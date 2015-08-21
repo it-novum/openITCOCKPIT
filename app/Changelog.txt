@@ -1,0 +1,106 @@
+3.0.4
+<span class="label bg-color-green">New</span> User permissions
+<span class="label bg-color-green">New</span> User group permissions
+<span class="label bg-color-green">New</span> Container permissions
+<span class="label bg-color-green">New</span> Host sharing
+<span class="label bg-color-green">New</span> Documentation
+<span class="label bg-color-green">New</span> Add new Dashboards
+<span class="label bg-color-red">Bugfix</span> Dashboards
+<span class="label bg-color-red">Bugfix</span> Containers / Nodes
+<span class="label bg-color-red">Bugfix</span> Locations
+
+
+3.0.3 RC2
+<span class="label bg-color-green">New</span> Dashboards
+<span class="label bg-color-green">New</span> REST API for migration scripts
+<span class="label bg-color-green">New</span> ITSM Stack for multiple i-doit systems - IdoitModule
+<span class="label bg-color-green">New</span> Migration scripts to migrate latest openITCOCKPIT V2 to V3
+<span class="label bg-color-green">New</span> Prepare backend for ACL permissions
+<span class="label bg-color-green">New</span> Prepare documentation
+<span class="label bg-color-green">New</span> Container permissions are applied immediately
+<span class="label bg-color-green">New</span> Mass delete for lots of monitoring objects
+<span class="label bg-color-green">New</span> Used by for Distributed Monitoring Module
+<span class="label bg-color-green">New</span> Deletion of satellite systems
+<span class="label bg-color-green">New</span> Delete all hosts associated with a host template if you delete the host template
+<span class="label bg-color-green">New</span> Delete all services associated with a service template if you delete the service template
+<span class="label bg-color-green">New</span> New list for monitoring commands
+<span class="label bg-color-green">New</span> Devicegroups
+<span class="label bg-color-green">New</span> Compressed and minified JavaScript files
+<span class="label bg-color-red">Bugfix</span> Don't delete objects that are used by other objects
+<span class="label bg-color-red">Bugfix</span> Search for Changelog
+<span class="label bg-color-red">Bugfix</span> Servicetemplategroups to Hostgroups
+<span class="label bg-color-red">Bugfix</span> Hosts to Hostgroups
+<span class="label bg-color-red">Bugfix</span> Forwarder / Search
+<span class="label bg-color-red">Bugfix</span> Statusmap style issues
+<span class="label bg-color-red">Bugfix</span> Monitoring configuration generator
+<span class="label bg-color-red">Bugfix</span> Location coordinates issue
+<span class="label bg-color-blue">Notice</span> Due to unexpected issues the EVC module could not be implemented. It is scheduled for version 3.0.5
+
+
+3.0.2 RC1
+<span class="label bg-color-red">Bugfix</span> Proxy settings
+<span class="label bg-color-green">New</span> Basic Monitoring -> Browser
+<span class="label bg-color-green">New</span> gearman_worker for background taks like schedule downtime
+<span class="label bg-color-green">New</span> oitc.cmd as replacement of nagios.cmd
+<span class="label bg-color-green">New</span> Automaps
+<span class="label bg-color-green">New</span> Statusmap
+<span class="label bg-color-green">New</span> Downtime Report
+<span class="label bg-color-green">New</span> Current State Report
+<span class="label bg-color-green">New</span> Container baised permissions for monitoring objects
+<span class="label bg-color-red">Bugfix</span> Removed typos in database
+<span class="label bg-color-red">Bugfix</span> Rename of openitcockpit database
+<span class="label bg-color-green">New</span> Check_MK SNMP Support
+<span class="label bg-color-green">New</span> Redevelopment of Check_MK Module
+<span class="label bg-color-green">New</span> Status stats in menu bar
+<span class="label bg-color-green">New</span> Option to minify nagios configuration
+<span class="label bg-color-red">Bugfix</span> Fixed several issues with the Map Module in Chrome
+<span class="label bg-color-red">Bugfix</span> Fixed Trafficlight flapping and unknown state
+<span class="label bg-color-green">New</span> Send a ping to a remote system over the interface (host summary)
+<span class="label bg-color-green">New</span> New Iconsets for the Map Module: arrows, arrow-h, arrow-v, file-text, file-o and globe. Everyone is in 16x16, 32x32, 64x64, 128x128 available
+<span class="label bg-color-green">New</span> You can Navigate though the Filtered menu list using arrow down or arrow up key
+<span class="label bg-color-red">Bugfix</span> Fixed the arrangement of Items in Item menu in the Map Module
+<span class="label bg-color-red">Bugfix</span> Hard and soft state type in host summary
+<span class="label bg-color-red">Bugfix</span> JavaScript graph day and month issues
+
+
+3.0.1 Beta
+<span class="label bg-color-green">New</span> Instant reports as PDF and HTML
+<span class="label bg-color-green">New</span> Add parameter support for host and service notifications by cake
+<span class="label bg-color-green">New</span> Description field for servicetemplate groups
+<span class="label bg-color-green">New</span> Event handler for serivce tempaltes and services
+<span class="label bg-color-green">New</span> API interface to check and create new cronjobs
+<span class="label bg-color-green">New</span> Host groups overview extended
+<span class="label bg-color-green">New</span> Monitoring commands for host list
+<span class="label bg-color-green">New</span> Monitoring commands for service list
+<span class="label bg-color-green">New</span> Acknowledge for host and host inc. services
+<span class="label bg-color-green">New</span> Servicetemplate cache for copy actions
+<span class="label bg-color-green">New</span> External command interface HTTP (replacement of cmd.cgi)
+<span class="label bg-color-green">New</span> External command interface oitc.cmd (replacement of nagios.cmd)
+<span class="label bg-color-green">New</span> System health overview in Administration -> Debugging
+<span class="label bg-color-green">New</span> Magnetic Grid System in the Map Module
+<span class="label bg-color-green">New</span> Stateless Icons for the Map Module
+<span class="label bg-color-green">New</span> Traffic Light Gadget in the Map Module
+<span class="label bg-color-green">New</span> Menu Panel from the Map editor can be hidden automatically
+<span class="label bg-color-green">New</span> RRD Gadget in Map editor
+<span class="label bg-color-green">New</span> Text Layers can be added in Map editor and it is possible to resize them with the Grid (if the magnetic grid is enabled)
+<span class="label bg-color-green">New</span> Host, Service, Hostgroup and Servicegroup list can be exported as PDF now
+<span class="label bg-color-red">Bugfix</span> Data tables are state save now
+<span class="label bg-color-red">Bugfix</span> Hold proportions on user image upload
+<span class="label bg-color-red">Bugfix</span> JavaScript graph time issues
+<span class="label bg-color-red">Bugfix</span> Delete of running host and service downtimes
+<span class="label bg-color-red">Bugfix</span> Automatically create of CHECK_MK_ACTIVE service
+<span class="label bg-color-red">Bugfix</span> Monitoring engine send notifications
+<span class="label bg-color-red">Bugfix</span> Duplicate entries in dasbhoard "Current network segment issues"
+<span class="label bg-color-red">Bugfix</span> Display of contacts and contact groups in host and service summary
+<span class="label bg-color-red">Bugfix</span> Cronjob quiet mode
+<span class="label bg-color-red">Bugfix</span> Passive transfer of check results (for hosts)
+<span class="label bg-color-red">Bugfix</span> Proxy settings
+<span class="label bg-color-red">Bugfix</span> Import of LDAP users with a dot "." in samaccountname
+<span class="label bg-color-red">Bugfix</span> LDAP connect now uses a max. timeout of 25 seconds
+<span class="label bg-color-red">Bugfix</span> Speed up search by UUID and debugging shell
+<span class="label bg-color-blue">Notice</span> Please remove the brackets () in MK Servicetemplate CHECK_MK_PS in ARG1
+<span class="label bg-color-blue">Notice</span> Please set in MK Servicetemplate CHECK_MK_DISKSTAT the value "{ 'read': (10, 20), 'write': (10,40), 'average': 15 }" (without ") for ARG1
+
+
+3.0.0 Beta
+<span class="label bg-color-green">New</span> First Beta-Version of openITCOCKPIT

@@ -1,0 +1,76 @@
+{
+    "name": "cboden/Ratchet-examples"
+  , "type": "library"
+  , "homepage": "http://socketo.me"
+  , "keywords": ["WebSocket", "demo", "Ratchet"]
+  , "license": "MIT"
+  , "minimum-stability": "dev"
+  , "authors": [
+        {
+            "name": "Chris Boden"
+          , "email": "cboden@gmail.com"
+          , "role": "Developer"
+        }
+    ]
+ , "autoload": {
+        "psr-0": {
+            "Ratchet\\Cookbook": "src"
+          , "Ratchet\\Tutorials": "src"
+          , "Ratchet\\Website": "src"
+          , "Ratchet\\Tests\\Cookbook": "tests"
+          , "Ratchet\\Tests\\Tutorials": "tests"
+          , "Ratchet\\Tests\\Website": "tests"
+
+        }
+    }
+  , "require": {
+        "php": ">=5.3.3"
+      , "cboden/Ratchet": "master"
+      , "monolog/monolog": "dev-master"
+      , "cujojs/when": "dev-master"
+      , "tavendo/AutobahnJS": "dev-master"
+      , "gimite/web-socket-js": "dev-master"
+	  ,"react/react": "0.3.*"
+    }
+    , "repositories": [
+        {
+            "type": "package"
+          , "package": {
+                "name": "gimite/web-socket-js"
+              , "type": "library"
+              , "version": "dev-master"
+              , "source": {
+                    "url": "https://github.com/gimite/web-socket-js"
+                  , "type": "git"
+                  , "reference": "master"
+                }
+            }
+        }
+      , {
+            "type": "package"
+          , "package": {
+                "name": "tavendo/AutobahnJS"
+              , "type": "library"
+              , "version": "dev-master"
+              , "source": {
+                    "url": "https://github.com/tavendo/AutobahnJS.git"
+                  , "type": "git"
+                  , "reference": "v0.6.0"
+                }
+            }
+        }
+      , {
+            "type": "package"
+          , "package": {
+                "name": "cujojs/when"
+              , "type": "library"
+              , "version": "dev-master"
+              , "source": {
+                    "url": "https://github.com/cujojs/when.git"
+                  , "type": "git"
+                  , "reference": "00fdea1f49c697f97754b8ed6416082f362830ad"
+                }
+            }
+        }
+    ]
+}

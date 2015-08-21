@@ -1,0 +1,88 @@
+#titles {
+    overflow: hidden;
+    background-color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    display: none;
+    position: absolute;
+    z-index: 99999;
+    left: 0;
+    top: 0;
+}
+#titles div#the-end {
+    font-size: 60px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 12px #ffffff;
+    width: 100%;
+    text-align: center;
+}
+#credits {
+    color: #ffffff;
+    position: absolute;
+}
+#credits h1 {
+    color: #888888;
+    width: 100%;
+    height: 100%;
+    margin: 50px 0 0 50px;
+    text-align: center;
+    font-size: 16px;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+}
+#credits dl {
+    margin: 0px auto;
+}
+#credits dt {
+    float: left;
+    width: 260px;
+    margin: 0;
+    padding: 13px 0 0 0;
+    text-align: right;
+    font-family: "Arial Narrow", sans-serif;
+    font-size: 20px;
+    clear:left;
+}
+#credits dd {
+    width: 100%;
+    margin: 0 0 0 280px;
+    padding: 13px 0 0 0;
+    font-family: "Arial Black", sans-serif;
+    font-weight: bold;
+    font-size: 20px;    
+}
+#credits p {
+    width: 508px;
+    margin: 10px 0px 10px 60px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+}
+#credits .fineprint {
+    color: #888888;
+    width: 100%;
+    margin: 80px 0 0 50px;
+    text-align: center;
+    font-size: 10px;
+    font-family: sans-serif;
+}
+.clearfix: after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+.clearfix {
+    display: inline-block;
+}
+/* start commented backslash hack \*/
+* html .clearfix {
+    height: 1%;
+}
+.clearfix {
+    display: block;
+}
+/* close commented backslash hack */

@@ -1,0 +1,420 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+class Hosttemplate extends AppModel{
+	var $hasAndBelongsToMany = [
+		'Contactgroup' => [
+			'className' => 'Contactgroup',
+			'joinTable' => 'contactgroups_to_hosttemplates',
+			'foreignKey' => 'hosttemplate_id',
+			'associationForeignKey' => 'contactgroup_id',
+			'unique' => true,
+			'dependent' => true
+		],
+		'Contact' => [
+			'className' => 'Contact',
+			'joinTable' => 'contacts_to_hosttemplates',
+			'foreignKey' => 'hosttemplate_id',
+			'associationForeignKey' => 'contact_id',
+			'unique' => true,
+			'dependent' => true
+		]
+	];
+
+	var $belongsTo = [
+		'Container' => [
+			'className' => 'Container',
+			'foreignKey' => 'container_id'
+		],
+		'CheckPeriod' => [
+			'className' => 'Timeperiod',
+			'foreignKey' => 'check_period_id',
+		],
+		'NotifyPeriod' => [
+			'className' => 'Timeperiod',
+			'foreignKey' => 'notify_period_id',
+		],
+		'CheckCommand' => [
+			'className' => 'Command',
+			'foreignKey' => 'command_id',
+		]
+	];
+
+	var $hasMany = [
+		'Customvariable' => [
+			'className' => 'Customvariable',
+			'foreignKey' => 'object_id',
+			'conditions' => [
+				'objecttype_id' => OBJECT_HOSTTEMPLATE,
+			],
+			'dependent' => true
+		],
+		'Hosttemplatecommandargumentvalue'
+	];
+
+	var $validate = [
+		'name' => [
+			'notEmpty' => [
+				'rule'    => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			]
+		],
+		'priority' => [
+			'notEmpty' => [
+				'rule'    => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'range' => [
+				'rule' => ['range', 0, 6],
+				'message' => 'This value must be between 1 and 5'
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This value needs to be numeric'
+			]
+		],
+		'notify_period_id' => [
+			'notEmpty' => [
+				'rule'    => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+		],
+		'container_id' => [
+			'rule' => 'notEmpty',
+			'message' => 'This field cannot be left blank.',
+			'required' => true
+		],
+		'max_check_attempts' => [
+			'allowEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.'
+			],
+			'comparison' => [
+				'rule' => ['comparison', '>=', 1],
+				'message' => 'This value need to be at least 1'
+			]
+		],
+		'notification_interval' => [
+			'allowEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+			],
+			'comparison' => [
+				'rule' => ['comparison', '>=', 0],
+				'message' => 'This value need to be at least 0'
+			]
+		],
+		'check_interval' => [
+			'allowEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+			],
+			'comparison' => [
+				'rule' => ['comparison', '>=', 1],
+				'message' => 'This value need to be at least 1'
+			]
+		],
+		'retry_interval' => [
+			'allowEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+			],
+			'comparison' => [
+				'rule' => ['comparison', '>=', 1],
+				'message' => 'This value need to be at least 1'
+			]
+		],
+		'check_period_id' => [
+			'allowEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+			]
+		],
+		'command_id' => [
+			'allowEmpty' => [
+				'rule' => ['comparison', '>', 0],
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+			]
+		],
+		'notify_on_recovery' => [
+			'check_options' => [
+				'rule' => ['checkNotificationOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'allowEmpty' => true,
+				'required' => false
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'notify_on_down' => [
+			'check_options' => [
+				'rule' => ['checkNotificationOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'allowEmpty' => true,
+				'required' => false
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'notify_on_unreachable' => [
+			'check_options' => [
+				'rule' => ['checkNotificationOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'allowEmpty' => true,
+				'required' => false
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'notify_on_flapping' => [
+			'check_options' => [
+				'rule' => ['checkNotificationOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'allowEmpty' => true,
+				'required' => false
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'notify_on_downtime' => [
+			'check_options' => [
+				'rule' => ['checkNotificationOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'allowEmpty' => true,
+				'required' => false
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'flap_detection_enabled' => [
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype',
+				'required' => false,
+				'allowEmpty' => true
+			]
+		],
+		'flap_detection_on_up' => [
+			'check_options' => [
+				'rule' => ['checkFlapDetectionOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'required' => false,
+				'allowEmpty' => true
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'flap_detection_on_down' => [
+			'check_options' => [
+				'rule' => ['checkFlapDetectionOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'required' => false,
+				'allowEmpty' => true
+			],
+			'boolean' => [
+				'rule'    => ['boolean'],
+				'message' => 'Incorrect datatype'
+			]
+		],
+		'flap_detection_on_unreachable' => [
+			'check_options' => [
+				'rule' => ['checkFlapDetectionOptions', 'host'],
+				'message' => 'You have to choose at least one option.',
+				'required' => false,
+				'allowEmpty' => true
+			],
+			'boolean' => [
+				'rule'		=> ['boolean'],
+				'message'	=> 'Incorrect datatype'
+			]
+		],
+		'Contact' => [
+			'atLeastOne' => [
+				'rule' => ['atLeastOne'],
+				'message' => 'You must specify at least one contact or contact group.',
+				'required' => true
+			]
+		],
+		'Contactgroup' => [
+			'atLeastOne' => [
+				'rule' => ['atLeastOne'],
+				'message' => 'You must specify at least one contact or contact group',
+				'required' => true
+			]
+		],
+		'host_url' => [
+			'rule' => 'url',
+			'allowEmpty' => true,
+			'required' => false,
+			'message' => 'Not a valid URL format'
+		]
+	];
+
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		App::uses('UUID', 'Lib');
+		$this->notification_options = [
+							'host' => [
+								'notify_on_recovery',
+								'notify_on_down',
+								'notify_on_unreachable',
+								'notify_on_flapping',
+								'notify_on_downtime'
+							],
+						];
+
+		$this->falpdetection_options = [
+							'host' => [
+								'flap_detection_on_up',
+								'flap_detection_on_down',
+								'flap_detection_on_unreachable'
+							],
+						];
+	}
+
+	function checkNotificationOptions($data, $notification_type){
+		foreach($this->data as $request){
+			foreach($request as $request_key => $request_value){
+				if(in_array($request_key, $this->notification_options[$notification_type]) && $request_value == 1){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	function checkFlapDetectionOptions($data, $flapdetection_type){
+		if(isset($this->data['Hosttemplate']['flap_detection_enabled']) && (boolean)$this->data['Hosttemplate']['flap_detection_enabled'] === true){
+			foreach($this->data as $request){
+				foreach($request as $request_key => $request_value){
+					if(in_array($request_key, $this->falpdetection_options[$flapdetection_type]) && $request_value == 1){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
+	public function createUUID(){
+		return UUID::v4();
+	}
+
+	/*
+	Custom validation rule for contact and/or contactgroup fields
+	*/
+	public function atLeastOne($data) {
+		return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
+	}
+
+	/**
+	* Delete old records (custom variables) from database
+	*
+	* ### Options
+	*
+	* - See cake-api beforeSave function
+	*
+	* @param	array $options with the options
+	* @return	true
+	* @author	Irina Bering <irina.bering@it-novum.com>
+	* @since	3.0.1
+	*
+	*/
+	public function beforeSave($options = []) {
+		if(isset($this->data['Customvariable'])){
+			$customvariablesToDelete = $this->Customvariable->find('all', [
+				'conditions' => [
+					'Customvariable.object_id' =>$this->data['Hosttemplate']['id'],
+					'Customvariable.objecttype_id' => OBJECT_HOSTTEMPLATE,
+					'NOT' => [
+						'Customvariable.id' => Hash::extract($this->data['Customvariable'], '{n}.id')
+					]
+				]
+			]);
+			//Delete all custom variables that are remove by the user:
+			foreach($customvariablesToDelete as $customvariableToDelete){
+				$this->Customvariable->delete($customvariableToDelete['Customvariable']['id']);
+			}
+		}
+		return true;
+	}
+
+	public function hosttemplatesByContainerId($container_id = [], $type = 'all'){
+		return $this->find($type, [
+			'conditions' => [
+				'Hosttemplate.container_id' => $container_id
+			],
+			'order' => [
+				'Hosttemplate.name' => 'ASC'
+			]
+		]);
+	}
+}

@@ -1,0 +1,56 @@
+/* List Filter */
+	.list-filter {
+		clear: both;
+	}
+	.list-filter .form-group, 
+	.list-filter .form-group label {
+		margin-bottom: 0;
+	}
+
+	.list-filter .submit-group {
+		margin-top: 10px;
+	}
+	.list-filter .submit-group a.btn {
+	}
+	.list-filter form {
+		margin-bottom: 0;
+	}
+	.list-filter hr {
+		margin: 8px 0;
+	}
+	.list-filter.closed .content {
+		display: none;
+	}
+	
+	.list-filter.closed {
+		padding-top: 3px;
+		padding-bottom: 6px;
+		height: 35px;
+	}
+	.list-filter.closed hr {
+		display: none;
+	}
+	.list-filter h3 {
+		font-size: 18px;
+		margin: 0;
+	}
+	.list-filter.closed h3 {
+		font-size: 14px;
+		line-height: 24px;
+	}
+	
+	.fulltext-search {
+		padding: 8px 19px;
+		clear: both;
+		margin-bottom: 10px;
+	}
+	.fulltext-search form {
+		margin: 0;
+	}
+	.fulltext-search form .form-group {
+		margin: 0;
+	}
+	.fulltext-search h3 {
+		font-size: 14px;
+		line-height: 28px;
+	}

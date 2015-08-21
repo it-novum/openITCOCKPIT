@@ -1,0 +1,161 @@
+# ClearCache plugin for CakePHP
+
+ClearCache plugin provides several ways how to clear CACHE subfolders and
+cache engines in CakePHP applications.
+
+## Requirements
+
+The master branch has the following requirements:
+
+* CakePHP 2.0 or greater.
+* PHP 5.3.0 or greater.
+
+For CakePHP 1.3 use the 1.3 branch.
+
+## Installation
+
+* Clone/Copy the files in this directory into `app/Plugin/ClearCache`
+* Ensure the plugin is loaded in `app/Config/bootstrap.php` by calling `CakePlugin::load('ClearCache');`
+
+# Usage
+
+## Console Shell
+
+Run from your APP folder:
+
+	# clear all cached files and configured engines
+	Console/cake ClearCache.clear_cache
+
+	# clear all cached files
+	Console/cake ClearCache.clear_cache files
+	# clear just files in CACHE folder
+	Console/cake ClearCache.clear_cache files .
+	# clear just files in CACHE subfolders
+	Console/cake ClearCache.clear_cache files *
+	# clear just files in CACHE/views folder
+	Console/cake ClearCache.clear_cache files views
+	# clear just files in selected CACHE subfolders
+	Console/cake ClearCache.clear_cache files models persistent
+
+	# clear all configured cache engines
+	Console/cake ClearCache.clear_cache engines
+	# clear just engine named _cake_core_
+	Console/cake ClearCache.clear_cache engines _cake_core_
+	# clear just selected engines
+	Console/cake ClearCache.clear_cache engines default sessions
+
+	# clear all configured cache groups
+	Console/cake ClearCache.clear_cache groups
+	# clear just cache group named comment
+	Console/cake ClearCache.clear_cache groups comment
+	# clear just selected groups
+	Console/cake ClearCache.clear_cache groups comment post
+
+By default, running the shell will only display a total number of items cleaned.
+Use the `-v` flag to get list of items deleted:
+
+	# clear all cached files and configured engines
+	Console/cake ClearCache.clear_cache -v
+	# clear all cached files
+	Console/cake ClearCache.clear_cache files -v
+	# clear just engine named _cake_core_
+	Console/cake ClearCache.clear_cache engines _cake_core_ -v
+
+## Library Class
+
+Similarly, run from your application code:
+
+	App::uses('ClearCache', 'ClearCache.Lib');
+	$ClearCache = new ClearCache();
+
+	$output = $ClearCache->run();
+
+	$output = $ClearCache->files();
+	$output = $ClearCache->files('.');
+	$output = $ClearCache->files('*');
+	$output = $ClearCache->files('views');
+	$output = $ClearCache->files('models', 'persistent');
+
+	$output = $ClearCache->engines();
+	$output = $ClearCache->engines('_cake_core_');
+	$output = $ClearCache->engines('default', 'custom');
+
+	$output = $ClearCache->groups();
+	$output = $ClearCache->groups('comment');
+	$output = $ClearCache->groups('comment', 'post');
+
+Method files() returns an associative array of deleted/undeleted files:
+
+	array(
+		'deleted' => array(...),
+		'error'   => array(...)
+	)
+
+Method engines() returns an associative array of result:
+
+	array(
+		'default' => true,
+		'_cake_core_'   => false
+	)
+
+Method groups() returns an associative array of result:
+
+	array(
+		'comment' => array(
+			'default' => true,
+		),
+		'post' => array(
+			'default' => true,
+			'advanced' => true,
+		),
+	)
+
+Method run() returns an associative array of result:
+
+	array(
+		'files' => array(
+			'deleted' => array(...),
+			'error'   => array(...)
+		),
+		'engines' => array(
+			'default' => true,
+			'_cake_core_'   => false
+		)
+	)
+
+## Panel for DebugKit toolbar
+
+In AppController, configure usage of ClearCache panel for DebugKit toolbar:
+
+	public $components = array(
+		'DebugKit.Toolbar' => array(
+			'panels' => array('ClearCache.ClearCache')
+		)
+	);
+
+Optionally, mainly for situations when debug is disabled and DebugKit is configured
+with `'forceEnable' => true`, it is possible to restrict clearing of CACHE subfolders
+and cache engines/groups through DebugKit panel to specific items only (string or
+array of strings under folders/engines/groups keys) and/or enable every ones with
+special string _all_:
+
+	public $components = array(
+		'DebugKit.Toolbar' => array(
+			'panels' => array('ClearCache.ClearCache'),
+			'clear_cache' => array(
+				// allow to clear just files in CACHE/views folder
+				'folders' => 'views'
+				// allow to clear all cache engines at once, and selected ones separately
+				'engines' => array('_all_', 'default', 'sessions'),
+				// allow to clear all cache groups at once, and selected ones separately
+				'groups' => array('_all_', 'comment', 'post'),
+			)
+		)
+	);
+
+## Clearing cache groups
+
+Cache groups were introduced in CakePHP 2.2 and they are shared across all cache
+configs using the same engine and same prefix. Despite of this, ClearCache plugin
+clears WHOLE cache groups - even if they're specified in cache configurations with different
+cache engines and different prefixes.

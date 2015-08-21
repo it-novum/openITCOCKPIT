@@ -1,0 +1,14 @@
+{
+	"name": "ceeram/clear_cache",
+	"type": "cakephp-plugin",
+	"description": "Clear CakePHP caches from shell, app or debug_kit panel",
+	"homepage": "http://github.com/ceeram/clear_cache",
+	"license": "MIT",
+	"require": {
+		"php": ">=5.3.0",
+		"composer/installers": "*"
+	},
+	"extra": {
+		"installer-name": "ClearCache"
+	}
+}

@@ -1,0 +1,31 @@
+{
+    "name": "jbbcode/jbbcode",
+    "type": "library",
+    "description": "A lightweight but extensible BBCode parser written in PHP 5.3.",
+    "keywords": ["BBCode", "BB"],
+    "homepage": "http://jbbcode.com/",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "config": {
+        "bin-dir": "/usr/local/bin"
+    },
+    "authors": [
+        {
+            "name": "Jackson Owens",
+            "email": "jackson_owens@brown.edu",
+            "homepage": "http://jbowens.org/",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "JBBCode": "."
+        }
+    },
+    "minimum-stability": "stable"
+}

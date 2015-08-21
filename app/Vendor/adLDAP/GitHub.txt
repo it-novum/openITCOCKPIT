@@ -1,0 +1,12 @@
+https://github.com/adldap/adLDAP
+
+Issue Network timeout: https://github.com/adldap/adLDAP/issues/56
+Hi,
+i had the problem, that php kill my process after 30 seconds if the LDAP server was not reachable. I fixed this issue with the folowin line:
+ldap_set_option($this->ldapConnection, LDAP_OPT_NETWORK_TIMEOUT, 25);
+in lib/adLDAP/adLDAP.php's connect() function.
+
+May be you can implement this to your class :)
+
+Regards,
+Daniel
