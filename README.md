@@ -27,6 +27,17 @@ To install openITCOCKPIT on your system, just run the following commands.
 If [phpMyAdmin](https://www.phpmyadmin.net/) asks you for your web server **leave the selection blank** and continue with **Ok**.
 
 openITCOCKPIT uses Nginx as webserver and will generate the configuration for phpMyAdmin automatically for you.
+
+**openITCOCKPIT + Naemon (recommended)**
+````
+echo 'deb http://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
+adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
+apt-get update
+openitcockpit{,-naemon,-statusengine-naemon,-npcd}
+/usr/share/openitcockpit/app/SETUP.sh
+````
+**openITCOCKPIT Nagios 4:**
+
 ````
 echo 'deb http://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
