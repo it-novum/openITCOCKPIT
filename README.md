@@ -31,16 +31,16 @@ openITCOCKPIT uses Nginx as webserver and will generate the configuration for ph
 **openITCOCKPIT + Naemon (recommended)**
 ````
 echo 'deb http://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
+apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
 apt-get update
-openitcockpit{,-naemon,-statusengine-naemon,-npcd}
+apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
 
 ````
 echo 'deb http://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
+apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
 apt-get update
 apt-get install openitcockpit{,-nagios,-ndoutils,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
