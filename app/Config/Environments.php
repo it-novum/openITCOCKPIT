@@ -54,6 +54,8 @@ class Environments {
 			$environment = self::STAGING;
 		}elseif(substr($host, 0, 9) == '172.16.2.'){
 			$environment = self::DEVELOPMENT;
+		}elseif(substr($host, 0, 10) == '172.16.13.'){
+			$environment = self::DEVELOPMENT;
 		}else{
 			$environment = self::PRODUCTION;
 		}
