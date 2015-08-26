@@ -118,22 +118,6 @@ App.Components.WidgetHostStatusListComponent = Frontend.Component.extend({
 			});
 			$widgetContainer.find('.slider-slim').css('display','flex');
 
-			if(!$widgetElements.showUp.prop('checked')){
-				showUp = 0;
-			}
-			if(!$widgetElements.showDown.prop('checked')){
-				showDown = 0;
-			}
-			if(!$widgetElements.showUnreachable.prop('checked')){
-				showUnreachable = 0;
-			}
-			if($widgetElements.showAcknowledged.prop('checked')){
-				showAcknowledged = 1;
-			}
-			if($widgetElements.showDowntime.prop('checked')){
-				showDowntime = 1;
-			}
-
 			if(self.intervalIds[widgetId]){
 				clearInterval(self.intervalIds[widgetId]);
 				self.intervalIds[widgetId] = 0;
@@ -144,109 +128,84 @@ App.Components.WidgetHostStatusListComponent = Frontend.Component.extend({
 			}
 
 			self.options.loadWidgetData(widgetId, function(result){
+				saveData = {
+					'Widget': {
+						'id' : widgetId,
+					},
+					'WidgetHostStatusList':{
+						'widgetId' : widgetId,
+						'scroll_direction' : scrollDirection,
+						'hosts_per_page' : hostsPerPage,
+						'refresh_interval' : refreshInterval,
+						'animation_interval' : animationInterval,
+						'show_up' : $widgetElements.showUp.prop('checked')|0,
+						'show_down' : $widgetElements.showDown.prop('checked')|0,
+						'show_unreachable' : $widgetElements.showUnreachable.prop('checked')|0,
+						'show_acknowledged' : $widgetElements.showAcknowledged.prop('checked')|0,
+						'show_downtime' : $widgetElements.showDowntime.prop('checked')|0
+					}
+				};
 				if(result.data.WidgetHostStatusList.id){
-					saveData = {
-						'Widget': {
-							'id' : widgetId,
-						},
-						'WidgetHostStatusList':{
-							'id' : result.data.WidgetHostStatusList.id,
-							'widgetId' : widgetId,
-							'scroll_direction' : scrollDirection,
-							'hosts_per_page' : hostsPerPage,
-							'refresh_interval' : refreshInterval,
-							'animation_interval' : animationInterval,
-							'show_up' : showUp,
-							'show_down' : showDown,
-							'show_unreachable' : showUnreachable,
-							'show_acknowledged' : showAcknowledged,
-							'show_downtime' : showDowntime
-						}
-					};
-					self.options.saveWidgetData(saveData);
+					saveData.WidgetHostStatusList.id = result.data.WidgetHostStatusList.id;
 				}
-				else{
-					saveData = {
-						'Widget': {
-							'id' : widgetId,
-						},
-						'WidgetHostStatusList':{
-							'widgetId' : widgetId,
-							'scroll_direction' : scrollDirection,
-							'hosts_per_page' : hostsPerPage,
-							'refresh_interval' : refreshInterval,
-							'animation_interval' : animationInterval,
-							'show_up' : showUp,
-							'show_down' : showDown,
-							'show_unreachable' : showUnreachable,
-							'show_acknowledged' : showAcknowledged,
-							'show_downtime' : showDowntime
-						}
-					};
-					self.options.saveWidgetData(saveData);
-				}
+				self.options.saveWidgetData(saveData);
 			});
 
-			var $object = $widgetContainer.find('.statusListHosts');
+			var $object = $widgetContainer.find('.statusListHosts'),
+				ajaxPath = '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
+				dataTableAttributes = {
+					destroy: true,
+					'ajax': ajaxPath,
+					'iDisplayLength': parseInt($widgetElements.hostsPerPage,10),
+					'bLengthChange': false,
+					'sScrollY': '200px',
+					'bAutoWidth': true,
+					'pagingType': 'numbers',
+					'fnInitComplete': function(){
+						self.startSlider(self.dataTables[widgetId], widgetId);
+					}
+				};
 
-			if(self.dataTables[widgetId]){
-				self.dataTables[widgetId].dataTable({
-					destroy: true,
-					'ajax': '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-					'iDisplayLength': parseInt($widgetElements.hostsPerPage),
-					'bLengthChange': false,
-					'sScrollY': '200px',
-					'bAutoWidth': true,
-					'pagingType': 'numbers',
-					'fnInitComplete': function(){
-						self.startSlider(self.dataTables[widgetId], widgetId);
-					}
-				});
-			}else{
-				var table = $object.dataTable({
-					destroy: true,
-					'ajax': '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-					'iDisplayLength': parseInt($widgetElements.hostsPerPage),
-					'bLengthChange': false,
-					'sScrollY': '200px',
-					'bAutoWidth': true,
-					'pagingType': 'numbers',
-					'fnInitComplete': function(){
-						self.startSlider(self.dataTables[widgetId], widgetId);
-					}
-				});
-				self.dataTables[widgetId] = table;
+			if($widgetElements.showUp.prop('checked') || $widgetElements.showDown.prop('checked') || $widgetElements.showUnreachable.prop('checked')){
+				if(self.dataTables[widgetId]){
+					self.dataTables[widgetId].dataTable(dataTableAttributes);
+				}else{
+					var table = $object.dataTable(dataTableAttributes);
+					self.dataTables[widgetId] = table;
+				}
+
+				var checkInterval = refreshInterval * 60000,
+					intervalId = setInterval(function() {
+						self.dataTables[widgetId].dataTable({
+							destroy: true,
+							'ajax': ajaxPath,
+							'iDisplayLength': parseInt($widgetElements.hostsPerPage,10),
+							'bLengthChange': false,
+							'sScrollY': '200px',
+							'bAutoWidth': true,
+							'pagingType': 'numbers',
+							'fnInitComplete': function(){
+								clearInterval(self.timers[widgetId]);
+								delete self.timers[widgetId];
+								self.startSlider(self.dataTables[widgetId], widgetId);
+							}
+						});
+					}, checkInterval);
+				self.intervalIds[widgetId] = intervalId;
 			}
 
-			var checkInterval = refreshInterval * 60000,
-				intervalId = setInterval(function() {
-					self.dataTables[widgetId].dataTable({
-						destroy: true,
-						'ajax': '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-						'iDisplayLength': parseInt($widgetElements.hostsPerPage),
-						'bLengthChange': false,
-						'sScrollY': '200px',
-						'bAutoWidth': true,
-						'pagingType': 'numbers',
-						'fnInitComplete': function(){
-							clearInterval(self.timers[widgetId]);
-							delete self.timers[widgetId];
-							self.startSlider(self.dataTables[widgetId], widgetId);
-						}
-					});
-				}, checkInterval);
-			self.intervalIds[widgetId] = intervalId;
-
 			//restart Tab Rotation if needed
-			if(allWidgetParameters['tabRotation'].tabRotationInterval > 0){
-				allWidgetParameters['tabRotation'].tabRotationInterval = allWidgetParameters['tabRotation'].tabRotationInterval - 2000;
-				var intervalId = setInterval(function() {
-					$('.rotateTabs').find('.fa-refresh').addClass('fa-spin');
-					setTimeout(function(){
-						allWidgetParameters['nextTab'].nextTab();
-					},2000);
-				}, allWidgetParameters['tabRotation'].tabRotationInterval);
-				allWidgetParameters['tabRotation'].tabIntervalId = intervalId;
+			if(allWidgetParameters){
+				if(allWidgetParameters['tabRotation'].tabRotationInterval > 0){
+					allWidgetParameters['tabRotation'].tabRotationInterval = allWidgetParameters['tabRotation'].tabRotationInterval - 2000;
+					var intervalId = setInterval(function() {
+						$('.rotateTabs').find('.fa-refresh').addClass('fa-spin');
+						setTimeout(function(){
+							allWidgetParameters['nextTab'].nextTab();
+						},2000);
+					}, allWidgetParameters['tabRotation'].tabRotationInterval);
+					allWidgetParameters['tabRotation'].tabIntervalId = intervalId;
+				}
 			}
 		});
 
@@ -270,21 +229,11 @@ App.Components.WidgetHostStatusListComponent = Frontend.Component.extend({
 					$widgetContainer.find('.pagingIntervalValue').html(allWidgetParameters[10][currentId].animation_interval);
 					$widgetContainer.find('.slider-slim').css('display','flex');
 
-					if(allWidgetParameters[10][currentId].show_up){
-						$widgetContainer.find('.filter-up').prop('checked',true);
-					}
-					if(allWidgetParameters[10][currentId].show_down){
-						$widgetContainer.find('.filter-down').prop('checked',true);
-					}
-					if(allWidgetParameters[10][currentId].show_unreachable){
-						$widgetContainer.find('.filter-unreachable').prop('checked',true);
-					}
-					if(allWidgetParameters[10][currentId].show_acknowledged){
-						$widgetContainer.find('.filter-acknowledged').prop('checked',true);
-					}
-					if(allWidgetParameters[10][currentId].show_downtime){
-						$widgetContainer.find('.filter-downtime').prop('checked',true);
-					}
+					$widgetContainer.find('.filter-up').prop('checked',allWidgetParameters[10][currentId].show_up);
+					$widgetContainer.find('.filter-down').prop('checked',allWidgetParameters[10][currentId].show_down);
+					$widgetContainer.find('.filter-unreachable').prop('checked',allWidgetParameters[10][currentId].show_unreachable);
+					$widgetContainer.find('.filter-acknowledged').prop('checked',allWidgetParameters[10][currentId].show_acknowledged);
+					$widgetContainer.find('.filter-downtime').prop('checked',allWidgetParameters[10][currentId].show_downtime);
 
 					var $slider = $widgetContainer.find('input.slider');
 					$slider.slider();
@@ -298,8 +247,6 @@ App.Components.WidgetHostStatusListComponent = Frontend.Component.extend({
 						}
 					});
 
-					var $widgetElements = extractWidgetElements($widgetContainer);
-
 					//Show default in Inputfield if User never saved Widget
 					if($widgetContainer.find('.hosts-per-page').val() === ""){
 						$widgetContainer.find('.hosts-per-page').val('3');
@@ -308,39 +255,41 @@ App.Components.WidgetHostStatusListComponent = Frontend.Component.extend({
 						$widgetContainer.find('.refresh-interval').val('3');
 					}
 					//========================================
-					var $object = $widgetContainer.find('.statusListHosts'),
-						table = $object.dataTable({
-							destroy: true,
-							'ajax': '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-							'iDisplayLength': parseInt($widgetElements.hostsPerPage),
-							'bLengthChange': false,
-							'sScrollY': '200px',
-							'bAutoWidth': true,
-							'pagingType': 'numbers',
-							'fnInitComplete': function(){
-								self.startSlider($object, currentId);
-							}
-						});
-
-					var checkInterval = $widgetElements.refreshInterval * 60000,
-						intervalId = setInterval(function() {
-							var table = $object.dataTable({
+					if(allWidgetParameters[10][currentId].show_up || allWidgetParameters[10][currentId].show_down || allWidgetParameters[10][currentId].show_unreachable){
+						var $object = $widgetContainer.find('.statusListHosts'),
+							ajaxPath = '/admin/dashboard/statusListHosts/'+allWidgetParameters[10][currentId].show_up+'/'+allWidgetParameters[10][currentId].show_down+'/'+allWidgetParameters[10][currentId].show_unreachable+'/'+allWidgetParameters[10][currentId].show_acknowledged+'/'+allWidgetParameters[10][currentId].show_downtime,
+							table = $object.dataTable({
 								destroy: true,
-								'ajax': '/admin/dashboard/statusListHosts/'+$widgetElements.showUp.prop('checked')+'/'+$widgetElements.showDown.prop('checked')+'/'+$widgetElements.showUnreachable.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-								'iDisplayLength': parseInt($widgetElements.hostsPerPage),
+								'ajax': ajaxPath,
+								'iDisplayLength': parseInt(allWidgetParameters[10][currentId].hosts_per_page, 10),
 								'bLengthChange': false,
 								'sScrollY': '200px',
 								'bAutoWidth': true,
 								'pagingType': 'numbers',
 								'fnInitComplete': function(){
-									clearInterval(self.timers[currentId]);
-									delete self.timers[currentId];
 									self.startSlider($object, currentId);
 								}
 							});
-						}, checkInterval);
-					self.intervalIds[currentId] = intervalId;
-					self.dataTables[currentId] = table;
+
+						var checkInterval = allWidgetParameters[10][currentId].refresh_interval * 60000,
+							intervalId = setInterval(function() {
+								var table = $object.dataTable({
+									destroy: true,
+									'ajax': ajaxPath,
+									'iDisplayLength': parseInt(allWidgetParameters[10][currentId].hosts_per_page, 10),
+									'sScrollY': '200px',
+									'bAutoWidth': true,
+									'pagingType': 'numbers',
+									'fnInitComplete': function(){
+										clearInterval(self.timers[currentId]);
+										delete self.timers[currentId];
+										self.startSlider($object, currentId);
+									}
+								});
+							}, checkInterval);
+						self.intervalIds[currentId] = intervalId;
+						self.dataTables[currentId] = table;
+					}
 				}
 			}
 		});

@@ -35,14 +35,14 @@ App.Components.TimeComponent = Frontend.Component.extend({
 	initialized: false,
 	serverUTC: 0,
 	timezoneOffset: 0,
-	
+
 	setup: function(){
 		this.$localClienttime = $('#localClienttime');
 		this.$serverTime = $('#globalServertime');
 		this.serverRenderTime = this.$serverTime.data('render-servertime');
 		this.serverDate = new Date(this.serverRenderTime);
 		this.serverOffset = parseInt(this.$serverTime.attr('server-timezone-offset'), 10);
-		
+
 		this.pageLoaded = new Date().getTime();
 
 		this.timezoneOffset = parseInt(this.$localClienttime.attr('timezone-offset'), 10);
@@ -113,6 +113,9 @@ App.Components.TimeComponent = Frontend.Component.extend({
 	},
 
 	getCurrentTimeWithOffset: function(offset){
+		if(typeof(this.pageLoaded) === 'undefined'){
+			this.pageLoaded = new Date().getTime();
+		}
 		return new Date((this.getServerUTC() + (offset || 0)) * 1000 + (new Date().getTime() - this.pageLoaded));
 	},
 
@@ -140,14 +143,14 @@ App.Components.TimeComponent = Frontend.Component.extend({
 		this._isInitialized();
 		return this.getCurrentTimeWithOffset(this.timezoneOffset);
 	},
-	
-	
+
+
 	/**
 	 * @returns {Date}
 	 */
 	getServerUTC: function(){
 		return parseInt($('#globalServertime').attr('data-render-utc'));
-		
+
 	},
 
 	/**
