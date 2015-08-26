@@ -158,7 +158,7 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 						'services_per_page' : servicesPerPage,
 						'refresh_interval' : refreshInterval,
 						'animation_interval' : animationInterval,
-						'show_ok' : 0,
+						'show_ok' : $widgetElements.showOk.prop('checked')|0,
 						'show_warning' : $widgetElements.showWarning.prop('checked')|0,
 						'show_critical' : $widgetElements.showCritical.prop('checked')|0,
 						'show_unknown' : $widgetElements.showUnknown.prop('checked')|0,
@@ -174,12 +174,12 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 
 
 
-			var $object = $widgetContainer.find('.statusListServices');
-			if(self.dataTables[widgetId]){
-				self.dataTables[widgetId].dataTable({
+			var $object = $widgetContainer.find('.statusListServices'),
+				ajaxPath = '/admin/dashboard/statusListServices/'+$widgetElements.showOk.prop('checked')+'/'+$widgetElements.showWarning.prop('checked')+'/'+$widgetElements.showCritical.prop('checked')+'/'+$widgetElements.showUnknown.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
+				dataTableAttributes = {
 					destroy: true,
-					'ajax': '/admin/dashboard/statusListServices/'+$widgetElements.showOk.prop('checked')+'/'+$widgetElements.showWarning.prop('checked')+'/'+$widgetElements.showCritical.prop('checked')+'/'+$widgetElements.showUnknown.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-					'iDisplayLength': parseInt($widgetElements.servicesPerPage),
+					'ajax': ajaxPath,
+					'iDisplayLength': parseInt($widgetElements.servicesPerPage,10),
 					'bLengthChange': false,
 					'sScrollY': '200px',
 					'bAutoWidth': true,
@@ -187,41 +187,36 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 					'fnInitComplete': function(){
 						self.startSlider(self.dataTables[widgetId], widgetId);
 					}
-				});
-			}else{
-				var table = $object.dataTable({
-					destroy: true,
-					'ajax': '/admin/dashboard/statusListServices/'+$widgetElements.showOk.prop('checked')+'/'+$widgetElements.showWarning.prop('checked')+'/'+$widgetElements.showCritical.prop('checked')+'/'+$widgetElements.showUnknown.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-					'iDisplayLength': parseInt($widgetElements.servicesPerPage),
-					'bLengthChange': false,
-					'sScrollY': '200px',
-					'bAutoWidth': true,
-					'pagingType': 'numbers',
-					'fnInitComplete': function(){
-						self.startSlider(self.dataTables[widgetId], widgetId);
-					}
-				});
-				self.dataTables[widgetId] = table;
-			}
+				};
 
-			var checkInterval = refreshInterval * 60000,
-				intervalId = setInterval(function() {
-					self.dataTables[widgetId].dataTable({
-						destroy: true,
-						'ajax': '/admin/dashboard/statusListServices/'+$widgetElements.showOk.prop('checked')+'/'+$widgetElements.showWarning.prop('checked')+'/'+$widgetElements.showCritical.prop('checked')+'/'+$widgetElements.showUnknown.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-						'iDisplayLength': parseInt($widgetElements.servicesPerPage),
-						'bLengthChange': false,
-						'sScrollY': '200px',
-						'bAutoWidth': true,
-						'pagingType': 'numbers',
-						'fnInitComplete': function(){
-							clearInterval(self.timers[widgetId]);
-							delete self.timers[widgetId];
-							self.startSlider(self.dataTables[widgetId], widgetId);
-						}
-					});
-				}, checkInterval);
-			self.intervalIds[widgetId] = intervalId;
+			if($widgetElements.showOk.prop('checked') || $widgetElements.showWarning.prop('checked') || $widgetElements.showCritical.prop('checked') || $widgetElements.showUnknown.prop('checked')){
+
+				if(self.dataTables[widgetId]){
+					self.dataTables[widgetId].dataTable(dataTableAttributes);
+				}else{
+					var table = $object.dataTable(dataTableAttributes);
+					self.dataTables[widgetId] = table;
+				}
+
+				var checkInterval = refreshInterval * 60000,
+					intervalId = setInterval(function() {
+						self.dataTables[widgetId].dataTable({
+							destroy: true,
+							'ajax': ajaxPath,
+							'iDisplayLength': parseInt($widgetElements.servicesPerPage,10),
+							'bLengthChange': false,
+							'sScrollY': '200px',
+							'bAutoWidth': true,
+							'pagingType': 'numbers',
+							'fnInitComplete': function(){
+								clearInterval(self.timers[widgetId]);
+								delete self.timers[widgetId];
+								self.startSlider(self.dataTables[widgetId], widgetId);
+							}
+						});
+					}, checkInterval);
+				self.intervalIds[widgetId] = intervalId;
+			}
 
 			//restart Tab Rotation if needed
 			if(allWidgetParameters['tabRotation'].tabRotationInterval > 0){
@@ -275,9 +270,6 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 							}
 						}
 					});
-
-					var $widgetElements = extractWidgetElements($widgetContainer);
-
 					//Show default in Inputfield if User never saved Widget
 					if($widgetContainer.find('.services-per-page').val() === ""){
 						$widgetContainer.find('.services-per-page').val('3');
@@ -286,28 +278,31 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 						$widgetContainer.find('.refresh-interval').val('3');
 					}
 					//========================================
-					var $object = $widgetContainer.find('.statusListServices');
 
-					var table = $object.dataTable({
-						destroy: true,
-						'ajax': (allWidgetParameters[9][currentId].show_ok|allWidgetParameters[9][currentId].show_warning|allWidgetParameters[9][currentId].show_critical)?'/admin/dashboard/statusListServices/'+allWidgetParameters[9][currentId].show_ok+'/'+allWidgetParameters[9][currentId].show_warning+'/'+allWidgetParameters[9][currentId].show_critical+'/'+allWidgetParameters[9][currentId].show_unknown+'/'+allWidgetParameters[9][currentId].show_acknowledged+'/'+allWidgetParameters[9][currentId].show_downtime:false,
-						'iDisplayLength': parseInt($widgetElements.servicesPerPage),
-						'bLengthChange': false,
-						'sScrollY': '200px',
-						'bAutoWidth': true,
-						'pagingType': 'numbers',
-						'fnInitComplete': function(){
-							self.startSlider($object, currentId);
-						}
-					});
-					if(allWidgetParameters[9][currentId].show_ok|allWidgetParameters[9][currentId].show_warning|allWidgetParameters[9][currentId].show_critical){
-						var checkInterval = $widgetElements.refreshInterval * 60000,
+
+					if(allWidgetParameters[9][currentId].show_ok || allWidgetParameters[9][currentId].show_warning || allWidgetParameters[9][currentId].show_critical || allWidgetParameters[9][currentId].show_unknown){
+
+						var $object = $widgetContainer.find('.statusListServices'),
+							ajaxPath = '/admin/dashboard/statusListServices/'+allWidgetParameters[9][currentId].show_ok+'/'+allWidgetParameters[9][currentId].show_warning+'/'+allWidgetParameters[9][currentId].show_critical+'/'+allWidgetParameters[9][currentId].show_unknown+'/'+allWidgetParameters[9][currentId].show_acknowledged+'/'+allWidgetParameters[9][currentId].show_downtime,
+							table = $object.dataTable({
+								destroy: true,
+								'ajax': ajaxPath,
+								'iDisplayLength': parseInt(allWidgetParameters[9][currentId].services_per_page,10),
+								'bLengthChange': false,
+								'sScrollY': '200px',
+								'bAutoWidth': true,
+								'pagingType': 'numbers',
+								'fnInitComplete': function(){
+									self.startSlider($object, currentId);
+								}
+							}),
+							checkInterval = allWidgetParameters[9][currentId].refresh_interval * 60000,
 							intervalId = setInterval(function() {
 
 								var table = $object.dataTable({
 									destroy: true,
-									'ajax': '/admin/dashboard/statusListServices/'+$widgetElements.showOk.prop('checked')+'/'+$widgetElements.showWarning.prop('checked')+'/'+$widgetElements.showCritical.prop('checked')+'/'+$widgetElements.showUnknown.prop('checked')+'/'+$widgetElements.showAcknowledged.prop('checked')+'/'+$widgetElements.showDowntime.prop('checked'),
-									'iDisplayLength': parseInt($widgetElements.servicesPerPage),
+									'ajax': ajaxPath,
+									'iDisplayLength': parseInt(allWidgetParameters[9][currentId].services_per_page,10),
 									'bLengthChange': false,
 									'sScrollY': '200px',
 									'bAutoWidth': true,
@@ -323,6 +318,7 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 
 						self.intervalIds[currentId] = intervalId;
 						self.dataTables[currentId] = table;
+
 					}
 				}
 			}

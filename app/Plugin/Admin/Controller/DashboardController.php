@@ -87,8 +87,6 @@ class DashboardController extends AdminAppController{
 			'recursive' => -1,
 		]);
 
-
-
 		$sharedTabs = $this->DashboardTab->find('all', [
 			'fields' => [
 				'DashboardTab.id',
@@ -249,7 +247,6 @@ class DashboardController extends AdminAppController{
 
 			}
 
-
 			$widgets = $this->Widget->find('all', [
 				'conditions' => [
 					'Widget.dashboard_tab_id' => $tabId,
@@ -263,10 +260,7 @@ class DashboardController extends AdminAppController{
 					'WidgetGraphgenerator',
 				]
 			]);
-
-
 		}else{
-
 			$tabId = $tabs[0]['DashboardTab']['id'];
 			$widgets = $this->Widget->find('all', [
 				'conditions' => [
@@ -286,80 +280,7 @@ class DashboardController extends AdminAppController{
 			$alwaysUpdate = 0;
 		}
 
-		$barColors = [
-			'green' => [
-				'title' => 'Green Grass',
-				'color' => '#356e35',
-			],
-			'greenDark' => [
-				'title' => 'Dark Green',
-				'color' => '#496949',
-			],
-			'greenLight' => [
-				'title' => 'Light Green',
-				'color' => '#71843f',
-			],
-			'purple' => [
-				'title' => 'Purple',
-				'color' => '#6e587a',
-			],
-			'magenta' => [
-				'title' => 'Magenta',
-				'color' => '#6e3671',
-			],
-			'pink' => [
-				'title' => 'Pink',
-				'color' => '#ac5287',
-			],
-			'pinkDark' => [
-				'title' => 'Fade Pink',
-				'color' => '#a8829f',
-			],
-			'blueLight' => [
-				'title' => 'Light Blue',
-				'color' => '#92a2a8',
-			],
-			'teal' => [
-				'title' => 'Teal',
-				'color' => '#568a89',
-			],
-			'blue' => [
-				'title' => 'Ocean Blue',
-				'color' => '#57889C',
-			],
-			'blueDark' => [
-				'title' => 'Night Sky',
-				'color' => '#4c4f53',
-			],
-			'darken' => [
-				'title' => 'Night',
-				'color' => '#404040',
-			],
-			'yellow' => [
-				'title' => 'Day Light',
-				'color' => '#b09b5b',
-			],
-			'orange' => [
-				'title' => 'Orange',
-				'color' => '#c79121',
-			],
-			'orangeDark' => [
-				'title' => 'Dark Orange',
-				'color' => '#a57225',
-			],
-			'red' => [
-				'title' => 'Red Rose',
-				'color' => '#a90329',
-			],
-			'redLight' => [
-				'title' => 'Light Red',
-				'color' => '#a65858',
-			],
-			'white' => [
-				'title' => 'Purity',
-				'color' => '#FFF',
-			],
-		];
+		$barColors = $this->getBarColors();
 
 		$tabRotationInterval = $this->User->find('first', [
 			'fields' => [
@@ -534,80 +455,7 @@ class DashboardController extends AdminAppController{
 
 		$this->refreshTab($result['Widget']['id']);
 
-		$barColors = [
-			'green' => [
-				'title' => 'Green Grass',
-				'color' => '#356e35',
-			],
-			'greenDark' => [
-				'title' => 'Dark Green',
-				'color' => '#496949',
-			],
-			'greenLight' => [
-				'title' => 'Light Green',
-				'color' => '#71843f',
-			],
-			'purple' => [
-				'title' => 'Purple',
-				'color' => '#6e587a',
-			],
-			'magenta' => [
-				'title' => 'Magenta',
-				'color' => '#6e3671',
-			],
-			'pink' => [
-				'title' => 'Pink',
-				'color' => '#ac5287',
-			],
-			'pinkDark' => [
-				'title' => 'Fade Pink',
-				'color' => '#a8829f',
-			],
-			'blueLight' => [
-				'title' => 'Light Blue',
-				'color' => '#92a2a8',
-			],
-			'teal' => [
-				'title' => 'Teal',
-				'color' => '#568a89',
-			],
-			'blue' => [
-				'title' => 'Ocean Blue',
-				'color' => '#57889C',
-			],
-			'blueDark' => [
-				'title' => 'Night Sky',
-				'color' => '#4c4f53',
-			],
-			'darken' => [
-				'title' => 'Night',
-				'color' => '#404040',
-			],
-			'yellow' => [
-				'title' => 'Day Light',
-				'color' => '#b09b5b',
-			],
-			'orange' => [
-				'title' => 'Orange',
-				'color' => '#c79121',
-			],
-			'orangeDark' => [
-				'title' => 'Dark Orange',
-				'color' => '#a57225',
-			],
-			'red' => [
-				'title' => 'Red Rose',
-				'color' => '#a90329',
-			],
-			'redLight' => [
-				'title' => 'Light Red',
-				'color' => '#a65858',
-			],
-			'white' => [
-				'title' => 'Purity',
-				'color' => '#FFF',
-			],
-		];
+		$barColors = $this->getBarColors();
 
 		$this->set(compact('result'));
 		$this->set(compact('barColors'));
@@ -615,7 +463,6 @@ class DashboardController extends AdminAppController{
 	}
 
 	public function addDefaultWidgets($tabId){
-
 		$data = [
 				0 => [
 					'Widget' => [
@@ -709,6 +556,16 @@ class DashboardController extends AdminAppController{
 		}
 		$this->refreshTab($result[0]['Widget']['id']);
 
+		$barColors = $this->getBarColors();
+
+		$this->set(compact('barColors'));
+		foreach($result as $widget){
+			$this->set(compact('widget'));
+			$this->WidgetCollection->setWidgetDataToView([$widget]);
+		}
+	}
+
+	public function getBarColors(){
 		$barColors = [
 			'green' => [
 				'title' => 'Green Grass',
@@ -783,15 +640,7 @@ class DashboardController extends AdminAppController{
 				'color' => '#FFF',
 			],
 		];
-
-
-		$this->set(compact('barColors'));
-
-		foreach($result as $widget){
-			$this->set(compact('widget'));
-			$this->WidgetCollection->setWidgetDataToView([$widget]);
-		}
-
+		return $barColors;
 	}
 
 	public function addTab($title,$position){
@@ -1191,8 +1040,6 @@ class DashboardController extends AdminAppController{
 		}else{
 			$servicePerfData = false;
 		}
-
-
 		return json_encode($servicePerfData);
 	}
 
@@ -1221,15 +1068,17 @@ class DashboardController extends AdminAppController{
 		}
 		if($showDowntime === 'true'){
 			$extraConditions[] = '0';
+			$extraConditionsString = implode(' AND Servicestatus.scheduled_downtime_depth > ',$extraConditions);
+		}else{
+			$extraConditions[] = '0';
+			$extraConditionsString = implode(' AND Servicestatus.scheduled_downtime_depth = ',$extraConditions);
 		}
-
+		//debug($extraConditions);
 		$statesToSelect = implode(' OR current_state = ',$statesArray);
 
 		if($statesToSelect === ''){
 			$statesToSelect = '4';
 		}
-
-		$extraConditionsString = implode(' OR scheduled_downtime_depth > ',$extraConditions);
 
 		$servicestatus = $this->Servicestatus->find('all', [
 			'recursive' => -1,
@@ -1306,6 +1155,10 @@ class DashboardController extends AdminAppController{
 		}
 		if($showDowntime === 'true'){
 			$extraConditions[] = '0';
+			$extraConditionsString = implode(' AND Hoststatus.scheduled_downtime_depth > ',$extraConditions);
+		}else{
+			$extraConditions[] = '0';
+			$extraConditionsString = implode(' AND Hoststatus.scheduled_downtime_depth = ',$extraConditions);
 		}
 
 		$statesToSelect = implode(' OR current_state = ',$statesArray);
@@ -1313,8 +1166,6 @@ class DashboardController extends AdminAppController{
 		if($statesToSelect === ''){
 			$statesToSelect = '4';
 		}
-
-		$extraConditionsString = implode(' OR scheduled_downtime_depth > ',$extraConditions);
 
 		$hoststatus = $this->Hoststatus->find('all', [
 			'recursive' => -1,
@@ -1353,10 +1204,6 @@ class DashboardController extends AdminAppController{
 		]);
 		$this->set(compact('hoststatus'));
 		return json_encode($hoststatus);
-	}
-
-	public function maps($mapId){
-
 	}
 
 	public function browser($widgetId){
@@ -1415,7 +1262,6 @@ class DashboardController extends AdminAppController{
 		}else{
 			$service = false;
 		}
-
 		return json_encode($service);
 	}
 
