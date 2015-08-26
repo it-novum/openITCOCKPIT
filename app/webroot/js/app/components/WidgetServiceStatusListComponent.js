@@ -219,15 +219,17 @@ App.Components.WidgetServiceStatusListComponent = Frontend.Component.extend({
 			}
 
 			//restart Tab Rotation if needed
-			if(allWidgetParameters['tabRotation'].tabRotationInterval > 0){
-				allWidgetParameters['tabRotation'].tabRotationInterval = allWidgetParameters['tabRotation'].tabRotationInterval - 2000;
-				var intervalId = setInterval(function() {
-					$('.rotateTabs').find('.fa-refresh').addClass('fa-spin');
-					setTimeout(function(){
-						allWidgetParameters['nextTab'].nextTab();
-					},2000);
-				}, allWidgetParameters['tabRotation'].tabRotationInterval);
-				allWidgetParameters['tabRotation'].tabIntervalId = intervalId;
+			if(allWidgetParameters){
+				if(allWidgetParameters['tabRotation'].tabRotationInterval > 0){
+					allWidgetParameters['tabRotation'].tabRotationInterval = allWidgetParameters['tabRotation'].tabRotationInterval - 2000;
+					var intervalId = setInterval(function() {
+						$('.rotateTabs').find('.fa-refresh').addClass('fa-spin');
+						setTimeout(function(){
+							allWidgetParameters['nextTab'].nextTab();
+						},2000);
+					}, allWidgetParameters['tabRotation'].tabRotationInterval);
+					allWidgetParameters['tabRotation'].tabIntervalId = intervalId;
+				}
 			}
 		});
 
