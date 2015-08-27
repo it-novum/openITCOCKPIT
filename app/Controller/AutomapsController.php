@@ -174,6 +174,14 @@ class AutomapsController extends AppController{
 			'recursive' => -1,
 			'joins' => [
 				[
+					'table' => 'hosts',
+					'alias' => 'Host',
+					'type' => 'INNER',
+					'conditions' => [
+						'Host.id = Service.host_id'
+					]
+				],
+				[
 					'table' => 'servicetemplates',
 					'alias' => 'Servicetemplate',
 					'type' => 'INNER',
@@ -211,6 +219,9 @@ class AutomapsController extends AppController{
 				'Servicestatus.current_state',
 				'Servicestatus.problem_has_been_acknowledged',
 				'Servicestatus.scheduled_downtime_depth',
+				
+				'Host.id',
+				'Host.name',
 			],
 			'conditions' => [
 				'Service.host_id' => array_keys($hosts),
