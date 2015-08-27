@@ -77,9 +77,10 @@ class ProfileController extends AppController {
 				
 				//Fix container for validation
 				$user = $this->User->findById($this->Auth->user('id'));
-				$this->request->data['Container'] = Hash::extract($user['Container'], '{n}.id');
-				$this->request->data['User']['Container'] = $this->request->data['Container'];
+				$this->request->data['ContainerUserMembership'] = $user['ContainerUserMembership'];
 				$this->request->data['User']['id'] = $user['User']['id'];
+				$this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
+				$this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
 				if($this->User->save($this->request->data)){
 					$this->setFlash(__('Profile edit successfully'));
 					$sessionUser = $this->Session->read('Auth');
@@ -99,15 +100,8 @@ class ProfileController extends AppController {
 					$filename = $this->Upload->uploadUserimage($this->request->data['Picture']['Image']);
 					if($filename){
 						$user = $this->User->findById($this->Auth->user('id'));
-						$data = [
-							'User' => [
-								'id' => $user['User']['id'],
-								'image' => $filename,
-								'Container' => Hash::extract($user['Container'], '{n}.id')
-							],
-							'Container' => Hash::extract($user['Container'], '{n}.id')
-						];
-						if($this->User->save($data)){
+						$this->User->id = $this->Auth->user('id');
+						if($this->User->saveField('image', $filename)){
 							$this->Session->write('Auth.User.image', $filename);
 							
 							//Delete old image
@@ -133,16 +127,8 @@ class ProfileController extends AppController {
 				if(isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])){
 					if($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']){
 						$user = $this->User->findById($this->Auth->user('id'));
-						$data = [
-							'User' => [
-								'id' => $user['User']['id'],
-								'new_password' => $this->request->data['Password']['new_password'],
-								'confirm_new_password' => $this->request->data['Password']['new_password_repeat'],
-								'Container' => Hash::extract($user['Container'], '{n}.id')
-							],
-							'Container' => Hash::extract($user['Container'], '{n}.id')
-						];
-						if($this->User->save($data)){
+						$this->User->id = $this->Auth->user('id');
+						if($this->User->saveField('password', AuthComponent::password($this->request->data['Password']['new_password']))){
 							$this->setFlash(__('Password changed successfully'));
 							$this->redirect(['action' => 'edit']);
 						}
