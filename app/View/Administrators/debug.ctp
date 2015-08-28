@@ -76,17 +76,26 @@
 		<div class="widget-body padding-10">
 			<dl class="dl-horizontal">
 				<dt><?php echo __('Monitoring engine');?>:</dt>
-				<dd><?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<dt><?php echo __('Database connector');?>:</dt>
-				<dd><?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo ($is_statusengine)?__('Statusengine'):__('NDOUtils'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<dt><?php echo __('Perf. data processor');?>:</dt>
-				<dd><?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<?php /*?><dt><?php echo __('Database server');?>:</dt>
 				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
 				<dt><?php echo __('phpNSTA');?>:</dt>
 				<dd>
 					<?php echo ($is_phpNSTA_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="phpNSTA is only installed and running if you are using Distributed Monitoring" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 			</dl>
 		</div>
