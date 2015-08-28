@@ -2042,8 +2042,6 @@ class NagiosExportTask extends AppShell{
 				$file->create();
 			}
 
-
-
 			//Find dependent services
 			if(!empty($servicedependency['ServicedependencyServiceMembership'])){
 				foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]') as $mainService){
@@ -2071,9 +2069,9 @@ class NagiosExportTask extends AppShell{
 				}
 			}else{
 				//This service dependency is broken, ther are no services in it
-				$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
-				$file->close();
-				continue;
+				//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
+				//$file->close();
+				//continue;
 			}
 
 			if(!empty($servicedependency['ServicedependencyServicegroupMembership'])){
@@ -2098,9 +2096,9 @@ class NagiosExportTask extends AppShell{
 				}
 			}else{
 				//This service dependency is broken, ther are no services in it
-				$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
-				$file->close();
-				continue;
+				//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
+				//$file->close();
+				//continue;
 			}
 
 

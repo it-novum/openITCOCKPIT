@@ -451,6 +451,14 @@ class DebugConfigNagiosTask extends AppShell {
 		}
 	}
 	
+	public function translateStdin(){
+		$result = null;
+		do{
+			$result = $this->stdin->read();
+			$this->out($this->searchUuids($result));
+		}while($result !== false);
+	}
+	
 	/**
 	 * Unbind all accociations for the next find() call for every model
 	 *
