@@ -139,6 +139,8 @@ class AdministratorsController extends AppController{
 		$is_npcd_running = false;
 		$is_mysql_running = false;
 		$is_phpNSTA_running = false;
+		$is_statusengine = false;
+		$is_statusengine_perfdata = false;
 		
 		Configure::load('nagios');
 		exec(Configure::read('nagios.nagios_status'), $output, $returncode);
@@ -153,11 +155,32 @@ class AdministratorsController extends AppController{
 			$is_db_running = true;
 		}
 		
+		if(!$is_db_running){
+			exec('ps -eaf |grep statusengine | grep -v grep', $output, $returncode);
+			if(sizeof($output) > 0){
+				$is_db_running = true;
+				$is_statusengine = true;
+			}
+		}
+		
 		$output = null;
 		//exec(Configure::read('nagios.npcd_status'), $output, $returncode);
 		exec('ps -eaf |grep npcd | grep -v grep', $output, $returncode);
 		if(sizeof($output) > 0){
 			$is_npcd_running = true;
+		}
+		
+		if(!$is_npcd_running){
+			$statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
+			if(file_exists($statusengineConfig)){
+				require_once $statusengineConfig;
+				if(isset($config['process_perfdata'])){
+					if($config['process_perfdata'] === true && $is_statusengine === true){
+						$is_npcd_running = true;
+						$is_statusengine_perfdata = true;
+					}
+				}
+			}
 		}
 		
 		/*exec(Configure::read('nagios.mysql_status'), $output, $returncode);
@@ -170,8 +193,25 @@ class AdministratorsController extends AppController{
 			$is_phpNSTA_running = true;
 		}
 
-		$this->set(compact(['disks', 'memory', 'load', 'is_npcd_running', 'is_db_running', 'is_nagios_running', 'is_mysql_running', 'is_phpNSTA_running', 'isEnterprise']));
-		
+		//Get Monitoring engine + version
+		$output = null;
+		exec(Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
+		$monitoring_engine = $output[1];
+
+		$this->set(compact([
+			'disks',
+			'memory',
+			'load',
+			'is_npcd_running',
+			'is_db_running',
+			'is_nagios_running',
+			'is_mysql_running',
+			'is_phpNSTA_running',
+			'isEnterprise',
+			'is_statusengine',
+			'is_statusengine_perfdata',
+			'monitoring_engine'
+		]));
 	}
-	
 }
+

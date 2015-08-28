@@ -133,7 +133,7 @@
 			if($user['User']['image'] != null && $user['User']['image'] != ''):
 				if(file_exists(WWW_ROOT.'userimages'.DS.$user['User']['image'])):
 					echo $this->html->image('/userimages'.DS.$user['User']['image'], ['height' => 70]);
-					echo ' <a class="txt-color-red" href="/admin/profile/deleteImage"><i class="fa fa-trash-o"></i> '.__('Delete my image').'</a>';
+					echo ' <a class="txt-color-red" href="/profile/deleteImage"><i class="fa fa-trash-o"></i> '.__('Delete my image').'</a>';
 				else:
 					echo $this->html->image('/img/fallback_user.png', ['width' => 70, 'height' => 70]);
 					echo ' <span class="text-muted">'.__('You have no own image uploaded yet').'</span>';
@@ -174,7 +174,7 @@
 	<div>
 		<div class="widget-body">
 			<?php
-			if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
+			if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
 				?>
 				<div class"padding-top-20">
 					<br />

@@ -314,7 +314,6 @@ class UsersController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			if($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))){
 				$this->redirect([
-					'plugin' => 'admin',
 					'controller' => 'users',
 					'action' => 'add',
 					'ldap' => 1,

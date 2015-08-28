@@ -432,7 +432,7 @@ class StatusHelper extends AppHelper{
 		}
 	}
 	
-	public function automapIcon($servicestatus){
+	public function automapIcon($service, $addTooltip = true){
 		$stateClasses = [
 			0 => 'ok',
 			1 => 'warning',
@@ -440,14 +440,24 @@ class StatusHelper extends AppHelper{
 			3 => 'unknown'
 		];
 		
-		$html = '<i class="fa fa-square '.$stateClasses[$servicestatus['Servicestatus']['current_state']].'"></i>';
-		
-		if($servicestatus['Servicestatus']['problem_has_been_acknowledged'] > 0){
-			$html = '<i class="fa fa-user '.$stateClasses[$servicestatus['Servicestatus']['current_state']].'"></i>';
+		$serviceName = $service['Service']['name'];
+		if($serviceName === null || $serviceName === ''){
+			$serviceName = $service['Servicetemplate']['name'];
 		}
 		
-		if($servicestatus['Servicestatus']['scheduled_downtime_depth'] > 0){
-			$html = '<i class="fa fa-power-off '.$stateClasses[$servicestatus['Servicestatus']['current_state']].'"></i>';
+		$tooltip = '';
+		if($addTooltip){
+			$tooltip = 'rel="tooltip" data-placement="bottom" data-original-title="'.$service['Host']['name'].'/'.$serviceName.'" data-html="true"';
+		}
+		
+		$html = '<i '.$tooltip.' class="fa fa-square '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
+		
+		if($service['Servicestatus']['problem_has_been_acknowledged'] > 0){
+			$html = '<i '.$tooltip.' class="fa fa-user '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
+		}
+		
+		if($service['Servicestatus']['scheduled_downtime_depth'] > 0){
+			$html = '<i '.$tooltip.' class="fa fa-power-off '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
 		}
 		return $html;
 	}

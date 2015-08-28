@@ -1,3 +1,4 @@
+'use strict';
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -313,7 +314,7 @@ App.Components.WidgetGraphgeneratorComponent = Frontend.Component.extend({
 
 								//self.options.Ajaxloader.show();
 								self.updateGraphByServiceRules(currentId);
-								checkInterval = allWidgetParameters[14][currentId].check_interval*1000;
+								var checkInterval = allWidgetParameters[14][currentId].check_interval*1000;
 
 								var intervalId = setInterval(function() {
 									//self.options.Ajaxloader.show();
@@ -377,6 +378,17 @@ App.Components.WidgetGraphgeneratorComponent = Frontend.Component.extend({
 			service_uuid,
 			host_uuid;
 
+		/*var date = new Date(time_period.end*1000);
+		// hours part from the timestamp
+		var hours = date.getHours();
+		// minutes part from the timestamp
+		var minutes = "0" + date.getMinutes();
+		// seconds part from the timestamp
+		var seconds = "0" + date.getSeconds();
+
+		// will display time in 10:30:23 format
+		var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+		console.log(formattedTime);*/
 		if(Object.keys(service_rules).length == 0){
 			//self.options.Ajaxloader.hide();
 			return;
@@ -409,13 +421,17 @@ App.Components.WidgetGraphgeneratorComponent = Frontend.Component.extend({
 
 		self.options.Overlay.deactivateUi();
 
+		var timeOffset = new Date(),
+			timeOffsetSeconds = timeOffset.getTimezoneOffset() * -60;
+
 		self.options.Rrd.setup({
 			url: '/Graphgenerators/fetchGraphData/'+widgetId+'.json',
 			host_and_service_uuids: host_and_service_uuids,
 			selector: '#graphGenerator'+widgetId,
 			height: '90%',
 			async: false,
-			timezoneOffset: self.options.Time.timezoneOffset,
+			//timezoneOffset: self.options.Time.timezoneOffset,
+			timezoneOffset: timeOffsetSeconds,
 			timeout_in_ms: self.user_default_timeout,
 			error_callback: function(response, status){
 				self.options.Overlay.activateUi();
@@ -466,6 +482,7 @@ App.Components.WidgetGraphgeneratorComponent = Frontend.Component.extend({
 				}, self.user_default_timeout);
 			}
 		});
+
 		self.options.Rrd.drawServiceRules(service_rules, time_period, function(){
 			$widgetContainer.find('.graph_legend').show();
 			//self.options.Ajaxloader.hide();
@@ -520,6 +537,8 @@ App.Components.WidgetGraphgeneratorComponent = Frontend.Component.extend({
 			now = parseInt(self.options.Time.getCurrentTimeWithOffset(0).getTime() / 1000, 10),
 			substract_seconds,
 			result;
+
+		//console.log(self.options.Time.getCurrentTimeWithOffset(2).getTime());
 
 		if($field.length > 0){
 			substract_seconds = parseInt($field.val(), 10);

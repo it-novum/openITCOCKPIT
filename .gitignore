@@ -2,7 +2,6 @@ tmp/*
 [Cc]onfig/core.php
 [Cc]onfig/database.php
 app/tmp/*
-app/[Cc]onfig/core.php
 app/[Cc]onfig/database.php
 !empty
 lib/Cake/Console/Templates/skel/tmp/*
@@ -24,3 +23,10 @@ app/Plugin/MapModule/webroot/img/icons/*
 *.swo
 app/webroot/js/compressed_components.js
 app/webroot/js/compressed_controllers.js
+__Plugins
+__Plugins/*
+app/Plugin/AutoreportModule
+app/Plugin/DistributeModule
+app/Plugin/EventcorrelationModule
+app/Plugin/IdoitModule
+app/Plugin/MkModule

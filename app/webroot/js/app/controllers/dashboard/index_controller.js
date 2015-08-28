@@ -50,6 +50,7 @@ App.Controllers.DashboardIndexController = Frontend.AppController.extend({
 		'Overlay',
 		'BootstrapModal',
 		'Uuid',
+
 	],
 
 
