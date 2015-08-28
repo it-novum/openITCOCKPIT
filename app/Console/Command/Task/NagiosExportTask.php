@@ -1959,9 +1959,9 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('define hostdependency{', 0);
 
 			//Find dependend hosts
+			$hosts = [];
+			$dependenHosts = [];
 			if(!empty($hostdependency['HostdependencyHostMembership'])){
-				$hosts = [];
-				$dependenHosts = [];
 				foreach($hostdependency['HostdependencyHostMembership'] as $_host){
 					if($_host['dependent'] == 0){
 						$host = $this->Host->findById($_host['host_id']);
@@ -1974,20 +1974,14 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 
-			$content.= $this->addContent('host_name', 1, implode(',', $hosts));
-			$content.= $this->addContent('dependent_host_name', 1, implode(',', $dependenHosts));
-			unset($hosts, $dependenHosts);
-			}else{
-				//This hostdependency is broken, ther are no hosts in it!
-				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
-				$file->close();
-				continue;
+				$content.= $this->addContent('host_name', 1, implode(',', $hosts));
+				$content.= $this->addContent('dependent_host_name', 1, implode(',', $dependenHosts));
 			}
 
 			//Find dependend hostgroups
+			$hostgroups = [];
+			$dependenHostgroups = [];
 			if(!empty($hostdependency['HostdependencyHostgroupMembership'])){
-				$hostgroups = [];
-				$dependenHostgroups = [];
 				foreach($hostdependency['HostdependencyHostgroupMembership'] as $_hostgroup){
 					if($_hostgroup['dependent'] == 0){
 						$hostgroup = $this->Hostgroup->findById($_hostgroup['hostgroup_id']);
@@ -2004,13 +1998,7 @@ class NagiosExportTask extends AppShell{
 				if(!empty($dependenHostgroups)){
 					$content.= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependenHostgroups));
 				}
-			unset($hostgroups, $dependenHostgroups);
 
-			}else{
-				//This hostdependency is broken, ther are no hosts in it!
-				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
-				$file->close();
-				continue;
 			}
 
 			$content.= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
@@ -2020,6 +2008,16 @@ class NagiosExportTask extends AppShell{
 
 			$content.= $this->addContent('}', 0);
 
+			//Check if the host dependency is valid
+			if(empty($hosts) || empty($dependenHosts)){
+				//This host dependency is broken, ther are no hosts in it!
+				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
+				$file->close();
+				if($file->exists()){
+					$file->delete();
+				}
+				continue;
+			}
 			$file->write($content);
 			$file->close();
 		}
