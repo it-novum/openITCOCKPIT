@@ -557,12 +557,15 @@ class NagiosExportTask extends AppShell{
 				 * This will be available in one of the next versions...
 				 *
 				 * So this is a little workaround!!!
+				 * We only att the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
 				 */
-				$content.= $this->addContent('check_freshness', 1, 1);
-				if($checkInterrval == 0){
-					$checkInterrval = 300;
+				if($host['Host']['satellite_id'] > 0){
+					$content.= $this->addContent('check_freshness', 1, 1);
+					if($checkInterrval == 0){
+						$checkInterrval = 300;
+					}
+					$content.= $this->addContent('freshness_threshold', 1, $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
 				}
-				$content.= $this->addContent('freshness_threshold', 1, $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
 			}
 
 			
@@ -2042,7 +2045,7 @@ class NagiosExportTask extends AppShell{
 				$file->create();
 			}
 
-			//Find dependent services
+			//Find dependent services (this code will create a own dependency for each service)
 			if(!empty($servicedependency['ServicedependencyServiceMembership'])){
 				foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]') as $mainService){
 					$serviceObject = $this->Service->findById($mainService['service_id']);
@@ -2101,6 +2104,74 @@ class NagiosExportTask extends AppShell{
 				//continue;
 			}
 
+			//Find dependent services (create one dependency for all master services)
+			//if(!empty($servicedependency['ServicedependencyServiceMembership'])){
+			//	$masterServices = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]');
+			//	$dependendServices = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1]');
+			//	$masterServiceIds = Hash::extract($masterServices, '{n}.service_id');
+			//	$dependendServiceIds = Hash::extract($dependendServices, '{n}.service_id');
+			//	if(!empty($masterServiceIds) && !empty($dependendServiceIds)){
+			//		unset($masterServices, $dependendServices);
+			//		$_masterServices = $this->Service->find('all', [
+			//			'recursive' => -1,
+			//			'contain' => [
+			//				'Host'
+			//			],
+			//			'conditions' => [
+			//				'Service.id' => $masterServiceIds
+			//			],
+			//			'fields' => [
+			//				'Service.id',
+			//				'Service.uuid',
+			//				'Host.id',
+			//				'Host.uuid',
+			//			]
+			//		]);
+			//		$_dependendServices = $this->Service->find('all', [
+			//			'recursive' => -1,
+			//			'contain' => [
+			//				'Host'
+			//			],
+			//			'conditions' => [
+			//				'Service.id' => $dependendServiceIds
+			//			],
+			//			'fields' => [
+			//				'Service.id',
+			//				'Service.uuid',
+			//				'Host.id',
+			//				'Host.uuid',
+			//			]
+			//		]);
+			//		
+			//		$masterServices = [];
+			//		foreach($_masterServices as $_masterService){
+			//			$masterServices[] = $_masterService['Host']['uuid'];
+			//			$masterServices[] = $_masterService['Service']['uuid'];
+			//		}
+			//		
+			//		$dependendServices = [];
+			//		foreach($_dependendServices as $_dependendService){
+			//			$dependendServices[] = $_dependendService['Host']['uuid'];
+			//			$dependendServices[] = $_dependendService['Service']['uuid'];
+			//		}
+			//		
+			//		$content.= $this->addContent('define servicedependency{', 0);
+			//		$content.= $this->addContent('host_name', 1, $serviceObject['Host']['uuid']);
+			//		$content.= $this->addContent('service_description', 1, $serviceObject['Service']['uuid']);
+			//		$content.= $this->addContent('dependent_host_name', 1, $dependentServiceObject['Host']['uuid']);
+			//		$content.= $this->addContent('dependent_service_description', 1, $dependentServiceObject['Service']['uuid']);
+			//		
+			//		
+			//		debug($masterServices);
+			//		debug($dependendServices);
+			//	}
+			//}else{
+			//	//Service dependency is broken, delete the file and continue
+			//	if($file->exists()){
+			//		$file->delete();
+			//	}
+			//	continue;
+			//}
 
 			$file->write($content);
 			$file->close();

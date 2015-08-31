@@ -198,6 +198,12 @@ class AdministratorsController extends AppController{
 		exec(Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
 		$monitoring_engine = $output[1];
 
+		App::uses('CakeEmail', 'Network/Email');
+		$Email = new ItcMail();
+		$Email->config('default');
+		$mailConfig = $Email->getConfig();
+		
+
 		$this->set(compact([
 			'disks',
 			'memory',
@@ -210,8 +216,44 @@ class AdministratorsController extends AppController{
 			'isEnterprise',
 			'is_statusengine',
 			'is_statusengine_perfdata',
-			'monitoring_engine'
+			'monitoring_engine',
+			'mailConfig'
 		]));
+	}
+	
+	public function testMail(){
+		$this->loadModel('Systemsetting');
+		$recipientAddress = $this->Auth->user('email');
+		$_systemsettings = $this->Systemsetting->findAsArray();
+		
+		$Email = new CakeEmail();
+		$Email->config('default');
+		$Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+		$Email->to($recipientAddress);
+		$Email->subject(__('System test mail'));
+
+		$Email->emailFormat('both');
+		$Email->template('template-testmail', 'template-testmail');
+
+		$Email->send();
+		$this->setFlash(__('Test mail send to: %s', $recipientAddress));
+		return $this->redirect(['action' => 'debug']);
 	}
 }
 
+App::uses('CakeEmail', 'Network/Email');
+class ItcMail extends CakeEmail{
+	
+	public function __construct($config = null){
+		parent::__construct($config);
+	}
+	
+	public function getConfig($removePassword = true){
+		if($removePassword === true){
+			$config = $this->_config;
+			unset($config['password']);
+			return $config;
+		}
+		return $this->_config;
+	}
+}
