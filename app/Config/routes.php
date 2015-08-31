@@ -23,13 +23,13 @@ Router::mapResources([
 	'locations',
 	'servicetemplates',
 	'devicegroups',
+	'users',
 ]);
 
 // Caution: Do NOT mix controller names with those controller names from plugins! It's a bug and may not work.
 // Alternatively use `Router::mapResources('')` multiple times but without passing an array as argument.
 
 Router::mapResources([
-	'admin.users',
 	'distribute_module.satellites',
 ]);
 
