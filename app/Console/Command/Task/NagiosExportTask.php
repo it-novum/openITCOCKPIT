@@ -951,7 +951,7 @@ class NagiosExportTask extends AppShell{
 			}
 
 			if(isset($servicetemplates['Servicetemplate']['is_volatile'])){
-				$content.= $this->addContent('is_volatile', 1, $servicetemplates['Servicetemplate']['is_volatile']);
+				$content.= $this->addContent('is_volatile', 1, (int)$servicetemplates['Servicetemplate']['is_volatile']);
 			}
 
 			if(!empty($servicetemplates['Servicetemplate']['notes']))
@@ -2047,7 +2047,8 @@ class NagiosExportTask extends AppShell{
 
 			//Find dependent services (this code will create a own dependency for each service)
 			if(!empty($servicedependency['ServicedependencyServiceMembership'])){
-				foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]') as $mainService){
+				$mainServices = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]');
+				foreach($mainServices as $mainService){
 					$serviceObject = $this->Service->findById($mainService['service_id']);
 					foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1]') as $depentFromMainService){
 						$dependentServiceObject = $this->Service->findById($depentFromMainService['service_id']);
@@ -2066,7 +2067,6 @@ class NagiosExportTask extends AppShell{
 						$content.= $this->addContent('}', 0);
 						$content.= $this->nl();
 						unset($dependentServiceObject);
-
 					}
 					unset($serviceObject);
 				}
@@ -2103,7 +2103,7 @@ class NagiosExportTask extends AppShell{
 				//$file->close();
 				//continue;
 			}
-
+			
 			//Find dependent services (create one dependency for all master services)
 			//if(!empty($servicedependency['ServicedependencyServiceMembership'])){
 			//	$masterServices = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]');
@@ -2476,8 +2476,10 @@ class NagiosExportTask extends AppShell{
 		}
 		$c.=$string;
 
-		while(strlen($c) < 40){
-			$c.=' ';
+		if($value !== null){
+			while((strlen($c) < 40)){
+				$c.=' ';
+			}
 		}
 
 		if($value !== null){
