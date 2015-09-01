@@ -125,6 +125,7 @@ class ServicegroupsController extends AppController{
 			'limit' => 150
 		];
 
+		debug($this->Servicegroup->find('all'));
 		$this->Paginator->settings['order'] = [	'Container.name' => 'asc',
 												'Host.name'	=> 'asc',
 												'Service.name' => 'asc',

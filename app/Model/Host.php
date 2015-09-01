@@ -212,12 +212,6 @@ class Host extends AppModel{
 			],
 
 		],
-		'host_url' => [
-			'rule' => 'url',
-			'allowEmpty' => true,
-			'required' => false,
-			'message' => 'Not a valid URL format',
-		]
 		/*
 				'priority' => [
 					'notEmpty' => [
