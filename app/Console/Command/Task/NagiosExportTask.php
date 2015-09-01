@@ -557,12 +557,15 @@ class NagiosExportTask extends AppShell{
 				 * This will be available in one of the next versions...
 				 *
 				 * So this is a little workaround!!!
+				 * We only att the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
 				 */
-				$content.= $this->addContent('check_freshness', 1, 1);
-				if($checkInterrval == 0){
-					$checkInterrval = 300;
+				if($host['Host']['satellite_id'] > 0){
+					$content.= $this->addContent('check_freshness', 1, 1);
+					if($checkInterrval == 0){
+						$checkInterrval = 300;
+					}
+					$content.= $this->addContent('freshness_threshold', 1, $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
 				}
-				$content.= $this->addContent('freshness_threshold', 1, $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
 			}
 
 			
@@ -948,7 +951,7 @@ class NagiosExportTask extends AppShell{
 			}
 
 			if(isset($servicetemplates['Servicetemplate']['is_volatile'])){
-				$content.= $this->addContent('is_volatile', 1, $servicetemplates['Servicetemplate']['is_volatile']);
+				$content.= $this->addContent('is_volatile', 1, (int)$servicetemplates['Servicetemplate']['is_volatile']);
 			}
 
 			if(!empty($servicetemplates['Servicetemplate']['notes']))
@@ -1267,7 +1270,7 @@ class NagiosExportTask extends AppShell{
 			}
 			if(isset($service['Service']['is_volatile'])){
 				if($service['Service']['is_volatile'] !== null && $service['Service']['is_volatile'] !== '')
-					$content.= $this->addContent('is_volatile', 1, $service['Service']['is_volatile']);
+					$content.= $this->addContent('is_volatile', 1, (int)$service['Service']['is_volatile']);
 			}
 			if(!empty($service['Service']['notes']))
 				$content.= $this->addContent('notes', 1, $service['Service']['notes']);
@@ -1521,7 +1524,7 @@ class NagiosExportTask extends AppShell{
 		}
 		if(isset($service['Service']['is_volatile'])){
 			if($service['Service']['is_volatile'] !== null && $service['Service']['is_volatile'] !== '')
-				$content.= $this->addContent('is_volatile', 1, $service['Service']['is_volatile']);
+				$content.= $this->addContent('is_volatile', 1, (int)$service['Service']['is_volatile']);
 		}
 		if(!empty($service['Service']['notes']))
 			$content.= $this->addContent('notes', 1, $service['Service']['notes']);
@@ -1959,9 +1962,9 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('define hostdependency{', 0);
 
 			//Find dependend hosts
+			$hosts = [];
+			$dependenHosts = [];
 			if(!empty($hostdependency['HostdependencyHostMembership'])){
-				$hosts = [];
-				$dependenHosts = [];
 				foreach($hostdependency['HostdependencyHostMembership'] as $_host){
 					if($_host['dependent'] == 0){
 						$host = $this->Host->findById($_host['host_id']);
@@ -1974,20 +1977,14 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 
-			$content.= $this->addContent('host_name', 1, implode(',', $hosts));
-			$content.= $this->addContent('dependent_host_name', 1, implode(',', $dependenHosts));
-			unset($hosts, $dependenHosts);
-			}else{
-				//This hostdependency is broken, ther are no hosts in it!
-				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
-				$file->close();
-				continue;
+				$content.= $this->addContent('host_name', 1, implode(',', $hosts));
+				$content.= $this->addContent('dependent_host_name', 1, implode(',', $dependenHosts));
 			}
 
 			//Find dependend hostgroups
+			$hostgroups = [];
+			$dependenHostgroups = [];
 			if(!empty($hostdependency['HostdependencyHostgroupMembership'])){
-				$hostgroups = [];
-				$dependenHostgroups = [];
 				foreach($hostdependency['HostdependencyHostgroupMembership'] as $_hostgroup){
 					if($_hostgroup['dependent'] == 0){
 						$hostgroup = $this->Hostgroup->findById($_hostgroup['hostgroup_id']);
@@ -2004,13 +2001,7 @@ class NagiosExportTask extends AppShell{
 				if(!empty($dependenHostgroups)){
 					$content.= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependenHostgroups));
 				}
-			unset($hostgroups, $dependenHostgroups);
 
-			}else{
-				//This hostdependency is broken, ther are no hosts in it!
-				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
-				$file->close();
-				continue;
 			}
 
 			$content.= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
@@ -2020,6 +2011,16 @@ class NagiosExportTask extends AppShell{
 
 			$content.= $this->addContent('}', 0);
 
+			//Check if the host dependency is valid
+			if(empty($hosts) || empty($dependenHosts)){
+				//This host dependency is broken, ther are no hosts in it!
+				$this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
+				$file->close();
+				if($file->exists()){
+					$file->delete();
+				}
+				continue;
+			}
 			$file->write($content);
 			$file->close();
 		}
@@ -2036,29 +2037,93 @@ class NagiosExportTask extends AppShell{
 		if(!is_dir($this->conf['path'].$this->conf['servicedependencies'])){
 			mkdir($this->conf['path'].$this->conf['servicedependencies']);
 		}
-
 		foreach($servicedependencies as $servicedependency){
 			$file = new File($this->conf['path'].$this->conf['servicedependencies'].$servicedependency['Servicedependency']['uuid'].$this->conf['suffix']);
 			$content = $this->fileHeader();
 			if(!$file->exists()){
 				$file->create();
 			}
-
-
-
-			//Find dependent services
-			if(!empty($servicedependency['ServicedependencyServiceMembership'])){
-				foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]') as $mainService){
-					$serviceObject = $this->Service->findById($mainService['service_id']);
-					foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1]') as $depentFromMainService){
-						$dependentServiceObject = $this->Service->findById($depentFromMainService['service_id']);
-
+			
+			$masterServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].service_id');
+			$masterServices = $this->Service->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'Host'
+				],
+				'fields' => [
+					'Host.id',
+					'Host.uuid',
+					'Service.id',
+					'Service.uuid'
+				],
+				'conditions' => [
+					'Service.id' => $masterServicesIds,
+				]
+			]);
+				
+			$dependentServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].service_id');
+			$dependentServices = $this->Service->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'Host'
+				],
+				'fields' => [
+					'Host.id',
+					'Host.uuid',
+					'Service.id',
+					'Service.uuid'
+				],
+				'conditions' => [
+					'Service.id' => $dependentServicesIds,
+				]
+			]);
+				
+			$masterServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id');
+			$masterServicegroups = $this->Servicegroup->find('all', [
+				'recursive' => -1,
+				'conditions' => [
+					'Servicegroup.id' => $masterServicegroupIds
+				],
+				'fields' => [
+					'Servicegroup.uuid'
+				]
+			]);
+			if(!empty($masterServicegroups)){
+				$masterServicegroups = implode(',', Hash::extract($masterServicegroups, '{n}.Servicegroup.uuid'));
+			}
+			
+			$dependentServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id');
+			$dependentServicegroups = $this->Servicegroup->find('all', [
+				'recursive' => -1,
+				'conditions' => [
+					'Servicegroup.id' => $dependentServicegroupIds
+				],
+				'fields' => [
+					'Servicegroup.uuid'
+				]
+			]);
+			if(!empty($dependentServicegroups)){
+				$dependentServicegroups = implode(',', Hash::extract($dependentServicegroups, '{n}.Servicegroup.uuid'));
+			}
+			
+			$hasMasterServicesAndDependentService = (!empty($masterServices) && !empty($dependentServices));
+			if($hasMasterServicesAndDependentService === true){
+				foreach($masterServices as $masterService){
+					foreach($dependentServices as $dependentService){
 						$content.= $this->addContent('define servicedependency{', 0);
-						$content.= $this->addContent('host_name', 1, $serviceObject['Host']['uuid']);
-						$content.= $this->addContent('service_description', 1, $serviceObject['Service']['uuid']);
-						$content.= $this->addContent('dependent_host_name', 1, $dependentServiceObject['Host']['uuid']);
-						$content.= $this->addContent('dependent_service_description', 1, $dependentServiceObject['Service']['uuid']);
-
+						$content.= $this->addContent('host_name', 1, $masterService['Host']['uuid']);
+						$content.= $this->addContent('service_description', 1, $masterService['Service']['uuid']);
+						$content.= $this->addContent('dependent_host_name', 1, $dependentService['Host']['uuid']);
+						$content.= $this->addContent('dependent_service_description', 1, $dependentService['Service']['uuid']);
+						
+						if(!empty($masterServicegroups)){
+							$content.= $this->addContent('servicegroup_name', 1, $masterServicegroups);
+						}
+						
+						if(!empty($dependentServicegroups)){
+							$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroups);
+						}
+				
 						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
 						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
 						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
@@ -2066,45 +2131,17 @@ class NagiosExportTask extends AppShell{
 
 						$content.= $this->addContent('}', 0);
 						$content.= $this->nl();
-						unset($dependentServiceObject);
-
 					}
-					unset($serviceObject);
 				}
 			}else{
 				//This service dependency is broken, ther are no services in it
 				$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
 				$file->close();
-				continue;
-			}
-
-			if(!empty($servicedependency['ServicedependencyServicegroupMembership'])){
-				foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0]') as $mainServicegroup){
-					$servicegroupObject = $this->Servicegroup->findById($mainServicegroup['servicegroup_id']);
-					foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1]') as $depentFromMainServicegroup){
-						$dependentServicegroupObject = $this->Servicegroup->findById($depentFromMainServicegroup['servicegroup_id']);
-						$content.= $this->addContent('define servicedependency{', 0);
-						$content.= $this->addContent('servicegroup_name', 1, $servicegroupObject['Servicegroup']['uuid']);
-						$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroupObject['Servicegroup']['uuid']);
-
-						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
-						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
-
-						$content.= $this->addContent('}', 0);
-						$content.= $this->nl();
-						unset($dependentServicegroupObject);
-					}
-					unset($servicegroupObject);
+				if($file->exists()){
+					$file->delete();
 				}
-			}else{
-				//This service dependency is broken, ther are no services in it
-				$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
-				$file->close();
 				continue;
 			}
-
 
 			$file->write($content);
 			$file->close();
@@ -2409,8 +2446,10 @@ class NagiosExportTask extends AppShell{
 		}
 		$c.=$string;
 
-		while(strlen($c) < 40){
-			$c.=' ';
+		if($value !== null){
+			while((strlen($c) < 40)){
+				$c.=' ';
+			}
 		}
 
 		if($value !== null){

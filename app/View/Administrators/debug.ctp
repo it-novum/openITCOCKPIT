@@ -248,6 +248,45 @@
 
 <div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
 <header>
+		<span class="widget-icon"> <i class="fa fa-envelope"></i></span>
+		<h2><?php echo __('Email configuration'); ?></h2>
+	</header>
+	<!-- widget div-->
+	<div>
+		<!-- end widget edit box -->
+		<div class="widget-body padding-10">
+			<dl class="dl-horizontal">
+				<dt><?php echo __('Mail server address');?>:</dt>
+				<dd><?php echo h($mailConfig['host']); ?></dd>
+				
+				<dt><?php echo __('Mail server port');?>:</dt>
+				<dd><?php echo h($mailConfig['port']); ?></dd>
+				
+				<dt><?php echo __('Transport protocol');?>:</dt>
+				<dd><?php echo h($mailConfig['transport']); ?></dd>
+				
+				<dt><?php echo __('Username');?>:</dt>
+				<dd><?php echo h($mailConfig['username']); ?></dd>
+				
+				<dt><?php echo __('Password');?>:</dt>
+				<dd><i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information.'); ?></i></dd>
+				
+				<dt>&nbsp;</dt>
+				<dd>
+					<form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate" action="/Administrators/testMail">
+						<input type="submit" value="<?php echo __('Send test Email to my address'); ?>" class="btn btn-xs btn-default">
+					</form>
+				</dd>
+			</dl>
+		</div>
+
+
+
+	</div>
+</div>
+
+<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
+<header>
 		<span class="widget-icon"> <i class="fa fa-user"></i></span>
 		<h2><?php echo __('User information'); ?></h2>
 	</header>

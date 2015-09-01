@@ -54,7 +54,7 @@
 				'value' => $user['User']['lastname']
 			]);
 			
-			if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
+			if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
 				echo $this->Form->input('samaccountname', [
 					'label' => __('Username'),
 					'value' => $user['User']['samaccountname'],
