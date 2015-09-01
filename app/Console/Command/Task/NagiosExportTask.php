@@ -1270,7 +1270,7 @@ class NagiosExportTask extends AppShell{
 			}
 			if(isset($service['Service']['is_volatile'])){
 				if($service['Service']['is_volatile'] !== null && $service['Service']['is_volatile'] !== '')
-					$content.= $this->addContent('is_volatile', 1, $service['Service']['is_volatile']);
+					$content.= $this->addContent('is_volatile', 1, (int)$service['Service']['is_volatile']);
 			}
 			if(!empty($service['Service']['notes']))
 				$content.= $this->addContent('notes', 1, $service['Service']['notes']);
@@ -1524,7 +1524,7 @@ class NagiosExportTask extends AppShell{
 		}
 		if(isset($service['Service']['is_volatile'])){
 			if($service['Service']['is_volatile'] !== null && $service['Service']['is_volatile'] !== '')
-				$content.= $this->addContent('is_volatile', 1, $service['Service']['is_volatile']);
+				$content.= $this->addContent('is_volatile', 1, (int)$service['Service']['is_volatile']);
 		}
 		if(!empty($service['Service']['notes']))
 			$content.= $this->addContent('notes', 1, $service['Service']['notes']);
@@ -2037,27 +2037,67 @@ class NagiosExportTask extends AppShell{
 		if(!is_dir($this->conf['path'].$this->conf['servicedependencies'])){
 			mkdir($this->conf['path'].$this->conf['servicedependencies']);
 		}
-
 		foreach($servicedependencies as $servicedependency){
 			$file = new File($this->conf['path'].$this->conf['servicedependencies'].$servicedependency['Servicedependency']['uuid'].$this->conf['suffix']);
 			$content = $this->fileHeader();
 			if(!$file->exists()){
 				$file->create();
 			}
-
 			//Find dependent services (this code will create a own dependency for each service)
 			if(!empty($servicedependency['ServicedependencyServiceMembership'])){
+				if(!empty($servicedependency['ServicedependencyServicegroupMembership'])){
+					$masterServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id');
+					$masterServicegroups = $this->Servicegroup->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'Servicegroup.id' => $masterServicegroupIds
+						],
+						'fields' => [
+							'Servicegroup.uuid'
+						]
+					]);
+					if(!empty($masterServicegroups)){
+						$masterServicegroups = implode(',', Hash::extract($masterServicegroups, '{n}.Servicegroup.uuid'));
+						$hasMasterServicegroups = true;
+					}
+					
+					$dependentServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id');
+					$dependentServicegroups = $this->Servicegroup->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'Servicegroup.id' => $dependentServicegroupIds
+						],
+						'fields' => [
+							'Servicegroup.uuid'
+						]
+					]);
+					if(!empty($dependentServicegroups)){
+						$dependentServicegroups = implode(',', Hash::extract($dependentServicegroups, '{n}.Servicegroup.uuid'));
+						$hasDependentServicegroups = true;
+					}
+				}else{
+					$hasMasterServicegroups = false;
+					$hasDependentServicegroups = false;
+				}
+				
 				$mainServices = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0]');
 				foreach($mainServices as $mainService){
 					$serviceObject = $this->Service->findById($mainService['service_id']);
 					foreach(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1]') as $depentFromMainService){
 						$dependentServiceObject = $this->Service->findById($depentFromMainService['service_id']);
-
 						$content.= $this->addContent('define servicedependency{', 0);
 						$content.= $this->addContent('host_name', 1, $serviceObject['Host']['uuid']);
 						$content.= $this->addContent('service_description', 1, $serviceObject['Service']['uuid']);
 						$content.= $this->addContent('dependent_host_name', 1, $dependentServiceObject['Host']['uuid']);
 						$content.= $this->addContent('dependent_service_description', 1, $dependentServiceObject['Service']['uuid']);
+
+						if($hasMasterServicegroups === true){
+							$content.= $this->addContent('servicegroup_name', 1, $masterServicegroups);
+						}
+						
+						if($hasDependentServicegroups === true){
+								$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroups);
+						}
 
 						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
 						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
@@ -2070,39 +2110,40 @@ class NagiosExportTask extends AppShell{
 					}
 					unset($serviceObject);
 				}
-			}else{
-				//This service dependency is broken, ther are no services in it
-				//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
-				//$file->close();
-				//continue;
+			
+			//}else{
+			//	//This service dependency is broken, ther are no services in it
+			//	//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
+			//	//$file->close();
+			//	//continue;
 			}
 
-			if(!empty($servicedependency['ServicedependencyServicegroupMembership'])){
-				foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0]') as $mainServicegroup){
-					$servicegroupObject = $this->Servicegroup->findById($mainServicegroup['servicegroup_id']);
-					foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1]') as $depentFromMainServicegroup){
-						$dependentServicegroupObject = $this->Servicegroup->findById($depentFromMainServicegroup['servicegroup_id']);
-						$content.= $this->addContent('define servicedependency{', 0);
-						$content.= $this->addContent('servicegroup_name', 1, $servicegroupObject['Servicegroup']['uuid']);
-						$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroupObject['Servicegroup']['uuid']);
-
-						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
-						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
-
-						$content.= $this->addContent('}', 0);
-						$content.= $this->nl();
-						unset($dependentServicegroupObject);
-					}
-					unset($servicegroupObject);
-				}
-			}else{
-				//This service dependency is broken, ther are no services in it
-				//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
-				//$file->close();
-				//continue;
-			}
+		//	if(!empty($servicedependency['ServicedependencyServicegroupMembership'])){
+		//		foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0]') as $mainServicegroup){
+		//			$servicegroupObject = $this->Servicegroup->findById($mainServicegroup['servicegroup_id']);
+		//			foreach(Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1]') as $depentFromMainServicegroup){
+		//				$dependentServicegroupObject = $this->Servicegroup->findById($depentFromMainServicegroup['servicegroup_id']);
+		//				$content.= $this->addContent('define servicedependency{', 0);
+		//				$content.= $this->addContent('servicegroup_name', 1, $servicegroupObject['Servicegroup']['uuid']);
+		//				$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroupObject['Servicegroup']['uuid']);
+        //
+		//				$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
+		//				$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
+		//				$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
+		//				$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
+        //
+		//				$content.= $this->addContent('}', 0);
+		//				$content.= $this->nl();
+		//				unset($dependentServicegroupObject);
+		//			}
+		//			unset($servicegroupObject);
+		//		}
+		//	}else{
+		//		//This service dependency is broken, ther are no services in it
+		//		//$this->Servicedependency->delete($servicedependency['Servicedependency']['id']);
+		//		//$file->close();
+		//		//continue;
+		//	}
 			
 			//Find dependent services (create one dependency for all master services)
 			//if(!empty($servicedependency['ServicedependencyServiceMembership'])){

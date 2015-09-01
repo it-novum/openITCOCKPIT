@@ -27,7 +27,7 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-bomb fa-fw"></i>
+			<i class="fa fa-sitemap fa-fw"></i>
 				<?php echo __('Monitoring'); ?>
 			<span>>
 				<?php echo __('Hostdependencies'); ?>
@@ -58,7 +58,7 @@
 						</div>
 						<div class="widget-toolbar" role="menu">
 						<a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i class="fa fa-lg fa-table"></i></a>
-						<ul class="dropdown-menu arrow-box-up-right color-select pull-right">
+						<ul class="dropdown-menu arrow-box-up-right pull-right">
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="0"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hosts'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Dependent hosts'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hostgroups'); ?></a></li>
@@ -72,7 +72,7 @@
 					</div>
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
-					<span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
+					<span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
 					<h2 class="hidden-mobile"><?php echo __('Hostdependencies'); ?> </h2>
 
 				</header>
