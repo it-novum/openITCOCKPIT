@@ -139,6 +139,8 @@ class AdministratorsController extends AppController{
 		$is_npcd_running = false;
 		$is_mysql_running = false;
 		$is_phpNSTA_running = false;
+		$is_statusengine = false;
+		$is_statusengine_perfdata = false;
 		
 		Configure::load('nagios');
 		exec(Configure::read('nagios.nagios_status'), $output, $returncode);
@@ -153,11 +155,32 @@ class AdministratorsController extends AppController{
 			$is_db_running = true;
 		}
 		
+		if(!$is_db_running){
+			exec('ps -eaf |grep statusengine | grep -v grep', $output, $returncode);
+			if(sizeof($output) > 0){
+				$is_db_running = true;
+				$is_statusengine = true;
+			}
+		}
+		
 		$output = null;
 		//exec(Configure::read('nagios.npcd_status'), $output, $returncode);
 		exec('ps -eaf |grep npcd | grep -v grep', $output, $returncode);
 		if(sizeof($output) > 0){
 			$is_npcd_running = true;
+		}
+		
+		if(!$is_npcd_running){
+			$statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
+			if(file_exists($statusengineConfig)){
+				require_once $statusengineConfig;
+				if(isset($config['process_perfdata'])){
+					if($config['process_perfdata'] === true && $is_statusengine === true){
+						$is_npcd_running = true;
+						$is_statusengine_perfdata = true;
+					}
+				}
+			}
 		}
 		
 		/*exec(Configure::read('nagios.mysql_status'), $output, $returncode);
@@ -170,8 +193,67 @@ class AdministratorsController extends AppController{
 			$is_phpNSTA_running = true;
 		}
 
-		$this->set(compact(['disks', 'memory', 'load', 'is_npcd_running', 'is_db_running', 'is_nagios_running', 'is_mysql_running', 'is_phpNSTA_running', 'isEnterprise']));
+		//Get Monitoring engine + version
+		$output = null;
+		exec(Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
+		$monitoring_engine = $output[1];
+
+		App::uses('CakeEmail', 'Network/Email');
+		$Email = new ItcMail();
+		$Email->config('default');
+		$mailConfig = $Email->getConfig();
 		
+
+		$this->set(compact([
+			'disks',
+			'memory',
+			'load',
+			'is_npcd_running',
+			'is_db_running',
+			'is_nagios_running',
+			'is_mysql_running',
+			'is_phpNSTA_running',
+			'isEnterprise',
+			'is_statusengine',
+			'is_statusengine_perfdata',
+			'monitoring_engine',
+			'mailConfig'
+		]));
 	}
 	
+	public function testMail(){
+		$this->loadModel('Systemsetting');
+		$recipientAddress = $this->Auth->user('email');
+		$_systemsettings = $this->Systemsetting->findAsArray();
+		
+		$Email = new CakeEmail();
+		$Email->config('default');
+		$Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+		$Email->to($recipientAddress);
+		$Email->subject(__('System test mail'));
+
+		$Email->emailFormat('both');
+		$Email->template('template-testmail', 'template-testmail');
+
+		$Email->send();
+		$this->setFlash(__('Test mail send to: %s', $recipientAddress));
+		return $this->redirect(['action' => 'debug']);
+	}
+}
+
+App::uses('CakeEmail', 'Network/Email');
+class ItcMail extends CakeEmail{
+	
+	public function __construct($config = null){
+		parent::__construct($config);
+	}
+	
+	public function getConfig($removePassword = true){
+		if($removePassword === true){
+			$config = $this->_config;
+			unset($config['password']);
+			return $config;
+		}
+		return $this->_config;
+	}
 }

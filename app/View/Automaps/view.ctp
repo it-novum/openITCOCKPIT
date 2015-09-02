@@ -66,7 +66,7 @@
 					<?php foreach($services as $service):?>
 						<div class="col-xs-12 col-md-4 col-lg-3 ellipsis" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>">
 							<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
-								<?php echo $this->Status->automapIcon($service); ?>
+								<?php echo $this->Status->automapIcon($service, false); ?>
 								<?php
 								$serviceName = $service['Servicetemplate']['name'];
 								if($serviceName == null || $serviceName == ''):

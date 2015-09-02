@@ -76,17 +76,26 @@
 		<div class="widget-body padding-10">
 			<dl class="dl-horizontal">
 				<dt><?php echo __('Monitoring engine');?>:</dt>
-				<dd><?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<dt><?php echo __('Database connector');?>:</dt>
-				<dd><?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo ($is_statusengine)?__('Statusengine'):__('NDOUtils'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<dt><?php echo __('Perf. data processor');?>:</dt>
-				<dd><?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd>
+				<dd>
+					<?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<?php /*?><dt><?php echo __('Database server');?>:</dt>
 				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
 				<dt><?php echo __('phpNSTA');?>:</dt>
 				<dd>
 					<?php echo ($is_phpNSTA_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="phpNSTA is only installed and running if you are using Distributed Monitoring" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 			</dl>
 		</div>
@@ -233,6 +242,45 @@
 					<?php endforeach; ?>
 				<?php endif;?>
 		</div>
+
+	</div>
+</div>
+
+<div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
+<header>
+		<span class="widget-icon"> <i class="fa fa-envelope"></i></span>
+		<h2><?php echo __('Email configuration'); ?></h2>
+	</header>
+	<!-- widget div-->
+	<div>
+		<!-- end widget edit box -->
+		<div class="widget-body padding-10">
+			<dl class="dl-horizontal">
+				<dt><?php echo __('Mail server address');?>:</dt>
+				<dd><?php echo h($mailConfig['host']); ?></dd>
+				
+				<dt><?php echo __('Mail server port');?>:</dt>
+				<dd><?php echo h($mailConfig['port']); ?></dd>
+				
+				<dt><?php echo __('Transport protocol');?>:</dt>
+				<dd><?php echo h($mailConfig['transport']); ?></dd>
+				
+				<dt><?php echo __('Username');?>:</dt>
+				<dd><?php echo h($mailConfig['username']); ?></dd>
+				
+				<dt><?php echo __('Password');?>:</dt>
+				<dd><i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information.'); ?></i></dd>
+				
+				<dt>&nbsp;</dt>
+				<dd>
+					<form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate" action="/Administrators/testMail">
+						<input type="submit" value="<?php echo __('Send test Email to my address'); ?>" class="btn btn-xs btn-default">
+					</form>
+				</dd>
+			</dl>
+		</div>
+
+
 
 	</div>
 </div>

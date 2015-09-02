@@ -125,7 +125,7 @@ echo $this->Form->create('Documentation', array(
 								</div>
 								<div class="widget-toolbar pull-left" style="border:0px;" role="menu">
 									<a href="javascript:void(0);" class="dropdown-toggle color-box selector bg-color-darken" id="currentColor" color="#404040" current-color="bg-color-darken" data-toggle="dropdown"></a>
-									<ul class="dropdown-menu arrow-box-up-right color-select pull-right">
+									<ul class="dropdown-menu arrow-box-up-right pull-right">
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Green Grass'); ?>" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-green" select-color="true" color="#356E35" class="bg-color-green"></span></li>
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Dark Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenDark" select-color="true" color="#496949" class="bg-color-greenDark"></span></li>
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Light Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenLight" select-color="true" color="#71843F" class="bg-color-greenLight"></span></li>

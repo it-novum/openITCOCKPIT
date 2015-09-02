@@ -82,7 +82,7 @@
 						</div>
 						<div class="widget-toolbar" role="menu">
 						<a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i class="fa fa-lg fa-table"></i></a>
-						<ul class="dropdown-menu arrow-box-up-right color-select pull-right">
+						<ul class="dropdown-menu arrow-box-up-right pull-right">
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="0"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('State'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Host'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Date'); ?></a></li>
