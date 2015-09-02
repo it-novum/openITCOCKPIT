@@ -764,7 +764,8 @@ class Service extends AppModel{
 			'fields' => [
 				'Service.id',
 				'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
-				'Service.uuid'
+				'Service.uuid',
+				'Service.service_type'
 			],
 			'order' => [
 				'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC'
@@ -911,7 +912,7 @@ class Service extends AppModel{
 		}
 		return true;
 	}
-	
+
 	public function __delete($id, $userId){
 		if(is_numeric($id)){
 			$service = $this->findById($id);
@@ -975,7 +976,7 @@ class Service extends AppModel{
 		}
 		return false;
 	}
-	
+
 	/*
 	 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
 	 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
