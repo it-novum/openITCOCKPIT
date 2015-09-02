@@ -318,11 +318,6 @@ class Service extends AppModel{
 				'message' => 'Incorrect datatype'
 			]
 		],
-		'service_url' => [
-			'rule' => 'url',
-			'allowEmpty' => true,
-			'message' => 'Not a valid URL format'
-		]
 	];
 
 	function __construct($id = false, $table = null, $ds = null){
