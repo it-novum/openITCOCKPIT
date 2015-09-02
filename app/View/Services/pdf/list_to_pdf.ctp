@@ -86,10 +86,14 @@ foreach($css as $cssFile): ?>
 						<tr>
 							<td class="bg-color-lightGray font-lg" colspan="8">
 							<?php
-								if($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'] == 1):
-									echo $this->Monitoring->hostFlappingIconColored($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'], '', $service['Host']['Hoststatus'][0]['Hoststatus']['current_state']);
+								if(isset($service['Host']['Hoststatus'][0]['Hoststatus'])):
+									if($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'] == 1):
+										echo $this->Monitoring->hostFlappingIconColored($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'], '', $service['Host']['Hoststatus'][0]['Hoststatus']['current_state']);
+									else:
+										echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($service['Host']['Hoststatus'][0]['Hoststatus']['current_state']).'"></i>';
+									endif;
 								else:
-									echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($service['Host']['Hoststatus'][0]['Hoststatus']['current_state']).'"></i>';
+									echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor().'"></i>';
 								endif;
 							?>
 							<span class="font-md"><?php echo $service['Host']['name']; ?> (<?php echo $service['Host']['address']; ?>)</span>

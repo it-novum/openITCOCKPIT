@@ -91,7 +91,7 @@ foreach($css as $cssFile): ?>
 									echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor($host[0]['Hoststatus']['current_state']).'"></i>';
 								endif;
 							else:
-								echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor().'"></i>';
+								echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor(null).'"></i>';
 							endif;
 							?>
 							</td>
