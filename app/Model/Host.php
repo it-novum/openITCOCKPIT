@@ -212,12 +212,6 @@ class Host extends AppModel{
 			],
 
 		],
-		'host_url' => [
-			'rule' => 'url',
-			'allowEmpty' => true,
-			'required' => false,
-			'message' => 'Not a valid URL format',
-		]
 		/*
 				'priority' => [
 					'notEmpty' => [
@@ -381,7 +375,7 @@ class Host extends AppModel{
 			$tmp_keys = array_diff_key($requestData['Host'], $diff_array['Host']);
 		}
 
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 		$breakInherit = false;
 		if(isset($diff_array['Contact']) && !isset($diff_array['Contactgroup']['Contactgroup'])){
@@ -400,7 +394,7 @@ class Host extends AppModel{
 			$breakInherit = true;
 		}
 
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 		if(!isset($diff_array['Contact']['Contact']) && isset($diff_array['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = ($requestData['Contact']['Contact'] == '') ? [] : $requestData['Contact']['Contact'];
@@ -410,7 +404,7 @@ class Host extends AppModel{
 			$breakInherit = true;
 		}
 
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 		if(!isset($diff_array['Contact']['Contact']) && !isset($diff_array['Contactgroup']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = [];
@@ -419,7 +413,7 @@ class Host extends AppModel{
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contactgroups' => '0']]);
 			$breakInherit = true;
 		}
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 
 		/*
@@ -431,7 +425,7 @@ class Host extends AppModel{
 			$breakInherit = true;
 		}
 
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		if(isset($diff_array['Contactgroup']['Contactgroup']) || ((isset($diff_array['Contactgroup']['Contactgroup']) && $diff_array['Contactgroup']['Contactgroup'] == null)) && !isset($diff_array['Contact']['Contact'])){
 		//if(!isset($diff_array['Contact']['Contact']) && (isset($diff_array['Contactgroup']['Contactgroup']) || $diff_array['Contactgroup']['Contactgroup'] == null)){
 			$diff_array['Contact']['Contact'] = ($request_data['Contact']['Contact'] == '')?[]:$request_data['Contact']['Contact'];
@@ -524,7 +518,7 @@ class Host extends AppModel{
 			$diff_array = Hash::remove($diff_array, 'Hostcommandargumentvalue');
 		}
 
-		//Stupid nagios 4 inheritance
+		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 		if($diff_array['Host']['Contact'] == '' && $diff_array['Host']['Contactgroup'] == ''){
 			$diff_array['Contact']['Contact'] = [];
