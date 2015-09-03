@@ -366,6 +366,10 @@ class StatusHelper extends AppHelper{
 	}
 
 	function HostStatusTextColor($state = 2){
+		if($state === null){
+			return 'txt-primary';
+		}
+		
 		switch($state){
 			case 0:
 			return 'txt-color-green';
@@ -378,6 +382,10 @@ class StatusHelper extends AppHelper{
 		}
 	}
 	function ServiceStatusTextColor($state = 2){
+		if($state === null){
+			return 'txt-primary';
+		}
+		
 		switch($state){
 			case 0:
 			return 'txt-color-green';

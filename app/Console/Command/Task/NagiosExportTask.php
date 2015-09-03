@@ -2194,6 +2194,8 @@ class NagiosExportTask extends AppShell{
 	}
 	
 	public function afterExportExternalTasks(){
+		//Restart oitc CMD to wipe old cached information
+		exec('service oitc_cmd restart');
 		$this->exportSatHostAndServiceGroups();
 		
 		
