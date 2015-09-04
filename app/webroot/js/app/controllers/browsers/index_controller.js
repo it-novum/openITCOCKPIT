@@ -24,23 +24,12 @@
 
 App.Controllers.BrowsersIndexController = Frontend.AppController.extend({
 
-	components: ['Search'],
+	components: ['Search', 'Utils'],
 
 	_initialize: function() {
 		this.Search.nodeSearch();
-		
-		$('#host-list-datatables').dataTable({
-			"bPaginate": true,
-			"bFilter": true,
-			"bInfo": false,
-			"bStateSave": true
-		});
-		
-		$('div.dataTables_filter')
-			.attr('style', 'width: 100% !important;padding-right: 20px;')
-			.children('.input-group')
-				.attr('style', 'width: 100% !important;');
-		
+		this.Utils.browserDatatables();
+		this.Utils.flapping();
 	}
 
 });
