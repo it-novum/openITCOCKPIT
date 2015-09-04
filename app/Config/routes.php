@@ -13,6 +13,7 @@ Router::mapResources([
 	'contactgroups',
 	'hosts',
 	'hostgroups',
+	'hosttemplates',
 	'services',
 	'servicegroups',
 	'hostescalations',

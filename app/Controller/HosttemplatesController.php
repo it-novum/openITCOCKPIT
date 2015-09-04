@@ -579,8 +579,12 @@ class HosttemplatesController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Hosttemplate successfully saved'));
-				$this->redirect(array('action' => 'index'));
+				if($this->request->ext == 'json'){
+					$this->serializeId(); // REST API ID serialization
+				}else{
+					$this->setFlash(__('Hosttemplate successfully saved'));
+					$this->redirect(array('action' => 'index'));
+				}
 			}else{
 				$this->setFlash(__('Could not save data'), false);
 				$this->CustomValidationErrors->loadModel($this->Hosttemplate);
