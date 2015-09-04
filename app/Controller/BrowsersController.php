@@ -23,13 +23,25 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App::import('Model', 'Host');
-App::import('Model', 'Container');
+//App::import('Model', 'Host');
+//App::import('Model', 'Container');
 class BrowsersController extends AppController{
 
 	public $layout = 'Admin.default';
-	public $helpers = ['PieChart', 'BrowserMisc'];
-	public $uses = [MONITORING_HOSTSTATUS, MONITORING_SERVICESTATUS, 'Host', 'Service', 'Container'];
+	public $helpers = [
+		'PieChart',
+		'BrowserMisc',
+		'Status',
+		'Monitoring',
+	];
+	public $uses = [
+		MONITORING_HOSTSTATUS,
+		MONITORING_SERVICESTATUS,
+		'Host',
+		'Service',
+		'Container',
+		'Tenant',
+	];
 
 	function index($id = null){
 		if($id != null){
@@ -42,64 +54,146 @@ class BrowsersController extends AppController{
 		$allContainerArr = $this->Container->children($id, false, ['id', 'containertype_id']);
 
 		$all_container_ids = Hash::merge([$id], Hash::extract($allContainerArr, '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/].id'));
-		$all_host_uuids = $this->Host->find('all',[
-				'recursive' => '-1',
-				'conditions' => [
-					'AND' => [
-						'Host.container_id' => $all_container_ids,
-						'Host.disabled' => 0
+		
+		$tenants = $this->Tenant->tenantsByContainerId(
+			array_merge(
+				$this->MY_RIGHTS, array_keys(
+					$this->User->getTenantIds(
+						$this->Auth->user('id')
+					)
+				)
+			),
+			'list', 'container_id');
+		$query = [
+			'recursive' => -1,
+			'contain' => [],
+			'fields' => [
+				'Host.id',
+				'Host.uuid',
+				'Host.name',
+				'Host.address',
+
+				'Hoststatus.current_state',
+				'Hoststatus.last_check',
+				'Hoststatus.next_check',
+				'Hoststatus.last_hard_state_change',
+				'Hoststatus.output',
+				'Hoststatus.state_type',
+				'Hoststatus.is_flapping',
+			],
+			'conditions' => [
+				'HostsToContainers.container_id' => $this->MY_RIGHTS
+			],
+			'joins' => [
+				[
+					'table' => 'nagios_objects',
+					'type' => 'INNER',
+					'alias' => 'HostObject',
+					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+				], [
+					'table' => 'nagios_hoststatus',
+					'type' => 'LEFT OUTER',
+					'alias' => 'Hoststatus',
+					'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
+				], [
+					'table' => 'hosts_to_containers',
+					'alias' => 'HostsToContainers',
+					'type' => 'LEFT',
+					'conditions' => [
+						'HostsToContainers.host_id = Host.id',
 					]
-				],
-				'fields' => [
-					'Host.id',
-					'Host.uuid',
-					'Host.container_id'
 				]
-			]);
-		$hoststatus = $this->Hoststatus->find('all', [
-			'conditions' => [
-				'Objects.name1' => Hash::extract($all_host_uuids, '{n}.Host.uuid')
 			],
-			'fields' => [
-				'Hoststatus.current_state'
+			'order' => [
+				'Hoststatus.current_state' => 'DESC',
+			],
+			'group' => [
+				'Host.id'
 			]
-		]);
+		];
+		$hosts = $this->Host->find('all', $query);
 
-		$state_array_host = [0,0,0];
-		$state_array_service = [0,0,0,0];
-		$host_status_count = array_count_values(Hash::extract($hoststatus, '{n}.Hoststatus.current_state'));
-		foreach($host_status_count as $key => $value){
-			$state_array_host[$key] = $value;
-		}
-
-		$all_service_uuids = $this->Service->find('all',[
-			'recursive' => '-1',
+		$query = [
+			'recursive' => -1,
 			'conditions' => [
-				'AND' => [
-					'Service.host_id' => Hash::extract($all_host_uuids, '{n}.Host.id'),
-					'Service.disabled' => 0
-				]
+				'HostsToContainers.container_id' => $this->MY_RIGHTS
 			],
+			'contain' => [],
 			'fields' => [
+				'Service.id',
 				'Service.uuid',
-				'Service.host_id'
-			]
-		]);
-		$servicestatus = $this->Servicestatus->find('all', [
-			'conditions' => [
-				'Objects.name2' => Hash::extract($all_service_uuids, '{n}.Service.uuid')
-			],
-			'fields' => [
 				'Servicestatus.current_state'
+			],
+			'order' => ['Host.name' => 'asc'],
+			'joins' => [[
+				'table' => 'hosts',
+				'type' => 'INNER',
+				'alias' => 'Host',
+				'conditions' => 'Service.host_id = Host.id'
+			], [
+				'table' => 'nagios_objects',
+				'type' => 'INNER',
+				'alias' => 'HostObject',
+				'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+			], [
+				'table' => 'nagios_hoststatus',
+				'type' => 'INNER',
+				'alias' => 'Hoststatus',
+				'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
+			], [
+				'table' => 'nagios_objects',
+				'type' => 'INNER',
+				'alias' => 'ServiceObject',
+				'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+			], [
+				'table' => 'nagios_servicestatus',
+				'type' => 'LEFT OUTER',
+				'alias' => 'Servicestatus',
+				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+			], [
+				'table' => 'hosts_to_containers',
+				'alias' => 'HostsToContainers',
+				'type' => 'LEFT',
+				'conditions' => [
+					'HostsToContainers.host_id = Host.id',
+				]
 			]
-		]);
-
-		$service_status_count = array_count_values(Hash::extract($servicestatus, '{n}.Servicestatus.current_state'));
-		foreach($service_status_count as $key => $value){
-			$state_array_service[$key] = $value;
+			],
+			'group' => [
+				'Service.id'
+			]
+		];
+		$services = $this->Service->find('all', $query);
+		
+		$state_array_host = [
+			0 => 0,
+			1 => 0,
+			2 => 0
+		];
+		$state_array_service = [
+			0 => 0,
+			1 => 0,
+			2 => 0,
+			3 => 0
+		];
+		
+		foreach($hosts as $host){
+			$state_array_host[$host['Hoststatus']['current_state']]++;
+		}
+		foreach($services as $service){
+			$state_array_service[$service['Servicestatus']['current_state']]++;
 		}
 
-		$this->set(compact(array('browser', 'parents', 'top_node', 'state_array_host', 'state_array_service', 'all_container_ids')));
+		$this->set(compact([
+			'browser',
+			'parents',
+			'top_node',
+			'state_array_host',
+			'state_array_service',
+			'all_container_ids',
+			'tenants',
+			'hosts',
+		]));
 	}
 
 
@@ -187,7 +281,14 @@ class BrowsersController extends AppController{
 
 		$all_container_ids = Hash::merge([$id], $child_node_ids);
 
-		$this->set(compact(['top_node', 'browser', 'parents', 'state_array_host', 'state_array_service', 'all_container_ids']));
+		$this->set(compact([
+			'top_node',
+			'browser',
+			'parents',
+			'state_array_host',
+			'state_array_service',
+			'all_container_ids',
+		]));
 	}
 
 	function locationBrowser($id = null){

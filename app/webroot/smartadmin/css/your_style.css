@@ -1773,3 +1773,17 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	padding-bottom:5px;
 }
 
+.node-list{
+	height: 211px;
+}
+
+.height-100{
+	height:100%;
+}
+
+#node-list-search{
+	width: 100%;
+	border: none;
+	border-bottom: 1px solid #c2c2c2;
+	padding-left: 10px;
+}

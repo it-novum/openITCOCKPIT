@@ -24,6 +24,7 @@
 //	confirmation.
 ?>
 <ol class="breadcrumb">
+	<li></li> <!-- leading / -->
 	<?php
 	$current_node = $top_node;
 	if($top_node['Container']['parent_id'] != null):
@@ -36,7 +37,7 @@
 		endforeach;
 	endif;
 	?>
-	<li class="active"><?php echo $current_node['Container']['name']; ?><li>
+	<li class="active"><?php echo h($current_node['Container']['name']); ?><li>
 </ol>
 
 <div class="row">
