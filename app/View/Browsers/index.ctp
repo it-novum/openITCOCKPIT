@@ -33,7 +33,7 @@
 		endforeach;
 	endif;
 	?>
-	<li class="active"><?php echo h($current_node['Container']['name']); ?><li>
+	<li class="active"><?php echo h($current_node['Container']['name']); ?></li>
 </ol>
 
 <div class="row">

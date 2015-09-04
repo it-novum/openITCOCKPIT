@@ -28,15 +28,19 @@
 	<?php
 	if($currentContainer['Container']['parent_id'] != null):
 		foreach($parents as $parent):
-			if($parent['Container']['containertype_id'] == CT_GLOBAL){
+			if($parent['Container']['containertype_id'] == CT_GLOBAL):
 				echo '<li>'.$this->Html->link($parent['Container']['name'], 'index/'.$parent['Container']['id']).'</li>';
-			}else{
-				echo '<li>'.$this->Html->link($parent['Container']['name'], $this->BrowserMisc->browserLink($parent['Container']['containertype_id']).'/'.$parent['Container']['id']).'</li>';
-			}
+			else:
+				if(in_array($parent['Container']['id'], $MY_RIGHTS_WITH_TENANT)):
+					echo '<li>'.$this->Html->link($parent['Container']['name'], ['action' => 'tenantBrowser', $parent['Container']['id']]).'</li>';
+				else:
+					echo '<li class="active">'.h($currentContainer['Container']['name']).'</li>';
+				endif;
+			endif;
 		endforeach;
 	endif;
 	?>
-	<li class="active"><?php echo h($currentContainer['Container']['name']); ?><li>
+	<li class="active"><?php echo h($currentContainer['Container']['name']); ?></li>
 </ol>
 
 <div class="row">
@@ -54,10 +58,9 @@
 							<div class="ellipsis searchContainer">
 								<?php 
 								$faClass = $this->BrowserMisc->containertypeIcon($b['containertype_id']);
-								$link = $this->BrowserMisc->browserLink($b['containertype_id']);
 								?>
 								<i class="fa <?php echo $faClass; ?>"></i>
-								<?php echo $this->Html->link($b['name'], $link.'/'.$b['id'], ['class' => 'searchMe']); ?>
+								<?php echo $this->Html->link($b['name'], ['action' => 'tenantBrowser', $b['id']], ['class' => 'searchMe']); ?>
 							</div>
 						<?php endforeach; ?>
 				</div>

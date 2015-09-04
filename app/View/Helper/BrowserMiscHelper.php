@@ -38,7 +38,7 @@ class BrowserMiscHelper extends AppHelper{
 			case 1:	$faClass = ''; break; // ?
 			case 2:	$faClass = 'fa-home'; break;
 			case 3:	$faClass = 'fa-location-arrow'; break;
-			case 4:	$faClass = '';  break; // ?
+			case 4:	$faClass = 'fa-cloud';  break; // ?
 			case 5:	$faClass = 'fa-link'; break;
 			case 6:	$faClass = 'fa-users';
 			case 7:	$faClass = 'fa-sitemap'; break;
