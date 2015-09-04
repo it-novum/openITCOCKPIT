@@ -146,7 +146,20 @@ class HostsController extends AppController{
 
 		$childrenContainer = [];
 		if(isset($this->request->params['named']['BrowserContainerId'])){
-			if(is_array($this->request->params['named']['BrowserContainerId'])){
+			if(!is_array($this->request->params['named']['BrowserContainerId'])){
+				$this->request->params['named']['BrowserContainerId'] = [$this->request->params['named']['BrowserContainerId']];
+			}
+			foreach($this->request->params['named']['BrowserContainerId'] as $containerIdToCheck){
+				if(!in_array($containerIdToCheck, $this->MY_RIGHTS)){
+					$this->render403();
+					return;
+				}
+			}
+			$conditions = Hash::merge($conditions, [
+				'Host.disabled' => 0,
+				'HostsToContainers.container_id' => $this->request->params['named']['BrowserContainerId']
+			]);
+			/*if(is_array($this->request->params['named']['BrowserContainerId'])){
 				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
 				foreach($browserContainerIds as $id){
 					$childrenContainer[] = $this->Container->children($id, false, ['id', 'containertype_id']);
@@ -176,6 +189,7 @@ class HostsController extends AppController{
 				'Host.container_id' => $all_container_ids
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
+				*/
 		}
 
 		$this->Host->virtualFields['hoststatus'] = 'Hoststatus.current_state';

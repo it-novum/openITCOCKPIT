@@ -23,284 +23,109 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App::import('Model', 'Host');
-App::import('Model', 'Container');
+//App::import('Model', 'Host');
+//App::import('Model', 'Container');
 class BrowsersController extends AppController{
 
 	public $layout = 'Admin.default';
-	public $helpers = ['PieChart', 'BrowserMisc'];
-	public $uses = [MONITORING_HOSTSTATUS, MONITORING_SERVICESTATUS, 'Host', 'Service', 'Container'];
+	public $helpers = [
+		'PieChart',
+		'BrowserMisc',
+		'Status',
+		'Monitoring',
+	];
+	public $uses = [
+		MONITORING_HOSTSTATUS,
+		MONITORING_SERVICESTATUS,
+		'Host',
+		'Service',
+		'Container',
+		'Tenant',
+		'Browser',
+	];
 
-	function index($id = null){
-		if($id != null){
-			$top_node = $this->Container->findById($id);
-		}else{
-			$top_node = $this->Container->find('first');
-		}
+	function index(){
+		$top_node = $this->Container->findById(ROOT_CONTAINER);
 		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
 		$browser = Hash::extract($this->Container->children($top_node['Container']['id'], true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-		$allContainerArr = $this->Container->children($id, false, ['id', 'containertype_id']);
 
-		$all_container_ids = Hash::merge([$id], Hash::extract($allContainerArr, '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/].id'));
-		$all_host_uuids = $this->Host->find('all',[
-				'recursive' => '-1',
-				'conditions' => [
-					'AND' => [
-						'Host.container_id' => $all_container_ids,
-						'Host.disabled' => 0
-					]
-				],
-				'fields' => [
-					'Host.id',
-					'Host.uuid',
-					'Host.container_id'
-				]
-			]);
-		$hoststatus = $this->Hoststatus->find('all', [
-			'conditions' => [
-				'Objects.name1' => Hash::extract($all_host_uuids, '{n}.Host.uuid')
-			],
-			'fields' => [
-				'Hoststatus.current_state'
-			]
-		]);
-
-		$state_array_host = [0,0,0];
-		$state_array_service = [0,0,0,0];
-		$host_status_count = array_count_values(Hash::extract($hoststatus, '{n}.Hoststatus.current_state'));
-		foreach($host_status_count as $key => $value){
-			$state_array_host[$key] = $value;
-		}
-
-		$all_service_uuids = $this->Service->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Service.host_id' => Hash::extract($all_host_uuids, '{n}.Host.id'),
-					'Service.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Service.uuid',
-				'Service.host_id'
-			]
-		]);
-		$servicestatus = $this->Servicestatus->find('all', [
-			'conditions' => [
-				'Objects.name2' => Hash::extract($all_service_uuids, '{n}.Service.uuid')
-			],
-			'fields' => [
-				'Servicestatus.current_state'
-			]
-		]);
-
-		$service_status_count = array_count_values(Hash::extract($servicestatus, '{n}.Servicestatus.current_state'));
-		foreach($service_status_count as $key => $value){
-			$state_array_service[$key] = $value;
-		}
-
-		$this->set(compact(array('browser', 'parents', 'top_node', 'state_array_host', 'state_array_service', 'all_container_ids')));
+		$tenants = $this->__getTenants();
+		$query = $this->Browser->hostsQuery(ROOT_CONTAINER);
+		$hosts = $this->Host->find('all', $query);
+		$query = $this->Browser->serviceQuery(ROOT_CONTAINER);
+		$services = $this->Service->find('all', $query);
+		$state_array_host = $this->Browser->countHoststate($hosts);
+		$state_array_service = $this->Browser->countServicestate($services);
+		$this->set(compact([
+			'browser',
+			'parents',
+			'top_node',
+			'state_array_host',
+			'state_array_service',
+			'tenants',
+			'hosts',
+		]));
 	}
 
 
-	function tenantBrowser($id = null){
-		if($id != null){
-			$top_node = $this->Container->findById($id);
+	function tenantBrowser($id){
+		if(!$this->Container->exists($id)){
+			throw new NotFoundException(__('Invalid container'));
+		}
+		$MY_RIGHTS_WITH_TENANT = array_merge($this->MY_RIGHTS, array_keys($this->__getTenants()));
+		if(!$this->hasRootPrivileges){
+			if(!in_array($id, $MY_RIGHTS_WITH_TENANT)){
+				$this->render403();
+				return;
+			}
+		}
+
+		if($this->hasRootPrivileges === true){
+			$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
 		}else{
-			$top_node = $this->Container->find('first');
+			$containerNest = Hash::nest($this->Container->children($id));
+			$browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_DEVICEGROUP, CT_NODE]);
+			
+		}
+		if($this->hasRootPrivileges === false){
+			foreach($browser as $key => $containerRecord){
+				if(!in_array($containerRecord['id'], $this->MY_RIGHTS)){
+					unset($browser[$key]);
+				}
+			}
 		}
 
-		$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-		$all_nodes = Hash::extract($this->Container->children($id, false), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-
-		//ids of all containers within this Tenant
-		$child_node_ids = Hash::extract($all_nodes, '{n}.id');
-		$all_containertype_ids = Hash::combine($all_nodes, '{n}.id', '{n}.containertype_id');
-
-		$child_node_hosts = $this->Host->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Host.container_id' => $child_node_ids,
-					'Host.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Host.id',
-				'Host.name',
-				'Host.uuid',
-				'Host.container_id'
-			]
-		]);
-		
-		$all_host_uuids = Hash::extract($child_node_hosts, '{n}.Host.uuid');
-		$all_host_ids = Hash::extract($child_node_hosts, '{n}.Host.id');
-
-		$hoststatus = $this->Hoststatus->find('all', [
-			'conditions' => [
-				'Objects.name1' => $all_host_uuids,
-			],
-			'fields' => [
-				'Hoststatus.current_state'
-			]
-		]);
-
-		$all_services = $this->Service->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Service.host_id' => $all_host_ids,
-					'Service.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Service.uuid',
-				'Service.host_id'
-			]
-		]);
-
-		$all_service_uuids = Hash::extract($all_services, '{n}.Service.uuid');
-
-		$servicestatus = $this->Servicestatus->find('all', [
-			'conditions' => [
-				'Objects.name2' => $all_service_uuids
-			],
-			'fields' => [
-				'Servicestatus.current_state'
-			]
-		]);
-
-
-		$state_array_host = [0,0,0];
-		$state_array_service = [0,0,0,0];
-		$host_status_count = array_count_values(Hash::extract($hoststatus, '{n}.Hoststatus.current_state'));
-		foreach($host_status_count as $key => $value){
-			$state_array_host[$key] = $value;
+		$hosts = $services = [];
+		if(in_array($id, $this->MY_RIGHTS)){
+			$query = $this->Browser->hostsQuery($id);
+			$hosts = $this->Host->find('all', $query);
+			$query = $this->Browser->serviceQuery($id);
+			$services = $this->Service->find('all', $query);
 		}
-
-		$service_status_count = array_count_values(Hash::extract($servicestatus, '{n}.Servicestatus.current_state'));
-		foreach($service_status_count as $key => $value){
-			$state_array_service[$key] = $value;
-		}
-
-		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
-
-		$all_container_ids = Hash::merge([$id], $child_node_ids);
-
-		$this->set(compact(['top_node', 'browser', 'parents', 'state_array_host', 'state_array_service', 'all_container_ids']));
+		$state_array_host = $this->Browser->countHoststate($hosts);
+		$state_array_service = $this->Browser->countServicestate($services);
+		$currentContainer = $this->Container->findById($id);
+		$parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+		$this->set(compact([
+			'currentContainer',
+			'browser',
+			'parents',
+			'state_array_host',
+			'state_array_service',
+			'hosts',
+			'MY_RIGHTS_WITH_TENANT'
+		]));
 	}
 
-	function locationBrowser($id = null){
-		if($id != null){
-			$top_node = $this->Container->findById($id);
-		}else{
-			$top_node = $this->Container->find('first');
-		}
-		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
-
-		$browser = ['There is nothing to show'];
-		$this->set(compact(['top_node', 'parents', 'browser']));
-	}
-
-	function devicegroupBrowser($id = null){
-		//not implemented yet
-	}
-
-	function nodeBrowser($id = null){
-		if($id != null){
-			$top_node = $this->Container->findById($id);
-		}else{
-			$top_node = $this->Container->find('first');
-		}
-		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
-
-		$browser = Hash::extract($this->Container->children($top_node['Container']['id'], true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-		$all_nodes = Hash::extract($this->Container->children($top_node['Container']['id'], false), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-
-		//the child nodes of the current node 
-		$child_node_ids = Hash::extract($all_nodes, '{n}.id');
-		//neede for both (list and chart)
-		$all_hosts = $this->Host->find('all',[
-				'recursive' => '-1',
-				'conditions' => [
-					'AND' => [
-						'Host.container_id' => $top_node['Container']['id'],
-						'Host.disabled' => 0
-					]
-				],
-				'fields' => [
-					'Host.id',
-					'Host.name',
-					'Host.uuid',
-					'Host.container_id'
-				]
-		]);
-
-		$browser = array_merge($browser, $all_hosts);
-
-		$child_node_hosts = $this->Host->find('all',[
-				'recursive' => '-1',
-				'conditions' => [
-					'AND' => [
-						'Host.container_id' => $child_node_ids,
-						'Host.disabled' => 0
-					]
-				],
-				'fields' => [
-					'Host.id',
-					'Host.name',
-					'Host.uuid',
-					'Host.container_id'
-				]
-		]);
-
-		//all hosts (list hosts and recursive childs) for the chart
-		$all_hosts = array_merge($all_hosts, $child_node_hosts);
-
-		$hoststatus = $this->Hoststatus->find('all', [
-			'conditions' => [
-				'Objects.name1' => Hash::extract($all_hosts, '{n}.Host.uuid')
-			],
-			'fields' => [
-				'Hoststatus.current_state'
-			]
-		]);
-		
-		$all_services = $this->Service->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Service.host_id' => Hash::extract($all_hosts, '{n}.Host.id'),
-					'Service.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Service.uuid',
-				'Service.host_id'
-			]
-		]);
-		$servicestatus = $this->Servicestatus->find('all', [
-			'conditions' => [
-				'Objects.name2' => Hash::extract($all_services, '{n}.Service.uuid')
-			],
-			'fields' => [
-				'Servicestatus.current_state'
-			]
-		]);
-
-		$state_array_host = [0,0,0];
-		$state_array_service = [0,0,0,0];
-		$host_status_count = array_count_values(Hash::extract($hoststatus, '{n}.Hoststatus.current_state'));
-		foreach($host_status_count as $key => $value){
-			$state_array_host[$key] = $value;
-		}
-
-		$service_status_count = array_count_values(Hash::extract($servicestatus, '{n}.Servicestatus.current_state'));
-		foreach($service_status_count as $key => $value){
-			$state_array_service[$key] = $value;
-		}
-		$all_container_ids = Hash::merge([$id],$child_node_ids);
-
-		$this->set(compact(['top_node', 'parents', 'browser', 'state_array_host', 'state_array_service', 'all_container_ids']));
+	protected function __getTenants(){
+		return $this->Tenant->tenantsByContainerId(
+			array_merge(
+				$this->MY_RIGHTS, array_keys(
+					$this->User->getTenantIds(
+						$this->Auth->user('id')
+					)
+				)
+			),
+		'list', 'container_id');
 	}
 }

@@ -339,6 +339,25 @@ class User extends AppModel {
 		}
 	}
 
+	//A user can have >= 1 tenants, due to multiple containers
+	public function getTenantIds($id = null, $index = 'id'){
+		if($id === null){
+			$id = $this->id;
+		}
+		$Container = ClassRegistry::init('Container');
+		$Tenant = ClassRegistry::init('Tenant');
+		$user = $this->findById($id);
+		$tenants = [];
+		foreach($user['ContainerUserMembership'] as $_container){
+			foreach($Container->getPath($_container['container_id']) as $subContainer){
+				if($subContainer['Container']['containertype_id'] == CT_TENANT){
+					$tenants[$subContainer['Container'][$index]] = $subContainer['Container']['name'];
+				}
+			}
+		}
+		return $tenants;
+	}
+
 	public function __delete($user, $userId){
 		if(is_numeric($user)){
 			$userId = $user;
