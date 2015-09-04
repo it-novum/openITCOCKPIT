@@ -378,13 +378,13 @@ class Host extends AppModel{
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
 		$breakInherit = false;
-		if(isset($diff_array['Contact']) && !isset($diff_array['Contactgroup']['Contactgroup'])){
-			if(!isset($requestData['Contact']['Contact'])){
+		if(isset($diff_array['Contact']) && empty($diff_array['Contactgroup']['Contactgroup'])){
+			if(empty($requestData['Contact']['Contact'])){
 				$diff_array['Contact']['Contact'] = [];
 			}else{
 				$diff_array['Contact']['Contact'] = $requestData['Contact']['Contact'];
 			}
-			if(!isset($requestData['Contactgroup']['Contactgroup'])){
+			if(empty($requestData['Contactgroup']['Contactgroup'])){
 				$diff_array['Contactgroup']['Contactgroup'] = [];
 			}else{
 				$diff_array['Contactgroup']['Contactgroup'] = $requestData['Contactgroup']['Contactgroup'];
@@ -396,9 +396,9 @@ class Host extends AppModel{
 
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-		if(!isset($diff_array['Contact']['Contact']) && isset($diff_array['Contactgroup'])){
-			$diff_array['Contact']['Contact'] = ($requestData['Contact']['Contact'] == '') ? [] : $requestData['Contact']['Contact'];
-			$diff_array['Contactgroup']['Contactgroup'] = ($requestData['Contactgroup']['Contactgroup'] == '') ? [] : $requestData['Contactgroup']['Contactgroup'];
+		if(empty($diff_array['Contact']['Contact']) && isset($diff_array['Contactgroup'])){
+			$diff_array['Contact']['Contact'] = empty($requestData['Contact']['Contact']) ? [] : $requestData['Contact']['Contact'];
+			$diff_array['Contactgroup']['Contactgroup'] = empty($requestData['Contactgroup']['Contactgroup']) ? [] : $requestData['Contactgroup']['Contactgroup'];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '1']]);
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contactgroups' => '1']]);
 			$breakInherit = true;
@@ -406,7 +406,7 @@ class Host extends AppModel{
 
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-		if(!isset($diff_array['Contact']['Contact']) && !isset($diff_array['Contactgroup']['Contactgroup'])){
+		if(empty($diff_array['Contact']['Contact']) && empty($diff_array['Contactgroup']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = [];
 			$diff_array['Contactgroup']['Contactgroup'] = [];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '0']]);
@@ -417,7 +417,7 @@ class Host extends AppModel{
 		//See https://github.com/naemon/naemon-core/pull/92
 
 		/*
-		if(isset($diff_array['Contact']['Contact']) || ((isset($diff_array['Contact']['Contact']) && $diff_array['Contact']['Contact'] == null)) && !isset($diff_array['Contactgroup']['Contactgroup'])){
+		if(isset($diff_array['Contact']['Contact']) || ((isset($diff_array['Contact']['Contact']) && $diff_array['Contact']['Contact'] == null)) && empty($diff_array['Contactgroup']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = ($request_data['Contact']['Contact'] == '')?[]:$request_data['Contact']['Contact'];
 			$diff_array['Contactgroup']['Contactgroup'] = ($request_data['Contactgroup']['Contactgroup'] == '')?[]:$request_data['Contactgroup']['Contactgroup'];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '1']]);
@@ -426,8 +426,8 @@ class Host extends AppModel{
 		}
 
 		//Because of nagios 4 inheritance
-		if(isset($diff_array['Contactgroup']['Contactgroup']) || ((isset($diff_array['Contactgroup']['Contactgroup']) && $diff_array['Contactgroup']['Contactgroup'] == null)) && !isset($diff_array['Contact']['Contact'])){
-		//if(!isset($diff_array['Contact']['Contact']) && (isset($diff_array['Contactgroup']['Contactgroup']) || $diff_array['Contactgroup']['Contactgroup'] == null)){
+		if(isset($diff_array['Contactgroup']['Contactgroup']) || ((isset($diff_array['Contactgroup']['Contactgroup']) && $diff_array['Contactgroup']['Contactgroup'] == null)) && empty($diff_array['Contact']['Contact'])){
+		//if(empty($diff_array['Contact']['Contact']) && (isset($diff_array['Contactgroup']['Contactgroup']) || $diff_array['Contactgroup']['Contactgroup'] == null)){
 			$diff_array['Contact']['Contact'] = ($request_data['Contact']['Contact'] == '')?[]:$request_data['Contact']['Contact'];
 			$diff_array['Contactgroup']['Contactgroup'] = ($request_data['Contactgroup']['Contactgroup'] == '')?[]:$request_data['Contactgroup']['Contactgroup'];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '1']]);
@@ -468,10 +468,10 @@ class Host extends AppModel{
 			$containerId = $requestData['Host']['container_id'];
 		}
 
-		if(!isset($requestData['Host']['Contactgroup'])){
+		if(empty($requestData['Host']['Contactgroup'])){
 			$requestData['Host']['Contactgroup'] = [];
 		}
-		if(!isset($requestData['Host']['Contact'])){
+		if(empty($requestData['Host']['Contact'])){
 			$requestData['Host']['Contactgroup'] = [];
 		}
 
@@ -495,7 +495,7 @@ class Host extends AppModel{
 				'Hostgroup' => $requestData['Hostgroup']['Hostgroup']
 			]
 		]);
-		if(!isset($diff_array['Hostcommandargumentvalue'])){
+		if(empty($diff_array['Hostcommandargumentvalue'])){
 			$diff_array = Hash::merge($diff_array, [
 					'Hostcommandargumentvalue' => [],
 				]
@@ -514,13 +514,13 @@ class Host extends AppModel{
 				]
 			]);
 		}
-		if(!isset($requestData['Hostcommandargumentvalue'])){
+		if(empty($requestData['Hostcommandargumentvalue'])){
 			$diff_array = Hash::remove($diff_array, 'Hostcommandargumentvalue');
 		}
 
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-		if($diff_array['Host']['Contact'] == '' && $diff_array['Host']['Contactgroup'] == ''){
+		if(empty($diff_array['Host']['Contact']) && empty($diff_array['Host']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = [];
 			$diff_array['Contactgroup']['Contactgroup'] = [];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '0']]);
@@ -624,7 +624,7 @@ class Host extends AppModel{
 			'recursive' => -1
 		]);
 		$host = $host[0];
-		if(!isset($host['Host']['hosttemplate_id']) || $host['Host']['hosttemplate_id'] == 0){
+		if(empty($host['Host']['hosttemplate_id']) || $host['Host']['hosttemplate_id'] == 0){
 			return $host;
 		}
 		$host = [
@@ -650,7 +650,7 @@ class Host extends AppModel{
 	 * @return boolean
 	 */
 	public static function filterNullValues($var){
-		if($var != null || $var === '0' || $var === ''){
+		if($var != null || $var === '0' || $var === '' || $var === []){
 			return true;
 		}
 		return false;
@@ -731,7 +731,7 @@ class Host extends AppModel{
 
 	public function beforeValidate($options = array()){
 		$params = Router::getParams();
-		if(!isset($params['action'])){
+		if(empty($params['action'])){
 			return parent::beforeValidate($options);
 		}
 		$action = $params['action'];
@@ -812,7 +812,7 @@ class Host extends AppModel{
 					foreach($result['Service'] as $service){
 						$service['hostname'] = $result['Host']['name'];
 
-						if($service['name'] == null || $service['name'] == ''){
+						if(empty($service['name'])){
 							$service['name'] = $service['Servicetemplate']['name'];
 						}
 
@@ -868,7 +868,7 @@ class Host extends AppModel{
 				$return = [];
 				foreach($results as $result){
 					foreach($result['Service'] as $service){
-						if($service['name'] == null || $service['name'] == ''){
+						if(empty($service['name'])){
 							$service['name'] = $service['Servicetemplate']['name'];
 						}
 						if($options['forOptiongroup'] === false){
