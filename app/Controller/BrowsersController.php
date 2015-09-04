@@ -56,40 +56,17 @@ class BrowsersController extends AppController{
 
 		$all_container_ids = Hash::merge([$id], Hash::extract($allContainerArr, '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/].id'));
 		
-		$tenants = $this->Tenant->tenantsByContainerId(
-			array_merge(
-				$this->MY_RIGHTS, array_keys(
-					$this->User->getTenantIds(
-						$this->Auth->user('id')
-					)
-				)
-			),
-			'list', 'container_id');
-		$query = $this->Browser->hostsQuery($this->MY_RIGHTS);
+		$tenants = $this->__getTenants();
+		$query = $this->Browser->hostsQuery(ROOT_CONTAINER);
 		$hosts = $this->Host->find('all', $query);
 
-		$query = $this->Browser->serviceQuery($this->MY_RIGHTS);
+		$query = $this->Browser->serviceQuery(ROOT_CONTAINER);
 		$services = $this->Service->find('all', $query);
 		
-		$state_array_host = [
-			0 => 0,
-			1 => 0,
-			2 => 0
-		];
-		$state_array_service = [
-			0 => 0,
-			1 => 0,
-			2 => 0,
-			3 => 0
-		];
-		
-		foreach($hosts as $host){
-			$state_array_host[$host['Hoststatus']['current_state']]++;
-		}
-		foreach($services as $service){
-			$state_array_service[$service['Servicestatus']['current_state']]++;
-		}
+		$state_array_host = $this->Browser->countHoststate($hosts);
 
+		$state_array_service = $this->Browser->countServicestate($services);
+		
 		$this->set(compact([
 			'browser',
 			'parents',
@@ -103,100 +80,49 @@ class BrowsersController extends AppController{
 	}
 
 
-	function tenantBrowser($id = null){
-		if($id != null){
-			$top_node = $this->Container->findById($id);
-		}else{
-			$top_node = $this->Container->find('first');
+	function tenantBrowser($id){
+		if(!$this->Container->exists($id)){
+			throw new NotFoundException(__('Invalid container'));
 		}
-
-		//debug($this->Container->children($id, true));
+		if(!$this->hasRootPrivileges){
+			if(!in_array($id, array_merge($this->MY_RIGHTS, array_keys($this->__getTenants())))){
+				$this->render403();
+				return;
+			}
+		}
 
 		$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-		$all_nodes = Hash::extract($this->Container->children($id, false), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
-
-		//ids of all containers within this Tenant
-		$child_node_ids = Hash::extract($all_nodes, '{n}.id');
-		$all_containertype_ids = Hash::combine($all_nodes, '{n}.id', '{n}.containertype_id');
-
-		$child_node_hosts = $this->Host->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Host.container_id' => $child_node_ids,
-					'Host.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Host.id',
-				'Host.name',
-				'Host.uuid',
-				'Host.container_id'
-			]
-		]);
-		
-		$all_host_uuids = Hash::extract($child_node_hosts, '{n}.Host.uuid');
-		$all_host_ids = Hash::extract($child_node_hosts, '{n}.Host.id');
-
-		$hoststatus = $this->Hoststatus->find('all', [
-			'conditions' => [
-				'Objects.name1' => $all_host_uuids,
-			],
-			'fields' => [
-				'Hoststatus.current_state'
-			]
-		]);
-
-		$all_services = $this->Service->find('all',[
-			'recursive' => '-1',
-			'conditions' => [
-				'AND' => [
-					'Service.host_id' => $all_host_ids,
-					'Service.disabled' => 0
-				]
-			],
-			'fields' => [
-				'Service.uuid',
-				'Service.host_id'
-			]
-		]);
-
-		$all_service_uuids = Hash::extract($all_services, '{n}.Service.uuid');
-
-		$servicestatus = $this->Servicestatus->find('all', [
-			'conditions' => [
-				'Objects.name2' => $all_service_uuids
-			],
-			'fields' => [
-				'Servicestatus.current_state'
-			]
-		]);
-
-
-		$state_array_host = [0,0,0];
-		$state_array_service = [0,0,0,0];
-		$host_status_count = array_count_values(Hash::extract($hoststatus, '{n}.Hoststatus.current_state'));
-		foreach($host_status_count as $key => $value){
-			$state_array_host[$key] = $value;
+		if($this->hasRootPrivileges === false){
+			foreach($browser as $key => $containerRecord){
+				if(!in_array($containerRecord['id'], $this->MY_RIGHTS)){
+					unset($browser[$key]);
+				}
+			}
 		}
 
-		$service_status_count = array_count_values(Hash::extract($servicestatus, '{n}.Servicestatus.current_state'));
-		foreach($service_status_count as $key => $value){
-			$state_array_service[$key] = $value;
+		$hosts = $services = [];
+		if(in_array($id, $this->MY_RIGHTS)){
+			$query = $this->Browser->hostsQuery($id);
+			$hosts = $this->Host->find('all', $query);
+
+			$query = $this->Browser->serviceQuery($id);
+			$services = $this->Service->find('all', $query);
 		}
-
-		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
-
-		$all_container_ids = Hash::merge([$id], $child_node_ids);
 		
+		$state_array_host = $this->Browser->countHoststate($hosts);
+
+		$state_array_service = $this->Browser->countServicestate($services);
+
+		$currentContainer = $this->Container->findById($id);
+		$parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+
 		$this->set(compact([
-			'top_node',
+			'currentContainer',
 			'browser',
 			'parents',
 			'state_array_host',
 			'state_array_service',
-			'all_container_ids',
-			'hosts'
+			'hosts',
 		]));
 	}
 
@@ -312,5 +238,17 @@ class BrowsersController extends AppController{
 		$all_container_ids = Hash::merge([$id],$child_node_ids);
 
 		$this->set(compact(['top_node', 'parents', 'browser', 'state_array_host', 'state_array_service', 'all_container_ids']));
+	}
+	
+	protected function __getTenants(){
+		return $this->Tenant->tenantsByContainerId(
+			array_merge(
+				$this->MY_RIGHTS, array_keys(
+					$this->User->getTenantIds(
+						$this->Auth->user('id')
+					)
+				)
+			),
+		'list', 'container_id');
 	}
 }

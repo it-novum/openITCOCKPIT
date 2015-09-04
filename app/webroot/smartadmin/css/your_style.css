@@ -510,6 +510,26 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	padding: 50px;
 }
 
+.padding-left-80 {
+	padding-left: 80px;
+}
+
+.padding-right-80 {
+	padding-right: 80px;
+}
+
+.padding-bottom-80 {
+	padding-bottom: 80px;
+}
+
+.padding-top-80 {
+	padding-top: 80px;
+}
+
+.padding-80 {
+	padding: 80px;
+}
+
 .config_editor {
 	border: 1px solid black;
 	background: #EDEEEE;

@@ -89,6 +89,7 @@
 												'action' => 'index',
 												'plugin' => '',
 												'Filter.Hoststatus.current_state['.$state.']' => 1,
+												'BrowserContainerId' => ROOT_CONTAINER
 											]); ?>">
 												<i class="fa fa-square <?php echo $state_colors[$state]?>"></i>
 												<?php echo $state_count.' ('.round($state_count/$state_total*100, 2).' %)'; ?>
@@ -97,7 +98,7 @@
 								<?php endforeach; ?>
 							</div>
 						<?php else:?>
-							<div class="text-muted padding-top-20"><?php echo __('No hosts are monitored on your system. Please create first a host'); ?></div>
+							<div class="text-muted padding-top-20"><?php echo __('No hosts associated with this node'); ?></div>
 						<?php endif; ?>
 					</div>
 
@@ -137,6 +138,7 @@
 											'action' => 'index',
 											'plugin' => '',
 											'Filter.Servicestatus.current_state['.$state.']' => 1,
+											'BrowserContainerId' => ROOT_CONTAINER
 										]); ?>">
 											<i class="fa fa-square <?php echo $state_colors[$state]?>"></i>
 											<?php
@@ -154,7 +156,7 @@
 							<?php endforeach;?>
 							</div>
 						<?php else:?>
-							<div class="text-muted padding-top-20"><?php echo __('No services are monitored on your system. Please create first a service'); ?></div>
+							<div class="text-muted padding-top-20"><?php echo __('No services associated with this node'); ?></div>
 						<?php endif;?>
 					</div>
 				</div>
@@ -171,98 +173,106 @@
 			<div>
 				<div class="widget-body no-padding">
 					<div class="mobile_table">
-						<table id="host-list-datatables" class="table table-striped table-bordered smart-form" style="">
-							<thead>
-								<tr>
-									<?php $order = $this->Paginator->param('order'); ?>
-									<th class="select_datatable no-sort"><?php echo __('Hoststatus'); ?></th>
-									<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
-									<th class="no-sort"><?php echo __('Hostname'); ?></th>
-									<th class="no-sort"><?php echo __('IP address'); ?></th>
-									<th class="no-sort"><?php echo  __('State since'); ?></th>
-									<th class="no-sort"><?php echo __('Last check'); ?></th>
-									<th class="no-sort"><?php echo __('Output'); ?></th>
-								</tr>
-							</thead>
-							<tbody>
-								<?php foreach($hosts as $host): ?>
-									<?php
-									//Better performance, than run all the Hash::extracts if not necessary
-									$hasEditPermission = false;
-									if($hasRootPrivileges === true):
-										$hasEditPermission = true;
-									else:
-										if($this->Acl->isWritableContainer(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))):
-											$hasEditPermission = true;
-										endif;
-									endif;
-									?>
+						<?php if(!empty($hosts)):?>
+							<table id="host-list-datatables" class="table table-striped table-bordered smart-form" style="">
+								<thead>
 									<tr>
-										<td class="text-center width-75">
-											<?php
-											if($host['Hoststatus']['is_flapping'] == 1):
-												echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
-											else:
-												$href = 'javascript:void(0);';
-												if($this->Acl->hasPermission('browser', 'hosts')):
-													$href = '/hosts/browser/'.$host['Host']['id'];
-												endif;
-												echo $this->Status->humanHostStatus($host['Host']['uuid'], $href, [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host['Hoststatus']['current_state']]]])['html_icon'];
-											endif;
-											?>
-										</td>
-										<td class="width-50">
-											<div class="btn-group">
-												<?php if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):?>
-													<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-												<?php else: ?>
-													<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-												<?php endif; ?>
-												<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-												<ul class="dropdown-menu">
-													<?php if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):?>
-														<li>
-															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-														</li>
-													<?php endif;?>
-													<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
-														<li>
-															<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
-														</li>
-													<?php endif; ?>
-													
-													<?php
-														if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):
-															echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
-														endif;
-													?>
-													<?php if($this->Acl->hasPermission('delete', 'hosts') && $hasEditPermission):?>
-														<li class="divider"></li>
-														<li>
-															<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
-														</li>
-													<?php endif;?>
-												</ul>
-											</div>
-										</td>
-
-										<td>
-											<?php if($this->Acl->hasPermission('browser', 'hosts')):?>
-												<a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
-											<?php else:?>
-												<?php echo h($host['Host']['name']); ?>
-											<?php endif; ?>
-										</td>
-										<td><?php echo h($host['Host']['address']); ?></td>
-										<td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
-											<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_hard_state_change'])));?>
-										</td>
-										<td><?php echo h($this->Time->format($host['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
-										<td><?php echo h($host['Hoststatus']['output']); ?></td>
+										<?php $order = $this->Paginator->param('order'); ?>
+										<th class="select_datatable no-sort"><?php echo __('Hoststatus'); ?></th>
+										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort"><?php echo __('Hostname'); ?></th>
+										<th class="no-sort"><?php echo __('IP address'); ?></th>
+										<th class="no-sort"><?php echo  __('State since'); ?></th>
+										<th class="no-sort"><?php echo __('Last check'); ?></th>
+										<th class="no-sort"><?php echo __('Output'); ?></th>
 									</tr>
-								<?php endforeach; ?>
-							</tbody>
-						</table>
+								</thead>
+								<tbody>
+									<?php foreach($hosts as $host): ?>
+										<?php
+										//Better performance, than run all the Hash::extracts if not necessary
+										$hasEditPermission = false;
+										if($hasRootPrivileges === true):
+											$hasEditPermission = true;
+										else:
+											if($this->Acl->isWritableContainer(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))):
+												$hasEditPermission = true;
+											endif;
+										endif;
+										?>
+										<tr>
+											<td class="text-center width-75">
+												<?php
+												if($host['Hoststatus']['is_flapping'] == 1):
+													echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
+												else:
+													$href = 'javascript:void(0);';
+													if($this->Acl->hasPermission('browser', 'hosts')):
+														$href = '/hosts/browser/'.$host['Host']['id'];
+													endif;
+													echo $this->Status->humanHostStatus($host['Host']['uuid'], $href, [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host['Hoststatus']['current_state']]]])['html_icon'];
+												endif;
+												?>
+											</td>
+											<td class="width-50">
+												<div class="btn-group">
+													<?php if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):?>
+														<a href="/hosts/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php else: ?>
+														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php endif; ?>
+													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+													<ul class="dropdown-menu">
+														<?php if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):?>
+															<li>
+																<a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
+															<li>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
+															</li>
+														<?php endif; ?>
+													
+														<?php
+															if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):
+																echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+															endif;
+														?>
+														<?php if($this->Acl->hasPermission('delete', 'hosts') && $hasEditPermission):?>
+															<li class="divider"></li>
+															<li>
+																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+															</li>
+														<?php endif;?>
+													</ul>
+												</div>
+											</td>
+
+											<td>
+												<?php if($this->Acl->hasPermission('browser', 'hosts')):?>
+													<a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+												<?php else:?>
+													<?php echo h($host['Host']['name']); ?>
+												<?php endif; ?>
+											</td>
+											<td><?php echo h($host['Host']['address']); ?></td>
+											<td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
+												<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_hard_state_change'])));?>
+											</td>
+											<td><?php echo h($this->Time->format($host['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
+											<td><?php echo h($host['Hoststatus']['output']); ?></td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+						<?php else: ?>
+							<div class="noMatch">
+								<center>
+									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+								</center>
+							</div>
+						<?php endif;?>
 					</div>
 				</div>
 			</div>

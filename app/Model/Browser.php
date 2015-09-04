@@ -130,4 +130,30 @@ class Browser extends AppModel{
 			]
 		];
 	}
+	
+	public function countHoststate($hosts = []){
+		$state_array_host = [
+			0 => 0,
+			1 => 0,
+			2 => 0
+		];
+		foreach($hosts as $host){
+			$state_array_host[$host['Hoststatus']['current_state']]++;
+		}
+		return $state_array_host;
+	}
+	
+	public function countServicestate($services = []){
+		$state_array_service = [
+			0 => 0,
+			1 => 0,
+			2 => 0,
+			3 => 0
+		];
+		foreach($services as $service){
+			$state_array_service[$service['Servicestatus']['current_state']]++;
+		}
+		return $state_array_service;
+	}
+	
 }
