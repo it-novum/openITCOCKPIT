@@ -41,7 +41,7 @@
 		<div class="jarviswidget node-list" role="widget">
 			<header>
 				<span class="widget-icon"> <i class="fa fa-list-ul"></i></span>
-				<h2> <?php echo __('nodes'); ?> </h2>
+				<h2> <?php echo __('Nodes'); ?> </h2>
 			</header>
 			<div class="no-padding height-100" style="overflow-y:auto; overflow-x: hidden;">
 				<input type="text" id="node-list-search" placeholder="<?php echo __('Search...'); ?>"/>

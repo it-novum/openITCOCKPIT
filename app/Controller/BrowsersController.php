@@ -41,6 +41,7 @@ class BrowsersController extends AppController{
 		'Service',
 		'Container',
 		'Tenant',
+		'Browser',
 	];
 
 	function index($id = null){
@@ -64,105 +65,10 @@ class BrowsersController extends AppController{
 				)
 			),
 			'list', 'container_id');
-		$query = [
-			'recursive' => -1,
-			'contain' => [],
-			'fields' => [
-				'Host.id',
-				'Host.uuid',
-				'Host.name',
-				'Host.address',
-
-				'Hoststatus.current_state',
-				'Hoststatus.last_check',
-				'Hoststatus.next_check',
-				'Hoststatus.last_hard_state_change',
-				'Hoststatus.output',
-				'Hoststatus.state_type',
-				'Hoststatus.is_flapping',
-			],
-			'conditions' => [
-				'HostsToContainers.container_id' => $this->MY_RIGHTS
-			],
-			'joins' => [
-				[
-					'table' => 'nagios_objects',
-					'type' => 'INNER',
-					'alias' => 'HostObject',
-					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-				], [
-					'table' => 'nagios_hoststatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Hoststatus',
-					'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-				], [
-					'table' => 'hosts_to_containers',
-					'alias' => 'HostsToContainers',
-					'type' => 'LEFT',
-					'conditions' => [
-						'HostsToContainers.host_id = Host.id',
-					]
-				]
-			],
-			'order' => [
-				'Hoststatus.current_state' => 'DESC',
-			],
-			'group' => [
-				'Host.id'
-			]
-		];
+		$query = $this->Browser->hostsQuery($this->MY_RIGHTS);
 		$hosts = $this->Host->find('all', $query);
 
-		$query = [
-			'recursive' => -1,
-			'conditions' => [
-				'HostsToContainers.container_id' => $this->MY_RIGHTS
-			],
-			'contain' => [],
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Servicestatus.current_state'
-			],
-			'order' => ['Host.name' => 'asc'],
-			'joins' => [[
-				'table' => 'hosts',
-				'type' => 'INNER',
-				'alias' => 'Host',
-				'conditions' => 'Service.host_id = Host.id'
-			], [
-				'table' => 'nagios_objects',
-				'type' => 'INNER',
-				'alias' => 'HostObject',
-				'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-			], [
-				'table' => 'nagios_hoststatus',
-				'type' => 'INNER',
-				'alias' => 'Hoststatus',
-				'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-			], [
-				'table' => 'nagios_objects',
-				'type' => 'INNER',
-				'alias' => 'ServiceObject',
-				'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
-			], [
-				'table' => 'nagios_servicestatus',
-				'type' => 'LEFT OUTER',
-				'alias' => 'Servicestatus',
-				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
-			], [
-				'table' => 'hosts_to_containers',
-				'alias' => 'HostsToContainers',
-				'type' => 'LEFT',
-				'conditions' => [
-					'HostsToContainers.host_id = Host.id',
-				]
-			]
-			],
-			'group' => [
-				'Service.id'
-			]
-		];
+		$query = $this->Browser->serviceQuery($this->MY_RIGHTS);
 		$services = $this->Service->find('all', $query);
 		
 		$state_array_host = [
@@ -203,6 +109,8 @@ class BrowsersController extends AppController{
 		}else{
 			$top_node = $this->Container->find('first');
 		}
+
+		//debug($this->Container->children($id, true));
 
 		$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
 		$all_nodes = Hash::extract($this->Container->children($id, false), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
@@ -280,7 +188,7 @@ class BrowsersController extends AppController{
 		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
 
 		$all_container_ids = Hash::merge([$id], $child_node_ids);
-
+		
 		$this->set(compact([
 			'top_node',
 			'browser',
@@ -288,6 +196,7 @@ class BrowsersController extends AppController{
 			'state_array_host',
 			'state_array_service',
 			'all_container_ids',
+			'hosts'
 		]));
 	}
 
