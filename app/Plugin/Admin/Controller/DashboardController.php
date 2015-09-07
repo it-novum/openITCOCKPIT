@@ -118,6 +118,7 @@ class DashboardController extends AdminAppController{
 							'name' => __('Default'),
 							'position' => 0,
 							'shared' => 0,
+							'source_tab_id' => 0,
 							'user_id' => $userId,
 						]
 					];
