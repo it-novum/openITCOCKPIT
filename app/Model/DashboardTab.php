@@ -29,7 +29,7 @@ class DashboardTab extends AppModel{
 			'dependent' => true
 		]
 	];
-	public $belongsTo = ['Container'];
+	//public $belongsTo = ['Container'];
 	public $validate = [
 		'name' => [
 			'notEmpty' => [
@@ -38,6 +38,34 @@ class DashboardTab extends AppModel{
 				'required' => true
 			],
 		],
+		'user_id' => [
+			'notEmpty' => [
+				'rule' => 'notEmpty',
+				'message' => 'This field cannot be left blank.',
+				'required' => true
+			],
+			'notEmpty' => [
+				'rule' => 'numeric',
+				'message' => 'This field need to be numeric.',
+				'required' => true
+			],
+		],
 	];
+	
+	
+	//Function name new or create are registerd by php/CakePHP
+	public function createNewTab($userId, $position = null){
+		$this->create();
+		$data = [
+			'user_id' => $userId,
+			'position' => $position,
+			'name' => __('Default'),
+			'shared' => 0,
+			'source_tab_id' => null,
+			'check_for_updates' => 0
+		];
+		return $this->save($data);
+	}
+	
 }
 
