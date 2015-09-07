@@ -31,6 +31,7 @@ class DashboardsController extends AppController{
 		'Monitoring',
 		'Admin.Widget',
 		'Bbcode',
+		'Dashboard',
 	];
 	public $components = [
 		'Admin.WidgetCollection',
@@ -85,7 +86,24 @@ class DashboardsController extends AppController{
 		}else{
 			$tabId = $tab['DashboardTab']['id'];
 		}
-		//debug($tab);
+		
+		//Find all tabs of the user, to create tab bar
+		$tabs = $this->DashboardTab->find('all', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'user_id' => $this->Auth->user('id')
+			],
+			'order' => [
+				'position' => 'ASC'
+			]
+		]);
+		$this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
+		$this->Frontend->setJson('tabId', $tabId);
+		$this->set(compact([
+			'tab',
+			'tabs',
+		]));
 	}
 	
 	public function restoreDefault($tabId = null){
@@ -93,4 +111,107 @@ class DashboardsController extends AppController{
 			throw new NotFoundException(__('Invalid tab'));
 		}
 	}
+	
+	public function updateTitle(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['title'])){
+			$widgetId = $this->request->data['widgetId'];
+			$title = $this->request->data['title'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['title'] = $title;
+					$this->Widget->save($widget);
+				}
+			}
+		}
+	}
+	
+	public function updateColor(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['color'])){
+			$widgetId = $this->request->data['widgetId'];
+			$color = $this->request->data['color'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['color'] = str_replace('bg-', 'jarviswidget-', $color);
+					$this->Widget->save($widget);
+				}
+			}
+		}
+	}
+	
+	public function updatePosition(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['tabId']) && isset($this->request->data[0])){
+			$userId = $this->Auth->user('id');
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [
+					'Widget'
+				],
+				'conditions' => [
+					'id' => $this->request->data['tabId'],
+					'user_id' => $userId
+				]
+			]);
+			if(!empty($tab)){
+				$widgetIds = Hash::extract($tab['Widget'], '{n}.id');
+				$data = [];
+				foreach($this->request->data as $widget){
+					if(is_array($widget) && isset($widget['id'])){
+						if(in_array($widget['id'], $widgetIds)){
+							$data[] = [
+								'id' => $widget['id'],
+								'row' => $widget['row'],
+								'col' => $widget['col'],
+								'width' => $widget['width'],
+								'height' => $widget['height']
+							];
+						}
+					}
+				}
+				if(!empty($data)){
+					$this->Widget->saveAll($data);
+				}
+			}
+		}
+	}
+
+	public function deleteWidget(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->find('first', [
+					'contain' => [
+						'DashboardTab'
+					],
+					'conditions' => [
+						'Widget.id' => $widgetId,
+					]
+				]);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$this->Widget->delete($widget['Widget']['id']);
+				}
+			}
+		}
+	}
+
 }

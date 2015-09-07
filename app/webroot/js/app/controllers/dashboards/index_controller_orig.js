@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.DashboardIndexController = Frontend.AppController.extend({
+App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 	$gridstack: null,
 	tabId: null,
 	allTabs: null,

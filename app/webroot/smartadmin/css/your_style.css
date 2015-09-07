@@ -1697,10 +1697,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	color:#333;
 }
 
-.gridstackContainer{
-	padding-bottom:13px!important;
-}
-
 .widget-map-title{
 	display: none;
 }
