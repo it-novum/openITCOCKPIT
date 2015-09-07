@@ -53,6 +53,7 @@ class DashboardsController extends AppController{
 
 	public function beforeFilter(){
 		require_once APP . 'Lib' . DS . 'Dashboards' . DS . 'DashboardHandler.php';
+		$this->DashboardHandler = new Dashboard\DashboardHandler();
 		//Dashboard is allays allowed
 		if($this->Auth->loggedIn() === true){
 			$this->Auth->allow();
@@ -61,7 +62,6 @@ class DashboardsController extends AppController{
 	}
 	
 	public function index($tabId = null){
-		$foo = new Dashboard\DashboardHandler();
 		$userId = $this->Auth->user('id');
 		$tab = $this->DashboardTab->find('first', [
 			'conditions' => [
@@ -76,7 +76,9 @@ class DashboardsController extends AppController{
 			if($result){
 				$tabId = $result['DashboardTab']['id'];
 				//Fill new tab with default dashboards
-				$this->Widget->restoreDefault($tabId);
+				$this->Widget->create();
+				$defaultWidgets = $this->DashboardHandler->getDefaultDashboards($tabId);
+				$this->Widget->saveAll($defaultWidgets);
 				//normalize data for controller workflow
 				$tab = $this->DashboardTab->findById($tabId);
 			}
