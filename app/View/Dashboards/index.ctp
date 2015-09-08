@@ -90,6 +90,14 @@
 								<?php echo __('Add Widget')?> <i class="fa fa-caret-down"></i>
 							</button>
 							<ul class="dropdown-menu pull-right">
+								<?php foreach($allWidgets as $_widget):?>
+									<li>
+										<a href="javascript:void(0);">
+											<i class="fa <?php echo h($_widget['icon']); ?>"></i>&nbsp;
+											<?php echo h($_widget['title']);?>
+										</a>
+									</li>
+								<?php endforeach; ?>
 								<li class="divider"></li>
 								<li>
 									<a href="<?php echo Router::url(['controller' => 'dashboards', 'action' => 'restoreDefault', $tab['DashboardTab']['id']]); ?>">

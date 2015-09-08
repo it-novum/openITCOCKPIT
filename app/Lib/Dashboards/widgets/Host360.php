@@ -2,6 +2,7 @@
 namespace Dashboard\Widget;
 class Host360 extends Widget{
 	public $isDefault = true;
+	public $icon = 'fa-pie-chart';
 	
 	public function __construct(){
 		$this->typeId = 3;

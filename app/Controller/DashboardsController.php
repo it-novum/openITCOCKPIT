@@ -111,11 +111,15 @@ class DashboardsController extends AppController{
 				'position' => 'ASC'
 			]
 		]);
+		
+		$allWidgets = $this->DashboardHandler->getAllWidgets();
+		
 		$this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
 		$this->Frontend->setJson('tabId', $tabId);
 		$this->set(compact([
 			'tab',
 			'tabs',
+			'allWidgets'
 		]));
 	}
 	

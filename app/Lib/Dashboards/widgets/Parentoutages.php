@@ -2,6 +2,7 @@
 namespace Dashboard\Widget;
 class Parentoutages extends Widget{
 	public $isDefault = true;
+	public $icon = 'fa-exchange';
 	
 	public function __construct(){
 		$this->typeId = 2;

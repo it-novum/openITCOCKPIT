@@ -21,6 +21,19 @@ class DashboardHandler{
 		}
 	}
 	
+	public function getAllWidgets(){
+		$widgets = [];
+		foreach($this->_widgets as $widgetClassName){
+			$widgetClassName = 'Dashboard\Widget\\' . $widgetClassName;
+			$widgets[] = [
+				'typeId' => $this->{$widgetClassName}->typeId,
+				'title' => $this->{$widgetClassName}->title,
+				'icon' => $this->{$widgetClassName}->icon,
+			];
+		}
+		return $widgets;
+	}
+	
 	public function getDefaultDashboards($tabId){
 		$data = [];
 		foreach($this->_widgets as $widgetClassName){
@@ -31,5 +44,4 @@ class DashboardHandler{
 		}
 		return $data;
 	}
-	
 }

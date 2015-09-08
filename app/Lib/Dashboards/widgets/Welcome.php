@@ -2,6 +2,7 @@
 namespace Dashboard\Widget;
 class Welcome extends Widget{
 	public $isDefault = true;
+	public $icon = 'fa-comment';
 	
 	public function __construct(){
 		$this->typeId = 1;

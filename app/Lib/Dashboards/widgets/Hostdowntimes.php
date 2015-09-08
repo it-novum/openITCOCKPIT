@@ -2,6 +2,7 @@
 namespace Dashboard\Widget;
 class Hostdowntimes extends Widget{
 	public $isDefault = true;
+	public $icon = 'fa-power-off';
 	
 	public function __construct(){
 		$this->typeId = 5;
