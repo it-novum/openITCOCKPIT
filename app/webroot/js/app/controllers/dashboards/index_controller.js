@@ -26,6 +26,7 @@
 App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 	$gridstack: null,
 	tabId: null,
+	gridCallbacks: [],
 
 	components: [
 		'Ajaxloader',
@@ -49,16 +50,11 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 	//	'Uuid',
 	//],
 
-
-
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
 	_initialize: function(){
 		this.Ajaxloader.setup();
 		this.buildGridstack();
 		this.tabId = this.getVar('tabId');
+		this.gridCallbacks.push(this.updatePosition);
 		var self = this;
 		
 		// Bind click event to change widget title
@@ -155,11 +151,16 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		var _self = this;
 		this.$gridstack.on('dragstop', function(event, ui){
 			//var widgets = event.currentTarget.children;
-			_self.updatePosition();
+			//We can add multiple callbacks to this.gridCallbacks array. Each callback of the array will be fired
+			for(var key in _self.gridCallbacks){
+				_self.gridCallbacks[key].apply(_self, []);
+			}
 		});
 		
 		this.$gridstack.on('resizestop', function(event, ui){
-			_self.updatePosition();
+			for(var key in _self.gridCallbacks){
+				_self.gridCallbacks[key].apply(_self, []);
+			}
 		});
 	},
 	
@@ -179,7 +180,6 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				widget.height = node.height;
 				data.push(widget);
 			}
-
 		});
 		
 		$.ajax({

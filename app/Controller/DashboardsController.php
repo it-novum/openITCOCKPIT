@@ -64,15 +64,28 @@ class DashboardsController extends AppController{
 	
 	public function index($tabId = null){
 		$userId = $this->Auth->user('id');
-		$tab = $this->DashboardTab->find('first', [
-			'conditions' => [
-				'user_id' => $this->Auth->user('id')
-			],
-			'order' => [
-				'position' => 'ASC'
-			]
-		]);
+		$tab = [];
+		if($tabId !== null && is_numeric($tabId)){
+			$tab = $this->DashboardTab->find('first', [
+				'conditions' => [
+					'user_id' => $this->Auth->user('id'),
+					'id' => $tabId,
+				],
+			]);
+		}
+		//No tab given, select first tab of the user
 		if(empty($tab)){
+			$tab = $this->DashboardTab->find('first', [
+				'conditions' => [
+					'user_id' => $this->Auth->user('id')
+				],
+				'order' => [
+					'position' => 'ASC'
+				]
+			]);
+		}
+		if(empty($tab)){
+			//No tab found. Create one
 			$result = $this->DashboardTab->createNewTab($userId, 1);
 			if($result){
 				$tabId = $result['DashboardTab']['id'];
@@ -107,9 +120,20 @@ class DashboardsController extends AppController{
 	}
 	
 	public function restoreDefault($tabId = null){
-		if(!$this->DashboardTab->exists($tabId)){
+		$tab = $this->DashboardTab->find('first', [
+			'conditions' => [
+				'user_id' => $this->Auth->user('id'),
+				'id' => $tabId,
+			],
+		]);
+		if(empty($tab) || $tab['DashboardTab']['id'] == null){
 			throw new NotFoundException(__('Invalid tab'));
 		}
+		if($this->Widget->deleteAll(['Widget.dashboard_tab_id' => $tab['DashboardTab']['id']])){
+			$defaultWidgets = $this->DashboardHandler->getDefaultDashboards($tabId);
+			$this->Widget->saveAll($defaultWidgets);
+		}
+		$this->redirect(['action' => 'index', $tabId]);
 	}
 	
 	public function updateTitle(){

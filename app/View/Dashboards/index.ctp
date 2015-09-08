@@ -83,6 +83,24 @@
 							<?php endforeach;?>
 						</ul>
 					</div>
+					
+					<div class="widget-toolbar" role="menu">
+						<div class="btn-group">
+							<button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
+								<?php echo __('Add Widget')?> <i class="fa fa-caret-down"></i>
+							</button>
+							<ul class="dropdown-menu pull-right">
+								<li class="divider"></li>
+								<li>
+									<a href="<?php echo Router::url(['controller' => 'dashboards', 'action' => 'restoreDefault', $tab['DashboardTab']['id']]); ?>">
+										<i class="fa fa-recycle"></i>&nbsp;
+										<?php echo __('Restore default'); ?>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					
 				</header>
 				<div>
 					<div class="widget-body no-padding padding-top-10">
