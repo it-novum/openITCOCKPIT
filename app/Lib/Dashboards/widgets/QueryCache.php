@@ -57,7 +57,7 @@ class QueryCache{
 			'Host.disabled' => 0,
 		];
 		if($this->Controller->hasRootPrivileges === false){
-			$conditions = Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
 		$query = [
 			'recursive' => -1,
@@ -124,7 +124,7 @@ class QueryCache{
 			'Service.disabled' => 0,
 		];
 		if($this->Controller->hasRootPrivileges === false){
-			$conditions = Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
 		$query = [
 			'recursive' => -1,
@@ -204,7 +204,7 @@ class QueryCache{
 			'Hoststatus.current_state >' => 0,
 		];
 		if($this->Controller->hasRootPrivileges === false){
-			$conditions = Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
 		$result = $this->Controller->Parenthost->find('all', [
 			'joins' => [
@@ -260,7 +260,7 @@ class QueryCache{
 			'Hoststatus.scheduled_downtime_depth >' => 0,
 		];
 		if($this->Controller->hasRootPrivileges === false){
-			$conditions = Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
 		$query = [
 			'recursive' => -1,
@@ -310,7 +310,7 @@ class QueryCache{
 			'Servicestatus.scheduled_downtime_depth >' => 0,
 		];
 		if($this->Controller->hasRootPrivileges === false){
-			$conditions = Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
 		$query = [
 			'conditions' => $conditions,
