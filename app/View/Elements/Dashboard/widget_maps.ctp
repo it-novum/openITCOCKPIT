@@ -23,36 +23,33 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Dashboard\Widget;
-class Hostdowntimes extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-power-off';
-	public $element = 'host_downtimes';
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 5;
-		$this->title = __('Host downtimes');
-	}
-	
-	public function setData(){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostDowntimes = $this->QueryCache->hostDowntimes();
-		$this->Controller->set(compact(['widgetHostDowntimes']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 24, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
+?>
+<div class="widget-body maps-body">
+	<?php
+	if($MapModule){
+		echo $this->Form->create('maps', array(
+			'class' => 'widgetMapsForm clear',
+			'id' => '',
+		));
+		$maps = $this->Html->chosenPlaceholder($allMaps);
+		$options = [
+			'options' => $maps,
+			'label' => __('Select a a map'),
+			'class' => 'chosen selectMap elementInput',
+			'wrapInput' => 'col col-xs-8 selectMap',
 		];
-		return $restorConfig;
+		echo $this->Form->input('mapSelect', $options);
+
+		$options_button = array(
+			'label' => 'Save',
+			'class' => 'maps_save btn btn-sm btn-primary',
+		);
+		echo $this->Form->end($options_button);
+	}else{
+		echo "Plugin MapModule is missing!";
 	}
-	
-}
+
+?>
+	<div class="widget-map-title"><i class="fa fa-cog "></i></div>
+	<div class="widget-map"></div>
+</div>

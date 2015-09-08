@@ -23,36 +23,24 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Dashboard\Widget;
-class Hostdowntimes extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-power-off';
-	public $element = 'host_downtimes';
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 5;
-		$this->title = __('Host downtimes');
-	}
-	
-	public function setData(){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostDowntimes = $this->QueryCache->hostDowntimes();
-		$this->Controller->set(compact(['widgetHostDowntimes']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 24, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
-}
+if(empty($widgetHostDowntimes)): ?>
+	<div class="text-center text-success padding-50">
+		<h5 class="padding-top-50">
+			<i class="fa fa-check"></i>
+			<?php echo __('Currently are no hosts in scheduled downtime');?>
+		</h5>
+	</div>
+<?php else: ?>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			<tbody>
+				<?php foreach($widgetHostDowntimes as $host): ?>
+					<tr>
+						<td class="dashboard-table"><a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']);?></a></td>
+					</tr>
+				<?php endforeach;?>
+			</tbody>
+		</table>
+	</div>
+<?php
+endif;

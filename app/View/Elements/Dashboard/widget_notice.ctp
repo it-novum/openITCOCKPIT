@@ -23,36 +23,29 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Dashboard\Widget;
-class Hostdowntimes extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-power-off';
-	public $element = 'host_downtimes';
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 5;
-		$this->title = __('Host downtimes');
-	}
-	
-	public function setData(){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostDowntimes = $this->QueryCache->hostDowntimes();
-		$this->Controller->set(compact(['widgetHostDowntimes']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 24, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
-}
+?>
+<div class="widget-body notice-body">
+	<?php
+	echo $this->Form->create('noticeForm', array(
+		'class' => 'notice_form clear',
+		'id' => '',
+	));
+
+	echo $this->Form->input('notice', array(
+		'type' => 'textarea',
+		'class' => 'notice_textarea',
+		'label' => 'Your notice (Markdown allowed)',
+		'value' => '',
+	));
+
+	$options_button = array(
+		'label' => 'Save',
+		'class' => 'notice_save btn btn-sm btn-primary',
+	);
+	echo $this->Form->end($options_button);
+
+	?>
+
+	<div class="widget-notice-title"><i class="fa fa-cog "></i></div>
+	<div class="widget-notice"></div>
+</div>

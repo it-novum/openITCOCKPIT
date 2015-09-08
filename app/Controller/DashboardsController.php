@@ -54,12 +54,14 @@ class DashboardsController extends AppController{
 
 	public function beforeFilter(){
 		require_once APP . 'Lib' . DS . 'Dashboards' . DS . 'DashboardHandler.php';
-		$this->DashboardHandler = new Dashboard\DashboardHandler();
 		//Dashboard is allays allowed
 		if($this->Auth->loggedIn() === true){
 			$this->Auth->allow();
 		}
 		parent::beforeFilter();
+		if($this->Auth->loggedIn() === true){
+			$this->DashboardHandler = new Dashboard\DashboardHandler($this);
+		}
 	}
 	
 	public function index($tabId = null){
@@ -114,12 +116,15 @@ class DashboardsController extends AppController{
 		
 		$allWidgets = $this->DashboardHandler->getAllWidgets();
 		
+		$preparedWidgets = $this->DashboardHandler->prepareForRender($tab);
+		
 		$this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
 		$this->Frontend->setJson('tabId', $tabId);
 		$this->set(compact([
 			'tab',
 			'tabs',
-			'allWidgets'
+			'allWidgets',
+			'preparedWidgets'
 		]));
 	}
 	

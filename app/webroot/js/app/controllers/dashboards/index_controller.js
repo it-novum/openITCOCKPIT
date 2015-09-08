@@ -32,24 +32,6 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'Ajaxloader',
 	],
 
-
-	//components: [
-	//	'Rrd',
-	//	'Utils',
-	//	'WidgetTrafficLight',
-	//	'WidgetTacho',
-	//	'WidgetServiceStatusList',
-	//	'WidgetHostStatusList',
-	//	'WidgetMap',
-	//	'Ajaxloader',
-	//	'WidgetBrowser',
-	//	'WidgetNotice',
-	//	'WidgetGraphgenerator',
-	//	'Overlay',
-	//	'BootstrapModal',
-	//	'Uuid',
-	//],
-
 	_initialize: function(){
 		this.Ajaxloader.setup();
 		this.buildGridstack();

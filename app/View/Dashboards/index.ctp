@@ -115,7 +115,7 @@
 						<div class="padding-bottom-10">
 							<div class="grid-stack">
 								<?php
-								foreach($tab['Widget'] as $widget):
+								foreach($preparedWidgets as $widget):
 									echo $this->Dashboard->render($widget);
 								endforeach;
 								?>

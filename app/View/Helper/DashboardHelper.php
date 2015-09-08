@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 class DashboardHelper extends AppHelper{
 	public function render($widget){
 		$html = $this->_header($widget);
@@ -31,21 +32,21 @@ class DashboardHelper extends AppHelper{
 	}
 	
 	private function _header($widget){
-		$html = '<div data-gs-height="'.h($widget['height']).'" data-gs-width="'.h($widget['width']).'" data-gs-x="'.h($widget['row']).'" data-gs-y="'.h($widget['col']).'" data-widget-id="'.h($widget['id']).'" class="grid-stack-item ui-draggable ui-resizable">';
+		$html = '<div data-gs-height="'.h($widget['Widget']['height']).'" data-gs-width="'.h($widget['Widget']['width']).'" data-gs-x="'.h($widget['Widget']['row']).'" data-gs-y="'.h($widget['Widget']['col']).'" data-widget-id="'.h($widget['Widget']['id']).'" class="grid-stack-item ui-draggable ui-resizable">';
 			$html .= '<div class="grid-stack-item-content">';
-				$html .= '<div id="widget-color-'.h($widget['id']).'"" class="jarviswidget '.h($widget['color']).'">';
+				$html .= '<div id="widget-color-'.h($widget['Widget']['id']).'"" class="jarviswidget '.h($widget['Widget']['color']).'">';
 					$html .= '<header class="ui-draggable-handle" role="heading">';
 						$html .= '<div role="menu" class="jarviswidget-ctrls">';
 							$html .= $this->_headerMenu($widget);
 						$html .= '</div>';
-						$html .= '<h2><i class="fa fa-user"></i> <span id="widget-title-'.h($widget['id']).'">'.h($widget['title']).'</span></h2>';
+						$html .= '<h2><i class="fa '.h($widget['Settings']['icon']).'"></i> <span id="widget-title-'.h($widget['Widget']['id']).'">'.h($widget['Widget']['title']).'</span></h2>';
 					$html .= '</header>';
 		return $html;
 	}
 	
 	private function _body($widget){
-		$html = '<div class="widget-body">';
-			$html .= 'It works!';
+		$html = '<div class="widget-body padding-0">';
+			$html .= $this->_View->element($widget['Settings']['element']);
 		$html .= '</div>';
 		return $html;
 	}
@@ -59,9 +60,9 @@ class DashboardHelper extends AppHelper{
 	
 	private function _headerMenu($widget){
 		$html = '
-			<a data-original-title="'.__('Edit title').'" data-placement="left" rel="tooltip" class="button-icon jarviswidget-edit-btn changeTitle" href="javascript:void(0);" data-widget-id="'.h($widget['id']).'"><i class="fa fa-cog "></i></a>
+			<a data-original-title="'.__('Edit title').'" data-placement="left" rel="tooltip" class="button-icon jarviswidget-edit-btn changeTitle" href="javascript:void(0);" data-widget-id="'.h($widget['Widget']['id']).'"><i class="fa fa-cog "></i></a>
 			<div class="widget-toolbar pull-left" style="border:0px;" role="menu">
-				<a href="javascript:void(0);" class="dropdown-toggle color-box selector '.h($widget['color']).'" style="vertical-align: baseline;" id="currentColor" color="#404040" current-color="'.h($widget['color']).'" data-toggle="dropdown" data-widget-id="'.h($widget['id']).'"></a>
+				<a href="javascript:void(0);" class="dropdown-toggle color-box selector '.h($widget['Widget']['color']).'" style="vertical-align: baseline;" id="currentColor" color="#404040" current-color="'.h($widget['Widget']['color']).'" data-toggle="dropdown" data-widget-id="'.h($widget['Widget']['id']).'"></a>
 				<ul class="dropdown-menu arrow-box-up-right pull-right color-select">
 					<li style="display: inline-block; margin:0; float: none;"><span data-original-title="'.__('Green Grass').'" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-green" select-color="true" color="#356E35" class="bg-color-green"></span></li>
 					<li style="display: inline-block; margin:0; float: none;"><span data-original-title="'.__('Dark Green').'" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenDark" select-color="true" color="#496949" class="bg-color-greenDark"></span></li>
@@ -83,7 +84,7 @@ class DashboardHelper extends AppHelper{
 					<li style="display: inline-block; margin:0; float: none;"><span data-original-title="'.__('Purity').'" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-white" select-color="true" color="#FFFFFF" class="bg-color-white"></span></li>
 				</ul>
 			</div>
-			<a data-original-title="'.__('Delete').'" data-placement="left" rel="tooltip" class="button-icon jarviswidget-delete-btn deleteWidget" href="javascript:void(0);" data-widget-id="'.h($widget['id']).'">
+			<a data-original-title="'.__('Delete').'" data-placement="left" rel="tooltip" class="button-icon jarviswidget-delete-btn deleteWidget" href="javascript:void(0);" data-widget-id="'.h($widget['Widget']['id']).'">
 				<i class="fa fa-times"></i>
 			</a>
 			';

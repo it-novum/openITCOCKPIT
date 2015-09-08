@@ -410,6 +410,26 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	margin: 10px;
 }
 
+.padding-bottom-0 {
+	padding-bottom: 0px;
+}
+
+.padding-top-0 {
+	padding-top: 0px;
+}
+
+.padding-left-0 {
+	padding-left: 0px;
+}
+
+.padding-right-0 {
+	padding-right: 0px;
+}
+
+.padding-0 {
+	padding: 0px!important;
+}
+
 .padding-bottom-5 {
 	padding-bottom: 5px;
 }
@@ -1797,4 +1817,10 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	border: none;
 	border-bottom: 1px solid #c2c2c2;
 	padding-left: 10px;
+}
+
+.dashboard-table{
+	padding-top: 3px!important;
+	padding-bottom: 3px!important;
+	font-size: 85%;
 }
