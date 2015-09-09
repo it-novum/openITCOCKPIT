@@ -31,6 +31,7 @@ class DashboardHandler{
 		'Welcome',
 		'Parentoutages',
 		'Host360',
+		'Host180',
 		'Service360',
 		'Hostdowntimes',
 		'Servicedowntimes',
@@ -65,6 +66,21 @@ class DashboardHandler{
 			];
 		}
 		return $widgets;
+	}
+	
+	public function getWidgetByTypeId($typeId){
+		$result = [
+			'typeId' => $this->{$this->__widgetClasses[$typeId]}->typeId,
+			'title' => $this->{$this->__widgetClasses[$typeId]}->title,
+			'icon' => $this->{$this->__widgetClasses[$typeId]}->icon,
+			'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$typeId]}->element,
+			'row' => $this->{$this->__widgetClasses[$typeId]}->row,
+			'col' => $this->{$this->__widgetClasses[$typeId]}->col,
+			'width' => $this->{$this->__widgetClasses[$typeId]}->width,
+			'height' => $this->{$this->__widgetClasses[$typeId]}->height,
+			'color' => $this->{$this->__widgetClasses[$typeId]}->defaultColor,
+		];
+		return $result;
 	}
 	
 	public function getDefaultDashboards($tabId){

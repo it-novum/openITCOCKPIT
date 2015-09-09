@@ -30,14 +30,41 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 	components: [
 		'Ajaxloader',
+		'WidgetChart180',
 	],
 
 	_initialize: function(){
 		this.Ajaxloader.setup();
 		this.buildGridstack();
 		this.tabId = this.getVar('tabId');
+		this.WidgetChart180.bindEvents();
 		this.gridCallbacks.push(this.updatePosition);
 		var self = this;
+		
+		// Bind click event to create new widgets
+		$('.addWidget').click(function(){
+			var $object = $(this);
+			var grid = self.$gridstack.data('gridstack');
+			//grid.add_widget($.parseHTML(response.responseText),0,0,width,height,false);
+			self.Ajaxloader.show();
+			$.ajax({
+				url: "/dashboards/add",
+				type: "POST",
+				data: {typeId: $object.data('type-id'), tabId: self.tabId},
+				error: function(){},
+				success: function(response){
+					if(response !== ''){
+						grid.add_widget($.parseHTML(response));
+						//New widget added. So we need to save all the new positions
+						self.updatePosition();
+					}
+					self.Ajaxloader.hide();
+				}.bind(self),
+				complete: function(response) {
+				}
+			});
+			
+		});
 		
 		// Bind click event to change widget title
 		$('.changeTitle').click(function(){
@@ -146,7 +173,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		});
 	},
 	
-	updatePosition: function(widgets){
+	updatePosition: function(){
 		this.Ajaxloader.show();
 		var data = [];
 		$('.grid-stack-item').each(function(intKey, object){

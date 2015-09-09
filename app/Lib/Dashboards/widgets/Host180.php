@@ -24,31 +24,31 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Service360 extends Widget{
+class Host180 extends Widget{
 	public $isDefault = true;
 	public $icon = 'fa-pie-chart';
-	public $element = 'service_piechart_360';
+	public $element = 'host_piechart_180';
 	public $width = 5;
 	public $height = 13;
 	
 	public function __construct(\Controller $controller, $QueryCache){
 		parent::__construct($controller, $QueryCache);
-		$this->typeId = 4;
-		$this->title = __('Services Piechart');
+		$this->typeId = 7;
+		$this->title = __('Hosts Piechart 180');
 	}
 	
 	public function setData(){
 		//Prefix every widget variable with $widgetFoo
-		$widgetServiceStateArray = $this->QueryCache->serviceStateCount();
-		$this->Controller->set(compact(['widgetServiceStateArray']));
+		$widgetHostStateArray180 = $this->QueryCache->hostStateCount180();
+		$this->Controller->set(compact(['widgetHostStateArray180']));
 	}
 	
 	public function getRestoreConfig($tabId){
 		$restorConfig = [
 			'dashboard_tab_id' => $tabId,
 			'type_id' => $this->typeId,
-			'row' => 5, // x
-			'col' => 11, // Y
+			'row' => 0, // x
+			'col' => 11, // y
 			'width' => 5,
 			'height' => 13,
 			'title' => $this->title,

@@ -128,6 +128,52 @@ class DashboardsController extends AppController{
 		]));
 	}
 	
+	public function add(){
+		$widget = [];
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['typeId']) && isset($this->request->data['tabId'])){
+			$typeId = $this->request->data['typeId'];
+			$tabId = $this->request->data['tabId'];
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [],
+				'conditions' => [
+					'user_id' => $this->Auth->user('id'),
+					'id' => $tabId,
+				],
+			]);
+			//Check if the tab exists and is owned by the user
+			if(!empty($tab)){
+				$_widget = $this->DashboardHandler->getWidgetByTypeId($typeId);
+				//Save the new widget
+				$data = [
+					'dashboard_tab_id' => $tabId,
+					'type_id' => $typeId,
+					'row' => $_widget['row'],
+					'col' => $_widget['col'],
+					'width' => $_widget['width'],
+					'height' => $_widget['height'],
+					'title' => $_widget['title'],
+					'color' => $_widget['color'],
+				];
+				$resultForRender = $this->Widget->save($data);
+				if($resultForRender){
+					//prepareForRender requires multidimensional Widget array
+					$resultForRender = [
+						'Widget' => [
+							$resultForRender['Widget']
+						]
+					];
+					$widget = $this->DashboardHandler->prepareForRender($resultForRender);
+				}
+			}
+		}
+		//Set the widget or an empty array
+		$this->set('widget', $widget);
+	}
+	
 	public function restoreDefault($tabId = null){
 		$tab = $this->DashboardTab->find('first', [
 			'conditions' => [

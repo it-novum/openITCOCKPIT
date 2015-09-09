@@ -92,7 +92,7 @@
 							<ul class="dropdown-menu pull-right">
 								<?php foreach($allWidgets as $_widget):?>
 									<li>
-										<a href="javascript:void(0);">
+										<a href="javascript:void(0);" class="addWidget" data-type-id="<?php echo h($_widget['typeId']); ?>">
 											<i class="fa <?php echo h($_widget['icon']); ?>"></i>&nbsp;
 											<?php echo h($_widget['title']);?>
 										</a>

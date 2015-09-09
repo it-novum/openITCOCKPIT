@@ -35,6 +35,15 @@ class Widget{
 	public $icon = 'fa-question';
 	//Element to render
 	public $element = '404';
+	//Default row
+	public $row = 0;
+	//Default col
+	public $col = 0;
+	//Default width
+	public $width = 5;
+	//Default height
+	public $height = 11;
+	
 	
 	public $Controller = null;
 	

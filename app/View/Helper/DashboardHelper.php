@@ -32,7 +32,7 @@ class DashboardHelper extends AppHelper{
 	}
 	
 	private function _header($widget){
-		$html = '<div data-gs-height="'.h($widget['Widget']['height']).'" data-gs-width="'.h($widget['Widget']['width']).'" data-gs-x="'.h($widget['Widget']['row']).'" data-gs-y="'.h($widget['Widget']['col']).'" data-widget-id="'.h($widget['Widget']['id']).'" class="grid-stack-item ui-draggable ui-resizable">';
+		$html = '<div data-gs-height="'.h($widget['Widget']['height']).'" data-gs-width="'.h($widget['Widget']['width']).'" data-gs-x="'.h($widget['Widget']['row']).'" data-gs-y="'.h($widget['Widget']['col']).'" data-widget-id="'.h($widget['Widget']['id']).'" data-widget-type-id="'.h($widget['Widget']['type_id']).'" class="grid-stack-item ui-draggable ui-resizable">';
 			$html .= '<div class="grid-stack-item-content">';
 				$html .= '<div id="widget-color-'.h($widget['Widget']['id']).'"" class="jarviswidget '.h($widget['Widget']['color']).'">';
 					$html .= '<header class="ui-draggable-handle" role="heading">';

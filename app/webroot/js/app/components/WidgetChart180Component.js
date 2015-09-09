@@ -1,4 +1,3 @@
-<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,38 +22,21 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Dashboard\Widget;
-class Service360 extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-pie-chart';
-	public $element = 'service_piechart_360';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 4;
-		$this->title = __('Services Piechart');
+App.Components.WidgetChart180Component = Frontend.Component.extend({
+	bindEvents: function(){
+		$(document).on('click', '.toggleDetailsForPiechart', function(){
+			$object = $(this);
+			var $container = $object.parents('.widget-body');
+			var $chartImage = $container.find('.hostChart180');
+			var $chartStats = $container.find('.hostInfo180');
+			
+			if($chartStats.is(':visible')){
+				$chartStats.hide();
+				$chartImage.show();
+			}else{
+				$chartImage.hide();
+				$chartStats.show();
+			}
+		});
 	}
-	
-	public function setData(){
-		//Prefix every widget variable with $widgetFoo
-		$widgetServiceStateArray = $this->QueryCache->serviceStateCount();
-		$this->Controller->set(compact(['widgetServiceStateArray']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 5, // x
-			'col' => 11, // Y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
-}
+});

@@ -28,6 +28,8 @@ class Parentoutages extends Widget{
 	public $isDefault = true;
 	public $icon = 'fa-exchange';
 	public $element = 'parent_outages';
+	public $width = 5;
+	public $height = 11;
 	
 	public function __construct(\Controller $controller, $QueryCache){
 		parent::__construct($controller, $QueryCache);

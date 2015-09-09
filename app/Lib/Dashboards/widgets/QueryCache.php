@@ -59,43 +59,14 @@ class QueryCache{
 		if($this->Controller->hasRootPrivileges === false){
 			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
-		$query = [
-			'recursive' => -1,
-			'contain' => [],
-			'fields' => [
-				'Host.id',
-				'Host.uuid',
-
-				'Hoststatus.current_state',
-			],
-			'conditions' => [
-				$conditions,
-			],
-			'joins' => [
-				[
-					'table' => 'nagios_objects',
-					'type' => 'INNER',
-					'alias' => 'HostObject',
-					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-				], [
-					'table' => 'nagios_hoststatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Hoststatus',
-					'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-				], [
-					'table' => 'hosts_to_containers',
-					'alias' => 'HostsToContainers',
-					'type' => 'LEFT',
-					'conditions' => [
-						'HostsToContainers.host_id = Host.id',
-					]
-				]
-			],
-			'group' => [
-				'Host.id'
-			]
-		];
 		
+		$fields = [
+			'Host.id',
+			'Host.uuid',
+
+			'Hoststatus.current_state',
+		];
+		$query = $this->_hostBaseQuery($fields, $conditions);
 		$hosts = $this->Controller->Host->find('all', $query);
 		
 		$hostStateArray = [
@@ -262,6 +233,15 @@ class QueryCache{
 		if($this->Controller->hasRootPrivileges === false){
 			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
+		
+		$fields = [
+			'Hoststatus.host_object_id',
+			'Objects.name1',
+			'Host.name',
+			'Host.id',
+			'Hoststatus.scheduled_downtime_depth',
+		];
+		
 		$query = [
 			'recursive' => -1,
 			'fields' => [
@@ -360,5 +340,104 @@ class QueryCache{
 		$result = $this->Controller->Service->find('all', $query);
 		$this->setCache(__FUNCTION__, $result);
 		return $result;
+	}
+	
+	public function hostStateCount180(){
+		if($this->isCached(__FUNCTION__)){
+			return $this->getCache(__FUNCTION__);
+		}
+		
+		$conditions = [
+			'Host.disabled' => 0,
+		];
+		if($this->Controller->hasRootPrivileges === false){
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+		}
+		
+		$fields = [
+			'Host.id',
+			'Host.uuid',
+
+			'Hoststatus.scheduled_downtime_depth',
+			'Hoststatus.current_state',
+			'Hoststatus.problem_has_been_acknowledged',
+		];
+		$query = $this->_hostBaseQuery($fields, $conditions);
+		
+		$hosts = $this->Controller->Host->find('all', $query);
+		
+		$hostStateArray = [
+			'state' => [
+				0 => 0,
+				1 => 0,
+				2 => 0
+			],
+			'acknowledged' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+			],
+			'in_downtime' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+			],
+			'not_handled' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+			],
+			'total' => 0
+		];
+		foreach($hosts as $host){
+			$hostStateArray['state'][$host['Hoststatus']['current_state']]++;
+			if($host['Hoststatus']['problem_has_been_acknowledged'] > 0 || $host['Hoststatus']['scheduled_downtime_depth'] > 0){
+				if($host['Hoststatus']['problem_has_been_acknowledged'] > 0){
+					$hostStateArray['acknowledged'][$host['Hoststatus']['current_state']]++;
+				}
+				if($host['Hoststatus']['scheduled_downtime_depth'] > 0){
+					$hostStateArray['in_downtime'][$host['Hoststatus']['current_state']]++;
+				}
+			}else{
+				if($host['Hoststatus']['current_state'] > 0){
+					$hostStateArray['not_handled'][$host['Hoststatus']['current_state']]++;
+				}
+			}
+			$hostStateArray['total']++;
+		}
+		$this->setCache(__FUNCTION__, $hostStateArray);
+		return $hostStateArray;
+	}
+	
+	private function _hostBaseQuery($fields = [], $conditions = []){
+		return [
+			'recursive' => -1,
+			'contain' => [],
+			'fields' => $fields,
+			'conditions' => $conditions,
+			'joins' => [
+				[
+					'table' => 'nagios_objects',
+					'type' => 'INNER',
+					'alias' => 'HostObject',
+					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+				], [
+					'table' => 'nagios_hoststatus',
+					'type' => 'LEFT OUTER',
+					'alias' => 'Hoststatus',
+					'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
+				], [
+					'table' => 'hosts_to_containers',
+					'alias' => 'HostsToContainers',
+					'type' => 'LEFT',
+					'conditions' => [
+						'HostsToContainers.host_id = Host.id',
+					]
+				]
+			],
+			'group' => [
+				'Host.id'
+			]
+		];
 	}
 }

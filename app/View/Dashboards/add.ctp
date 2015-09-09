@@ -23,38 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Dashboard\Widget;
-class Service360 extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-pie-chart';
-	public $element = 'service_piechart_360';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 4;
-		$this->title = __('Services Piechart');
-	}
-	
-	public function setData(){
-		//Prefix every widget variable with $widgetFoo
-		$widgetServiceStateArray = $this->QueryCache->serviceStateCount();
-		$this->Controller->set(compact(['widgetServiceStateArray']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 5, // x
-			'col' => 11, // Y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
-}
+if(!empty($widget)):
+	//We call the same function than index will call with n widgets. so we need tto iterate through $widget
+	foreach($widget as $_widget):
+		echo $this->Dashboard->render($_widget);
+	endforeach;
+endif;

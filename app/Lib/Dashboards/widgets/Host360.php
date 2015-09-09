@@ -28,6 +28,8 @@ class Host360 extends Widget{
 	public $isDefault = true;
 	public $icon = 'fa-pie-chart';
 	public $element = 'host_piechart_360';
+	public $width = 5;
+	public $height = 13;
 	
 	public function __construct(\Controller $controller, $QueryCache){
 		parent::__construct($controller, $QueryCache);
