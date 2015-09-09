@@ -199,7 +199,9 @@ $config = [
 				'host' => ['index'],
 				'service' => ['index'],
 			],
-			
+			'Administrators' => [
+				'debug' => ['testMail'],
+			],
 		]
 	]
 ];

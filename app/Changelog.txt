@@ -1,3 +1,13 @@
+3.0.5
+<span class="label bg-color-green">New</span> Add test mail function to debug page
+<span class="label bg-color-green">New</span> Restart oITC CMD after new monitoring configuration was written
+<span class="label bg-color-green">New</span> Rewrite Browser
+<span class="label bg-color-red">Bugfix</span> LDAP user import
+<span class="label bg-color-red">Bugfix</span> Edit user profile
+<span class="label bg-color-red">Bugfix</span> Hostdependencies and Servicedependencies
+<span class="label bg-color-red">Bugfix</span> Clenup Graphgenerator configurations
+<span class="label bg-color-red">Bugfix</span> List as PDF
+
 3.0.4
 <span class="label bg-color-green">New</span> User permissions
 <span class="label bg-color-green">New</span> User group permissions

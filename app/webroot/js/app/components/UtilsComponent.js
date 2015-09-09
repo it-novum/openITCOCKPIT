@@ -47,5 +47,19 @@ App.Components.UtilsComponent = Frontend.Component.extend({
 				}
 			}.bind(this), this.flappingInterval);
 		}
+	},
+	
+	browserDatatables: function(){
+		$('#host-list-datatables').dataTable({
+			"bPaginate": true,
+			"bFilter": true,
+			"bInfo": false,
+			"bStateSave": true
+		});
+		
+		$('div.dataTables_filter')
+			.attr('style', 'width: 100% !important;padding-right: 20px;')
+			.children('.input-group')
+				.attr('style', 'width: 100% !important;');
 	}
 });

@@ -46,7 +46,7 @@ class DebugConfigNagiosTask extends AppShell {
 	
 	private function _buildUuidCache(){
 		$this->uuidCache = [];
-		$Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Service', 'Servicetemplate'];
+		$Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Servicegroup', 'Service', 'Servicetemplate'];
 		$options = [
 			'Host' => [
 				'recursive' => -1,
@@ -80,6 +80,15 @@ class DebugConfigNagiosTask extends AppShell {
 			'Hostgroup' => [
 				'recursive' => -1,
 				'fields' => ['Hostgroup.id', 'Hostgroup.uuid', 'Hostgroup.container_id'],
+				'contain' => [
+					'Container' => [
+						'fields' => ['Container.name']
+					]
+				]
+			],
+			'Servicegroup' => [
+				'recursive' => -1,
+				'fields' => ['Servicegroup.id', 'Servicegroup.uuid', 'Servicegroup.container_id'],
 				'contain' => [
 					'Container' => [
 						'fields' => ['Container.name']
@@ -449,6 +458,14 @@ class DebugConfigNagiosTask extends AppShell {
 
 			return "<error>object not found in UUID cache</error><comment>[".$match."]</comment>";
 		}
+	}
+	
+	public function translateStdin(){
+		$result = null;
+		do{
+			$result = $this->stdin->read();
+			$this->out($this->searchUuids($result));
+		}while($result !== false);
 	}
 	
 	/**

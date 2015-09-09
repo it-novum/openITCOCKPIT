@@ -1,4 +1,3 @@
-<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,6 +22,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = [
-	'version' => '3.0.5',
-];
+App.Controllers.BrowsersTenantBrowserController = Frontend.AppController.extend({
+
+	components: ['Search', 'Utils'],
+
+	_initialize: function() {
+		this.Search.nodeSearch();
+		this.Utils.browserDatatables();
+		this.Utils.flapping();
+	}
+
+});

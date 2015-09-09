@@ -28,16 +28,23 @@ class DebugShell extends AppShell {
 	public $tasks = ['DebugConfigNagios'];
 	
 	public function main(){
+		$this->stdout->styles('red_bold', ['text' => 'red', 'bold' => true]);
 		Configure::load('nagios');
 		
 		$this->conf = Configure::read('nagios.export');
 		
 		$this->parser = $this->getOptionParser();
+		
+		if(array_key_exists('stdin', $this->params)){
+			$this->DebugConfigNagios->setup($this->conf);
+			$this->DebugConfigNagios->translateStdin();
+			exit(0);
+		}
+		
 		$this->out(__d('oitc_console', 'Interactive openITCOCKPIT debugging shell'));
 		$this->hr();
 		$this->out(__d('oitc_console', '[D]ebug Monitoring Configuration'));
 		$this->out(__d('oitc_console', '[Q]uit'));
-		$this->stdout->styles('red_bold', ['text' => 'red', 'bold' => true]);
 		
 		
 		if(array_key_exists('debug', $this->params)){
@@ -74,8 +81,9 @@ class DebugShell extends AppShell {
 		$parser = parent::getOptionParser();
 		$parser->addOptions([
 			'tail' => ['help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
-			'tailf' => ['short' => 't', __d('oitc_console', 'Tailf and parse monitoring logfile')],
-			'debug' => ['short' => 'd', __d('oitc_console', 'Debuging menu')]
+			'tailf' => ['short' => 't', 'help' => __d('oitc_console', 'Tailf and parse monitoring logfile')],
+			'stdin' => ['short' => 's', 'help' => __d('oitc_console', 'Read and translate from stdin. Example cat file.cfg | oitc debug -s')],
+			'debug' => ['short' => 'd', 'help' => __d('oitc_console', 'Debuging menu')]
 		]);
 		return $parser;
 	}

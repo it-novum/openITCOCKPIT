@@ -1,4 +1,3 @@
-<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,6 +22,27 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = [
-	'version' => '3.0.5',
-];
+App.Components.SearchComponent = Frontend.Component.extend({
+	
+	$nodeListSearch: null,
+	
+	nodeSearch: function(){
+		var self = this;
+		this.$nodeListSearch = $('#node-list-search');
+		this.$nodeListSearch.on('keyup', function(e){
+			var value = self.$nodeListSearch.val();
+			if(value == ''){
+				$('.searchContainer').show();
+			}else{
+				$('.searchMe').each(function(intKey, object){
+					var $object = $(object);
+					if(!$object.html().toLowerCase().match(value)){
+						$object.parent().hide();
+					}
+				});
+			}
+		});
+	}
+	
+});
+

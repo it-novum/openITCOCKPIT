@@ -906,7 +906,29 @@ class Host extends AppModel{
 		$id = $host['Host']['id'];
 		$this->id = $id;
 		$Changelog = ClassRegistry::init('Changelog');
+		
+		//Load the Service Model to delete Graphgenerator configurations
+		$Service = ClassRegistry::init('Service');
+		$serviceIds = array_keys($Service->find('list', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'Service.host_id' => $id
+			]
+		]));
+		
+		$GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+		$graphgenTmplConfs = $GraphgenTmplConf->find('all', [
+			'conditions' => [
+				'GraphgenTmplConf.service_id' => $serviceIds
+			]
+		]);
 		if($this->delete()){
+			//Delete was successfully - delete Graphgenerator configurations
+			foreach($graphgenTmplConfs as $graphgenTmplConf){
+				$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
+			}
+			
 			$changelog_data = $Changelog->parseDataForChangelog(
 				'delete',
 				'hosts',
