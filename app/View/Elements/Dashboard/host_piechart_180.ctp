@@ -26,112 +26,115 @@
 <div class="row no-padding">
 	<div class="col-xs-12">
 		<?php if($widgetHostStateArray180['total'] > 0): ?>
-		<div class="col-xs-12 text-center chart180">
-			<?php
-			$overview_chart =  $this->PieChart->createHalfPieChart($widgetHostStateArray180['state']);
-			echo $this->Html->image(
-				'/img/charts/'.$overview_chart
-			);
-			$stateColors = [
-				'ok',
-				'critical',
-				'unknown'
-			]; ?>
-		</div>
-		<div class="col-xs-12 stats180 margin-top-10" style="display:none; padding-bottom:56px;">
-			<div class="col-xs-6">
-				<div class="col-xs-12 stateHost_1">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[1]' => 1
-					]); ?>" style="color:#FFF;">
-						<?php echo __('%s down', $widgetHostStateArray180['state'][1]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[1]' => 1,
-						'Filter.Hoststatus.problem_has_been_acknowledged[0]' => 1,
-					]); ?>">
-						<?php echo __('%s not handled', $widgetHostStateArray180['not_handled'][1]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[1]' => 1,
-						'Filter.Hoststatus.problem_has_been_acknowledged[1]' => 1,
-					]); ?>">
-						<?php echo __('%s acknowledged', $widgetHostStateArray180['acknowledged'][1]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[1]' => 1,
-						'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
-					]); ?>">
-						<?php echo __('%s in downtime', $widgetHostStateArray180['in_downtime'][1]);?>
-					</a>
-				</div>
+		<div style="height: 140px;">
+			<div class="col-xs-12 text-center chart180">
+				<?php
+				$overview_chart =  $this->PieChart->createHalfPieChart($widgetHostStateArray180['state']);
+				echo $this->Html->image(
+					'/img/charts/'.$overview_chart
+				);
+				$stateColors = [
+					'ok',
+					'critical',
+					'unknown'
+				]; ?>
 			</div>
+			<div class="col-xs-12 stats180 margin-top-10" style="display:none; position: absolute; top:0px;">
+				<div class="col-xs-6">
+					<div class="col-xs-12 stateHost_1">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[1]' => 1
+						]); ?>" style="color:#FFF;">
+							<?php echo __('%s down', $widgetHostStateArray180['state'][1]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[1]' => 1,
+							'Filter.Hoststatus.problem_has_been_acknowledged[0]' => 1,
+						]); ?>">
+							<?php echo __('%s not handled', $widgetHostStateArray180['not_handled'][1]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[1]' => 1,
+							'Filter.Hoststatus.problem_has_been_acknowledged[1]' => 1,
+						]); ?>">
+							<?php echo __('%s acknowledged', $widgetHostStateArray180['acknowledged'][1]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[1]' => 1,
+							'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
+						]); ?>">
+							<?php echo __('%s in downtime', $widgetHostStateArray180['in_downtime'][1]);?>
+						</a>
+					</div>
+				</div>
 			
-			<div class="col-xs-6">
-				<div class="col-xs-12 stateHost_2">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[2]' => 1
-					]); ?>" style="color:#FFF;">
-						<?php echo __('%s unreachable', $widgetHostStateArray180['state'][2]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[2]' => 1,
-						'Filter.Hoststatus.problem_has_been_acknowledged[0]' => 1,
-						'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
-					]); ?>">
-						<?php echo __('%s not handled', $widgetHostStateArray180['not_handled'][2]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[2]' => 1,
-						'Filter.Hoststatus.problem_has_been_acknowledged[1]' => 1,
-					]); ?>">
-						<?php echo __('%s acknowledged', $widgetHostStateArray180['acknowledged'][2]);?>
-					</a>
-				</div>
-				<div class="col-xs-12">
-					<a href="<?php echo Router::url([
-						'controller' => 'hosts',
-						'action' => 'index',
-						'plugin' => '',
-						'Filter.Hoststatus.current_state[2]' => 1,
-						'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
-					]); ?>">
-						<?php echo __('%s in downtime', $widgetHostStateArray180['in_downtime'][2]);?>
-					</a>
+				<div class="col-xs-6">
+					<div class="col-xs-12 stateHost_2">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[2]' => 1
+						]); ?>" style="color:#FFF;">
+							<?php echo __('%s unreachable', $widgetHostStateArray180['state'][2]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[2]' => 1,
+							'Filter.Hoststatus.problem_has_been_acknowledged[0]' => 1,
+							'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
+						]); ?>">
+							<?php echo __('%s not handled', $widgetHostStateArray180['not_handled'][2]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[2]' => 1,
+							'Filter.Hoststatus.problem_has_been_acknowledged[1]' => 1,
+						]); ?>">
+							<?php echo __('%s acknowledged', $widgetHostStateArray180['acknowledged'][2]);?>
+						</a>
+					</div>
+					<div class="col-xs-12">
+						<a href="<?php echo Router::url([
+							'controller' => 'hosts',
+							'action' => 'index',
+							'plugin' => '',
+							'Filter.Hoststatus.current_state[2]' => 1,
+							'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1
+						]); ?>">
+							<?php echo __('%s in downtime', $widgetHostStateArray180['in_downtime'][2]);?>
+						</a>
+					</div>
 				</div>
 			</div>
 		</div>
+		
 			<div class="text-center font-xs">
 				<div class="col-xs-12">
 					<div class="toggleDetailsForPiechart"><i class="fa fa-angle-down"></i></div>

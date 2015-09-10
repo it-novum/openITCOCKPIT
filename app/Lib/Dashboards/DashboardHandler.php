@@ -33,6 +33,7 @@ class DashboardHandler{
 		'Host360',
 		'Host180',
 		'Service360',
+		'Service180',
 		'Hostdowntimes',
 		'Servicedowntimes',
 	];

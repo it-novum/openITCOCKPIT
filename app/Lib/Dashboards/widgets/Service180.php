@@ -1,3 +1,4 @@
+<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -22,32 +23,24 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Components.WidgetChart180Component = Frontend.Component.extend({
-	bindEvents: function(){
-		$(document).on('click', '.toggleDetailsForPiechart', function(){
-			$object = $(this);
-			//var $container = $object.parents('.widget-body');
-			var $container = $object.parent().parent().parent();
-			var $chartImage = $container.find('.chart180');
-			var $chartStats = $container.find('.stats180');
-			
-			var $arrow = $object.children();
-			
-			if($chartStats.is(':visible')){
-				//$chartStats.hide();
-				//$chartImage.show();
-				$chartStats.fadeOut();
-				$chartImage.fadeIn();
-				$arrow.removeClass('fa-angle-up');
-				$arrow.addClass('fa-angle-down');
-			}else{
-				//$chartImage.hide();
-				//$chartStats.show();
-				$chartStats.fadeIn();
-				$chartImage.fadeOut();
-				$arrow.removeClass('fa-angle-down');
-				$arrow.addClass('fa-angle-up');
-			}
-		});
+namespace Dashboard\Widget;
+class Service180 extends Widget{
+	public $isDefault = false;
+	public $icon = 'fa-pie-chart';
+	public $element = 'service_piechart_180';
+	public $width = 5;
+	public $height = 13;
+	
+	public function __construct(\Controller $controller, $QueryCache){
+		parent::__construct($controller, $QueryCache);
+		$this->typeId = 8;
+		$this->title = __('Services Piechart 180');
 	}
-});
+	
+	public function setData(){
+		//Prefix every widget variable with $widgetFoo
+		$widgetServiceStateArray180 = $this->QueryCache->serviceStateCount180();
+		$this->Controller->set(compact(['widgetServiceStateArray180']));
+	}
+	
+}

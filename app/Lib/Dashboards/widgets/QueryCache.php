@@ -97,55 +97,13 @@ class QueryCache{
 		if($this->Controller->hasRootPrivileges === false){
 			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
 		}
-		$query = [
-			'recursive' => -1,
-			'conditions' => [
-				$conditions,
-			],
-			'contain' => [],
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Servicestatus.current_state'
-			],
-			'joins' => [[
-				'table' => 'hosts',
-				'type' => 'INNER',
-				'alias' => 'Host',
-				'conditions' => 'Service.host_id = Host.id'
-			], [
-				'table' => 'nagios_objects',
-				'type' => 'INNER',
-				'alias' => 'HostObject',
-				'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-			], [
-				'table' => 'nagios_hoststatus',
-				'type' => 'INNER',
-				'alias' => 'Hoststatus',
-				'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-			], [
-				'table' => 'nagios_objects',
-				'type' => 'INNER',
-				'alias' => 'ServiceObject',
-				'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
-			], [
-				'table' => 'nagios_servicestatus',
-				'type' => 'LEFT OUTER',
-				'alias' => 'Servicestatus',
-				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
-			], [
-				'table' => 'hosts_to_containers',
-				'alias' => 'HostsToContainers',
-				'type' => 'LEFT',
-				'conditions' => [
-					'HostsToContainers.host_id = Host.id',
-				]
-			]
-			],
-			'group' => [
-				'Service.id'
-			]
+		
+		$fields = [
+			'Service.id',
+			'Service.uuid',
+			'Servicestatus.current_state'
 		];
+		$query = $this->_serviceBaseQuery($fields, $conditions);
 		
 		$services = $this->Controller->Service->find('all', $query);
 		
@@ -391,22 +349,87 @@ class QueryCache{
 		];
 		foreach($hosts as $host){
 			$hostStateArray['state'][$host['Hoststatus']['current_state']]++;
-			if($host['Hoststatus']['problem_has_been_acknowledged'] > 0 || $host['Hoststatus']['scheduled_downtime_depth'] > 0){
-				if($host['Hoststatus']['problem_has_been_acknowledged'] > 0){
-					$hostStateArray['acknowledged'][$host['Hoststatus']['current_state']]++;
-				}
-				if($host['Hoststatus']['scheduled_downtime_depth'] > 0){
-					$hostStateArray['in_downtime'][$host['Hoststatus']['current_state']]++;
-				}
+			if($host['Hoststatus']['problem_has_been_acknowledged'] > 0){
+				$hostStateArray['acknowledged'][$host['Hoststatus']['current_state']]++;
 			}else{
-				if($host['Hoststatus']['current_state'] > 0){
-					$hostStateArray['not_handled'][$host['Hoststatus']['current_state']]++;
-				}
+				$hostStateArray['not_handled'][$host['Hoststatus']['current_state']]++;
+			}
+			
+			if($host['Hoststatus']['scheduled_downtime_depth'] > 0){
+				$hostStateArray['in_downtime'][$host['Hoststatus']['current_state']]++;
 			}
 			$hostStateArray['total']++;
 		}
 		$this->setCache(__FUNCTION__, $hostStateArray);
 		return $hostStateArray;
+	}
+	
+	public function serviceStateCount180(){
+		if($this->isCached(__FUNCTION__)){
+			return $this->getCache(__FUNCTION__);
+		}
+		
+		$conditions = [
+			'Host.disabled' => 0,
+			'Service.disabled' => 0,
+		];
+		if($this->Controller->hasRootPrivileges === false){
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+		}
+		
+		$fields = [
+			'Service.id',
+			'Service.uuid',
+			'Servicestatus.scheduled_downtime_depth',
+			'Servicestatus.current_state',
+			'Servicestatus.problem_has_been_acknowledged',
+		];
+		$query = $this->_serviceBaseQuery($fields, $conditions);
+		
+		$services = $this->Controller->Service->find('all', $query);
+		
+		$serviceStateArray = [
+			'state' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0,
+			],
+			'acknowledged' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0
+			],
+			'in_downtime' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0
+			],
+			'not_handled' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0,
+			],
+			'total' => 0
+		];
+		foreach($services as $service){
+			$serviceStateArray['state'][$service['Servicestatus']['current_state']]++;
+			if($service['Servicestatus']['problem_has_been_acknowledged'] > 0){
+				$serviceStateArray['acknowledged'][$service['Servicestatus']['current_state']]++;
+			}else{
+				$serviceStateArray['not_handled'][$service['Servicestatus']['current_state']]++;
+			}
+			
+			if($service['Servicestatus']['scheduled_downtime_depth'] > 0){
+				$serviceStateArray['in_downtime'][$service['Servicestatus']['current_state']]++;
+			}
+			$serviceStateArray['total']++;
+		}
+		$this->setCache(__FUNCTION__, $serviceStateArray);
+		return $serviceStateArray;
 	}
 	
 	private function _hostBaseQuery($fields = [], $conditions = []){
@@ -437,6 +460,52 @@ class QueryCache{
 			],
 			'group' => [
 				'Host.id'
+			]
+		];
+	}
+	
+	private function _serviceBaseQuery($fields = [], $conditions = []){
+		return [
+			'recursive' => -1,
+			'conditions' => $conditions,
+			'contain' => [],
+			'fields' => $fields,
+			'joins' => [[
+				'table' => 'hosts',
+				'type' => 'INNER',
+				'alias' => 'Host',
+				'conditions' => 'Service.host_id = Host.id'
+			], [
+				'table' => 'nagios_objects',
+				'type' => 'INNER',
+				'alias' => 'HostObject',
+				'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+			], [
+				'table' => 'nagios_hoststatus',
+				'type' => 'INNER',
+				'alias' => 'Hoststatus',
+				'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
+			], [
+				'table' => 'nagios_objects',
+				'type' => 'INNER',
+				'alias' => 'ServiceObject',
+				'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+			], [
+				'table' => 'nagios_servicestatus',
+				'type' => 'LEFT OUTER',
+				'alias' => 'Servicestatus',
+				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+			], [
+				'table' => 'hosts_to_containers',
+				'alias' => 'HostsToContainers',
+				'type' => 'LEFT',
+				'conditions' => [
+					'HostsToContainers.host_id = Host.id',
+				]
+			]
+			],
+			'group' => [
+				'Service.id'
 			]
 		];
 	}

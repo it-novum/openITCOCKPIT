@@ -248,7 +248,10 @@ class ListFilterComponent extends Component {
 
 						case 'greater':
 							$conditions[$model.'.'.$field.' >='] = $value[0];
-
+							break;
+							
+						case 'lesser':
+							$conditions[$model.'.'.$field.' <='] = $value[0];
 							break;
 
 						default:
