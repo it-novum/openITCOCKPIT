@@ -41,145 +41,96 @@
 				]; ?>
 			</div>
 			<div class="col-xs-12 stats180 margin-top-10" style="display:none; position: absolute; top:0px;">
-				<div class="col-xs-4">
-					<div class="col-xs-12 stateService_1">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[1]' => 1
-						]); ?>" style="color:#FFF;">
-							<?php echo __('%s warning', $widgetServiceStateArray180['state'][1]);?>
-						</a>
+				<?php foreach([1, 2, 3] as $state): ?>
+					<div class="col-xs-4">
+						<div class="col-xs-12 stateService_<?php echo $state; ?>">
+							<a href="<?php echo Router::url([
+								'controller' => 'services',
+								'action' => 'index',
+								'plugin' => '',
+								'Filter.Servicestatus.current_state['.$state.']' => 1
+							]); ?>" style="color:#FFF;">
+								<?php echo __('( %s ) warning', $widgetServiceStateArray180['state'][$state]);?>
+							</a>
+						</div>
+						<div class="col-xs-12">
+							<?php if($widgetServiceStateArray180['not_handled'][$state] > 0): ?>
+								<a href="<?php echo Router::url([
+									'controller' => 'services',
+									'action' => 'index',
+									'plugin' => '',
+									'Filter.Servicestatus.current_state['.$state.']' => 1,
+									'Filter.Servicestatus.problem_has_been_acknowledged[0]' => 1,
+								]); ?>">
+									<?php echo __('( %s ) not handled', $widgetServiceStateArray180['not_handled'][$state]);?>
+								</a>
+							<?php else: ?>
+								<?php echo __('( 0 ) not handled'); ?>
+							<?php endif; ?>
+						</div>
+						<div class="col-xs-12">
+							<?php if($widgetServiceStateArray180['by_host'][$state] > 0): ?>
+								<a href="<?php echo Router::url([
+									'controller' => 'services',
+									'action' => 'index',
+									'plugin' => '',
+									'Filter.Servicestatus.current_state['.$state.']' => 1,
+									'Filter.Hoststatus.current_state[1]' => 1,
+									'Filter.Hoststatus.current_state[2]' => 1,
+								]); ?>">
+									<?php echo __('( %s ) by host', $widgetServiceStateArray180['by_host'][$state]);?>
+								</a>
+							<?php else: ?>
+								<?php echo __('( 0 ) by host'); ?>
+							<?php endif; ?>
+						</div>
+						<div class="col-xs-12">
+							<?php if($widgetServiceStateArray180['acknowledged'][$state] > 0): ?>
+								<a href="<?php echo Router::url([
+									'controller' => 'services',
+									'action' => 'index',
+									'plugin' => '',
+									'Filter.Servicestatus.current_state['.$state.']' => 1,
+									'Filter.Servicestatus.problem_has_been_acknowledged[1]' => 1,
+								]); ?>">
+									<?php echo __('( %s ) acknowledged', $widgetServiceStateArray180['acknowledged'][$state]);?>
+								</a>
+							<?php else: ?>
+								<?php echo __('( 0 ) acknowledged'); ?>
+							<?php endif; ?>
+						</div>
+						<div class="col-xs-12">
+							<?php if($widgetServiceStateArray180['in_downtime'][$state] > 0): ?>
+								<a href="<?php echo Router::url([
+									'controller' => 'services',
+									'action' => 'index',
+									'plugin' => '',
+									'Filter.Servicestatus.current_state['.$state.']' => 1,
+									'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
+								]); ?>">
+									<?php echo __('( %s ) in downtime', $widgetServiceStateArray180['in_downtime'][$state]);?>
+								</a>
+							<?php else: ?>
+								<?php echo __('( 0 ) in downtime'); ?>
+							<?php endif; ?>
+						</div>
+						<div class="col-xs-12">
+							<?php if($widgetServiceStateArray180['passive'][$state] > 0): ?>
+								<a href="<?php echo Router::url([
+									'controller' => 'services',
+									'action' => 'index',
+									'plugin' => '',
+									'Filter.Servicestatus.current_state['.$state.']' => 1,
+									'Filter.Servicestatus.active_checks_enabled[0]' => 1,
+								]); ?>">
+									<?php echo __('( %s ) passive', $widgetServiceStateArray180['passive'][$state]);?>
+								</a>
+							<?php else: ?>
+								<?php echo __('( 0 ) passive'); ?>
+							<?php endif; ?>
+						</div>
 					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[1]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[0]' => 1,
-						]); ?>">
-							<?php echo __('%s not handled', $widgetServiceStateArray180['not_handled'][1]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[1]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[1]' => 1,
-						]); ?>">
-							<?php echo __('%s acknowledged', $widgetServiceStateArray180['acknowledged'][1]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[1]' => 1,
-							'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
-						]); ?>">
-							<?php echo __('%s in downtime', $widgetServiceStateArray180['in_downtime'][1]);?>
-						</a>
-					</div>
-				</div>
-			
-				<div class="col-xs-4">
-					<div class="col-xs-12 stateService_2">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[2]' => 1
-						]); ?>" style="color:#FFF;">
-							<?php echo __('%s critical', $widgetServiceStateArray180['state'][2]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[2]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[0]' => 1,
-							'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
-						]); ?>">
-							<?php echo __('%s not handled', $widgetServiceStateArray180['not_handled'][2]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[2]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[1]' => 1,
-						]); ?>">
-							<?php echo __('%s acknowledged', $widgetServiceStateArray180['acknowledged'][2]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[2]' => 1,
-							'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
-						]); ?>">
-							<?php echo __('%s in downtime', $widgetServiceStateArray180['in_downtime'][2]);?>
-						</a>
-					</div>
-				</div>
-			
-				<div class="col-xs-4">
-					<div class="col-xs-12 stateService_3">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[3]' => 1
-						]); ?>" style="color:#FFF;">
-							<?php echo __('%s unknown', $widgetServiceStateArray180['state'][3]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[3]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[0]' => 1,
-							'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
-						]); ?>">
-							<?php echo __('%s not handled', $widgetServiceStateArray180['not_handled'][3]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[3]' => 1,
-							'Filter.Servicestatus.problem_has_been_acknowledged[1]' => 1,
-						]); ?>">
-							<?php echo __('%s acknowledged', $widgetServiceStateArray180['acknowledged'][3]);?>
-						</a>
-					</div>
-					<div class="col-xs-12">
-						<a href="<?php echo Router::url([
-							'controller' => 'services',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Servicestatus.current_state[3]' => 1,
-							'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1
-						]); ?>">
-							<?php echo __('%s in downtime', $widgetServiceStateArray180['in_downtime'][3]);?>
-						</a>
-					</div>
-				</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 			<div class="text-center font-xs">

@@ -383,6 +383,8 @@ class QueryCache{
 			'Servicestatus.scheduled_downtime_depth',
 			'Servicestatus.current_state',
 			'Servicestatus.problem_has_been_acknowledged',
+			'Servicestatus.active_checks_enabled',
+			'Hoststatus.current_state',
 		];
 		$query = $this->_serviceBaseQuery($fields, $conditions);
 		
@@ -413,6 +415,18 @@ class QueryCache{
 				2 => 0,
 				3 => 0,
 			],
+			'passive' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0,
+			],
+			'by_host' => [
+				0 => 0,
+				1 => 0,
+				2 => 0,
+				3 => 0
+			],
 			'total' => 0
 		];
 		foreach($services as $service){
@@ -426,6 +440,14 @@ class QueryCache{
 			if($service['Servicestatus']['scheduled_downtime_depth'] > 0){
 				$serviceStateArray['in_downtime'][$service['Servicestatus']['current_state']]++;
 			}
+			if($service['Servicestatus']['active_checks_enabled'] == 0){
+				$serviceStateArray['passive'][$service['Servicestatus']['active_checks_enabled']]++;
+			}
+			
+			if($service['Hoststatus']['current_state'] > 0){
+				$serviceStateArray['by_host'][$service['Servicestatus']['current_state']]++;
+			}
+			
 			$serviceStateArray['total']++;
 		}
 		$this->setCache(__FUNCTION__, $serviceStateArray);
@@ -464,46 +486,55 @@ class QueryCache{
 		];
 	}
 	
-	private function _serviceBaseQuery($fields = [], $conditions = []){
-		return [
-			'recursive' => -1,
-			'conditions' => $conditions,
-			'contain' => [],
-			'fields' => $fields,
-			'joins' => [[
+	private function _serviceBaseQuery($fields = [], $conditions = [], $joins = []){
+		$_joins = [
+			[
 				'table' => 'hosts',
 				'type' => 'INNER',
 				'alias' => 'Host',
 				'conditions' => 'Service.host_id = Host.id'
-			], [
+			],
+			[
 				'table' => 'nagios_objects',
 				'type' => 'INNER',
 				'alias' => 'HostObject',
 				'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-			], [
+			],
+			[
 				'table' => 'nagios_hoststatus',
 				'type' => 'INNER',
 				'alias' => 'Hoststatus',
 				'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-			], [
+			],
+			[
 				'table' => 'nagios_objects',
 				'type' => 'INNER',
 				'alias' => 'ServiceObject',
 				'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
-			], [
+			],
+			[
 				'table' => 'nagios_servicestatus',
 				'type' => 'LEFT OUTER',
 				'alias' => 'Servicestatus',
 				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
-			], [
+			],
+			[
 				'table' => 'hosts_to_containers',
 				'alias' => 'HostsToContainers',
 				'type' => 'LEFT',
 				'conditions' => [
 					'HostsToContainers.host_id = Host.id',
 				]
-			]
 			],
+		];
+		
+		$joins = \Hash::merge($_joins, $joins);
+		return [
+			'recursive' => -1,
+			'conditions' => $conditions,
+			'contain' => [],
+			'fields' => $fields,
+			'joins' => $joins,
 			'group' => [
 				'Service.id'
 			]
