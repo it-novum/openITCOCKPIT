@@ -67,7 +67,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		});
 		
 		// Bind click event to change widget title
-		$('.changeTitle').click(function(){
+		$(document).on('click', '.changeTitle', function(){
 			var widgetId = $(this).data('widget-id');
 			bootbox.prompt({
 				title: self.getVar('lang').newTitle,
@@ -94,7 +94,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		});
 		
 		//Bind click event to change widget color
-		$("[select-color='true']").click(function(){
+		$(document).on('click', "[select-color='true']", function(){
 			var $colorChoosDiv = $(this).parent().parent().parent();
 			var $selectButton = $colorChoosDiv.find('a');
 			var widgetId = $selectButton.data('widget-id');
@@ -124,7 +124,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		});
 		
 		//Bind click event to delete widget
-		$('.deleteWidget').click(function(){
+		$(document).on('click', '.deleteWidget', function(){
 			var widgetId = $(this).data('widget-id');
 			self.Ajaxloader.show();
 			self.$gridstack.data('gridstack').remove_widget($(this).parents('.grid-stack-item'));
