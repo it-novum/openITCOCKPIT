@@ -25,7 +25,7 @@
 
 namespace Dashboard\Widget;
 class Host180 extends Widget{
-	public $isDefault = true;
+	public $isDefault = false;
 	public $icon = 'fa-pie-chart';
 	public $element = 'host_piechart_180';
 	public $width = 5;
@@ -41,20 +41,6 @@ class Host180 extends Widget{
 		//Prefix every widget variable with $widgetFoo
 		$widgetHostStateArray180 = $this->QueryCache->hostStateCount180();
 		$this->Controller->set(compact(['widgetHostStateArray180']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 11, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
 	}
 	
 }

@@ -26,16 +26,23 @@ App.Components.WidgetChart180Component = Frontend.Component.extend({
 	bindEvents: function(){
 		$(document).on('click', '.toggleDetailsForPiechart', function(){
 			$object = $(this);
-			var $container = $object.parents('.widget-body');
-			var $chartImage = $container.find('.hostChart180');
-			var $chartStats = $container.find('.hostInfo180');
+			//var $container = $object.parents('.widget-body');
+			var $container = $object.parent().parent().parent();
+			var $chartImage = $container.find('.chart180');
+			var $chartStats = $container.find('.stats180');
+			
+			var $arrow = $object.children();
 			
 			if($chartStats.is(':visible')){
 				$chartStats.hide();
 				$chartImage.show();
+				$arrow.removeClass('fa-angle-up');
+				$arrow.addClass('fa-angle-down');
 			}else{
 				$chartImage.hide();
 				$chartStats.show();
+				$arrow.removeClass('fa-angle-down');
+				$arrow.addClass('fa-angle-up');
 			}
 		});
 	}

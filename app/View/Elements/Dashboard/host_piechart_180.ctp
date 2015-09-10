@@ -26,7 +26,7 @@
 <div class="row no-padding">
 	<div class="col-xs-12">
 		<?php if($widgetHostStateArray180['total'] > 0): ?>
-		<div class="col-xs-12 text-center hostChart180">
+		<div class="col-xs-12 text-center chart180">
 			<?php
 			$overview_chart =  $this->PieChart->createHalfPieChart($widgetHostStateArray180['state']);
 			echo $this->Html->image(
@@ -38,7 +38,7 @@
 				'unknown'
 			]; ?>
 		</div>
-		<div class="col-xs-12 hostInfo180" style="display:none; padding-top:66px;">
+		<div class="col-xs-12 stats180 margin-top-10" style="display:none; padding-bottom:56px;">
 			<div class="col-xs-6">
 				<div class="col-xs-12 stateHost_1">
 					<a href="<?php echo Router::url([
@@ -134,7 +134,7 @@
 		</div>
 			<div class="text-center font-xs">
 				<div class="col-xs-12">
-					<div class="toggleDetailsForPiechart"><i class="fa fa-angle-up"></i></div>
+					<div class="toggleDetailsForPiechart"><i class="fa fa-angle-down"></i></div>
 				</div>
 				<?php foreach($widgetHostStateArray180['state'] as $state => $stateCount):?>
 					<div class="col-md-4 no-padding">
@@ -145,7 +145,7 @@
 							'Filter.Hoststatus.current_state['.$state.']' => 1
 						]); ?>">
 							<i class="fa fa-square <?php echo $stateColors[$state]?>"></i>
-							<?php echo $stateCount .' ('.round($stateCount/$widgetHostStateArray['total'] * 100, 2).' %)'; ?>
+							<?php echo $stateCount .' ('.round($stateCount/$widgetHostStateArray180['total'] * 100, 2).' %)'; ?>
 						</a>
 					</div>
 				<?php endforeach; ?>
