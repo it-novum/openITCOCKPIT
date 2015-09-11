@@ -46,7 +46,7 @@ class DashboardHelper extends AppHelper{
 	
 	private function _body($widget){
 		$html = '<div class="widget-body padding-0">';
-			$html .= $this->_View->element($widget['Settings']['element']);
+			$html .= $this->_View->element($widget['Settings']['element'], ['widget' => $widget]);
 		$html .= '</div>';
 		return $html;
 	}

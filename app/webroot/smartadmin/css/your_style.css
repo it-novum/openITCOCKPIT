@@ -942,25 +942,12 @@ rect.unknown {
 	bottom: 20px;
 }
 
-.status_datatable_header {
-	height: 37px !important;
-	line-height: 20px !important;
-}
-
-.status_datatable_header .slider-slim {
-	float: left;
-	margin-left: 10px;
-
-}
 
 .slider-slim .slider .slider-track {
 	height: 5px;
+	margin-bottom:0px;
 }
 
-.status_datatable_header .slider-slim .slider {
-	margin-bottom: 5px;
-	margin-top: 10px;
-}
 
 .slider-slim .slider .slider-handle {
 	font-size: 8px;
@@ -1360,59 +1347,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	/* TODO Remove this one day and fix everything else! Work WITH bootstrap, not against it. */
 	margin-left: 0;
 	margin-right: 0;
-}
-
-
-.service-status-list-toolbar,
-.host-status-list-toolbar{
-	display:flex;
-	margin-top:0px!important;
-	float: right!important;
-}
-
-.status_datatable_header div.widget-toolbar{
-	float:right!important;
-}
-
-.service-status-list-toolbar input,
-.host-status-list-toolbar input{
-	margin:4px 5px!important;
-	width:40px;
-	padding:0px 1px;
-	text-align: center!important;
-}
-
-.service_list_save,
-.host_list_save{
-	color: #fff;
-	background-color: #337ab7;
-	padding: 2px 5px;
-	border-radius: 2px;
-	font-size: 14px;
-	font-weight: 400;
-	text-align: center;
-	border: 1px solid #2e6da4;
-	float: right;
-	margin-top: 4px;
-	margin-right: 3px;
-	cursor: pointer;
-}
-
-.service_list_save:active,
-.service_list_save:hover,
-.host_list_save:active,
-.host_list_save:hover{
-	background-color: #286090;
-	border-color: #204d74;
-}
-
-.status_datatable_header div.widget-toolbar{
-	margin-top:4px;
-}
-
-.status_datatable_header div.widget-toolbar input[type=checkbox] {
-	position: relative;
-	top: 2px;
 }
 
 .grid-stack {

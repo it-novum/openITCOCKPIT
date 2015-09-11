@@ -454,7 +454,7 @@ class QueryCache{
 		return $serviceStateArray;
 	}
 	
-	private function _hostBaseQuery($fields = [], $conditions = []){
+	public function _hostBaseQuery($fields = [], $conditions = []){
 		return [
 			'recursive' => -1,
 			'contain' => [],
@@ -486,7 +486,7 @@ class QueryCache{
 		];
 	}
 	
-	private function _serviceBaseQuery($fields = [], $conditions = [], $joins = []){
+	public function _serviceBaseQuery($fields = [], $conditions = [], $joins = []){
 		$_joins = [
 			[
 				'table' => 'hosts',

@@ -30,7 +30,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 	components: [
 		'Ajaxloader',
+		'Utils',
 		'WidgetChart180',
+		'WidgetStatusList',
 	],
 
 	_initialize: function(){
@@ -38,7 +40,11 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.buildGridstack();
 		this.tabId = this.getVar('tabId');
 		this.WidgetChart180.bindEvents();
+		this.WidgetStatusList.setup(this.Utils);
+		this.WidgetStatusList.initLists();
 		this.gridCallbacks.push(this.updatePosition);
+		
+		
 		var self = this;
 		
 		// Bind click event to create new widgets

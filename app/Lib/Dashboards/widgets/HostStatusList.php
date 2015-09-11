@@ -34,6 +34,7 @@ class HostStatusList extends Widget{
 	
 	public $initialConfig = [
 		'WidgetHostStatusList' => [
+			'animation' => 'fadeInUp',
 			'show_up' => 0,
 			'show_down' => 1,
 			'show_unreachable' => 1,
@@ -50,9 +51,65 @@ class HostStatusList extends Widget{
 	
 	public function setData($widgetData){
 		//debug($widgetData);
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostStateArray180 = $this->QueryCache->hostStateCount180();
-		$this->Controller->set(compact(['widgetHostStateArray180']));
+		$widget = $this->Controller->Widget->find('first', [
+			'recursive' => -1,
+			'contain' => [
+				'WidgetHostStatusList'
+			],
+			'conditions' => [
+				'Widget.id' => $widgetData['Widget']['id']
+			]
+		]);
+
+		$conditions = [
+			'Host.disabled' => 0,
+		];
+
+		$mapWidgetSettingsToHoststatus = [
+			'show_up' => 0,
+			'show_down' => 1,
+			'show_unreachable' => 2,
+		];
+		
+		$_stateTypes = [];
+		foreach($mapWidgetSettingsToHoststatus as $stateName => $state){
+			if($widget['WidgetHostStatusList'][$stateName]){
+				$_stateTypes[] = $state;
+			}
+		}
+		//Only add the condition, if it make any sens. If the user select all state types, we don't need a condition
+		if(sizeof($_stateTypes) < 3){
+			$conditions['Hoststatus.current_state'] = $_stateTypes;
+		}
+		
+		if($widget['WidgetHostStatusList']['show_acknowledged'] == false){
+			$conditions['Hoststatus.problem_has_been_acknowledged'] = 0;
+		}
+		
+		if($widget['WidgetHostStatusList']['show_downtime'] == false){
+			$conditions['Hoststatus.scheduled_downtime_depth'] = 0;
+		}
+		
+		if($this->Controller->hasRootPrivileges === false){
+			$conditions = \Hash::merge($conditions, ['HostsToContainers.container_id' => $this->Controller->MY_RIGHTS]);
+		}
+		
+		$fields = [
+			'Host.id',
+			'Host.uuid',
+			'Host.name',
+			'Hoststatus.current_state',
+			'Hoststatus.last_hard_state_change',
+			'Hoststatus.problem_has_been_acknowledged',
+			'Hoststatus.scheduled_downtime_depth',
+			'Hoststatus.is_flapping'
+		];
+		$query = $this->QueryCache->_hostBaseQuery($fields, $conditions);
+		$hosts = $this->Controller->Host->find('all', $query);
+		$this->Controller->viewVars['widgetHoststatusList'][$widget['Widget']['id']] = [
+			'Hosts' => $hosts,
+			'Widget' => $widget,
+		];
 	}
 	
 }
