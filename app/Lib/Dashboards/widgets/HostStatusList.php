@@ -24,38 +24,35 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Widget{
-	//Integer value of the dashboard type
-	public $typeId = null;
-	//Is this a default widget (restorDefault)
+class HostStatusList extends Widget{
 	public $isDefault = false;
-	//Default color
-	public $defaultColor = 'jarviswidget-color-blueDark';
-	//Default icon of the widget
-	public $icon = 'fa-question';
-	//Element to render
-	public $element = '404';
-	//Default row
-	public $row = 0;
-	//Default col
-	public $col = 0;
-	//Default width
-	public $width = 5;
-	//Default height
-	public $height = 11;
-	//Is ther a initical configuration we want to save into the database
-	public $hasInitialConfig = false;
+	public $icon = 'fa-list-alt';
+	public $element = 'host_status_list';
+	public $width = 10;
+	public $height = 21;
+	public $hasInitialConfig = true;
 	
-	
-	public $Controller = null;
+	public $initialConfig = [
+		'WidgetHostStatusList' => [
+			'show_up' => 0,
+			'show_down' => 1,
+			'show_unreachable' => 1,
+			'show_acknowledged' => 0,
+			'show_downtime' => 0
+		]
+	];
 	
 	public function __construct(\Controller $controller, $QueryCache){
-		$this->Controller = $controller;
-		$this->QueryCache = $QueryCache;
+		parent::__construct($controller, $QueryCache);
+		$this->typeId = 9;
+		$this->title = __('Hosts status list');
 	}
 	
-	//This function will set all required variables for the view
 	public function setData($widgetData){
-		
+		//debug($widgetData);
+		//Prefix every widget variable with $widgetFoo
+		$widgetHostStateArray180 = $this->QueryCache->hostStateCount180();
+		$this->Controller->set(compact(['widgetHostStateArray180']));
 	}
+	
 }

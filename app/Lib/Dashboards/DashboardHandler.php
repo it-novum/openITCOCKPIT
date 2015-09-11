@@ -36,6 +36,7 @@ class DashboardHandler{
 		'Service180',
 		'Hostdowntimes',
 		'Servicedowntimes',
+		'HostStatusList',
 	];
 	
 	protected $__widgetClasses = [];
@@ -69,18 +70,27 @@ class DashboardHandler{
 		return $widgets;
 	}
 	
-	public function getWidgetByTypeId($typeId){
+	public function getWidgetByTypeId($typeId, $tabId = null){
 		$result = [
-			'typeId' => $this->{$this->__widgetClasses[$typeId]}->typeId,
-			'title' => $this->{$this->__widgetClasses[$typeId]}->title,
-			'icon' => $this->{$this->__widgetClasses[$typeId]}->icon,
-			'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$typeId]}->element,
-			'row' => $this->{$this->__widgetClasses[$typeId]}->row,
-			'col' => $this->{$this->__widgetClasses[$typeId]}->col,
-			'width' => $this->{$this->__widgetClasses[$typeId]}->width,
-			'height' => $this->{$this->__widgetClasses[$typeId]}->height,
-			'color' => $this->{$this->__widgetClasses[$typeId]}->defaultColor,
+			'Widget' => [
+				'dashboard_tab_id' => $tabId,
+				'typeId' => $this->{$this->__widgetClasses[$typeId]}->typeId, //backward compatible
+				'type_id' => $this->{$this->__widgetClasses[$typeId]}->typeId,
+				'title' => $this->{$this->__widgetClasses[$typeId]}->title,
+				'icon' => $this->{$this->__widgetClasses[$typeId]}->icon,
+				'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$typeId]}->element,
+				'row' => $this->{$this->__widgetClasses[$typeId]}->row,
+				'col' => $this->{$this->__widgetClasses[$typeId]}->col,
+				'width' => $this->{$this->__widgetClasses[$typeId]}->width,
+				'height' => $this->{$this->__widgetClasses[$typeId]}->height,
+				'color' => $this->{$this->__widgetClasses[$typeId]}->defaultColor,
+			]
 		];
+		
+		if($this->{$this->__widgetClasses[$typeId]}->hasInitialConfig === true){
+			$result = \Hash::merge($result, $this->{$this->__widgetClasses[$typeId]}->initialConfig);
+		}
+		
 		return $result;
 	}
 	
@@ -99,15 +109,16 @@ class DashboardHandler{
 		$widgetData = [];
 		if(isset($tab['Widget'])){
 			foreach($tab['Widget'] as $widget){
-				$widgetData[] = [
+				$currentWidgetData = [
 					'Widget' => $widget,
 					'Settings' => [
 						'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$widget['type_id']]}->element,
 						'icon' => $this->{$this->__widgetClasses[$widget['type_id']]}->icon,
 					]
 				];
+				$widgetData[] = $currentWidgetData;
 				//Set data for view
-				$this->{$this->__widgetClasses[$widget['type_id']]}->setData();
+				$this->{$this->__widgetClasses[$widget['type_id']]}->setData($currentWidgetData);
 			}
 		}
 		return $widgetData;

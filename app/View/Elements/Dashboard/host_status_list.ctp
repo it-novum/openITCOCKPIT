@@ -22,25 +22,4 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
 ?>
-<div class="widget-body browser-body">
-	<?php
-	echo $this->Form->create('browser', array(
-		'class' => 'widgetBrowserForm clear',
-		'id' => '',
-	));
-
-	echo $this->Form->input('url');
-
-	$options_button = array(
-		'label' => 'Save',
-		'class' => 'browser_save btn btn-sm btn-primary',
-	);
-	echo $this->Form->end($options_button);
-
-	?>
-
-	<div class="widget-browser-title"><i class="fa fa-cog "></i></div>
-	<div class="widget-browser"></div>
-</div>

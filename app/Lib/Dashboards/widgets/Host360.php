@@ -37,7 +37,7 @@ class Host360 extends Widget{
 		$this->title = __('Hosts Piechart');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetHostStateArray = $this->QueryCache->hostStateCount();
 		$this->Controller->set(compact(['widgetHostStateArray']));

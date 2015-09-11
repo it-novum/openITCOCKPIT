@@ -37,7 +37,7 @@ class Service180 extends Widget{
 		$this->title = __('Services Piechart 180');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetServiceStateArray180 = $this->QueryCache->serviceStateCount180();
 		$this->Controller->set(compact(['widgetServiceStateArray180']));

@@ -37,7 +37,7 @@ class Host180 extends Widget{
 		$this->title = __('Hosts Piechart 180');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetHostStateArray180 = $this->QueryCache->hostStateCount180();
 		$this->Controller->set(compact(['widgetHostStateArray180']));

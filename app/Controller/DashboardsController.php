@@ -44,6 +44,7 @@ class DashboardsController extends AppController{
 		'Host',
 		'DashboardTab',
 		'Widget',
+		'WidgetHostStatusList',
 		'Service',
 		MONITORING_OBJECTS,
 		'Rrd',
@@ -146,20 +147,16 @@ class DashboardsController extends AppController{
 			]);
 			//Check if the tab exists and is owned by the user
 			if(!empty($tab)){
-				$_widget = $this->DashboardHandler->getWidgetByTypeId($typeId);
-				//Save the new widget
-				$data = [
-					'dashboard_tab_id' => $tabId,
-					'type_id' => $typeId,
-					'row' => $_widget['row'],
-					'col' => $_widget['col'],
-					'width' => $_widget['width'],
-					'height' => $_widget['height'],
-					'title' => $_widget['title'],
-					'color' => $_widget['color'],
-				];
-				$resultForRender = $this->Widget->save($data);
-				if($resultForRender){
+				$_widget = $this->DashboardHandler->getWidgetByTypeId($typeId, $tabId);
+				$this->Widget->create();
+				if($this->Widget->saveAll($_widget)){
+					$resultForRender = $this->Widget->find('first', [
+						'conditions' => [
+							'Widget.id' => $this->Widget->id
+						],
+						'recursive' => -1,
+						'contain' => [],
+					]);
 					//prepareForRender requires multidimensional Widget array
 					$resultForRender = [
 						'Widget' => [

@@ -27,7 +27,7 @@ namespace Dashboard\Widget;
 class Welcome extends Widget{
 	public $isDefault = true;
 	public $icon = 'fa-comment';
-	public $element = 'Welcome';
+	public $element = 'welcome';
 	public $width = 5;
 	public $height = 11;
 	
@@ -37,7 +37,7 @@ class Welcome extends Widget{
 		$this->title = __('Welcome');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetHostStateArray = $this->QueryCache->hostStateCount();
 		$widgetServiceStateArray = $this->QueryCache->serviceStateCount();

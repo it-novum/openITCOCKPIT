@@ -37,7 +37,7 @@ class Servicedowntimes extends Widget{
 		$this->title = __('Service downtimes');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetServiceDowntimes = $this->QueryCache->serviceDowntimes();
 		$this->Controller->set(compact(['widgetServiceDowntimes']));

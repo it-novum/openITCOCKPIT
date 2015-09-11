@@ -37,7 +37,7 @@ class Parentoutages extends Widget{
 		$this->title = __('Parentoutages');
 	}
 	
-	public function setData(){
+	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetParentOutages = $this->QueryCache->parentOutages();
 		$this->Controller->set(compact(['widgetParentOutages']));
