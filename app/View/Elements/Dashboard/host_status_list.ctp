@@ -33,31 +33,47 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
 			<div class="col-xs-2">
 				<a href="javascript:void(0);" data-widget-id="<?php echo h($widget['Widget']['id']); ?>" class="btn btn-default btn-xs stopRotation btn-primary"><i class="fa fa-pause"></i></a>
 				<a href="javascript:void(0);" data-widget-id="<?php echo h($widget['Widget']['id']); ?>" class="btn btn-default btn-xs startRotation" style="display:none;"><i class="fa fa-play"></i></a>
-				<a href="javascript:void(0);" class="btn btn-default btn-xs"><i class="fa fa-arrow-left"></i></a>
-				<a href="javascript:void(0);" class="btn btn-default btn-xs"><i class="fa fa-arrow-up"></i></a>
+				<?php
+				$class = '';
+				if($widgetData['Widget']['WidgetHostStatusList']['animation'] == 'fadeInRight'):
+					$class = 'btn-primary';
+				endif;
+				?>
+				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?>"><i class="fa fa-arrow-left"></i></a>
+				<?php
+				$class = '';
+				if($widgetData['Widget']['WidgetHostStatusList']['animation'] == 'fadeInUp'):
+					$class = 'btn-primary';
+				endif;
+				?>
+				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?>"><i class="fa fa-arrow-up"></i></a>
 			</div>
 			<div class="col-xs-4">
-				<div class="slider-slim width-120">
-					<input class="slider slider-primary slider-slim" data-slider-min="3" data-slider-max="30" data-slider-value="5" />
+				<div class="pull-left padding-right-5">
+					<?php echo __('Paging interval');?>:
 				</div>
+				<div class="slider-slim width-120 pull-left">
+					<input class="slider slider-primary slider-slim" data-slider-min="3" data-slider-max="30" data-slider-value="<?php echo h($widgetData['Widget']['WidgetHostStatusList']['animation_interval']); ?>" />
+				</div>
+				<div class="clearfix"></div>
 			</div>
 			<div class="col-xs-6 text-right">
 				<?php
 				$stateSettings = [
 					'show_up' => [
-						'icon' => 'fa-square fa-lg ok'
+						'icon' => 'fa-square ok'
 					],
 					'show_down' => [
-						'icon' => 'fa-square fa-lg critical'
+						'icon' => 'fa-square critical'
 					],
 					'show_unreachable' => [
-						'icon' => 'fa-square fa-lg unknown'
+						'icon' => 'fa-square unknown'
 					],
 					'show_acknowledged' => [
-						'icon' => 'fa-user fa-lg'
+						'icon' => 'fa-user'
 					],
 					'show_downtime' => [
-						'icon' => 'fa-power-off fa-lg'
+						'icon' => 'fa-power-off'
 					]
 				];
 				foreach($stateSettings as $dbField => $stateSetting): ?>

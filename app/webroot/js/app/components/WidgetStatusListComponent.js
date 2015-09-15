@@ -26,6 +26,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	
 	lists: {},
 	UtilsComponent: null,
+	updateInterval: 500000, //Ajax update interval of the lists in seconds (5 mins by default)
 	
 	setup: function(UtilsComponent){
 		this.UtilsComponent = UtilsComponent;
@@ -71,6 +72,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 					self.lists[$list.data('widget-id')] = {
 						datatable: $list,
 						timer: null,
+						lastUpdate: new Date().getTime()
 					};
 					self.startRotate($list);
 				}
@@ -117,11 +119,15 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 				var nextPage = currentPage + 1;
 				if(nextPage > totalPages){
 					nextPage = 0;
+					
+					//Check if we need to refresh the table content
+					if((this.lists[widgetId].lastUpdate + this.updateInterval) < new Date().getTime()){
+						console.log('refresh data');
+					}
 				}
 				$list.fnPageChange(nextPage);
 			}
-			//Hier funktioniert flapping setzen, aber laufen dann nicht 500 timer?
-			//this.UtilsComponent.flapping();
+			this.UtilsComponent.flapping();
 		}.bind(this), 5000);
 	},
 	

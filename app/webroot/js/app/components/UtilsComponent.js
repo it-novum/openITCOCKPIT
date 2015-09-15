@@ -33,6 +33,12 @@ App.Components.UtilsComponent = Frontend.Component.extend({
 		if(this.$flappingContainer.length > 0){
 			//var current_state_class = (this.$flappingContainer.parent().attr('class').split(' ').pop())?this.$flappingContainer.parent().attr('class').split(' ').pop():'';
 			var i = 0;
+			
+			if(this.flappingIntervalObject != null){
+				//Stop the old interval
+				clearInterval(this.flappingIntervalObject);
+			}
+			
 			this.flappingIntervalObject = setInterval(function(){
 				if(i == 0){
 				//	this.$flappingContainer.html('<i class="fa fa-circle '+current_state_class+'"></i> <i class="fa fa-circle-o '+current_state_class+'"></i>');
