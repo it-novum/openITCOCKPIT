@@ -1064,8 +1064,11 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('host_name',1, $service['Host']['uuid']);
 
 			$content.= $this->addContent('name', 1, $service['Service']['uuid']);
-			if($service['Service']['name'] !== null && $service['Service']['name'] !== '')
+			if($service['Service']['name'] !== null && $service['Service']['name'] !== ''){
 				$content.= $this->addContent('display_name', 1, $service['Service']['name']);
+			}else{
+				$content.= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+			}
 
 			$content.= $this->addContent('service_description', 1, $service['Service']['uuid']);
 
@@ -1347,8 +1350,11 @@ class NagiosExportTask extends AppShell{
 		$content.= $this->addContent('host_name',1, $service['Host']['uuid']);
 
 		$content.= $this->addContent('name', 1, $service['Service']['uuid']);
-		if($service['Service']['name'] !== null && $service['Service']['name'] !== '')
+		if($service['Service']['name'] !== null && $service['Service']['name'] !== ''){
 			$content.= $this->addContent('display_name', 1, $service['Service']['name']);
+		}else{
+			$content.= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+		}
 
 		$content.= $this->addContent('service_description', 1, $service['Service']['uuid']);
 
