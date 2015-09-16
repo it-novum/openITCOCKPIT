@@ -124,7 +124,7 @@ class AfterExportShell extends AppShell{
 			$this->out('Copy files to <blue>'.$satellite['Satellite']['name'].'</blue> ('.$satellite['Satellite']['address'].')', false);
 			if($this->checkPort($satellite['Satellite']['address'])){
 				$output = null;
-				exec("rsync -e 'ssh -ax -i ".$this->conf['SSH']['private_key']."' -avzm --timeout=10 --delete  ".Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']."/* ".$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].":".$this->conf['REMOTE']['path'], $output, $returnCode);
+				exec("rsync -e 'ssh -ax -i ".$this->conf['SSH']['private_key']." -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete  ".Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']."/* ".$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].":".$this->conf['REMOTE']['path'], $output, $returnCode);
 				if($returnCode > 0){
 					$this->out('<red>   Error while copy data</red>');
 					debug($output);
@@ -132,7 +132,7 @@ class AfterExportShell extends AppShell{
 					$this->out('<green>   ...ok</green>');
 					$this->out('Fire up nagios restart', false);
 					$output = null;
-					exec('ssh -i '.$this->conf['SSH']['private_key'].' '.$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].' "service nagios restart"', $output, $returnCode);
+					exec('ssh -i '.$this->conf['SSH']['private_key'].' -o StrictHostKeyChecking=no ' .$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].' "sudo service nagios restart"', $output, $returnCode);
 					if($returnCode > 0){
 						$this->out('<red>   Error while restart nagios</red>');
 						debug($output);
@@ -143,7 +143,7 @@ class AfterExportShell extends AppShell{
 						$this->out('Execute custom remote command', false);
 						foreach($this->conf['SSH']['remote_command'] as $remoteCommand){
 							$output = null;
-							exec('ssh -i '.$this->conf['SSH']['private_key'].' '.$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].' \''.$remoteCommand.'\'', $output, $returnCode);
+							exec('ssh -i '.$this->conf['SSH']['private_key'].' -o StrictHostKeyChecking=no '.$this->conf['SSH']['username']."@".$satellite['Satellite']['address'].' \''.$remoteCommand.'\'', $output, $returnCode);
 							if($returnCode > 0){
 								$this->out('<red>   Error while executing remote command</red>');
 								debug($output);
