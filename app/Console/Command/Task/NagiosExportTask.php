@@ -127,7 +127,15 @@ class NagiosExportTask extends AppShell{
 			$commands = [];
 			$commands[] = $this->Command->findByUuid($uuid);
 		}else{
-			$commands = $this->Command->find('all');
+			$commands = $this->Command->find('all', [
+				'recursive' => -1,
+				'contain' => [],
+				'fields' => [
+					'id',
+					'uuid',
+					'command_line'
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['commands'])){
@@ -177,7 +185,15 @@ class NagiosExportTask extends AppShell{
 			$contacts = [];
 			$contacts[] = $this->Contact->findByUuid($uuid);
 		}else{
-			$contacts = $this->Contact->find('all');
+			$contacts = $this->Contact->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'HostTimeperiod',
+					'ServiceTimeperiod',
+					'HostCommands',
+					'ServiceCommands',
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['contacts'])){
@@ -235,7 +251,17 @@ class NagiosExportTask extends AppShell{
 			$contactgroups = [];
 			$contactgroups[] = $this->Contactgroup->findByUuid($uuid);
 		}else{
-			$contactgroups = $this->Contactgroup->find('all');
+			$contactgroups = $this->Contactgroup->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'Contact' => [
+						'fields' => [
+							'Contact.id',
+							'Contact.uuid'
+						]
+					]
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['contactgroups'])){
@@ -283,7 +309,20 @@ class NagiosExportTask extends AppShell{
 			$hosttemplates = [];
 			$hosttemplates[] = $this->Hosttemplate->findByUuid($uuid);
 		}else{
-			$hosttemplates = $this->Hosttemplate->find('all');
+			$hosttemplates = $this->Hosttemplate->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'CheckPeriod',
+					'NotifyPeriod',
+					'CheckCommand',
+					'Customvariable',
+					'Hosttemplatecommandargumentvalue' => [
+						'Commandargument'
+					],
+					'Contactgroup',
+					'Contact',
+				],
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['hosttemplates'])){
@@ -307,9 +346,9 @@ class NagiosExportTask extends AppShell{
 				}
 			}
 
+			$commandarguments = [];
 			if(!empty($hosttemplate['Hosttemplatecommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = $this->Hosttemplatecommandargumentvalue->findAllByHosttemplateId($hosttemplate['Hosttemplate']['id']);
 				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
@@ -324,7 +363,7 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->nl();
 			$content.= $this->addContent(';Check settings:', 1);
 			if(isset($commandarguments) && !empty($commandarguments)){
-				$content.= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Hosttemplatecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+				$content.= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 			}else{
 				$content.= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid']);
 			}
@@ -411,8 +450,29 @@ class NagiosExportTask extends AppShell{
 			]);
 		}else{
 			$hosts = $this->Host->find('all', [
+				'recursive' => -1,
 				'conditions' => [
 					'Host.disabled' => 0
+				],
+				'contain' => [
+					'Hosttemplate' => [
+						'fields' => [
+							'Hosttemplate.id',
+							'Hosttemplate.uuid',
+							'Hosttemplate.check_interval'
+						]
+					],
+					'Hostcommandargumentvalue' => [
+						'Commandargument'
+					],
+					'Customvariable',
+					'Contactgroup',
+					'Contact',
+					'Parenthost',
+					'Hostgroup',
+					'CheckPeriod',
+					'NotifyPeriod',
+					'CheckCommand'
 				]
 			]);
 		}
@@ -438,11 +498,9 @@ class NagiosExportTask extends AppShell{
 				}
 			}
 
-
+			$commandarguments = [];
 			if(!empty($host['Hostcommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = $this->Hostcommandargumentvalue->findAllByHostId($host['Host']['id']);
-
 				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
@@ -476,7 +534,7 @@ class NagiosExportTask extends AppShell{
 				if(isset($commandarguments) && !empty($commandarguments)){
 					if($host['CheckCommand']['uuid'] !== null && $host['CheckCommand']['uuid'] !== ''){
 						//The host has its own check_command and own command args
-						$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Hostcommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+						$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 					}else{
 						//The host only has its own command args, but the same command as the hosttemplate
 						//This is not supported by nagios, so we need to select the command and create the
@@ -491,7 +549,7 @@ class NagiosExportTask extends AppShell{
 								],
 								'fields' => ['Command.uuid']
 							]);
-							$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Hostcommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+							$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 							unset($command);
 						}
 					}
@@ -503,9 +561,7 @@ class NagiosExportTask extends AppShell{
 			}else{
 				$content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
 			}
-			if(isset($commandarguments)){
-				unset($commandarguments);
-			}
+
 			//$content.= $this->addContent('initial_state', 1, $this->_systemsettings['MONITORING']['MONITORING.HOST.INITSTATE']);
 
 			if($host['CheckPeriod']['uuid'] !== null && $host['CheckPeriod']['uuid'] !== '')
@@ -648,7 +704,7 @@ class NagiosExportTask extends AppShell{
 			
 			if($this->dm === true && $host['Host']['satellite_id'] > 0){
 				//Generate config file for sat nagios
-				$this->exportSatHost($host, $host['Host']['satellite_id']);
+				$this->exportSatHost($host, $host['Host']['satellite_id'], $commandarguments);
 			
 				/*
 				 * May be not all hosts in hostgroup 'foo' are available in SAT system 'bar', so we create an array
@@ -660,6 +716,10 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 			}
+			
+			if(isset($commandarguments)){
+				unset($commandarguments);
+			}
 
 		}
 		if($this->conf['minified']){
@@ -669,7 +729,7 @@ class NagiosExportTask extends AppShell{
 		$this->deleteHostPerfdata();
 	}
 	
-	public function exportSatHost($host, $satelliteId){
+	public function exportSatHost($host, $satelliteId, $commandarguments){
 		if(!is_dir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['hosts'])){
 			mkdir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['hosts']);
 		}
@@ -684,13 +744,6 @@ class NagiosExportTask extends AppShell{
 
 		if(!$file->exists()){
 			$file->create();
-		}
-
-		if(!empty($host['Hostcommandargumentvalue'])){
-			//Select command arguments + command, because we have arguments!
-			$commandarguments = $this->Hostcommandargumentvalue->findAllByHostId($host['Host']['id']);
-
-			$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
 		}
 
 		$content.= $this->addContent('define host{', 0);
@@ -726,7 +779,7 @@ class NagiosExportTask extends AppShell{
 		if(isset($commandarguments) && !empty($commandarguments)){
 			if($host['CheckCommand']['uuid'] !== null && $host['CheckCommand']['uuid'] !== ''){
 				//The host has its own check_command and own command args
-				$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Hostcommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+				$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 			}else{
 				//The host only has its own command args, but the same command as the hosttemplate
 				//This is not supported by nagios, so we need to select the command and create the
@@ -741,7 +794,7 @@ class NagiosExportTask extends AppShell{
 						],
 						'fields' => ['Command.uuid']
 					]);
-					$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Hostcommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+					$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 					unset($command);
 				}
 			}
@@ -750,10 +803,6 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid']);
 		}
 		
-		if(isset($commandarguments)){
-			unset($commandarguments);
-		}
-
 		if($host['CheckPeriod']['uuid'] !== null && $host['CheckPeriod']['uuid'] !== '')
 			$content.= $this->addContent('check_period', 1, $host['CheckPeriod']['uuid']);
 
@@ -851,7 +900,24 @@ class NagiosExportTask extends AppShell{
 			$_servicetemplates = [];
 			$_servicetemplates[] = $this->Servicetemplate->findByUuid($uuid);
 		}else{
-			$_servicetemplates = $this->Servicetemplate->find('all');
+			$_servicetemplates = $this->Servicetemplate->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'CheckPeriod',
+					'NotifyPeriod',
+					'CheckCommand',
+					'EventhandlerCommand',
+					'Customvariable',
+					'Servicetemplatecommandargumentvalue' => [
+						'Commandargument'
+					],
+					'Servicetemplateeventcommandargumentvalue' => [
+						'Commandargument'
+					],
+					'Contact',
+					'Contactgroup'
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['servicetemplates'])){
@@ -877,9 +943,9 @@ class NagiosExportTask extends AppShell{
 				}
 			}
 
+			$commandarguments = [];
 			if(!empty($servicetemplates['Servicetemplatecommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = $this->Servicetemplatecommandargumentvalue->findAllByServicetemplateId($servicetemplates['Servicetemplate']['id']);
 				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
@@ -893,7 +959,7 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->nl();
 			$content.= $this->addContent(';Check settings:', 1);
 			if(isset($commandarguments) && !empty($commandarguments)){
-				$content.= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicetemplatecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+				$content.= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 			}else{
 				$content.= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid']);
 			}
@@ -958,16 +1024,16 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->addContent('notes', 1, $servicetemplates['Servicetemplate']['notes']);
 
 			//Export event handlers to template
+			$eventarguments = [];
 			if(isset($servicetemplates['EventhandlerCommand']['id']) && $servicetemplates['EventhandlerCommand']['id'] !== null){
 				$content.= $this->addContent(';Event handler:', 1);
 				if(!empty($servicetemplates['Servicetemplateeventcommandargumentvalue'])){
 					//Select command arguments + command, because we have arguments!
-					$eventarguments = $this->Servicetemplateeventcommandargumentvalue->findAllByServicetemplateId($servicetemplates['Servicetemplate']['id']);
 					$eventarguments = Hash::sort($eventarguments, '{n}.Commandargument.name', 'asc', 'natural');
 				}
 				
 				if(isset($eventarguments) && !empty($eventarguments)){
-					$content.= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.Servicetemplateeventcommandargumentvalue.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+					$content.= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 				}else{
 					$content.= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid']);
 				}
@@ -1043,14 +1109,40 @@ class NagiosExportTask extends AppShell{
 				'Host.uuid',
 				'Host.satellite_id'
 			],
-
 		]);
+		
 		foreach($hosts as $host){
 			$services = $this->Service->find('all', [
+				'recursive' => -1,
 				'conditions' => [
 					'Service.disabled' => 0,
-					'Service.host_id' => $host['Host']['id']
-				]
+					'Service.host_id' => $host['Host']['id'],
+				],
+				'contain' => [
+					'Servicetemplate' => [
+						'fields' => [
+							'Servicetemplate.id',
+							'Servicetemplate.uuid',
+							'Servicetemplate.name',
+							'Servicetemplate.check_interval',
+							'Servicetemplate.eventhandler_command_id'
+						]
+					],
+					'CheckPeriod',
+					'CheckCommand',
+					'NotifyPeriod',
+					'Servicecommandargumentvalue' => [
+						'Commandargument'
+					],
+					'Serviceeventcommandargumentvalue' => [
+						'Commandargument'
+					],
+					'EventhandlerCommand',
+					'Customvariable',
+					'Servicegroup',
+					'Contactgroup',
+					'Contact'
+				],
 			]);
 			foreach($services as $service){
 				if(!$this->conf['minified']){
@@ -1062,25 +1154,39 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 
-				/*if(!empty($service['Servicecommandargumentvalue'])){
-					$this->Commandargument->unbindModel(
-						['hasOne' => ['Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-					);
-					$commandarguments = $this->Commandargument->find('all', [
-						'conditions' => [
-							'Commandargument.command_id' => $service['CheckCommand']['id'],
-							'Servicecommandargumentvalue.service_id' => $service['Service']['id']
-						]
-					]);
-					$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				}*/
+				//if(!empty($service['Servicecommandargumentvalue'])){
+				//	$this->Commandargument->unbindModel(
+				//		['hasOne' => ['Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
+				//	);
+				//	$commandarguments = $this->Commandargument->find('all', [
+				//		'conditions' => [
+				//			'Commandargument.command_id' => $service['CheckCommand']['id'],
+				//			'Servicecommandargumentvalue.service_id' => $service['Service']['id']
+				//		]
+				//	]);
+				//	$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+				//}
 
+				$commandarguments = [];
 				if(!empty($service['Servicecommandargumentvalue'])){
 					//Select command arguments + command, because we have arguments!
-					$commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($service['Service']['id']);
-					$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+					//$commandarguments = $this->Servicecommandargumentvalue->find('all', [
+					//	'recursive' => -1,
+					//	'conditions' => [
+					//		'Servicecommandargumentvalue.service_id' => $service['Service']['id']
+					//	],
+					//	'contain' => [
+					//		'Commandargument' => [
+					//			'fields' => [
+					//				'Commandargument.name',
+					//				'Commandargument.human_name',
+					//				'Commandargument.command_id'
+					//			]
+					//		]
+					//	]
+					//]);
+					$commandarguments = Hash::sort($service['Servicecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 				}
-
 
 				$content.= $this->addContent('define service{', 0);
 				$content.= $this->addContent('use', 1, $service['Servicetemplate']['uuid']);
@@ -1098,15 +1204,16 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->nl();
 				$content.= $this->addContent(';Check settings:', 1);
 			
+				$eventarguments = [];
 				if($host['Host']['satellite_id'] == 0){
 					if(isset($commandarguments) && !empty($commandarguments)){
 						if($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== ''){
 							//The host has its own check_command and own command args
-							$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+							$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 						}else{
 							//The services only has its own command args, but the same command as the servicetemplate
 							//This is not supported by nagios, so we need to select the command and create the
-							//config with the right comman
+							//config with the right command uuid
 							$command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
 							if(!empty($command_id)){
 								$command_id = array_pop($command_id);
@@ -1117,7 +1224,7 @@ class NagiosExportTask extends AppShell{
 									],
 									'fields' => ['Command.uuid']
 								]);
-								$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+								$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 								unset($command);
 							}
 						}
@@ -1132,7 +1239,6 @@ class NagiosExportTask extends AppShell{
 						$content.= $this->addContent(';Event handler:', 1);
 						if(!empty($service['Serviceeventcommandargumentvalue'])){
 							//Select command arguments + command, because we have arguments!
-							$eventarguments = $this->Serviceeventcommandargumentvalue->findAllByServiceId($service['Service']['id']);
 							$eventarguments = Hash::sort($eventarguments, '{n}.Commandargument.name', 'asc', 'natural');
 						}
 				
@@ -1153,16 +1259,12 @@ class NagiosExportTask extends AppShell{
 						}
 				
 						if(isset($eventarguments) && !empty($eventarguments)){
-							$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.Serviceeventcommandargumentvalue.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+							$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 						}else{
 							if($serviceHasOwnEventhandler === true){
 								//The service has a own event handler, witout arguments.
 								$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
 							}
-						}
-				
-						if(isset($eventarguments)){
-							unset($eventarguments);
 						}
 					
 						if(isset($serviceHasOwnEventhandler)){
@@ -1173,10 +1275,6 @@ class NagiosExportTask extends AppShell{
 				
 				}else{
 					$content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
-				}
-			
-				if(isset($commandarguments)){
-					unset($commandarguments);
 				}
 			
 				/*
@@ -1319,7 +1417,7 @@ class NagiosExportTask extends AppShell{
 			
 				if($this->dm === true && $host['Host']['satellite_id'] > 0){
 				
-					$this->exportSatService($service, $host);
+					$this->exportSatService($service, $host, $commandarguments, $eventarguments);
 				
 					/*
 					 * May be not all services in servicegroup 'foo' are available on SAT system 'bar', so we create an array
@@ -1330,6 +1428,14 @@ class NagiosExportTask extends AppShell{
 							$this->dmConfig[$host['Host']['satellite_id']]['Servicegroup'][$servicegroup['uuid']][] = $host['Host']['uuid'].','.$service['Service']['uuid'];
 						}
 					}
+				}
+				
+				if(isset($commandarguments)){
+					unset($commandarguments);
+				}
+				
+				if(isset($eventarguments)){
+					unset($eventarguments);
 				}
 			}
 		}
@@ -1342,7 +1448,7 @@ class NagiosExportTask extends AppShell{
 		$this->deleteServicePerfdata();
 	}
 	
-	public function exportSatService($service, $host){
+	public function exportSatService($service, $host, $commandarguments, $eventarguments){
 		$satelliteId = $host['Host']['satellite_id'];
 		if(!is_dir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['services'])){
 			mkdir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['services']);
@@ -1360,12 +1466,6 @@ class NagiosExportTask extends AppShell{
 
 		if(!$file->exists()){
 			$file->create();
-		}
-
-		if(!empty($service['Servicecommandargumentvalue'])){
-			//Select command arguments + command, because we have arguments!
-			$commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($service['Service']['id']);
-			$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
 		}
 
 		$content.= $this->addContent('define service{', 0);
@@ -1387,7 +1487,7 @@ class NagiosExportTask extends AppShell{
 		if(isset($commandarguments) && !empty($commandarguments)){
 			if($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== ''){
 				//The host has its own check_command and own command args
-				$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+				$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 			}else{
 				//The services only has its own command args, but the same command as the servicetemplate
 				//This is not supported by nagios, so we need to select the command and create the
@@ -1402,7 +1502,7 @@ class NagiosExportTask extends AppShell{
 						],
 						'fields' => ['Command.uuid']
 					]);
-					$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+					$content.= $this->addContent('check_command', 1, $command['Command']['uuid'].'!'.implode('!', Hash::extract($commandarguments, '{n}.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
 					unset($command);
 				}
 			}
@@ -1411,19 +1511,10 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
 		}
 		
-		if(isset($commandarguments)){
-			unset($commandarguments);
-		}
-		
 		// Export event handler to SAT-System
 		if(isset($service['Serviceeventcommandargumentvalue']) && !empty($service['Serviceeventcommandargumentvalue'])){
 			$content.= $this->addContent(';Event handler:', 1);
-			if(!empty($service['Serviceeventcommandargumentvalue'])){
-				//Select command arguments + command, because we have arguments!
-				$eventarguments = $this->Serviceeventcommandargumentvalue->findAllByServiceId($service['Service']['id']);
-				$eventarguments = Hash::sort($eventarguments, '{n}.Commandargument.name', 'asc', 'natural');
-			}
-		
+
 			//Lookup command name of event handler (uuid)
 			$serviceHasOwnEventhandler = true;
 			if(!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null){
@@ -1441,16 +1532,12 @@ class NagiosExportTask extends AppShell{
 			}
 		
 			if(isset($eventarguments) && !empty($eventarguments)){
-				$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.Serviceeventcommandargumentvalue.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+				$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 			}else{
 				if($serviceHasOwnEventhandler === true){
 					//The service has a own event handler, witout arguments.
 					$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
 				}
-			}
-		
-			if(isset($eventarguments)){
-				unset($eventarguments);
 			}
 			
 			if(isset($serviceHasOwnEventhandler)){
@@ -1584,7 +1671,22 @@ class NagiosExportTask extends AppShell{
 			$hostgroups = [];
 			$hostgroups[] = $this->Hostgroup->findByUuid($uuid);
 		}else{
-			$hostgroups = $this->Hostgroup->find('all');
+			$hostgroups = $this->Hostgroup->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'Host' => [
+						'fields' => [
+							'Host.id',
+							'Host.uuid'
+						]
+					]
+				],
+				'fields' => [
+					'Hostgroup.id',
+					'Hostgroup.uuid',
+					'Hostgroup.description'
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['hostgroups'])){
@@ -1635,7 +1737,23 @@ class NagiosExportTask extends AppShell{
 			$servicegroups = [];
 			$servicegroups[] = $this->Servicegroup->findByUuid($uuid);
 		}else{
-			$servicegroups = $this->Servicegroup->find('all');
+			$servicegroups = $this->Servicegroup->find('all', [
+				'recursive' => -1,
+				'contain' => [
+					'Service' => [
+						'fields' => [
+							'Service.id',
+							'Service.uuid',
+							'Service.host_id',
+						],
+					]
+				],
+				'fields' => [
+					'Servicegroup.id',
+					'Servicegroup.uuid',
+					'Servicegroup.description'
+				]
+			]);
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['servicegroups'])){
@@ -1660,8 +1778,24 @@ class NagiosExportTask extends AppShell{
 				 */
 
 				$members = [];
+				$hostCache = [];
 				foreach($servicegroup['Service'] as $service){
-					$host = $this->Host->findById($service['host_id']);
+					if(isset($hostCache[$service['host_id']])){
+						$host = $hostCache[$service['host_id']];
+					}else{
+						$host = $this->Host->find('first', [
+							'recursive' => -1,
+							'contain' => [],
+							'fields' => [
+								'Host.id',
+								'Host.uuid'
+							],
+							'conditions' => [
+								'Host.id' => $service['host_id']
+							]
+						]);
+						$hostCache[$service['host_id']] = $host;
+					}
 					$members[] = $host['Host']['uuid'].','.$service['uuid'];
 				}
 
@@ -2183,7 +2317,15 @@ class NagiosExportTask extends AppShell{
 		if(!$file->exists()){
 			$file->create();
 		}
-		foreach($this->Macro->find('all') as $macro){
+		
+		$macros = $this->Macro->find('all', [
+			'fields' => [
+				'name',
+				'value'
+			]
+		]);
+		
+		foreach($macros as $macro){
 			$content.= $this->addContent($macro['Macro']['name'].'='.$macro['Macro']['value'], 0);
 		}
 

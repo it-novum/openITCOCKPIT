@@ -30,17 +30,28 @@ class TestingShell extends AppShell{
 	public $uses = [
 		'Systemsetting',
 		MONITORING_CORECONFIG_MODEL,
-		'Host', 'Servicetemplate',
+		'Host',
+		'Servicetemplate',
+		'Hosttemplate',
 		'Service',
 		'Hostgroup',
 		MONITORING_HOSTSTATUS,
 		MONITORING_SERVICESTATUS,
 		'Servicetemplateeventcommandargumentvalue',
 		'Serviceeventcommandargumentvalue',
-		'Command'
+		'Command',
+		'Contact',
+		'Contactgroup',
+		'Servicegroup',
+		'Timeperiod',
+		'Macro',
+		'Hostescalation',
+		'Hostcommandargumentvalue',
+		'Servicecommandargumentvalue'
 	];
 	
 	public function main(){
+		
 		
 		/*
 		 * Lof of space for your experimental code :)

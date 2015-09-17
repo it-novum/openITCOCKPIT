@@ -176,7 +176,7 @@
 																	],
 																	[
 																		'class' => 'txt-color-green',
-																		'escape' => ture
+																		'escape' => true
 																	]
 																);
 															else:
