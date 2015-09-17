@@ -27,7 +27,18 @@ class TestingShell extends AppShell{
 	/*
 	 * This is a test and debuging shell for development purposes
 	 */
-	public $uses = ['Systemsetting', MONITORING_CORECONFIG_MODEL, 'MkModule.Mkservicedata', 'Host', 'Servicetemplate', 'Service', 'Hostgroup', MONITORING_HOSTSTATUS, MONITORING_SERVICESTATUS, 'Servicetemplateeventcommandargumentvalue', 'Serviceeventcommandargumentvalue', 'Command'];
+	public $uses = [
+		'Systemsetting',
+		MONITORING_CORECONFIG_MODEL,
+		'Host', 'Servicetemplate',
+		'Service',
+		'Hostgroup',
+		MONITORING_HOSTSTATUS,
+		MONITORING_SERVICESTATUS,
+		'Servicetemplateeventcommandargumentvalue',
+		'Serviceeventcommandargumentvalue',
+		'Command'
+	];
 	
 	public function main(){
 		
