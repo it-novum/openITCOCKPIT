@@ -289,5 +289,53 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
+	
+	public function saveHostStatuslistSettings(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
 
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['settings'])){
+			$this->__saveStatuslistSettings($this->request->data['widgetId'], $this->request->data['settings'], 'WidgetHostStatusList');
+		}
+	}
+	
+	public function saveServiceStatuslistSettings(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['settings'])){
+			$this->__saveStatuslistSettings($this->request->data['widgetId'], $this->request->data['settings'], 'WidgetServiceStatusList');
+		}
+	}
+	
+	private function __saveStatuslistSettings($widgetId, $settings, $contain){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if($this->Widget->exists($widgetId)){
+			$userId = $this->Auth->user('id');
+			$widget = $this->Widget->find('first', [
+				'contain' => [
+					$contain,
+					'DashboardTab'
+				],
+				'conditions' => [
+					'Widget.id' => $widgetId,
+				]
+			]);
+			if($widget['DashboardTab']['user_id'] == $userId){
+				foreach($settings as $dbField => $value){
+					if($value !== '' && $value !== null && isset($widget[$contain][$dbField])){
+						$widget[$contain][$dbField] = $value;
+					}
+				}
+				$this->Widget->saveAll($widget);
+			}
+		}
+	}
 }

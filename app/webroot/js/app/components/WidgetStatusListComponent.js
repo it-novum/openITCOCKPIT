@@ -24,9 +24,14 @@
 
 App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	
+	Ajaxloader: null,
 	lists: {},
 	UtilsComponent: null,
 	updateInterval: 500000, //Ajax update interval of the lists in seconds (5 mins by default)
+	
+	setAjaxloader: function(Ajaxloader){
+		this.Ajaxloader = Ajaxloader;
+	},
 	
 	setup: function(UtilsComponent){
 		this.UtilsComponent = UtilsComponent;
@@ -44,6 +49,42 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 			$object.hide();
 			$object.parent().children('.stopRotation').show();
 		});
+		
+		$(document).on('click', '.saveListSettings', function(){
+			var $object = $(this);
+			var widgetId = $object.data('widget-id');
+		});
+		
+		$(document).on('click', '.listAnimateUp', function(){
+			var $object = $(this);
+			var widgetId = $object.data('widget-id');
+			self.setAnimation(widgetId, 'fadeInUp');
+			self.lists[widgetId].data.animation = 'fadeInUp';
+			$object.addClass('btn-primary');
+			$object.parent().children('.listAnimateRight').removeClass('btn-primary');
+		});
+		
+		$(document).on('click', '.listAnimateRight', function(){
+			var $object = $(this);
+			var widgetId = $object.data('widget-id');
+			self.setAnimation(widgetId, 'fadeInRight');
+			self.lists[widgetId].data.animation = 'fadeInRight';
+			$object.addClass('btn-primary');
+			$object.parent().children('.listAnimateUp').removeClass('btn-primary');
+		});
+		
+		$(document).on('click', '.saveListSettings', function(){
+			var widgetId = $(this).data('widget-id');
+			var $inputs = $('.saveListSettings').parent().children('.listSettings').children(':input');
+			$inputs.each(function(key, input){
+				var $input = $(input);
+				self.lists[widgetId].data[$input.data('key')] = 0;
+				if($input.prop('checked')){
+					self.lists[widgetId].data[$input.data('key')] = 1;
+				}
+			}).bind(self);
+			self.saveSettings(widgetId);
+		});
 	},
 	
 	
@@ -53,15 +94,21 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 		$('.slider-horizontal').each(function(int, object){
 			$(object).css('margin-bottom', '0px');
 		});
-		
+		$('.slider-horizontal').on('slideStop', function(e){
+			var widgetId = $(this).parent().data('widget-id');
+			self.lists[widgetId].data.animation_interval = parseInt(e.value, 10);
+			self.updateInterval(widgetId);
+		});
 		var self = this;
 		$('.statusListHosts').each(function(key, object){
 			var $list = $(object);
+			var sliderValue = parseInt($list.parent().parent().find('input.slider-slim').data('slider-value'), 10);
 			var $widgetContainer = $list.parent().parent().parent().parent();
 			var height = self.calculateHeight($widgetContainer);
 			
 			var recordsPerPage = self.calculateRowsByHeight(height);
 			
+			var widgetId = $list.data('widget-id');
 			$list.dataTable({
 				'iDisplayLength': recordsPerPage,
 				'bLengthChange': false,
@@ -69,15 +116,23 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 				'bAutoWidth': true,
 				'pagingType': 'numbers',
 				'fnInitComplete': function(){
-					self.lists[$list.data('widget-id')] = {
+					self.lists[widgetId] = {
 						datatable: $list,
 						timer: null,
-						lastUpdate: new Date().getTime()
+						lastUpdate: new Date().getTime(),
+						data: {
+							show_up: null,
+							show_down: null,
+							show_unreachable: null,
+							show_acknowledged: null,
+							show_downtime: null,
+							animation: null,
+							animation_interval: sliderValue,
+						}
 					};
 					self.startRotate($list);
 				}
 			});
-			
 		});
 	},
 	
@@ -128,13 +183,39 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 				$list.fnPageChange(nextPage);
 			}
 			this.UtilsComponent.flapping();
-		}.bind(this), 5000);
+		}.bind(this), (this.lists[widgetId].data.animation_interval * 1000));
 	},
 	
 	stopInterval: function(widgetId){
 		if(this.lists[widgetId].timer !== null){
 			clearInterval(this.lists[widgetId].timer);
 		}
+	},
+	
+	setAnimation: function(widgetId, animation){
+		var $list = this.lists[widgetId].datatable;
+		var oSettings = $list.fnSettings();
+		oSettings._sActiveClass = 'animated ' + animation;
+	},
+	
+	saveSettings: function(widgetId){
+		this.Ajaxloader.show();
+		$.ajax({
+			url: "/dashboards/saveHostStatuslistSettings",
+			type: "POST",
+			data: {settings: this.lists[widgetId].data, widgetId: widgetId},
+			error: function(){},
+			success: function(response){
+				this.Ajaxloader.hide();
+			}.bind(this),
+			complete: function(response) {
+			}
+		});
+	},
+	
+	updateInterval: function(widgetId){
+		this.stopInterval(widgetId);
+		this.startRotate(this.lists[widgetId].datatable);
 	}
 	
 });

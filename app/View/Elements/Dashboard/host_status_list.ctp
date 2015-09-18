@@ -39,54 +39,56 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
 					$class = 'btn-primary';
 				endif;
 				?>
-				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?>"><i class="fa fa-arrow-left"></i></a>
+				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?> listAnimateRight" data-widget-id="<?php echo h($widget['Widget']['id']); ?>"><i class="fa fa-arrow-left"></i></a>
 				<?php
 				$class = '';
 				if($widgetData['Widget']['WidgetHostStatusList']['animation'] == 'fadeInUp'):
 					$class = 'btn-primary';
 				endif;
 				?>
-				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?>"><i class="fa fa-arrow-up"></i></a>
+				<a href="javascript:void(0);" class="btn btn-default btn-xs <?php echo $class; ?> listAnimateUp" data-widget-id="<?php echo h($widget['Widget']['id']); ?>"><i class="fa fa-arrow-up"></i></a>
 			</div>
 			<div class="col-xs-4">
 				<div class="pull-left padding-right-5">
 					<?php echo __('Paging interval');?>:
 				</div>
-				<div class="slider-slim width-120 pull-left">
+				<div class="slider-slim width-120 pull-left" data-widget-id="<?php echo h($widget['Widget']['id']); ?>">
 					<input class="slider slider-primary slider-slim" data-slider-min="3" data-slider-max="30" data-slider-value="<?php echo h($widgetData['Widget']['WidgetHostStatusList']['animation_interval']); ?>" />
 				</div>
 				<div class="clearfix"></div>
 			</div>
 			<div class="col-xs-6 text-right">
-				<?php
-				$stateSettings = [
-					'show_up' => [
-						'icon' => 'fa-square ok'
-					],
-					'show_down' => [
-						'icon' => 'fa-square critical'
-					],
-					'show_unreachable' => [
-						'icon' => 'fa-square unknown'
-					],
-					'show_acknowledged' => [
-						'icon' => 'fa-user'
-					],
-					'show_downtime' => [
-						'icon' => 'fa-power-off'
-					]
-				];
-				foreach($stateSettings as $dbField => $stateSetting): ?>
+				<span class="listSettings">
 					<?php
-					$checked = '';
-					if($widgetData['Widget']['WidgetHostStatusList'][$dbField] == true):
-						$checked = 'checked="checked"';
-					endif;
-					?>
-					<i class="fa <?php echo $stateSetting['icon']; ?>"></i> <input type="checkbox" <?php echo $checked; ?>/>
-				<?php
-				endforeach; ?>
-				<a href="javascript:void(0);" class="btn btn-primary btn-xs margin-left-10"><?php echo __('Save');?></a>
+					$stateSettings = [
+						'show_up' => [
+							'icon' => 'fa-square ok'
+						],
+						'show_down' => [
+							'icon' => 'fa-square critical'
+						],
+						'show_unreachable' => [
+							'icon' => 'fa-square unknown'
+						],
+						'show_acknowledged' => [
+							'icon' => 'fa-user'
+						],
+						'show_downtime' => [
+							'icon' => 'fa-power-off'
+						]
+					];
+					foreach($stateSettings as $dbField => $stateSetting): ?>
+						<?php
+						$checked = '';
+						if($widgetData['Widget']['WidgetHostStatusList'][$dbField] == true):
+							$checked = 'checked="checked"';
+						endif;
+						?>
+						<i class="fa <?php echo $stateSetting['icon']; ?>"></i> <input type="checkbox" <?php echo $checked; ?> data-key="<?php echo $dbField; ?>"/>
+					<?php
+					endforeach; ?>
+				</span>
+				<a href="javascript:void(0);" class="btn btn-primary btn-xs margin-left-10 saveListSettings" data-widget-id="<?php echo h($widget['Widget']['id']); ?>"><?php echo __('Save');?></a>
 			</div>
 		</div>
 	</div>

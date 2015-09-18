@@ -41,6 +41,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.tabId = this.getVar('tabId');
 		this.WidgetChart180.bindEvents();
 		this.WidgetStatusList.setup(this.Utils);
+		this.WidgetStatusList.setAjaxloader(this.Ajaxloader);
 		this.WidgetStatusList.initLists();
 		this.gridCallbacks.push(this.updatePosition);
 		
