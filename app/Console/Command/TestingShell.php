@@ -52,7 +52,6 @@ class TestingShell extends AppShell{
 	
 	public function main(){
 		
-		
 		/*
 		 * Lof of space for your experimental code :)
 		 */

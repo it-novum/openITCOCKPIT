@@ -349,7 +349,7 @@ class NagiosExportTask extends AppShell{
 			$commandarguments = [];
 			if(!empty($hosttemplate['Hosttemplatecommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+				$commandarguments = Hash::sort($hosttemplate['Hosttemplatecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
 			$content.= $this->addContent('define host{', 0);
@@ -501,7 +501,7 @@ class NagiosExportTask extends AppShell{
 			$commandarguments = [];
 			if(!empty($host['Hostcommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+				$commandarguments = Hash::sort($host['Hostcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
 			$content.= $this->addContent('define host{', 0);
@@ -946,7 +946,7 @@ class NagiosExportTask extends AppShell{
 			$commandarguments = [];
 			if(!empty($servicetemplates['Servicetemplatecommandargumentvalue'])){
 				//Select command arguments + command, because we have arguments!
-				$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+				$commandarguments = Hash::sort($servicetemplates['Servicetemplatecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 			}
 
 			$content.= $this->addContent('define service{', 0);
@@ -1029,7 +1029,7 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->addContent(';Event handler:', 1);
 				if(!empty($servicetemplates['Servicetemplateeventcommandargumentvalue'])){
 					//Select command arguments + command, because we have arguments!
-					$eventarguments = Hash::sort($eventarguments, '{n}.Commandargument.name', 'asc', 'natural');
+					$eventarguments = Hash::sort($servicetemplates['Servicetemplateeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 				}
 				
 				if(isset($eventarguments) && !empty($eventarguments)){
@@ -1239,7 +1239,7 @@ class NagiosExportTask extends AppShell{
 						$content.= $this->addContent(';Event handler:', 1);
 						if(!empty($service['Serviceeventcommandargumentvalue'])){
 							//Select command arguments + command, because we have arguments!
-							$eventarguments = Hash::sort($eventarguments, '{n}.Commandargument.name', 'asc', 'natural');
+							$eventarguments = Hash::sort($service['Serviceeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 						}
 				
 						//Lookup command name of event handler (uuid)
