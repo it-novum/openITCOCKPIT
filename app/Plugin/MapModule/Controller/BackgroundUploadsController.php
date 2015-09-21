@@ -36,13 +36,16 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 	public function upload(){
 		if(!empty($_FILES)){
-			debug($_FILES);
-			$backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds');
+
+			//define background image directory
+			$backgroundImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
 
 			//check if upload folder exist
-			if(!is_dir($backgroundFolder->path)){
-				mkdir($backgroundFolder->path);
+			if(!is_dir($backgroundImgDirectory)){
+				mkdir($backgroundImgDirectory);
 			}
+
+			$backgroundFolder = new Folder($backgroundImgDirectory);
 
 			//this name should be also stored in the Database 
 			//-> displayed name when you choose the background
