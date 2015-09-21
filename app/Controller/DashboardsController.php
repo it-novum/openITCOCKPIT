@@ -43,6 +43,7 @@ class DashboardsController extends AppController{
 		'DashboardTab',
 		'Widget',
 		'WidgetHostStatusList',
+		'WidgetServiceStatusList',
 		'Service',
 		MONITORING_OBJECTS,
 		'Rrd',

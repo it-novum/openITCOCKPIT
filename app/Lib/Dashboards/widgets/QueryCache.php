@@ -454,6 +454,15 @@ class QueryCache{
 		return $serviceStateArray;
 	}
 	
+	public function trafficLightServices(){
+		if($this->isCached(__FUNCTION__)){
+			return $this->getCache(__FUNCTION__);
+		}
+		$services = $this->Controller->Host->servicesByContainerIds($this->Controller->MY_RIGHTS ,'list');
+		$this->setCache(__FUNCTION__, $services);
+		return $services;
+	}
+	
 	public function _hostBaseQuery($fields = [], $conditions = []){
 		return [
 			'recursive' => -1,

@@ -33,6 +33,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'Utils',
 		'WidgetChart180',
 		'WidgetStatusList',
+		'WidgetTrafficLight'
 	],
 
 	_initialize: function(){
@@ -44,6 +45,8 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.WidgetStatusList.setAjaxloader(this.Ajaxloader);
 		this.WidgetStatusList.initLists();
 		this.gridCallbacks.push(this.updatePosition);
+		
+		this.WidgetTrafficLight.initTrafficlights();
 		
 		
 		var self = this;

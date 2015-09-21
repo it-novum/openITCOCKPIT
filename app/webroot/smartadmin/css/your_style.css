@@ -1101,55 +1101,11 @@ a.autocomplete-items {
 	flex-wrap: wrap;
 }
 
-.trafficlight {
-	width: 150px;
-	position: static !important;
-	margin: 10px auto;
-}
-
-.tacho {
-	width: 100%;
-	position: static !important;
-	text-align: center;
-}
-
-.tacho canvas {
-	margin: 0 auto;
-	display: none;
-}
-
-.traffic-light form,
-.trafficLight-body form{
-	display:flex;
-	flex-wrap:wrap;
-}
-
-.trafficLight-body .form-group,
-.tacho-body .form-group{
-	width:82%;
-}
-
-.trafficLight-body form div.data-source-select{
-	display:none;
-	margin-top: 5px;
-}
 .dataSourceValues{
 	display:none;
 	clear:both;
 	margin-top:5px;
 }
-
-.traffic-light form div.form-group label,
-.trafficLight-body form div.form-group div,
-.trafficLight-body form div.form-group label,
-.trafficLight-body form div.form-group div{
-	float:none;
-}
-
-.trafficLight-body form div.form-group label.control-label{
-	width:100%;
-}
-
 
 .tacho_preview{
 	color: #fff;
@@ -1207,10 +1163,6 @@ a.autocomplete-items {
 
 .dataSourceValues div.form-group input{
 	width:106px;
-}
-.traffic-light .form-group label,
-.tacho-body .form-group label{
-	width:100%;
 }
 
 .service-title,
@@ -1518,24 +1470,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	text-align:center;
 }
 
-.selectTrafficlight,
-.selectTachoService{
-	width:100%;
-	height:27px;
-}
-
-.trafficlight_save,
-.tacho_save{
-	margin-top:22px;
-	padding:4px 8px;
-}
-.tacho_save,
-.tacho_save:active{
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	left:auto;
-}
 
 .dataSourceValues,
 .data-source-select{
@@ -1758,3 +1692,4 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	padding-bottom: 3px!important;
 	font-size: 85%;
 }
+
