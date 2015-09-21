@@ -123,4 +123,11 @@ class DashboardHandler{
 		}
 		return $widgetData;
 	}
+	
+	public function refresh($widget){
+		if(isset($widget['Widget']['type_id'])){
+			$result = $this->{$this->__widgetClasses[$widget['Widget']['type_id']]}->refresh($widget);
+			return $result;
+		}
+	}
 }

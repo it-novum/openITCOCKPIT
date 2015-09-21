@@ -312,6 +312,39 @@ class DashboardsController extends AppController{
 		}
 	}
 	
+	public function refresh(){
+		$widget = [];
+		$element = 'Dashboard'.DS.'404.ctp';
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		
+		if(isset($this->request->data['widgetId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->find('first', [
+					'contain' => [
+						'DashboardTab'
+					],
+					'conditions' => [
+						'Widget.id' => $widgetId,
+					]
+				]);
+				if($widget['DashboardTab']['user_id'] != $userId){
+					$widgetId = [];
+				}else{
+					$result = $this->DashboardHandler->refresh($widget);
+					$element = $result['element'];
+				}
+			}
+		}
+		
+		//Set the widget or an empty array
+		$this->set('widget', $widget);
+		$this->set('element', $element);
+	}
+	
 	private function __saveStatuslistSettings($widgetId, $settings, $contain){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){

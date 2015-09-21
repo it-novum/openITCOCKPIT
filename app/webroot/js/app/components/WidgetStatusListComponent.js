@@ -27,7 +27,8 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	Ajaxloader: null,
 	lists: {},
 	UtilsComponent: null,
-	updateInterval: 500000, //Ajax update interval of the lists in seconds (5 mins by default)
+	updateIntervalValue: 300000, //Ajax update interval of the lists in seconds (5 mins by default)
+	//updateIntervalValue: 3000, // Development value (every 3 seconds)
 	
 	setAjaxloader: function(Ajaxloader){
 		this.Ajaxloader = Ajaxloader;
@@ -85,54 +86,78 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 			}).bind(self);
 			self.saveSettings(widgetId);
 		});
-	},
-	
-	
-	initLists: function(){
-		var $slider = $('input.slider');
-		$slider.slider();
-		$('.slider-horizontal').each(function(int, object){
-			$(object).css('margin-bottom', '0px');
-		});
-		$('.slider-horizontal').on('slideStop', function(e){
+		
+		$(document).on('slideStop', '.slider-horizontal', function(e){
 			var widgetId = $(this).parent().data('widget-id');
 			self.lists[widgetId].data.animation_interval = parseInt(e.value, 10);
 			self.updateInterval(widgetId);
 		});
+		
+		var gridstack = $('.grid-stack');
+		gridstack.on('resizestop', function(event, ui){
+			var $element = $(ui.element);
+			var widgetId = parseInt($element.data('widget-id'), 10);
+			var widgetTypeId = parseInt($element.data('widget-type-id'), 10);
+			if(widgetTypeId == 9 || widgetTypeId == 10){
+				//this.initList($element.children('.statusListTable'));
+				self.refreshWidget(widgetId);
+			}
+		});
+	},
+	
+	
+	initLists: function(){
 		var self = this;
-		$('.statusListHosts').each(function(key, object){
-			var $list = $(object);
-			var sliderValue = parseInt($list.parent().parent().find('input.slider-slim').data('slider-value'), 10);
-			var $widgetContainer = $list.parent().parent().parent().parent();
-			var height = self.calculateHeight($widgetContainer);
-			
-			var recordsPerPage = self.calculateRowsByHeight(height);
-			
-			var widgetId = $list.data('widget-id');
-			$list.dataTable({
-				'iDisplayLength': recordsPerPage,
-				'bLengthChange': false,
-				'sScrollY': height+'px',
-				'bAutoWidth': true,
-				'pagingType': 'numbers',
-				'fnInitComplete': function(){
-					self.lists[widgetId] = {
-						datatable: $list,
-						timer: null,
-						lastUpdate: new Date().getTime(),
-						data: {
-							show_up: null,
-							show_down: null,
-							show_unreachable: null,
-							show_acknowledged: null,
-							show_downtime: null,
-							animation: null,
-							animation_interval: sliderValue,
-						}
-					};
-					self.startRotate($list);
-				}
-			});
+		$('.statusListTable').each(function(key, object){
+			this.initList(object);
+		}.bind(this));
+	},
+	
+	initList: function(object){
+		var $list = $(object);
+		
+		var $slider = $list.parent().parent().find('input.slider-slim');
+		$slider.slider();
+		$('.slider-horizontal').each(function(int, object){
+			$(object).css('margin-bottom', '0px');
+		});
+		
+		var widgetId = $list.data('widget-id');
+		var sliderValue = parseInt($list.parent().parent().find('input.slider-slim').data('slider-value'), 10);
+		var $widgetContainer = $list.parent().parent().parent().parent();
+		var height = this.calculateHeight($widgetContainer);
+		
+		var recordsPerPage = this.calculateRowsByHeight(height);
+		
+		if(typeof this.lists[widgetId] != 'undefined'){
+			if(typeof this.lists[widgetId].timer != 'undefined'){
+				clearInterval(this.lists[widgetId].timer);
+			}
+		}
+		
+		$list.dataTable({
+			'iDisplayLength': recordsPerPage,
+			'bLengthChange': false,
+			'sScrollY': height+'px',
+			'bAutoWidth': true,
+			'pagingType': 'numbers',
+			'fnInitComplete': function(){
+				this.lists[widgetId] = {
+					datatable: $list,
+					timer: null,
+					lastUpdate: new Date().getTime(),
+					data: {
+						show_up: null,
+						show_down: null,
+						show_unreachable: null,
+						show_acknowledged: null,
+						show_downtime: null,
+						animation: null,
+						animation_interval: sliderValue,
+					}
+				};
+				this.startRotate($list);
+			}.bind(this)
 		});
 	},
 	
@@ -176,8 +201,8 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 					nextPage = 0;
 					
 					//Check if we need to refresh the table content
-					if((this.lists[widgetId].lastUpdate + this.updateInterval) < new Date().getTime()){
-						console.log('refresh data');
+					if((this.lists[widgetId].lastUpdate + this.updateIntervalValue) < new Date().getTime()){
+						this.refreshWidget(widgetId);
 					}
 				}
 				$list.fnPageChange(nextPage);
@@ -216,6 +241,32 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	updateInterval: function(widgetId){
 		this.stopInterval(widgetId);
 		this.startRotate(this.lists[widgetId].datatable);
+	},
+	
+	refreshWidget: function(widgetId){
+		if(this.lists[widgetId].timer !== null){
+			clearInterval(this.lists[widgetId].timer);
+		}
+		this.Ajaxloader.show();
+		
+		var $tableContainer = this.lists[widgetId].datatable.parents('.tableContainer');
+		$tableContainer.html('<div class="text-center padding-top-50"><h1><i class="fa fa-cog fa-lg fa-spin"></i></h1></div>');
+		$.ajax({
+			url: "/dashboards/refresh",
+			type: "POST",
+			data: {widgetId: widgetId},
+			error: function(){},
+			success: function(response){
+				if(response !== ''){
+					$tableContainer.html(response);
+					this.lists[widgetId].datatable = null;
+					this.initList($tableContainer.children('.statusListTable'));
+				}
+				this.Ajaxloader.hide();
+			}.bind(this),
+			complete: function(response) {
+			}
+		});
 	}
 	
 });

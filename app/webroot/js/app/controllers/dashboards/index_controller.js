@@ -61,9 +61,17 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				error: function(){},
 				success: function(response){
 					if(response !== ''){
-						grid.add_widget($.parseHTML(response));
+						var widgetHtml = $.parseHTML(response);
+						grid.add_widget(widgetHtml);
 						//New widget added. So we need to save all the new positions
 						self.updatePosition();
+						
+						//Do we need to call any javascript actions?
+						switch(parseInt($object.data('type-id'), 10)){
+						case 9:
+							this.WidgetStatusList.initList($(widgetHtml).find('.statusListTable'));
+							break;
+						}
 					}
 					self.Ajaxloader.hide();
 				}.bind(self),

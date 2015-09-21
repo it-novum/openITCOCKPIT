@@ -35,6 +35,7 @@ class HostStatusList extends Widget{
 	public $initialConfig = [
 		'WidgetHostStatusList' => [
 			'animation' => 'fadeInUp',
+			'animation_interval' => 10,
 			'show_up' => 0,
 			'show_down' => 1,
 			'show_unreachable' => 1,
@@ -109,6 +110,13 @@ class HostStatusList extends Widget{
 		$this->Controller->viewVars['widgetHoststatusList'][$widget['Widget']['id']] = [
 			'Hosts' => $hosts,
 			'Widget' => $widget,
+		];
+	}
+	
+	public function refresh($widget){
+		$this->setData($widget);
+		return [
+			'element' => 'Dashboard'.DS.'host_status_list_table'
 		];
 	}
 	
