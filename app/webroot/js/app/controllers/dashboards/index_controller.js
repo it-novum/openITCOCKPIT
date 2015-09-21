@@ -69,6 +69,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 						//Do we need to call any javascript actions?
 						switch(parseInt($object.data('type-id'), 10)){
 						case 9:
+						case 10:
 							this.WidgetStatusList.initList($(widgetHtml).find('.statusListTable'));
 							break;
 						}

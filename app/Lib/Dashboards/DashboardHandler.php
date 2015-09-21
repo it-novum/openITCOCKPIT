@@ -37,6 +37,7 @@ class DashboardHandler{
 		'Hostdowntimes',
 		'Servicedowntimes',
 		'HostStatusList',
+		'ServiceStatusList',
 	];
 	
 	protected $__widgetClasses = [];

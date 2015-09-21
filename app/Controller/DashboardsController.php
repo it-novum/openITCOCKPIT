@@ -29,12 +29,10 @@ class DashboardsController extends AppController{
 		'PieChart',
 		'Status',
 		'Monitoring',
-		'Admin.Widget',
 		'Bbcode',
 		'Dashboard',
 	];
 	public $components = [
-		'Admin.WidgetCollection',
 		'Bbcode',
 	];
 	public $uses = [
@@ -289,29 +287,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
-	public function saveHostStatuslistSettings(){
-		$this->autoRender = false;
-		if(!$this->request->is('ajax')){
-			throw new MethodNotAllowedException();
-		}
 
-		if(isset($this->request->data['widgetId']) && isset($this->request->data['settings'])){
-			$this->__saveStatuslistSettings($this->request->data['widgetId'], $this->request->data['settings'], 'WidgetHostStatusList');
-		}
-	}
-	
-	public function saveServiceStatuslistSettings(){
-		$this->autoRender = false;
-		if(!$this->request->is('ajax')){
-			throw new MethodNotAllowedException();
-		}
-
-		if(isset($this->request->data['widgetId']) && isset($this->request->data['settings'])){
-			$this->__saveStatuslistSettings($this->request->data['widgetId'], $this->request->data['settings'], 'WidgetServiceStatusList');
-		}
-	}
-	
 	public function refresh(){
 		$widget = [];
 		$element = 'Dashboard'.DS.'404.ctp';
@@ -345,29 +321,44 @@ class DashboardsController extends AppController{
 		$this->set('element', $element);
 	}
 	
-	private function __saveStatuslistSettings($widgetId, $settings, $contain){
+	public function saveStatuslistSettings(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
-		if($this->Widget->exists($widgetId)){
-			$userId = $this->Auth->user('id');
-			$widget = $this->Widget->find('first', [
-				'contain' => [
-					$contain,
-					'DashboardTab'
-				],
-				'conditions' => [
-					'Widget.id' => $widgetId,
-				]
-			]);
-			if($widget['DashboardTab']['user_id'] == $userId){
-				foreach($settings as $dbField => $value){
-					if($value !== '' && $value !== null && isset($widget[$contain][$dbField])){
-						$widget[$contain][$dbField] = $value;
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['settings']) && isset($this->request->data['widgetTypeId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$settings = $this->request->data['settings'];
+			$widgetTypeId = $this->request->data['widgetTypeId'];
+			
+			if($widgetTypeId == 9 || $widgetTypeId == 10){
+				if($widgetTypeId == 9){
+					$contain = 'WidgetHostStatusList';
+				}
+				
+				if($widgetTypeId == 10){
+					$contain = 'WidgetServiceStatusList';
+				}
+				if($this->Widget->exists($widgetId)){
+					$userId = $this->Auth->user('id');
+					$widget = $this->Widget->find('first', [
+						'contain' => [
+							$contain,
+							'DashboardTab'
+						],
+						'conditions' => [
+							'Widget.id' => $widgetId,
+						]
+					]);
+					if($widget['DashboardTab']['user_id'] == $userId){
+						foreach($settings as $dbField => $value){
+							if($value !== '' && $value !== null && isset($widget[$contain][$dbField])){
+								$widget[$contain][$dbField] = $value;
+							}
+						}
+						$this->Widget->saveAll($widget);
 					}
 				}
-				$this->Widget->saveAll($widget);
 			}
 		}
 	}

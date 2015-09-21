@@ -77,6 +77,9 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 		$(document).on('click', '.saveListSettings', function(){
 			var widgetId = $(this).data('widget-id');
 			var $inputs = $('.saveListSettings').parent().children('.listSettings').children(':input');
+			
+			var widgetTypeId = parseInt($(this).parents('.grid-stack-item').data('widget-type-id'), 10);
+			
 			$inputs.each(function(key, input){
 				var $input = $(input);
 				self.lists[widgetId].data[$input.data('key')] = 0;
@@ -84,7 +87,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 					self.lists[widgetId].data[$input.data('key')] = 1;
 				}
 			}).bind(self);
-			self.saveSettings(widgetId);
+			self.saveSettings(widgetId, widgetTypeId);
 		});
 		
 		$(document).on('slideStop', '.slider-horizontal', function(e){
@@ -223,12 +226,12 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 		oSettings._sActiveClass = 'animated ' + animation;
 	},
 	
-	saveSettings: function(widgetId){
+	saveSettings: function(widgetId, widgetTypeId){
 		this.Ajaxloader.show();
 		$.ajax({
-			url: "/dashboards/saveHostStatuslistSettings",
+			url: "/dashboards/saveStatuslistSettings",
 			type: "POST",
-			data: {settings: this.lists[widgetId].data, widgetId: widgetId},
+			data: {settings: this.lists[widgetId].data, widgetId: widgetId, widgetTypeId: widgetTypeId},
 			error: function(){},
 			success: function(response){
 				this.Ajaxloader.hide();

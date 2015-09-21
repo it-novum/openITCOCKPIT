@@ -24,6 +24,11 @@
 //	confirmation.
 
 class DashboardHelper extends AppHelper{
+	
+	public $helpers = [
+		'Acl',
+	];
+	
 	public function render($widget){
 		$html = $this->_header($widget);
 		$html .= $this->_body($widget);

@@ -61,7 +61,15 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
 						<i class="fa fa-power-off fa-lg "></i>
 					<?php endif; ?>
 				</td>
-				<td><?php echo h($host['Host']['name']);?></td>
+				<td>
+					<?php
+					if($this->Acl->hasPermission('browser', 'hosts')):
+						echo '<a href="/hosts/browser/'.$host['Host']['id'].'">'.h($host['Host']['name']).'</a>';
+					else:
+						echo h($host['Host']['name']);
+					endif;
+					?>
+				</td>
 				<td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
 					<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_hard_state_change'])));?>
 				</td>
