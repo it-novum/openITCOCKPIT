@@ -102,7 +102,10 @@
 						?>
 						<!-- add icons -->
 						<?php if($item['Mapitem']['type'] == 'map'): ?>
-						<div id="<?php echo $uuid; ?>" class="elementHover" data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" data-uuid="<?php echo $item['Map']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
+						<div id="<?php echo $uuid; ?>" 
+						class="elementHover" 
+						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
+						data-uuid="<?php echo $item['Map']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
 					<?php else:?>
 						<div id="<?php echo $uuid; ?>" class="elementHover" data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
@@ -179,7 +182,6 @@
 							if(file_exists($rrd_path.$gadget['Service']['host_uuid'].DS.$gadget['Service']['uuid'].'.xml')):
 								$rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path.$gadget['Service']['host_uuid'].DS.$gadget['Service']['uuid'].'.xml');
 								$rrdBackgroundColor = 'BACK#FFFFFFFF';
-								debug($rrd_structure_datasources);
 								if(isset($gadget['Mapgadget']['transparent_background']) && $gadget['Mapgadget']['transparent_background'] == true){
 									$rrdBackgroundColor = 'BACK#FFFFFF00';
 								}

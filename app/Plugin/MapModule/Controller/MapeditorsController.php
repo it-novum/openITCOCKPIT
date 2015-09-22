@@ -902,7 +902,7 @@ class MapeditorsController extends MapModuleAppController {
 		$servicestatus = [];
 
 		foreach ($hostUuids as $key => $hostUuid) {
-			$hoststatus = $this->Objects->find('all', [
+			$hoststatus[] = $this->Objects->find('first', [
 				'recursive' => -1,
 				'conditions' => [
 					'name1' => $hostUuid,
@@ -910,7 +910,10 @@ class MapeditorsController extends MapModuleAppController {
 				],
 				'fields' => [
 					'Objects.*',
-					'Hoststatus.*'
+					'Hoststatus.current_state',
+					'Hoststatus.problem_has_been_acknowledged',
+					'Hoststatus.scheduled_downtime_depth',
+					'Hoststatus.is_flapping'
 					//'Hoststatus.current_state',
 				],
 				'joins' => [

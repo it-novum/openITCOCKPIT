@@ -239,15 +239,23 @@ class MapstatusHelper extends AppHelper{
 	}
 
 	public function hostgroupstatus($uuid){
-
 		$cumulative_service_state = false;
 		$cumulative_host_state = Hash::apply($this->hostgroupstatus[0], 'Host.{n}.Hoststatus.{n}.Hoststatus.current_state', 'max');
-		
+
 		foreach ($this->hostgroupstatus[0]['Host'] as $key => $hosts) {
-			$cumulative_service_states_data[] = Hash::apply($hosts, 'Servicestatus.{n}.Servicestatus.current_state', 'max');
+
+			$currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
+			if(is_array($currentStates) && !empty($currentStates)){
+				$current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
+				if(is_int($current_cumulative_service_state)){
+					$cumulative_service_states_data[] = $current_cumulative_service_state;
+				}
+			}
+			
 		}
-		
-		$cumulative_service_state = max($cumulative_service_states_data);
+		if(isset($cumulative_service_states_data)){
+			$cumulative_service_state = max($cumulative_service_states_data);
+		}
 		return (!$cumulative_service_state)?$this->hostgroupstatusValuesHost($cumulative_host_state):$this->hostgroupstatusValuesService($cumulative_service_state);
 	}
 

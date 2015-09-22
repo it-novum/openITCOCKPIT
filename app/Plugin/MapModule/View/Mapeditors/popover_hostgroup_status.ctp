@@ -36,14 +36,28 @@ $hostAmount = count($hostgroup[0]['Host']);
 
 $serviceStateArr = [];
 foreach ($hostgroup[0]['Host'] as $counter => $host) {
-	foreach ($host['Servicestatus'] as $key => $value) {
-		$serviceStateArr[$counter][$key] = $value['Servicestatus']['current_state'];
+	//check if the servicestatus array is not empty
+	if(!empty($host['Servicestatus'])){
+		foreach ($host['Servicestatus'] as $key => $value) {
+			//fill the current state into the array
+			$serviceStateArr[$counter][$key] = $value['Servicestatus']['current_state'];
+		}
+	}else{
+		//set a null value into the array
+		$serviceStateArr[$counter] = null;
 	}
+	
 }
 
 $serviceAmountperHost = [];
 foreach ($serviceStateArr as $k => $v) {
-	$serviceAmountperHost[$k] = count($v);
+	//check if there is an empty array
+	if(!empty($v)){
+		$serviceAmountperHost[$k] = count($v);
+	}else{
+		//if the $v is empty it contains no services
+		$serviceAmountperHost[$k] = 0;
+	}
 }
 $serviceAmount = array_sum($serviceAmountperHost);
 
@@ -90,7 +104,13 @@ $serviceAmount = array_sum($serviceAmountperHost);
 			<?php echo $host['name']; ?>
 			</td>
 			<!-- State -->
+			<?php if(isset($serviceStateArr[$key])): ?>
 			<td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
+			<?php else: ?>
+				<!-- there are no services for this host so display the hostdata -->
+				<?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state']; ?>
+				<td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
+			<?php endif; ?>
 			<!-- Output -->
 			<td title="<?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>"><?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>. There are <?php echo $serviceAmountperHost[$key]; ?> Services</td>
 		</tr>
