@@ -46,6 +46,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.WidgetStatusList.initLists();
 		this.gridCallbacks.push(this.updatePosition);
 		
+		this.WidgetTrafficLight.setAjaxloader(this.Ajaxloader);
 		this.WidgetTrafficLight.initTrafficlights();
 		
 		

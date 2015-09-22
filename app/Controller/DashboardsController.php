@@ -363,4 +363,23 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
+	
+	public function saveTrafficLightService(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['serviceId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$serviceId = (int)$this->request->data['serviceId'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['service_id'] = $serviceId;
+					$this->Widget->save($widget);
+				}
+			}
+		}
+	}
 }

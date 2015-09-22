@@ -24,9 +24,25 @@
 
 App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 
+	Ajaxloader: null,
+
 	trafficlights: {},
 
+	setAjaxloader: function(Ajaxloader){
+		this.Ajaxloader = Ajaxloader;
+	},
+
 	initTrafficlights: function(){
+		var self = this;
+		$(document).on('change', '.trafficLightSelectService', function(){
+			var $object = $(this);
+			var widgetId = parseInt($object.data('widget-id'), 10);
+			var serviceId = parseInt($object.val(), 10);
+			if(!isNaN(serviceId)){
+				self.saveService(widgetId, serviceId);
+			}
+		});
+		
 		$('.trafficlightContainer').each(function(key, object){
 			this.initTrafficlight(object);
 		}.bind(this));
@@ -35,17 +51,22 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 	initTrafficlight: function(object){
 		var $object = $(object);
 		widgetId = parseInt($object.parents('.grid-stack-item').data('widget-id'), 10);
-		$container = $('.trafficlightContainer');
+		var $container = $object;
+		var $wrapper = $object.parents('.trafficLight-body').find('.trafficLightWrapper');
 		this.trafficlights[widgetId] = {
+			container: $container,
+			wrapper: $wrapper,
 			svg: null,
+			blinkTimer: null,
+			refreshTimer: null,
 			current_state: parseInt($container.data('current-state'), 10),
 			is_flapping: parseInt($container.data('is-flapping'), 10)
 		};
-		this.drawTrafficLight(widgetId);
+		this.drawTrafficLight(widgetId, $container);
 	},
 
-	drawTrafficLight:function(widgetId){
-		$svgContainer = $('.trafficlightContainer');
+	drawTrafficLight:function(widgetId, $container){
+		$svgContainer = $container;
 
 		var id = widgetId;
 		var sizeX = 60;
@@ -191,10 +212,52 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		//the animation isnt that smooth anymore but the browser need ~70% less CPU!
 		// Do not increase animation speed, this will burn your CPU!
 		$.fx.interval = 50;
-		setInterval(function(){
+		this.trafficlights[widgetId].blinkTimer = setInterval(function(){
 			$green.fadeOut(2000);
 			$green.fadeIn(2000);
 		}, 3000);
+	},
+	
+	saveService: function(widgetId, serviceId){
+		this.Ajaxloader.show();
+		$.ajax({
+			url: "/dashboards/saveTrafficLightService",
+			type: "POST",
+			data: {widgetId: widgetId, serviceId: serviceId},
+			error: function(){},
+			success: function(response){
+				this.Ajaxloader.hide();
+				this.refresh(widgetId);
+			}.bind(this),
+			complete: function(response) {
+			}
+		});
+	},
+	
+	refresh: function(widgetId){
+		var $wrapper = this.trafficlights[widgetId].wrapper;
+		var $trafficLightBody = $wrapper.parents('.trafficLight-body').parent();
+		$wrapper.html('<div class="text-center padding-top-50"><h1><i class="fa fa-cog fa-lg fa-spin"></i></h1></div>');
+		this.Ajaxloader.show();
+		$.ajax({
+			url: "/dashboards/refresh",
+			type: "POST",
+			data: {widgetId: widgetId},
+			error: function(){},
+			success: function(response){
+				if(response != ''){
+					$trafficLightBody.html(response);
+					if(this.trafficlights[widgetId].blinkTimer != null){
+						clearInterval(this.trafficlights[widgetId].blinkTimer);
+					}
+					this.initTrafficlight($trafficLightBody.find('.trafficlightContainer'));
+					$('.chosen').chosen();
+				}
+				this.Ajaxloader.hide();
+			}.bind(this),
+			complete: function(response) {
+			}
+		});
 	}
 
 });

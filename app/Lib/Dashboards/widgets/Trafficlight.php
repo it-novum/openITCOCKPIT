@@ -40,7 +40,54 @@ class Trafficlight extends Widget{
 	public function setData($widgetData){
 		//Prefix every widget variable with $widgetFoo
 		$widgetServicesForTrafficlight = $this->QueryCache->trafficLightServices();
-		$this->Controller->set(compact(['widgetServicesForTrafficlight']));
+		$service = [];
+		if($widgetData['Widget']['service_id'] !== null){
+			if($this->Controller->Service->exists($widgetData['Widget']['service_id'])){
+				$query = [
+					'recursive' => -1,
+					'conditions' => [
+						'Service.id' => $widgetData['Widget']['service_id']
+					],
+					'contain' => [],
+					'fields' => [
+						'Service.id',
+						'Service.uuid',
+						'Servicestatus.current_state',
+						'Servicestatus.is_flapping',
+						'Servicestatus.normal_check_interval',
+					],
+					'joins' => [
+						[
+							'table' => 'nagios_objects',
+							'type' => 'INNER',
+							'alias' => 'ServiceObject',
+							'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+						],
+						[
+							'table' => 'nagios_servicestatus',
+							'type' => 'LEFT OUTER',
+							'alias' => 'Servicestatus',
+							'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+						],
+					]
+				];
+		
+				$service = $this->Controller->Service->find('first', $query);
+			}
+		}
+		
+		$this->Controller->viewVars['widgetTrafficlights'][$widgetData['Widget']['id']] = [
+			'Service' => $service,
+			'Widget' => $widgetData,
+		];
+		$this->Controller->set('widgetServicesForTrafficlight', $widgetServicesForTrafficlight);
+	}
+	
+	public function refresh($widget){
+		$this->setData($widget);
+		return [
+			'element' => 'Dashboard'.DS.$this->element
+		];
 	}
 	
 }
