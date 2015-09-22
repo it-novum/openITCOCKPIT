@@ -72,6 +72,7 @@ class AppController extends Controller{
 		'Contactgroup',
 		'Host',
 		'Hostgroup',
+		'Hosttemplate',
 		'Service',
 		'Servicegroup',
 		'Hostescalation',

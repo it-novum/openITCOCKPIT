@@ -752,15 +752,39 @@ class Service extends AppModel{
 				'Servicetemplate' => [
 					'fields' => ['Servicetemplate.name']
 				],
+		/*		
 				'Host' => [
-					'fields' => ['Host.name', 'Host.uuid', 'Host.address', 'Host.description']
+					'fields' => ['Host.name', 'Host.uuid', 'Host.address', 'Host.description'],
+					'Container'
+				]
+		*/		
+			],
+			'joins' => [
+				[
+					'table' => 'hosts',
+					'alias' => 'Host',
+					'conditions' => [
+						'Host.id = Service.host_id'
+					]
+				],
+				[
+					'table' => 'hosts_to_containers',
+					'alias' => 'HostsToContainers',
+					'conditions' =>[
+						'HostsToContainers.host_id = Host.id'
+					] 
 				]
 			],
 			'fields' => [
 				'Service.id',
 				'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
 				'Service.uuid',
-				'Service.service_type'
+				'Service.service_type',
+				'Host.id',
+				'Host.name',
+				'Host.uuid',
+				'Host.address',
+				'Host.description',
 			],
 			'order' => [
 				'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC'
