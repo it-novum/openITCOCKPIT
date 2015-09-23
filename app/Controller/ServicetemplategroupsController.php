@@ -72,6 +72,7 @@ class ServicetemplategroupsController extends AppController{
 		]);
 		$all_servicetemplategroups = $this->Paginator->paginate();
 		$this->set(compact('all_servicetemplategroups'));
+		$this->set('_serialize', array('all_servicetemplategroups'));
 
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
