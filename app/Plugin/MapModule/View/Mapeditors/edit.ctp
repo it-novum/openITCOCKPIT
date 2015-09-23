@@ -588,7 +588,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($servicegroups),
+												'options' => $this->Html->chosenPlaceholder($servicegroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen elementInput',
@@ -629,7 +629,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($hostgroups),
+												'options' => $this->Html->chosenPlaceholder($hostgroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen elementInput',
@@ -812,7 +812,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($servicegroups),
+												'options' => $this->Html->chosenPlaceholder($servicegroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen lineInput',
@@ -839,7 +839,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($hostgroups),
+												'options' => $this->Html->chosenPlaceholder($hostgroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen lineInput',
@@ -975,7 +975,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($servicegroups),
+												'options' => $this->Html->chosenPlaceholder($servicegroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen gadgetInput',
@@ -1007,7 +1007,7 @@
 											'class' => 'form-horizontal clear'
 										]);
 										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($hostgroups),
+												'options' => $this->Html->chosenPlaceholder($hostgroup),
 												'data-placeholder' => __('Please select...'),
 												'multiple' => false,
 												'class' => 'chosen gadgetInput',

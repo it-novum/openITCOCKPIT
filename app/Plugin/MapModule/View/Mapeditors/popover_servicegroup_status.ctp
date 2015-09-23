@@ -33,7 +33,6 @@
 */
 $servicegroupStatus = $this->Mapstatus->servicegroupstatus($uuid);
 
-
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
 	<tr>
@@ -41,11 +40,11 @@ $servicegroupStatus = $this->Mapstatus->servicegroupstatus($uuid);
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Servicegroup Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicegroup[0]['Container']['name'] ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Container']['name'] ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicegroup[0]['Servicegroup']['description'] ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Servicegroup']['description'] ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>

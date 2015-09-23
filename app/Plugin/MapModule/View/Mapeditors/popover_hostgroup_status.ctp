@@ -31,11 +31,11 @@
  *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
  *      |__/                                    
 */
-$hostgroupStatus = $this->Mapstatus->hostgroupstatus($hostgroup[0]['Hostgroup']['uuid']);
-$hostAmount = count($hostgroup[0]['Host']);
+$hostgroupStatus = $this->Mapstatus->hostgroupstatus($hostgroups[0]['Hostgroup']['uuid']);
+$hostAmount = count($hostgroups[0]['Host']);
 
 $serviceStateArr = [];
-foreach ($hostgroup[0]['Host'] as $counter => $host) {
+foreach ($hostgroups[0]['Host'] as $counter => $host) {
 	//check if the servicestatus array is not empty
 	if(!empty($host['Servicestatus'])){
 		foreach ($host['Servicestatus'] as $key => $value) {
@@ -69,15 +69,15 @@ $serviceAmount = array_sum($serviceAmountperHost);
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Hostgroup Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $hostgroup[0]['Container']['name']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $hostgroups[0]['Container']['name']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $hostgroup[0]['Hostgroup']['description']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $hostgroups[0]['Hostgroup']['description']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-		<?php if(isset($hostgroup[0]['Host']) && $hostAmount > 0): ?>
+		<?php if(isset($hostgroups[0]['Host']) && $hostAmount > 0): ?>
 		<td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($hostgroupStatus['state'])['class']; ?>"> <?php echo $hostgroupStatus['human_state']; ?></td>
 		<?php else: ?>
 			<td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
@@ -89,7 +89,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
 	</tr>
 </table>
 
-<?php if(isset($hostgroup[0]['Host']) && $hostAmount > 0) : ?>
+<?php if(isset($hostgroups[0]['Host']) && $hostAmount > 0) : ?>
 <table class="table table-bordered popoverListTable">
 	<tr>
 		<th class="col-md-4 col-xs-3 h6"><?php echo __('Host Name'); ?></th>
@@ -97,7 +97,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
 		<th class="col-md-7 col-xs-8 h6"><?php echo __('Output'); ?></th>
 	</tr>
 	<?php
-		foreach ($hostgroup[0]['Host'] as $key => $host) : ?>
+		foreach ($hostgroups[0]['Host'] as $key => $host) : ?>
 		<tr>
 			<!-- Hostname -->
 			<td title="<?php echo $host['name']; ?>">
@@ -108,7 +108,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
 			<td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
 			<?php else: ?>
 				<!-- there are no services for this host so display the hostdata -->
-				<?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state']; ?>
+				<?php $currentHostState = $host['Hoststatus']['Hoststatus']['current_state']; ?>
 				<td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
 			<?php endif; ?>
 			<!-- Output -->

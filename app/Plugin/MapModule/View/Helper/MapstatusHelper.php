@@ -54,13 +54,19 @@ class MapstatusHelper extends AppHelper{
 		}
 
 		//fill Hostgroups
-		if(isset($this->_View->viewVars['hostgroup'])){
-			$this->hostgroupstatus = $this->_View->viewVars['hostgroup'];
+		if(isset($this->_View->viewVars['hostgroups'])){
+			$hostgroupstatus = $this->_View->viewVars['hostgroups'];
+			foreach ($hostgroupstatus as $hgs) {
+				$this->hostgroupstatus[$hgs['Hostgroup']['uuid']] = $hgs['Host'];
+			}
 		}
 
 		//fill Servicegroups
-		if(isset($this->_View->viewVars['servicegroup'])){
-			$this->servicegroupstatus = $this->_View->viewVars['servicegroup'];
+		if(isset($this->_View->viewVars['servicegroups'])){
+			$servicegroupstatus = $this->_View->viewVars['servicegroups'];
+			foreach ($servicegroupstatus as $sgs) {
+				$this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs['Servicegroup']['Servicestatus'];
+			}
 		}
 
 
@@ -229,10 +235,9 @@ class MapstatusHelper extends AppHelper{
 
 
 	public function servicegroupstatus($uuid){
-		$servicestate = Hash::extract($this->servicegroupstatus[0], 'Servicegroup.{n}.Servicestatus.{n}.Servicestatus');
-
+		$servicestate = Hash::extract($this->servicegroupstatus[$uuid], '{n}.Servicestatus');
 		if(!empty($servicestate)){
-			$cumulative_service_state = Hash::apply($this->servicegroupstatus[0], 'Servicegroup.{n}.Servicestatus.{n}.Servicestatus.current_state', 'max');
+			$cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
 			return $this->ServicegroupstatusValues($cumulative_service_state);
 		}
 		return $this->ServicegroupstatusValues(0);
@@ -240,10 +245,9 @@ class MapstatusHelper extends AppHelper{
 
 	public function hostgroupstatus($uuid){
 		$cumulative_service_state = false;
-		$cumulative_host_state = Hash::apply($this->hostgroupstatus[0], 'Host.{n}.Hoststatus.{n}.Hoststatus.current_state', 'max');
+		$cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.Hoststatus.current_state', 'max');
 
-		foreach ($this->hostgroupstatus[0]['Host'] as $key => $hosts) {
-
+		foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
 			$currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
 			if(is_array($currentStates) && !empty($currentStates)){
 				$current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');

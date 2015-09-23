@@ -121,15 +121,15 @@ class MapeditorsController extends MapModuleAppController {
 
 		$hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
 		$services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
-		$hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
-		$servicegroups = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
+		$hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
+		$servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
 
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
 
-		$this->set(compact(['map', 'maps', 'mapList', 'servicegroups', 'hostgroups', 'hosts', 'services','backgroundThumbs', 'iconSets', 'icons']));
+		$this->set(compact(['map', 'maps', 'mapList', 'servicegroup', 'hostgroup', 'hosts', 'services','backgroundThumbs', 'iconSets', 'icons']));
 	}
 
 	public function view($id = null){
@@ -476,8 +476,9 @@ class MapeditorsController extends MapModuleAppController {
 
 		//just the hostgroups
 		if(count($hostgroupUuids) > 0){
-			foreach ($hostgroupUuids as $hostgroupUuid) {
-				$hostgroup = $this->Hostgroup->find('all',[
+			$hostgroups = [];
+			foreach ($hostgroupUuids as $k => $hostgroupUuid) {
+				$hostgroup = $this->Hostgroup->find('first',[
 					'recursive' => -1,
 					'conditions' => [
 						'uuid' => $hostgroupUuid,
@@ -501,19 +502,20 @@ class MapeditorsController extends MapModuleAppController {
 						'Hostgroup.*'
 					]
 				]);
-				$currentHostgroupHostUuids = Hash::extract($hostgroup, '{n}.Host.{n}.uuid');
+				$hostgroups[$k] = $hostgroup;
+				$currentHostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
 				$hostgroupHoststatus = [];
 				$hostgroupServicestatus = [];
 
 				foreach ($currentHostgroupHostUuids as $key => $currentHostgroupHostUuid) {
-					$hostgroupHoststatus = $this->Objects->find('all', [
+					$hostgroupHoststatus = $this->Objects->find('first', [
 						'conditions' => [
 							'name1' => $currentHostgroupHostUuid,
 							'objecttype_id' => 1
 						],
 						'fields' => [
 							'Objects.*',
-							'Hoststatus.*',
+							'Hoststatus.current_state',
 						],
 						'joins' => [
 							[
@@ -529,6 +531,79 @@ class MapeditorsController extends MapModuleAppController {
 						'recursive' => -1,
 						'conditions' => [
 							'name1' => $currentHostgroupHostUuid,
+							'objecttype_id' => 2
+						],
+						'fields' => [
+							'Objects.*',
+							'Servicetemplate.name',
+							'Servicetemplate.description',
+							'Servicestatus.current_state',
+							'Service.name',
+							'Service.description',
+						],
+						'joins' => [
+							[
+								'table' => 'services',
+								'alias' => 'Service',
+								'conditions' => [
+									'Objects.name2 = Service.uuid',
+								]
+							],
+							[
+								'table' => 'servicetemplates',
+								'type' => 'INNER',
+								'alias' => 'Servicetemplate',
+								'conditions' => [
+									'Servicetemplate.id = Service.servicetemplate_id',
+								]
+							],
+							[
+								'table' => 'nagios_servicestatus',
+								'type' => 'LEFT OUTER',
+								'alias' => 'Servicestatus',
+								'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
+							]
+						]
+					]);
+					$hostgroups[$k]['Host'][$key]['Hoststatus'] = $hostgroupHoststatus;
+					$hostgroups[$k]['Host'][$key]['Servicestatus'] = $hostgroupServicestatus;
+
+				}
+			}
+			$mapstatus['hostgroupstatus'] = $hostgroups;
+		}
+
+		//just the Servicegroups
+		if(count($servicegroupUuids) > 0){
+			$servicegroups = [];
+			foreach ($servicegroupUuids as $k => $servicegroupUuid) {
+				$servicegroup = $this->Servicegroup->find('first',[
+					'recursive' => -1,
+					'conditions' => [
+						'uuid' => $servicegroupUuid,
+					],
+					'contain' => [
+						'Container' => [
+							'fields' => [
+								'Container.name'
+							]
+						],
+						'Service' => [
+							'fields' => [
+								'Service.*'
+							],
+						],
+					],
+				]);
+				$servicegroups[$k] = $servicegroup;
+
+				$currentServicegroupServiceUuids = Hash::extract($servicegroup, 'Service.{n}.uuid');
+
+				foreach ($currentServicegroupServiceUuids as $key => $currentServicegroupServiceUuid) {
+					$servicestate = $this->Objects->find('first', [
+						'recursive' => -1,
+						'conditions' => [
+							'name2' => $currentServicegroupServiceUuid,
 							'objecttype_id' => 2
 						],
 						'fields' => [
@@ -564,80 +639,11 @@ class MapeditorsController extends MapModuleAppController {
 						]
 					]);
 
-					$hostgroup[0]['Host'][$key]['Hoststatus'] = $hostgroupHoststatus;
-					$hostgroup[0]['Host'][$key]['Servicestatus'] = $hostgroupServicestatus;
+					$servicegroups[$k]['Servicegroup']['Servicestatus'][$key] = $servicestate;
 				}
-			}
-			$mapstatus['hostgroupstatus'] = $hostgroup;
-		}
 
-		//just the Servicegroups
-		if(count($servicegroupUuids) > 0){
-			foreach ($servicegroupUuids as $servicegroupUuid) {
-				$servicegroup = $this->Servicegroup->find('all',[
-					'recursive' => -1,
-					'conditions' => [
-						'uuid' => $servicegroupUuid,
-					],
-					'contain' => [
-						'Container' => [
-							'fields' => [
-								'Container.name'
-							]
-						],
-						'Service' => [
-							'fields' => [
-								'Service.*'
-							],
-						],
-					],
-				]);
 			}
-
-			$currentServicegroupServiceUuids = Hash::extract($servicegroup, '{n}.Service.{n}.uuid');
-
-			foreach ($currentServicegroupServiceUuids as $key => $currentServicegroupServiceUuid) {
-				$servicestatus = $this->Objects->find('all', [
-					'recursive' => -1,
-					'conditions' => [
-						'name2' => $currentServicegroupServiceUuid,
-						'objecttype_id' => 2
-					],
-					'fields' => [
-						'Objects.*',
-						'Servicetemplate.name',
-						'Servicetemplate.description',
-						'Servicestatus.*',
-						'Service.name',
-						'Service.description',
-					],
-					'joins' => [
-						[
-							'table' => 'services',
-							'alias' => 'Service',
-							'conditions' => [
-								'Objects.name2 = Service.uuid',
-							]
-						],
-						[
-							'table' => 'servicetemplates',
-							'type' => 'INNER',
-							'alias' => 'Servicetemplate',
-							'conditions' => [
-								'Servicetemplate.id = Service.servicetemplate_id',
-							]
-						],
-						[
-							'table' => 'nagios_servicestatus',
-							'type' => 'LEFT OUTER',
-							'alias' => 'Servicestatus',
-							'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-						]
-					]
-				]);
-				$servicegroup[0]['Servicegroup'][$key]['Servicestatus'] = $servicestatus;
-			}
-			$mapstatus['servicegroupstatus'] = $servicegroup;
+			$mapstatus['servicegroupstatus'] = $servicegroups;
 		}
 
 		//just the Services
@@ -700,7 +706,7 @@ class MapeditorsController extends MapModuleAppController {
 			$this->Frontend->setJson('map_gadgets', Hash::Extract($map_gadgets, '{n}.Mapgadget'));
 		}
 
-		$this->set(compact(['map', 'map_items', 'mapstatus', 'map_lines', 'map_gadgets', 'map_texts', 'backgroundThumbs', 'iconSets', 'hoststatus', 'servicestatus', 'hostgroup', 'servicegroup', 'isFullscreen', 'icons']));
+		$this->set(compact(['map', 'map_items', 'mapstatus', 'map_lines', 'map_gadgets', 'map_texts', 'backgroundThumbs', 'iconSets', 'hoststatus', 'servicestatus', 'hostgroups', 'servicegroups', 'isFullscreen', 'icons']));
 	}
 
 	public function hostUuidFromServiceUuid($serviceUuid = null){
@@ -800,7 +806,7 @@ class MapeditorsController extends MapModuleAppController {
 
 	public function popoverServicegroupStatus($uuid = null){
 		$this->loadModel('Servicegroup');
-		$servicegroup = $this->Servicegroup->find('all',[
+		$servicegroups = $this->Servicegroup->find('all',[
 			'recursive' => -1,
 			'conditions' => [
 				'uuid' => $uuid,
@@ -813,16 +819,15 @@ class MapeditorsController extends MapModuleAppController {
 				],
 				'Service' => [
 					'fields' => [
-						'Service.*'
+						'Service.uuid'
 					],
 				],
 			],
 		]);
-
-		$currentServicegroupServiceUuids = Hash::extract($servicegroup, '{n}.Service.{n}.uuid');
+		$currentServicegroupServiceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
 
 		foreach ($currentServicegroupServiceUuids as $key => $currentServicegroupServiceUuid) {
-			$servicestatus = $this->Objects->find('all', [
+			$servicestatus = $this->Objects->find('first', [
 				'recursive' => -1,
 				'conditions' => [
 					'name2' => $currentServicegroupServiceUuid,
@@ -832,7 +837,7 @@ class MapeditorsController extends MapModuleAppController {
 					'Objects.*',
 					'Servicetemplate.name',
 					'Servicetemplate.description',
-					'Servicestatus.*',
+					'Servicestatus.current_state',
 					'Service.name',
 					'Service.description',
 				],
@@ -863,15 +868,14 @@ class MapeditorsController extends MapModuleAppController {
 					'Servicestatus.current_state DESC'
 				]
 			]);
-			$servicegroup[0]['Servicegroup'][$key]['Servicestatus'] = $servicestatus;
-			//Host.{n}.Hoststatus.{n}.Hoststatus.current_state'
+			$servicegroups[0]['Servicegroup']['Servicestatus'][$key] = $servicestatus;
 		}
-		$this->set(compact(['uuid', 'servicegroup']));
+		$this->set(compact(['uuid', 'servicegroups']));
 	}
 
 	public function popoverHostgroupStatus($uuid = null){
 		$this->loadModel('Hostgroup');
-		$hostgroup = $this->Hostgroup->find('all',[
+		$hostgroups = $this->Hostgroup->find('all',[
 			'recursive' => -1,
 			'conditions' => [
 				'uuid' => $uuid,
@@ -895,14 +899,12 @@ class MapeditorsController extends MapModuleAppController {
 				'Hostgroup.*'
 			]
 		]);
-
-		$hostUuids = Hash::extract($hostgroup, '{n}.Host.{n}.uuid');
+		$hostUuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
 
 		$hoststatus = [];
-		$servicestatus = [];
 
 		foreach ($hostUuids as $key => $hostUuid) {
-			$hoststatus[] = $this->Objects->find('first', [
+			$hoststate = $this->Objects->find('first', [
 				'recursive' => -1,
 				'conditions' => [
 					'name1' => $hostUuid,
@@ -926,6 +928,8 @@ class MapeditorsController extends MapModuleAppController {
 				]
 			]);
 
+			$hoststatus[] = $hoststate;
+
 			$servicestatus = $this->Objects->find('all', [
 				'recursive' => -1,
 				'conditions' => [
@@ -936,7 +940,7 @@ class MapeditorsController extends MapModuleAppController {
 					'Objects.*',
 					'Servicetemplate.name',
 					'Servicetemplate.description',
-					'Servicestatus.*',
+					'Servicestatus.current_state',
 					'Service.name',
 					'Service.description',
 				],
@@ -967,11 +971,11 @@ class MapeditorsController extends MapModuleAppController {
 					'Servicestatus.current_state DESC'
 				]
 			]);
-			$hostgroup[0]['Host'][$key]['Hoststatus'] = $hoststatus;
-			$hostgroup[0]['Host'][$key]['Servicestatus'] = $servicestatus;
+			$hostgroups[0]['Host'][$key]['Hoststatus'] = $hoststate;
+			$hostgroups[0]['Host'][$key]['Servicestatus'] = $servicestatus;
 		}
 
-		$this->set(compact(['hostgroup','hoststatus', 'servicestatus']));
+		$this->set(compact(['hostgroups','hoststatus', 'servicestatus']));
 	}
 
 
