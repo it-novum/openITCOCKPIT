@@ -94,8 +94,16 @@ class ServicetemplategroupsController extends AppController{
 			$this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 			$this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
 			if($this->Servicetemplategroup->saveAll($this->request->data)){
+				if($this->request->ext == 'json'){
+					$this->serializeId();
+					return;
+				}
 				$this->setFlash(__('Servicetemplategroup successfully saved'));
 				$this->redirect(array('action' => 'index'));
+			}
+			if($this->request->ext == 'json'){
+				$this->serializeErrorMessage();
+				return;
 			}
 			$this->setFlash(__('Servicetemplategroup could not be saved'), false);
 			if(isset($this->request->data['Container']['parent_id'])){
