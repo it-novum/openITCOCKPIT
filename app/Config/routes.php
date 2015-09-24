@@ -24,6 +24,7 @@ Router::mapResources([
 	'servicetemplates',
 	'devicegroups',
 	'users',
+	'servicetemplategroups',
 ]);
 
 // Caution: Do NOT mix controller names with those controller names from plugins! It's a bug and may not work.
