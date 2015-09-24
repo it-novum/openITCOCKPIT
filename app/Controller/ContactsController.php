@@ -247,6 +247,7 @@ class ContactsController extends AppController{
 		if($this->getNamedParameter('ldap', 0) == 1){
 			$isLdap = true;
 			$this->request->data['Contact']['email'] = $this->getNamedParameter('email', '');
+			$this->request->data['Contact']['name'] = $this->getNamedParameter('samaccountname', '');
 		}
 
 		if($this->request->is('post') || $this->request->is('put')){
@@ -339,6 +340,7 @@ class ContactsController extends AppController{
 					'action' => 'add',
 					'ldap' => 1,
 					'email' => $ldapUser['mail'],
+					'samaccountname' => $ldapUser['samaccountname'],
 					//Fixing usernames like jon.doe
 					'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
 				]);
