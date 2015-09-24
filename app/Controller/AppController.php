@@ -86,6 +86,7 @@ class AppController extends Controller{
 		'Servicetemplate',
 		'Servicegroup',
 		'Devicegroup',
+		'Servicetemplategroup',
 	];
 
 	/**
@@ -697,7 +698,7 @@ class AppController extends Controller{
 		if($this->hasRootPrivileges === true){
 			return true;
 		}
-		
+
 		if($useLevel === true){
 			$MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function($value){
 				if((int)$value === WRITE_RIGHT){
@@ -713,10 +714,10 @@ class AppController extends Controller{
 			if(!empty($result)){
 				return true;
 			}
-			
+
 			return false;
 		}
-		
+
 		$rights = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
 		if(is_array($containerIds)){
@@ -732,7 +733,7 @@ class AppController extends Controller{
 
 		return false;
 	}
-	
+
 	protected function getWriteContainers(){
 		$MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function($value){
 			if((int)$value === WRITE_RIGHT){
