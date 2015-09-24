@@ -42,6 +42,7 @@ class ContactsController extends AppController{
 		'Paginator',
 		'ListFilter.ListFilter',
 		'RequestHandler',
+		'Ldap',
 	];
 	public $helpers = ['ListFilter.ListFilter'];
 
@@ -65,6 +66,7 @@ class ContactsController extends AppController{
 	];
 
 	function index(){
+		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$this->Contact->unbindModel([
 				'hasAndBelongsToMany' => ['HostCommands', 'ServiceCommands', 'Contactgroup'],
 				'belongsTo' => ['HostTimeperiod', 'ServiceTimeperiod']
@@ -119,7 +121,7 @@ class ContactsController extends AppController{
 		}
 
 		//$this->Paginator->settings['limit'] = 1;
-		$this->set(compact(['all_contacts']));
+		$this->set(compact(['all_contacts', 'systemsettings']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', array('all_contacts'));
 		$this->set('isFilter', false);
@@ -240,6 +242,12 @@ class ContactsController extends AppController{
 		$timeperiods = $this->Timeperiod->find('list');
 
 		$_timeperiods = [];
+		
+		$isLdap = false;
+		if($this->getNamedParameter('ldap', 0) == 1){
+			$isLdap = true;
+			$this->request->data['Contact']['email'] = $this->getNamedParameter('email', '');
+		}
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$containerIds = [];
@@ -317,9 +325,53 @@ class ContactsController extends AppController{
 
 			$this->setFlash(__('Contact could not be saved'), false);
 		}
-		$this->set(compact(['containers', '_timeperiods', 'timeperiods', 'notification_commands']));
+		$this->set(compact(['containers', '_timeperiods', 'timeperiods', 'notification_commands', 'isLdap']));
 		$this->set('_serialize', ['containers', '_timeperiods', 'timeperiods', 'notification_commands']);
 
+	}
+
+	public function addFromLdap(){
+		if($this->request->is('post') || $this->request->is('put')){
+			if($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))){
+				$ldapUser = $this->Ldap->findUser($this->request->data('Ldap.samaccountname'));
+				$this->redirect([
+					'controller' => 'contacts',
+					'action' => 'add',
+					'ldap' => 1,
+					'email' => $ldapUser['mail'],
+					//Fixing usernames like jon.doe
+					'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+				]);
+			}
+			$this->setFlash(__('Contact does not exists in LDAP'), false);
+		}
+
+		$users = [];
+		$requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
+
+
+		$allLdapUsers = $this->Ldap->findAllUser();
+		foreach($allLdapUsers as $samAccountName){
+			$ldapUser = $this->Ldap->userInfo($samAccountName);
+			$ableToImport = true;
+			foreach($requiredFilds as $requiredFild){
+				if(!isset($ldapUser[$requiredFild])){
+					$ableToImport = false;
+				}
+			}
+
+			if($ableToImport === true){
+				$users[] = $ldapUser;
+			}
+		}
+
+		$usersForSelect = [];
+		foreach($users as $user){
+			$usersForSelect[$user['samaccountname']] = $user['displayname'] . ' ('.$user['samaccountname'].')';
+		}
+
+		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+		$this->set(compact(['usersForSelect', 'systemsettings']));
 	}
 
 	protected function __allowDelete($contact){
