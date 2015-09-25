@@ -76,6 +76,10 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 						case 10:
 							this.WidgetStatusList.initList($(widgetHtml).find('.statusListTable'));
 							break;
+							
+						case 11:
+							this.WidgetTrafficLight.initTrafficlight($(widgetHtml).find('.trafficlightContainer'));
+							$('.chosen').chosen();
 						}
 					}
 					self.Ajaxloader.hide();

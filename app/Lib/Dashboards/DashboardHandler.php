@@ -39,6 +39,7 @@ class DashboardHandler{
 		'HostStatusList',
 		'ServiceStatusList',
 		'Trafficlight',
+		'Tachometer',
 	];
 	
 	protected $__widgetClasses = [];

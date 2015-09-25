@@ -108,6 +108,58 @@
 							</ul>
 						</div>
 					</div>
+					<div class="widget-toolbar" rile="menu">
+						<button class="btn btn-xs btn-primary" data-toggle="dropdown" aria-expanded="false">
+							<i class="fa fa-refresh"></i>
+						</button>
+						<ul class="dropdown-menu pull-right" id="37199141">
+							<li>
+								<div class="form-group form-group-slider ">
+									<label class="col rotationSliderLabel" for="tabRotationInterval">Choose tab rotation interval</label>
+									<div class="col rotationSlider">
+										<div class="slider slider-horizontal" id=""><div class="slider-track"><div class="slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top hide" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top hide"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top hide" style="top: -30px;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div></div><input type="text" id="tabRotationInterval" maxlength="255" value="0" class="form-control slider slider-success" name="data[rotationInterval]" data-slider-min="0" data-slider-max="1200" data-slider-value="0" data-slider-selection="before" data-slider-step="30" human="#HostNotificationinterval_human" data="value: '0'" style="display: none;">
+									</div>
+									<div class="col rotationSliderInput">
+										<input type="number" id="_tabRotationInterval" human="#HostNotificationinterval_human" value="0" slider-for="HostNotificationinterval" class="form-control slider-input" name="data[Host][notification_interval]">
+										<span class="note" id="HostNotificationinterval_human">0 seconds</span>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="widget-toolbar" rile="menu">
+						<button class="btn btn-xs btn-success" data-toggle="dropdown" aria-expanded="false">
+							<i class="fa fa-plus"></i>
+						</button>
+						<ul class="newTabsList dropdown-menu pull-right" id="45809103">
+							<li class="addNewTab"><a href="javascript:void(0);"><i class="fa fa-plus">&nbsp;</i>New Tab</a></li>
+							<li class="divider"></li>
+							<li class="addSharedTab">
+								<form action="/" novalidate="novalidate" class="sharedTabsForm clear" id="" method="post" accept-charset="utf-8"><div style="display:none;"><input type="hidden" name="_method" value="POST"></div><div class="form-group"><label for="chooseSharedTabSharedTabSelect" class="col col-md-2 control-label">Select a shared Tab</label><div class="col col-xs-8 selectSharedTab">
+									<select name="data[chooseSharedTab][sharedTabSelect]" class="chosen selectSharedTab elementInput" id="chooseSharedTabSharedTabSelect" style="display: none;">
+										<option value="0"></option>
+									</select>
+									<div class="chosen-container chosen-container-single" style="width: 100%;" title="" id="chooseSharedTabSharedTabSelect_chosen">
+										<a class="chosen-single chosen-default" tabindex="-1">
+											<span>Please choose</span>
+											<div>
+												<b></b>
+											</div>
+										</a>
+										<div class="chosen-drop">
+											<div class="chosen-search">
+												<input type="text" autocomplete="off">
+											</div>
+											<ul class="chosen-results"></ul>
+										</div>
+									</div>
+									<div class="submit">
+										<input class="sharedTabSave btn btn-primary" type="submit" value="Save">
+									</div>
+								</form>
+							</li>
+						</ul>
+					</div>
 					
 				</header>
 				<div>

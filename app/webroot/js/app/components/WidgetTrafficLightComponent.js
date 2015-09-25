@@ -61,9 +61,12 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			refreshTimer: null,
 			current_state: parseInt($container.data('current-state'), 10),
 			is_flapping: parseInt($container.data('is-flapping'), 10),
-			check_interval: parseInt($container.data('check-interval'), 10)
+			check_interval: parseInt($container.data('check-interval'), 10),
+			idService: parseInt($container.data('id-service'), 10)
 		};
-		this.drawTrafficLight(widgetId, $container);
+		if(this.trafficlights[widgetId].idService > 0){
+			this.drawTrafficLight(widgetId, $container);
+		}
 	},
 
 	drawTrafficLight:function(widgetId, $container){
@@ -224,9 +227,11 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		if(this.trafficlights[widgetId].refreshTimer != null){
 			clearTimeout(this.trafficlights[widgetId].refreshTimer);
 		}
-		this.trafficlights[widgetId].refreshTimer = setTimeout(function(){
-			this.refresh(widgetId);
-		}.bind(this), (this.trafficlights[widgetId].check_interval * 1000));
+		if(this.trafficlights[widgetId].check_interval > 0){
+			this.trafficlights[widgetId].refreshTimer = setTimeout(function(){
+				this.refresh(widgetId);
+			}.bind(this), (this.trafficlights[widgetId].check_interval * 1000));
+		}
 	},
 	
 	saveService: function(widgetId, serviceId){

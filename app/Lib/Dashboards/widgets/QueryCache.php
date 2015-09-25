@@ -31,6 +31,7 @@ class QueryCache{
 	//Requeres CackePHP Controller
 	public function __construct(\Controller $controller){
 		$this->Controller = $controller;
+		$this->RrdPath = \Configure::read('rrd.path');
 	}
 	
 	public function isCached($functionName){
@@ -463,6 +464,73 @@ class QueryCache{
 		return $services;
 	}
 	
+	public function tachometerServices(){
+		if($this->isCached(__FUNCTION__)){
+			return $this->getCache(__FUNCTION__);
+		}
+		
+		$results = $this->Controller->Host->find('all', [
+			'contain' => [
+				'Service' => [
+					'conditions' => [
+						'Service.disabled' => 0,
+					],
+					'fields' => [
+						'Service.id',
+						'Service.uuid',
+						'Service.name',
+						'Service.servicetemplate_id',
+						'Service.process_performance_data'
+					],
+					'Servicetemplate' => [
+						'fields' => [
+							'Servicetemplate.id',
+							'Servicetemplate.name',
+							'Servicetemplate.process_performance_data'
+						]
+					]
+				]
+			],
+			'fields' => [
+				'Host.id',
+				'Host.uuid',
+				'Host.name',
+			],
+			'joins' => [
+				[
+					'table' => 'hosts_to_containers',
+					'alias' => 'HostsToContainers',
+					'type' => 'LEFT',
+					'conditions' => [
+						'HostsToContainers.host_id = Host.id',
+					]
+				]
+			],
+			'conditions' => [
+				'HostsToContainers.container_id' => $this->Controller->MY_RIGHTS,
+				'Host.disabled' => 0
+			]
+		]);
+		
+		$services = [];
+		foreach($results as $host){
+			foreach($host['Service'] as $service){
+				if($service['process_performance_data'] == 1 || $service['Servicetemplate']['process_performance_data'] == 1){
+					if(file_exists($this->RrdPath.$host['Host']['uuid'].DS.$service['uuid'].'.rrd')){
+						$serviceName = $service['name'];
+						if($serviceName === null || $serviceName === ''){
+							$serviceName = $service['Servicetemplate']['name'];
+						}
+						$services[$service['id']] = $host['Host']['name'] . DS . $serviceName;
+					}
+				}
+			}
+		}
+		
+		$this->setCache(__FUNCTION__, $services);
+		return $services;
+	}
+	
 	public function _hostBaseQuery($fields = [], $conditions = []){
 		return [
 			'recursive' => -1,
@@ -549,4 +617,5 @@ class QueryCache{
 			]
 		];
 	}
+	
 }

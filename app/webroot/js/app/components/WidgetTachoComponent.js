@@ -563,4 +563,4 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 		gauge.draw();
 	}
 
-})
+});

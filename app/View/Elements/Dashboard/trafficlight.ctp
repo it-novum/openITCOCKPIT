@@ -54,10 +54,12 @@ endif;
 		<div class="trafficLightWrapper">
 			<?php if($serviceId && $this->Acl->hasPermission('browser', 'services')): ?>
 				<a href="/services/browser/<?php echo $widget['Widget']['service_id']; ?>">
-					<div class="trafficlightContainer" data-current-state="<?php echo $widgetData['Service']['Servicestatus']['current_state']; ?>" data-is-flapping="<?php echo $widgetData['Service']['Servicestatus']['is_flapping']; ?>" data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>"></div>
+					<div class="trafficlightContainer" data-current-state="<?php echo $widgetData['Service']['Servicestatus']['current_state']; ?>" data-is-flapping="<?php echo $widgetData['Service']['Servicestatus']['is_flapping']; ?>" data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>" data-id-service="<?php echo $serviceId; ?>"></div>
 				</a>
 			<?php else: ?>
-				<div class="trafficlightContainer" data-current-state="3" data-is-flapping="0" data-check-interval="0"></div>
+				<div class="trafficlightContainer" data-current-state="3" data-is-flapping="0" data-check-interval="0" data-id-service="0">
+					<?php echo __('No service selected or selected service has been deleted');?>
+				</div>
 			<?php endif; ?>
 		</div>
 	</center>
