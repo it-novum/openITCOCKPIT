@@ -35,10 +35,10 @@
 <section id="widget-grid" class="">
 	<div class="row">
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false" >
+			<div class="jarviswidget" id="wid-id-1" data-widget-editbutton="false" >
 				<header>
 					<div class="tabsContainer">
-						<ul class="nav pull-left nav-tabs">
+						<ul class="nav nav-tabs pull-left">
 							<?php foreach($tabs as $_tab): ?>
 								<?php $isActive = ($_tab['DashboardTab']['id'] == $tab['DashboardTab']['id']); ?>
 								<li class="<?php echo ($isActive)?'active':''; ?> dropdown-toggle dashboardTab">
@@ -51,21 +51,21 @@
 									<?php if($isActive): ?>
 										<ul class="dropdown-menu">
 											<li>
-												<a class="renameTab" href="javascript:void(0)">
+												<a class="tab-select-menu-fix renameTab" href="javascript:void(0)">
 													<i class="fa fa-pencil-square-o"></i>
 													<?php echo __('Rename'); ?>
 												</a>
 											</li>
 											<?php if(!$_tab['DashboardTab']['shared']): ?>
 												<li>
-													<a class="shareTab" href="javascript:void(0)">
+													<a class="tab-select-menu-fix shareTab" href="javascript:void(0)">
 														<i class="fa fa-share-alt"></i>
 														<?php echo __('Start sharing'); ?>
 													</a>
 												</li>
 												<?php else: ?>
 													<li>
-														<a class="stopShareTab" href="javascript:void(0)">
+														<a class="tab-select-menu-fix stopShareTab" href="javascript:void(0)">
 															<i class="fa fa-share-alt"></i>
 															<?php echo __('Stop sharing'); ?>
 														</a>
@@ -73,7 +73,7 @@
 											<?php endif ?>
 											<?php if($_tab['DashboardTab']['source_tab_id'] !== 0): ?>
 												<li>
-													<a class="refreshTab" href="javascript:void(0)">
+													<a class="tab-select-menu-fix refreshTab" href="javascript:void(0)">
 														<i class="fa fa-refresh"></i>
 														<?php echo __('Get update'); ?>
 													</a>
