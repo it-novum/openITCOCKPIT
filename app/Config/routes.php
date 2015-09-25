@@ -22,6 +22,7 @@ Router::mapResources([
 	'graph_collections',
 	'locations',
 	'servicetemplates',
+	'hosttemplates',
 	'devicegroups',
 	'users',
 	'servicetemplategroups',

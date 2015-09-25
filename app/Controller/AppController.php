@@ -84,6 +84,7 @@ class AppController extends Controller{
 		'User',
 		'Location',
 		'Servicetemplate',
+		'Hosttemplate',
 		'Servicegroup',
 		'Devicegroup',
 		'Servicetemplategroup',
