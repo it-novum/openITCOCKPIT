@@ -172,7 +172,7 @@ class TreeComponent extends Component {
 	 * @param bool      $resolveRoot
 	 * @return int[]
 	 */
-	public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false){
+	public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false, $includeContainerTypes = []){
 		if(!is_array($containerIds)){
 			$containerIds = [$containerIds];
 		}
@@ -185,12 +185,15 @@ class TreeComponent extends Component {
 				continue;
 			}
 
-			$tmpResult = $this->Container->children($containerId, false, ['id']);
-			$tmpResult = Hash::extract($tmpResult, '{n}.Container.id');
+			$tmpResult = $this->Container->children($containerId, false, ['id', 'containertype_id']);
+			if(!empty($includeContainerTypes)){
+				$tmpResult = Hash::extract($tmpResult, '{n}.Container[containertype_id=/^('.implode('|', $includeContainerTypes).')$/].id');
+			}else{
+				$tmpResult = Hash::extract($tmpResult, '{n}.Container.id');
+			}
 			$result = array_merge($result, $tmpResult);
 			$result[] = $containerId;
 		}
-
 		return array_unique($result);
 	}
 }

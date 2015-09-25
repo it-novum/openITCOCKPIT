@@ -154,7 +154,7 @@ class ServicegroupsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
 		}
-		
+
 		$servicegroup = $this->Servicegroup->find('first', [
 			'contain' => [
 				'Service' => [
@@ -270,7 +270,7 @@ class ServicegroupsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
 		}
-		
+
 		$services = [];
 		$this->Frontend->set('data_placeholder', __('Please choose a service'));
 		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -340,7 +340,10 @@ class ServicegroupsController extends AppController{
 	public function loadServices($containerId = null){
 		$this->allowOnlyAjaxRequests();
 
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+		$containerIds = $this->Tree->resolveChildrenOfContainerIds(
+			$containerId, false,
+			$this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
+		);
 		$services = $this->Host->servicesByContainerIds($containerIds, 'list', [
 			'forOptiongroup' => true,
 		]);
