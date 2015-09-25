@@ -38,12 +38,20 @@
 					'warning',
 					'critical',
 					'unknown'
-				]; ?>
+				];
+				
+				$bgColors = [
+					1 => 'bg-color-red',
+					2 => 'bg-color-orange',
+					3 => 'bg-color-blueDark'
+				];
+				
+				?>
 			</div>
 			<div class="col-xs-12 stats180 margin-top-10" style="display:none; position: absolute; top:0px;">
 				<?php foreach([1, 2, 3] as $state): ?>
 					<div class="col-xs-4">
-						<div class="col-xs-12 stateService_<?php echo $state; ?>">
+						<div class="col-xs-12 <?php echo $bgColors[$state]; ?>">
 							<a href="<?php echo Router::url([
 								'controller' => 'services',
 								'action' => 'index',

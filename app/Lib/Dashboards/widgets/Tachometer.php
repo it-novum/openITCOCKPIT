@@ -27,7 +27,7 @@ namespace Dashboard\Widget;
 class Tachometer extends Widget{
 	public $isDefault = false;
 	public $icon = 'fa-dashboard';
-	public $element = '404';
+	public $element = 'tachometer';
 	public $width = 4;
 	public $height = 16;
 	

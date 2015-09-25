@@ -55,27 +55,36 @@
 													<i class="fa fa-pencil-square-o"></i>
 													<?php echo __('Rename'); ?>
 												</a>
-												<?php if(!$_tab['DashboardTab']['shared']): ?>
+											</li>
+											<?php if(!$_tab['DashboardTab']['shared']): ?>
+												<li>
 													<a class="shareTab" href="javascript:void(0)">
 														<i class="fa fa-share-alt"></i>
 														<?php echo __('Start sharing'); ?>
 													</a>
+												</li>
 												<?php else: ?>
-													<a class="stopShareTab" href="javascript:void(0)">
-														<i class="fa fa-share-alt"></i>
-														<?php echo __('Stop sharing'); ?>
-													</a>
-												<?php endif ?>
-												<a class="deleteTab" href="javascript:void(0)">
-													<i class="fa fa-trash-o"></i>
-													<?php echo __('Delete'); ?>
-												</a>
-												<?php if($_tab['DashboardTab']['source_tab_id'] !== 0): ?>
+													<li>
+														<a class="stopShareTab" href="javascript:void(0)">
+															<i class="fa fa-share-alt"></i>
+															<?php echo __('Stop sharing'); ?>
+														</a>
+													</li>
+											<?php endif ?>
+											<?php if($_tab['DashboardTab']['source_tab_id'] !== 0): ?>
+												<li>
 													<a class="refreshTab" href="javascript:void(0)">
 														<i class="fa fa-refresh"></i>
 														<?php echo __('Get update'); ?>
 													</a>
-												<?php endif ?>
+												</li>
+											<?php endif ?>
+											<li class="divider"></li>
+											<li>
+												<a class="deleteTab txt-color-red" href="javascript:void(0)">
+													<i class="fa fa-trash-o"></i>
+													<?php echo __('Delete'); ?>
+												</a>
 											</li>
 										</ul>
 									<?php endif;?>

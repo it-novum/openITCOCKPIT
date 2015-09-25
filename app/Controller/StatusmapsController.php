@@ -68,7 +68,7 @@ class StatusmapsController extends AppController{
 			'Parenthost' => [
 				'id' => 0,
 				'uuid' => '123456',
-				'name' => 'OpenITCOCKPIT',
+				'name' => $this->systemname,
 				'address' => '127.0.0.1'
 			],
 			'Host' => []
