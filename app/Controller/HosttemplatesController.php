@@ -171,7 +171,7 @@ class HosttemplatesController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}
-		
+
 		// Data to refill form
 		if($this->request->is('post') || $this->request->is('put')){
 			$containerId = $this->request->data('Hosttemplate.container_id');
@@ -447,7 +447,7 @@ class HosttemplatesController extends AppController{
 			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 		$commands = $this->Command->hostCommands('list');
-		
+
 		if($this->hasRootPrivileges === true){
 			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}else{
@@ -579,9 +579,18 @@ class HosttemplatesController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
+				if($this->request->ext == 'json'){
+					$this->serializeId();
+					return;
+				}
 				$this->setFlash(__('Hosttemplate successfully saved'));
 				$this->redirect(array('action' => 'index'));
 			}else{
+
+				if($this->request->ext == 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}
 				$this->setFlash(__('Could not save data'), false);
 				$this->CustomValidationErrors->loadModel($this->Hosttemplate);
 				$this->CustomValidationErrors->customFields(['notification_interval', 'check_interval', 'retry_interval', 'notify_on_recovery', 'flap_detection_on_up']);
@@ -646,7 +655,7 @@ class HosttemplatesController extends AppController{
 			if($changelog_data){
 				CakeLog::write('log', serialize($changelog_data));
 			}
-			
+
 			//Hosttemplate deleted, now we need to delete all hosts + services that are using this template
 			$this->loadModel('Host');
 			$hosts = $this->Host->find('all', [
@@ -657,7 +666,7 @@ class HosttemplatesController extends AppController{
 			foreach($hosts as $host){
 				$this->Host->__delete($host, $this->Auth->user('id'));
 			}
-			
+
 			$this->setFlash(__('Hosttemplate deleted'));
 			$this->redirect(array('action' => 'index'));
 		}
