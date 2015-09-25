@@ -202,7 +202,6 @@ class PackageManager{
 			];
 		}
 		$proxy = new ProxyController();
-		debug($proxy->getSettings());
 		$httpComponent = new HttpComponent($url, $curlSettings, $proxy->getSettings());
 		$httpComponent->sendRequest();
 
