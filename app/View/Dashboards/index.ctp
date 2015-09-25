@@ -41,17 +41,15 @@
 						<ul class="nav nav-tabs pull-left">
 							<?php foreach($tabs as $_tab): ?>
 								<?php $isActive = ($_tab['DashboardTab']['id'] == $tab['DashboardTab']['id']); ?>
-								<li class="<?php echo ($isActive)?'active':''; ?> dropdown-toggle dashboardTab">
-									<a class="pointer" data-toggle="dropdown" href="javascript:void(0)">
-										<span class="text <?php echo ($_tab['DashboardTab']['shared'] == 1)?'text-primary':''; ?>"><?php echo h($_tab['DashboardTab']['name']); ?></span>
-										<?php if($isActive): ?>
+								<?php if($isActive): ?>
+									<li class="active dropdown-toggle">
+										<a class="pointer" data-toggle="dropdown" href="javascript:void(0);">
+											<span class="text <?php echo ($_tab['DashboardTab']['shared'] == 1)?'text-primary':''; ?>"><?php echo h($_tab['DashboardTab']['name']); ?></span>
 											<b class="caret"></b>
-										<?php endif; ?>
-									</a>
-									<?php if($isActive): ?>
+										</a>
 										<ul class="dropdown-menu">
 											<li>
-												<a class="tab-select-menu-fix renameTab" href="javascript:void(0)">
+												<a class="tab-select-menu-fix" href="javascript:void(0)" data-toggle="modal" data-target="#renameTabModal" >
 													<i class="fa fa-pencil-square-o"></i>
 													<?php echo __('Rename'); ?>
 												</a>
@@ -71,7 +69,7 @@
 														</a>
 													</li>
 											<?php endif ?>
-											<?php if($_tab['DashboardTab']['source_tab_id'] !== 0): ?>
+											<?php if($_tab['DashboardTab']['source_tab_id'] !== 0 && $_tab['DashboardTab']['source_tab_id'] !== null): ?>
 												<li>
 													<a class="tab-select-menu-fix refreshTab" href="javascript:void(0)">
 														<i class="fa fa-refresh"></i>
@@ -81,14 +79,17 @@
 											<?php endif ?>
 											<li class="divider"></li>
 											<li>
-												<a class="deleteTab txt-color-red" href="javascript:void(0)">
-													<i class="fa fa-trash-o"></i>
-													<?php echo __('Delete'); ?>
-												</a>
+												<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'dashboards', 'action' => 'deleteTab', $_tab['DashboardTab']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
 											</li>
 										</ul>
-									<?php endif;?>
-								</li>
+									</li>
+								<?php else: ?>
+									<li>
+										<a class="pointer" href="<?php echo Router::url(['action' => 'index', $_tab['DashboardTab']['id']]); ?>">
+											<span class="text <?php echo ($_tab['DashboardTab']['shared'] == 1)?'text-primary':''; ?>"><?php echo h($_tab['DashboardTab']['name']); ?></span>
+										</a>
+									</li>
+								<?php endif; ?>
 							<?php endforeach;?>
 						</ul>
 					</div>
@@ -137,37 +138,9 @@
 						</ul>
 					</div>
 					<div class="widget-toolbar" rile="menu">
-						<button class="btn btn-xs btn-success" data-toggle="dropdown" aria-expanded="false">
+						<button class="btn btn-xs btn-success" data-toggle="modal" data-target="#addWidgetModal">
 							<i class="fa fa-plus"></i>
 						</button>
-						<ul class="newTabsList dropdown-menu pull-right" id="45809103">
-							<li class="addNewTab"><a href="javascript:void(0);"><i class="fa fa-plus">&nbsp;</i>New Tab</a></li>
-							<li class="divider"></li>
-							<li class="addSharedTab">
-								<form action="/" novalidate="novalidate" class="sharedTabsForm clear" id="" method="post" accept-charset="utf-8"><div style="display:none;"><input type="hidden" name="_method" value="POST"></div><div class="form-group"><label for="chooseSharedTabSharedTabSelect" class="col col-md-2 control-label">Select a shared Tab</label><div class="col col-xs-8 selectSharedTab">
-									<select name="data[chooseSharedTab][sharedTabSelect]" class="chosen selectSharedTab elementInput" id="chooseSharedTabSharedTabSelect" style="display: none;">
-										<option value="0"></option>
-									</select>
-									<div class="chosen-container chosen-container-single" style="width: 100%;" title="" id="chooseSharedTabSharedTabSelect_chosen">
-										<a class="chosen-single chosen-default" tabindex="-1">
-											<span>Please choose</span>
-											<div>
-												<b></b>
-											</div>
-										</a>
-										<div class="chosen-drop">
-											<div class="chosen-search">
-												<input type="text" autocomplete="off">
-											</div>
-											<ul class="chosen-results"></ul>
-										</div>
-									</div>
-									<div class="submit">
-										<input class="sharedTabSave btn btn-primary" type="submit" value="Save">
-									</div>
-								</form>
-							</li>
-						</ul>
 					</div>
 					
 				</header>
@@ -188,3 +161,100 @@
 		</article>
 	</div>
 </section>
+
+<div class="modal fade" id="addWidgetModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel"><?php echo __('Create new Tab');?></h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<?php
+					echo $this->Form->create('dashboard', [
+						'class' => 'form-horizontal clear',
+						'action' => 'createTab'
+					]);
+					echo $this->Form->input('name');
+					?>
+					<div style="height:35px;">
+						<?php
+						echo $this->Form->submit(__('Save'), [
+							'class' => [
+								'btn btn-primary pull-right'
+							]
+						]);
+						echo $this->Form->end();
+						?>
+					</div>
+				</div>
+				<div>
+					<hr />
+					<h3><?php echo __('Select shared tab');?></h3>
+					<?php echo $this->Form->input('shared_tabs', [
+						'options' => ['foobar', '123', 'asd'],
+						'label' => __('Shared tabs'),
+						'class' => 'chosen',
+						'style' => 'width:100%',
+						]);?>
+						<br />
+						<br />
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					<?php echo __('Close'); ?>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="renameTabModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel"><?php echo __('Rename tab');?></h4>
+			</div>
+			<div class="modal-body">
+				<div>
+					<?php
+					echo $this->Form->create('dashboard', [
+						'class' => 'form-horizontal clear',
+						'action' => 'renameTab'
+					]);
+					echo $this->Form->input('name', [
+						'value' => $tab['DashboardTab']['name']
+					]);
+					echo $this->Form->input('id', [
+						'value' => $tab['DashboardTab']['id'],
+						'type' => 'hidden'
+					]);
+					?>
+					<div style="height:35px;">
+						<?php
+						echo $this->Form->submit(__('Save'), [
+							'class' => [
+								'btn btn-primary pull-right'
+							]
+						]);
+						echo $this->Form->end();
+						?>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">
+					<?php echo __('Close'); ?>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+

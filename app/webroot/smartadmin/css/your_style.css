@@ -1364,3 +1364,10 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .tab-select-menu-fix:hover{
 	color:#FFF!important;
 }
+
+.tabTargetDestination{
+	border: 1px solid #EEE;
+	width:5em;
+	height:33px
+}
+

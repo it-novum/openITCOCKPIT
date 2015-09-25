@@ -54,17 +54,41 @@ class DashboardTab extends AppModel{
 	
 	
 	//Function name new or create are registerd by php/CakePHP
-	public function createNewTab($userId, $position = null){
-		$this->create();
-		$data = [
-			'user_id' => $userId,
-			'position' => $position,
+	public function createNewTab($userId, $options = []){
+		$_options = [
 			'name' => __('Default'),
 			'shared' => 0,
 			'source_tab_id' => null,
-			'check_for_updates' => 0
+			'check_for_updates' => 0,
+			'position' => $this->getNextPosition($userId),
 		];
+		$options = Hash::merge($_options, $options);
+		
+		$this->create();
+		$data = [
+			'user_id' => $userId,
+		];
+		
+		$data = Hash::merge($options, $data);
+		
 		return $this->save($data);
+	}
+	
+	public function getNextPosition($userId){
+		$result = $this->find('first', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'user_id' => $userId
+			],
+			'order' => [
+				'position' => 'DESC'
+			]
+		]);
+		if(!empty($result)){
+			return (int)$result['DashboardTab']['position'] + 1;
+		}
+		return 1;
 	}
 	
 }

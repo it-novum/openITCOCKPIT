@@ -52,6 +52,13 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		
 		var self = this;
 		
+		$('.nav-tabs').sortable({
+			update: function(){
+				console.log('drop');
+			},
+			placeholder: 'tabTargetDestination'
+		});
+		
 		// Bind click event to create new widgets
 		$('.addWidget').click(function(){
 			var $object = $(this);

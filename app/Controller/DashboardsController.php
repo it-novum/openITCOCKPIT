@@ -88,7 +88,7 @@ class DashboardsController extends AppController{
 		}
 		if(empty($tab)){
 			//No tab found. Create one
-			$result = $this->DashboardTab->createNewTab($userId, 1);
+			$result = $this->DashboardTab->createNewTab($userId);
 			if($result){
 				$tabId = $result['DashboardTab']['id'];
 				//Fill new tab with default dashboards
@@ -168,6 +168,86 @@ class DashboardsController extends AppController{
 		}
 		//Set the widget or an empty array
 		$this->set('widget', $widget);
+	}
+	
+	public function createTab(){
+		if($this->request->is('post') || $this->request->is('put')){
+			if(isset($this->request->data['dashboard']['name'])){
+				$tabName = $this->request->data['dashboard']['name'];
+				$userId = $this->Auth->user('id');
+				if(mb_strlen($tabName) > 0){
+					$result = $this->DashboardTab->createNewTab($userId, [
+						'name' => $tabName
+					]);
+					if(isset($result['DashboardTab']['id'])){
+						$this->redirect([
+							'action' => 'index',
+							$result['DashboardTab']['id']
+						]);
+					}
+				}
+			}
+		}
+		$this->redirect([
+			'action' => 'index'
+		]);
+	}
+	
+	public function renameTab(){
+		if($this->request->is('post') || $this->request->is('put')){
+			if(isset($this->request->data['dashboard']['name']) && isset($this->request->data['dashboard']['id'])){
+				$tabName = $this->request->data['dashboard']['name'];
+				$tabId = $this->request->data['dashboard']['id'];
+				$userId = $this->Auth->user('id');
+				if(mb_strlen($tabName) > 0){
+					$result = $this->DashboardTab->find('first', [
+						'recursive' => -1,
+						'contain' => [],
+						'conditions' => [
+							'id' => $tabId,
+							'user_id' => $userId
+						]
+					]);
+					if(!empty($result)){
+						$this->DashboardTab->id = $tabId;
+						if($this->DashboardTab->saveField('name', $tabName)){
+							$this->redirect([
+								'action' => 'index',
+								$tabId
+							]);
+						}
+					}
+				}
+			}
+		}
+		$this->setFlash(__('Could not rename tab'), false);
+		$this->redirect([
+			'action' => 'index',
+			$tabId
+		]);
+	}
+	
+	public function deleteTab($tabId = null){
+		if(!$this->DashboardTab->exists($tabId)){
+			throw new NotFoundException(__('Invalid host'));
+		}
+
+		if(!$this->request->is('post')){
+			throw new MethodNotAllowedException();
+		}
+		
+		$tab = $this->DashboardTab->findById($tabId);
+		$userId = $this->Auth->user('id');
+		if($tab['DashboardTab']['user_id'] == $userId){
+			$this->DashboardTab->id = $tab['DashboardTab']['id'];
+			if($this->DashboardTab->delete()){
+				$this->setFlash(__('Tab deleted'));
+				$this->redirect(['action' => 'index']);
+			}
+		}
+
+		$this->setFlash(__('Could not delete tab'), false);
+		$this->redirect(['action' => 'index']);
 	}
 	
 	public function restoreDefault($tabId = null){
