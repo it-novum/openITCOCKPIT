@@ -2,6 +2,8 @@
 <span class="label bg-color-green">New</span> Add test mail function to debug page
 <span class="label bg-color-green">New</span> Restart oITC CMD after new monitoring configuration was written
 <span class="label bg-color-green">New</span> Rewrite Browser
+<span class="label bg-color-green">New</span> Rewrite Dashboards
+<span class="label bg-color-green">New</span> LDAP contact import
 <span class="label bg-color-red">Bugfix</span> LDAP user import
 <span class="label bg-color-red">Bugfix</span> Edit user profile
 <span class="label bg-color-red">Bugfix</span> Hostdependencies and Servicedependencies
@@ -9,6 +11,7 @@
 <span class="label bg-color-red">Bugfix</span> List as PDF
 <span class="label bg-color-red">Bugfix</span> Map Module Wizard select not monitored service
 <span class="label bg-color-red">Bugfix</span> Fixed Default state for Hostgroups and Servicegroups in Map Module
+<span class="label bg-color-red">Bugfix</span> Two-factor authentication
 
 3.0.4
 <span class="label bg-color-green">New</span> User permissions
