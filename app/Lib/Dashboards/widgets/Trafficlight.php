@@ -46,10 +46,13 @@ class Trafficlight extends Widget{
 				$query = [
 					'recursive' => -1,
 					'conditions' => [
-						'Service.id' => $widgetData['Widget']['service_id']
+						'Service.id' => $widgetData['Widget']['service_id'],
+						'HostsToContainers.container_id' => $this->Controller->MY_RIGHTS,
+						'Service.disabled' => 0
 					],
 					'contain' => [],
 					'fields' => [
+						'Host.id',
 						'Service.id',
 						'Service.uuid',
 						'Servicestatus.current_state',
@@ -57,6 +60,12 @@ class Trafficlight extends Widget{
 						'Servicestatus.normal_check_interval',
 					],
 					'joins' => [
+						[
+							'table' => 'hosts',
+							'type' => 'INNER',
+							'alias' => 'Host',
+							'conditions' => 'Service.host_id = Host.id'
+						],
 						[
 							'table' => 'nagios_objects',
 							'type' => 'INNER',
@@ -68,6 +77,14 @@ class Trafficlight extends Widget{
 							'type' => 'LEFT OUTER',
 							'alias' => 'Servicestatus',
 							'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+						],
+						[
+							'table' => 'hosts_to_containers',
+							'alias' => 'HostsToContainers',
+							'type' => 'LEFT',
+							'conditions' => [
+								'HostsToContainers.host_id = Host.id',
+							]
 						],
 					]
 				];

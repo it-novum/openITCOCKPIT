@@ -56,26 +56,24 @@
 											</li>
 											<?php if(!$_tab['DashboardTab']['shared']): ?>
 												<li>
-													<a class="tab-select-menu-fix shareTab" href="javascript:void(0)">
-														<i class="fa fa-share-alt"></i>
+													<a class="tab-select-menu-fix" href="<?php echo Router::url([
+															'controller' => 'dashboards',
+															'action' => 'startSharing',
+															$_tab['DashboardTab']['id']]); ?>">
+														<i class="fa fa-code-fork"></i>
 														<?php echo __('Start sharing'); ?>
 													</a>
 												</li>
 												<?php else: ?>
 													<li>
-														<a class="tab-select-menu-fix stopShareTab" href="javascript:void(0)">
-															<i class="fa fa-share-alt"></i>
-															<?php echo __('Stop sharing'); ?>
+														<a class="tab-select-menu-fix" href="<?php echo Router::url([
+															'controller' => 'dashboards',
+															'action' => 'stopSharing',
+															$_tab['DashboardTab']['id']]); ?>">
+																<i class="fa fa-ban"></i>
+																<?php echo __('Stop sharing'); ?>
 														</a>
 													</li>
-											<?php endif ?>
-											<?php if($_tab['DashboardTab']['source_tab_id'] !== 0 && $_tab['DashboardTab']['source_tab_id'] !== null): ?>
-												<li>
-													<a class="tab-select-menu-fix refreshTab" href="javascript:void(0)">
-														<i class="fa fa-refresh"></i>
-														<?php echo __('Get update'); ?>
-													</a>
-												</li>
 											<?php endif ?>
 											<li class="divider"></li>
 											<li>
@@ -193,15 +191,31 @@
 				</div>
 				<div>
 					<hr />
-					<h3><?php echo __('Select shared tab');?></h3>
-					<?php echo $this->Form->input('shared_tabs', [
-						'options' => ['foobar', '123', 'asd'],
+					<h3><?php echo __('Create from shared tab');?></h3>
+					<?php
+					echo $this->Form->create('dashboard', [
+						'class' => 'form-horizontal clear',
+						'action' => 'createTabFromSharing'
+					]);
+					echo $this->Form->input('source_tab', [
+						'options' => $sharedTabs,
 						'label' => __('Shared tabs'),
 						'class' => 'chosen',
 						'style' => 'width:100%',
-						]);?>
-						<br />
-						<br />
+						]);
+					?>
+					<div style="height:35px;">
+						<?php
+						echo $this->Form->submit(__('Create'), [
+							'class' => [
+								'btn btn-primary pull-right'
+							]
+						]);
+						echo $this->Form->end();
+						?>
+					</div>
+					<br />
+					<br />
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -258,3 +272,49 @@
 	</div>
 </div>
 
+<div class="modal fade" id="updateAvailableModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel"><?php echo __('For your tab is an update available');?></h4>
+			</div>
+			<div class="modal-body">
+				<h3><?php echo __('Do you want to perform a update?'); ?></h3>
+				<?php
+				echo $this->Form->create('dashboard', [
+					'class' => 'form-horizontal clear',
+					'action' => 'updateSharedTab'
+				]);
+				echo $this->Form->input('ask_again', [
+					'type' => 'checkbox',
+					'checked' => false,
+					'label' => __('Don\'t ask again for this tab')
+				]);
+				echo $this->Form->input('tabId', [
+					'type' => 'hidden',
+					'value' => $tab['DashboardTab']['id']
+				]);
+				?>
+			</div>
+			<div class="modal-footer">
+				<div style="height:35px;">
+					<?php
+					echo $this->Form->submit(__('Yes'), [
+						'class' => [
+							'btn btn-primary'
+						],
+						'div' => false,
+						'value' => 1
+					]); ?>
+					<button class="btn btn-default" data-dismiss="modal" id="noAutoUpdate">
+						<?php echo __('No'); ?>
+					</button>
+				</div>
+				<?php echo $this->Form->end(); ?>
+			</div>
+		</div>
+	</div>
+</div>

@@ -50,6 +50,10 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.WidgetTrafficLight.initTrafficlights();
 		
 		
+		if(this.getVar('updateAvailable') === true){
+			$('#updateAvailableModal').modal('show'); 
+		}
+		
 		var self = this;
 		
 		$('.nav-tabs').sortable({
@@ -76,6 +80,27 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				});
 			},
 			placeholder: 'tabTargetDestination'
+		});
+		
+		//Bind click evento for noAutoUpdate
+		$('#noAutoUpdate').click(function(){
+			var askAgain = $('#dashboardAskAgain').prop('checked');
+			if(askAgain === true){
+				//Send AJAX request to disable update function
+				self.Ajaxloader.show();
+				$.ajax({
+					url: "/dashboards/disableUpdate",
+					type: "POST",
+					data: {tabId: self.tabId},
+					error: function(){},
+					success: function(response){
+						console.log(response);
+						self.Ajaxloader.hide();
+					}.bind(self),
+					complete: function(response) {
+					}
+				});
+			}
 		});
 		
 		// Bind click event to create new widgets

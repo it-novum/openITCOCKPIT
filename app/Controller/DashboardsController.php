@@ -52,6 +52,10 @@ class DashboardsController extends AppController{
 		'Hostgroup',
 	];
 
+	const UPDATE_DISABLED = 0;
+	const CHECK_FOR_UPDATES = 1;
+	const AUTO_UPDATE = 2;
+
 	public function beforeFilter(){
 		require_once APP . 'Lib' . DS . 'Dashboards' . DS . 'DashboardHandler.php';
 		//Dashboard is allays allowed
@@ -83,7 +87,7 @@ class DashboardsController extends AppController{
 				],
 				'order' => [
 					'position' => 'ASC'
-				]
+				],
 			]);
 		}
 		if(empty($tab)){
@@ -120,11 +124,97 @@ class DashboardsController extends AppController{
 		
 		$this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
 		$this->Frontend->setJson('tabId', $tabId);
+		
+		//Find shared tabs
+		$this->DashboardTab->bindModel([
+			'belongsTo' => [
+				'User'
+			]
+		]);
+		$_sharedTabs = $this->DashboardTab->find('all', [
+			'recursive' => -1,
+			'contain' => [
+				'User' => [
+					'fields' => [
+						'User.id',
+						'User.usergroup_id',
+						'User.firstname',
+						'User.lastname'
+					]
+				]
+			],
+			'fields' => [
+				'DashboardTab.id',
+				'DashboardTab.name',
+			],
+			'conditions' => [
+				'shared' => 1
+			],
+			'order' => [
+				'User.id' => 'ASC'
+			]
+		]);
+		$sharedTabs = [];
+		foreach($_sharedTabs as $sharedTab){
+			$sharedTabs[$sharedTab['DashboardTab']['id']] = $sharedTab['User']['firstname'].' '.$sharedTab['User']['lastname'].DS.$sharedTab['DashboardTab']['name'];
+		}
+		
+		//Was this tab created from a shared tab?
+		$updateAvailable = false;
+		if($tab['DashboardTab']['source_tab_id'] > 0){
+			//Does the source tab exists?
+			if($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])){
+				$sourceTab = $this->DashboardTab->find('first', [
+					'recursive' => -1,
+					'contain' => [],
+					'conditions' => [
+						'DashboardTab.id' => $tab['DashboardTab']['source_tab_id'],
+						'DashboardTab.modified >' => $tab['DashboardTab']['modified']
+					]
+				]);
+				if(!empty($sourceTab)){
+					//Source tab was modified, show update notice or run auto update
+					if($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES){
+						//Display update available message
+						$updateAvailable = true;
+					}
+					
+					if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
+						//Delete old widgets
+						foreach($tab['Widget'] as $widget){
+							$this->Widget->delete($widget['id']);
+						}
+						$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
+						if($error === false){
+							$this->setFlash(__('Tab automatically updated'));
+							$this->redirect([
+								'action' => 'index',
+								$tab['DashboardTab']['id']
+							]);
+						}else{
+							$this->setFlash(__('Automatically tab failed'), false);
+							$this->redirect(['action' => 'index']);
+						}
+					}
+				}
+			}else{
+				//Source tab not found, reset association
+				$tab['DashboardTab']['source_tab_id'] = null;
+				$tab['DashboardTab']['check_for_updates'] = self::UPDATE_DISABLED;
+				$this->DashboardTab->id = $tab['DashboardTab']['id'];
+				$this->DashboardTab->saveField('source_tab_id', $tab['DashboardTab']['source_tab_id']);
+				$this->DashboardTab->saveField('check_for_updates', $tab['DashboardTab']['check_for_updates']);
+			}
+		}
+		
+		$this->Frontend->setJson('updateAvailable', $updateAvailable);
 		$this->set(compact([
 			'tab',
 			'tabs',
 			'allWidgets',
-			'preparedWidgets'
+			'preparedWidgets',
+			'sharedTabs',
+			'updateAvailable'
 		]));
 	}
 	
@@ -163,6 +253,8 @@ class DashboardsController extends AppController{
 						]
 					];
 					$widget = $this->DashboardHandler->prepareForRender($resultForRender);
+					$this->DashboardTab->id = $tabId;
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 				}
 			}
 		}
@@ -191,6 +283,117 @@ class DashboardsController extends AppController{
 		$this->redirect([
 			'action' => 'index'
 		]);
+	}
+	
+	public function createTabFromSharing(){
+		$sourceTabId = $this->request->data('dashboard.source_tab');
+		$sourceTab = $this->DashboardTab->find('first', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'id' => $sourceTabId,
+				'shared' => 1
+			],
+		]);
+		if(empty($sourceTab)){
+			throw new NotFoundException(__('Invalid tab'));
+		}
+		$userId = $this->Auth->user('id');
+		$newTab = $this->DashboardTab->createNewTab($userId, [
+			'name' => $sourceTab['DashboardTab']['name'],
+			'source_tab_id' => $sourceTabId,
+			'check_for_updates' => 1
+		]);
+		
+		$error = $this->Widget->copySharedWidgets($sourceTab, $newTab, $userId);
+		
+		if($error === false){
+			$this->setFlash(__('Tab copied successfully'));
+			$this->redirect([
+				'action' => 'index',
+				$newTab['DashboardTab']['id']
+			]);
+		}
+		
+		$this->setFlash(__('Could not use shared tab'), false);
+		$this->redirect(['action' => 'index']);
+	}
+	
+	public function updateSharedTab(){
+		if($this->request->is('post') || $this->request->is('put')){
+			$tabId = $this->request->data('dashboard.tabId');
+			$askAgain = $this->request->data('dashboard.ask_again');
+			$userId = $this->Auth->user('id');
+		
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [
+					'Widget'
+				],
+				'conditions' => [
+					'id' => $tabId,
+					'user_id' => $userId
+				]
+			]);
+			if(!empty($tab)){
+				//Delete old widgets
+				foreach($tab['Widget'] as $widget){
+					$this->Widget->delete($widget['id']);
+				}
+				
+				if($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])){
+					$sourceTab = $this->DashboardTab->find('first', [
+						'recursive' => -1,
+						'contain' => [],
+						'conditions' => [
+							'id' => $tab['DashboardTab']['source_tab_id'],
+							'shared' => 1
+						],
+					]);
+					$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
+					
+					$this->DashboardTab->id = $tab['DashboardTab']['id'];
+					if($askAgain == 1){
+						$this->DashboardTab->saveField('check_for_updates', self::AUTO_UPDATE);
+					}
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+					
+					if($error === false){
+						$this->setFlash(__('Tab updated successfully'));
+						$this->redirect([
+							'action' => 'index',
+							$tab['DashboardTab']['id']
+						]);
+					}
+					$this->setFlash(__('Could not update tab'), false);
+					$this->redirect(['action' => 'index']);
+				}
+			}
+		}
+	}
+	
+	public function disableUpdate(){
+		if(!$this->request->is('post')){
+			throw new MethodNotAllowedException();
+		}
+		$this->autoRender = false;
+		if(isset($this->request->data['tabId'])){
+			$tabId = $this->request->data['tabId'];
+			$userId = $this->Auth->user('id');
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [],
+				'conditions' => [
+					'id' => $tabId,
+					'user_id' => $userId
+				]
+			]);
+			if(!empty($tab)){
+				$this->DashboardTab->id = $tab['DashboardTab']['id'];
+				$this->DashboardTab->saveField('source_tab_id', null);
+				$this->DashboardTab->saveField('check_for_updates', self::UPDATE_DISABLED);
+			}
+		}
 	}
 	
 	public function renameTab(){
@@ -229,7 +432,7 @@ class DashboardsController extends AppController{
 	
 	public function deleteTab($tabId = null){
 		if(!$this->DashboardTab->exists($tabId)){
-			throw new NotFoundException(__('Invalid host'));
+			throw new NotFoundException(__('Invalid tab'));
 		}
 
 		if(!$this->request->is('post')){
@@ -263,6 +466,8 @@ class DashboardsController extends AppController{
 		if($this->Widget->deleteAll(['Widget.dashboard_tab_id' => $tab['DashboardTab']['id']])){
 			$defaultWidgets = $this->DashboardHandler->getDefaultDashboards($tabId);
 			$this->Widget->saveAll($defaultWidgets);
+			$this->DashboardTab->id = $tabId;
+			$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 		}
 		$this->redirect(['action' => 'index', $tabId]);
 	}
@@ -340,6 +545,8 @@ class DashboardsController extends AppController{
 				}
 				if(!empty($data)){
 					$this->Widget->saveAll($data);
+					$this->DashboardTab->id = $tab['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 				}
 			}
 		}
@@ -364,6 +571,8 @@ class DashboardsController extends AppController{
 				]);
 				if($widget['DashboardTab']['user_id'] == $userId){
 					$this->Widget->delete($widget['Widget']['id']);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 				}
 			}
 		}
@@ -398,6 +607,58 @@ class DashboardsController extends AppController{
 				}
 			}
 		}
+	}
+	
+	public function startSharing($tabId){
+		$userId = $this->Auth->user('id');
+		$tab = $this->DashboardTab->find('first', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'id' => $tabId,
+				'user_id' => $userId
+			],
+			'fields' => [
+				'id',
+				'user_id'
+			]
+		]);
+		if(empty($tab)){
+			throw new NotFoundException(__('Invalid tab'));
+		}
+		
+		$this->DashboardTab->id = $tabId;
+		$this->DashboardTab->saveField('shared', 1);
+		$this->redirect([
+			'action' => 'index',
+			$tabId
+		]);
+	}
+	
+	public function stopSharing($tabId){
+		$userId = $this->Auth->user('id');
+		$tab = $this->DashboardTab->find('first', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'id' => $tabId,
+				'user_id' => $userId
+			],
+			'fields' => [
+				'id',
+				'user_id'
+			]
+		]);
+		if(empty($tab)){
+			throw new NotFoundException(__('Invalid tab'));
+		}
+		
+		$this->DashboardTab->id = $tabId;
+		$this->DashboardTab->saveField('shared', 0);
+		$this->redirect([
+			'action' => 'index',
+			$tabId
+		]);
 	}
 
 	public function refresh(){
@@ -469,6 +730,8 @@ class DashboardsController extends AppController{
 							}
 						}
 						$this->Widget->saveAll($widget);
+						$this->DashboardTab->id = $widget['DashboardTab']['id'];
+						$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 					}
 				}
 			}
@@ -489,6 +752,8 @@ class DashboardsController extends AppController{
 				if($widget['DashboardTab']['user_id'] == $userId){
 					$widget['Widget']['service_id'] = $serviceId;
 					$this->Widget->save($widget);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
 				}
 			}
 		}
