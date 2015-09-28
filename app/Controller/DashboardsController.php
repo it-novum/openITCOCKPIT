@@ -163,38 +163,37 @@ class DashboardsController extends AppController{
 		$updateAvailable = false;
 		if($tab['DashboardTab']['source_tab_id'] > 0){
 			//Does the source tab exists?
-			if($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])){
-				$sourceTab = $this->DashboardTab->find('first', [
-					'recursive' => -1,
-					'contain' => [],
-					'conditions' => [
-						'DashboardTab.id' => $tab['DashboardTab']['source_tab_id'],
-						'DashboardTab.modified >' => $tab['DashboardTab']['modified']
-					]
-				]);
-				if(!empty($sourceTab)){
-					//Source tab was modified, show update notice or run auto update
-					if($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES){
-						//Display update available message
-						$updateAvailable = true;
+			$sourceTab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [],
+				'conditions' => [
+					'DashboardTab.id' => $tab['DashboardTab']['source_tab_id'],
+					'DashboardTab.shared' => 1,
+					'DashboardTab.modified >' => $tab['DashboardTab']['modified']
+				]
+			]);
+			if(!empty($sourceTab)){
+				//Source tab was modified, show update notice or run auto update
+				if($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES){
+					//Display update available message
+					$updateAvailable = true;
+				}
+				
+				if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
+					//Delete old widgets
+					foreach($tab['Widget'] as $widget){
+						$this->Widget->delete($widget['id']);
 					}
-					
-					if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
-						//Delete old widgets
-						foreach($tab['Widget'] as $widget){
-							$this->Widget->delete($widget['id']);
-						}
-						$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
-						if($error === false){
-							$this->setFlash(__('Tab automatically updated'));
-							$this->redirect([
-								'action' => 'index',
-								$tab['DashboardTab']['id']
-							]);
-						}else{
-							$this->setFlash(__('Automatically tab failed'), false);
-							$this->redirect(['action' => 'index']);
-						}
+					$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
+					if($error === false){
+						$this->setFlash(__('Tab automatically updated'));
+						$this->redirect([
+							'action' => 'index',
+							$tab['DashboardTab']['id']
+						]);
+					}else{
+						$this->setFlash(__('Automatically tab failed'), false);
+						$this->redirect(['action' => 'index']);
 					}
 				}
 			}else{
