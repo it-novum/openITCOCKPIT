@@ -247,10 +247,17 @@ class ServicegroupsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-
+				if($this->request->ext == 'json'){
+					$this->serializeId();
+					return;
+				}
 				$this->setFlash(__('Servicegroup successfully saved'));
 				$this->redirect(['action' => 'index']);
 			}else{
+				if($this->request->ext == 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}
 				$this->setFlash(__('Servicegroup could not be saved'), false);
 			}
 		}
