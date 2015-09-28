@@ -117,23 +117,9 @@
 						</div>
 					</div>
 					<div class="widget-toolbar" rile="menu">
-						<button class="btn btn-xs btn-primary" data-toggle="dropdown" aria-expanded="false">
+						<button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#tabRotateModal">
 							<i class="fa fa-refresh"></i>
 						</button>
-						<ul class="dropdown-menu pull-right" id="37199141">
-							<li>
-								<div class="form-group form-group-slider ">
-									<label class="col rotationSliderLabel" for="tabRotationInterval">Choose tab rotation interval</label>
-									<div class="col rotationSlider">
-										<div class="slider slider-horizontal" id=""><div class="slider-track"><div class="slider-selection" style="left: 0%; width: 0%;"></div><div class="slider-handle min-slider-handle round" tabindex="0" style="left: 0%;"></div><div class="slider-handle max-slider-handle round hide" tabindex="0" style="left: 0%;"></div></div><div class="tooltip tooltip-main top hide" style="left: 0%; margin-left: 0px;"><div class="tooltip-arrow"></div><div class="tooltip-inner">0</div></div><div class="tooltip tooltip-min top hide"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div><div class="tooltip tooltip-max top hide" style="top: -30px;"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div></div><input type="text" id="tabRotationInterval" maxlength="255" value="0" class="form-control slider slider-success" name="data[rotationInterval]" data-slider-min="0" data-slider-max="1200" data-slider-value="0" data-slider-selection="before" data-slider-step="30" human="#HostNotificationinterval_human" data="value: '0'" style="display: none;">
-									</div>
-									<div class="col rotationSliderInput">
-										<input type="number" id="_tabRotationInterval" human="#HostNotificationinterval_human" value="0" slider-for="HostNotificationinterval" class="form-control slider-input" name="data[Host][notification_interval]">
-										<span class="note" id="HostNotificationinterval_human">0 seconds</span>
-									</div>
-								</div>
-							</li>
-						</ul>
 					</div>
 					<div class="widget-toolbar" rile="menu">
 						<button class="btn btn-xs btn-success" data-toggle="modal" data-target="#addWidgetModal">
@@ -308,6 +294,53 @@
 						],
 						'div' => false,
 						'value' => 1
+					]); ?>
+					<button class="btn btn-default" data-dismiss="modal" id="noAutoUpdate">
+						<?php echo __('No'); ?>
+					</button>
+				</div>
+				<?php echo $this->Form->end(); ?>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="tabRotateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title" id="myModalLabel"><?php echo __('Setup a tab rotation interval');?></h4>
+			</div>
+			<div class="modal-body">
+				<?php
+				echo $this->Form->create('dashboard', [
+					'class' => 'form-horizontal clear',
+					'action' => 'updateTabRotateInterval'
+				]);
+				?>
+				<div class="form-group form-group-slider ">
+					<label class="col rotationSliderLabel" for="tabRotationInterval">Choose tab rotation interval</label>
+						<div class="col rotationSlider">
+							<input type="text" id="tabRotationInterval" maxlength="255" value="" class="form-control slider slider-success" name="data[rotationInterval]" data-slider-min="0" data-slider-max="1200" data-slider-value="420" data-slider-selection="before" data-slider-step="30" human="#HostNotificationinterval_human">
+						</div>
+						<div class="col rotationSliderInput">
+							<input type="number" id="_tabRotationInterval" human="#HostNotificationinterval_human" value="420" slider-for="HostNotificationinterval" class="form-control slider-input" name="data[Host][notification_interval]">
+							<span class="note" id="HostNotificationinterval_human">7 minutes and 0 seconds</span>
+						</div>
+					</div>
+				
+			</div>
+			<div class="modal-footer">
+				<div style="height:35px;">
+					<?php
+					echo $this->Form->submit(__('Save'), [
+						'class' => [
+							'btn btn-primary'
+						],
+						'div' => false,
 					]); ?>
 					<button class="btn btn-default" data-dismiss="modal" id="noAutoUpdate">
 						<?php echo __('No'); ?>

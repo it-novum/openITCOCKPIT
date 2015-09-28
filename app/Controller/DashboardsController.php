@@ -162,38 +162,40 @@ class DashboardsController extends AppController{
 		//Was this tab created from a shared tab?
 		$updateAvailable = false;
 		if($tab['DashboardTab']['source_tab_id'] > 0){
-			//Does the source tab exists?
-			$sourceTab = $this->DashboardTab->find('first', [
-				'recursive' => -1,
-				'contain' => [],
-				'conditions' => [
-					'DashboardTab.id' => $tab['DashboardTab']['source_tab_id'],
-					'DashboardTab.shared' => 1,
-					'DashboardTab.modified >' => $tab['DashboardTab']['modified']
-				]
-			]);
-			if(!empty($sourceTab)){
-				//Source tab was modified, show update notice or run auto update
-				if($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES){
-					//Display update available message
-					$updateAvailable = true;
-				}
-				
-				if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
-					//Delete old widgets
-					foreach($tab['Widget'] as $widget){
-						$this->Widget->delete($widget['id']);
+			if($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])){
+				//Does the source tab exists?
+				$sourceTab = $this->DashboardTab->find('first', [
+					'recursive' => -1,
+					'contain' => [],
+					'conditions' => [
+						'DashboardTab.id' => $tab['DashboardTab']['source_tab_id'],
+						'DashboardTab.shared' => 1,
+						'DashboardTab.modified >' => $tab['DashboardTab']['modified']
+					]
+				]);
+				if(!empty($sourceTab)){
+					//Source tab was modified, show update notice or run auto update
+					if($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES){
+						//Display update available message
+						$updateAvailable = true;
 					}
-					$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
-					if($error === false){
-						$this->setFlash(__('Tab automatically updated'));
-						$this->redirect([
-							'action' => 'index',
-							$tab['DashboardTab']['id']
-						]);
-					}else{
-						$this->setFlash(__('Automatically tab failed'), false);
-						$this->redirect(['action' => 'index']);
+					
+					if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
+						//Delete old widgets
+						foreach($tab['Widget'] as $widget){
+							$this->Widget->delete($widget['id']);
+						}
+						$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
+						if($error === false){
+							$this->setFlash(__('Tab automatically updated'));
+							$this->redirect([
+								'action' => 'index',
+								$tab['DashboardTab']['id']
+							]);
+						}else{
+							$this->setFlash(__('Automatically tab failed'), false);
+							$this->redirect(['action' => 'index']);
+						}
 					}
 				}
 			}else{
@@ -300,7 +302,7 @@ class DashboardsController extends AppController{
 		$userId = $this->Auth->user('id');
 		$newTab = $this->DashboardTab->createNewTab($userId, [
 			'name' => $sourceTab['DashboardTab']['name'],
-			'source_tab_id' => $sourceTabId,
+			'source_tab_id' => $sourceTab['DashboardTab']['id'],
 			'check_for_updates' => 1
 		]);
 		
