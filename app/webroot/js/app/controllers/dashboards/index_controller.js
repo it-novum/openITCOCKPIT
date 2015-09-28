@@ -54,7 +54,26 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		
 		$('.nav-tabs').sortable({
 			update: function(){
-				console.log('drop');
+				var $tabbar = $(this);
+				var $tabs = $tabbar.children();
+				var tabIdsOrdered = {};
+				$tabs.each(function(key, tab){
+					var $tab = $(tab);
+					tabIdsOrdered[key] = parseInt($tab.data('tab-id'), 10);
+				});
+				self.Ajaxloader.show();
+				$.ajax({
+					url: "/dashboards/updateTabPosition",
+					type: "POST",
+					data: {tabIdsOrdered: tabIdsOrdered},
+					error: function(){},
+					success: function(response){
+						console.log(response);
+						self.Ajaxloader.hide();
+					}.bind(self),
+					complete: function(response) {
+					}
+				});
 			},
 			placeholder: 'tabTargetDestination'
 		});

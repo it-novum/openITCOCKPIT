@@ -42,7 +42,7 @@
 							<?php foreach($tabs as $_tab): ?>
 								<?php $isActive = ($_tab['DashboardTab']['id'] == $tab['DashboardTab']['id']); ?>
 								<?php if($isActive): ?>
-									<li class="active dropdown-toggle">
+									<li class="active dropdown-toggle" data-tab-id="<?php echo $_tab['DashboardTab']['id']; ?>">
 										<a class="pointer" data-toggle="dropdown" href="javascript:void(0);">
 											<span class="text <?php echo ($_tab['DashboardTab']['shared'] == 1)?'text-primary':''; ?>"><?php echo h($_tab['DashboardTab']['name']); ?></span>
 											<b class="caret"></b>
@@ -84,7 +84,7 @@
 										</ul>
 									</li>
 								<?php else: ?>
-									<li>
+									<li data-tab-id="<?php echo $_tab['DashboardTab']['id']; ?>">
 										<a class="pointer" href="<?php echo Router::url(['action' => 'index', $_tab['DashboardTab']['id']]); ?>">
 											<span class="text <?php echo ($_tab['DashboardTab']['shared'] == 1)?'text-primary':''; ?>"><?php echo h($_tab['DashboardTab']['name']); ?></span>
 										</a>

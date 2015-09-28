@@ -368,6 +368,37 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
+	
+	public function updateTabPosition(){
+		if(!$this->request->is('post')){
+			throw new MethodNotAllowedException();
+		}
+		$this->autoRender = false;
+		$tabIdsOrdered = $this->request->data('tabIdsOrdered');
+		if(is_array($tabIdsOrdered) && !empty($tabIdsOrdered)){
+			$userId = $this->Auth->user('id');
+			$position = 1;
+			foreach($tabIdsOrdered as $tabId){
+				$tab = $this->DashboardTab->find('first', [
+					'recursive' => -1,
+					'contain' => [],
+					'conditions' => [
+						'id' => $tabId,
+						'user_id' => $userId
+					],
+					'fields' => [
+						'id',
+						'user_id'
+					]
+				]);
+				if(!empty($tab)){
+					$this->DashboardTab->id = $tabId;
+					$this->DashboardTab->saveField('position', $position);
+					$position++;
+				}
+			}
+		}
+	}
 
 	public function refresh(){
 		$widget = [];
