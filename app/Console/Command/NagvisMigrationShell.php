@@ -97,11 +97,14 @@ class NagvisMigrationShell extends AppShell {
 				//determine imagesize
 				//$imgWidth = getimagesize($dir.DS.$listItem)[0];
 				$item = preg_replace('/_$/', '', $item[0][0]);
+				preg_match_all('/[^\_]+$/', $listItem, $newFilename);
+				debug($newFilename);
+				$newFilename = $newFilename[0][0];
 				$folderName = $item;
 				$to = $dir.DS.$folderName;
 				debug($item);
 				if($this->createIconsetDirectories($dir, $folderName)){
-					$this->moveIconFiles($dir, $to, $listItem);
+					$this->moveIconFiles($dir, $to, $listItem, $newFilename);
 				};
 			}
 		}
@@ -367,15 +370,18 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * move the spcified file to the given directory
+	 * move the specified file to the given directory
+	 * you can also rename the file 
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $from     The Path where the file is located
-	 * @param  String $to       The Path where the file shall be moved
-	 * @param  String $filename The File to be moved
+	 * @param  String $from         The Path where the file is located
+	 * @param  String $to           The Path where the file shall be moved
+	 * @param  String $filename     The File to be moved
+	 * @param  String $newFilename  optional if set rename the file
 	 * @return Bool             True on success, false on failure
 	 */
-	protected function moveIconFiles($from, $to, $filename){
-		return rename($from.DS.$filename, $to.DS.$filename);
+	protected function moveIconFiles($from, $to, $filename, $newFilename = null){
+		$newFilename = ($newFilename == null)?$filename:$newFilename;
+		return rename($from.DS.$filename, $to.DS.$newFilename);
 	}
 
 	// shall cleanup the ssh2 connection and delete the downloaded config files
