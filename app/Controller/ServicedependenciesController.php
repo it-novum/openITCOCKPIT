@@ -54,13 +54,13 @@ class ServicedependenciesController extends AppController{
 
 	public $layout = 'Admin.default';
 	public $components = [
-		'Paginator', 
+		'Paginator',
 		'ListFilter.ListFilter',
-		'RequestHandler', 
+		'RequestHandler',
 		'CustomValidationErrors',
 	];
 	public $helpers = [
-		'ListFilter.ListFilter', 
+		'ListFilter.ListFilter',
 		'CustomValidationErrors',
 	];
 
@@ -294,7 +294,10 @@ class ServicedependenciesController extends AppController{
 			throw new NotFoundException(__('Invalid hosttemplate'));
 		}
 
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
+			false,
+			$this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
+		);
 		$servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
 		$services = $this->Host->servicesByContainerIds($containerIds, 'list', [
 			'forOptiongroup' => true,
