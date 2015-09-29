@@ -260,7 +260,7 @@ class GearmanWorkerShell extends AppShell{
 				
 			case 'create_apt_config':
 				$file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
-				fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com trusty  main'.PHP_EOL);
+				fwrite($file, 'deb https://secret:'.$payload['key'].'@apt.open-itcockpit.com trusty  main'.PHP_EOL);
 				//fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com nightly  main'.PHP_EOL);
 				fclose($file);
 				unset($payload);
