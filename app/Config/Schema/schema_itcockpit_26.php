@@ -751,7 +751,8 @@ class AppSchema extends CakeSchema {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'uuid' => array('column' => 'uuid', 'unique' => 1),
-			'export' => array('column' => array('uuid', 'host_id', 'disabled'), 'unique' => 0)
+			'export' => array('column' => array('uuid', 'host_id', 'disabled'), 'unique' => 0),
+			'host_id' => array('column' => array('host_id', 'disabled'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);

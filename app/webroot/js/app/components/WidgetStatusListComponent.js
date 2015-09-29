@@ -90,11 +90,11 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 			self.saveSettings(widgetId, widgetTypeId);
 		});
 		
-		$(document).on('slideStop', '.slider-horizontal', function(e){
-			var widgetId = $(this).parent().data('widget-id');
-			self.lists[widgetId].data.animation_interval = parseInt(e.value, 10);
-			self.updateInterval(widgetId);
-		});
+		//$(document).on('slideStop', '.slider-horizontal', function(e){
+		//	var widgetId = $(this).parent().data('widget-id');
+		//	self.lists[widgetId].data.animation_interval = parseInt(e.value, 10);
+		//	self.updateInterval(widgetId);
+		//});
 		
 		var gridstack = $('.grid-stack');
 		gridstack.on('resizestop', function(event, ui){
@@ -117,10 +117,17 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	},
 	
 	initList: function(object){
+		var self = this;
 		var $list = $(object);
 		
 		var $slider = $list.parent().parent().find('input.slider-slim');
 		$slider.slider();
+		$slider.slider('on', 'slideStop', function(e){
+			var widgetId = $(this).parent().data('widget-id');
+			self.lists[widgetId].data.animation_interval = parseInt(e.value, 10);
+			self.updateInterval(widgetId);
+		});
+		
 		$('.slider-horizontal').each(function(int, object){
 			$(object).css('margin-bottom', '0px');
 		});

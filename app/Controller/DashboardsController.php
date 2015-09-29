@@ -208,15 +208,65 @@ class DashboardsController extends AppController{
 			}
 		}
 		
+		//Get tab rotate interval
+		$user = $this->User->find('first', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'User.id' => $this->Auth->user('id')
+			],
+			'fields' => [
+				'dashboard_tab_rotation'
+			]
+		]);
+		$tabRotateInterval = $user['User']['dashboard_tab_rotation'];
+		
 		$this->Frontend->setJson('updateAvailable', $updateAvailable);
+		$this->Frontend->setJson('tabRotationInterval', $tabRotateInterval);
+		$this->Frontend->setJson('lang_minutes', __('minutes'));
+		$this->Frontend->setJson('lang_seconds', __('seconds'));
+		$this->Frontend->setJson('lang_and', __('and'));
+		$this->Frontend->setJson('lang_disabled', __('disabled'));
 		$this->set(compact([
 			'tab',
 			'tabs',
 			'allWidgets',
 			'preparedWidgets',
 			'sharedTabs',
-			'updateAvailable'
+			'updateAvailable',
+			'tabRotateInterval'
 		]));
+	}
+	
+	//Will redirect the user to the next tab
+	public function next($currentTabId){
+		$userId = $this->Auth->user('id');
+		$tabs = $this->DashboardTab->find('all', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'user_id' => $this->Auth->user('id')
+			],
+			'order' => [
+				'position' => 'ASC'
+			],
+			'fields' => [
+				'DashboardTab.id',
+				'DashboardTab.position',
+			]
+		]);
+		$tabs = Hash::extract($tabs, '{n}.DashboardTab.id');
+		$nextTabId = $tabs[0];
+		
+		$currentKey = array_search($currentTabId, $tabs);
+		$nextKey = $currentKey + 1;
+		if(isset($tabs[$nextKey])){
+			$nextTabId = $tabs[$nextKey];
+		}
+		$this->redirect([
+			'action' => 'index',
+			$nextTabId
+		]);
 	}
 	
 	public function add(){
@@ -606,6 +656,31 @@ class DashboardsController extends AppController{
 					$this->DashboardTab->saveField('position', $position);
 					$position++;
 				}
+			}
+		}
+	}
+	
+	public function saveTabRotationInterval(){
+		if(!$this->request->is('post')){
+			throw new MethodNotAllowedException();
+		}
+		$this->autoRender = false;
+		if(isset($this->request->data['value'])){
+			if(is_numeric($this->request->data['value'])){
+				$userId = $this->Auth->user('id');
+				$user = $this->User->find('first', [
+					'recursive' => -1,
+					'contain' => [],
+					'conditions' => [
+						'User.id' => $userId
+					],
+					'fields' => [
+						'User.id',
+						'User.dashboard_tab_rotation'
+					]
+				]);
+				$this->User->id = $user['User']['id'];
+				$this->User->saveField('dashboard_tab_rotation', $this->request->data['value']);
 			}
 		}
 	}

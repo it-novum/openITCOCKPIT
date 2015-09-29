@@ -118,7 +118,7 @@
 					</div>
 					<div class="widget-toolbar" rile="menu">
 						<button class="btn btn-xs btn-primary" data-toggle="modal" data-target="#tabRotateModal">
-							<i class="fa fa-refresh"></i>
+							<i class="fa fa-refresh" id="tabRotationIcon"></i>
 						</button>
 					</div>
 					<div class="widget-toolbar" rile="menu">
@@ -315,38 +315,47 @@
 				<h4 class="modal-title" id="myModalLabel"><?php echo __('Setup a tab rotation interval');?></h4>
 			</div>
 			<div class="modal-body">
-				<?php
-				echo $this->Form->create('dashboard', [
-					'class' => 'form-horizontal clear',
-					'action' => 'updateTabRotateInterval'
-				]);
-				?>
-				<div class="form-group form-group-slider ">
-					<label class="col rotationSliderLabel" for="tabRotationInterval">Choose tab rotation interval</label>
-						<div class="col rotationSlider">
-							<input type="text" id="tabRotationInterval" maxlength="255" value="" class="form-control slider slider-success" name="data[rotationInterval]" data-slider-min="0" data-slider-max="1200" data-slider-value="420" data-slider-selection="before" data-slider-step="30" human="#HostNotificationinterval_human">
-						</div>
-						<div class="col rotationSliderInput">
-							<input type="number" id="_tabRotationInterval" human="#HostNotificationinterval_human" value="420" slider-for="HostNotificationinterval" class="form-control slider-input" name="data[Host][notification_interval]">
-							<span class="note" id="HostNotificationinterval_human">7 minutes and 0 seconds</span>
+				<div class="row">
+					<div class="col col-xs-12">
+						<div class="form-group form-group-slider ">
+							<label class="col" for="tabRotationInterval"><?php echo __('Choose tab rotation interval'); ?></label>
+							<div class="col">
+								<input 
+									type="text"
+									id="TabRotationInterval"
+									maxlength="255"
+									value=""
+									class="form-control slider slider-success"
+									name="data[rotationInterval]"
+									data-slider-min="0"
+									data-slider-max="900"
+									data-slider-value="<?php echo $tabRotateInterval; ?>"
+									data-slider-selection="before"
+									data-slider-step="10"
+									human="#TabRotationInterval_human"
+								>
+							</div>
+							<div class="col">
+								<span class="note" id="TabRotationInterval_human">
+									<?php
+									if($tabRotateInterval == 0):
+										echo __('disabled');
+									else:
+										echo $this->Utils->secondsInWords($tabRotateInterval);
+									endif;
+									?>
+								</span>
+							</div>
 						</div>
 					</div>
-				
+				</div>
 			</div>
 			<div class="modal-footer">
 				<div style="height:35px;">
-					<?php
-					echo $this->Form->submit(__('Save'), [
-						'class' => [
-							'btn btn-primary'
-						],
-						'div' => false,
-					]); ?>
-					<button class="btn btn-default" data-dismiss="modal" id="noAutoUpdate">
-						<?php echo __('No'); ?>
+					<button class="btn btn-default" data-dismiss="modal">
+						<?php echo __('Close'); ?>
 					</button>
 				</div>
-				<?php echo $this->Form->end(); ?>
 			</div>
 		</div>
 	</div>

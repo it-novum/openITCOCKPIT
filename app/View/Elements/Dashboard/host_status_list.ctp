@@ -53,7 +53,7 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
 					<?php echo __('Paging interval');?>:
 				</div>
 				<div class="slider-slim width-120 pull-left" data-widget-id="<?php echo h($widget['Widget']['id']); ?>">
-					<input class="slider slider-primary slider-slim" data-slider-min="3" data-slider-max="30" data-slider-value="<?php echo h($widgetData['Widget']['WidgetHostStatusList']['animation_interval']); ?>" />
+					<input class="slider slider-primary slider-slim statusListUpdateSlider" data-slider-min="3" data-slider-max="30" data-slider-value="<?php echo h($widgetData['Widget']['WidgetHostStatusList']['animation_interval']); ?>" />
 				</div>
 				<div class="clearfix"></div>
 			</div>

@@ -27,6 +27,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 	$gridstack: null,
 	tabId: null,
 	gridCallbacks: [],
+	lang: [],
+	tabRotationInterval: 0,
+	tabRotationIntervalId: null,
 
 	components: [
 		'Ajaxloader',
@@ -54,6 +57,14 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			$('#updateAvailableModal').modal('show'); 
 		}
 		
+		this.tabRotationInterval = parseInt(this.getVar('tabRotationInterval'), 10);
+		
+		this.lang = [];
+		this.lang[1] = this.getVar('lang_minutes');
+		this.lang[2] = this.getVar('lang_seconds');
+		this.lang[3] = this.getVar('lang_and');
+		this.lang[4] = this.getVar('lang_disabled');
+		
 		var self = this;
 		
 		$('.nav-tabs').sortable({
@@ -72,7 +83,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 					data: {tabIdsOrdered: tabIdsOrdered},
 					error: function(){},
 					success: function(response){
-						console.log(response);
+						//console.log(response);
 						self.Ajaxloader.hide();
 					}.bind(self),
 					complete: function(response) {
@@ -94,7 +105,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 					data: {tabId: self.tabId},
 					error: function(){},
 					success: function(response){
-						console.log(response);
+						//console.log(response);
 						self.Ajaxloader.hide();
 					}.bind(self),
 					complete: function(response) {
@@ -217,6 +228,73 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				}
 			});
 		});
+		
+		//Create tab rotation slider
+		var $tabRotationSlider = $('#TabRotationInterval');
+		$tabRotationSlider.slider({ tooltip: 'hide' });
+		$tabRotationSlider.slider('on', 'slide', function(ev){
+			if(ev.value == null){
+				ev.value = 0;
+			}
+
+			var min = parseInt(ev.value / 60, 10);
+			var sec = parseInt(ev.value % 60, 10);
+			
+			if(parseInt(ev.value, 10) === 0){
+				//Disabled
+				$('#TabRotationInterval_human').html(self.lang[4]);
+			}else{
+				$('#TabRotationInterval_human').html(min + " " + self.lang[1] + " " + self.lang[3] + " " + sec + " " + self.lang[2]);
+			}
+		});
+		$tabRotationSlider.slider('on', 'slideStop', function(ev){
+			// NOTICE BOOTSTRAP BUG
+			// slideStop will get called twice due to a bug in bootstrap
+			// If ev.target.form is undefiend, we return to avoid two AJAX requests :)
+			
+			if(typeof ev.target.form == 'undefined'){
+				return true;
+			}
+			
+			if(ev.value == null){
+				ev.value = 0;
+			}
+
+			var min = parseInt(ev.value / 60, 10);
+			var sec = parseInt(ev.value % 60, 10);
+			
+			if(parseInt(ev.value, 10) === 0){
+				//Disabled
+				$('#TabRotationInterval_human').html(self.lang[4]);
+			}else{
+				$('#TabRotationInterval_human').html(min + " " + self.lang[1] + " " + self.lang[3] + " " + sec + " " + self.lang[2]);
+			}
+			//Save new slider value
+			self.Ajaxloader.show();
+		
+			$.ajax({
+				url: "/dashboards/saveTabRotationInterval",
+				type: "POST",
+				data: {value: parseInt(ev.value, 10)},
+				error: function(){},
+				success: function(response){
+					self.Ajaxloader.hide();
+					$('#tabRotateModal').modal('hide');
+				}.bind(self),
+				complete: function(response) {
+				}
+			});
+			
+			//Update tab rotation interval
+			self.tabRotationInterval = parseInt(ev.value, 10);
+			self.startTabRotationInterval();
+		});
+		
+		//Start tab rotation
+		if(this.tabRotationInterval > 0){
+			this.startTabRotationInterval();
+		}
+		
 	},
 	
 	buildGridstack: function(){
@@ -277,6 +355,28 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			complete: function(response) {
 			}
 		});
+	},
+	
+	startTabRotationInterval: function(){
+		this.stopTabRotationInterval();
+		if(this.tabRotationInterval > 0){
+			// 2 seconds befor the tab switch is executet, we start the spin animation for the reload icon
+			var self = this;
+			var interval = (this.tabRotationInterval * 1000) - 2000;
+			this.tabRotationIntervalId = setTimeout(function(){
+				var _this = self;
+				$('#tabRotationIcon').addClass('fa-spin');
+				setTimeout(function(){
+					window.location.href = '/dashboards/next/'+_this.tabId;
+				}, 2000);
+			}, interval);
+		}
+	},
+	
+	stopTabRotationInterval: function(){
+		if(this.tabRotationIntervalId != null){
+			clearTimeout(this.tabRotationIntervalId);
+		}
 	}
 	
 });
