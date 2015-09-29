@@ -79,15 +79,25 @@ class NagvisMigrationShell extends AppShell {
 
 	}
 
+	/**
+	 * extract the name of iconset files, create the directory with the name
+	 * and move the files into the directory
+	 * 
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $list  the list of iconset files
+	 * @param  String $dir  the Directory where the new folders should be create
+	 * @return void
+	 */
 	protected function sortList($list, $dir){
 		sort($list);
-		$pattern = '/.+?(?=ok|down|ciritcal|error|up|unknown|warning|ack|okaytime|okaytimeuser|pending|sack|sdowntime|unreachable)/i';
+		$pattern = '/.+?(?=ok|down|critical|error|up|unknown|warning|ack|okaytime|okaytimeuser|pending|sack|sdowntime|unreachable)/i';
 		foreach ($list as $listItem) {
 			preg_match_all($pattern, $listItem, $item);
 			if(!empty($item[0])){
 				//determine imagesize
-				$imgWidth = getimagesize($dir.DS.$listItem)[0];
-				$folderName = $item[0][0].$imgWidth.'px';
+				//$imgWidth = getimagesize($dir.DS.$listItem)[0];
+				$item = preg_replace('/_$/', '', $item[0][0]);
+				$folderName = $item;
 				$to = $dir.DS.$folderName;
 				debug($item);
 				if($this->createIconsetDirectories($dir, $folderName)){
@@ -100,10 +110,10 @@ class NagvisMigrationShell extends AppShell {
 	/**
 	 * Create image Directories for the Iconsets
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $path The Path where the directory shall be created
-	 * @param  String $name The name of the new folder 
-	 * @return Bool       	true if the directory has benn created or if its already existing 
-	 *                      false if everything fails
+	 * @param  String $path  the Path where the directory shall be created
+	 * @param  String $name  the name of the new folder 
+	 * @return Bool          true if the directory has benn created or if its already existing 
+	 *                       false if everything fails
 	 */
 	protected function createIconsetDirectories($path, $name){
 		$folder = $path.DS.$name; 
