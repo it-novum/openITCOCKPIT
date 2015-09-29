@@ -302,7 +302,11 @@ class ServicedependenciesController extends AppController{
 		$services = $this->Host->servicesByContainerIds($containerIds, 'list', [
 			'forOptiongroup' => true,
 		]);
-		$timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+		$timeperiodContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
+			false,
+			$this->Constants->containerProperties(OBJECT_TIMEPERIOD)
+		);
+		$timeperiods = $this->Timeperiod->timeperiodsByContainerId($timeperiodContainerIds, 'list');
 
 		$servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
 		$servicegroupsDependent = $servicegroups;
