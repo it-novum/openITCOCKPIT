@@ -771,124 +771,95 @@ class Host extends AppModel{
 			$containerIds = [$containerIds];
 		}
 
+		$Service = ClassRegistry::init('Service');
+		$hosts = $this->hostsByContainerId($containerIds, 'list');
+
 		switch($type){
 			case 'all':
-				$results = $this->find('all', [
-					'contain' => [
-						'Service' => [
-							'conditions' => [
-								'Service.disabled' => 0,
-							],
-							'Servicetemplate' => [
-								'fields' => [
-									'Servicetemplate.id',
-									'Servicetemplate.name',
-								],
-							],
-						],
-					],
-					'fields' => [
-						'Host.id',
-						'Host.name',
-					],
-					'joins' => [
-						[
-							'table' => 'hosts_to_containers',
-							'alias' => 'HostsToContainers',
-							'type' => 'LEFT',
-							'conditions' => [
-								'HostsToContainers.host_id = Host.id',
-							]
-						]
-					],
-					'conditions' => [
-						'HostsToContainers.container_id' => $containerIds,
-						'Host.disabled' => 0
-					]
-				]);
-
 				$return = [];
-				foreach($results as $result){
-					foreach($result['Service'] as $service){
-						$service['hostname'] = $result['Host']['name'];
-
-						if(empty($service['name'])){
-							$service['name'] = $service['Servicetemplate']['name'];
+				foreach($hosts as $hostId => $hostName){
+					$services = $Service->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'Service.host_id' => $hostId,
+							'Service.disabled' => 0
+						],
+						'joins' => [
+							[
+								'table' => 'servicetemplates',
+								'type' => 'INNER',
+								'alias' => 'Servicetemplate',
+								'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+							]
+						],
+						'fields' => [
+							'Service.*',
+							'Servicetemplate.id',
+							'Servicetemplate.name'
+						]
+					]);
+					foreach($services as $service){
+						$serviceName = $service['Service']['name'];
+						if($serviceName === null || $serviceName === ''){
+							$serviceName = $service['Servicetemplate']['name'];
 						}
-
-						unset($service['Servicetemplate']);
-						$return[] = $service;
+						$service['Service']['hostname'] = $hostName;
+						$service['Service']['name'] = $serviceName;
+						$return[] = $service['Service'];
 					}
 				}
-
 				return $return;
 				break;
 
 			case 'list':
-				$results = $this->find('all', [
-					'contain' => [
-						'Service' => [
-							'conditions' => [
-								'Service.disabled' => 0
-							],
-							'fields' => [
-								'Service.id',
-								'Service.uuid',
-								'Service.name',
-								'Service.servicetemplate_id'
-							],
-							'Servicetemplate' => [
-								'fields' => [
-									'Servicetemplate.id',
-									'Servicetemplate.name'
-								]
-							]
-						]
-					],
-					'fields' => [
-						'Host.id',
-						'Host.name',
-					],
-					'joins' => [
-						[
-							'table' => 'hosts_to_containers',
-							'alias' => 'HostsToContainers',
-							'type' => 'LEFT',
-							'conditions' => [
-								'HostsToContainers.host_id = Host.id',
-							]
-						]
-					],
-					'conditions' => [
-						'HostsToContainers.container_id' => $containerIds,
-						'Host.disabled' => 0
-					]
-				]);
-
 				$return = [];
-				foreach($results as $result){
-					foreach($result['Service'] as $service){
-						if(empty($service['name'])){
-							$service['name'] = $service['Servicetemplate']['name'];
+				foreach($hosts as $hostId => $hostName){
+					$services = $Service->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'Service.host_id' => $hostId,
+							'Service.disabled' => 0
+						],
+						'joins' => [
+							[
+								'table' => 'servicetemplates',
+								'type' => 'INNER',
+								'alias' => 'Servicetemplate',
+								'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+							]
+						],
+						'fields' => [
+							'Service.id',
+							'Service.uuid',
+							'Service.servicetemplate_id',
+							'Service.host_id',
+							'Service.name',
+							'Service.disabled',
+							'Servicetemplate.id',
+							'Servicetemplate.name'
+						]
+					]);
+					foreach($services as $service){
+						$serviceName = $service['Service']['name'];
+						if($serviceName === null || $serviceName === ''){
+							$serviceName = $service['Servicetemplate']['name'];
 						}
+
+						$serviceId = $service['Service']['id'];
+
 						if($options['forOptiongroup'] === false){
 							if($options['prefixHostname']){
-								$return[$service['id']] = $result['Host']['name'] . $options['delimiter'] . $service['name'];
+								$return[$serviceId] = $hostName . $options['delimiter'] . $serviceName;
 							}else{
-								$return[$service['id']] = $service['name'];
+								$return[$serviceId] = $serviceName;
 							}
 						}else{
-							$hostId = $result['Host']['id'];
-							$hostName = $result['Host']['name'];
-							$serviceName = $service['name'];
-
 							if($options['prefixHostname']){
-								$return[$hostId][$hostName][$service['id']] = $hostName . $options['delimiter'] . $serviceName;
+								$return[$hostId][$hostName][$serviceId] = $hostName . $options['delimiter'] . $serviceName;
 							}else{
-								$return[$hostId][$hostName][$service['id']] = $serviceName;
+								$return[$hostId][$hostName][$serviceId] = $serviceName;
 							}
 						}
-
 					}
 				}
 				return $return;
