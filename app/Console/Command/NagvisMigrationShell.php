@@ -25,8 +25,6 @@
 
 class NagvisMigrationShell extends AppShell {
 
-	public $uses = ['Folder', 'File'];
-
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
 			$this->error('SSH2 not found!', 'Please install the SSH2 PHP package!');
@@ -77,6 +75,46 @@ class NagvisMigrationShell extends AppShell {
 		//download the files
 		$this->getFiles($session, $iconsetPath, $iconsetList, $cfgDownloadDir);
 
+		$this->sortList($iconsetList, $cfgDownloadDir);
+
+	}
+
+	protected function sortList($list, $dir){
+		sort($list);
+		$pattern = '/.+?(?=ok|down|ciritcal|error|up|unknown|warning|ack|okaytime|okaytimeuser|pending|sack|sdowntime|unreachable)/i';
+		foreach ($list as $listItem) {
+			preg_match_all($pattern, $listItem, $item);
+			if(!empty($item[0])){
+				//determine imagesize
+				$imgWidth = getimagesize($dir.DS.$listItem)[0];
+				$folderName = $item[0][0].$imgWidth.'px';
+				$to = $dir.DS.$folderName;
+				debug($item);
+				if($this->createIconsetDirectories($dir, $folderName)){
+					$this->moveIconFiles($dir, $to, $listItem);
+				};
+			}
+		}
+	}
+
+	/**
+	 * Create image Directories for the Iconsets
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $path The Path where the directory shall be created
+	 * @param  String $name The name of the new folder 
+	 * @return Bool       	true if the directory has benn created or if its already existing 
+	 *                      false if everything fails
+	 */
+	protected function createIconsetDirectories($path, $name){
+		$folder = $path.DS.$name; 
+		if(is_dir($folder)){
+			return true;
+		}else{
+			$this->out('<info>creating Folder '.$name.'</info>');
+			mkdir($folder);
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -189,7 +227,7 @@ class NagvisMigrationShell extends AppShell {
 	 * @param  Resource $session  the session resource
 	 * @param  String $path       the path string
 	 * @param  Array $fileList    the config file list
-	 * @return [type]           [description]
+	 * @return Bool               true if the transfer is complete
 	 */
 	protected function getFiles($session, $path, $fileList, $downloadDir){
 		$a = ["Measuring the cable length to fetch your data... ",
@@ -302,8 +340,10 @@ class NagvisMigrationShell extends AppShell {
 	 */
 	protected function createDownloadDirectory($dir){
 		$this->out('<info>Creating Download Folder</info>');
-		$owner = posix_getpwuid(fileowner('js/'));
-		mkdir($dir, fileperms('js/'));
+		//take an example folder to get the rights
+		$exampleFolder = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'js'.DS;
+		$owner = posix_getpwuid(fileowner($exampleFolder));
+		mkdir($dir, fileperms($exampleFolder));
 		chown($dir, $owner['name']);
 	}
 
@@ -316,13 +356,26 @@ class NagvisMigrationShell extends AppShell {
 		return (function_exists('ssh2_connect'))?true:false;
 	}
 
-	// 
+	/**
+	 * move the spcified file to the given directory
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $from     The Path where the file is located
+	 * @param  String $to       The Path where the file shall be moved
+	 * @param  String $filename The File to be moved
+	 * @return Bool             True on success, false on failure
+	 */
+	protected function moveIconFiles($from, $to, $filename){
+		return rename($from.DS.$filename, $to.DS.$filename);
+	}
+
+	// shall cleanup the ssh2 connection and delete the downloaded config files
 	protected function cleanupData(){
 		//ssh2_exec($session, 'exit');
 		//unset($session);
 		//trigger deleteDownloadData()
 	}
 
+	//delete the download data
 	protected function deleteDownloadData(){
 
 	}
