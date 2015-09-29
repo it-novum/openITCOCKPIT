@@ -83,7 +83,7 @@ class Servicegroup extends AppModel{
 				case 'all':
 					return $this->find('all', [
 						'conditions' => [
-							'Container.parent_id' => array_values($tenant),
+							'Container.parent_id' => array_unique(array_values($tenant)),
 							'Container.containertype_id' => CT_SERVICEGROUP
 						],
 						'recursive' => 1,
@@ -96,7 +96,7 @@ class Servicegroup extends AppModel{
 					$return = [];
 					$results = $this->find('all', [
 						'conditions' => [
-							'Container.parent_id' => array_values($tenant),
+							'Container.parent_id' => array_unique(array_values($tenant)),
 							'Container.containertype_id' => CT_SERVICEGROUP
 						],
 						'recursive' => 1,
