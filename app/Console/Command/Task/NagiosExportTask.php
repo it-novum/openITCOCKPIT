@@ -2170,7 +2170,9 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
 			$content.= $this->addContent('execution_failure_criteria', 1, $this->hostDependencyExecutionString($hostdependency['Hostdependency']));
 			$content.= $this->addContent('notification_failure_criteria', 1, $this->hostDependencyNotificationString($hostdependency['Hostdependency']));
-			$content.= $this->addContent('dependency_period', 1, $hostdependency['Timeperiod']['uuid']);
+			if($hostdependency['Timeperiod']['uuid'] !== null && $hostdependency['Timeperiod']['uuid'] !== ''){
+				$content.= $this->addContent('dependency_period', 1, $hostdependency['Timeperiod']['uuid']);
+			}
 
 			$content.= $this->addContent('}', 0);
 
@@ -2290,7 +2292,9 @@ class NagiosExportTask extends AppShell{
 						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
 						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
 						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
+						if($servicedependency['Timeperiod']['uuid'] !== null && $servicedependency['Timeperiod']['uuid'] !== ''){
+							$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
+						}
 
 						$content.= $this->addContent('}', 0);
 						$content.= $this->nl();
