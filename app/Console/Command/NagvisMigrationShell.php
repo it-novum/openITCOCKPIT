@@ -101,7 +101,8 @@ class NagvisMigrationShell extends AppShell {
 		$dir = new DirectoryIterator($baseDir);
 		//iterate through base dir
 		foreach ($dir as $fileInfo) {
-			if($fileInfo->isDir()){
+			if($fileInfo->isDir() && !$fileInfo->isDot()){
+				$this->out('<info>Convert icons in '.$fileInfo->getFilename().'</info>');
 				$subDir = new DirectoryIterator($fileInfo->getPathname());
 				//iterate through sub directory
 				foreach ($subDir as $files) {
@@ -111,7 +112,9 @@ class NagvisMigrationShell extends AppShell {
 						$filename = $files->getFilename();
 						$filename = preg_replace('/(\..*)/', '', $filename);
 						$fullPath = $path.DS.$filename.'.png';
-						$this->deleteFile($file);
+						if($this->convertToPNG($file, $fullPath)){
+							$this->deleteFile($file);
+						}
 					}
 				}
 			}else{
@@ -257,7 +260,7 @@ class NagvisMigrationShell extends AppShell {
 		foreach($fileList as $key => $file){
 			try{
 				if(@ssh2_scp_recv($session, '/'.$path.'/'.$file , $downloadDir.'/'.$file)){
-					$this->show_download_status($count, $fileAmount, 100);
+					$this->show_download_status($count, $fileAmount, 60);
 					usleep(100000);
 					$count++;
 				}else{
