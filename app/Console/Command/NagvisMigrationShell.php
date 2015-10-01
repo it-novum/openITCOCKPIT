@@ -55,6 +55,7 @@ class NagvisMigrationShell extends AppShell {
 		if($configFilesReceived){
 			$this->startFiletransform($configFileList, $cfgDownloadDir);
 		}
+
 		/*
 		  get background images
 		 */
@@ -62,8 +63,16 @@ class NagvisMigrationShell extends AppShell {
 		$bgPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'maps'.DS;
 		//receive a file list
 		$bgImgList = $this->getFileList($session, $bgPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
+		//remove the default change_me background image from the list
+		$foundKey = array_search('change_me.png', $bgImgList);
+		if(isset($foundKey)){
+			unset($bgImgList[$foundKey]);
+		}
 		//download the files
 		$this->getFiles($session, $bgPath, $bgImgList, $cfgDownloadDir);
+
+		$destination = $pluginPath.'img'.DS.'backgrounds'.DS;
+		$this->moveToDestination($bgImgList,$cfgDownloadDir, $destination);
 
 		/*
 		  get iconsets
@@ -72,62 +81,53 @@ class NagvisMigrationShell extends AppShell {
 		$iconsetPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'iconsets'.DS;
 		//receive a file list
 		$iconsetList = $this->getFileList($session, $iconsetPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
+		$iconsetDir = $cfgDownloadDir.DS.'iconsets';
+		($this->checkConfigFilesDir($iconsetDir))?:$this->createDownloadDirectory($iconsetDir);
 		//download the files
-		$this->getFiles($session, $iconsetPath, $iconsetList, $cfgDownloadDir);
+		$this->getFiles($session, $iconsetPath, $iconsetList, $iconsetDir);
+		//sort every icon into its folder
+		$this->sortList($iconsetList, $iconsetDir);
 
-		$this->sortList($iconsetList, $cfgDownloadDir);
-
+		$this->convert($iconsetDir);
 	}
 
 	/**
-	 * extract the name of iconset files, create the directory with the name
-	 * and move the files into the directory
-	 * 
+	 * iterates through the iconsets and convert every image to PNG
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  Array $list  the list of iconset files
-	 * @param  String $dir  the Directory where the new folders should be create
+	 * @param  $string $baseDir  the base directory of the iconsets
 	 * @return void
 	 */
-	protected function sortList($list, $dir){
-		sort($list);
-		$pattern = '/.+?(?=ok|down|critical|error|up|unknown|warning|ack|okaytime|okaytimeuser|pending|sack|sdowntime|unreachable)/i';
-		foreach ($list as $listItem) {
-			preg_match_all($pattern, $listItem, $item);
-			if(!empty($item[0])){
-				//determine imagesize
-				//$imgWidth = getimagesize($dir.DS.$listItem)[0];
-				$item = preg_replace('/_$/', '', $item[0][0]);
-				preg_match_all('/[^\_]+$/', $listItem, $newFilename);
-				debug($newFilename);
-				$newFilename = $newFilename[0][0];
-				$folderName = $item;
-				$to = $dir.DS.$folderName;
-				debug($item);
-				if($this->createIconsetDirectories($dir, $folderName)){
-					$this->moveIconFiles($dir, $to, $listItem, $newFilename);
-				};
+	protected function convert($baseDir){
+		$dir = new DirectoryIterator($baseDir);
+		//iterate through base dir
+		foreach ($dir as $fileInfo) {
+			if($fileInfo->isDir()){
+				$subDir = new DirectoryIterator($fileInfo->getPathname());
+				//iterate through sub directory
+				foreach ($subDir as $files) {
+					if($files->isFile() && !$files->isDot()){
+						$file = $files->getPathname();
+						$path = $files->getPath();
+						$filename = $files->getFilename();
+						$filename = preg_replace('/(\..*)/', '', $filename);
+						$fullPath = $path.DS.$filename.'.png';
+						$this->deleteFile($file);
+					}
+				}
+			}else{
+				continue;
 			}
 		}
 	}
 
 	/**
-	 * Create image Directories for the Iconsets
+	 * deletes the given file
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $path  the Path where the directory shall be created
-	 * @param  String $name  the name of the new folder 
-	 * @return Bool          true if the directory has benn created or if its already existing 
-	 *                       false if everything fails
+	 * @param  String $file  the file to delete
+	 * @return Bool          true on success false on error
 	 */
-	protected function createIconsetDirectories($path, $name){
-		$folder = $path.DS.$name; 
-		if(is_dir($folder)){
-			return true;
-		}else{
-			$this->out('<info>creating Folder '.$name.'</info>');
-			mkdir($folder);
-			return true;
-		}
-		return false;
+	protected function deleteFile($file){
+		return unlink($file);
 	}
 
 	/**
@@ -282,13 +282,11 @@ class NagvisMigrationShell extends AppShell {
 	 */
 	protected function startFiletransform($fileList, $folder){
 		$this->out('<info>Starting File Transformation</info>');
-
 		foreach ($fileList as $key => $file) {
 			echo 'Processing file '.$file;
 			$fileData = $this->transformFileContentToArray($folder.'/'.$file);
 			$this->out('<success> ...Complete!</success>');
 		}
-		
 		$this->out('<info>File Transformation Complete!</info>');
 	}
 
@@ -361,6 +359,69 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
+	 * mass move of files
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $files  An Array of files to move
+	 * @param  String $from  current destination of the files
+	 * @param  String $to    destination where to files shall be moved
+	 * @return void
+	 */
+	protected function moveToDestination($files, $from, $to){
+		foreach ($files as $file) {
+			$this->moveIconFiles($from, $to, $file);
+		}
+	}
+
+	/**
+	 * extract the name of iconset files, create the directory with the name
+	 * and move the files into the directory
+	 * 
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $list  the list of iconset files
+	 * @param  String $dir  the Directory where the new folders should be create
+	 * @return void
+	 */
+	protected function sortList($list, $dir){
+		$pattern = '/[^\_]+$/';
+		foreach ($list as $listItem) {
+			$item = preg_split($pattern, $listItem);
+			if(!empty($item[0])){
+				//remove underscore from the item 
+				$item = preg_replace('/_$/', '', $item[0]);
+				//get the new filename
+				preg_match_all('/[^\_]+$/', $listItem, $newFilename);
+				$newFilename = $newFilename[0][0];
+				$folderName = $item;
+				$to = $dir.DS.$folderName;
+				//check/create iconset folder 
+				if($this->createIconsetDirectories($dir, $folderName)){
+					$this->moveIconFiles($dir, $to, $listItem, $newFilename);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Create image Directories for the Iconsets
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $path  the Path where the directory shall be created
+	 * @param  String $name  the name of the new folder 
+	 * @return Bool          true if the directory has benn created or if its already existing 
+	 *                       false if everything fails
+	 */
+	protected function createIconsetDirectories($path, $name){
+		$folder = $path.DS.$name; 
+		if(is_dir($folder)){
+			return true;
+		}else{
+			$this->out('<info>creating Folder '.$name.'</info>');
+			mkdir($folder);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * checks if the SSH2 Package is installed
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @return Bool 	true if installed false if not
@@ -384,10 +445,21 @@ class NagvisMigrationShell extends AppShell {
 		return rename($from.DS.$filename, $to.DS.$newFilename);
 	}
 
+	/**
+	 * convert an image to PNG 
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $file  the file
+	 * @param  String $name  path and filename for the created image 
+	 * @return Bool          true on success false on error
+	 */
+	protected function convertToPNG($file, $name){
+		return imagepng(imagecreatefromstring(file_get_contents($file)), $name);
+	}
+
 	// shall cleanup the ssh2 connection and delete the downloaded config files
-	protected function cleanupData(){
-		//ssh2_exec($session, 'exit');
-		//unset($session);
+	protected function cleanupData($session){
+		ssh2_exec($session, 'exit');
+		unset($session);
 		//trigger deleteDownloadData()
 	}
 
