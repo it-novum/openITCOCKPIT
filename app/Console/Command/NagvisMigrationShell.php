@@ -91,6 +91,12 @@ class NagvisMigrationShell extends AppShell {
 		$this->convert($iconsetDir);
 	}
 
+	/**
+	 * iterates through the iconsets and convert every image to PNG
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  $string $baseDir  the base directory of the iconsets
+	 * @return void
+	 */
 	protected function convert($baseDir){
 		$dir = new DirectoryIterator($baseDir);
 		//iterate through base dir
