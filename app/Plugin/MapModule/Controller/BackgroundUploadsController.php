@@ -74,7 +74,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 		}
 	}
 
-	public function createThumbnailsFromBackgrounds($obj){
+	public function createThumbnailsFromBackgrounds($obj, $isShell = false){
 		$file = $obj['fullPath'];
 		$folderInstance = $obj['folderInstance'];
 
@@ -131,18 +131,18 @@ class BackgroundUploadsController extends MapModuleAppController {
 		imagealphablending($destImg, false); 
 		imagesavealpha($destImg,true); 
 
+		if(!$isShell){
+			header('Content-Type: image/'.$obj['fileExtension']);
+		}
 		switch($imgtype){
 			// 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
 			case 1: 
-				header('Content-Type: image/gif');
 				imagegif($destImg, $folderInstance->path.DS. 'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
 				break;
 			case 2:
-				header('Content-Type: image/jpeg');
 				imagejpeg($destImg, $folderInstance->path.DS. 'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
 				break;
 			case 3:
-				header('Content-Type: image/png');
 				imagepng($destImg, $folderInstance->path.DS. 'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
 				break;
 			default:
