@@ -95,24 +95,10 @@ class NagvisMigrationShell extends AppShell {
 		$this->sortList($iconsetList, $iconsetDir);
 
 		$this->convert($iconsetDir);
-	}
 
-	protected function triggerThumbnailCreation($dir, $images){
-		$folderInstance = new Folder($dir);
 
-		foreach ($images as $image) {
-			$fullFilePath = $dir.DS.$image;
-			$fileExtension = pathinfo($fullFilePath,PATHINFO_EXTENSION);
-			$filename = preg_replace('/(\..*)/', '', $image);
-			$data = [
-				'fullPath' => $fullFilePath,
-				'uuidFilename' => $filename,
-				'fileExtension' => $fileExtension,
-				'folderInstance' => $folderInstance
-			];
-			$backgroundUploadInstance = new BackgroundUploadsController();
-			$backgroundUploadInstance->createThumbnailsFromBackgrounds($data, true);
-		}
+		//$this->cleanup($session, $cfgDownloadDir);
+
 	}
 
 	/**
@@ -127,12 +113,6 @@ class NagvisMigrationShell extends AppShell {
 
 		$this->hr(1);
 		return ['host' => $host, 'user' => $user, 'pass' => $pass];
-		/* $this->out('<info>You have entered:</info> '.$this->nl().
-					'Host: '.$host.$this->nl().
-					'User: '.$user.$this->nl());
-		$userHasValidated = $this->in('Are these informations correct?', ['y','n'], 'n');
-		$this->hr(1);*/
-		
 	}
 
 	/**
@@ -156,13 +136,17 @@ class NagvisMigrationShell extends AppShell {
 	 * @return Resource           	the session resource
 	 */
 	protected function connectRemoteServer($hostData){
-		$this->out('<info>trying to connect to Remote Host using '.$hostData['user'].'@'.$hostData['host'].'</info>');
-		if(!$session = ssh2_connect($hostData['host'], 22)){
-			$this->error('Connection failed!', 'cannot connect to the server');
-		}else{
-			$this->out('<info>Connection established!</info>');
-			$session = $this->remoteAuth($session, $hostData['user'], $hostData['pass']);
-			return $session;
+		$this->out('<info>Trying to connect to Remote Host using '.$hostData['user'].'@'.$hostData['host'].'</info>');
+		try{
+			if(@$session = ssh2_connect($hostData['host'], 22)){
+				$this->out('<info>Connection established!</info>');
+				$session = $this->remoteAuth($session, $hostData['user'], $hostData['pass']);
+				return $session;
+			}else{
+				throw new Exception('Connection failed! cannot connect to the server');
+			}
+		}catch(Exception $e){
+			$this->error($e->getMessage());
 		}
 	}
 
@@ -175,11 +159,15 @@ class NagvisMigrationShell extends AppShell {
 	 * @return Resource          	the session resource
 	 */
 	protected function remoteAuth($session, $user, $pass){
-		if(ssh2_auth_password($session, $user, $pass)){
-			$this->out('<info>Authentication succeeded!</info>');
-			return $session;
-		}else{
-			$this->error('Authentication failed!', 'it seems that these credentials are wrong');
+		try{
+			if(@ssh2_auth_password($session, $user, $pass)){
+				$this->out('<info>Authentication succeeded!</info>');
+				return $session;
+			}else{
+				throw new Exception('Authentication failed! it seems that these credentials are wrong');
+			}
+		}catch(Exception $e){
+			$this->error($e->getMessage());
 		}
 	}
 
@@ -315,6 +303,32 @@ class NagvisMigrationShell extends AppShell {
 			return false;
 		}
 	}
+
+	/**
+	 * triggers the thumbnail creation which is within the BackgroundUploadsController
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $dir    the directory where the Backgrounds are located
+	 * @param  Array $images  the list of the Backgrounds from the old system
+	 * @return void
+	 */
+	protected function triggerThumbnailCreation($dir, $images){
+		$folderInstance = new Folder($dir);
+		$this->out('<info>Creating Thumbnails from the imported Backgrounds</info>');
+		foreach ($images as $image) {
+			$fullFilePath = $dir.DS.$image;
+			$fileExtension = pathinfo($fullFilePath,PATHINFO_EXTENSION);
+			$filename = preg_replace('/(\..*)/', '', $image);
+			$data = [
+				'fullPath' => $fullFilePath,
+				'uuidFilename' => $filename,
+				'fileExtension' => $fileExtension,
+				'folderInstance' => $folderInstance
+			];
+			$backgroundUploadInstance = new BackgroundUploadsController();
+			$backgroundUploadInstance->createThumbnailsFromBackgrounds($data, true);
+		}
+	}
+
 
 	/**
 	 * check if the download directory for the config files exist
@@ -484,14 +498,16 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	// shall cleanup the ssh2 connection and delete the downloaded config files
-	protected function cleanupData($session){
+	protected function cleanupData($session, $downloadDir){
+		$this->out('<info>Cleaning up Directory</info>');
 		ssh2_exec($session, 'exit');
 		unset($session);
-		//trigger deleteDownloadData()
+		//delete download folder with everything in it
+		$this->deleteDownloadData($downloadDir);
 	}
 
 	//delete the download data
-	protected function deleteDownloadData(){
+	protected function deleteDownloadData($dir){
 
 	}
 
