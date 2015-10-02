@@ -22,9 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
+App::uses('Folder', 'Utility');
+App::import('Controller', 'MapModule.BackgroundUploads');
 class NagvisMigrationShell extends AppShell {
 
+	//public $uses = ['MapModule.BackgroundUploads'];
+	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
 			$this->error('SSH2 not found!', 'Please install the SSH2 PHP package!');
@@ -74,6 +77,9 @@ class NagvisMigrationShell extends AppShell {
 		$destination = $pluginPath.'img'.DS.'backgrounds'.DS;
 		$this->moveToDestination($bgImgList,$cfgDownloadDir, $destination);
 
+		$this->triggerThumbnailCreation($destination, $bgImgList);
+	
+
 		/*
 		  get iconsets
 		 */
@@ -91,46 +97,22 @@ class NagvisMigrationShell extends AppShell {
 		$this->convert($iconsetDir);
 	}
 
-	/**
-	 * iterates through the iconsets and convert every image to PNG
-	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  $string $baseDir  the base directory of the iconsets
-	 * @return void
-	 */
-	protected function convert($baseDir){
-		$dir = new DirectoryIterator($baseDir);
-		//iterate through base dir
-		foreach ($dir as $fileInfo) {
-			if($fileInfo->isDir() && !$fileInfo->isDot()){
-				$this->out('<info>Convert icons in '.$fileInfo->getFilename().'</info>');
-				$subDir = new DirectoryIterator($fileInfo->getPathname());
-				//iterate through sub directory
-				foreach ($subDir as $files) {
-					if($files->isFile() && !$files->isDot()){
-						$file = $files->getPathname();
-						$path = $files->getPath();
-						$filename = $files->getFilename();
-						$filename = preg_replace('/(\..*)/', '', $filename);
-						$fullPath = $path.DS.$filename.'.png';
-						if($this->convertToPNG($file, $fullPath)){
-							$this->deleteFile($file);
-						}
-					}
-				}
-			}else{
-				continue;
-			}
-		}
-	}
+	protected function triggerThumbnailCreation($dir, $images){
+		$folderInstance = new Folder($dir);
 
-	/**
-	 * deletes the given file
-	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $file  the file to delete
-	 * @return Bool          true on success false on error
-	 */
-	protected function deleteFile($file){
-		return unlink($file);
+		foreach ($images as $image) {
+			$fullFilePath = $dir.DS.$image;
+			$fileExtension = pathinfo($fullFilePath,PATHINFO_EXTENSION);
+			$filename = preg_replace('/(\..*)/', '', $image);
+			$data = [
+				'fullPath' => $fullFilePath,
+				'uuidFilename' => $filename,
+				'fileExtension' => $fileExtension,
+				'folderInstance' => $folderInstance
+			];
+			$backgroundUploadInstance = new BackgroundUploadsController();
+			$backgroundUploadInstance->createThumbnailsFromBackgrounds($data, true);
+		}
 	}
 
 	/**
@@ -422,6 +404,48 @@ class NagvisMigrationShell extends AppShell {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * iterates through the iconsets and convert every image to PNG
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  $string $baseDir  the base directory of the iconsets
+	 * @return void
+	 */
+	protected function convert($baseDir){
+		$dir = new DirectoryIterator($baseDir);
+		//iterate through base dir
+		foreach ($dir as $fileInfo) {
+			if($fileInfo->isDir() && !$fileInfo->isDot()){
+				$this->out('<info>Convert icons in '.$fileInfo->getFilename().'</info>');
+				$subDir = new DirectoryIterator($fileInfo->getPathname());
+				//iterate through sub directory
+				foreach ($subDir as $files) {
+					if($files->isFile() && !$files->isDot()){
+						$file = $files->getPathname();
+						$path = $files->getPath();
+						$filename = $files->getFilename();
+						$filename = preg_replace('/(\..*)/', '', $filename);
+						$fullPath = $path.DS.$filename.'.png';
+						if($this->convertToPNG($file, $fullPath)){
+							$this->deleteFile($file);
+						}
+					}
+				}
+			}else{
+				continue;
+			}
+		}
+	}
+
+	/**
+	 * deletes the given file
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $file  the file to delete
+	 * @return Bool          true on success false on error
+	 */
+	protected function deleteFile($file){
+		return unlink($file);
 	}
 
 	/**
