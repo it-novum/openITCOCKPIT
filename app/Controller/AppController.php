@@ -88,6 +88,7 @@ class AppController extends Controller{
 		'Servicegroup',
 		'Devicegroup',
 		'Servicetemplategroup',
+		'Map',
 	];
 
 	/**

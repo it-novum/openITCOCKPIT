@@ -67,9 +67,18 @@ class MapsController extends MapModuleAppController {
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
 			if($this->Map->saveAll($this->request->data)){
+
+				if($this->request->ext === 'json'){
+					$this->serializeId();
+					return;
+				}
 				$this->setFlash(__('Map properties successfully saved'));
 				$this->redirect(['action' => 'index']);
 			}else{
+				if($this->request->ext === 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}
 				$this->setFlash(__('could not save data'), false);
 			}
 		}

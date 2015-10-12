@@ -34,5 +34,5 @@
 */
 ?>
 <?php 
-echo $hostId['Host']['id'];
+echo $service['Host']['id'];
 ?>

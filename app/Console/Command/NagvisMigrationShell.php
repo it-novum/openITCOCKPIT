@@ -24,9 +24,19 @@
 //	confirmation.
 App::uses('Folder', 'Utility');
 App::import('Controller', 'MapModule.BackgroundUploads');
+App::import('Model', 'Host');
+App::import('Model', 'Service');
+App::import('Model', 'Hostgroup');
+App::import('Model', 'Servicegroup');
+App::import('Model', 'MapModule.Map');
 class NagvisMigrationShell extends AppShell {
 
-	//public $uses = ['MapModule.BackgroundUploads'];
+	//public $uses = ['Host'];
+	private $host;
+	private $service;
+	private $hostgroup;
+	private $servicegroup;
+	private $map;
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
@@ -55,10 +65,7 @@ class NagvisMigrationShell extends AppShell {
 		($this->checkConfigFilesDir($cfgDownloadDir))?:$this->createDownloadDirectory($cfgDownloadDir);
 		//download the files
 		$configFilesReceived = $this->getFiles($session, $cfgPath, $configFileList, $cfgDownloadDir);
-		if($configFilesReceived){
-			$this->startFiletransform($configFileList, $cfgDownloadDir);
-		}
-
+		
 		/*
 		  get background images
 		 */
@@ -96,9 +103,25 @@ class NagvisMigrationShell extends AppShell {
 
 		$this->convert($iconsetDir);
 
+		//@TODO move the iconsets to their destination
+		//@TODO write config files into the DB
+		//@TODO cleanup the directory
 
 		//$this->cleanup($session, $cfgDownloadDir);
+		
+		
+		//$test->find('all');
+		
+		//create Object instances
+		$this->host = new Host();
+		$this->service = new Service();
+		$this->hostgroup = new Hostgroup();
+		$this->servicegroup = new Servicegroup();
+		$this->map = new Map();
 
+		if($configFilesReceived){
+			$this->startFiletransform($configFileList, $cfgDownloadDir);
+		}
 	}
 
 	/**
@@ -258,9 +281,184 @@ class NagvisMigrationShell extends AppShell {
 		foreach ($fileList as $key => $file) {
 			echo 'Processing file '.$file;
 			$fileData = $this->transformFileContentToArray($folder.'/'.$file);
-			$this->out('<success> ...Complete!</success>');
+			if($fileData == false){
+				$this->out('<error> ...Transform Failed!</error>');
+			}else{
+				$mapname = preg_replace('/(\..*)/', '', $file);
+				if($this->saveConfigToDB($mapname, $fileData)){
+					$this->out('<success> ...Complete!</success>');
+				}else{
+					$this->out('<error> ...Save to Database Failed!</error>');
+				}
+			}
 		}
 		$this->out('<info>File Transformation Complete!</info>');
+	}
+
+	protected function saveConfigToDB($mapname, $data){
+		//debug($mapname);
+		foreach ($data as $key => $items) {
+			foreach ($items as $item) {
+				//debug($key);
+				$currentData = [];
+				switch ($key) {
+					case 'global':
+						//contains background and grid(but this option is not be implemented in the map Module)
+						$mapId = $this->map->find('first',[
+							'recursive' => -1,
+							'conditions' => [
+								'name' => $mapname,
+							],
+							'fields' => [
+								'name',
+								'id',
+							],
+						]);
+						//debug($mapId);
+						$currentData = [
+							'mapname' => $mapname, // neccesary for assigning the background image correctly
+							'background' => $item['map_image']
+						];
+						break;
+					case 'host':
+						$hostId = $this->resolveHostname($item['host_name']);
+						debug($hostId);
+						//host not found
+						if(empty($hostId)){
+							continue;
+						}
+						$currentData = [
+							'hostname' => $item['host_name'], // must be resolved. object_id needed
+							'y' => $item['x'],
+							'x' => $item['y'],
+							//'iconset' => $item['iconset'],
+						];
+						
+						break;
+					case 'service':
+					//debug($item['host_name'],)
+						//$ids = $this->resolveServicename($item['host_name'], $item['service_description']);
+						//debug($ids);
+						//host or service not found
+						if(empty($ids)){
+							continue;
+						}
+						$currentData = [
+							'hostname' => $item['host_name'], //must be resolved
+							'servicename' => $item['service_description'], //must be resolved from hostId
+							'x' => $item['x'],
+							'y' => $item['y'],
+							'type' => $item['view_type'] // gadget, icon or line
+						];
+						
+						break;
+					case 'hostgroup':
+						$currentData = [
+							'hostgroupname' => $item['hostgroup_name'], // must be resolved
+							'x' => $item['x'],
+							'y' => $item['y']
+						];
+						break;
+					case 'servicegroup':
+						$currentData = [
+							'servicegroup' => $item['servicegroup_name'],
+							'x' => $item['x'],
+							'y' => $item['y']
+						];
+						break;
+					case 'textbox':
+						//text gadget
+						$currentData = [
+							'text' => $item['text'],
+							'x' => $item['x'],
+							'y' => $item['y']
+						];
+						break;
+					case 'line':
+						$currentData = [
+							'x' => $item['x'], // comma separated 
+							'y' => $item['y'], // comma separated
+							'lineType' => $item['line_type'] //10 for line with 2 arrows -><-, 11 for 1 arrow -->, 12 for no arrow -- CURRENTLY NOT IMPLEMENTED
+						];
+						
+						break;
+					case 'shape':
+						//icon
+						$currentData = [
+							'icon' => $item['icon'],
+							'x' => $item['x'],
+							'y' => $item['y']
+						];
+						
+						break;
+					default:
+						$this->out('<warning>the type '.$key.' is not specified!</warning>');
+						break;
+				}
+				//debug($currentData);
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $hostname
+	 * @return host id
+	 */
+	protected function resolveHostname($hostname){
+		$hostId = $this->host->find('first',[
+			'recursive' => -1,
+			'conditions' => [
+				'Host.name' => $hostname
+			],
+			'fields' => [
+				'Host.id'
+			]
+		]);
+		if(!empty($hostId)){
+			return $hostId['Host']['id'];
+		}
+		return false;
+	}
+
+	/**
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $hostname
+	 * @param  String $servicename
+	 * @return host and service id
+	 */
+	protected function resolveServicename($hostname, $servicename){
+		$hostId = $this->resolveHostname($hostname);
+
+		if(!empty($hostId)){
+			$serviceId = $this->service->find('first',[
+				'recursive' => -1,
+				'conditions' => [
+					'Service.name' => $servicename. 'OR',
+					'Servicetemplate.name' => $servicename
+				],
+				'fields' => [
+					'Service.id',
+					'Host.id'
+				],
+				'joins' => [
+					[
+						'table' => 'hosts',
+						'alias' => 'Host',
+						'conditions' => [
+							'Host.id = '.$hostId,
+						]
+					],
+				]
+			]);
+			debug($serviceId);
+			if(!empty($serviceId)){
+				return $serviceId;
+			}
+			return 'keine serviceId';
+		}
+		return 'keine hostId';
 	}
 
 	/**
@@ -294,9 +492,10 @@ class NagvisMigrationShell extends AppShell {
 				//fill the data
 				if($data_key && !$file_definition_end){
 					$data_value_array = explode('=',$row);
-					$data_array[$data_key][$intern_key][$data_value_array[0]] = $data_value_array[1]; 
+					$data_array[$data_key][$intern_key][$data_value_array[0]] = $data_value_array[1];
 				}
 			}
+			//var_dump($data_array);
 			return $data_array;
 		}else{
 			$this->out('<warning>Warning! The Specified File does not exist!</warning>');

@@ -124,7 +124,6 @@ class MapeditorsController extends MapModuleAppController {
 		$hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
 		$servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
-
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
@@ -980,7 +979,7 @@ class MapeditorsController extends MapModuleAppController {
 
 
 	public function popoverServiceStatus($uuid = null){
-		$servicestatus = $this->Objects->find('all', [
+		$servicestatus = $this->Objects->find('first', [
 			'recursive' => -1,
 			'conditions' => [
 				'name2' => $uuid,
@@ -1026,7 +1025,43 @@ class MapeditorsController extends MapModuleAppController {
 				]
 			]
 		]);
-		$this->set(compact('servicestatus'));
+
+		$service = $this->Service->find('first', [
+			'recursive' => -1,
+			'conditions' => [
+				'Service.uuid' => $uuid,
+			],
+			'contains' =>[
+				'Host',
+				'Service',
+				'Servicetemplate'
+			],
+			'fields' => [
+				'Host.name',
+				'Service.id',
+				'Service.description',
+				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+				'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription'
+			],
+			'joins' => [
+				[
+					'table' => 'hosts',
+					'alias' => 'Host',
+					'conditions' => [
+						'Host.id = Service.host_id',
+					]
+				],
+				[
+					'table' => 'servicetemplates',
+					'type' => 'INNER',
+					'alias' => 'Servicetemplate',
+					'conditions' => [
+						'Servicetemplate.id = Service.servicetemplate_id',
+					]
+				],
+			]
+		]);
+		$this->set(compact('uuid','servicestatus', 'service'));
 	}
 
 	public function popoverMapStatus($id){
@@ -1497,103 +1532,55 @@ class MapeditorsController extends MapModuleAppController {
 
 
 	public function servicesForWizard($hostId = null){
-		$this->loadModel('Host');
-		$this->loadModel('Service');
-		$this->loadModel('Servicetemplate');
-
-		//determine Host UUID
-		$hostUuid = $this->Host->find('first',[
-			'recursive' => -1,
-			'conditions' => [
-				'id' => $hostId,
-			],
-			'fields' => [
-				'Host.uuid'
-			]
-		]);
-
-		$hostUuid = $hostUuid['Host']['uuid'];
-
-		$serviceUuids = $this->Objects->find('all',[
-			'recursive' => -1,
-			'conditions' => [
-				'name1' => $hostUuid,
-				'objecttype_id' => 2
-			]
-		]);
-
-
-		$serviceUuids = Hash::extract($serviceUuids, '{n}.Objects.name2');
-
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Service->exists($serviceId)){
+			throw new NotFoundException(__('Invalid service'));
+		}
 		$services = $this->Service->find('all', [
 			'recursive' => -1,
-			'conditions' => [
-				'Service.uuid' => $serviceUuids,
+			'contain' => [
+				'Servicetemplate' => [
+					'fields' => ['Servicetemplate.name']
+				],
+				'Host' => [
+					'fields' => ['Host.name', 'Host.uuid']
+				]
 			],
 			'fields' => [
 				'Service.id',
-				'Service.name',
-				'Service.description',
-				'Service.name',
-				'Servicetemplate.name',
-				'Servicetemplate.description'
+				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceDescription'
 			],
-			'joins' => [
-				[
-					'table' => 'servicetemplates',
-					'type' => 'INNER',
-					'alias' => 'Servicetemplate',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id',
-					]
-				],
+			'order' => [
+				'Service.name ASC', 'Servicetemplate.name ASC'
+			],
+			'conditions' => [
+				'Host.id' => $hostId
 			]
 		]);
-		$this->set(compact(['hostUuid', 'services']));
+		$this->set(compact(['services']));
 	}
 
 	public function hostFromService($serviceId = null){
-		$this->loadModel('Host');
-		$this->loadModel('Service');
-
-		if(!$this->Objects->exists($serviceId)){
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Service->exists($serviceId)){
 			throw new NotFoundException(__('Invalid service'));
 		}
-
-		$serviceUuid = $this->Service->find('first', [
+		$service = $this->Service->find('first', [
 			'recursive' => -1,
 			'conditions' => [
-				'id' => $serviceId,
+				'Service.id' => $serviceId,
+			],
+			'contain' => [
+				'Host'
 			],
 			'fields' => [
-				'Service.uuid',
+				'Host.id'
 			]
 		]);
-
-		$serviceUuid = Hash::extract($serviceUuid, 'Service.uuid');
-
-		$hostUuid = $this->Objects->find('first', [
-			'recursive' => -1,
-			'conditions' => [
-				'name2' => $serviceUuid[0],
-			],
-			'fields' => [
-				'Objects.name1',
-			]
-		]);
-
-		$hostUuid = Hash::extract($hostUuid, 'Objects.name1');
-
-		$hostId = $this->Host->find('first',[
-			'recursive' => -1,
-			'conditions' => [
-				'uuid' => $hostUuid[0],
-			],
-			'fields' => [
-				'Host.id',
-			]
-		]);
-
-		$this->set(compact('serviceUuid','hostId'));
+		$this->set(compact('service'));
 	}
 }

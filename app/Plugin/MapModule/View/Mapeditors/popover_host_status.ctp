@@ -34,7 +34,6 @@
 
 $returnedHoststatusfield = $this->Mapstatus->hoststatusField($uuid);
 $hostStatus = $this->Mapstatus->hoststatus($uuid);
-//@TODO servicestatus
 
 $returnedServiceStatus = [];
 foreach ($servicestatus as $counter => $servicestate) {

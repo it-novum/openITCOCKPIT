@@ -26,6 +26,7 @@ Router::mapResources([
 	'devicegroups',
 	'users',
 	'servicetemplategroups',
+	'MapModule.maps',
 ]);
 
 // Caution: Do NOT mix controller names with those controller names from plugins! It's a bug and may not work.

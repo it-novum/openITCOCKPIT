@@ -240,27 +240,30 @@ class MapstatusHelper extends AppHelper{
 			$cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
 			return $this->ServicegroupstatusValues($cumulative_service_state);
 		}
-		return $this->ServicegroupstatusValues(0);
+		return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
 	}
 
 	public function hostgroupstatus($uuid){
 		$cumulative_service_state = false;
-		$cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.Hoststatus.current_state', 'max');
+		if(!empty($this->hostgroupstate[$uuid])){
+			$cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.Hoststatus.current_state', 'max');
 
-		foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
-			$currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
-			if(is_array($currentStates) && !empty($currentStates)){
-				$current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
-				if(is_int($current_cumulative_service_state)){
-					$cumulative_service_states_data[] = $current_cumulative_service_state;
+			foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
+				$currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
+				if(is_array($currentStates) && !empty($currentStates)){
+					$current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
+					if(is_int($current_cumulative_service_state)){
+						$cumulative_service_states_data[] = $current_cumulative_service_state;
+					}
 				}
+				
 			}
-			
+			if(isset($cumulative_service_states_data)){
+				$cumulative_service_state = max($cumulative_service_states_data);
+			}
+			return (!$cumulative_service_state)?$this->hostgroupstatusValuesHost($cumulative_host_state):$this->hostgroupstatusValuesService($cumulative_service_state);
 		}
-		if(isset($cumulative_service_states_data)){
-			$cumulative_service_state = max($cumulative_service_states_data);
-		}
-		return (!$cumulative_service_state)?$this->hostgroupstatusValuesHost($cumulative_host_state):$this->hostgroupstatusValuesService($cumulative_service_state);
+		return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
 	}
 
 	public function hostgroupstatusValuesHost($state){
