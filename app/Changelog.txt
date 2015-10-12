@@ -7,6 +7,8 @@
 <span class="label bg-color-red">Bugfix</span> Hostdependencies and Servicedependencies
 <span class="label bg-color-red">Bugfix</span> Clenup Graphgenerator configurations
 <span class="label bg-color-red">Bugfix</span> List as PDF
+<span class="label bg-color-red">Bugfix</span> Map Module Wizard select not monitored service
+<span class="label bg-color-red">Bugfix</span> Fixed Default state for Hostgroups and Servicegroups in Map Module
 
 3.0.4
 <span class="label bg-color-green">New</span> User permissions

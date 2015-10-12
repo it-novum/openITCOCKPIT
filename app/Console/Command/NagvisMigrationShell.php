@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 App::uses('Folder', 'Utility');
 App::import('Controller', 'MapModule.BackgroundUploads');
 App::import('Model', 'Host');
@@ -29,6 +30,7 @@ App::import('Model', 'Service');
 App::import('Model', 'Hostgroup');
 App::import('Model', 'Servicegroup');
 App::import('Model', 'MapModule.Map');
+
 class NagvisMigrationShell extends AppShell {
 
 	//public $uses = ['Host'];
@@ -108,9 +110,6 @@ class NagvisMigrationShell extends AppShell {
 		//@TODO cleanup the directory
 
 		//$this->cleanup($session, $cfgDownloadDir);
-		
-		
-		//$test->find('all');
 		
 		//create Object instances
 		$this->host = new Host();
@@ -322,13 +321,12 @@ class NagvisMigrationShell extends AppShell {
 						break;
 					case 'host':
 						$hostId = $this->resolveHostname($item['host_name']);
-						debug($hostId);
 						//host not found
 						if(empty($hostId)){
 							continue;
 						}
 						$currentData = [
-							'hostname' => $item['host_name'], // must be resolved. object_id needed
+							'object_id' => $hostId, // must be resolved. object_id needed
 							'y' => $item['x'],
 							'x' => $item['y'],
 							//'iconset' => $item['iconset'],
@@ -336,16 +334,14 @@ class NagvisMigrationShell extends AppShell {
 						
 						break;
 					case 'service':
-					//debug($item['host_name'],)
-						//$ids = $this->resolveServicename($item['host_name'], $item['service_description']);
-						//debug($ids);
+						$ids = $this->resolveServicename($item['host_name'], $item['service_description']);
+						debug($ids);
 						//host or service not found
 						if(empty($ids)){
 							continue;
 						}
 						$currentData = [
-							'hostname' => $item['host_name'], //must be resolved
-							'servicename' => $item['service_description'], //must be resolved from hostId
+							'object_id' => $ids['Service']['id'], //must be resolved from hostId
 							'x' => $item['x'],
 							'y' => $item['y'],
 							'type' => $item['view_type'] // gadget, icon or line
@@ -433,32 +429,28 @@ class NagvisMigrationShell extends AppShell {
 
 		if(!empty($hostId)){
 			$serviceId = $this->service->find('first',[
-				'recursive' => -1,
 				'conditions' => [
-					'Service.name' => $servicename. 'OR',
-					'Servicetemplate.name' => $servicename
+					'OR' => [
+						'Service.name' => $servicename,
+						'Servicetemplate.name' => $servicename
+					]
 				],
 				'fields' => [
 					'Service.id',
-					'Host.id'
 				],
-				'joins' => [
-					[
-						'table' => 'hosts',
-						'alias' => 'Host',
-						'conditions' => [
-							'Host.id = '.$hostId,
-						]
-					],
+				'contain' => [
+					'Host',
+					'Servicetemplate'
 				]
 			]);
-			debug($serviceId);
 			if(!empty($serviceId)){
 				return $serviceId;
 			}
-			return 'keine serviceId';
+			$this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
+			return false; // thers no service id
 		}
-		return 'keine hostId';
+		$this->out('<warning>Could not resolve Host '.$hostname.'</warning>');
+		return false; // thers no host id
 	}
 
 	/**

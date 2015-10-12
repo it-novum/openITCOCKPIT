@@ -44,12 +44,13 @@
 					<div class="widget-toolbar" role="menu">
 						<?php //echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
+						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
 							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
 						endif;
+						echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); 
 						?>
-						<?php echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); ?>
 					</div>
 
 					<div class="jarviswidget-ctrls" role="menu">
@@ -80,7 +81,7 @@
 				</header>
 				<div>
 					<div class="widget-body no-padding">
-						<?php //echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+						<?php echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
 						<div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>

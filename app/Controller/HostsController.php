@@ -129,6 +129,22 @@ class HostsController extends AppController{
 				],
 			],
 		],
+		'notMonitored' => [
+			'fields' => [
+				'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+				'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
+				'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+				'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+			],
+		],
+		'disabled' => [
+			'fields' => [
+				'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+				'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
+				'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+				'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+			],
+		],
 	];
 
 	public function index(){
@@ -1317,7 +1333,14 @@ class HostsController extends AppController{
 	public function disabled(){
 
 		$this->__unbindAssociations('Service');
-		$all_services = [];
+
+		if(!isset($this->request->params['named']['BrowserContainerId'])){
+			$conditions = [
+				'Host.disabled' => 1,
+				'HostsToContainers.container_id' => $this->MY_RIGHTS,
+			];
+		}
+		$conditions = $this->ListFilter->buildConditions([], $conditions);
 		$this->Paginator->settings = [
 			'recurisve' => -1,
 			'conditions' => [
