@@ -28,8 +28,8 @@ class Tachometer extends Widget{
 	public $isDefault = false;
 	public $icon = 'fa-dashboard';
 	public $element = 'tachometer';
-	public $width = 4;
-	public $height = 16;
+	public $width = 5;
+	public $height = 17;
 	
 	public function __construct(\Controller $controller, $QueryCache){
 		parent::__construct($controller, $QueryCache);

@@ -50,6 +50,7 @@ class DashboardsController extends AppController{
 		'User',
 		'Servicegroup',
 		'Hostgroup',
+		'WidgetTacho',
 	];
 
 	const UPDATE_DISABLED = 0;
@@ -833,5 +834,127 @@ class DashboardsController extends AppController{
 				}
 			}
 		}
+	}
+	
+	public function saveTachoService(){
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		
+		$perfdata = [];
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['serviceId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$serviceId = (int)$this->request->data['serviceId'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['service_id'] = $serviceId;
+					//$this->Widget->save($widget);
+					//$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					//$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+					
+					$service = $this->Service->find('first', [
+						'recursive' => -1,
+						'contain' => [],
+						'conditions' => [
+							'Service.id' => $serviceId
+						],
+						'joins' => [
+							[
+								'table' => 'nagios_objects',
+								'type' => 'INNER',
+								'alias' => 'ServiceObject',
+								'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+							],
+							[
+								'table' => 'nagios_servicestatus',
+								'type' => 'LEFT OUTER',
+								'alias' => 'Servicestatus',
+								'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+							],
+						],
+						'fields' => [
+							'Service.id',
+							'Service.uuid',
+							'Servicestatus.current_state',
+							'Servicestatus.perfdata',
+						]
+					]);
+					
+				
+					
+					if(isset($service['Servicestatus']['perfdata'])){
+						$perfdata = [];
+						$_perfdata = $this->Rrd->parsePerfData($service['Servicestatus']['perfdata']);
+						$keys = ['current', 'unit', 'warn', 'crit', 'min', 'max'];
+						foreach($_perfdata as $dsName => $data){
+							foreach($keys as $key){
+								if(isset($data[$key])){
+									if($data[$key] == '' && $key !== 'unit'){
+										$data[$key] = 0;
+									}
+									$perfdata[$dsName][$key] = $data[$key];
+								}else{
+									$perfdata[$dsName][$key] = 0;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		$this->set('perfdata', $perfdata);
+		$this->set('_serialize', ['perfdata']);
+	}
+	
+	public function saveTachoConfig(){
+		if($this->request->is('post') || $this->request->is('put')){
+			$tachoConfig = $this->request->data['dashboard'];
+			$requiredKeys = [
+				'ds',
+				'min',
+				'max',
+				'warn',
+				'crit',
+				'tabId',
+				'widgetId',
+			];
+			foreach($requiredKeys as $key){
+				if(!isset($tachoConfig[$key]) || $tachoConfig[$key] == ''){
+					//Missing parameter
+					return;
+				}
+			}
+			
+			$userId = $this->Auth->user('id');
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [],
+				'conditions' => [
+					'id' => $tachoConfig['tabId'],
+					'user_id' => $userId
+				],
+			]);
+			if(empty($tab) && !$this->Widget->exists($tachoConfig['widgetId'])){
+				//Tab not found
+				return;
+			}
+			
+			$data = [
+				'WidgetTacho' => [
+					'widget_id' => $tachoConfig['widgetId'],
+					'min' => $tachoConfig['min'],
+					'max' => $tachoConfig['max'],
+					'warn' => $tachoConfig['warn'],
+					'crit' => $tachoConfig['crit'],
+					'data_source' => $tachoConfig['ds'],
+				]
+			];
+			$result = $this->WidgetTacho->save($data);
+			return $this->redirect(['action' => 'index', $tachoConfig['tabId']]);
+		}
+		
+		return $this->redirect(['action' => 'index']);
 	}
 }

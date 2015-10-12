@@ -36,7 +36,8 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'Utils',
 		'WidgetChart180',
 		'WidgetStatusList',
-		'WidgetTrafficLight'
+		'WidgetTrafficLight',
+		'WidgetTacho'
 	],
 
 	_initialize: function(){
@@ -52,6 +53,8 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.WidgetTrafficLight.setAjaxloader(this.Ajaxloader);
 		this.WidgetTrafficLight.initTrafficlights();
 		
+		this.WidgetTacho.setAjaxloader(this.Ajaxloader);
+		this.WidgetTacho.initTachos();
 		
 		if(this.getVar('updateAvailable') === true){
 			$('#updateAvailableModal').modal('show'); 
