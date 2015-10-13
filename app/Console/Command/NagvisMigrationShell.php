@@ -426,7 +426,6 @@ class NagvisMigrationShell extends AppShell {
 	 */
 	protected function resolveServicename($hostname, $servicename){
 		$hostId = $this->resolveHostname($hostname);
-
 		if(!empty($hostId)){
 			$serviceId = $this->service->find('first',[
 				'conditions' => [
