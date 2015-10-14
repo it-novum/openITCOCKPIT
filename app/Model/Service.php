@@ -765,7 +765,7 @@ class Service extends AppModel{
 			'order' => [
 				'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC'
 			],
-			'conditions' => $_conditions
+			'conditions' => $conditions
 		]);
 	}
 
@@ -921,7 +921,7 @@ class Service extends AppModel{
 			'serviceUuid' => $service['Service']['uuid'],
 		];
 		$Changelog = ClassRegistry::init('Changelog');
-		
+
 		if($this->delete($id)){
 			//Delete was successfully - delete Graphgenerator configurations
 			$GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
@@ -933,7 +933,7 @@ class Service extends AppModel{
 			foreach($graphgenTmplConfs as $graphgenTmplConf){
 				$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
 			}
-			
+
 			$changelog_data = $Changelog->parseDataForChangelog(
 				'delete',
 				'services',
