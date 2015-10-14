@@ -919,6 +919,7 @@ class DashboardsController extends AppController{
 				'crit',
 				'tabId',
 				'widgetId',
+				'serviceId'
 			];
 			foreach($requiredKeys as $key){
 				if(!isset($tachoConfig[$key]) || $tachoConfig[$key] == ''){
@@ -951,7 +952,10 @@ class DashboardsController extends AppController{
 					'data_source' => $tachoConfig['ds'],
 				]
 			];
-			$result = $this->WidgetTacho->save($data);
+			if($this->WidgetTacho->save($data)){
+				$this->DashboardTab->id = $tab['DashboardTab']['id'];
+				$this->DashboardTab->saveField('service_id', $tachoConfig['widgetId']);
+			}
 			return $this->redirect(['action' => 'index', $tachoConfig['tabId']]);
 		}
 		

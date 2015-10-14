@@ -77,7 +77,7 @@
 										<?php $allowEdit = $this->Acl->isWritableContainer($servicetemplategroup['Container']['parent_id']); ?>
 										<tr>
 											<td><?php echo $servicetemplategroup['Container']['name']; ?></td>
-											<td class="width-160">
+											<td class="width-240">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -92,12 +92,21 @@
 															</li>
 														<?php endif; ?>
 														<?php if($this->Acl->hasPermission('edit', 'hosts')): ?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/allocateToHostgroup/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate hostgroup'); ?></a>
-															</li>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/allocateToHost/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate host'); ?></a>
-															</li>
+															<?php if($this->Acl->hasPermission('allocateToHostgroup')): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/allocateToHostgroup/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate hostgroup'); ?></a>
+																</li>
+															<?php endif;?>
+															<?php if($this->Acl->hasPermission('allocateToMatchingHostgroup')): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/allocateToMatchingHostgroup/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate matching hostgroup'); ?></a>
+																</li>
+															<?php endif;?>
+															<?php if($this->Acl->hasPermission('allocateToHost')): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/allocateToHost/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate host'); ?></a>
+																</li>
+															<?php endif;?>
 														<?php endif; ?>
 														<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 															<li class="divider"></li>

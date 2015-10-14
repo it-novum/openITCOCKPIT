@@ -76,7 +76,7 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 	initTacho: function(object){
 		var $widgetContainer = $(object).parents('.grid-stack-item');
 		
-		var $form = $widgetContainer.find('form');
+		var $form = $widgetContainer.find('.inputWrap');
 		var changeCallback = function(e){
 			var $object = $(e.target);
 			var widgetId = parseInt($object.data('widget-id'), 10);
@@ -193,7 +193,7 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 	fillFilds: function(widgetId, ds){
 		var perfdata = this.tachos[widgetId].perfdata[ds];
 		var $widgetContainer = this.tachos[widgetId].widgetContainer;
-		var $form = $widgetContainer.find('form');
+		var $form = $widgetContainer.find('.inputWrap');
 		var $min = $form.find('.tacho-min');
 		var $max = $form.find('.tacho-max');
 		var $warn = $form.find('.tacho-warn');

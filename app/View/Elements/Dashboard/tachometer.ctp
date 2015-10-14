@@ -39,7 +39,12 @@ endif;
 	<div class="padding-10" style="position:absolute; top:0px; left:0px; z-index:1;">
 		<div class="row">
 			<div class="col-xs-12">
-				<select class="chosen tachoSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" style="width:100%;">
+				<?php
+				echo $this->Form->create('dashboard', [
+					'class' => 'clear',
+					'action' => 'saveTachoConfig'
+				]); ?>
+				<select class="chosen tachoSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" name="data[dashboard][serviceId]" style="width:100%;">
 					<option></option>
 					<?php foreach($widgetServicesForTachometer as $_serviceId => $serviceName):?>
 						<?php
@@ -51,18 +56,20 @@ endif;
 						<option value="<?php echo $_serviceId; ?>" <?php echo $selected; ?>><?php echo h($serviceName); ?></option>
 					<?php endforeach; ?>
 				</select>
+				<br />
+				<br />
 			</div>
 			<div class="col-xs-12">
+				<div class="inputWrap">
+					<?php
+					echo $this->Form->input('ds', ['label' => __('Datasource'), 'options' => [], 'class' => 'form-control tacho-ds', 'data-widget-id' => $widget['Widget']['id']]);
+					echo $this->Form->input('min', ['label' => __('Minimum'), 'class' => 'form-control tacho-min', 'data-field' => 'min', 'data-widget-id' => $widget['Widget']['id']]);
+					echo $this->Form->input('max', ['label' => __('Maximum'), 'class' => 'form-control tacho-max', 'data-field' => 'max', 'data-widget-id' => $widget['Widget']['id']]);
+					echo $this->Form->input('warn', ['label' => __('Warn %'), 'class' => 'form-control tacho-warn', 'data-field' => 'warn', 'data-widget-id' => $widget['Widget']['id']]);
+					echo $this->Form->input('crit', ['label' => __('Crit %'), 'class' => 'form-control tacho-crit', 'data-field' => 'crit', 'data-widget-id' => $widget['Widget']['id']]);
+					?>
+				</div>
 				<?php
-				echo $this->Form->create('dashboard', [
-					'class' => 'clear',
-					'action' => 'saveTachoConfig'
-				]);
-				echo $this->Form->input('ds', ['label' => __('Datasource'), 'options' => [], 'class' => 'form-control tacho-ds', 'data-widget-id' => $widget['Widget']['id']]);
-				echo $this->Form->input('min', ['label' => __('Minimum'), 'class' => 'form-control tacho-min', 'data-field' => 'min', 'data-widget-id' => $widget['Widget']['id']]);
-				echo $this->Form->input('max', ['label' => __('Maximum'), 'class' => 'form-control tacho-max', 'data-field' => 'max', 'data-widget-id' => $widget['Widget']['id']]);
-				echo $this->Form->input('warn', ['label' => __('Warn %'), 'class' => 'form-control tacho-warn', 'data-field' => 'warn', 'data-widget-id' => $widget['Widget']['id']]);
-				echo $this->Form->input('crit', ['label' => __('Crit %'), 'class' => 'form-control tacho-crit', 'data-field' => 'crit', 'data-widget-id' => $widget['Widget']['id']]);
 				echo $this->Form->input('tabId', ['type' => 'hidden', 'value' => $widget['Widget']['dashboard_tab_id']]);
 				echo $this->Form->input('widgetId', ['type' => 'hidden', 'value' => $widget['Widget']['id']]);
 				?>
