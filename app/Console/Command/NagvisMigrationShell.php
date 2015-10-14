@@ -39,6 +39,7 @@ class NagvisMigrationShell extends AppShell {
 	private $hostgroup;
 	private $servicegroup;
 	private $map;
+	private $lastError;
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
@@ -278,28 +279,28 @@ class NagvisMigrationShell extends AppShell {
 	protected function startFiletransform($fileList, $folder){
 		$this->out('<info>Starting File Transformation</info>');
 		foreach ($fileList as $key => $file) {
-			echo 'Processing file '.$file;
+			$this->out('Processing file '.$file);
 			$fileData = $this->transformFileContentToArray($folder.'/'.$file);
 			if($fileData == false){
 				$this->out('<error> ...Transform Failed!</error>');
 			}else{
 				$mapname = preg_replace('/(\..*)/', '', $file);
-				if($this->saveConfigToDB($mapname, $fileData)){
+				if($data = $this->saveConfigToDB($mapname, $fileData)){
+					//debug($data);
 					$this->out('<success> ...Complete!</success>');
 				}else{
 					$this->out('<error> ...Save to Database Failed!</error>');
 				}
 			}
+			$this->hr(1);
 		}
 		$this->out('<info>File Transformation Complete!</info>');
 	}
 
 	protected function saveConfigToDB($mapname, $data){
-		//debug($mapname);
+		$mapData = [];
 		foreach ($data as $key => $items) {
-			$mapData = [];
 			foreach ($items as $item) {
-				//debug($key);
 				$currentData = [];
 				switch ($key) {
 					case 'global':
@@ -408,9 +409,8 @@ class NagvisMigrationShell extends AppShell {
 				}
 				//debug($currentData);
 			}
-		//	debug($mapData);
 		}
-		return true;
+		return $mapData;
 	}
 
 	/**
@@ -453,7 +453,12 @@ class NagvisMigrationShell extends AppShell {
 			$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
 			return $hostId;
 		}
-		$this->out('<warning>Could not resolve Host '.$hostname.'</warning>');
+		$errorMsg = '<warning>Could not resolve Host '.$hostname.'</warning>';
+		if($this->lastError != $errorMsg){
+			$this->out($errorMsg);
+			$this->lastError = $errorMsg;
+		}
+		
 		return false;
 	}
 
@@ -468,6 +473,7 @@ class NagvisMigrationShell extends AppShell {
 		if(!empty($hostId)){
 			$serviceId = $this->service->find('first',[
 				'conditions' => [
+					'Service.host_id' => $hostId,
 					'OR' => [
 						'Service.name' => $servicename,
 						'Servicetemplate.name' => $servicename
@@ -485,10 +491,18 @@ class NagvisMigrationShell extends AppShell {
 				$this->out('<success>Service '.$servicename.' resolved! ID -> '.$serviceId['Service']['id'].'</success>');
 				return $serviceId;
 			}
-			$this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
+			$errorMsg = $this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
+			if($this->lastError != $errorMsg){
+				$this->out($errorMsg);
+				$this->lastError = $errorMsg;
+			}
 			return false; // thers no service id
 		}
-		$this->out('<warning>Could not resolve Host '.$hostname.'</warning>');
+		$errorMsg = '<warning>Could not resolve Host '.$hostname.'</warning>';
+		if($this->lastError != $errorMsg){
+			$this->out($errorMsg);
+			$this->lastError = $errorMsg;
+		}
 		return false; // thers no host id
 	}
 
