@@ -99,7 +99,8 @@ class MapeditorsController extends MapModuleAppController {
 			//@TODO deleteAll is not the good way to refresh the map items
 			//-> pass the itemId and lineId as hidden field!
 			//Delete old map items
-
+debug($request);
+die();
 			$this->Mapitem->deleteAll(['Mapitem.map_id' => $map['Map']['id']]);
 			$this->Mapline->deleteAll(['Mapline.map_id' => $map['Map']['id']]);
 			$this->Mapgadget->deleteAll(['Mapgadget.map_id' => $map['Map']['id']]);
@@ -1535,7 +1536,7 @@ class MapeditorsController extends MapModuleAppController {
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
-		if(!$this->Service->exists($serviceId)){
+		if(!$this->Host->exists($hostId)){
 			throw new NotFoundException(__('Invalid service'));
 		}
 		$services = $this->Service->find('all', [

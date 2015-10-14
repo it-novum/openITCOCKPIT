@@ -297,6 +297,7 @@ class NagvisMigrationShell extends AppShell {
 	protected function saveConfigToDB($mapname, $data){
 		//debug($mapname);
 		foreach ($data as $key => $items) {
+			$mapData = [];
 			foreach ($items as $item) {
 				//debug($key);
 				$currentData = [];
@@ -309,15 +310,20 @@ class NagvisMigrationShell extends AppShell {
 								'name' => $mapname,
 							],
 							'fields' => [
-								'name',
 								'id',
+								'name',
+								'title',
 							],
 						]);
+						//$item['iconset'] -> this is the default iconset when there is an icon without view_type and iconset defined
 						//debug($mapId);
 						$currentData = [
-							'mapname' => $mapname, // neccesary for assigning the background image correctly
+							'id' => $mapId['Map']['id'],
+							'name' => $mapname, // neccesary for assigning the background image correctly
+							'title' => $mapId['Map']['title'],
 							'background' => $item['map_image']
 						];
+						$mapData['Map'] = $currentData;
 						break;
 					case 'host':
 						$hostId = $this->resolveHostname($item['host_name']);
@@ -325,28 +331,33 @@ class NagvisMigrationShell extends AppShell {
 						if(empty($hostId)){
 							continue;
 						}
+						$viewType = $this->getViewType((!isset($item['view_type']))?'icon':$item['view_type']); //icon or line
 						$currentData = [
 							'object_id' => $hostId, // must be resolved. object_id needed
 							'y' => $item['x'],
 							'x' => $item['y'],
-							//'iconset' => $item['iconset'],
+							'type' => 'Host',
+							'iconset' => (!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset'],
 						];
+						$mapData[$viewType][] = $currentData;
 						
 						break;
 					case 'service':
 						$ids = $this->resolveServicename($item['host_name'], $item['service_description']);
-						debug($ids);
 						//host or service not found
 						if(empty($ids)){
 							continue;
 						}
+
+						$viewType = $this->getViewType((!isset($item['view_type']))?'icon':$item['view_type']);// gadget, icon or line
 						$currentData = [
 							'object_id' => $ids['Service']['id'], //must be resolved from hostId
 							'x' => $item['x'],
 							'y' => $item['y'],
-							'type' => $item['view_type'] // gadget, icon or line
+							'type' => 'Service',
+							'iconset' => ((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset']),
 						];
-						
+						$mapData[$viewType][] = $currentData;
 						break;
 					case 'hostgroup':
 						$currentData = [
@@ -377,6 +388,7 @@ class NagvisMigrationShell extends AppShell {
 							'lineType' => $item['line_type'] //10 for line with 2 arrows -><-, 11 for 1 arrow -->, 12 for no arrow -- CURRENTLY NOT IMPLEMENTED
 						];
 						
+						$mapData['Mapline'][] = $currentData;
 						break;
 					case 'shape':
 						//icon
@@ -385,16 +397,40 @@ class NagvisMigrationShell extends AppShell {
 							'x' => $item['x'],
 							'y' => $item['y']
 						];
-						
+						$mapData['Mapicons'][] = $currentData;
+						break;
+					case 'map':
+						//debug($item);
 						break;
 					default:
-						$this->out('<warning>the type '.$key.' is not specified!</warning>');
+						$this->out('<error>the type '.$key.' is not specified!</error>');
 						break;
 				}
 				//debug($currentData);
 			}
+		//	debug($mapData);
 		}
 		return true;
+	}
+
+	/**
+	 * returns the map type
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $type the type returned from the config file
+	 * @return String       the new type
+	 */
+	protected function getViewType($type){
+		switch ($type) {
+			case 'gadget':
+				return 'Mapgadget';
+				break;
+			case 'line':
+				return 'Mapline';
+				break;
+			default:
+				return 'Mapitem';
+				break;
+		}
 	}
 
 	/**
@@ -413,8 +449,11 @@ class NagvisMigrationShell extends AppShell {
 			]
 		]);
 		if(!empty($hostId)){
-			return $hostId['Host']['id'];
+			$hostId = $hostId['Host']['id'];
+			$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
+			return $hostId;
 		}
+		$this->out('<warning>Could not resolve Host '.$hostname.'</warning>');
 		return false;
 	}
 
@@ -443,6 +482,7 @@ class NagvisMigrationShell extends AppShell {
 				]
 			]);
 			if(!empty($serviceId)){
+				$this->out('<success>Service '.$servicename.' resolved! ID -> '.$serviceId['Service']['id'].'</success>');
 				return $serviceId;
 			}
 			$this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
