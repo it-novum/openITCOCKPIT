@@ -44,6 +44,7 @@ class DashboardController extends AdminAppController{
 		'Host',
 		'DashboardTab',
 		'Widget',
+		'WidgetTacho',
 		'Service',
 		MONITORING_OBJECTS,
 		'Rrd',

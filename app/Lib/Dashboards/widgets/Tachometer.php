@@ -29,7 +29,7 @@ class Tachometer extends Widget{
 	public $icon = 'fa-dashboard';
 	public $element = 'tachometer';
 	public $width = 5;
-	public $height = 17;
+	public $height = 23;
 	
 	public function __construct(\Controller $controller, $QueryCache){
 		parent::__construct($controller, $QueryCache);
@@ -48,10 +48,17 @@ class Tachometer extends Widget{
 					'conditions' => [
 						'Service.id' => $widgetData['Widget']['service_id']
 					],
-					'contain' => [],
+					'contain' => [
+						'Servicetemplate' => [
+							'fields' => [
+								'Servicetemplate.name'
+							]
+						]
+					],
 					'fields' => [
 						'Service.id',
 						'Service.uuid',
+						'Service.name',
 						'Servicestatus.current_state',
 						'Servicestatus.is_flapping',
 						'Servicestatus.normal_check_interval',
@@ -76,9 +83,22 @@ class Tachometer extends Widget{
 			}
 		}
 		
+		$widgetTacho = $this->Controller->WidgetTacho->findByWidgetId($widgetData['Widget']['id']);
+		
+		if(!isset($widgetTacho['WidgetTacho'])){
+			$widgetTacho['WidgetTacho'] = [
+				'min' => null,
+				'max' => null,
+				'warn' => null,
+				'crit' => null,
+				'data_source' => null
+			];
+		}
+		
 		$this->Controller->viewVars['widgetTachometers'][$widgetData['Widget']['id']] = [
 			'Service' => $service,
 			'Widget' => $widgetData,
+			'WidgetTacho' => $widgetTacho['WidgetTacho']
 		];
 		$this->Controller->set('widgetServicesForTachometer', $widgetServicesForTachometer);
 	}
@@ -88,6 +108,11 @@ class Tachometer extends Widget{
 		return [
 			'element' => 'Dashboard'.DS.$this->element
 		];
+	}
+	
+	public function getElement($widget){
+		//debug($widget);
+		return $this->element;
 	}
 	
 }

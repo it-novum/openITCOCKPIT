@@ -115,7 +115,7 @@ class DashboardHandler{
 				$currentWidgetData = [
 					'Widget' => $widget,
 					'Settings' => [
-						'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$widget['type_id']]}->element,
+						'element' => 'Dashboard'.DS.$this->{$this->__widgetClasses[$widget['type_id']]}->getElement($widget),
 						'icon' => $this->{$this->__widgetClasses[$widget['type_id']]}->icon,
 					]
 				];

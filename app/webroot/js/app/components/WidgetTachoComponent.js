@@ -34,12 +34,34 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 
 	initTachos: function(){
 		var self = this;
+		
+		var gridstack = $('.grid-stack');
+		gridstack.on('resizestop', function(event, ui){
+			var $element = $(ui.element);
+			var widgetId = parseInt($element.data('widget-id'), 10);
+			var widgetTypeId = parseInt($element.data('widget-type-id'), 10);
+			if(widgetTypeId == 12){
+				this.resizeTacho(widgetId);
+			}
+		}.bind(this));
+		
 		$(document).on('change', '.tachoSelectService', function(e){
 			var $object = $(e.target);
 			var widgetId = parseInt($object.data('widget-id'), 10);
 			var serviceId = parseInt($object.val(), 10);
 			if(!isNaN(serviceId)){
-				this.saveService(widgetId, serviceId);
+				this.fetchTachoPerfdata(widgetId, serviceId, function(){
+					var firstDS = null;
+					this.tachos[widgetId].dsSelect.html('');
+					for(var ds in this.tachos[widgetId].perfdata){
+						if(firstDS === null){
+							firstDS = ds;
+						}
+						this.tachos[widgetId].dsSelect.append($('<option></option>').val(ds).html(ds));
+					}
+					this.calculateThresholds(widgetId, firstDS);
+					this.fillFilds(widgetId, firstDS);
+				}.bind(this));
 			}
 		}.bind(this));
 		
@@ -74,6 +96,7 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 	},
 
 	initTacho: function(object){
+		var serviceId = $(object).data('service-id');
 		var $widgetContainer = $(object).parents('.grid-stack-item');
 		
 		var $form = $widgetContainer.find('.inputWrap');
@@ -93,8 +116,87 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 		this.tachos[widgetId] = {
 			widgetContainer: $widgetContainer,
 			dsSelect: $dsSelector,
-			perfdata: {}
+			configured: false,
+			serviceId: null,
+			perfdata: {},
+			gauge: null,
+			refreshTimer: null,
+			check_interval: 0
 		};
+		if(serviceId !== ''){
+			this.tachos[widgetId].configured = true;
+			this.tachos[widgetId].serviceId = serviceId;
+		}
+
+		if(this.tachos[widgetId].configured === true){
+			this.fetchTachoPerfdata(widgetId, serviceId, function(){
+				//Set parameters like min, max, warn and crit
+				var $form = $widgetContainer.find('.inputWrap');
+				var $min = $form.find('.tacho-min');
+				var $max = $form.find('.tacho-max');
+				var $warn = $form.find('.tacho-warn');
+				var $crit = $form.find('.tacho-crit');
+				var currentDs = this.tachos[widgetId].dsSelect.val();
+
+				this.tachos[widgetId].perfdata[currentDs].min = parseFloat($min.val());
+				this.tachos[widgetId].perfdata[currentDs].max = parseFloat($max.val());
+				this.tachos[widgetId].perfdata[currentDs].warn = parseFloat($warn.val());
+				this.tachos[widgetId].perfdata[currentDs].crit = parseFloat($crit.val());
+				this.tachos[widgetId].check_interval = parseInt($('#canvas-'+widgetId).data('check-interval'), 10);
+		
+				var height = this.calculateHeight(widgetId);
+				var options = {
+					height: height,
+					width: height,
+					title: currentDs
+				};
+				this.drawTacho(widgetId, this.tachos[widgetId].dsSelect.val(), 'canvas-'+widgetId, options);
+				this.startRefreshInterval(widgetId);
+			}.bind(this));
+		}
+		
+	},
+	
+	startRefreshInterval: function(widgetId){
+		if(this.tachos[widgetId].refreshTimer != null){
+			clearInterval(this.tachos[widgetId].refreshTimer);
+		}
+		if(this.tachos[widgetId].check_interval > 0){
+			this.tachos[widgetId].refreshTimer = setInterval(function(){
+				this.refreshTacho(widgetId);
+			}.bind(this), (this.tachos[widgetId].check_interval * 1000));
+		}
+	},
+	
+	calculateHeight: function(widgetId){
+		var height = this.tachos[widgetId].widgetContainer.innerHeight();
+		return parseInt((height - 40 - 40 - 35 - 15 - 35), 10);
+	},
+	
+	resizeTacho: function(widgetId){
+		var height = this.calculateHeight(widgetId);
+		var currentDs = this.tachos[widgetId].dsSelect.val();
+		var options = {
+			height: height,
+			width: height,
+			title: currentDs
+		};
+		this.drawTacho(widgetId, this.tachos[widgetId].dsSelect.val(), 'canvas-'+widgetId, options);
+	},
+	
+	refreshTacho: function(widgetId){
+		var currentDs = this.tachos[widgetId].dsSelect.val();
+		var min = this.tachos[widgetId].perfdata[currentDs].min;
+		var max = this.tachos[widgetId].perfdata[currentDs].max;
+		var warn = this.tachos[widgetId].perfdata[currentDs].warn;
+		var crit = this.tachos[widgetId].perfdata[currentDs].crit;
+		this.fetchTachoPerfdata(widgetId, this.tachos[widgetId].serviceId, function(){
+			this.tachos[widgetId].perfdata[currentDs].min = min;
+			this.tachos[widgetId].perfdata[currentDs].max = max;
+			this.tachos[widgetId].perfdata[currentDs].warn = warn;
+			this.tachos[widgetId].perfdata[currentDs].crit = crit;
+			this.tachos[widgetId].gauge.setValue(this.tachos[widgetId].perfdata[currentDs].current);
+		}.bind(this));
 	},
 	
 	updateValue: function(value, field, widgetId){
@@ -102,27 +204,19 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 		this.tachos[widgetId].perfdata[ds][field] = parseFloat(value);
 	},
 	
-	saveService: function(widgetId, serviceId){
+	fetchTachoPerfdata: function(widgetId, serviceId, callback){
 		this.Ajaxloader.show();
 		$.ajax({
-			url: "/dashboards/saveTachoService.json",
+			url: "/dashboards/getTachoPerfdata.json",
 			type: "POST",
+			//async: false,
 			data: {widgetId: widgetId, serviceId: serviceId},
 			error: function(){},
 			success: function(response){
 				if(typeof response.perfdata != 'undefined'){
-					normalizedPerfdata = this.normalizedPerfdata(response.perfdata);
+					var normalizedPerfdata = this.normalizedPerfdata(response.perfdata);
 					this.tachos[widgetId].perfdata = normalizedPerfdata;
-					var firstDS = null;
-					this.tachos[widgetId].dsSelect.html('');
-					for(var ds in normalizedPerfdata){
-						if(firstDS === null){
-							firstDS = ds;
-						}
-						this.tachos[widgetId].dsSelect.append($('<option></option>').val(ds).html(ds));
-					}
-					this.calculateThresholds(widgetId, firstDS);
-					this.fillFilds(widgetId, firstDS);
+					callback();
 				}
 				this.Ajaxloader.hide();
 			}.bind(this),
@@ -204,8 +298,8 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 		$warn.val('');
 		$crit.val('');
 		
-		$min.prop("readonly", false);
-		$max.prop("readonly", false);
+		$min.prop('readonly', false);
+		$max.prop('readonly', false);
 		
 		$min.val(this.tachos[widgetId].perfdata[ds].min);
 		$max.val(this.tachos[widgetId].perfdata[ds].max);
@@ -213,12 +307,17 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 		$crit.val(this.tachos[widgetId].perfdata[ds].crit);
 		
 		if(perfdata.unit == '%'){
-			$min.prop("readonly", true);
-			$max.prop("readonly", true);
+			$min.prop('readonly', true);
+			$max.prop('readonly', true);
 		}
 	},
 
-	drawTacho:function(widgetId, ds, canvasId){
+	drawTacho:function(widgetId, ds, canvasId, options){
+		options = options || {};
+		var height = options.height || 250;
+		var width  = options.width  || 250;
+		var title  = options.title  || '';
+		
 		var perfdata = this.tachos[widgetId].perfdata[ds];
 		
 		for(var key in perfdata){
@@ -267,12 +366,13 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 
 		var gauge = new Gauge({
 			renderTo: canvasId,
-			height: 250,
+			height: height,
+			width: width,
 			minValue: perfdata.min,
 			maxValue: perfdata.max,
 			units: perfdata.unit,
 			strokeTicks: true,
-			title: 'sdfsdf',
+			title: title,
 			glow: true,
 			valueFormat : {
 				int: intergetDigits,
@@ -302,6 +402,6 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 			gauge.setValue(perfdata.current);
 		};
 		gauge.draw();
+		this.tachos[widgetId].gauge = gauge;
 	}
-
 });

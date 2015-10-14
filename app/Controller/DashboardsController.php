@@ -836,7 +836,7 @@ class DashboardsController extends AppController{
 		}
 	}
 	
-	public function saveTachoService(){
+	public function getTachoPerfdata(){
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
@@ -953,8 +953,8 @@ class DashboardsController extends AppController{
 				]
 			];
 			if($this->WidgetTacho->save($data)){
-				$this->DashboardTab->id = $tab['DashboardTab']['id'];
-				$this->DashboardTab->saveField('service_id', $tachoConfig['widgetId']);
+				$this->Widget->id = $data['WidgetTacho']['widget_id'];
+				$this->Widget->saveField('service_id', $tachoConfig['serviceId']);
 			}
 			return $this->redirect(['action' => 'index', $tachoConfig['tabId']]);
 		}

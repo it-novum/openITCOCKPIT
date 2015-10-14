@@ -62,4 +62,8 @@ class Widget{
 	public function refresh($widget){
 		
 	}
+	
+	public function getElement($widget){
+		return $this->element;
+	}
 }

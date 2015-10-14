@@ -145,6 +145,12 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 						case 11:
 							this.WidgetTrafficLight.initTrafficlight($(widgetHtml).find('.trafficlightContainer'));
 							$('.chosen').chosen();
+							break;
+						
+						case 12:
+							this.WidgetTacho.initTacho($(widgetHtml).find('.tachometerContainer'));
+							$('.chosen').chosen();
+							break;
 						}
 					}
 					self.Ajaxloader.hide();

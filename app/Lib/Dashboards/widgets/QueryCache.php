@@ -118,8 +118,10 @@ class QueryCache{
 			'total' => 0
 		];
 		foreach($services as $service){
-			$serviceStateArray['state'][$service['Servicestatus']['current_state']]++;
-			$serviceStateArray['total']++;
+			if(isset($service['Servicestatus']['current_state'])){
+				$serviceStateArray['state'][$service['Servicestatus']['current_state']]++;
+				$serviceStateArray['total']++;
+			}
 		}
 		$this->setCache(__FUNCTION__, $serviceStateArray);
 		return $serviceStateArray;

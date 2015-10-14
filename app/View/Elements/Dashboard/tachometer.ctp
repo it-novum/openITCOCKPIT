@@ -27,68 +27,167 @@ $widgetData = $widgetTachometers[$widget['Widget']['id']];
 $serviceId = null;
 if(!empty($widgetData['Service'])):
 	$serviceId = $widgetData['Service']['Service']['id'];
+	$selectedServiceName = $widgetData['Service']['Service']['name'];
+	if($selectedServiceName === null || $selectedServiceName === ''):
+		$selectedServiceName = $widgetData['Service']['Servicetemplate']['name'];
+	endif;
 endif;
 ?>
 <div class="widget-body tacho-body">
 	<div style="display:none;" class="tachoPreviewContainer">
 		<div class="pull-right padding-right-20"><a href="javascript:void(0);" class="btn btn-danger close-preview" data-widget-id="<?php echo $widget['Widget']['id']; ?>"><?php echo __('Close'); ?></a></div>
-		<div class="tachometerContainer">
+		<div class="tachometerContainer" data-service-id="<?php echo $serviceId; ?>">
 			<!-- canvas object will be created by javascript -->
 		</div>
 	</div>
-	<div class="padding-10" style="position:absolute; top:0px; left:0px; z-index:1;">
-		<div class="row">
-			<div class="col-xs-12">
-				<?php
-				echo $this->Form->create('dashboard', [
-					'class' => 'clear',
-					'action' => 'saveTachoConfig'
-				]); ?>
-				<select class="chosen tachoSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" name="data[dashboard][serviceId]" style="width:100%;">
-					<option></option>
-					<?php foreach($widgetServicesForTachometer as $_serviceId => $serviceName):?>
-						<?php
-							$selected = '';
-							if($serviceId !== null && $_serviceId == $serviceId):
-								$selected = 'selected="selected"';
-							endif;
-						?>
-						<option value="<?php echo $_serviceId; ?>" <?php echo $selected; ?>><?php echo h($serviceName); ?></option>
-					<?php endforeach; ?>
-				</select>
-				<br />
-				<br />
+	
+	<div class="panel-group smart-accordion-default" id="accordion-<?php echo $widget['Widget']['id'];?>">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<?php if($serviceId === null): ?>
+						<a data-toggle="collapse" data-parent="#accordion-<?php echo $widget['Widget']['id'];?>" href="#collapseOne-1-<?php echo $widget['Widget']['id'];?>" aria-expanded="true" class="">
+							<i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo __('Configuration'); ?>
+						</a>
+					<?php else: ?>
+						<a data-toggle="collapse" data-parent="#accordion-<?php echo $widget['Widget']['id'];?>" href="#collapseOne-1-<?php echo $widget['Widget']['id'];?>" aria-expanded="false" class="collapsed">
+							<i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo __('Configuration'); ?>
+						</a>
+					<?php endif; ?>
+				</h4>
 			</div>
-			<div class="col-xs-12">
-				<div class="inputWrap">
-					<?php
-					echo $this->Form->input('ds', ['label' => __('Datasource'), 'options' => [], 'class' => 'form-control tacho-ds', 'data-widget-id' => $widget['Widget']['id']]);
-					echo $this->Form->input('min', ['label' => __('Minimum'), 'class' => 'form-control tacho-min', 'data-field' => 'min', 'data-widget-id' => $widget['Widget']['id']]);
-					echo $this->Form->input('max', ['label' => __('Maximum'), 'class' => 'form-control tacho-max', 'data-field' => 'max', 'data-widget-id' => $widget['Widget']['id']]);
-					echo $this->Form->input('warn', ['label' => __('Warn %'), 'class' => 'form-control tacho-warn', 'data-field' => 'warn', 'data-widget-id' => $widget['Widget']['id']]);
-					echo $this->Form->input('crit', ['label' => __('Crit %'), 'class' => 'form-control tacho-crit', 'data-field' => 'crit', 'data-widget-id' => $widget['Widget']['id']]);
-					?>
+			<div id="collapseOne-1-<?php echo $widget['Widget']['id'];?>" class="panel-collapse collapse <?php echo ($serviceId === null)?'in':''; ?>" aria-expanded="true">
+				<div class="panel-body">
+					<div>
+						<div class="row">
+							<div class="col-xs-12">
+								<?php
+								echo $this->Form->create('dashboard', [
+									'class' => 'clear',
+									'action' => 'saveTachoConfig',
+									'id' => 'TachoForm-'.$widget['Widget']['id']
+								]); ?>
+								<select class="chosen tachoSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" name="data[dashboard][serviceId]" style="width:100%;">
+									<option></option>
+									<?php foreach($widgetServicesForTachometer as $_serviceId => $serviceName):?>
+										<?php
+											$selected = '';
+											if($serviceId !== null && $_serviceId == $serviceId):
+												$selected = 'selected="selected"';
+											endif;
+										?>
+										<option value="<?php echo $_serviceId; ?>" <?php echo $selected; ?>><?php echo h($serviceName); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<br />
+								<br />
+							</div>
+							<div class="col-xs-12">
+								<div class="inputWrap">
+									<?php
+									if($widgetData['WidgetTacho']['data_source'] != null):
+										echo $this->Form->input('ds', [
+											'label' => __('Datasource'),
+											'options' => [$widgetData['WidgetTacho']['data_source'] => $widgetData['WidgetTacho']['data_source']],
+											'class' => 'form-control tacho-ds',
+											'data-widget-id' => $widget['Widget']['id'],
+											'selected' => $widgetData['WidgetTacho']['data_source']
+										]);
+									else:
+										echo $this->Form->input('ds', [
+											'label' => __('Datasource'),
+											'options' => [],
+											'class' => 'form-control tacho-ds',
+											'data-widget-id' => $widget['Widget']['id']
+										]);
+									endif;
+									echo $this->Form->input('min', [
+										'label' => __('Minimum'),
+										'class' => 'form-control tacho-min',
+										'data-field' => 'min',
+										'data-widget-id' => $widget['Widget']['id'],
+										'value' => $widgetData['WidgetTacho']['min']
+									]);
+									echo $this->Form->input('max', [
+										'label' => __('Maximum'),
+										'class' => 'form-control tacho-max',
+										'data-field' => 'max',
+										'data-widget-id' => $widget['Widget']['id'],
+										'value' => $widgetData['WidgetTacho']['max']
+									]);
+									echo $this->Form->input('warn', [
+										'label' => __('Warn %'),
+										'class' => 'form-control tacho-warn',
+										'data-field' => 'warn',
+										'data-widget-id' => $widget['Widget']['id'],
+										'value' => $widgetData['WidgetTacho']['warn']
+									]);
+									echo $this->Form->input('crit', [
+										'label' => __('Crit %'),
+										'class' => 'form-control tacho-crit',
+										'data-field' => 'crit',
+										'data-widget-id' => $widget['Widget']['id'],
+										'value' => $widgetData['WidgetTacho']['crit']
+									]);
+									?>
+								</div>
+								<?php
+								echo $this->Form->input('tabId', ['type' => 'hidden', 'value' => $widget['Widget']['dashboard_tab_id']]);
+								echo $this->Form->input('widgetId', ['type' => 'hidden', 'value' => $widget['Widget']['id']]);
+								?>
+							</div>
+							<div class="col-xs-12">
+								<div class="pull-right padding-top-10">
+									<a href="javascript:void(0);" class="btn btn-default previewTacho" data-widget-id="<?php echo $widget['Widget']['id']; ?>">
+										<?php echo __('Preview'); ?>
+									</a>
+									<?php
+									echo $this->Form->submit(__('Save'), [
+										'class' => [
+											'btn btn-primary'
+										],
+										'data-submit' => 'TachoForm-'.$widget['Widget']['id'],
+										'div' => false,
+										'value' => 1
+									]); ?>
+								</div>
+								<?php echo $this->Form->end(); ?>
+							</div>
+						</div>
+					</div>
 				</div>
-				<?php
-				echo $this->Form->input('tabId', ['type' => 'hidden', 'value' => $widget['Widget']['dashboard_tab_id']]);
-				echo $this->Form->input('widgetId', ['type' => 'hidden', 'value' => $widget['Widget']['id']]);
-				?>
 			</div>
-			<div class="col-xs-12">
-				<div class="pull-right padding-top-10">
-					<a href="javascript:void(0);" class="btn btn-default previewTacho" data-widget-id="<?php echo $widget['Widget']['id']; ?>">
-						<?php echo __('Preview'); ?>
-					</a>
-					<?php
-					echo $this->Form->submit(__('Save'), [
-						'class' => [
-							'btn btn-primary'
-						],
-						'div' => false,
-						'value' => 1
-					]); ?>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<?php if($serviceId === null): ?>
+						<a data-toggle="collapse" data-parent="#accordion-<?php echo $widget['Widget']['id'];?>" href="#collapseTwo-1-<?php echo $widget['Widget']['id'];?>" aria-expanded="false" class="collapsed">
+							<i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo __('No services selected'); ?>
+						</a>
+					<?php else:?>
+						<a data-toggle="collapse" data-parent="#accordion-<?php echo $widget['Widget']['id'];?>" href="#collapseTwo-1-<?php echo $widget['Widget']['id'];?>" aria-expanded="true" class="">
+							<i class="fa fa-lg fa-angle-down pull-right"></i> <i class="fa fa-lg fa-angle-up pull-right"></i> <?php echo h($selectedServiceName); ?>
+						</a>
+					<?php endif;?>
+				</h4>
+			</div>
+			<div id="collapseTwo-1-<?php echo $widget['Widget']['id'];?>" class="panel-collapse collapse <?php echo ($serviceId === null)?'':'in'; ?>" aria-expanded="false">
+				<div class="panel-body">
+					<?php if($serviceId === null): ?>
+						<?php echo __('No service selected or selected service has been deleted');?>
+					<?php else: ?>
+						<center>
+							<?php if($serviceId && $this->Acl->hasPermission('browser', 'services')): ?>
+								<a href="/services/browser/<?php echo $serviceId; ?>">
+									<canvas id="canvas-<?php echo $widget['Widget']['id'];?>" data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>"></canvas>
+								</a>
+							<?php else: ?>
+								<canvas id="canvas-<?php echo $widget['Widget']['id'];?>" data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>"></canvas>
+							<?php endif; ?>
+						</center>
+					<?php endif;?>
 				</div>
-				<?php echo $this->Form->end(); ?>
 			</div>
 		</div>
 	</div>
