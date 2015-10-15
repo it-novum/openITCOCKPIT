@@ -43,6 +43,16 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			}
 		});
 		
+		var gridstack = $('.grid-stack');
+		gridstack.on('resizestop', function(event, ui){
+			var $element = $(ui.element);
+			var widgetId = parseInt($element.data('widget-id'), 10);
+			var widgetTypeId = parseInt($element.data('widget-type-id'), 10);
+			if(widgetTypeId == 11){
+				this.drawTrafficLight(widgetId, this.trafficlights[widgetId].container);
+			}
+		}.bind(this));
+		
 		$('.trafficlightContainer').each(function(key, object){
 			this.initTrafficlight(object);
 		}.bind(this));
@@ -53,6 +63,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		widgetId = parseInt($object.parents('.grid-stack-item').data('widget-id'), 10);
 		var $container = $object;
 		var $wrapper = $object.parents('.trafficLight-body').find('.trafficLightWrapper');
+		var $widgetContainer = $object.parents('.grid-stack-item');
 		this.trafficlights[widgetId] = {
 			container: $container,
 			wrapper: $wrapper,
@@ -62,11 +73,17 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			current_state: parseInt($container.data('current-state'), 10),
 			is_flapping: parseInt($container.data('is-flapping'), 10),
 			check_interval: parseInt($container.data('check-interval'), 10),
-			idService: parseInt($container.data('id-service'), 10)
+			idService: parseInt($container.data('id-service'), 10),
+			widgetContainer: $widgetContainer
 		};
 		if(this.trafficlights[widgetId].idService > 0){
 			this.drawTrafficLight(widgetId, $container);
 		}
+	},
+
+	calculateHeight: function(widgetId){
+		var height = this.trafficlights[widgetId].widgetContainer.innerHeight();
+		return parseInt((height - 70 - 35 - 30), 10)
 	},
 
 	drawTrafficLight:function(widgetId, $container){
@@ -83,10 +100,17 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			blinkLight = true;
 		}
 
-
 		//SVG Container
-		$svgContainer.css({width: '150px'}).svg();
+		//$svgContainer.css({width: '150px'}).svg();
+		
+		var height = this.calculateHeight(widgetId);
+		
+		$svgContainer.svg();
 		var svg = $svgContainer.svg('get');
+
+		svg._svg.setAttribute('viewBox', '0 0 105 150');
+		svg._svg.setAttribute('width', '100%');
+		svg._svg.setAttribute('height', height+'px');
 
 		//main group
 		var trafficLight = svg.group('trafficLight_'+id);
@@ -206,6 +230,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		});
 		
 		this.trafficlights[widgetId].svg = svg;
+		
 		if(this.trafficlights[widgetId].current_state == 3 || this.trafficlights[widgetId].is_flapping == 1){
 			this.blinking(widgetId);
 		}
