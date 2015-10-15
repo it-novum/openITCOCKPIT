@@ -68,9 +68,9 @@
 							<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
 								<?php echo $this->Status->automapIcon($service, false); ?>
 								<?php
-								$serviceName = $service['Servicetemplate']['name'];
+								$serviceName = $service['Service']['name'];
 								if($serviceName == null || $serviceName == ''):
-									$serviceName = $service['Service']['name'];
+									$serviceName = $service['Servicetemplate']['name'];
 								endif;
 								echo h($hosts[$service['Service']['host_id']]).'/'.h($serviceName);
 								?>

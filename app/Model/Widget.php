@@ -36,9 +36,6 @@ class Widget extends AppModel{
 		'WidgetHostStatusList' => [
 			'dependent' => true
 		],
-		'WidgetBrowser' => [
-			'dependent' => true
-		],
 		'WidgetNotice' => [
 			'dependent' => true
 		],
@@ -58,26 +55,79 @@ class Widget extends AppModel{
 				'rule' => ['comparison', '>', 0],
 				'message' => 'The value should be greate than zero.',
 			],
-		], 'row' => [
+		],
+		'row' => [
 			'numeric' => [
 				'rule' => 'numeric',
 				'message' => 'This field needs a numeric value.',
 			],
-		], 'col' => [
+		],
+		'col' => [
 			'numeric' => [
 				'rule' => 'numeric',
 				'message' => 'This field needs a numeric value.',
 			],
-		], 'size_x' => [
+		],
+		'size_x' => [
 			'numeric' => [
 				'rule' => 'numeric',
 				'message' => 'This field needs a numeric value.',
 			],
-		], 'size_y' => [
+		],
+		'size_y' => [
 			'numeric' => [
 				'rule' => 'numeric',
 				'message' => 'This field needs a numeric value.',
 			],
 		],
 	];
+	
+	public function copySharedWidgets($sourceTab, $targetTab, $userId){
+		$sourceWidgets = $this->find('all', [
+			'conditions' => [
+				'Widget.dashboard_tab_id' => $sourceTab['DashboardTab']['id']
+			]
+		]);
+		
+		foreach($sourceWidgets as $sourceWidget){
+			if(isset($sourceWidget['Service'])){
+				unset($sourceWidget['Service']);
+			}
+			if(isset($sourceWidget['Host'])){
+				unset($sourceWidget['Host']);
+			}
+			
+			$sourceWidget = Hash::remove($sourceWidget, '{s}.id');
+			$sourceWidget = Hash::remove($sourceWidget, '{s}.widget_id');
+			
+			$sourceWidget['DashboardTab'] = [
+				'id' => $targetTab['DashboardTab']['id'],
+				'name' => $sourceTab['DashboardTab']['name'],
+				'user_id' => $userId
+			];
+			$sourceWidget['Widget']['dashboard_tab_id'] = $targetTab['DashboardTab']['id'];
+			//Remove all mnull keys and unused Models
+			$sourceWidget = array_filter($sourceWidget, function($valuesAsArray){
+				if(is_array($valuesAsArray)){
+					foreach($valuesAsArray as $value){
+						if($value !== null && $value !== ''){
+							return true;
+						}
+					}
+				}else{
+					if($valuesAsArray !== null && $valuesAsArray !== ''){
+						return true;
+					}
+				}
+				return false;
+			});
+			if(!$this->saveAll($sourceWidget)){
+				debug($this->validationErrors);
+				$error = true;
+			}else{
+				$error = false;
+			}
+		}
+		return $error;
+	}
 }

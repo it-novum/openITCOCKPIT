@@ -103,29 +103,29 @@ echo $this->Form->create('Documentation', array(
 									<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-xs btn-default dropdown-toggle"><span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="xx-small" ><?php echo __('smallest'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="xx-small" ><?php echo __('Smallest'); ?></a>
 										</li>
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="x-small" ><?php echo __('smaller'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="x-small" ><?php echo __('Smaller'); ?></a>
 										</li>
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="small" ><?php echo __('small'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="small" ><?php echo __('Small'); ?></a>
 										</li>
 										<li class="divider"></li>
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="large" ><?php echo __('big'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="large" ><?php echo __('Big'); ?></a>
 										</li>
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="x-large" ><?php echo __('bigger'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="x-large" ><?php echo __('Bigger'); ?></a>
 										</li>
 										<li>
-											<a href="javascript:void(0);" select-fsize="true" fsize="xx-large" ><?php echo __('biggest'); ?></a>
+											<a href="javascript:void(0);" select-fsize="true" fsize="xx-large" ><?php echo __('Biggest'); ?></a>
 										</li>
 									</ul>
 								</div>
 								<div class="widget-toolbar pull-left" style="border:0px;" role="menu">
 									<a href="javascript:void(0);" class="dropdown-toggle color-box selector bg-color-darken" id="currentColor" color="#404040" current-color="bg-color-darken" data-toggle="dropdown"></a>
-									<ul class="dropdown-menu arrow-box-up-right pull-right">
+									<ul class="dropdown-menu arrow-box-up-right pull-right color-select">
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Green Grass'); ?>" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-green" select-color="true" color="#356E35" class="bg-color-green"></span></li>
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Dark Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenDark" select-color="true" color="#496949" class="bg-color-greenDark"></span></li>
 										<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Light Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenLight" select-color="true" color="#71843F" class="bg-color-greenLight"></span></li>

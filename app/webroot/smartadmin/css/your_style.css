@@ -410,6 +410,26 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	margin: 10px;
 }
 
+.padding-bottom-0 {
+	padding-bottom: 0px;
+}
+
+.padding-top-0 {
+	padding-top: 0px;
+}
+
+.padding-left-0 {
+	padding-left: 0px;
+}
+
+.padding-right-0 {
+	padding-right: 0px;
+}
+
+.padding-0 {
+	padding: 0px!important;
+}
+
 .padding-bottom-5 {
 	padding-bottom: 5px;
 }
@@ -699,6 +719,10 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	width: 160px;
 }
 
+.width-240{
+	width: 240px;
+}
+
 .mobile_table {
 	overflow-x: auto !important;
 }
@@ -922,25 +946,12 @@ rect.unknown {
 	bottom: 20px;
 }
 
-.status_datatable_header {
-	height: 37px !important;
-	line-height: 20px !important;
-}
-
-.status_datatable_header .slider-slim {
-	float: left;
-	margin-left: 10px;
-
-}
 
 .slider-slim .slider .slider-track {
 	height: 5px;
+	margin-bottom:0px;
 }
 
-.status_datatable_header .slider-slim .slider {
-	margin-bottom: 5px;
-	margin-top: 10px;
-}
 
 .slider-slim .slider .slider-handle {
 	font-size: 8px;
@@ -1089,135 +1100,6 @@ a.autocomplete-items {
 	border-color: #869499;
 }
 
-.multi-childs {
-	display: flex;
-	flex-wrap: wrap;
-}
-
-.trafficlight {
-	width: 150px;
-	position: static !important;
-	margin: 10px auto;
-}
-
-.tacho {
-	width: 100%;
-	position: static !important;
-	text-align: center;
-}
-
-.tacho canvas {
-	margin: 0 auto;
-	display: none;
-}
-
-.traffic-light form,
-.trafficLight-body form{
-	display:flex;
-	flex-wrap:wrap;
-}
-
-.trafficLight-body .form-group,
-.tacho-body .form-group{
-	width:82%;
-}
-
-.trafficLight-body form div.data-source-select{
-	display:none;
-	margin-top: 5px;
-}
-.dataSourceValues{
-	display:none;
-	clear:both;
-	margin-top:5px;
-}
-
-.traffic-light form div.form-group label,
-.trafficLight-body form div.form-group div,
-.trafficLight-body form div.form-group label,
-.trafficLight-body form div.form-group div{
-	float:none;
-}
-
-.trafficLight-body form div.form-group label.control-label{
-	width:100%;
-}
-
-
-.tacho_preview{
-	color: #fff;
-	background-color: #337ab7;
-	padding: 2px 5px;
-	border-radius: 2px;
-	font-size: 14px;
-	font-weight: 400;
-	text-align: center;
-	border: 1px solid #2e6da4;
-	display: none;
-	position: absolute;
-
-	bottom: 15px;
-	right: 0px;
-}
-
-.tacho_preview:hover,
-.widget-browser-title:hover,
-.widget-notice-title:hover{
-	cursor:pointer;
-}
-
-.tacho_preview_canvas{
-	position:absolute;
-	top: -33px;
-	right: 61px;
-	height: 207px;
-	background: #FFF;
-	display: none;
-	z-index: 2;
-	border: 1px solid #CCC;
-	box-shadow: -10px 10px 30px #888888;
-}
-
-.tacho-error-message-min,
-.tacho-error-message-max{
-	color:#a94442;
-	width:180px;
-	margin:0!important;
-	padding:0!important;
-}
-
-.dataSourceValues legend{
-	border: 0px;
-	margin: 0px;
-	padding: 5px 0px 0px 15px;
-	font-size: 13px;
-}
-
-.dataSourceValues div.form-group{
-	display:flex;
-	margin: 2px 0px;
-}
-
-.dataSourceValues div.form-group input{
-	width:106px;
-}
-.traffic-light .form-group label,
-.tacho-body .form-group label{
-	width:100%;
-}
-
-.service-title,
-.service-title-tacho{
-	display:none;
-	height:56px;
-	font-size: 19px;
-	font-weight: 400;
-}
-.service-title:hover,
-.service-title-tacho:hover{
-	cursor:pointer;
-}
-
 .menustats {
 	display: inline-block;
 	margin: 0;
@@ -1342,61 +1224,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	margin-right: 0;
 }
 
-
-.service-status-list-toolbar,
-.host-status-list-toolbar{
-	display:flex;
-	margin-top:0px!important;
-	float: right!important;
-}
-
-.status_datatable_header div.widget-toolbar{
-	float:right!important;
-}
-
-.service-status-list-toolbar input,
-.host-status-list-toolbar input{
-	margin:4px 5px!important;
-	width:40px;
-	padding:0px 1px;
-	text-align: center!important;
-}
-
-.service_list_save,
-.host_list_save{
-	color: #fff;
-	background-color: #337ab7;
-	padding: 2px 5px;
-	border-radius: 2px;
-	font-size: 14px;
-	font-weight: 400;
-	text-align: center;
-	border: 1px solid #2e6da4;
-	float: right;
-	margin-top: 4px;
-	margin-right: 3px;
-	cursor: pointer;
-}
-
-.service_list_save:active,
-.service_list_save:hover,
-.host_list_save:active,
-.host_list_save:hover{
-	background-color: #286090;
-	border-color: #204d74;
-}
-
-.status_datatable_header div.widget-toolbar{
-	margin-top:4px;
-}
-
-.status_datatable_header div.widget-toolbar input[type=checkbox] {
-	position: relative;
-	top: 2px;
-}
-
-.grid-stack {
-
+.grid-stack{
+	min-height:300px;
 }
 
 .grid-stack-item-content {
@@ -1407,9 +1236,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	background-color:#337ab7;
 }
 
-.grid-stack-item-content .widget-toolbar{
-	float:left;
-}
 
 .grid-stack-item-content .jarviswidget{
 	margin-bottom:0;
@@ -1429,104 +1255,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 
 .grid-stack-item-content .jarviswidget div .jarviswidget-edit-btn{
 	border-right: 1px solid rgba(0,0,0,.09);
-}
-
-.ellipsis{
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
-
-.newTabContainer,
-.rotateTabs{
-	margin:0px 0px 0px 10px;
-}
-
-.newTabContainer button,
-.rotateTabs button{
-	height: 34px;
-	border-radius: 0;
-	margin-top: -1px;
-	padding: 3px 11px;
-}
-.newTabContainer button:active,
-.rotateTabs button:active{
-	top:0;
-	left:0;
-}
-
-.newTabsList hr{
-	margin:0px;
-}
-
-.addSharedTab label{
-	width: 100%;
-	padding-bottom: 10px;
-	color: #333;
-}
-
-.sharedTabSave{
-	padding: 2px 7px;
-}
-
-.selectSharedTab{
-	width:75%;
-}
-
-.newTabsList{
-	min-width:250px;
-	padding-bottom: 10px;
-}
-
-.tabsContainer{
-	float:left;
-	width:80%;
-	display:flex;
-}
-
-.rotateTabs{
-	cursor:pointer;
-}
-
-.rotationSlider,
-.rotationSliderInput,
-.rotationSliderLabel{
-	width:87%;
-	margin: 0 auto;
-}
-
-.rotationSliderLabel{
-	padding:10px;
-	color: #333;
-}
-
-.rotationSlider{
-	height:25px;
-}
-
-.rotationSliderInput{
-	height:30px;
-}
-
-.rotationSliderInput input{
-	display:none;
-}
-
-.newWidgetContainer{
-	float:right;
-	margin:5px 5px 0px 0px;
-}
-
-.newWidgetContainer hr{
-	margin:5px 0px;
-}
-
-.Dashboard_index header[role=heading]{
-	line-height: 1px!important;
-}
-
-.grid-stack{
-	min-height:300px;
 }
 
 .ellipsis{
@@ -1564,72 +1292,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	text-align:center;
 }
 
-.selectTrafficlight,
-.selectTachoService{
-	width:100%;
-	height:27px;
-}
-
-.trafficlight_save,
-.tacho_save{
-	margin-top:22px;
-	padding:4px 8px;
-}
-.tacho_save,
-.tacho_save:active{
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	left:auto;
-}
-
-.dataSourceValues,
-.data-source-select{
-	display:none;
-}
-.tacho-body .DataSourceValuesFields label{
-	width:45%;
-}
-
-.widget-browser-title,
-.widget-browser,
-.widget-notice,
-.widget-notice-title{
-	display:none;
-}
-
-.widget-browser{
-	height:610px;
-}
-
-.browser-body label{
-	width:10%;
-}
-.browser-body .col-md-10{
-	width:80%;
-}
-
-.notice_save{
-	float:right;
-	margin-right: 5%;
-}
-
-.notice-body .form-group{
-	margin-bottom:0;
-}
-
-.notice-body label,
-.notice-body .col-md-10
-{
-	width:95%;
-	padding:0;
-}
-
-.notice_textarea{
-	width:100%;
-	height:177px;
-}
-
 .pagingInterval{
 	width: 310px;
 	padding-top: 8px;
@@ -1648,70 +1310,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .rotateTabs .form-group-slider{
 	width:350px;
 	margin-bottom: -10px;
-}
-
-.dataSourceButtons,
-.dataSourceButtonsHeadline{
-	display:none;
-	padding-left: 15px;
-}
-.selectTimeFrameContainer{
-	padding-left: 0px;
-}
-
-.graphgenerator-body .form-group label{
-	width:100%;
-}
-
-.dataSourceButtons .onoffswitch{
-	margin:0px;
-}
-
-.switchContainer{
-	margin:10px 20px;
-}
-
-.dashboardTab{
-	height:34px;
-}
-
-.tabsContainer .nav-tabs>li.active>a{
-	margin-top:0px!important;
-	height:33px;
-}
-
-
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.renameTab,
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.shareTab,
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.stopShareTab,
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.refreshTab,
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.deleteTab{
-	color:#333!important;
-}
-
-.jarviswidget-color-blueDark .dashboardTab ul.dropdown-menu li a.refreshTab{
-	display:none;
-}
-
-.addSharedTab li.active-result{
-	color:#333;
-}
-
-.gridstackContainer{
-	padding-bottom:13px!important;
-}
-
-.widget-map-title{
-	display: none;
-}
-.widget-map{
-	margin: 0 auto;
-	position: relative;
-}
-
-.DashboardMainHeader{
-	display:table;
-	width:100%;
 }
 
 .tabTargetDestination{
@@ -1737,57 +1335,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	cursor:pointer;
 }
 
-.stateColService{
-	width:33%;
-	float:left;
-	height:140px;
-}
-
-.stateColHost{
-	width:50%;
-	float:left;
-	height:140px;
-}
-
-.stateService_1,
-.stateService_2,
-.stateService_3,
-.stateHost_1,
-.stateHost_2{
-	height:18px;
-	color:#FFF;
-	text-align:left;
-	font-weight: bold;
-	padding: 0px 0px 0px 19px;
-}
-
-.stateService_1{
-	background-color:#DF8F1D;
-}
-
-.stateService_2,
-.stateHost_1{
-	background-color:#C9302C;
-}
-
-.stateService_3,
-.stateHost_2{
-	background-color:#92A2A8;
-}
-
-.stateColHostListItem,
-.stateColServiceListItem{
-	width:100%;
-	text-align:left;
-	padding: 3px 0px 0px 10px;
-}
-
-.stateColHostList,
-.stateColServiceList{
-	border:1px solid #eeeeee!important;
-	padding-bottom:5px;
-}
-
 .node-list{
 	height: 211px;
 }
@@ -1801,4 +1348,36 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	border: none;
 	border-bottom: 1px solid #c2c2c2;
 	padding-left: 10px;
+}
+
+.dashboard-table{
+	padding-top: 3px!important;
+	padding-bottom: 3px!important;
+	font-size: 85%;
+}
+
+.tab-select-menu-fix{
+	color: #333!important;
+}
+
+.tab-select-menu-fix:hover{
+	color:#FFF!important;
+}
+
+.tabTargetDestination{
+	border: 1px solid #EEE;
+	width:5em;
+	height:33px
+}
+
+.tachoPreviewContainer{
+	position: absolute;
+	z-index: 2;
+	background: rgba(100, 100, 100, 0.5);
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	text-align: center;
+	padding-top: 15px;
+	height: 414px;
 }

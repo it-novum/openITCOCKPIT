@@ -181,8 +181,9 @@ $config = [
 				'edit' => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros']
 			],
 			'Servicetemplategroups' => [
-				'add' => ['allocateToHost', 'allocateToHostgroup', 'getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
-				'edit' => ['allocateToHost', 'allocateToHostgroup', 'getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId']
+				'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+				'add' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+				'edit' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId']
 			],
 			'Servicetemplates' => [
 				'add' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],

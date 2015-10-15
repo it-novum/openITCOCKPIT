@@ -65,7 +65,12 @@
 				);
 				echo $this->Form->input('Contact.name');
 				echo $this->Form->input('Contact.description');
-				echo $this->Form->input('Contact.email');
+				
+				$options = [];
+				if($isLdap === true):
+					$options['readonly'] = true;
+				endif;
+				echo $this->Form->input('Contact.email', $options);
 				echo $this->Form->input('Contact.phone');
 				?>
 			<br />

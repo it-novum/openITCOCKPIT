@@ -53,16 +53,15 @@ class ProxyController extends AppController {
 	}
 	
 	function getSettings(){
-		$proxy = $this->Proxy->find('all');
+		$proxy = $this->Proxy->find('first');
 		$settings = array('ipaddress' => '', 'port' => 0, 'enabled' => false);
-		if(isset($proxy[0]['Proxy']) && !empty($proxy[0]['proxy'])){
+		if(!empty($proxy)){
 			$settings = array(
-				'ipaddress' => $proxy[0]['Proxy']['ipaddress'],
-				'port' => $proxy[0]['Proxy']['port'],
-				'enabled' => $proxy[0]['Proxy']['enabled']
+				'ipaddress' => $proxy['Proxy']['ipaddress'],
+				'port' => $proxy['Proxy']['port'],
+				'enabled' => $proxy['Proxy']['enabled']
 			);
 		}
 		return $settings;
 	}
-	
 }

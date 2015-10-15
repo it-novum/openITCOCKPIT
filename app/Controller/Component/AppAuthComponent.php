@@ -115,9 +115,9 @@ class AppAuthComponent extends AuthComponent{
 		$this->authError = __('action_not_allowed');
 		$this->authorize = ['Controller'];
 		$this->loginRedirect = [
-			'plugin' => 'admin',
-			'controller' => 'dashboard',
-			'action' => 'index'
+			'controller' => 'dashboards',
+			'action' => 'index',
+			'plugin' => null
 		];
 		$this->logoutRedirect = [
 			'controller' => 'login',

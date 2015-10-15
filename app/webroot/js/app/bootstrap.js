@@ -73,11 +73,10 @@ $(document).ready(function(){
 	});
 	
 	jQuery.ajax({
-		url: "https://project.it-novum.com/s/d41d8cd98f00b204e9800998ecf8427e/de_DE-awd9nr-1988229788/6261/8/1.4.7/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?collectorId=aabdde90",
+		url: "https://project.it-novum.com/s/2527aba8089321056587b3d39dfb83e1-T/en_US-kerfqg/64026/9/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=c71ccc45",
 		type: "get",
 		cache: true,
 		dataType: "script"
 	});
 	
-
 });

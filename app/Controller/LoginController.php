@@ -126,7 +126,7 @@ class LoginController extends AppController {
 
 
 				if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'twofactor'){
-					$this->redirect('/login/onetimetoken/'.$_user['User']['id'].'/'.$this->data['User']['remember_me']);
+					$this->redirect('/login/onetimetoken/'.$this->Auth->user('id').'/'.$this->data['User']['remember_me']);
 
 					return;
 				}else{
@@ -181,7 +181,6 @@ class LoginController extends AppController {
 							'password'       => '',
 							'samaccountname' => '',
 							'sampassword'    => '',
-
 						]);
 					}
 
@@ -230,16 +229,18 @@ class LoginController extends AppController {
 		$user['User'] = $_user['User'];
 		$user['User']['onetimetoken'] = $onetimetoken;
 		if(isset($user['User']['id'])){
+			$this->User->id = $user['User']['id'];
 			// Avoid of saving a empty user (otherwise we would may be create a user and only the onetimetoken field is filled)
-			if($this->User->save($user)){
+			if($this->User->saveField('onetimetoken', $onetimetoken)){
 				$Email->send();
 				// Kick out the user, that he can not browser to /hosts/index for example, witout entering the one time token
 				$this->Session->write('_Auth', $this->Session->read('Auth'));
 				$this->Session->delete('Auth');
 			}
 			$this->set('user_id', $_user['User']['id']);
+		}else{
+			$this->setFlash('No user given or user not found', false);
 		}
-		$this->setFlash('No user given or user not found', false);
 	}
 
 	/**

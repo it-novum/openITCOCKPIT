@@ -108,6 +108,11 @@ class LdapComponent extends Component{
 		return false;
 	}
 	
+	public function findUser($username){
+		$result = $this->userInfo($username);
+		return $result;
+	}
+	
 	public function findAllUser(){
 		return $this->adldap->user()->all();
 	}

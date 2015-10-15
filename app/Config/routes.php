@@ -1,5 +1,5 @@
 <?php
-Router::connect('/', array('controller' => 'dashboard', 'action' => 'index', 'plugin' => 'admin'));
+Router::connect('/', array('controller' => 'dashboards', 'action' => 'index'));
 Router::connect('/widget/:plugin/:controller/:action/*', array('widget' => true));
 Router::connect('/widget/:controller/:action/*', array('widget' => true));
 

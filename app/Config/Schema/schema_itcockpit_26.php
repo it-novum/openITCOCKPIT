@@ -45,7 +45,8 @@ class AppSchema extends CakeSchema {
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'export' => array('column' => array('command_id', 'name', 'human_name'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -749,7 +750,9 @@ class AppSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
+			'uuid' => array('column' => 'uuid', 'unique' => 1),
+			'export' => array('column' => array('uuid', 'host_id', 'disabled'), 'unique' => 0),
+			'host_id' => array('column' => array('host_id', 'disabled'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -1301,7 +1304,7 @@ class AppSchema extends CakeSchema {
 		'position' => ['type' => 'integer', 'null' => false], //Position
 		'name' => ['type' => 'string', 'null' => false], // The name of the tab.
 		'shared' => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
-		'source_tab_id' => ['type' => 'integer', 'null' => false], // The name of the tab.
+		'source_tab_id' => ['type' => 'integer', 'null' => true], // The name of the tab.
 		'check_for_updates' => ['type' => 'integer', 'null' => true, 'default' => null],
 		'source_last_modified' => ['type' => 'datetime', 'null' => true, 'default' => null],
 		'created' => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -1328,9 +1331,7 @@ class AppSchema extends CakeSchema {
 	public $widget_service_status_lists = [
 		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
 		'widget_id' => ['type' => 'integer', 'null' => false],
-		'scroll_direction' => ['type' => 'string', 'null' => false],
-		'services_per_page' => ['type' => 'integer', 'null' => false],
-		'refresh_interval' => ['type' => 'integer', 'null' => false],
+		'animation' => ['type' => 'string', 'null' => false],
 		'animation_interval' => ['type' => 'integer', 'null' => false],
 		'show_ok' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
 		'show_warning' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
@@ -1347,25 +1348,13 @@ class AppSchema extends CakeSchema {
 	public $widget_host_status_lists = [
 		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
 		'widget_id' => ['type' => 'integer', 'null' => false],
-		'scroll_direction' => ['type' => 'string', 'null' => false],
-		'hosts_per_page' => ['type' => 'integer', 'null' => false],
-		'refresh_interval' => ['type' => 'integer', 'null' => false],
+		'animation' => ['type' => 'string', 'null' => false],
 		'animation_interval' => ['type' => 'integer', 'null' => false],
 		'show_up' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
 		'show_down' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
 		'show_unreachable' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
 		'show_acknowledged' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
 		'show_downtime' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-		'indexes' => [
-			'PRIMARY' => ['column' => 'id', 'unique' => 1],
-			'KEY' => ['column' => 'widget_id', 'unique' => 1],
-		],
-	];
-
-	public $widget_browsers = [
-		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-		'widget_id' => ['type' => 'integer', 'null' => false],
-		'url' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 			'KEY' => ['column' => 'widget_id', 'unique' => 1],

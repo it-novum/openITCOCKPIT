@@ -46,6 +46,10 @@
 						if($this->Acl->hasPermission('add')):
 							echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', array('class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus'));
 							echo " "; //Fix HTML
+							if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
+								echo $this->Html->link(__('Import from LDAP'), '/'.$this->params['controller'].'/addFromLdap', array('class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus'));
+								echo " "; //Fix HTML
+							endif;
 						endif;
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
