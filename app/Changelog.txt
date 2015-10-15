@@ -6,6 +6,7 @@
 <span class="label bg-color-green">New</span> LDAP contact import
 <span class="label bg-color-green">New</span> Improve SQL query performance
 <span class="label bg-color-green">New</span> Allocate service template groups to matching hostgroup
+<span class="label bg-color-red">Bugfix</span> Report an issue
 <span class="label bg-color-red">Bugfix</span> Generation of Host and Service dependency configuration
 <span class="label bg-color-red">Bugfix</span> LDAP user import
 <span class="label bg-color-red">Bugfix</span> Edit user profile

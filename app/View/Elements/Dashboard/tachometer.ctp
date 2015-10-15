@@ -91,14 +91,16 @@ endif;
 											'options' => [$widgetData['WidgetTacho']['data_source'] => $widgetData['WidgetTacho']['data_source']],
 											'class' => 'form-control tacho-ds',
 											'data-widget-id' => $widget['Widget']['id'],
-											'selected' => $widgetData['WidgetTacho']['data_source']
+											'selected' => $widgetData['WidgetTacho']['data_source'],
+											'form' => 'TachoForm-'.$widget['Widget']['id'],
 										]);
 									else:
 										echo $this->Form->input('ds', [
 											'label' => __('Datasource'),
 											'options' => [],
 											'class' => 'form-control tacho-ds',
-											'data-widget-id' => $widget['Widget']['id']
+											'data-widget-id' => $widget['Widget']['id'],
+											'form' => 'TachoForm-'.$widget['Widget']['id'],
 										]);
 									endif;
 									echo $this->Form->input('min', [
@@ -106,34 +108,46 @@ endif;
 										'class' => 'form-control tacho-min',
 										'data-field' => 'min',
 										'data-widget-id' => $widget['Widget']['id'],
-										'value' => $widgetData['WidgetTacho']['min']
+										'value' => $widgetData['WidgetTacho']['min'],
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									echo $this->Form->input('max', [
 										'label' => __('Maximum'),
 										'class' => 'form-control tacho-max',
 										'data-field' => 'max',
 										'data-widget-id' => $widget['Widget']['id'],
-										'value' => $widgetData['WidgetTacho']['max']
+										'value' => $widgetData['WidgetTacho']['max'],
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									echo $this->Form->input('warn', [
 										'label' => __('Warn %'),
 										'class' => 'form-control tacho-warn',
 										'data-field' => 'warn',
 										'data-widget-id' => $widget['Widget']['id'],
-										'value' => $widgetData['WidgetTacho']['warn']
+										'value' => $widgetData['WidgetTacho']['warn'],
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									echo $this->Form->input('crit', [
 										'label' => __('Crit %'),
 										'class' => 'form-control tacho-crit',
 										'data-field' => 'crit',
 										'data-widget-id' => $widget['Widget']['id'],
-										'value' => $widgetData['WidgetTacho']['crit']
+										'value' => $widgetData['WidgetTacho']['crit'],
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									?>
 								</div>
 								<?php
-								echo $this->Form->input('tabId', ['type' => 'hidden', 'value' => $widget['Widget']['dashboard_tab_id']]);
-								echo $this->Form->input('widgetId', ['type' => 'hidden', 'value' => $widget['Widget']['id']]);
+								echo $this->Form->input('tabId', [
+									'type' => 'hidden',
+									'value' => $widget['Widget']['dashboard_tab_id'],
+									'form' => 'TachoForm-'.$widget['Widget']['id'],
+								]);
+								echo $this->Form->input('widgetId', [
+									'type' => 'hidden',
+									'value' => $widget['Widget']['id'],
+									'form' => 'TachoForm-'.$widget['Widget']['id'],
+								]);
 								?>
 							</div>
 							<div class="col-xs-12">
@@ -146,7 +160,7 @@ endif;
 										'class' => [
 											'btn btn-primary'
 										],
-										'data-submit' => 'TachoForm-'.$widget['Widget']['id'],
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
 										'div' => false,
 										'value' => 1
 									]); ?>

@@ -46,7 +46,8 @@ class Tachometer extends Widget{
 				$query = [
 					'recursive' => -1,
 					'conditions' => [
-						'Service.id' => $widgetData['Widget']['service_id']
+						'Service.id' => $widgetData['Widget']['service_id'],
+						'HostsToContainers.container_id' => $this->Controller->MY_RIGHTS,
 					],
 					'contain' => [
 						'Servicetemplate' => [
@@ -65,10 +66,16 @@ class Tachometer extends Widget{
 					],
 					'joins' => [
 						[
+							'table' => 'hosts',
+							'type' => 'INNER',
+							'alias' => 'Host',
+							'conditions' => 'Service.host_id = Host.id'
+						],
+						[
 							'table' => 'nagios_objects',
 							'type' => 'INNER',
 							'alias' => 'ServiceObject',
-							'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+							'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
 						],
 						[
 							'table' => 'nagios_servicestatus',
@@ -76,7 +83,18 @@ class Tachometer extends Widget{
 							'alias' => 'Servicestatus',
 							'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
 						],
-					]
+						[
+							'table' => 'hosts_to_containers',
+							'alias' => 'HostsToContainers',
+							'type' => 'LEFT',
+							'conditions' => [
+								'HostsToContainers.host_id = Host.id',
+							]
+						]
+					],
+					'group' => [
+						'Service.id'
+					],
 				];
 		
 				$service = $this->Controller->Service->find('first', $query);

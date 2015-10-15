@@ -923,8 +923,8 @@ class DashboardsController extends AppController{
 			];
 			foreach($requiredKeys as $key){
 				if(!isset($tachoConfig[$key]) || $tachoConfig[$key] == ''){
-					//Missing parameter
-					return;
+					$this->setFlash(__('One or more parameters are missing'), false);
+					return $this->redirect(['action' => 'index']);
 				}
 			}
 			
@@ -938,8 +938,8 @@ class DashboardsController extends AppController{
 				],
 			]);
 			if(empty($tab) && !$this->Widget->exists($tachoConfig['widgetId'])){
-				//Tab not found
-				return;
+				$this->setFlash(__('Given tab not found in database'), false);
+				return $this->redirect(['action' => 'index']);
 			}
 			
 			$data = [
