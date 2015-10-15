@@ -52,7 +52,8 @@ class MapeditorsController extends MapModuleAppController {
 		'Service',
 		'Servicegroup',
 		'MapModule.Background',
-		'MapModule.Map',MONITORING_OBJECTS,
+		'MapModule.Map',
+		MONITORING_OBJECTS,
 		MONITORING_HOSTSTATUS,
 	];
 	public $helpers = [
@@ -105,9 +106,17 @@ class MapeditorsController extends MapModuleAppController {
 			$this->Mapicon->deleteAll(['Mapicon.map_id' => $map['Map']['id']]);
 			$this->Maptext->deleteAll(['Maptext.map_id' => $map['Map']['id']]);
 			if($this->Map->saveAll($request)){
+				if($this->request->ext === 'json'){
+					$this->serializeId();
+					return;
+				}
 				$this->setFlash(__('Map modified successfully'));
 				$this->redirect(['plugin' => 'map_module', 'controller' => 'maps', 'action' => 'index']);
 			}else{
+				if($this->request->ext === 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}
 				$this->setFlash(__('Data could not be saved'), false);
 			}
 		}

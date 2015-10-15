@@ -24,7 +24,9 @@
 //	confirmation.
 
 App::uses('Folder', 'Utility');
+App::uses('HttpSocket', 'Network/Http');
 App::import('Controller', 'MapModule.BackgroundUploads');
+App::import('Controller', 'MapModule.Maps');
 App::import('Model', 'Host');
 App::import('Model', 'Service');
 App::import('Model', 'Hostgroup');
@@ -40,6 +42,7 @@ class NagvisMigrationShell extends AppShell {
 	private $servicegroup;
 	private $map;
 	private $lastError;
+	private $HttpSocket;
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
@@ -118,6 +121,25 @@ class NagvisMigrationShell extends AppShell {
 		$this->hostgroup = new Hostgroup();
 		$this->servicegroup = new Servicegroup();
 		$this->map = new Map();
+		$this->HttpSocket = new HttpSocket([
+			'ssl_verify_peer' => false
+		]);
+
+		$loginUrl = 'https://172.16.13.45/login/login.json';
+		$loginData = array(
+			'LoginUser' => array(
+				'email' => 'admin@it-novum.com',
+				'password' => 'asdf12',
+			)
+		);
+		$httpResponse = $this->HttpSocket->post($loginUrl, $loginData);
+		if(!$httpResponse->isOk()){
+			debug($httpResponse->raw);
+			die('ende');
+		}
+
+
+		debug($httpResponse->raw);
 
 		if($configFilesReceived){
 			$this->startFiletransform($configFileList, $cfgDownloadDir);
@@ -285,8 +307,9 @@ class NagvisMigrationShell extends AppShell {
 				$this->out('<error> ...Transform Failed!</error>');
 			}else{
 				$mapname = preg_replace('/(\..*)/', '', $file);
-				if($data = $this->saveConfigToDB($mapname, $fileData)){
-					//debug($data);
+				if($data = $this->transformDataForV3($mapname, $fileData)){
+//debug($data);					
+					$this->saveNewData($data);
 					$this->out('<success> ...Complete!</success>');
 				}else{
 					$this->out('<error> ...Save to Database Failed!</error>');
@@ -297,7 +320,33 @@ class NagvisMigrationShell extends AppShell {
 		$this->out('<info>File Transformation Complete!</info>');
 	}
 
-	protected function saveConfigToDB($mapname, $data){
+	protected function saveNewData($data){
+		$mapId = $data['Map']['id'];
+		try{
+			$request = [
+				'header' => ['Content-Type' => 'application/json'],
+			];
+			$response = $this->HttpSocket->post('https://172.16.13.45/map_module/maps/edit/'.$mapId, json_encode($data), $request);
+		//	debug($response->body());
+			if($response->isOk()){
+				//debug($response);
+				//$this->out($response);
+			}else{
+				throw new Exception($response->raw);
+			}
+		}catch(Exception $e){
+			$this->error($e->getMessage());
+		}
+	}
+
+	/**
+	 * transform the config file content into the new form for v3 
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $mapname name of the Map 
+	 * @param  Array $data    config file array content
+	 * @return the new datastructure for v3
+	 */
+	protected function transformDataForV3($mapname, $data){
 		$mapData = [];
 		foreach ($data as $key => $items) {
 			foreach ($items as $item) {
@@ -308,16 +357,24 @@ class NagvisMigrationShell extends AppShell {
 						$mapId = $this->map->find('first',[
 							'recursive' => -1,
 							'conditions' => [
-								'name' => $mapname,
+								'Map.name' => $mapname,
 							],
 							'fields' => [
-								'id',
-								'name',
-								'title',
+								'Map.id',
+								'Map.name',
+								'Map.title',
 							],
+							'contain' => [
+								'Container' => [
+									'fields' => [
+										'Container.id'
+									]
+								]
+							]
 						]);
+					//	debug($mapId);
+					//	die();
 						//$item['iconset'] -> this is the default iconset when there is an icon without view_type and iconset defined
-						//debug($mapId);
 						$currentData = [
 							'id' => $mapId['Map']['id'],
 							'name' => $mapname, // neccesary for assigning the background image correctly
@@ -325,6 +382,30 @@ class NagvisMigrationShell extends AppShell {
 							'background' => $item['map_image']
 						];
 						$mapData['Map'] = $currentData;
+						/*'Map' => array(
+							'id' => '50',
+							'name' => 'SAP_End2End_detail',
+							'title' => 'SAP-End2End-detail'
+						),
+						'Container' => array(
+							(int) 0 => array(
+								'id' => '2',
+								'containertype_id' => '2',
+								'name' => 'it-novum',
+								'parent_id' => '1',
+								'lft' => '2',
+								'rght' => '103',
+								'MapsToContainer' => array(
+									'id' => '50',
+									'container_id' => '2',
+									'map_id' => '50'
+								)
+							)
+						)
+					)
+*/
+						$mapData['Map']['container_id'] = Hash::extract($mapId, 'Container.{n}.id');
+						debug($mapData);
 						break;
 					case 'host':
 						$hostId = $this->resolveHostname($item['host_name']);
@@ -407,7 +488,6 @@ class NagvisMigrationShell extends AppShell {
 						$this->out('<error>the type '.$key.' is not specified!</error>');
 						break;
 				}
-				//debug($currentData);
 			}
 		}
 		return $mapData;
