@@ -1312,11 +1312,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	margin-bottom: -10px;
 }
 
-.DashboardMainHeader{
-	display:table;
-	width:100%;
-}
-
 .tabTargetDestination{
 	border: 1px solid #EEE;
 	width:5em;
