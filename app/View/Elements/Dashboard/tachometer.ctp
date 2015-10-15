@@ -24,6 +24,12 @@
 //	confirmation.
 
 $widgetData = $widgetTachometers[$widget['Widget']['id']];
+
+$widgetTachoId = null;
+if(isset($widgetData['WidgetTacho']['id']) && $widgetData['WidgetTacho']['id'] !== null && is_numeric($widgetData['WidgetTacho']['id'])):
+	$widgetTachoId = $widgetData['WidgetTacho']['id'];
+endif;
+
 $serviceId = null;
 if(!empty($widgetData['Service'])):
 	$serviceId = $widgetData['Service']['Service']['id'];
@@ -148,6 +154,13 @@ endif;
 									'value' => $widget['Widget']['id'],
 									'form' => 'TachoForm-'.$widget['Widget']['id'],
 								]);
+								if($widgetTachoId !== null):
+									echo $this->Form->input('widgetTachoId', [
+										'type' => 'hidden',
+										'value' => $widgetTachoId,
+										'form' => 'TachoForm-'.$widget['Widget']['id'],
+									]);
+								endif;
 								?>
 							</div>
 							<div class="col-xs-12">

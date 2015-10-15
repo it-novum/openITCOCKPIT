@@ -911,6 +911,10 @@ class DashboardsController extends AppController{
 	public function saveTachoConfig(){
 		if($this->request->is('post') || $this->request->is('put')){
 			$tachoConfig = $this->request->data['dashboard'];
+			$widgetTachoId = null;
+			if(isset($tachoConfig['widgetTachoId'])){
+				$widgetTachoId = $tachoConfig['widgetTachoId'];
+			}
 			$requiredKeys = [
 				'ds',
 				'min',
@@ -952,6 +956,9 @@ class DashboardsController extends AppController{
 					'data_source' => $tachoConfig['ds'],
 				]
 			];
+			if($widgetTachoId !== null){
+				$data['WidgetTacho']['id'] = $widgetTachoId;
+			}
 			if($this->WidgetTacho->save($data)){
 				$this->Widget->id = $data['WidgetTacho']['widget_id'];
 				$this->Widget->saveField('service_id', $tachoConfig['serviceId']);
