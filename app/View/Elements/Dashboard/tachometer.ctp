@@ -39,7 +39,7 @@ if(!empty($widgetData['Service'])):
 	endif;
 endif;
 ?>
-<div class="widget-body tacho-body">
+<div class="widget-body tacho-body" style="padding:0;">
 	<div style="display:none;" class="tachoPreviewContainer">
 		<div class="pull-right padding-right-20"><a href="javascript:void(0);" class="btn btn-danger close-preview" data-widget-id="<?php echo $widget['Widget']['id']; ?>"><?php echo __('Close'); ?></a></div>
 		<div class="tachometerContainer" data-service-id="<?php echo $serviceId; ?>">
@@ -200,7 +200,7 @@ endif;
 				</h4>
 			</div>
 			<div id="collapseTwo-1-<?php echo $widget['Widget']['id'];?>" class="panel-collapse collapse <?php echo ($serviceId === null)?'':'in'; ?>" aria-expanded="false">
-				<div class="panel-body">
+				<div class="panel-body" style="padding:0;">
 					<?php if($serviceId === null): ?>
 						<?php echo __('No service selected or selected service has been deleted');?>
 					<?php else: ?>

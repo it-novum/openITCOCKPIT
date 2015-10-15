@@ -170,7 +170,12 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 	
 	calculateHeight: function(widgetId){
 		var height = this.tachos[widgetId].widgetContainer.innerHeight();
-		return parseInt((height - 40 - 40 - 35 - 15 - 35), 10);
+		var width = this.tachos[widgetId].widgetContainer.innerWidth();
+		
+		//if((height + 40 + 40 + 35) > width){
+		//	return width;
+		//}
+		return parseInt((height - 40 - 40 - 35 - 10), 10);
 	},
 	
 	resizeTacho: function(widgetId){
