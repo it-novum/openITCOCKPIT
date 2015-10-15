@@ -42,6 +42,52 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 		 */
 		$('#exportAll').prop( "disabled", false);
 
+		
+
+		var exportRecords = {
+			129: {
+				task: 'export_started',
+				text: 'Export started',
+				finished: 0
+			},
+			132: {
+				task: 'export_create_default_config',
+				text: "Create default configuration",
+				finished: 1
+			}
+		};
+
+		
+		$('#launchExport').click(function(){
+			$.ajax({
+				url: '/exports/launchExport',
+				type: "GET",
+				success: function(data) {
+					console.log(data);
+				},
+				complete: function() {
+				}
+			});
+			
+			//Update export status
+			var worker = function(){
+				$.ajax({
+					url: '/exports/broadcast.json',
+					type: "GET",
+					success: function(response){
+						console.log(response);
+					},
+					complete: function() {
+						// Schedule the next request when the current one's complete
+						setTimeout(worker, 5000);
+					}
+				});
+			};
+			worker();
+		});
+		
+		
+
 		/*
 		 * Bind click events
 		 */

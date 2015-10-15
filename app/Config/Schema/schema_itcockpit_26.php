@@ -348,9 +348,11 @@ class AppSchema extends CakeSchema {
 
 	public $exports = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'object_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'objecttype_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'action' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'task' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'text' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'finished' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),

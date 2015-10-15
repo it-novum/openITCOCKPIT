@@ -30,6 +30,6 @@ $config = [
 		'encryption' => true,
 		'password' => '3c3b0be215c95321c30de1ab908364dfbf0ed440',
 		'pidfile' => '/var/run/oitc_gearmanworker.pid',
-		'worker' => 2
+		'worker' => 5
 	]
 ];

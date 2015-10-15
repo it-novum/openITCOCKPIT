@@ -98,3 +98,5 @@
 		</article>
 	</div>
 </section>
+
+<a href="javascript:void(0);" id="launchExport" class="btn btn-danger">EXPORT</a>

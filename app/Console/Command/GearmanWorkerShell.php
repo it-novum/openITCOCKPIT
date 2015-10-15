@@ -26,6 +26,7 @@
 class GearmanWorkerShell extends AppShell{
 	
 	public $uses = ['Systemsetting', MONITORING_EXTERNALCOMMAND];
+	public $tasks = ['NagiosExport', 'DefaultNagiosConfig'];
 	
 	public function main(){
 		$this->stdout->styles('red', ['text' => 'red']);
@@ -290,6 +291,84 @@ class GearmanWorkerShell extends AppShell{
 			case 'cmd_external_command':
 				$this->Externalcommand->runCmdCommand($payload);
 				break;
+				
+			case 'export_start_export':
+				$this->NagiosExport->init();
+				$return = ['task' => $payload['task']];
+				break;
+			
+			case 'export_delete_old_configuration':
+				$this->NagiosExport->deleteAllConfigfiles();
+				$return = ['task' => $payload['task']];
+				break;
+				
+			case 'export_create_default_config':
+				$this->DefaultNagiosConfig->execute();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_hosttemplates':
+				$this->NagiosExport->exportHosttemplates();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_hosts':
+				$this->NagiosExport->exportHosts();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_commands':
+				$this->NagiosExport->exportCommands();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_contacts':
+				$this->NagiosExport->exportContacts();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_contactgroups':
+				$this->NagiosExport->exportContactgroups();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_timeperiods':
+				$this->NagiosExport->exportTimeperiods();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_hostgroups':
+				$this->NagiosExport->exportHostgroups();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_hostescalations':
+				$this->NagiosExport->exportHostescalations();
+				$return = ['task' => $payload['task']];
+				break;
+				$this->NagiosExport->exportMacros();
+				$return = ['task' => $payload['task']];
+			case 'export_servicetemplates':
+				$this->NagiosExport->exportServicetemplates();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_services':
+				$this->NagiosExport->exportServices();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_serviceescalations':
+				$this->NagiosExport->exportServiceescalations();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_servicegroups':
+				$this->NagiosExport->exportServicegroups();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_hostdependencies':
+				$this->NagiosExport->exportHostdependencies();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_servicedependencies':
+				$this->NagiosExport->exportServicedependencies();
+				$return = ['task' => $payload['task']];
+				break;
+			case 'export_userdefinedmacros':
+				$this->NagiosExport->exportMacros();
+				$return = ['task' => $payload['task']];
+				break;
+				
 		}
 		
 		return serialize($return);
