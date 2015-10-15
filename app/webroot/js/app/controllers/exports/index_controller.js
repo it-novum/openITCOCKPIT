@@ -29,6 +29,9 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 	$progressbarBar: null,
 	$progressbarContainer: null,
 	$log: null,
+	
+	$exportLog: null,
+	
 	/**
 	 * @constructor
 	 * @return {void} 
@@ -40,34 +43,12 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 		/*
 		 * Fix for ugly FireFox behavior :(
 		 */
-		$('#exportAll').prop( "disabled", false);
+		$('#launchExport').prop( "disabled", false);
 
-		
 
-		var exportRecords = {
-			129: {
-				task: 'export_started',
-				text: 'Export started',
-				finished: 0
-			},
-			132: {
-				task: 'export_create_default_config',
-				text: "Create default configuration",
-				finished: 1
-			}
-		};
-
-		
 		$('#launchExport').click(function(){
-			$.ajax({
-				url: '/exports/launchExport',
-				type: "GET",
-				success: function(data) {
-					console.log(data);
-				},
-				complete: function() {
-				}
-			});
+			$('#exportInfo').show();
+			$('#launchExport').prop( "disabled", true);
 			
 			//Update export status
 			var worker = function(){
@@ -75,82 +56,52 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 					url: '/exports/broadcast.json',
 					type: "GET",
 					success: function(response){
-						console.log(response);
+						//console.log(response);
+						var $exportLog = $('#exportLog');
+						for(var key in response.exportRecords){
+							var $exportLogEntry = $exportLog.children('#'+key);
+							//console.log($exportLogEntry.length);
+							if($exportLogEntry.length == 0){
+								//Record does not exists, we need to create it
+								if(response.exportRecords[key].finished == 0){
+									var html = '<div id="'+key+'" data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span></div>';
+								}else{
+									var html = '<div id="'+key+'" data-finished="1"><i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span></div>';
+								}
+								$exportLog.append(html);
+							}else{
+								//Record exists, lets update it
+								if(response.exportRecords[key].finished == 0){
+									//If we overwrite existing records, the spin animation will flapp
+									if($exportLogEntry.data('finished') != 0){
+										var html = '<i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span>';
+										$exportLogEntry.html(html);
+									}
+								}else{
+									if($exportLogEntry.data('finished') != 1){
+										var html = '<i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span>';
+										$exportLogEntry.html(html);
+									}
+								}
+							}
+						}
 					},
 					complete: function() {
 						// Schedule the next request when the current one's complete
-						setTimeout(worker, 5000);
+						setTimeout(worker, 1000);
 					}
 				});
 			};
-			worker();
-		});
-		
-		
-
-		/*
-		 * Bind click events
-		 */
-		$('#exportAll').click(function(){
-			this.WebsocketSudo.send(this.WebsocketSudo.toJson('runCompleteExport', [$('#CreateBackup').prop('checked')]));
-			$('#exportAll').prop( "disabled", true);
-			this.$progressbar.show();
-			this.$log.show();
-		}.bind(this));
-		
-		
-		this.$textarea =  $('.form-control textarea');
-		this.$progressbar = $('#exportProgressbar');
-		this.fetchProgressbar();
-		this.$log = $('#logoutput');
-
-		this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
-		
-		this.WebsocketSudo._errorCallback = function(){
-			$('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
-		}
-		
-		this.WebsocketSudo.connect();
-		this.WebsocketSudo._success = function(e){
-			return true;
-		}.bind(this)
-		
-		this.WebsocketSudo._callback = function(transmitted){
-			if(transmitted.category == 'notification'){
-				this.$progressbarText.html(transmitted.payload);
-				
-				//Replace uuids
-				var RegExObject = new RegExp('('+this.getVar('uuidRegEx')+')', 'g');
-				transmitted.payload = transmitted.payload.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
-				if(transmitted.payload.match('Warning')){
-					this.$log.append('<div class="txt-color-orangeDark">'+transmitted.payload+'</div>');
-				}else if(transmitted.payload.match('Error')){
-					this.$log.append('<div class="txt-color-red">'+transmitted.payload+'</div>');
-				}else{
-					this.$log.append('<div>'+transmitted.payload+'</div>');
+			
+			$.ajax({
+				url: '/exports/launchExport',
+				type: "GET",
+				success: function(data) {
+					worker();
+				},
+				complete: function() {
 				}
-			}
-			
-			return true;
-		}.bind(this);
-		
-		this.WebsocketSudo._event = function(transmitted){
-			if(transmitted.category == 'done'){
-				this.$progressbarBar.removeClass('bg-color-purple');
-				this.$progressbarBar.addClass('bg-color-green');
-				this.$progressbarText.html(transmitted.payload);
-				this.$log.append('<div class="txt-color-green">'+transmitted.payload+'</div>');
-				this.$progressbar.removeClass('progress-striped');
-				this.$progressbar.removeClass('active');
-			}
-			return true;
-			
-		}.bind(this);
-	},
-	
-	fetchProgressbar: function(){
-		this.$progressbarBar = $(this.$progressbar.find('div')[1]);
-		this.$progressbarText = $(this.$progressbar.find('div')[2]);
+			});
+		});
 	}
-	
 });

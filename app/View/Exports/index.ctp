@@ -35,7 +35,13 @@
 		</h1>
 	</div>
 </div>
-<div id="error_msg"></div>
+<?php if(!$gearmanReachable): ?>
+	<div id="error_msg">
+		<div class="alert alert-danger alert-block">
+			<a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Error'); ?></h5><?php echo __('Could not connect to Gearman Job Server'); ?>
+		</div>
+	</div>
+<?php endif; ?>
 <section id="widget-grid" class="">
 	<div class="row">
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -69,34 +75,36 @@
 									</div>
 								</div>
 							</div>
-							<br />
-							<br />
-							<div class="progress progress-striped active" id="exportProgressbar" style="display:none;">
-								<?php echo $this->Html->progressbar(100, [
-									'useThresholds' => false,
-									'bgColor' => 'bg-color-purple',
-									'caption' => __('In progress'),
-									'color' => '#FFF'
-								]); ?>
-							</div>
-							<div id="logoutput" class="padding-left-20" style="display:none;">
-								<h4><?php echo __('Additional information'); ?>:</h4>
-								<br />
-							</div>
-							<br />
-							<br />
-							<div class="well formactions ">
-								<div class="pull-right">
-									<input type="submit" id="exportAll" value="<?php echo __('Refresh configuration'); ?>" class="btn btn-success">
-									&nbsp;
-									<a class="btn btn-default" href="/services"><?php echo __('Cancel'); ?></a>
+
+							<div class="row">
+								<div id="exportInfo" style="display:none;">
+									<div class="col-xs-12">
+										<div>
+											<h4><?php echo __('Additional information'); ?>:</h4>
+										</div>
+									</div>
+									<div class="col-xs-12">
+										<div class="well" id="exportLog"></div>
+									</div>
+								</div>
+								
+								
+								<div class="col-xs-12 padding-top-20">
+									<div class="well formactions ">
+										<div class="pull-right">
+											<?php if($gearmanReachable): ?>
+												<a href="javascript:void(0);" id="launchExport" class="btn btn-success"><?php echo __('Refresh configuration'); ?></a>
+											<?php else: ?>
+												<a href="javascript:void(0);" class="btn btn-danger"><?php echo __('Connection error'); ?></a>
+											<?php endif; ?>
+										</div>
+									</div>
 								</div>
 							</div>
+							
 					</div>
 				</div>
 			</div>
 		</article>
 	</div>
 </section>
-
-<a href="javascript:void(0);" id="launchExport" class="btn btn-danger">EXPORT</a>

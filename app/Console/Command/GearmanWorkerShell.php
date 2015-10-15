@@ -25,8 +25,15 @@
 
 class GearmanWorkerShell extends AppShell{
 	
-	public $uses = ['Systemsetting', MONITORING_EXTERNALCOMMAND];
-	public $tasks = ['NagiosExport', 'DefaultNagiosConfig'];
+	public $uses = [
+		'Systemsetting',
+		MONITORING_EXTERNALCOMMAND,
+		'Export'
+	];
+	public $tasks = [
+		'NagiosExport',
+		'DefaultNagiosConfig'
+	];
 	
 	public function main(){
 		$this->stdout->styles('red', ['text' => 'red']);
@@ -85,7 +92,7 @@ class GearmanWorkerShell extends AppShell{
 	public function getOptionParser(){
 		$parser = parent::getOptionParser();
 		$parser->addOptions([
-			'daemon' => ['short' => 'd', 'help' => __d('oitc_console', 'Starts GearmanWorker in daemon mode, instead of as a forground process')],
+			'daemon' => ['short' => 'd', 'help' => __d('oitc_console', 'Starts GearmanWorker in forground mode and fork worker processes')],
 			'start' => ['help' => __d('oitc_console', 'Start GearmanWorker in daemon mode and and fork the process in the background the daemon')],
 			'stop' => ['short' => 'k', 'help' => __d('oitc_console', 'Stops the daemon')],
 			'restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
@@ -293,12 +300,13 @@ class GearmanWorkerShell extends AppShell{
 				break;
 				
 			case 'export_start_export':
-				$this->NagiosExport->init();
-				$return = ['task' => $payload['task']];
+				//Start the export over a gearman worker to avoid max_execution_time issues
+				$this->launchExport();
 				break;
 			
 			case 'export_delete_old_configuration':
 				$this->NagiosExport->deleteAllConfigfiles();
+				sleep(5);
 				$return = ['task' => $payload['task']];
 				break;
 				
@@ -307,6 +315,7 @@ class GearmanWorkerShell extends AppShell{
 				$return = ['task' => $payload['task']];
 				break;
 			case 'export_hosttemplates':
+				sleep(10);
 				$this->NagiosExport->exportHosttemplates();
 				$return = ['task' => $payload['task']];
 				break;
@@ -372,6 +381,135 @@ class GearmanWorkerShell extends AppShell{
 		}
 		
 		return serialize($return);
+	}
+	
+	public function launchExport(){
+		//We do the export in on of our workers, to avoid max_execution_time errors
+		$this->NagiosExport->init();
+		$this->Export->deleteAll(true);
+		$this->Export->create();
+		$data = [
+			'Export' => [
+				'task' => 'export_started',
+				'text' => __('Export started')
+			]
+		];
+		$this->Export->save($data);
+		
+		$gearmanClient = new GearmanClient();
+		$gearmanClient->addServer($this->Config['address'], $this->Config['port']);
+		//This callback gets called, for any finished export task (like hosttemplates, services etc...)
+		$gearmanClient->setCompleteCallback([$this, 'exportCallback']);
+		
+		//Delete old configuration
+		//Delete old configuration
+		$this->Export->create();
+		$data = [
+			'Export' => [
+				'task' => 'export_delete_old_configuration',
+				'text' => __('Delete old configuration')
+			]
+		];
+		$response = $this->Export->save($data);
+		$gearmanClient->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
+		$this->Export->saveField('finished', 1);
+		
+		$this->Export->create();
+		$data = [
+			'Export' => [
+				'task' => 'before_export_external_tasks',
+				'text' => __('Run pre export tasks')
+			]
+		];
+		$response = $this->Export->save($data);
+		$this->NagiosExport->beforeExportExternalTasks();
+		$this->Export->saveField('finished', 1);
+		
+		//Define all tasks, we can do parallel
+		$tasks = [
+			'export_create_default_config' => [
+				'text' => __('Create default configuration'),
+			],
+			'export_hosttemplates' => [
+				'text' => __('Create hosttemplate configuration'),
+			],
+			'export_hosts' => [
+				'text' => __('Create host configuration'),
+			],
+			'export_commands' => [
+				'text' => __('Create command configuration'),
+			],
+			'export_contacts' => [
+				'text' => __('Create contact configuration'),
+			],
+			'export_contactgroups' => [
+				'text' => __('Create contact group configuration'),
+			],
+			'export_timeperiods' => [
+				'text' => __('Create timeperiod configuration'),
+			],
+			'export_hostgroups' => [
+				'text' => __('Create host group configuration'),
+			],
+			'export_hostescalations' => [
+				'text' => __('Create host escalation configuration'),
+			],
+			'export_servicetemplates' => [
+				'text' => __('Create servicetemplate configuration'),
+			],
+			'export_services' => [
+				'text' => __('Create service configuration'),
+			],
+			'export_serviceescalations' => [
+				'text' => __('Create service escalation configuration'),
+			],
+			'export_servicegroups' => [
+				'text' => __('Create service group configuration'),
+			],
+			'export_hostdependencies' => [
+				'text' => __('Create host dependency configuration'),
+			],
+			'export_servicedependencies' => [
+				'text' => __('Create service dependency configuration'),
+			],
+			'export_userdefinedmacros' => [
+				'text' => __('Export user defined macros'),
+			],
+		];
+			
+		foreach($tasks as $taskName => $task){
+			$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+			$this->Export->create();
+			$data = [
+				'Export' => [
+					'task' => $taskName,
+					'text' => $task['text']
+				]
+			];
+			$this->Export->save($data);
+		}
+		$gearmanClient->runTasks();
+		
+		//Export done
+		$this->Export->create();
+		$data = [
+			'Export' => [
+				'task' => 'after_export_external_tasks',
+				'text' => __('Run post export tasks')
+			]
+		];
+		$response = $this->Export->save($data);
+		$this->NagiosExport->afterExportExternalTasks();
+		$this->Export->saveField('finished', 1);
+	}
+	
+	public function exportCallback($task){
+		$result = unserialize($task->data());
+		$exportRecord = $this->Export->findByTask($result['task']);
+		if(!empty($exportRecord)){
+			$exportRecord['Export']['finished'] = 1;
+			$this->Export->save($exportRecord);
+		}
 	}
 	
 	/**

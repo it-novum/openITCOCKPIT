@@ -49,18 +49,12 @@ class ExportsController extends AppController{
 		App::uses('UUID', 'Lib');
 		Configure::load('gearman');
 		$this->Config = Configure::read('gearman');
-	
-		if($this->request->is('post') || $this->request->is('put')){
-			debug($this->request->data);
-			$this->Session->write('export', null);
-			$this->Session->write('export.export_started', true);
-			
-			$this->GearmanClient->client->setCompleteCallback([$this, 'complete']);
-			$this->GearmanClient->client->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export', 'playload' => 'hello world']), $this->Config['password']));
-			$this->GearmanClient->client->runTasks();
-		}
+		
+		$this->GearmanClient->client->setTimeout(5000);
+		$gearmanReachable = @$this->GearmanClient->client->ping(true);
 		
 		$this->loadModel('Systemsetting');
+		$this->set('gearmanReachable', $gearmanReachable);
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
@@ -87,10 +81,16 @@ class ExportsController extends AppController{
 	public function launchExport(){
 		$this->allowOnlyAjaxRequests();
 		session_write_close();
+		
+		//Remove old records from DB that javascript is not confused
+		$this->Export->deleteAll(true);
+		
 		Configure::load('gearman');
 		$this->Config = Configure::read('gearman');
-		
 		$this->autoRender = false;
+		$this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export']), $this->Config['password']));
+		return;
+		
 		$this->Export->deleteAll(true);
 		$this->Export->create();
 		$data = [
