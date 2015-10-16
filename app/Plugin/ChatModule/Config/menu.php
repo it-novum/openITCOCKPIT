@@ -23,13 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = array(
-	'menu' => array(
-		'chat' => array(
-			'url' => array('plugin' => 'chat_module', 'controller' => 'chat', 'action' => 'index'),
-			'title' => 'Communication',
-			'icon' => 'users',
-			'order' => 8
-		)
-	)
-);
+//$config = array(
+//	'menu' => array(
+//		'chat' => array(
+//			'url' => array('plugin' => 'chat_module', 'controller' => 'chat', 'action' => 'index'),
+//			'title' => 'Communication',
+//			'icon' => 'users',
+//			'order' => 8
+//		)
+//	)
+//);
+
+$config = [];

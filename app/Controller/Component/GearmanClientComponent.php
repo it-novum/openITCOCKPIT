@@ -25,6 +25,8 @@
 
 class GearmanClientComponent extends Component{
 	
+	public $client = null;
+	
 	public function initialize(Controller $controller) {
 		$this->Controller = $controller;
 		Configure::load('gearman');

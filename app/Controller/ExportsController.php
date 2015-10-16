@@ -31,19 +31,97 @@ class ExportsController extends AppController{
 		'ListFilter.ListFilter',
 		'RequestHandler',
 		'AdditionalLinks',
+		'GearmanClient',
 	];
 	public $helpers = [
 		'ListFilter.ListFilter',
 	];
 	
+	public function beforeFilter(){
+		//Dashboard is allays allowed
+		if($this->Auth->loggedIn() === true){
+			$this->Auth->allow();
+		}
+		parent::beforeFilter();
+	}
+	
 	public function index(){
 		App::uses('UUID', 'Lib');
+		Configure::load('gearman');
+		$this->Config = Configure::read('gearman');
+		
+		$this->GearmanClient->client->setTimeout(5000);
+		$gearmanReachable = @$this->GearmanClient->client->ping(true);
+		
+		$exportRunning = true;
+		$result = $this->Export->findByTask('export_started');
+		if(empty($result)){
+			$exportRunning = false;
+		}else{
+			if($result['Export']['finished'] == 1){
+				$exportRunning = false;
+			}
+		}
 		
 		$this->loadModel('Systemsetting');
-		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+		$this->set('gearmanReachable', $gearmanReachable);
+		$this->set('exportRunning', $exportRunning);
+		$this->Frontend->setJson('exportRunning', $exportRunning);
 		$this->Frontend->setJson('uuidRegEx', UUID::JSregex());
 	}
 	
+	public function broadcast(){
+		$this->allowOnlyAjaxRequests();
+		$_exportRecords = $this->Export->find('all');
+		
+		$exportRecords = [];
+		
+		$exportFinished = [
+			'finished' => false,
+			'successfully' => false
+		];
+		
+		foreach($_exportRecords as $exportRecord){
+			$exportRecords[$exportRecord['Export']['id']] = [
+				'task' => $exportRecord['Export']['task'],
+				'text' => $exportRecord['Export']['text'],
+				'finished' => $exportRecord['Export']['finished'],
+				'successfully' => $exportRecord['Export']['successfully'],
+			];
+			
+			if($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1){
+				$exportFinished = [
+					'finished' => true,
+					'successfully' => (bool)$exportRecord['Export']['successfully']
+				];
+			}
+		}
+		
+		$this->set(compact(['exportRecords', 'exportFinished']));
+		$this->set('_serialize', ['exportRecords', 'exportFinished']);
+	}
+	
+	public function launchExport($createBackup = 1){
+		$this->allowOnlyAjaxRequests();
+		session_write_close();
+		
+		//Remove old records from DB that javascript is not confused
+		$this->Export->deleteAll(true);
+		
+		Configure::load('gearman');
+		$this->Config = Configure::read('gearman');
+		$this->autoRender = false;
+		$this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
+		return;
+	}
+	
+	public function verifyConfig(){
+		//$this->allowOnlyAjaxRequests();
+		Configure::load('gearman');
+		$this->Config = Configure::read('gearman');
+		$result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
+		$result = unserialize($result);
+		$this->set('result', $result);
+		$this->set('_serialize', ['result']);
+	}
 }

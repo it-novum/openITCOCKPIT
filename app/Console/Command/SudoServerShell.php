@@ -37,7 +37,7 @@ class SudoServerShell extends AppShell {
 	
 	public $uses = [MONITORING_EXTERNALCOMMAND, MONITORING_NAGIOSTAT, 'Systemsetting'];
 	//public $tasks = ['NagiosExport'];
-	public $tasks = ['SudoWorker'];
+	//public $tasks = ['SudoWorker'];
 	
 	public function main(){
 		Configure::load('nagios');
@@ -165,14 +165,14 @@ class SudoServerShell extends AppShell {
 			unlink($this->pidFile);
 		}
 		
-		$this->sudoWorkerSocket = $this->createSocket();
-		$this->stdout->styles('red', ['text' => 'red']);
-		$this->out('<red>Tell my worker child to kill itself</red>');
-		$this->sendToWorkerSocket([
-			'task'  => 'exit',
-			'payload'  => 'exit',
-			'requestor'  => 'exit'
-		]);
+		//$this->sudoWorkerSocket = $this->createSocket();
+		//$this->stdout->styles('red', ['text' => 'red']);
+		//$this->out('<red>Tell my worker child to kill itself</red>');
+		//$this->sendToWorkerSocket([
+		//	'task'  => 'exit',
+		//	'payload'  => 'exit',
+		//	'requestor'  => 'exit'
+		//]);
 		
 		$this->stdout->styles('green', ['text' => 'green']);
 		$this->out('<green>SudoServer terminated, astalavista baby...</green>');
@@ -220,22 +220,22 @@ class SudoServerShell extends AppShell {
 		
 		
 		//Child handling
-		$this->stdout->styles('blue', ['text' => 'blue']);
-		$this->stdout->styles('green', ['text' => 'green']);
-		$this->out('<blue>Fork new sudo_server worker process</blue>');
-		$childWorker = pcntl_fork();
-		if(!$childWorker){
-			$this->out('<green>Hello I am the sudo_server worker process my pid is '.getmypid().'</green>');
-			//I am the sudo server worker child
-			$this->SudoWorker->work();
-			exit(0);
-		}
-		
-		//Im the parrent sudo server process
-		//Seelp one second thet your child can create its unix socket!
-		sleep(1);
-		$this->sudoWorkerSocket = $this->createSocket();
-		pcntl_signal(SIGCHLD, array($this, 'sigchld_handler'));
+		//$this->stdout->styles('blue', ['text' => 'blue']);
+		//$this->stdout->styles('green', ['text' => 'green']);
+		//$this->out('<blue>Fork new sudo_server worker process</blue>');
+		//$childWorker = pcntl_fork();
+		//if(!$childWorker){
+		//	$this->out('<green>Hello I am the sudo_server worker process my pid is '.getmypid().'</green>');
+		//	//I am the sudo server worker child
+		//	$this->SudoWorker->work();
+		//	exit(0);
+		//}
+		//
+		////Im the parrent sudo server process
+		////Seelp one second thet your child can create its unix socket!
+		//sleep(1);
+		//$this->sudoWorkerSocket = $this->createSocket();
+		//pcntl_signal(SIGCHLD, array($this, 'sigchld_handler'));
 		
 		
 		$SudoInterface = new SudoMessageInterface($this);

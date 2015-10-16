@@ -23,88 +23,138 @@
 //	confirmation.
 
 App.Controllers.ExportsIndexController = Frontend.AppController.extend({
-	$textarea: null,
-	$progressbar: null,
-	$progressbarText: null,
-	$progressbarBar: null,
-	$progressbarContainer: null,
-	$log: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
+	$exportLog: null,
+	worker: null,
 	
-	components: ['WebsocketSudo'],
+	//components: ['WebsocketSudo'],
 
 	_initialize: function(){
-		/*
-		 * Fix for ugly FireFox behavior :(
-		 */
-		$('#exportAll').prop( "disabled", false);
-
-		/*
-		 * Bind click events
-		 */
-		$('#exportAll').click(function(){
-			this.WebsocketSudo.send(this.WebsocketSudo.toJson('runCompleteExport', [$('#CreateBackup').prop('checked')]));
-			$('#exportAll').prop( "disabled", true);
-			this.$progressbar.show();
-			this.$log.show();
-		}.bind(this));
 		
+		this.worker = function(){
+			var self = this;
+			$.ajax({
+				url: '/exports/broadcast.json',
+				type: "GET",
+				success: function(response){
+					//console.log(response);
+					var $exportLog = $('#exportLog');
+					for(var key in response.exportRecords){
+						var $exportLogEntry = $exportLog.children('#'+key);
+						//console.log($exportLogEntry.length);
+						if($exportLogEntry.length == 0){
+							//Record does not exists, we need to create it
+							if(response.exportRecords[key].finished == 0){
+								var html = '<div id="'+key+'" data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span></div>';
+							}else{
+								if(response.exportRecords[key].successfully == 1){
+									var html = '<div id="'+key+'" data-finished="1"><i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span></div>';
+								}else{
+									var html = '<div id="'+key+'" data-finished="1"><i class="fa fa-times text-danger"></i> <span>'+response.exportRecords[key].text+'</span></div>';
+								}
+							}
+							$exportLog.append(html);
+						}else{
+							//Record exists, lets update it
+							if(response.exportRecords[key].finished == 0){
+								//If we overwrite existing records, the spin animation will flapp
+								if($exportLogEntry.data('finished') != 0){
+									var html = '<i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span>';
+									$exportLogEntry.html(html);
+								}
+							}else{
+								if(response.exportRecords[key].successfully == 1){
+									var html = '<i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span>';
+								}else{
+									var html = '<i class="fa fa-times text-danger"></i> <span>'+response.exportRecords[key].text+'</span>';
+								}
+								$exportLogEntry.html(html);
+							}
+						}
+					}
+					
+					if(response.exportFinished.finished == true){
+						if(response.exportFinished.successfully == true){
+							$('#exportSuccessfully').show();
+						}
+						
+						if(response.exportFinished.successfully == false){
+							$('#exportError').show();
+							
+							//Query monitoring validation error if any
+							for(var key in response.exportRecords){
+								if(response.exportRecords[key].task == 'export_verify_new_configuration'){
+									if(response.exportRecords[key].finished == 1 && response.exportRecords[key].successfully == 0){
+										self.verify();
+									}
+								}
+							}
+						}
+					}
+				},
+				complete: function(response){
+					// Schedule the next request when the current one's complete
+					if(response.responseJSON.exportFinished.finished == false){
+						setTimeout(self.worker, 1000);
+					}
+				}
+			});
+		}.bind(this);
 		
-		this.$textarea =  $('.form-control textarea');
-		this.$progressbar = $('#exportProgressbar');
-		this.fetchProgressbar();
-		this.$log = $('#logoutput');
-
-		this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
-		
-		this.WebsocketSudo._errorCallback = function(){
-			$('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
+		//Export running?
+		if(this.getVar('exportRunning') == true){
+			$('#exportInfo').show();
+			this.worker();
 		}
 		
-		this.WebsocketSudo.connect();
-		this.WebsocketSudo._success = function(e){
-			return true;
-		}.bind(this)
-		
-		this.WebsocketSudo._callback = function(transmitted){
-			if(transmitted.category == 'notification'){
-				this.$progressbarText.html(transmitted.payload);
-				
-				//Replace uuids
-				var RegExObject = new RegExp('('+this.getVar('uuidRegEx')+')', 'g');
-				transmitted.payload = transmitted.payload.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
-				if(transmitted.payload.match('Warning')){
-					this.$log.append('<div class="txt-color-orangeDark">'+transmitted.payload+'</div>');
-				}else if(transmitted.payload.match('Error')){
-					this.$log.append('<div class="txt-color-red">'+transmitted.payload+'</div>');
-				}else{
-					this.$log.append('<div>'+transmitted.payload+'</div>');
+		$('#launchExport').click(function(){
+			var self = this;
+			$('#exportInfo').show();
+			$('#launchExport').parents('.formactions').remove();
+
+			var createBackup = 1;
+			if($('#CreateBackup').prop('checked') == false || $('#CreateBackup').prop('checked') == null){
+				createBackup = 0;
+			}
+			$.ajax({
+				url: '/exports/launchExport/'+createBackup,
+				type: "GET",
+				success: function(data) {
+					
+				},
+				complete: function() {
+					self.worker();
 				}
-			}
-			
-			return true;
-		}.bind(this);
-		
-		this.WebsocketSudo._event = function(transmitted){
-			if(transmitted.category == 'done'){
-				this.$progressbarBar.removeClass('bg-color-purple');
-				this.$progressbarBar.addClass('bg-color-green');
-				this.$progressbarText.html(transmitted.payload);
-				this.$log.append('<div class="txt-color-green">'+transmitted.payload+'</div>');
-				this.$progressbar.removeClass('progress-striped');
-				this.$progressbar.removeClass('active');
-			}
-			return true;
-			
-		}.bind(this);
+			});
+		}.bind(this));
 	},
 	
-	fetchProgressbar: function(){
-		this.$progressbarBar = $(this.$progressbar.find('div')[1]);
-		this.$progressbarText = $(this.$progressbar.find('div')[2]);
+	verify: function(){
+		var $verifyOutput = $('#verifyOutput');
+		var RegExObject = new RegExp('('+this.getVar('uuidRegEx')+')', 'g');
+		$('#verifyError').show();
+		$.ajax({
+			url: '/exports/verifyConfig.json',
+			type: "GET",
+			success: function(response){
+				for(var key in response.result.output){
+					var line = response.result.output[key];
+					
+					//Replace UUID with links to forwarder
+					line = line.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
+					
+					var _class='txt-color-blueDark';
+					if(line.match('Warning')){
+						_class = 'txt-color-orangeDark';
+					}
+					
+					if(line.match('Error')){
+						_class = 'txt-color-red';
+					}
+					$verifyOutput.append('<div class="'+_class+'">'+line+'</div>');
+				}
+			},
+			complete: function(){
+			}
+		});
 	}
-	
 });
