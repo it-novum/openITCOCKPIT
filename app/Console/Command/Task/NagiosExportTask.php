@@ -707,7 +707,7 @@ class NagiosExportTask extends AppShell{
 				$this->exportSatHost($host, $host['Host']['satellite_id'], $commandarguments);
 			
 				/*
-				 * May be not all hosts in hostgroup 'foo' are available in SAT system 'bar', so we create an array
+				 * May be not all hosts in hostgroup 'foo' are available on SAT system 'bar', so we create an array
 				 * with all hosts from system 'bar' in hostgroup 'foo' for each SAT system
 				 */
 				if(!empty($host['Hostgroup'])){
@@ -726,6 +726,11 @@ class NagiosExportTask extends AppShell{
 			$file->write($content);
 			$file->close();
 		}
+		
+		if($this->dm === true){
+			$this->exportSatHostgroups();
+		}
+		
 		$this->deleteHostPerfdata();
 	}
 	
@@ -1443,6 +1448,10 @@ class NagiosExportTask extends AppShell{
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
+		}
+		
+		if($this->dm === true){
+			$this->exportSatServicegroups();
 		}
 		
 		$this->deleteServicePerfdata();
@@ -2371,13 +2380,72 @@ class NagiosExportTask extends AppShell{
 	public function afterExportExternalTasks(){
 		//Restart oitc CMD to wipe old cached information
 		exec('service oitc_cmd restart');
-		$this->exportSatHostAndServiceGroups();
+		//$this->exportSatHostAndServiceGroups();
 		
 		
 		foreach($this->externalTasks as $pluginName => $taskName){
 			$_task = new TaskCollection($this);
 			$extTask =  $_task->load($pluginName.'.'.$taskName);
 			$extTask->afterExport();
+		}
+	}
+
+	public function exportSatHostgroups(){
+		if(!empty($this->dmConfig) && is_array($this->dmConfig)){
+			foreach($this->dmConfig as $sat_id => $data){
+				//Create hostgroups configuration
+				if(isset($data['Hostgroup']) && !empty($data['Hostgroup'])){
+					if(!is_dir($this->conf['satellite_path'].$sat_id.DS.$this->conf['hostgroups'])){
+						mkdir($this->conf['satellite_path'].$sat_id.DS.$this->conf['hostgroups']);
+					}
+					foreach($data['Hostgroup'] as $hostgroupUuid => $members){
+						$file = new File($this->conf['satellite_path'].$sat_id.DS.$this->conf['hostgroups'].$hostgroupUuid.$this->conf['suffix']);
+						
+						$content = $this->fileHeader();
+						if(!$file->exists()){
+							$file->create();
+						}
+						
+						$content.= $this->addContent('define hostgroup{', 0);
+						$content.= $this->addContent('hostgroup_name', 1, $hostgroupUuid);
+						$content.= $this->addContent('alias', 1, $hostgroupUuid);
+						$content.= $this->addContent('members', 1, implode(',', $members));
+						$content.= $this->addContent('}', 0);
+					
+						$file->write($content);
+						$file->close();
+					}
+				}
+			}
+		}
+	}
+	
+	public function exportSatServicegroups(){
+		if(!empty($this->dmConfig) && is_array($this->dmConfig)){
+			foreach($this->dmConfig as $sat_id => $data){
+				//Create service groups
+				if(isset($data['Servicegroup']) && !empty($data['Servicegroup'])){
+					if(!is_dir($this->conf['satellite_path'].$sat_id.DS.$this->conf['servicegroups'])){
+						mkdir($this->conf['satellite_path'].$sat_id.DS.$this->conf['servicegroups']);
+					}
+					foreach($data['Servicegroup'] as $servicegroupUuid => $members){
+						$file = new File($this->conf['satellite_path'].$sat_id.DS.$this->conf['servicegroups'].$servicegroupUuid.$this->conf['suffix']);
+						$content = $this->fileHeader();
+						if(!$file->exists()){
+							$file->create();
+						}
+
+						$content.= $this->addContent('define servicegroup{', 0);
+						$content.= $this->addContent('servicegroup_name', 1, $servicegroupUuid);
+						$content.= $this->addContent('alias', 1, $servicegroupUuid);
+
+						$content.= $this->addContent('members', 1, implode(',', $members));
+						$content.= $this->addContent('}', 0);
+						$file->write($content);
+						$file->close();
+					}
+				}
+			}
 		}
 	}
 

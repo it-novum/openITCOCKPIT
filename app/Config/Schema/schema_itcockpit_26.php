@@ -351,6 +351,7 @@ class AppSchema extends CakeSchema {
 		'task' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'text' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'finished' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'successfully' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
