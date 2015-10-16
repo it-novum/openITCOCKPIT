@@ -3172,7 +3172,7 @@ INSERT INTO `systemsettings` (`id`, `key`, `value`, `info`, `section`, `created`
 (63, 'ARCHIVE.AGE.CONTACTNOTIFICATIONMETHODS', '2', 'Time in weeks how long contactnotificationmethods will be stored (keep eq to NOTIFICATIONS AND CONTACTNOTIFICATIONS)', 'ARCHIVE', '0000-00-00 00:00:00', '2015-01-16 00:41:41'),
 (64, 'CRONJOB.CLENUP_TEMPFILES', '10', 'Deletes tmp files', 'CRONJOB', '2014-12-23 11:45:31', '2015-01-02 10:59:39'),
 (65, 'MONITORING.FRESHNESS_THRESHOLD_ADDITION', '300', 'Value in seconds that get added to the service check interval for passive services, before the monitoring system will fire up the freshness check', 'MONITORING', '2014-12-23 11:45:31', '2015-01-02 10:59:39'),
-(66, 'MONITORING.AFTER_EXPORT', 'oitc after_export -q', 'A command that get executed on each export (Notice: this command runs as root, so be careful)', 'MONITORING', '2014-12-23 11:45:31', '2015-01-02 10:59:39');
+(66, 'MONITORING.AFTER_EXPORT', '#echo 1', 'A command that get executed on each export (Notice: this command runs as root, so be careful)', 'MONITORING', '2014-12-23 11:45:31', '2015-01-02 10:59:39');
 
 
 -- --------------------------------------------------------
