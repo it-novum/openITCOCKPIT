@@ -23,20 +23,8 @@
 //	confirmation.
 
 App.Controllers.ExportsIndexController = Frontend.AppController.extend({
-	$textarea: null,
-	$progressbar: null,
-	$progressbarText: null,
-	$progressbarBar: null,
-	$progressbarContainer: null,
-	$log: null,
-	
 	$exportLog: null,
 	worker: null,
-	
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
 	
 	//components: ['WebsocketSudo'],
 
