@@ -37,14 +37,6 @@ class ExportsController extends AppController{
 		'ListFilter.ListFilter',
 	];
 	
-	public function beforeFilter(){
-		//Dashboard is allays allowed
-		if($this->Auth->loggedIn() === true){
-			$this->Auth->allow();
-		}
-		parent::beforeFilter();
-	}
-	
 	public function index(){
 		App::uses('UUID', 'Lib');
 		Configure::load('gearman');

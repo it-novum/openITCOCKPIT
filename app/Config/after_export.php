@@ -28,13 +28,13 @@ $config = [
 		'SSH' => [
 			
 			//Username via the SSH connection is established
-			'username' => 'nagios',
+			'username' => 'root',
 			
 			//Path to your ssh private key file
-			'private_key' => '/var/www/.ssh/id_rsa',
+			'private_key' => '/root/.ssh/id_rsa',
 			
 			//Path to your ssh public key file
-			'public_key' => '/var/www/.ssh/id_rsa.pub',
+			'public_key' => '/root/.ssh/id_rsa.pub',
 			
 			/**
 			 * A command that will be executed on the remote host
@@ -54,6 +54,7 @@ $config = [
 		
 		'REMOTE' => [
 			//Path on the remote system were config files will be copied to
+			//With ending / !!!!!!
 			'path' => '/opt/openitc/nagios/etc/'
 		],
 	]

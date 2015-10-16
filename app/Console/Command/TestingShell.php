@@ -50,12 +50,18 @@ class TestingShell extends AppShell{
 		'Servicecommandargumentvalue'
 	];
 	
+	public $tasks = [
+		'AfterExport'
+	];
+	
 	public function main(){
 		
 		/*
 		 * Lof of space for your experimental code :)
 		 */
 		debug($this->params);
+		$this->AfterExport->init();
+		$this->AfterExport->execute();
 	}
 	
 	public function getOptionParser(){

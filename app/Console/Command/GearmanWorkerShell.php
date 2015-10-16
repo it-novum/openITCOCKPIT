@@ -32,7 +32,8 @@ class GearmanWorkerShell extends AppShell{
 	];
 	public $tasks = [
 		'NagiosExport',
-		'DefaultNagiosConfig'
+		'DefaultNagiosConfig',
+		'AfterExport',
 	];
 	
 	public function main(){
@@ -636,6 +637,20 @@ class GearmanWorkerShell extends AppShell{
 			$exportRecord['Export']['finished'] = 1;
 			$exportRecord['Export']['successfully'] = 1;
 			$this->Export->save($exportRecord);
+		}
+	}
+	
+	public function distributedMonitoringAfterExportCommand(){
+		//Loading distributed Monitoring support, if plugin is loaded/installed
+		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
+			return strpos($value, 'Module') !== false;
+		});
+		
+		if(in_array('DistributeModule', $modulePlugins)){
+			$this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+			$this->Satellites = $this->Satellite->find('all');
+			
+			
 		}
 	}
 	
