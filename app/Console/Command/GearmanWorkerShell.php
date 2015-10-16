@@ -587,10 +587,14 @@ class GearmanWorkerShell extends AppShell{
 						'text' => __('Execute after export command')
 					]
 				];
-				$this->Export->save($data);
+				$result = $this->Export->save($data);
 				$command = $this->NagiosExport->returnAfterExportCommand();
 				$output = null;
 				exec($command, $output, $returncode);
+				//The exec() may be block for a while
+				//Reset MySQL Connection to avoid MySQL hase gone away
+				$this->Systemsetting->getDatasource()->reconnect();
+				$this->Export->id = $result['Export']['id'];
 				$this->Export->saveField('finished', 1);
 				if($returncode == 0){
 					$this->Export->saveField('successfully', 1);
