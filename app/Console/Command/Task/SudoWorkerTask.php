@@ -19,11 +19,16 @@
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.+
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
 class SudoWorkerTask extends AppShell{
+	
+	/*
+	 * !!! DEPRECATED CLASS !!!
+	 * This class is useless and will be removed with the next version !
+	 */
 	
 	public $uses = ['Systemsetting'];
 	
