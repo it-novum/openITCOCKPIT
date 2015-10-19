@@ -324,15 +324,7 @@ class AppSchema extends CakeSchema {
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
-/*
-	public $dashboards = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'latin1', 'collate' => 'latin1_swedish_ci', 'engine' => 'InnoDB')
-	);
-*/
+
 	public $documentations = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
@@ -1358,27 +1350,6 @@ class AppSchema extends CakeSchema {
 		'show_unreachable' => ['type' => 'boolean', 'null' => false, 'default' => '1'],
 		'show_acknowledged' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
 		'show_downtime' => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-		'indexes' => [
-			'PRIMARY' => ['column' => 'id', 'unique' => 1],
-			'KEY' => ['column' => 'widget_id', 'unique' => 1],
-		],
-	];
-
-	public $widget_notices = [
-		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-		'widget_id' => ['type' => 'integer', 'null' => false],
-		'note' => array('type' => 'text', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'indexes' => [
-			'PRIMARY' => ['column' => 'id', 'unique' => 1],
-			'KEY' => ['column' => 'widget_id', 'unique' => 1],
-		],
-	];
-
-	public $widget_graphgenerators = [
-		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-		'widget_id' => ['type' => 'integer', 'null' => false],
-		'data_sources' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'time' => ['type' => 'integer', 'null' => false],
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 			'KEY' => ['column' => 'widget_id', 'unique' => 1],
