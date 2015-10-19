@@ -203,6 +203,9 @@ $config = [
 			'Administrators' => [
 				'debug' => ['testMail'],
 			],
+			'Exports' => [
+				'index' => ['broadcast', 'launchExport', 'verifyConfig'],
+			],
 		]
 	]
 ];

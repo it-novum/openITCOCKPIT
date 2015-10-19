@@ -32,7 +32,7 @@ class GearmanWorkerShell extends AppShell{
 	];
 	public $tasks = [
 		'NagiosExport',
-		'DefaultNagiosConfig'
+		'DefaultNagiosConfig',
 	];
 	
 	public function main(){
@@ -385,6 +385,15 @@ class GearmanWorkerShell extends AppShell{
 				];
 				break;
 				
+			case 'export_sync_sat_config':
+				//This task is part of a plugin, so we need to load it dynamicly
+				$_task = new TaskCollection($this);
+				$AfterExportTask = $_task->load('AfterExport');
+				$AfterExportTask->beQuiet();
+				$AfterExportTask->init();
+				$AfterExportTask->copy($payload['Satellite']);
+				$return = ['task' => $payload['task']];
+				break;
 		}
 		
 		return serialize($return);
@@ -598,6 +607,7 @@ class GearmanWorkerShell extends AppShell{
 				$this->Export->saveField('finished', 1);
 				if($returncode == 0){
 					$this->Export->saveField('successfully', 1);
+					$this->distributedMonitoringAfterExportCommand();
 				}else{
 					$successfully = false;
 					$this->Export->saveField('successfully', 0);
@@ -631,11 +641,50 @@ class GearmanWorkerShell extends AppShell{
 	
 	public function exportCallback($task){
 		$result = unserialize($task->data());
-		$exportRecord = $this->Export->findByTask($result['task']);
-		if(!empty($exportRecord)){
-			$exportRecord['Export']['finished'] = 1;
-			$exportRecord['Export']['successfully'] = 1;
-			$this->Export->save($exportRecord);
+		if($result['task'] !== 'export_sync_sat_config'){
+			$exportRecord = $this->Export->findByTask($result['task']);
+			if(!empty($exportRecord)){
+				$exportRecord['Export']['finished'] = 1;
+				$exportRecord['Export']['successfully'] = 1;
+				$this->Export->save($exportRecord);
+			}
+		}
+	}
+	
+	public function distributedMonitoringAfterExportCommand(){
+		//Loading distributed Monitoring support, if plugin is loaded/installed
+		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
+			return strpos($value, 'Module') !== false;
+		});
+		
+		if(in_array('DistributeModule', $modulePlugins)){
+			//DistributeModule is loaded and installed...
+			$this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+			$satellites = $this->Satellite->find('all');
+			
+			$gearmanClient = new GearmanClient();
+			$gearmanClient->addServer($this->Config['address'], $this->Config['port']);
+			//This callback gets called, for any finished export task (like hosttemplates, services etc...)
+			$gearmanClient->setCompleteCallback([$this, 'exportCallback']);
+		
+			$this->Export->create();
+			$data = [
+				'Export' => [
+					'task' => 'export_sync_sat_config',
+					'text' => __('Copy new monitoring configuration to satellite systems')
+				]
+			];
+			$result = $this->Export->save($data);
+			foreach($satellites as $satellite){
+				$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $data['Export']['task'], 'Satellite' => $satellite]), $this->Config['password']));
+			}
+			$gearmanClient->runTasks();
+			// Avoid "MySQL server has gone away"
+			$this->Systemsetting->getDatasource()->reconnect();
+			
+			$this->Export->id = $result['Export']['id'];
+			$this->Export->saveField('finished', 1);
+			$this->Export->saveField('successfully', 1);
 		}
 	}
 	

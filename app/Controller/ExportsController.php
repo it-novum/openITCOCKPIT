@@ -37,14 +37,6 @@ class ExportsController extends AppController{
 		'ListFilter.ListFilter',
 	];
 	
-	public function beforeFilter(){
-		//Dashboard is allays allowed
-		if($this->Auth->loggedIn() === true){
-			$this->Auth->allow();
-		}
-		parent::beforeFilter();
-	}
-	
 	public function index(){
 		App::uses('UUID', 'Lib');
 		Configure::load('gearman');
@@ -84,7 +76,7 @@ class ExportsController extends AppController{
 		foreach($_exportRecords as $exportRecord){
 			$exportRecords[$exportRecord['Export']['id']] = [
 				'task' => $exportRecord['Export']['task'],
-				'text' => $exportRecord['Export']['text'],
+				'text' => h($exportRecord['Export']['text']),
 				'finished' => $exportRecord['Export']['finished'],
 				'successfully' => $exportRecord['Export']['successfully'],
 			];
