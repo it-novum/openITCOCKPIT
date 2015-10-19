@@ -1382,6 +1382,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	height: 414px;
 }
 
+#nag_longoutput_content,
 #verifyOutput{
 	white-space: pre;
 }
+

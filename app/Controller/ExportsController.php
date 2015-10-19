@@ -76,7 +76,7 @@ class ExportsController extends AppController{
 		foreach($_exportRecords as $exportRecord){
 			$exportRecords[$exportRecord['Export']['id']] = [
 				'task' => $exportRecord['Export']['task'],
-				'text' => $exportRecord['Export']['text'],
+				'text' => h($exportRecord['Export']['text']),
 				'finished' => $exportRecord['Export']['finished'],
 				'successfully' => $exportRecord['Export']['successfully'],
 			];

@@ -30,7 +30,6 @@ class AfterExportTask extends AppShell{
 	];
 	
 	public function init(){
-		
 		$this->stdout->styles('green', ['text' => 'green']);
 		$this->stdout->styles('blue', ['text' => 'blue']);
 		$this->stdout->styles('red', ['text' => 'red']);
@@ -46,6 +45,7 @@ class AfterExportTask extends AppShell{
 		$satellites = $this->Satellite->find('all');
 		foreach($satellites as $satellite){
 			$this->copy($satellite);
+			$this->hr();
 		}
 	}
 	
@@ -60,25 +60,47 @@ class AfterExportTask extends AppShell{
 				$this->conf['SSH']['private_key']
 			);
 			if($loggedIn === true){
+				$this->out('<green> ok</green>');
 				//Creat SFTP Ressource
-				$sftp = ssh2_sftp($sshConnection);
 				if(is_dir(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'])){
 					$folder = new Folder(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']);
 					
 					//Delete target on remote host
 					$this->out('Delete old monitoring configuration', false);
-					//$result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
+					$result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
 					$this->out('<green> ok</green>');
 					
 					//Copy new files
-					$this->out('Copy new monitoring configuration', false);
-					@$folder->copy(array(
-						'to' => 'ssh2.sftp://'.$sftp.$this->conf['REMOTE']['path'],
-						'from' => Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
-						//'mode' => 0644,
-						'recursive' => true
-					));
-					$this->out('<green> ok</green>');
+					$this->out('Copy new configuration', false);
+					if($this->conf['SSH']['use_rsync'] === false){
+						$this->out(' using PHP', false);
+						$sftp = ssh2_sftp($sshConnection);
+						@$folder->copy(array(
+							'to' => 'ssh2.sftp://'.$sftp.$this->conf['REMOTE']['path'],
+							'from' => Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
+							//'mode' => 0644,
+							'recursive' => true
+						));
+						$this->out('<green> ok</green>');
+					}else{
+						$this->out(' using rsync', false);
+						$commandArgs = [
+							$this->conf['SSH']['private_key'],
+							Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
+							$this->conf['SSH']['username'],
+							$satellite['Satellite']['address'],
+							$this->conf['REMOTE']['path'],
+						];
+						$commandTemplate = "rsync -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
+						$command = vsprintf($commandTemplate, $commandArgs);
+						exec($command, $output, $returnCode);
+						if($returnCode == 0){
+							$this->out('<green> ok</green>');
+						}else{
+							$this->out('<red> error</red>');
+						}
+					}
+
 					
 					//Restart remote monitoring engine
 					$this->out('Restart remote monitoring engine', false);
@@ -123,6 +145,10 @@ class AfterExportTask extends AppShell{
 			'stdout' => $stdout,
 			'stderr' => $stderr
 		];
+	}
+	
+	public function beQuiet(){
+		$this->params['quiet'] = true;
 	}
 	
 }

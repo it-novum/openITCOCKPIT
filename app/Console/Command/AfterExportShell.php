@@ -29,14 +29,14 @@ class AfterExportShell extends AppShell{
 	];
 
 	public function main(){
-		$this->AfterExport->init();
-		
 		$parameter = false;
-		if(array_key_exists('gearman', $this->params)){
-			$parameter = true;
+		
+		if(isset($this->params['quiet']) && $this->params['quiet'] == true){
+			$this->AfterExport->beQuiet();
 		}
 		
 		if(array_key_exists('single', $this->params)){
+			$this->AfterExport->init();
 			$this->AfterExport->execute();
 			$parameter = true;
 		}
@@ -52,7 +52,6 @@ class AfterExportShell extends AppShell{
 		$parser = parent::getOptionParser();
 		$parser->addOptions([
 			'single' => ['help' => 'Run after export command single threaded', 'boolean' => false],
-			'gearman' => ['help' => 'Run after export multi threaded using gearman', 'boolean' => false],
 		]);
 		return $parser;
 	}

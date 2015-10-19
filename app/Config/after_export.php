@@ -39,6 +39,9 @@ $config = [
 			//Command to restart remote monitoring engine
 			'restart_command' => 'service naemon restart',
 			
+			//Use rsync or PHP SSH lib to copy data
+			'use_rsync' => true,
+			
 			/**
 			 * A command that will be executed on the remote host
 			 * Be careful with this option
