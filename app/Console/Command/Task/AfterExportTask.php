@@ -82,7 +82,7 @@ class AfterExportTask extends AppShell{
 					
 					//Restart remote monitoring engine
 					$this->out('Restart remote monitoring engine', false);
-					$result = $this->execOverSsh($sshConnection, "/bin/bash -c 'service nagios restart'");
+					$result = $this->execOverSsh($sshConnection, "/bin/bash -c '".$this->conf['SSH']['restart_command']."'");
 					$this->out('<green> ok</green>');
 					
 					//Execute remote commands - if any

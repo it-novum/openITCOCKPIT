@@ -24,10 +24,36 @@
 //	confirmation.
 
 class AfterExportShell extends AppShell{
-	public $tasks = ['AfterExportTask'];
+	public $tasks = [
+		'AfterExport'
+	];
 
 	public function main(){
 		$this->AfterExport->init();
-		$this->AfterExport->execute();
+		
+		$parameter = false;
+		if(array_key_exists('gearman', $this->params)){
+			$parameter = true;
+		}
+		
+		if(array_key_exists('single', $this->params)){
+			$this->AfterExport->execute();
+			$parameter = true;
+		}
+		
+		if($parameter === false){
+			$this->stdout->styles('red', ['text' => 'red']);
+			$this->out('<red>'.__('Usage error: Call with --help to get more information ').'</red>');
+		}
+		
+	}
+	
+	public function getOptionParser(){
+		$parser = parent::getOptionParser();
+		$parser->addOptions([
+			'single' => ['help' => 'Run after export command single threaded', 'boolean' => false],
+			'gearman' => ['help' => 'Run after export multi threaded using gearman', 'boolean' => false],
+		]);
+		return $parser;
 	}
 }

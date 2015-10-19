@@ -36,6 +36,9 @@ $config = [
 			//Path to your ssh public key file
 			'public_key' => '/root/.ssh/id_rsa.pub',
 			
+			//Command to restart remote monitoring engine
+			'restart_command' => 'service naemon restart',
+			
 			/**
 			 * A command that will be executed on the remote host
 			 * Be careful with this option
