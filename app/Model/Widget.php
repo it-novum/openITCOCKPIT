@@ -36,12 +36,12 @@ class Widget extends AppModel{
 		'WidgetHostStatusList' => [
 			'dependent' => true
 		],
-		'WidgetNotice' => [
-			'dependent' => true
-		],
-		'WidgetGraphgenerator' => [
-			'dependent' => true
-		],
+		//'WidgetNotice' => [
+		//	'dependent' => true
+		//],
+		//'WidgetGraphgenerator' => [
+		//	'dependent' => true
+		//],
 	];
 	public $validate = [
 		'dashboard_tab_id' => [
