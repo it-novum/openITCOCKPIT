@@ -534,7 +534,12 @@ class HostsController extends AppController{
 		$timeperiods = $this->Timeperiod->find('list');
 		$commands = $this->Command->hostCommands('list');
 		$hosttemplates = $this->Hosttemplate->find('list');
-		$hostgroups = $this->Hostgroup->findList([], 'id');
+		$hostgroups = $this->Hostgroup->findList([
+			'recursive' => -1,
+			'contain' => [
+				'Container'
+			]
+		], 'id');
 		// End changelog
 
 		// Data to refill form
@@ -560,7 +565,7 @@ class HostsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}
-		
+
 		//Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
 		$commandarguments = $this->Commandargument->find('all', [
 			'recursive' => -1,
@@ -1085,7 +1090,7 @@ class HostsController extends AppController{
 		$this->loadModel('Hostgroup');
 
 		$commands = $this->Command->hostCommands('list');
-		
+
 		if($this->hasRootPrivileges === true){
 			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}else{
@@ -1684,24 +1689,24 @@ class HostsController extends AppController{
 					'Container'
 				],
 			]);
-			
-			
+
+
 
 			$containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
 			$containerIdsToCheck[] = $_host['Host']['container_id'];
-			
+
 			//Check if user is permitted to see this object
 			if(!$this->allowedByContainerId($containerIdsToCheck, false)){
 				$this->render403();
 				return;
 			}
-			
+
 			//Check if user is permitted to edit this object
 			$allowEdit = false;
 			if($this->allowedByContainerId($containerIdsToCheck)){
 				$allowEdit = true;
 			}
-			
+
 			$services = $this->Service->findAllByHostIdAndDisabled($id, 0);
 
 			$commandarguments = [];
