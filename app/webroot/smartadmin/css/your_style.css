@@ -1387,3 +1387,6 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	white-space: pre;
 }
 
+.white-space-nowrap{
+	white-space: nowrap;
+}

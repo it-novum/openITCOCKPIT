@@ -126,12 +126,17 @@ endif;
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									echo $this->Form->input('warn', [
-										'label' => __('Warn %'),
+										//'label' => __('Warn %'),
 										'class' => 'form-control tacho-warn',
 										'data-field' => 'warn',
 										'data-widget-id' => $widget['Widget']['id'],
 										'value' => $widgetData['WidgetTacho']['warn'],
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
+										'label' => [
+											'class' => 'col col-xs-2 control-label white-space-nowrap',
+											'text' => __('Warn %')
+										],
+										'wrapInput' => 'col col-xs-10',
 									]);
 									echo $this->Form->input('crit', [
 										'label' => __('Crit %'),
@@ -141,8 +146,8 @@ endif;
 										'value' => $widgetData['WidgetTacho']['crit'],
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
 										'label' => [
-												'class' => 'col col-xs-2 control-label',
-												'text' => __('Crit %')
+											'class' => 'col col-xs-2 control-label white-space-nowrap',
+											'text' => __('Crit %')
 										],
 										'wrapInput' => 'col col-xs-10',
 									]);
