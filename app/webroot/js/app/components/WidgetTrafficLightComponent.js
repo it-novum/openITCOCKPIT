@@ -49,7 +49,9 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			var widgetId = parseInt($element.data('widget-id'), 10);
 			var widgetTypeId = parseInt($element.data('widget-type-id'), 10);
 			if(widgetTypeId == 11){
-				this.drawTrafficLight(widgetId, this.trafficlights[widgetId].container);
+				if(this.trafficlights[widgetId].idService !== 0){
+					this.drawTrafficLight(widgetId, this.trafficlights[widgetId].container);
+				}
 			}
 		}.bind(this));
 		
