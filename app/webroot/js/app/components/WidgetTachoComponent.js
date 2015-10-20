@@ -41,7 +41,9 @@ App.Components.WidgetTachoComponent = Frontend.Component.extend({
 			var widgetId = parseInt($element.data('widget-id'), 10);
 			var widgetTypeId = parseInt($element.data('widget-type-id'), 10);
 			if(widgetTypeId == 12){
-				this.resizeTacho(widgetId);
+				if(this.tachos[widgetId].serviceId !== null){
+					this.resizeTacho(widgetId);
+				}
 			}
 		}.bind(this));
 		

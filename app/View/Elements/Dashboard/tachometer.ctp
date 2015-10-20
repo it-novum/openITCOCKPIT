@@ -46,7 +46,7 @@ endif;
 			<!-- canvas object will be created by javascript -->
 		</div>
 	</div>
-	
+
 	<div class="panel-group smart-accordion-default" id="accordion-<?php echo $widget['Widget']['id'];?>">
 		<div class="panel panel-default">
 			<div class="panel-heading">
@@ -126,20 +126,30 @@ endif;
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
 									]);
 									echo $this->Form->input('warn', [
-										'label' => __('Warn %'),
+										//'label' => __('Warn %'),
 										'class' => 'form-control tacho-warn',
 										'data-field' => 'warn',
 										'data-widget-id' => $widget['Widget']['id'],
 										'value' => $widgetData['WidgetTacho']['warn'],
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
+										'label' => [
+											'class' => 'col col-xs-2 control-label white-space-nowrap',
+											'text' => __('Warn %')
+										],
+										'wrapInput' => 'col col-xs-10',
 									]);
 									echo $this->Form->input('crit', [
 										'label' => __('Crit %'),
-										'class' => 'form-control tacho-crit',
+										'class' => 'form-control tacho-crit padding-top-10',
 										'data-field' => 'crit',
 										'data-widget-id' => $widget['Widget']['id'],
 										'value' => $widgetData['WidgetTacho']['crit'],
 										'form' => 'TachoForm-'.$widget['Widget']['id'],
+										'label' => [
+											'class' => 'col col-xs-2 control-label white-space-nowrap',
+											'text' => __('Crit %')
+										],
+										'wrapInput' => 'col col-xs-10',
 									]);
 									?>
 								</div>
@@ -219,4 +229,3 @@ endif;
 		</div>
 	</div>
 </div>
-
