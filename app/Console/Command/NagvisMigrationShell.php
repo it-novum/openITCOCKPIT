@@ -137,12 +137,26 @@ class NagvisMigrationShell extends AppShell {
 		}
 		$this->moveDirRecursively($iconsetDir,$pluginPath.'img'.DS.'items'.DS, $toSkip);
 
+		/*
+		  get stateless icons (shapes)
+		 */
+		$this->out('<info>Getting Shapes</info>');
+		$shapesPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'shapes'.DS;
+		$shapesList = $this->getFileList($session, $shapesPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
+		$shapesDir = $cfgDownloadDir.DS.'shapes';
+		($this->checkConfigFilesDir($shapesDir))?:$this->createDownloadDirectory($shapesDir);
+		$this->getFiles($session, $shapesPath, $shapesList, $shapesDir);
 
-		//@TODO move the iconsets to their destination
+		$destination = $pluginPath.'img'.DS.'icons'.DS;
+		if($this->checkDir($destination)){
+			$this->moveToDestination($shapesList, $shapesDir, $destination);
+		}
+
+
+
+
 		//@TODO write config files into the DB
 		//@TODO cleanup the directory
-
-
 
 		//$this->cleanup($session, $cfgDownloadDir);
 		
