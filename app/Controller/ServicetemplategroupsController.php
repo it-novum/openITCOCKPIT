@@ -99,7 +99,7 @@ class ServicetemplategroupsController extends AppController{
 					$this->serializeId();
 					return;
 				}
-				$this->setFlash(__('Servicetemplategroup successfully saved'));
+				$this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
 				$this->redirect(array('action' => 'index'));
 			}
 			if($this->request->ext == 'json'){
@@ -132,7 +132,7 @@ class ServicetemplategroupsController extends AppController{
 			$this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
 			$this->request->data['Container']['id'] = $this->request->data['Servicetemplategroup']['container_id'];
 			if($this->Servicetemplategroup->saveAll($this->request->data)){
-				$this->setFlash(__('Servicetemplategroup successfully saved'));
+				$this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
 				$this->redirect(array('action' => 'index'));
 			}
 			if(isset($this->request->data['Container']['parent_id'])){
@@ -296,13 +296,13 @@ class ServicetemplategroupsController extends AppController{
 
 		$servicetemplategroup = $this->Servicetemplategroup->findById($id);
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		
+
 		if($this->hasRootPrivileges === true){
 			$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
 		}else{
 			$hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
 		}
-		
+
 		$this->Frontend->setJson('servicetemplategroup_id', $servicetemplategroup['Servicetemplategroup']['id']);
 		$this->Frontend->setJson('service_exists', __('Service already exist on selected host. Tick the box to create duplicate.'));
 		$this->Frontend->setJson('service_disabled', __('Service already exist on selected host but is disabled. Tick the box to create duplicate.'));
@@ -314,7 +314,7 @@ class ServicetemplategroupsController extends AppController{
 		if(!$this->Servicetemplategroup->exists($servicetemplategroup_id)){
 			throw new NotFoundException(__('Invalid hostgroup'));
 		}
-		
+
 		$userId = $this->Auth->user('id');
 		$servicetemplategroup = $this->Servicetemplategroup->find('first', [
 			'contain' => [
@@ -329,7 +329,7 @@ class ServicetemplategroupsController extends AppController{
 				'Servicetemplategroup.id' => $servicetemplategroup_id
 			]
 		]);
-		
+
 		//Get all hostgroups to user is allowed to see
 		$this->loadModel('Hostgroup');
 		$this->loadModel('Host');
@@ -363,9 +363,9 @@ class ServicetemplategroupsController extends AppController{
 			$this->setFlash(__('Could not found any hostgroup matching to %s', $servicetemplategroup['Container']['name']), false);
 			$this->redirect(['action' => 'index']);
 		}
-		
+
 		$servicetemplateCache = [];
-		
+
 		foreach($hostgroup['Host'] as $_host){
 			$host = $this->Host->find('first', [
 				'contain' => [
@@ -394,12 +394,12 @@ class ServicetemplategroupsController extends AppController{
 					if(in_array($_servicetemplate['id'], $existingServiceTemplates)){
 						continue;
 					}
-					
+
 					if(!isset($servicetemplateCache[$_servicetemplate['id']])){
 						$servicetemplateCache[$_servicetemplate['id']] = $this->Servicetemplate->findById($_servicetemplate['id']);
 					}
 					$servicetemplate = $servicetemplateCache[$_servicetemplate['id']];
-					
+
 					$service = [];
 					$service['Service']['uuid'] = UUID::v4();
 					$service['Service']['host_id'] = $host['Host']['id'];

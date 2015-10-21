@@ -204,7 +204,7 @@ class ContactsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Contact successfully saved'));
+				$this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				$this->setFlash(__('Contact could not be saved'), false);
@@ -242,7 +242,7 @@ class ContactsController extends AppController{
 		$timeperiods = $this->Timeperiod->find('list');
 
 		$_timeperiods = [];
-		
+
 		$isLdap = false;
 		if($this->getNamedParameter('ldap', 0) == 1){
 			$isLdap = true;
@@ -307,7 +307,7 @@ class ContactsController extends AppController{
 
 					return;
 				}
-				$this->setFlash(__('Contact successfully saved'));
+				$this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
 				$this->redirect(array('action' => 'index'));
 			}
 			if($this->request->ext === 'json'){
@@ -514,4 +514,3 @@ class ContactsController extends AppController{
 		$this->set('_serialize', array_keys($data));
 	}
 }
-

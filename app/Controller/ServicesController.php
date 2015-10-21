@@ -738,7 +738,7 @@ class ServicesController extends AppController{
 				if($isJsonRequest){
 					$this->serializeId();
 				}else{
-					$this->setFlash(__('Service created successfully'));
+					$this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
 					$this->redirect(['action' => 'notMonitored']);
 				}
 			}else{
@@ -1152,7 +1152,7 @@ class ServicesController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Service modified successfully.'));
+				$this->setFlash(__('<a href="/services/edit/%s">Service</a> modified successfully.', $this->Service->id));
 				$this->loadModel('Tenant');
 //				$this->Tenant->serviceCounter($this->Service->id, '+');
 				$redirect = $this->Service->redirect($this->request->params, ['action' => 'index']);

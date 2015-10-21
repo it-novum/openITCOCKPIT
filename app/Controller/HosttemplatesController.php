@@ -363,7 +363,7 @@ class HosttemplatesController extends AppController{
 					CakeLog::write('log', serialize($changelog_data));
 				}
 
-				$this->setFlash(__('Hosttemplate successfully saved'));
+				$this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				$this->setFlash(__('Could not save data'), false);
@@ -583,7 +583,7 @@ class HosttemplatesController extends AppController{
 					$this->serializeId();
 					return;
 				}
-				$this->setFlash(__('Hosttemplate successfully saved'));
+				$this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 

@@ -148,7 +148,7 @@ class ContactgroupsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Contactgroup successfully saved'));
+				$this->setFlash(__('<a href="/contactgroups/edit/%s">Contact group</a> successfully saved', $this->Contactgroup->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				$this->setFlash(__('Contactgroup could not be saved'), false);
@@ -240,7 +240,7 @@ class ContactgroupsController extends AppController{
 					return;
 				}
 
-				$this->setFlash(__('Contact group successfully saved'));
+				$this->setFlash(__('<a href="/contactgroups/edit/%s">Contact group</a> successfully saved', $this->Contactgroup->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				if($this->request->ext == 'json'){
@@ -276,7 +276,7 @@ class ContactgroupsController extends AppController{
 		}else{
 			$contactgroupId = $contactgroup['Contactgroup']['id'];
 		}
-		
+
 		$models = [
 			'__ContactgroupsToHosttemplates',
 			'__ContactgroupsToHosts',
@@ -285,7 +285,7 @@ class ContactgroupsController extends AppController{
 			'__ContactgroupsToHostescalations',
 			'__ContactgroupsToServiceescalations',
 		];
-		
+
 		foreach($models as $model){
 			$this->loadModel($model);
 			$count = $this->{$model}->find('count', [
@@ -337,10 +337,10 @@ class ContactgroupsController extends AppController{
 		}
 
 	}
-	
+
 	public function mass_delete($id = null){
 		$userId = $this->Auth->user('id');
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			foreach($this->request->data('Contactgroup.delete') as $contactgroupId){
 				if($this->Contactgroup->exists($contactgroupId)){
@@ -367,7 +367,7 @@ class ContactgroupsController extends AppController{
 			$this->setFlash(__('Contactgroups deleted'));
 			$this->redirect(['action' => 'index']);
 		}
-		
+
 		foreach(func_get_args() as $contactgroupId){
 			if($this->Contactgroup->exists($contactgroupId)){
 				$contactgroup = $this->Contactgroup->findById($contactgroupId);
@@ -382,7 +382,7 @@ class ContactgroupsController extends AppController{
 		}
 		$count = sizeof($contactgroupsToDelete) + sizeof($contactgroupsCanotDelete);
 		$this->set(compact(['contactgroupsToDelete', 'contactgroupsCanotDelete', 'count']));
-		
+
 
 	}
 }

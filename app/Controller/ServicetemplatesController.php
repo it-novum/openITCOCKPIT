@@ -382,7 +382,7 @@ class ServicetemplatesController extends AppController{
 					return;
 				}
 
-				$this->setFlash(__('Servicetemplate successfully saved.'));
+				$this->setFlash(__('<a href="/services/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				if($isJson){
@@ -654,7 +654,7 @@ class ServicetemplatesController extends AppController{
 				if($isJson){
 					$this->serializeId();
 				}else{
-					$this->setFlash(__('Servicetemplate successfully saved.'));
+					$this->setFlash(__('<a href="/servicetemplates/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
 					$redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
 					$this->redirect($redirect);
 				}
@@ -727,7 +727,7 @@ class ServicetemplatesController extends AppController{
 			if($changelog_data){
 				CakeLog::write('log', serialize($changelog_data));
 			}
-			
+
 			//Delete all services that were created using this template
 			$this->loadModel('Service');
 			$services = $this->Service->find('all', [
@@ -738,7 +738,7 @@ class ServicetemplatesController extends AppController{
 			foreach($services as $service){
 				$this->Service->__delete($service, $this->Auth->user('id'));
 			}
-			
+
 			$this->setFlash(__('Servicetemplate deleted.'));
 			$this->redirect(array('action' => 'index'));
 
@@ -805,17 +805,17 @@ class ServicetemplatesController extends AppController{
 		foreach($_all_services as $service){
 			$all_hosts[$service['Host']['id']]['Host'] = $service['Host'];
 			$all_hosts[$service['Host']['id']]['Container'][] = $service['HostsToContainers']['container_id'];
-			
+
 			if(!isset($all_services[$service['Host']['id']])){
 				$all_services[$service['Host']['id']] = [];
 			}
-			
+
 			$all_services[$service['Host']['id']][$service['Service']['id']] = [
 				'Service' => $service['Service'],
 				'Servicetemplate' => $service['Servicetemplate'],
 			];
 		}
-	
+
 		$this->set(compact(['all_services', 'all_hosts', 'servicetemplate']));
 		$this->set('back_url', $this->referer());
 	}

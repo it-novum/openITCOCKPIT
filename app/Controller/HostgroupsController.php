@@ -244,7 +244,7 @@ class HostgroupsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
 		}
-		
+
 		$ext_data_for_changelog = [];
 		$containerId = $hostgroup['Container']['parent_id'];
 		if($this->request->is('post') || $this->request->is('put')){
@@ -291,7 +291,7 @@ class HostgroupsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Hostgroup successfully saved'));
+				$this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
 				$this->redirect(['action' => 'index']);
 			}else{
 				$this->setFlash(__('Could not save data'), false);
@@ -306,13 +306,13 @@ class HostgroupsController extends AppController{
 
 	public function add(){
 		$userId = $this->Auth->user('id');
-		
+
 		if($this->hasRootPrivileges === true){
 			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
 		}
-		
+
 
 		$this->Frontend->set('data_placeholder', __('Please choose a host'));
 		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -364,7 +364,7 @@ class HostgroupsController extends AppController{
 					return;
 				}
 
-				$this->setFlash(__('Hostgroup successfully saved'));
+				$this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
 				$this->redirect(['action' => 'index']);
 			}else{
 				if($this->request->ext == 'json'){
@@ -529,7 +529,7 @@ class HostgroupsController extends AppController{
 			$host = $this->Host->findById($host_id);
 			$hostsToAppend[] = $host;
 		}
-		
+
 		if($this->hasRootPrivileges === true){
 			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
 			$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
