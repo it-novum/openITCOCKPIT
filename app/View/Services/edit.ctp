@@ -22,8 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
+
 $flapDetection_settings = [
 	'flap_detection_on_ok' => 'fa-square txt-color-greenLight',
 	'flap_detection_on_warning' => 'fa-square txt-color-orange',
@@ -144,7 +144,7 @@ echo $this->Form->create('Service', [
 			'value' => $service['Service']['name'],
 			'wrapInput' => 'col col-xs-8',
 		]);
-	endif; 
+	endif;
 	echo $this->Form->input('Service.description', [
 		'label' => __('Description'),
 		'value' => $service['Service']['description'],
@@ -289,11 +289,11 @@ echo $this->Form->create('Service', [
 			case 'Host':
 				$source = __('Service').' <i class="fa fa-arrow-right"></i> '.__('Servicetemplate').' <i class="fa fa-arrow-right"></i> <strong><a href="/hosts/edit/'.$service['Host']['id'].'">'.__('Host').'</a></strong>';
 				break;
-				
+
 			case 'Hosttemplate':
 				$source = __('Service').' <i class="fa fa-arrow-right"></i> '.__('Servicetemplate').' <i class="fa fa-arrow-right"></i> '.__('Host').' <i class="fa fa-arrow-right"></i> <strong><a href="/hosttemplates/edit/'.$service['Host']['hosttemplate_id'].'">'.__('Hosttemplate').'</a></strong>';
 				break;
-				
+
 			case 'Servicetemplate':
 				$source = __('Service').' <i class="fa fa-arrow-right"></i> <strong><a href="/servicetemplates/edit/'.$service['Service']['servicetemplate_id'].'">'.__('Servicetemplate').'</a></strong>';
 				break;
@@ -308,7 +308,7 @@ echo $this->Form->create('Service', [
 				'selected' => array_keys($ContactsInherited['Contact']),
 				'disabled' => true,
 			];
-			
+
 			$contactGroupOptions = [
 				'selected' => array_keys($ContactsInherited['Contactgroup']),
 				'disabled' => true,
@@ -619,4 +619,3 @@ echo $this->Form->input('Service.freshness_threshold', [
 <!-- close widget body -->
 </div>
 </div> <!-- end jarviswidget -->
-
