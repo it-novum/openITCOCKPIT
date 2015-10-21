@@ -246,7 +246,13 @@ class ListFilterHelper extends AppHelper {
 		if(isset($this->_options['formActionParams']['merge']) && $this->_options['formActionParams']['merge'] == false){
 			$options = $this->_options['formActionParams'];
 		}else{
-			$options = Set::merge(array('url' => $this->here), $this->_options['formActionParams']);
+			$here = $this->here;
+			if($this->request->params['action'] == 'index' || $this->request->params['action'] == ''){
+				//CakePHP remove index action from url by default
+				//This cause some strange behavior...
+				$here = $here . '/index';
+			}
+			$options = Set::merge(array('url' => $here), $this->_options['formActionParams']);
 		}
 
 		$ret.= $this->Form->create('Filter', $options);
