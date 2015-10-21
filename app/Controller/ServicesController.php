@@ -738,7 +738,7 @@ class ServicesController extends AppController{
 				if($isJsonRequest){
 					$this->serializeId();
 				}else{
-					$this->setFlash(__('Service created successfully'));
+					$this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
 					$this->redirect(['action' => 'notMonitored']);
 				}
 			}else{
@@ -873,7 +873,35 @@ class ServicesController extends AppController{
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
 		$this->Frontend->setJson('lang_and', __('and'));
 
-		$ContactsInherited = $this->__inheritContactsAndContactgroups($service);
+		$serviceContactsAndContactgroups = $this->Service->find('first', [
+			'recursive' => -1,
+			'contain' => [
+				'Contact' => [
+					'fields' => [
+						'Contact.id',
+						'Contact.name'
+					]
+				],
+				'Contactgroup' => [
+					'Container' => [
+						'fields' => [
+							'Container.name',
+						]
+					],
+					'fields' => [
+						'Contactgroup.id',
+					]
+				]
+			],
+			'conditions' => [
+				'Service.id' => $service['Service']['id']
+			],
+			'fields' => [
+				'Service.id'
+			]
+		]);
+		//debug($serviceContactsAndContactgroups);
+		$ContactsInherited = $this->__inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups);
 		//debug($ContactsInherited);
 		$this->Frontend->setJson('ContactsInherited', $ContactsInherited);
 
@@ -1152,7 +1180,7 @@ class ServicesController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Service modified successfully.'));
+				$this->setFlash(__('<a href="/services/edit/%s">Service</a> modified successfully.', $this->Service->id));
 				$this->loadModel('Tenant');
 //				$this->Tenant->serviceCounter($this->Service->id, '+');
 				$redirect = $this->Service->redirect($this->request->params, ['action' => 'index']);
@@ -1574,15 +1602,28 @@ class ServicesController extends AppController{
 			$service = $this->Service->prepareForView($id);
 			//$_service = $this->Service->findById($id);
 
+
 			$_service = $this->Service->find('first', [
 				'conditions' => [
 					'Service.id' => $id
 				],
 				'contain' => [
-					'Contactgroup' => [
-						'Container'
+					'Contact' => [
+						'fields' => [
+							'Contact.id',
+							'Contact.name'
+						]
 					],
-					'Contact',
+					'Contactgroup' => [
+						'Container' => [
+							'fields' => [
+								'Container.name',
+							]
+						],
+						'fields' => [
+							'Contactgroup.id',
+						]
+					],
 					'Servicecommandargumentvalue',
 					'Host' => [
 						'Container'
@@ -2154,54 +2195,46 @@ class ServicesController extends AppController{
 	 * $service is from prepareForView() but ther are no names in the service contact, only ids
 	 * $_service is from $this->Service->findById, because of contact names
 	 */
-	protected function __inheritContactsAndContactgroups($service, $_service = []){
-		//if(empty($service['Contact']) && empty($service['Contactgroup'])){
+	protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups){
+		if(empty($serviceContactsAndContactgroups['Contact']) && empty($serviceContactsAndContactgroups['Contactgroup'])){
 
 		//Check servicetemplate for contacts
-		if(!empty($service['Servicetemplate']['Contact']) || !empty($service['Servicetemplate']['Contactgroup'])){
-			return [
-				'inherit' => true,
-				'source' => 'Servicetemplate',
-				'Contact' => Hash::combine($service['Servicetemplate']['Contact'], '{n}.id', '{n}.name'),
-				'Contactgroup' => Hash::combine($service['Servicetemplate']['Contactgroup'], '{n}.id', '{n}.Container.name')
-			];
+			if(!empty($service['Servicetemplate']['Contact']) || !empty($service['Servicetemplate']['Contactgroup'])){
+				return [
+					'inherit' => true,
+					'source' => 'Servicetemplate',
+					'Contact' => Hash::combine($service['Servicetemplate']['Contact'], '{n}.id', '{n}.name'),
+					'Contactgroup' => Hash::combine($service['Servicetemplate']['Contactgroup'], '{n}.id', '{n}.Container.name')
+				];
+			}
+
+			//Check host for contacts
+			//debug($service['Host']);
+			if(!empty($service['Host']['Contact']) || !empty($service['Host']['Contactgroup'])){
+				return [
+					'inherit' => true,
+					'source' => 'Host',
+					'Contact' => Hash::combine($service['Host']['Contact'], '{n}.id', '{n}.name'),
+					'Contactgroup' => Hash::combine($service['Host']['Contactgroup'], '{n}.id', '{n}.Container.name')
+				];
+			}
+
+			//Check hosttemplate for contacts
+			if(!empty($service['Host']['Hosttemplate']['Contact']) || !empty($service['Host']['Hosttemplate']['Contactgroup'])){
+				return [
+					'inherit' => true,
+					'source' => 'Hosttemplate',
+					'Contact' => Hash::combine($service['Host']['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
+					'Contactgroup' => Hash::combine($service['Host']['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.Container.name')
+				];
+			}
 		}
 
-		//Check host for contacts
-		//debug($service['Host']);
-		if(!empty($service['Host']['Contact']) || !empty($service['Host']['Contactgroup'])){
-			return [
-				'inherit' => true,
-				'source' => 'Host',
-				'Contact' => Hash::combine($service['Host']['Contact'], '{n}.id', '{n}.name'),
-				'Contactgroup' => Hash::combine($service['Host']['Contactgroup'], '{n}.id', '{n}.Container.name')
-			];
-		}
-
-		//Check hosttemplate for contacts
-		if(!empty($service['Host']['Hosttemplate']['Contact']) || !empty($service['Host']['Hosttemplate']['Contactgroup'])){
-			return [
-				'inherit' => true,
-				'source' => 'Hosttemplate',
-				'Contact' => Hash::combine($service['Host']['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
-				'Contactgroup' => Hash::combine($service['Host']['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.Container.name')
-			];
-		}
-		//}
-
-		if(!empty($_service)){
-			return [
-				'inherit' => false,
-				'source' => 'Service',
-				'Contact' => Hash::combine($_service['Contact'], '{n}.id', '{n}.name'),
-				'Contactgroup' => Hash::combine($_service['Contactgroup'], '{n}.id', '{n}.Container.name')
-			];
-		}
 		return [
 			'inherit' => false,
 			'source' => 'Service',
-			'Contact' => Hash::combine($service['Contact'], '{n}.id', '{n}.name'),
-			'Contactgroup' => Hash::combine($service['Contactgroup'], '{n}.id', '{n}.Container.name')
+			'Contact' => Hash::combine($serviceContactsAndContactgroups['Contact'], '{n}.id', '{n}.name'),
+			'Contactgroup' => Hash::combine($serviceContactsAndContactgroups['Contactgroup'], '{n}.id', '{n}.Container.name')
 		];
 	}
 

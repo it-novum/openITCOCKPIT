@@ -855,7 +855,7 @@ class HostsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Host modified successfully'));
+				$this->setFlash(__('<a href="/hosts/edit/%s">Host</a> modified successfully', $host['Host']['id']));
 				$this->loadModel('Tenant');
 				//$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
 				$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
@@ -1303,7 +1303,7 @@ class HostsController extends AppController{
 				if($this->request->ext == 'json'){
 					$this->serializeId(); // REST API ID serialization
 				}else{
-					$this->setFlash(__('Host modified successfully'));
+					$this->setFlash(__('<a href="/hosts/edit/%s">Host</a> created successfully', $this->Host->id));
 					$this->loadModel('Tenant');
 					//				$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
 					$this->redirect(array('action' => 'notMonitored'));

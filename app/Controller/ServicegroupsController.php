@@ -251,7 +251,7 @@ class ServicegroupsController extends AppController{
 					$this->serializeId();
 					return;
 				}
-				$this->setFlash(__('Servicegroup successfully saved'));
+				$this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
 				$this->redirect(['action' => 'index']);
 			}else{
 				if($this->request->ext == 'json'){
@@ -329,7 +329,7 @@ class ServicegroupsController extends AppController{
 					$this->serializeId();
 					return;
 				}else{
-					$this->setFlash(__('servicegroup successfully saved'));
+					$this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
 					$this->redirect(array('action' => 'index'));
 				}
 			}else{

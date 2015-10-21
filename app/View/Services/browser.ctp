@@ -154,14 +154,14 @@
 										<td><strong><?php echo __('Flap detection'); ?>:</strong></td>
 										<td><?php echo $this->Monitoring->compareServiceFlapDetectionWithMonitoring($service)['html']; ?></td>
 									</tr>
-									
+
 									<?php if($this->Status->sget($service['Service']['uuid'], 'notifications_enabled') == 0):?>
 										<tr>
 											<td><strong><?php echo __('Notifications'); ?>:</strong></td>
 											<td><a data-original-title="<?php echo __('Difference to configuration detected'); ?>" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight"><?php echo __('Temporary off'); ?></span></td>
 										</tr>
 									<?php endif; ?>
-									
+
 									<tr>
 										<td><strong><?php echo __('Check attempt'); ?>:</strong></td>
 										<td><?php echo h($this->Status->sget($service['Service']['uuid'], 'current_check_attempt')); ?>/<?php echo h($service['Service']['max_check_attempts']); ?></td>
@@ -258,7 +258,7 @@
 					<div id="tab2" class="tab-pane fade">
 						<strong><?php echo __('Current check attempt')?>:</strong> <?php echo $this->Status->sget($service['Service']['uuid'], 'current_check_attempt'); ?><br/>
 						<strong><?php echo __('Maximum attempts per check')?>:</strong> <?php echo h($service['Service']['max_check_attempts']); ?><br/>
-						<strong><?php echo __('Check interval')?>:</strong>
+						<strong><?php echo __('Check period')?>:</strong>
 						<?php
 						if($service['CheckPeriod']['name'] !== '' && $service['CheckPeriod']['name'] !== null):
 							echo h($service['CheckPeriod']['name']);
@@ -267,7 +267,19 @@
 						endif;
 						?>
 						<br />
-						<strong><?php echo __('Check interval in case of error'); ?>:</strong> <?php echo $this->Utils->secondsInHumanShort($service['Service']['retry_interval']); ?><br />
+						<strong><?php echo __('Check interval')?>:</strong>
+						<?php echo $this->Utils->secondsInHumanShort($service['Service']['check_interval']); ?>
+						<br />
+						<strong><?php echo __('Check interval in case of error'); ?>:</strong> <?php echo $this->Utils->secondsInHumanShort($service['Service']['retry_interval']); ?>
+						<br />
+						<strong><?php echo __('Active checks enabled')?>:</strong>
+						<?php if($service['Service']['active_checks_enabled'] == 1): ?>
+							<i class="fa fa-check text-success"></i>
+						<?php else: ?>
+							<i class="fa fa-times text-danger"></i>
+						<?php endif; ?>
+						<br />
+
 						<br />
 						<br />
 						<strong><?php echo __('UUID')?>:</strong> <code><?php echo $service['Service']['uuid']; ?></code><br />
@@ -723,4 +735,3 @@
 </div>
 
 <?php echo $this->element('qrmodal'); ?>
-

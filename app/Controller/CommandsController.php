@@ -67,7 +67,7 @@ class CommandsController extends AppController{
 				'Command.command_type' => CHECK_COMMAND
 			],
 		];
-		
+
 		//Add all commands to result for API requests
 		if($this->isJsonRequest() || $this->isXmlRequest()){
 			unset($query['conditions']['Command.command_type']);
@@ -82,7 +82,7 @@ class CommandsController extends AppController{
 		$this->set('_serialize', ['all_commands']);
 		$this->set(compact(['all_commands']));
 	}
-	
+
 	public function hostchecks(){
 		$query = [
 			'limit' => 150,
@@ -94,7 +94,7 @@ class CommandsController extends AppController{
 				'Command.command_type' => HOSTCHECK_COMMAND
 			],
 		];
-		
+
 		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 		$all_commands = $this->Paginator->paginate();
 		$this->set('isFilter', false);
@@ -104,7 +104,7 @@ class CommandsController extends AppController{
 		$this->set('_serialize', ['all_commands']);
 		$this->set(compact(['all_commands']));
 	}
-	
+
 	public function notifications(){
 		$query = [
 			'limit' => 150,
@@ -116,7 +116,7 @@ class CommandsController extends AppController{
 				'Command.command_type' => NOTIFICATION_COMMAND
 			],
 		];
-		
+
 		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 		$all_commands = $this->Paginator->paginate();
 		$this->set('isFilter', false);
@@ -126,7 +126,7 @@ class CommandsController extends AppController{
 		$this->set('_serialize', ['all_commands']);
 		$this->set(compact(['all_commands']));
 	}
-	
+
 	public function handler(){
 		$query = [
 			'limit' => 150,
@@ -138,7 +138,7 @@ class CommandsController extends AppController{
 				'Command.command_type' => EVENTHANDLER_COMMAND
 			],
 		];
-		
+
 		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 		$all_commands = $this->Paginator->paginate();
 		$this->set('isFilter', false);
@@ -183,7 +183,7 @@ class CommandsController extends AppController{
 				}
 
 				// Redirect normal browser POST requests only, not for REST API requests
-				$this->setFlash(__('Command successfully saved'));
+				$this->setFlash(__('<a href="/commands/edit/%s">Command</a> created successfully', $this->Command->id));
 				$redirect = $this->Command->redirect($this->request->params, ['action' => 'index']);
 				$this->redirect($redirect);
 			}else{
@@ -244,7 +244,7 @@ class CommandsController extends AppController{
 						CakeLog::write('log', serialize($changelog_data));
 					}
 
-					$this->setFlash(__('Command successfully saved'));
+					$this->setFlash(__('<a href="/commands/edit/%s">Command</a> successfully saved', $this->Command->id));
 					$redirect = $this->Command->redirect($this->request->params, ['action' => 'index']);
 					$this->redirect($redirect);
 				}else{
@@ -505,7 +505,7 @@ class CommandsController extends AppController{
 			"Server, this is very powerful to test and debug plugins.\n" .
 			"User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
 	}
-	
+
 	//ALC permission
 	public function terminal(){
 		return null;

@@ -396,7 +396,7 @@ class Host extends AppModel{
 
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-		if(empty($diff_array['Contact']['Contact']) && isset($diff_array['Contactgroup'])){
+		if(!empty($diff_array['Contact']['Contact']) || !empty($diff_array['Contactgroup']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = empty($requestData['Contact']['Contact']) ? [] : $requestData['Contact']['Contact'];
 			$diff_array['Contactgroup']['Contactgroup'] = empty($requestData['Contactgroup']['Contactgroup']) ? [] : $requestData['Contactgroup']['Contactgroup'];
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '1']]);
@@ -413,10 +413,19 @@ class Host extends AppModel{
 			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contactgroups' => '0']]);
 			$breakInherit = true;
 		}
+
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-
 		/*
+		if(!isset($request_data['Contact']['Contact'])){
+			$request_data['Contact']['Contact'] = [];
+		}
+
+		if(!isset($request_data['Contactgroup']['Contactgroup'])){
+			$request_data['Contactgroup']['Contactgroup'] = [];
+		}
+
+
 		if(isset($diff_array['Contact']['Contact']) || ((isset($diff_array['Contact']['Contact']) && $diff_array['Contact']['Contact'] == null)) && !isset($diff_array['Contactgroup']['Contactgroup'])){
 			$diff_array['Contact']['Contact'] = ($request_data['Contact']['Contact'] == '')?[]:$request_data['Contact']['Contact'];
 			$diff_array['Contactgroup']['Contactgroup'] = ($request_data['Contactgroup']['Contactgroup'] == '')?[]:$request_data['Contactgroup']['Contactgroup'];
@@ -520,12 +529,12 @@ class Host extends AppModel{
 
 		//Because of nagios 4 inheritance
 		//See https://github.com/naemon/naemon-core/pull/92
-		if(empty($diff_array['Host']['Contact']) && empty($diff_array['Host']['Contactgroup'])){
-			$diff_array['Contact']['Contact'] = [];
-			$diff_array['Contactgroup']['Contactgroup'] = [];
-			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '0']]);
-			$diff_array = Hash::merge($diff_array, ['Host' => ['own_contactgroups' => '0']]);
-		}
+		//if(empty($diff_array['Host']['Contact']) && empty($diff_array['Host']['Contactgroup'])){
+		//	$diff_array['Contact']['Contact'] = [];
+		//	$diff_array['Contactgroup']['Contactgroup'] = [];
+		//	$diff_array = Hash::merge($diff_array, ['Host' => ['own_contacts' => '0']]);
+		//	$diff_array = Hash::merge($diff_array, ['Host' => ['own_contactgroups' => '0']]);
+		//}
 		return $diff_array;
 	}
 

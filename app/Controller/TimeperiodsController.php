@@ -141,7 +141,7 @@ class TimeperiodsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				$this->setFlash(__('Timeperiod successfully saved'));
+				$this->setFlash(__('<a href="/timeperiods/edit/%s">Timeperiod</a> successfully saved', $this->Timeperiod->id));
 				$this->redirect(['action' => 'index']);
 			}else{
 				$this->set('timerange_errors', $this->Timeperiod->validationErrors);
@@ -203,7 +203,7 @@ class TimeperiodsController extends AppController{
 				if($this->request->ext == 'json'){
 					$this->serializeId();
 				}else{
-					$this->setFlash(__('Timeperiod successfully saved'));
+					$this->setFlash(__('<a href="/timeperiods/edit/%s">Timeperiod</a> successfully saved', $this->Timeperiod->id));
 					$this->redirect(['action' => 'index']);
 				}
 			}else{
@@ -223,7 +223,7 @@ class TimeperiodsController extends AppController{
 		}else{
 			$timeperiodId = $timeperiod['Timeperiod']['id'];
 		}
-		
+
 		//Check contacts
 		$this->loadModel('Contact');
 		$contactCount = $this->Contact->find('count', [
@@ -238,7 +238,7 @@ class TimeperiodsController extends AppController{
 		if($contactCount > 0){
 			return false;
 		}
-		
+
 		//Check service templates
 		$this->loadModel('Servicetemplate');
 		$servicetemplateCount = $this->Servicetemplate->find('count', [
@@ -253,7 +253,7 @@ class TimeperiodsController extends AppController{
 		if($servicetemplateCount > 0){
 			return false;
 		}
-		
+
 		//Check services
 		$this->loadModel('Service');
 		$serviceCount = $this->Service->find('count', [
@@ -268,7 +268,7 @@ class TimeperiodsController extends AppController{
 		if($serviceCount > 0){
 			return false;
 		}
-		
+
 		//Check host templates
 		$this->loadModel('Hosttemplate');
 		$hosttemplateCount = $this->Hosttemplate->find('count', [
@@ -298,7 +298,7 @@ class TimeperiodsController extends AppController{
 		if($hostCount > 0){
 			return false;
 		}
-		
+
 		//Check host escalations
 		$this->loadModel('Hostescalation');
 		$hostescalationCount = $this->Hostescalation->find('count', [
@@ -310,7 +310,7 @@ class TimeperiodsController extends AppController{
 		if($hostescalationCount > 0){
 			return false;
 		}
-		
+
 		//Check service escalations
 		$this->loadModel('Serviceescalation');
 		$serviceescalationCount = $this->Serviceescalation->find('count', [
@@ -322,7 +322,7 @@ class TimeperiodsController extends AppController{
 		if($serviceescalationCount > 0){
 			return false;
 		}
-		
+
 		//Check autoreports
 		if(in_array('AutoreportModule', CakePlugin::loaded())){
 			$this->loadModel('AutoreportModule.Autoreport');
@@ -412,7 +412,7 @@ class TimeperiodsController extends AppController{
 			$this->setFlash(__('Timeperiods deleted'));
 			$this->redirect(['action' => 'index']);
 		}
-		
+
 		//GET request
 		$timeperiodsToDelete = [];
 		$timeperiodsCanotDelete = [];
