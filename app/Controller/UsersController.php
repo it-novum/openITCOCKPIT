@@ -102,7 +102,7 @@ class UsersController extends AppController{
 		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
 
 		$all_users = $this->Paginator->paginate();
-		
+
 		//Get users container ids
 		$userContainerIds = [];
 		foreach($all_users as $user){
@@ -279,18 +279,19 @@ class UsersController extends AppController{
 					$this->request->data['ContainerUserMembership']
 				);
 			}
-//			if($this->User->validates($this->request->data)){
-			$this->ContainerUserMembership->deleteAll(
-				[
-					'user_id' => $id
-				]
-			);
-			if($this->User->saveAll($this->request->data)){
-				$this->setFlash(__('User saved successfully'));
-				$this->redirect(array('action' => 'index'));
+			$this->User->set($this->request->data);
+			if($this->User->validates()){
+				$this->ContainerUserMembership->deleteAll(
+					[
+						'user_id' => $id
+					]
+				);
+				if($this->User->saveAll($this->request->data)){
+					$this->setFlash(__('User saved successfully'));
+					$this->redirect(array('action' => 'index'));
 
-				return;
-//				}
+					return;
+				}
 			}else{
 				$this->setFlash(__('Could not save user'), false);
 			}
