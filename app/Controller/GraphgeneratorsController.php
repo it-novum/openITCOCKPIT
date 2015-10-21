@@ -66,13 +66,11 @@ class GraphgeneratorsController extends AppController{
 		$userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 		$hostUuids = array_keys($this->Host->hostsByContainerId($userContainerIds, 'all', [], 'uuid'));
 		$all_hosts = $this->Host->find('all', [
+				'recursive' => -1,
 				'fields' => ['id', 'name', 'uuid'],
 				'conditions' => ['Host.uuid' => $hostUuids],
 			]
 		);
-
-		$hostUuids = array_keys($this->Host->hostsByContainerId($userContainerIds, 'all', [], 'uuid'));
-		$host_uuids = [];
 		$host_ids_for_select = [];
 		foreach($all_hosts as $host){
 			if($this->Rrd->isValidHostUuid($host['Host']['uuid'])){
