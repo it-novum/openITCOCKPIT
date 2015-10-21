@@ -158,7 +158,7 @@
 									<td><strong><?php echo __('Flap detection'); ?>:</strong></td>
 									<td><?php echo $this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['html']; ?></td>
 								</tr>
-								
+
 								<?php if($this->Status->get($host['Host']['uuid'], 'notifications_enabled') == 0):?>
 									<tr>
 										<td><strong><?php echo __('Notifications'); ?>:</strong></td>
@@ -238,6 +238,19 @@
 					</div>
 					<div id="tab2" class="tab-pane fade">
 						<strong><?php echo __('Check period')?>:</strong> <?php echo h($host['CheckPeriod']['name']); ?><br />
+						<strong><?php echo __('Check interval')?>:</strong>
+						<?php echo $this->Utils->secondsInHumanShort($host['Host']['check_interval']); ?>
+						<br />
+						<strong><?php echo __('Check interval in case of error'); ?>:</strong> <?php echo $this->Utils->secondsInHumanShort($host['Host']['retry_interval']); ?>
+						<br />
+						<strong><?php echo __('Active checks enabled')?>:</strong>
+						<?php if($host['Host']['active_checks_enabled'] == 1): ?>
+							<i class="fa fa-check text-success"></i>
+						<?php else: ?>
+							<i class="fa fa-times text-danger"></i>
+						<?php endif; ?>
+						<br />
+						<br />
 						<strong><?php echo __('UUID')?>:</strong> <code><?php echo $host['Host']['uuid']; ?></code><br />
 						<strong><?php echo __('IP address'); ?>:</strong> <code><?php echo h($host['Host']['address']); ?></code><br />
 						<strong><?php echo __('Description'); ?>:</strong><br />
