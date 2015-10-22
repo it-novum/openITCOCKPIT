@@ -907,11 +907,19 @@ class HostsController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container']['Container'][] = $this->request->data['Host']['container_id'];
 			if($this->Host->saveAll(Hash::merge($this->request->data, $host))){
-				$this->setFlash(__('Host modified successfully'));
-				$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-				$this->redirect($redirect);
+				if($this->request->ext == 'json'){
+					$this->serializeId(); // REST API ID serialization
+				}else{
+					$this->setFlash(__('Host modified successfully'));
+					$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
+					$this->redirect($redirect);
+				}
 			}else{
-				$this->setFlash(__('Data could not be saved'), false);
+				if($this->request->ext == 'json'){
+					$this->serializeErrorMessage();
+				}else{
+					$this->setFlash(__('Data could not be saved'), false);
+				}
 			}
 		}
 		$this->set(compact(['host','containers', 'sharingContainers']));
