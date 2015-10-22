@@ -121,9 +121,10 @@ class MapsController extends MapModuleAppController {
 				if($this->request->ext === 'json'){
 					$this->serializeId();
 					return;
+				}else{
+					$this->setFlash(__('Map properties successfully saved'));
+					$this->redirect(['action' => 'index']);
 				}
-				$this->setFlash(__('Map properties successfully saved'));
-				$this->redirect(['action' => 'index']);
 			}else{
 				if($this->request->ext === 'json'){
 					$this->serializeErrorMessage();

@@ -36,25 +36,27 @@ App::import('Model', 'MapModule.Map');
 class NagvisMigrationShell extends AppShell {
 
 	/* @var object Host Instance */
-	private $host;
+	private $host = null;
 	/* @var object Service Instance */
-	private $service;
+	private $service = null;
 	/* @var object Hostgroup Instance */
-	private $hostgroup;
+	private $hostgroup = null;
 	/* @var object Servicegroup Instance */
-	private $servicegroup;
+	private $servicegroup = null;
 	/* @var object Map Instance */
-	private $map;
+	private $map = null;
 	/* @var string last error message from object resolving */
-	private $lastError;
+	private $lastError = null;
 	/* @var object HttpSocket Instance */
-	private $HttpSocket;
+	private $HttpSocket = null;
 	/* @var string the domain of this host e.g. http://thisIp/ */
-	private $selfHost;
+	private $selfHost = null;
 	/* @var array credentials to log on to oitc v3 */
-	private $selfCredentials; 
+	private $selfCredentials = null; 
 	/* @var array mapping for the iconsets */
-	private $iconsetMap;
+	private $iconsetMap = null;
+	/* @var array iconsets which are obsolete */
+	private $obsoleteIconsets = null;
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
@@ -62,9 +64,15 @@ class NagvisMigrationShell extends AppShell {
 		}
 
 		//write the iconset map
+		//newIconset => [obsoleteIconset_1, obsoleteIconset_2, ... obsoleteIconset_n]
 		$this->iconsetMap = [
-			'std_mini_32px' => ['std_medium','std_small'],
+			'std_mini_32px' => ['std_medium','std_small', 'std_small_sack', 'std_medium_sack', 'std_big_sack'],
 			'std_mid_64px' => ['std_big'],
+		];
+		//iconsets which are not needed anymore
+		$this->obsoleteIconsets = [
+			'configerror',
+			'back'
 		];
 
 		$this->stdout->styles('success',['text' => 'green']);
@@ -126,15 +134,18 @@ class NagvisMigrationShell extends AppShell {
 		$this->getFiles($session, $iconsetPath, $iconsetList, $iconsetDir);
 		//sort every icon into its folder
 		$this->sortList($iconsetList, $iconsetDir);
-
+		//convert the images to png
 		$this->convert($iconsetDir);
-
+		//build list of iconsets which will be replaced by a new one
 		$toSkip = [];
 		foreach ($this->iconsetMap as $iconsets) {
 			foreach ($iconsets as $iconset) {
 				$toSkip[] = $iconset;
 			}
 		}
+		//merge array of obsolete iconsets with iconsets that will be replaced through a new from the module
+		$toSkip = Hash::merge($toSkip, $this->obsoleteIconsets);
+		//move all iconsets to the new module
 		$this->moveDirRecursively($iconsetDir,$pluginPath.'img'.DS.'items'.DS, $toSkip);
 
 		/*
@@ -142,18 +153,17 @@ class NagvisMigrationShell extends AppShell {
 		 */
 		$this->out('<info>Getting Shapes</info>');
 		$shapesPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'shapes'.DS;
+		//receive a file list
 		$shapesList = $this->getFileList($session, $shapesPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
 		$shapesDir = $cfgDownloadDir.DS.'shapes';
 		($this->checkConfigFilesDir($shapesDir))?:$this->createDownloadDirectory($shapesDir);
+		//download the files
 		$this->getFiles($session, $shapesPath, $shapesList, $shapesDir);
-
 		$destination = $pluginPath.'img'.DS.'icons'.DS;
+		//check if the target directory is existing
 		if($this->checkDir($destination)){
 			$this->moveToDestination($shapesList, $shapesDir, $destination);
 		}
-
-
-
 
 		//@TODO write config files into the DB
 		//@TODO cleanup the directory
@@ -184,14 +194,13 @@ class NagvisMigrationShell extends AppShell {
 			]
 		];
 		$httpResponse = $this->HttpSocket->post($loginUrl, $loginData);
-		if(!$httpResponse->isOk()){
-			debug($httpResponse->raw);
-			die('ende');
+		if($httpResponse->isOk()){
+			$this->out('<success>'.$httpResponse->body().'</success>');
+		}else{
+			$this->error('Login Failed!', $httpResponse->code.' '.$httpResponse->body());
 		}
 
-
-		debug($httpResponse->raw);
-
+		//transform the config files
 		if($configFilesReceived){
 			$this->startFiletransform($configFileList, $cfgDownloadDir);
 		}
@@ -359,7 +368,6 @@ class NagvisMigrationShell extends AppShell {
 			}else{
 				$mapname = preg_replace('/(\..*)/', '', $file);
 				if($data = $this->transformDataForV3($mapname, $fileData)){
-//debug($data);
 					$this->saveNewData($data);
 					$this->out('<success> ...Complete!</success>');
 				}else{
@@ -383,8 +391,11 @@ class NagvisMigrationShell extends AppShell {
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
 			}else{
-				//throw new Exception($response->raw);
-				throw new Exception('save data failed!');
+				debug($response->body());
+				debug($response->code);
+				debug($response->reasonPhrase);
+				throw new Exception($response->raw);
+				//throw new Exception('save data failed!');
 				
 			}
 		}catch(Exception $e){
@@ -532,7 +543,9 @@ class NagvisMigrationShell extends AppShell {
 						];
 						$mapData['Maptext'][] = $currentData;
 						break;
-					case 'line': // stateless line NOT IMPLEMENTED YET!
+					case 'line': 
+						continue; // stateless line NOT IMPLEMENTED YET!
+
 						$currentData = [
 							'x' => $item['x'], // comma separated 
 							'y' => $item['y'], // comma separated
@@ -551,7 +564,20 @@ class NagvisMigrationShell extends AppShell {
 						$mapData['Mapicon'][] = $currentData;
 						break;
 					case 'map':
-						//debug($item);
+						$mapId = $this->resolveMapname($item['map_name']);
+						if(empty($mapId)){
+							continue;
+						}
+
+						//map item
+						$currentData = [
+							'x' => $item['x'],
+							'y' => $item['y'],
+							'object_id' => $mapId,
+							'type' => 'map',
+							'iconset' => $this->getNewIconset(((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset'])),
+						];
+						$mapData['Mapitem'][] = $currentData;
 						break;
 					default:
 						$this->out('<error>the type '.$key.' is not specified!</error>');
@@ -593,9 +619,15 @@ class NagvisMigrationShell extends AppShell {
 				return 'Tacho';
 				break;
 			case 'text':
+			case 'text2':
+			case 'text_wbg':
 				return 'Text';
 				break;
 			case 'graph_all_ds':
+			case 'graph_itn':
+			case 'pChartPieChart_1':
+			case 'graph_trend':
+			case 'graph_traffic_in-out':
 				return 'RRDGraph';
 				break;
 			default:
@@ -624,14 +656,37 @@ class NagvisMigrationShell extends AppShell {
 		}
 	}
 
+	protected function resolveMapname($mapname){
+		$mapId = $this->map->find('first', [
+			'recursive' => -1,
+			'conditions' => [
+				'name' => $mapname,
+			],
+			'fields' => [
+				'id'
+			]
+		]);
+		if(!empty($mapId)){
+			$mapId = $mapId['Map']['id'];
+			$this->out('<success>Map '.$mapname.' resolved! ID -> '.$mapId.'</success>');
+			return $mapId;
+		}
+		$errorMsg = '<warning>Could not resolve Map '.$mapname.'</warning>';
+		if($this->lastError != $errorMsg){
+			$this->out($errorMsg);
+			$this->lastError = $errorMsg;
+		}
+		return false;
+	}
+
 	/**
 	 * Resolves the name of a Host or Servicegroup
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $groupName the name of the group
+	 * @param  String $groupname the name of the group
 	 * @param  String $groupType the group type. can be 'hostgroup' or 'servicegroup'
 	 * @return mixed             the groupID or false on failure
 	 */
-	protected function resolveGroupname($groupName, $groupType){
+	protected function resolveGroupname($groupname, $groupType){
 		$type = ucfirst($groupType);
 
 		$groupId = $this->$groupType->find('first',[
@@ -642,17 +697,17 @@ class NagvisMigrationShell extends AppShell {
 			'contain' => [
 				'Container' => [
 					'conditions' => [
-						'Container.name' => $groupName
+						'Container.name' => $groupname
 					],
 				]
 			]
 		]);
 		if(!empty($groupId['Container']['id'])){
 			$groupId = $groupId['Container']['id'];
-			$this->out('<success>'.$type.' '.$groupName.' resolved! ID -> '.$groupId.'</success>');
+			$this->out('<success>'.$type.' '.$groupname.' resolved! ID -> '.$groupId.'</success>');
 			return $groupId;
 		}
-		$this->out('<warning>Could not resolve '.$type.' '.$groupName.'</warning>');
+		$this->out('<warning>Could not resolve '.$type.' '.$groupname.'</warning>');
 		return false;
 	}
 
@@ -846,7 +901,11 @@ class NagvisMigrationShell extends AppShell {
 				$to = $dir.DS.$folderName;
 				//check/create iconset folder 
 				if($this->createIconsetDirectories($dir, $folderName)){
-					$this->moveIconFiles($dir, $to, $listItem, $newFilename);
+					if(!$this->moveIconFiles($dir, $to, $listItem, $newFilename)){
+						$this->out('<error>error moving '.$listItem.' to '.$to.'</error>');
+					}
+					if($folderName == 'back' || $folderName == 'demo_state' || $folderName == 'demo_landscapes'){
+					}
 				}
 			}
 		}
@@ -893,9 +952,12 @@ class NagvisMigrationShell extends AppShell {
 						$filename = $files->getFilename();
 						$filename = preg_replace('/(\..*)/', '', $filename);
 						$fullPath = $path.DS.$filename.'.png';
-						if($this->convertToPNG($file, $fullPath)){
-							$this->deleteFile($file);
+						if(pathinfo($path.DS.$file, PATHINFO_EXTENSION) != 'png'){
+							if($this->convertToPNG($file, $fullPath)){
+								$this->deleteFile($file);
+							}
 						}
+						
 					}
 				}
 			}else{
