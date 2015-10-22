@@ -731,7 +731,7 @@ class Service extends AppModel{
 		return false;
 	}
 
-	public function servicesByHostContainerIds($containerIds = [], $conditions = []){
+	public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []){
 		$_conditions = [
 			'Host.container_id' => $containerIds,
 			'Host.disabled' => 0,
@@ -746,7 +746,7 @@ class Service extends AppModel{
 
 		$conditions = Hash::merge($_conditions, $conditions);
 
-		return $this->find('all', [
+		$result =  $this->find('all', [
 			'recursive' => -1,
 			'contain' => [
 				'Servicetemplate' => [
@@ -767,6 +767,17 @@ class Service extends AppModel{
 			],
 			'conditions' => $conditions
 		]);
+
+		if($type == 'list'){
+			$_return = [];
+			foreach($result as $service){
+				$_return[$service['Service']['id']] = $service[0]['ServiceDescription'];
+			}
+			return $_return;
+		}
+
+		// type all or everything else
+		return $result;
 	}
 
 	public function diffWithTemplate($service, $servicetemplate){

@@ -45,8 +45,7 @@ class PerfdataHelper extends AppHelper{
 												foreach(str_split($s[1]) as $char ){
 														if( $char == '.' || $char == ',' || ($char >= '0' && $char <= '9') ){
 																$number .= $char;
-														}
-														else{
+														}else{
 																$unit .= $char;
 														}
 												}
@@ -60,6 +59,7 @@ class PerfdataHelper extends AppHelper{
 								}
 						}
 						if(isset($s[0])){
+								$perfdata[$i] = array_filter($perfdata[$i]);
 								$perfdata[$i] = array_combine($perf_data_structure, array_merge($perfdata[$i], (( sizeof($perf_data_structure)-sizeof($perfdata[$i]) )>0) ? array_fill(sizeof($perfdata[$i]),(sizeof($perf_data_structure)-sizeof($perfdata[$i])),''):array()));
 								unset($s);
 						}

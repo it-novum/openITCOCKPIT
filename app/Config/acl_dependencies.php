@@ -104,6 +104,9 @@ $config = [
 				'getTachoPerfdata',
 				'saveTachoConfig',
 			],
+			'Hosts' => [
+				'view'
+			]
 		],
 		'dependencies' => [
 			'Automaps' => [
@@ -234,4 +237,3 @@ $config = [
 		]
 	]
 ];
-
