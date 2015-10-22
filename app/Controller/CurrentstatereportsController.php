@@ -47,7 +47,7 @@ class CurrentstatereportsController extends AppController {
 		//ContainerID => 1 for ROOT Container
 
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
-		$services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds, 'list'),
+		$services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
 			'{n}.Service.id', '{n}'
 		);
 		$this->set(compact(['services', 'userContainerId']));

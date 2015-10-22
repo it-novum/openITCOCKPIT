@@ -326,6 +326,19 @@ class HostsController extends AppController{
 		}
 	}
 
+	public function view($id = null){
+		if(!in_array($this->request->ext, ['json', 'xml'])){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Host->exists($id)){
+			throw new NotFoundException(__('Invalid host'));
+		}
+		$host = $this->Host->findById($id);
+		$this->set('host', $host);
+		$this->set('_serialize', ['host']);
+	}
+
 	public function notMonitored(){
 		$this->__unbindAssociations('Service');
 
