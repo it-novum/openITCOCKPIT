@@ -25,11 +25,11 @@
 App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 	$exportLog: null,
 	worker: null,
-	
+
 	//components: ['WebsocketSudo'],
 
 	_initialize: function(){
-		
+
 		this.worker = function(){
 			var self = this;
 			$.ajax({
@@ -71,15 +71,15 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 							}
 						}
 					}
-					
+
 					if(response.exportFinished.finished == true){
 						if(response.exportFinished.successfully == true){
 							$('#exportSuccessfully').show();
 						}
-						
+
 						if(response.exportFinished.successfully == false){
 							$('#exportError').show();
-							
+
 							//Query monitoring validation error if any
 							for(var key in response.exportRecords){
 								if(response.exportRecords[key].task == 'export_verify_new_configuration'){
@@ -99,13 +99,13 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 				}
 			});
 		}.bind(this);
-		
+
 		//Export running?
 		if(this.getVar('exportRunning') == true){
 			$('#exportInfo').show();
 			this.worker();
 		}
-		
+
 		$('#launchExport').click(function(){
 			var self = this;
 			$('#exportInfo').show();
@@ -116,18 +116,23 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 				createBackup = 0;
 			}
 			$.ajax({
-				url: '/exports/launchExport/'+createBackup,
+				url: '/exports/launchExport/'+createBackup+'.json',
 				type: "GET",
-				success: function(data) {
-					
+				success: function(response){
+					if(response.export.exportRunning == true){
+						$('#exportRunning').show();
+						$('#exportInfo').show();
+						$('#launchExport').parents('.formactions').remove();
+					}
+					self.worker();
 				},
 				complete: function() {
-					self.worker();
+
 				}
 			});
 		}.bind(this));
 	},
-	
+
 	verify: function(){
 		var $verifyOutput = $('#verifyOutput');
 		var RegExObject = new RegExp('('+this.getVar('uuidRegEx')+')', 'g');
@@ -138,15 +143,15 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 			success: function(response){
 				for(var key in response.result.output){
 					var line = response.result.output[key];
-					
+
 					//Replace UUID with links to forwarder
 					line = line.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
-					
+
 					var _class='txt-color-blueDark';
 					if(line.match('Warning')){
 						_class = 'txt-color-orangeDark';
 					}
-					
+
 					if(line.match('Error')){
 						_class = 'txt-color-red';
 					}

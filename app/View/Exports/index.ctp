@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-6">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-retweet fa-fw "></i> 
-				<?php echo __('Administration')?> 
-			<span>> 
+			<i class="fa fa-retweet fa-fw "></i>
+				<?php echo __('Administration')?>
+			<span>>
 				<?php echo __('refresh monitoring configuration'); ?>
 			</span>
 		</h1>
@@ -77,14 +77,16 @@
 							</div>
 
 							<div class="row">
+								<?php $style='display:none;'; ?>
 								<?php if($exportRunning == true): ?>
-									<div class="col-xs-12 padding-top-20">
-										<div class="alert alert-info alert-block">
-											<h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo __('Refresh in progress'); ?></h4>
-											<?php echo __('You need to wait before the currently running refresh of the monitoring configuration is finished.'); ?>
-										</div>
+									<?php $style=''; ?>
+								<?php endif; ?>
+								<div id="exportRunning" class="col-xs-12 padding-top-20" style="<?php echo $style; ?>">
+									<div class="alert alert-info alert-block">
+										<h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo __('Refresh in progress'); ?></h4>
+										<?php echo __('You need to wait before the currently running refresh of the monitoring configuration is finished.'); ?>
 									</div>
-								<?php endif;?>
+								</div>
 								<div id="exportSuccessfully" class="col-xs-12 padding-top-20" style="display:none;">
 									<div class="alert alert-success alert-block">
 										<h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Success'); ?></h4>
@@ -114,8 +116,8 @@
 										<div class="well" id="exportLog"></div>
 									</div>
 								</div>
-								
-								
+
+
 								<?php if($exportRunning === false): ?>
 									<div class="col-xs-12 padding-top-20">
 										<div class="well formactions ">
@@ -130,7 +132,7 @@
 									</div>
 								<?php endif;?>
 							</div>
-							
+
 					</div>
 				</div>
 			</div>
