@@ -351,7 +351,6 @@ class HostsController extends AppController{
 		}
 
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
-
 		if(isset($this->request->params['named']['BrowserContainerId'])){
 			//The user set a comntainer id in the URL, may be over browser
 			$all_container_ids = Hash::merge(
@@ -1369,8 +1368,7 @@ class HostsController extends AppController{
 		$this->Paginator->settings = [
 			'recurisve' => -1,
 			'conditions' => [
-				'Host.disabled' => 1,
-				'HostsToContainers.container_id' => $this->MY_RIGHTS,
+				$conditions
 			],
 			'contain' => [
 				'Hosttemplate',
