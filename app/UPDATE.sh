@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. /etc/dbconfig-common/openitcockpit-mysql.conf
+. /etc/dbconfig-common/openitcockpit.conf
 
 APPDIR="/usr/share/openitcockpit/app"
 
