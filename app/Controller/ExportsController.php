@@ -25,7 +25,7 @@
 
 class ExportsController extends AppController{
 	public $layout = 'Admin.default';
-	
+
 	public $components = [
 		'Paginator',
 		'ListFilter.ListFilter',
@@ -36,15 +36,15 @@ class ExportsController extends AppController{
 	public $helpers = [
 		'ListFilter.ListFilter',
 	];
-	
+
 	public function index(){
 		App::uses('UUID', 'Lib');
 		Configure::load('gearman');
 		$this->Config = Configure::read('gearman');
-		
+
 		$this->GearmanClient->client->setTimeout(5000);
 		$gearmanReachable = @$this->GearmanClient->client->ping(true);
-		
+
 		$exportRunning = true;
 		$result = $this->Export->findByTask('export_started');
 		if(empty($result)){
@@ -54,25 +54,25 @@ class ExportsController extends AppController{
 				$exportRunning = false;
 			}
 		}
-		
+
 		$this->loadModel('Systemsetting');
 		$this->set('gearmanReachable', $gearmanReachable);
 		$this->set('exportRunning', $exportRunning);
 		$this->Frontend->setJson('exportRunning', $exportRunning);
 		$this->Frontend->setJson('uuidRegEx', UUID::JSregex());
 	}
-	
+
 	public function broadcast(){
 		$this->allowOnlyAjaxRequests();
 		$_exportRecords = $this->Export->find('all');
-		
+
 		$exportRecords = [];
-		
+
 		$exportFinished = [
 			'finished' => false,
 			'successfully' => false
 		];
-		
+
 		foreach($_exportRecords as $exportRecord){
 			$exportRecords[$exportRecord['Export']['id']] = [
 				'task' => $exportRecord['Export']['task'],
@@ -80,7 +80,7 @@ class ExportsController extends AppController{
 				'finished' => $exportRecord['Export']['finished'],
 				'successfully' => $exportRecord['Export']['successfully'],
 			];
-			
+
 			if($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1){
 				$exportFinished = [
 					'finished' => true,
@@ -88,25 +88,47 @@ class ExportsController extends AppController{
 				];
 			}
 		}
-		
+
 		$this->set(compact(['exportRecords', 'exportFinished']));
 		$this->set('_serialize', ['exportRecords', 'exportFinished']);
 	}
-	
+
 	public function launchExport($createBackup = 1){
-		$this->allowOnlyAjaxRequests();
-		session_write_close();
-		
-		//Remove old records from DB that javascript is not confused
-		$this->Export->deleteAll(true);
-		
-		Configure::load('gearman');
-		$this->Config = Configure::read('gearman');
-		$this->autoRender = false;
-		$this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
-		return;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		//session_write_close();
+
+		$exportRunning = true;
+		$result = $this->Export->findByTask('export_started');
+		if(empty($result)){
+			$exportRunning = false;
+		}else{
+			if($result['Export']['finished'] == 1){
+				$exportRunning = false;
+			}
+		}
+
+		$exportStarted = false;
+		if($exportRunning === false){
+			//Remove old records from DB that javascript is not confused
+
+			$this->Export->deleteAll(true);
+
+			Configure::load('gearman');
+			$this->Config = Configure::read('gearman');
+			$this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
+			$exportStarted = true;
+		}
+
+		$export = [
+			'exportRunning' => $exportRunning,
+			'exportStarted' => $exportStarted
+		];
+		$this->set('export', $export);
+		$this->set('_serialize', ['export']);
 	}
-	
+
 	public function verifyConfig(){
 		//$this->allowOnlyAjaxRequests();
 		Configure::load('gearman');
