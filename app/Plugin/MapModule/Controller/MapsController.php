@@ -43,7 +43,8 @@ class MapsController extends MapModuleAppController {
 			$this->Paginator->settings['conditions'] = [];
 		}
 		$this->Paginator->settings['order'] = ['Map.name' => 'asc'];
-		$this->set('all_maps', $this->Paginator->paginate());
+		$all_maps = $this->Paginator->paginate();
+		$this->set('all_maps', $all_maps);
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', array('all_maps'));
 		$this->set('isFilter', false);
@@ -117,9 +118,18 @@ class MapsController extends MapModuleAppController {
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
 			if($this->Map->saveAll($this->request->data)){
-				$this->setFlash(__('Map properties successfully saved'));
-				$this->redirect(['action' => 'index']);
+				if($this->request->ext === 'json'){
+					$this->serializeId();
+					return;
+				}else{
+					$this->setFlash(__('Map properties successfully saved'));
+					$this->redirect(['action' => 'index']);
+				}
 			}else{
+				if($this->request->ext === 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}
 				$this->setFlash(__('could not save data'), false);
 			}
 		}
@@ -146,9 +156,6 @@ class MapsController extends MapModuleAppController {
 	public function loadUsersForTenant($tenantId = []){
 		//$users = $this->Admin->Users->contactsByContainerId($this->MY_RIGHTS, 'list', 'id');
 		
-		
-		//debug(gettype(urldecode($tenantId)));
-		//die('ende');
 		foreach ($tenantId as $key => $value) {
 			debug($key);
 			debug($value);
