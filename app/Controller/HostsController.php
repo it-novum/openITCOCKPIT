@@ -141,7 +141,6 @@ class HostsController extends AppController{
 			'fields' => [
 				'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
 				'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-				'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
 				'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
 			],
 		],
