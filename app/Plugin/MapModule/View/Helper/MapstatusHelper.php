@@ -45,13 +45,15 @@ class MapstatusHelper extends AppHelper{
 		//fill Services
 		if(isset($this->_View->viewVars['servicestatus'])){
 			$servicestatus = $this->_View->viewVars['servicestatus'];
-			foreach ($servicestatus as $ss) {
-				$this->servicestatus[$ss['Objects']['name2']] = $ss['Servicestatus'];
-				array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Service']);
-				array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Servicetemplate']);
-				array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Objects']);
+			if(!empty($servicestatus)){
+				foreach ($servicestatus as $ss) {
+					$this->servicestatus[$ss['Objects']['name2']] = $ss['Servicestatus'];
+					array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Service']);
+					array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Servicetemplate']);
+					array_push($this->servicestatus[$ss['Objects']['name2']], $ss['Objects']);
+				}
 			}
-		}
+			}
 
 		//fill Hostgroups
 		if(isset($this->_View->viewVars['hostgroups'])){
@@ -68,7 +70,6 @@ class MapstatusHelper extends AppHelper{
 				$this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs['Servicegroup']['Servicestatus'];
 			}
 		}
-
 
 		if(isset($this->_View->viewVars['mapstatus'])){
 			$this->mapstatus = $this->_View->viewVars['mapstatus'];
@@ -267,6 +268,14 @@ class MapstatusHelper extends AppHelper{
 	}
 
 	public function hostgroupstatusValuesHost($state){
+		if(!isset($state)){
+			$err = [
+					'human_state' => __('Not found in monitoring'),
+					'image' => 'error.png',
+					'state' => -1
+				];
+			return $err;
+		}
 		$states = [
 				0 => [
 					'human_state' => __('Hostgroup is up'),
@@ -293,6 +302,14 @@ class MapstatusHelper extends AppHelper{
 	}
 	
 	public function hostgroupstatusValuesService($state){
+		if(!isset($state)){
+			$err = [
+					'human_state' => __('Not found in monitoring'),
+					'image' => 'error.png',
+					'state' => -1
+				];
+			return $err;
+		}
 		$states = [
 				0 => [
 					'human_state' => __('Ok'),
@@ -324,6 +341,14 @@ class MapstatusHelper extends AppHelper{
 	}
 
 	public function ServicegroupstatusValues($state){
+		if(!isset($state)){
+			$err = [
+					'human_state' => __('Not found in monitoring'),
+					'image' => 'error.png',
+					'state' => -1
+				];
+			return $err;
+		}
 		$states = [
 				0 => [
 					'human_state' => __('Ok'),
