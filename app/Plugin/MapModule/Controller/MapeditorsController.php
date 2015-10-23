@@ -798,7 +798,6 @@ class MapeditorsController extends MapModuleAppController {
 				'Servicestatus.current_state DESC'
 			]
 		]);
-
 		$this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
 	}
 
@@ -978,7 +977,7 @@ class MapeditorsController extends MapModuleAppController {
 
 
 	public function popoverServiceStatus($uuid = null){
-		$servicestatus = $this->Objects->find('first', [
+		$servicestatus = $this->Objects->find('all', [
 			'recursive' => -1,
 			'conditions' => [
 				'name2' => $uuid,
@@ -1025,7 +1024,7 @@ class MapeditorsController extends MapModuleAppController {
 			]
 		]);
 
-		$service = $this->Service->find('first', [
+		$service = $this->Service->find('all', [
 			'recursive' => -1,
 			'conditions' => [
 				'Service.uuid' => $uuid,
