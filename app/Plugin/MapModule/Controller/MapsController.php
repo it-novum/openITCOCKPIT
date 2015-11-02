@@ -100,7 +100,7 @@ class MapsController extends MapModuleAppController {
 			]
 		]);
 	
-		$map = $this->Map->findById($id);	
+		$map = $this->Map->findById($id);
 		//'Tenant.description' <-> Container.name
 		$tenants = Set::combine($this->Tenant->find('all',[
 
@@ -118,13 +118,15 @@ class MapsController extends MapModuleAppController {
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
 			if($this->Map->saveAll($this->request->data)){
-				if($this->request->ext === 'json'){
+				if($this->isJsonRequest()){
+					debug('json request');
 					$this->serializeId();
 					return;
-				}else{
-					$this->setFlash(__('Map properties successfully saved'));
-					$this->redirect(['action' => 'index']);
 				}
+				debug('kein json request');
+				$this->setFlash(__('Map properties successfully saved'));
+				$this->redirect(['action' => 'index']);
+				
 			}else{
 				if($this->request->ext === 'json'){
 					$this->serializeErrorMessage();

@@ -378,7 +378,13 @@ class NagvisMigrationShell extends AppShell {
 		}
 		$this->out('<info>File Transformation Complete!</info>');
 	}
-
+private $lastResponse = null;
+	/**
+	 * save the map data from the config files into the v3 Database
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $data the Data to send
+	 * @return void
+	 */
 	protected function saveNewData($data){
 		$mapId = $data['Map']['id'];
 		try{
@@ -386,8 +392,9 @@ class NagvisMigrationShell extends AppShell {
 				'header' => ['Content-Type' => 'application/json'],
 			];
 			debug($data);
-			$response = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId, json_encode($data), $request);
-
+			
+			$this->lastResponse = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
+			$response = $this->lastResponse;
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
 			}else{
@@ -623,6 +630,7 @@ class NagvisMigrationShell extends AppShell {
 			case 'text_wbg':
 				return 'Text';
 				break;
+			case 'graph':
 			case 'graph_all_ds':
 			case 'graph_itn':
 			case 'pChartPieChart_1':
@@ -637,7 +645,7 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * returns the map type
+	 * returns the item type
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $type the type returned from the config file
 	 * @return String       the new type
