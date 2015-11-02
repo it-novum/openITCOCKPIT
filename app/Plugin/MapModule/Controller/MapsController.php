@@ -119,11 +119,9 @@ class MapsController extends MapModuleAppController {
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
 			if($this->Map->saveAll($this->request->data)){
 				if($this->isJsonRequest()){
-					debug('json request');
 					$this->serializeId();
 					return;
 				}
-				debug('kein json request');
 				$this->setFlash(__('Map properties successfully saved'));
 				$this->redirect(['action' => 'index']);
 				
@@ -156,14 +154,11 @@ class MapsController extends MapModuleAppController {
 	}
 
 	public function loadUsersForTenant($tenantId = []){
-		//$users = $this->Admin->Users->contactsByContainerId($this->MY_RIGHTS, 'list', 'id');
+		return;
 		
 		foreach ($tenantId as $key => $value) {
-			debug($key);
-			debug($value);
+		//	debug($key);
+		//	debug($value);
 		}
-		//$users = $this->Admin->Users->find();
-
-		echo 'response vom MapsController';
 	}
 }

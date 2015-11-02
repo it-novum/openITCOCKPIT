@@ -165,11 +165,6 @@ class NagvisMigrationShell extends AppShell {
 			$this->moveToDestination($shapesList, $shapesDir, $destination);
 		}
 
-		//@TODO write config files into the DB
-		//@TODO cleanup the directory
-
-		//$this->cleanup($session, $cfgDownloadDir);
-		
 		//create Object instances
 		$this->host = new Host();
 		$this->service = new Service();
@@ -204,6 +199,9 @@ class NagvisMigrationShell extends AppShell {
 		if($configFilesReceived){
 			$this->startFiletransform($configFileList, $cfgDownloadDir);
 		}
+
+		//cleanup the obsolete data
+		$this->cleanupData($session, $cfgDownloadDir);
 	}
 
 	/**
@@ -391,19 +389,14 @@ private $lastResponse = null;
 			$request = [
 				'header' => ['Content-Type' => 'application/json'],
 			];
-			debug($data);
 			
 			$this->lastResponse = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
 			$response = $this->lastResponse;
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
 			}else{
-				debug($response->body());
-				debug($response->code);
-				debug($response->reasonPhrase);
+				$this->out('<error>'.$response->body().'</error>');
 				throw new Exception($response->raw);
-				//throw new Exception('save data failed!');
-				
 			}
 		}catch(Exception $e){
 			$this->error($e->getMessage());
@@ -1066,15 +1059,24 @@ private $lastResponse = null;
 	// shall cleanup the ssh2 connection and delete the downloaded config files
 	protected function cleanupData($session, $downloadDir){
 		$this->out('<info>Cleaning up Directory</info>');
-		ssh2_exec($session, 'exit');
+		if(!ssh2_exec($session, 'exit')){
+			$this->out('<error>Could not exit ssh2 session</error>');
+		}else{
+			$this->out('<info>Exit ssh2 session</info>');
+		}
 		unset($session);
 		//delete download folder with everything in it
-		$this->deleteDownloadData($downloadDir);
+		if($this->deleteDownloadData($downloadDir)){
+			$this->out('<info>Deleting download directory</info>');
+		}else{
+			$this->out('<warning>Could not delete the download directory</warning>');
+		}
 	}
 
 	//delete the download data
 	protected function deleteDownloadData($dir){
-
+		$folderToRemove = new Folder($dir);
+		return $folderToRemove->delete();
 	}
 
 	/*
