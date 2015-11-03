@@ -117,7 +117,7 @@
 							endif;
 							?>
 					<?php endif; ?>
-							<img src="/map_module/img/items/<?php echo $item['Mapitem']['iconset']; ?>/<?php echo $state['image']; ?>">
+							<img src="/map_module/img/items/<?php echo $item['Mapitem']['iconset']; ?>/<?php echo $state['image']; ?>" onerror="this.src='/map_module/img/items/missing.png';">
 							<!-- hidden data field -->
 							<input type="hidden" name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]" value="<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>" />
 						</a>
