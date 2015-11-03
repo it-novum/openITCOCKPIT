@@ -112,11 +112,11 @@ class Background extends MapModuleAppModel{
 		$fileDimesions = [];
 		foreach($itemsFolder as $name){
 			if(!in_array($name, ['.', '..']) && is_dir($basePath.'/'.$name)){
-				$iconSets[] = $name;
-
-				//determine the image size for one image
-				if(file_exists($basePath.'/'.$name.'/up.png')){
-					$fileDimensions[] = getimagesize($basePath.'/'.$name.'/up.png');
+				//check if there is an ok.png icon 
+				if(file_exists($basePath.'/'.$name.'/ok.png')){
+					$iconSets[] = $name;
+					//determine the image size for one image
+					$fileDimensions[] = getimagesize($basePath.'/'.$name.'/ok.png');
 				}
 			}
 		}

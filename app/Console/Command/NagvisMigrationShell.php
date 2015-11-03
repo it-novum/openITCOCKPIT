@@ -769,7 +769,7 @@ private $lastResponse = null;
 				$this->out('<success>Service '.$servicename.' resolved! ID -> '.$serviceId['Service']['id'].'</success>');
 				return $serviceId;
 			}
-			$errorMsg = $this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
+			$errorMsg = '<warning>Could not resolve Service '.$servicename.'</warning>';
 			if($this->lastError != $errorMsg){
 				$this->out($errorMsg);
 				$this->lastError = $errorMsg;
