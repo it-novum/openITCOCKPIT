@@ -222,7 +222,7 @@
 							data-link="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>"
 							data-perfdata='<?php echo (empty($state['perfdata']))?'':json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?>'
 							data-state='<?php echo $state['state']; ?>'
-							data-flapping='<?php echo $state['is_flapping'] ?>'>
+							data-flapping='<?php echo (isset($state['is_flapping']))?$state['is_flapping']:0 ?>'>
 						<?php endif;?>
 						</a>
 						</div>
