@@ -231,7 +231,7 @@
 					<?php foreach ($map['Mapicon'] as $key => $icon):
 							$uuid = UUID::v4(); ?>
 							<div id="<?php echo $uuid; ?>" class="statelessIconContainer" style="position:absolute;top:<?php echo $icon['y']; ?>px;left:<?php echo $icon['x']; ?>px;">
-								<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" />
+								<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" onerror="this.src='/map_module/img/items/missing.png';"/>
 							</div>
 					<?php endforeach; ?>
 
