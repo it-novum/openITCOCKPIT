@@ -1338,7 +1338,6 @@ CREATE TABLE IF NOT EXISTS `nagios_contactnotificationmethods` (
   `command_object_id` int(11) NOT NULL DEFAULT '0',
   `command_args` varchar(1000) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`contactnotificationmethod_id`,`start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`contactnotification_id`,`start_time`,`start_time_usec`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notification methods';
 
@@ -1358,7 +1357,6 @@ CREATE TABLE IF NOT EXISTS `nagios_contactnotifications` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`contactnotification_id`,`start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`contact_object_id`,`start_time`,`start_time_usec`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notifications';
 
@@ -1374,8 +1372,8 @@ CREATE TABLE IF NOT EXISTS `nagios_contacts` (
   `config_type` smallint(6) NOT NULL DEFAULT '0',
   `contact_object_id` int(11) NOT NULL DEFAULT '0',
   `alias` varchar(64) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `email_address` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `pager_address` varchar(64) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `email_address` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `pager_address` varchar(64) COLLATE utf8_swedish_ci DEFAULT '',
   `host_timeperiod_object_id` int(11) NOT NULL DEFAULT '0',
   `service_timeperiod_object_id` int(11) NOT NULL DEFAULT '0',
   `host_notifications_enabled` smallint(6) NOT NULL DEFAULT '0',
