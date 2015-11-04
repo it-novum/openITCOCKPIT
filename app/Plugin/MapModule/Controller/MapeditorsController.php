@@ -135,7 +135,6 @@ class MapeditorsController extends MapModuleAppController {
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
-
 		$this->set(compact(['map', 'maps', 'mapList', 'servicegroup', 'hostgroup', 'hosts', 'services','backgroundThumbs', 'iconSets', 'icons']));
 	}
 
@@ -717,6 +716,26 @@ class MapeditorsController extends MapModuleAppController {
 	}
 
 	public function hostUuidFromServiceUuid($serviceUuid = null){
+
+		$hostUuid = $this->Service->find('first',[
+			'conditions' => [
+				'Service.uuid' => $serviceUuid
+			],
+			'fields' => [
+				'Service.uuid'
+			],
+			'contain' => [
+				'Host' => [
+					'fields' => [
+						'Host.uuid'
+					]
+				],
+			]
+		]);
+
+		$hostUuid = Hash::extract($hostUuid, 'Host.uuid');
+
+/*
 		$hostUuid = $this->Objects->find('first',[
 			'recursive' => -1,
 			'conditions' => [
@@ -726,7 +745,7 @@ class MapeditorsController extends MapModuleAppController {
 				'Objects.name1',
 			]
 		]);
-		$hostUuid = Hash::extract($hostUuid, 'Objects.name1');
+		$hostUuid = Hash::extract($hostUuid, 'Objects.name1');*/
 		return $hostUuid;
 	}
 

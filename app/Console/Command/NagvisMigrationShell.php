@@ -80,12 +80,24 @@ class NagvisMigrationShell extends AppShell {
 
 		$hostData = $this->getHostData();
 		$path = $this->configFilesPath();
+		$credentials = $this->getSelfCredentials();
+
+		if(!empty($credentials)){
+			$this->selfHost = $credentials['host'];
+			$this->selfCredentials = [
+				'email' => $credentials['user'],
+				'password' => $credentials['password']
+			];
+		}else{
+			$this->error('the logon credentials for the openITCOCKPIT v3 machine were properly entered!');
+		}
+
 		$session = $this->connectRemoteServer($hostData);
 
 		/*
 		  get config files
 		 */
-		$this->out('<info>Getting config files</info>');
+		$this->out('Getting config files');
 		$cfgPath = $path.'etc'.DS.'maps'.DS;
 		//receive a file list
 		$configFileList = $this->getFileList($session, $cfgPath, '/^.*\.(cfg)$/i');
@@ -102,7 +114,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get background images
 		 */
-		$this->out('<info>Getting Background images</info>');
+		$this->out('Getting Background images');
 		$bgPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'maps'.DS;
 		//receive a file list
 		$bgImgList = $this->getFileList($session, $bgPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -124,7 +136,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get iconsets
 		 */
-		$this->out('<info>Getting Iconsets</info>');
+		$this->out('Getting Iconsets');
 		$iconsetPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'iconsets'.DS;
 		//receive a file list
 		$iconsetList = $this->getFileList($session, $iconsetPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -151,7 +163,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get stateless icons (shapes)
 		 */
-		$this->out('<info>Getting Shapes</info>');
+		$this->out('Getting Shapes');
 		$shapesPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'shapes'.DS;
 		//receive a file list
 		$shapesList = $this->getFileList($session, $shapesPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -165,11 +177,6 @@ class NagvisMigrationShell extends AppShell {
 			$this->moveToDestination($shapesList, $shapesDir, $destination);
 		}
 
-		//@TODO write config files into the DB
-		//@TODO cleanup the directory
-
-		//$this->cleanup($session, $cfgDownloadDir);
-		
 		//create Object instances
 		$this->host = new Host();
 		$this->service = new Service();
@@ -180,12 +187,7 @@ class NagvisMigrationShell extends AppShell {
 			'ssl_verify_peer' => false
 		]);
 
-		$this->selfHost = 'https://172.16.13.45';
-		$this->selfCredentials = [
-			'email' => 'admin@it-novum.com',
-			'password' => 'asdf12',
-		];
-
+		
 		$loginUrl = $this->selfHost.'/login/login.json';
 		$loginData = [
 			'LoginUser' => [
@@ -204,6 +206,25 @@ class NagvisMigrationShell extends AppShell {
 		if($configFilesReceived){
 			$this->startFiletransform($configFileList, $cfgDownloadDir);
 		}
+
+		//cleanup the obsolete data
+		$this->cleanupData($session, $cfgDownloadDir);
+	}
+
+	/**
+	 * get the http address and the credentials of the openITCOCKPIT v3 machine
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @return mixed Array with http address and logon credentials or false if there is something empty
+	 */
+	protected function getSelfCredentials(){
+		$host = $this->in('Please Enter the http(s):// address of the v3 Server');
+		$user = $this->in('Please Enter an username of an Administrative openITCOCKPIT v3 user');
+		$pass = $this->in('Please Enter the Password for user '.$user);
+
+		if(!empty($host) && !empty($user) && !empty($pass)){
+			return ['host' => $host, 'user' => $user, 'password' => $pass];
+		}
+		return false;
 	}
 
 	/**
@@ -378,25 +399,27 @@ class NagvisMigrationShell extends AppShell {
 		}
 		$this->out('<info>File Transformation Complete!</info>');
 	}
-
+private $lastResponse = null;
+	/**
+	 * save the map data from the config files into the v3 Database
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $data the Data to send
+	 * @return void
+	 */
 	protected function saveNewData($data){
 		$mapId = $data['Map']['id'];
 		try{
 			$request = [
 				'header' => ['Content-Type' => 'application/json'],
 			];
-			debug($data);
-			$response = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId, json_encode($data), $request);
-
+			
+			$this->lastResponse = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
+			$response = $this->lastResponse;
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
 			}else{
-				debug($response->body());
-				debug($response->code);
-				debug($response->reasonPhrase);
+				$this->out('<error>'.$response->body().'</error>');
 				throw new Exception($response->raw);
-				//throw new Exception('save data failed!');
-				
 			}
 		}catch(Exception $e){
 			$this->error($e->getMessage());
@@ -623,6 +646,7 @@ class NagvisMigrationShell extends AppShell {
 			case 'text_wbg':
 				return 'Text';
 				break;
+			case 'graph':
 			case 'graph_all_ds':
 			case 'graph_itn':
 			case 'pChartPieChart_1':
@@ -637,7 +661,7 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * returns the map type
+	 * returns the item type
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $type the type returned from the config file
 	 * @return String       the new type
@@ -768,7 +792,7 @@ class NagvisMigrationShell extends AppShell {
 				$this->out('<success>Service '.$servicename.' resolved! ID -> '.$serviceId['Service']['id'].'</success>');
 				return $serviceId;
 			}
-			$errorMsg = $this->out('<warning>Could not resolve Service '.$servicename.'</warning>');
+			$errorMsg = '<warning>Could not resolve Service '.$servicename.'</warning>';
 			if($this->lastError != $errorMsg){
 				$this->out($errorMsg);
 				$this->lastError = $errorMsg;
@@ -1058,15 +1082,24 @@ class NagvisMigrationShell extends AppShell {
 	// shall cleanup the ssh2 connection and delete the downloaded config files
 	protected function cleanupData($session, $downloadDir){
 		$this->out('<info>Cleaning up Directory</info>');
-		ssh2_exec($session, 'exit');
+		if(!ssh2_exec($session, 'exit')){
+			$this->out('<error>Could not exit ssh2 session</error>');
+		}else{
+			$this->out('<info>Exit ssh2 session</info>');
+		}
 		unset($session);
 		//delete download folder with everything in it
-		$this->deleteDownloadData($downloadDir);
+		if($this->deleteDownloadData($downloadDir)){
+			$this->out('<info>Deleting download directory</info>');
+		}else{
+			$this->out('<warning>Could not delete the download directory</warning>');
+		}
 	}
 
 	//delete the download data
 	protected function deleteDownloadData($dir){
-
+		$folderToRemove = new Folder($dir);
+		return $folderToRemove->delete();
 	}
 
 	/*

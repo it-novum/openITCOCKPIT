@@ -114,7 +114,7 @@ class ConstantsComponent extends Component{
 				'container_type' => CT_TENANT
 			],
 			"LOCATION_CONTAINER" => [
-				'properties' => OBJECT_DEVICEGROUP,
+				'properties' => OBJECT_DEVICEGROUP ^ OBJECT_SATELLITE,
 				'container_type' => CT_LOCATION
 			],
 			"DEVICEGROUP_CONTAINER" => [

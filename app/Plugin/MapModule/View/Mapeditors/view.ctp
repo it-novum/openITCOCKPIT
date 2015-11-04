@@ -117,7 +117,7 @@
 							endif;
 							?>
 					<?php endif; ?>
-							<img src="/map_module/img/items/<?php echo $item['Mapitem']['iconset']; ?>/<?php echo $state['image']; ?>">
+							<img src="/map_module/img/items/<?php echo $item['Mapitem']['iconset']; ?>/<?php echo $state['image']; ?>" onerror="this.src='/map_module/img/items/missing.png';">
 							<!-- hidden data field -->
 							<input type="hidden" name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]" value="<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>" />
 						</a>
@@ -222,7 +222,7 @@
 							data-link="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>"
 							data-perfdata='<?php echo (empty($state['perfdata']))?'':json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?>'
 							data-state='<?php echo $state['state']; ?>'
-							data-flapping='<?php echo $state['is_flapping'] ?>'>
+							data-flapping='<?php echo (isset($state['is_flapping']))?$state['is_flapping']:0 ?>'>
 						<?php endif;?>
 						</a>
 						</div>
@@ -231,7 +231,7 @@
 					<?php foreach ($map['Mapicon'] as $key => $icon):
 							$uuid = UUID::v4(); ?>
 							<div id="<?php echo $uuid; ?>" class="statelessIconContainer" style="position:absolute;top:<?php echo $icon['y']; ?>px;left:<?php echo $icon['x']; ?>px;">
-								<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" />
+								<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" onerror="this.src='/map_module/img/items/missing.png';"/>
 							</div>
 					<?php endforeach; ?>
 
