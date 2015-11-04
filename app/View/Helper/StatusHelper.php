@@ -206,7 +206,7 @@ class StatusHelper extends AppHelper{
 							'class' => 'btn-danger',
 							'hexColor' => '#d9534f'];
 				case 3:
-					return ['human_state' => __('Unreachable'),
+					return ['human_state' => __('Unknown'),
 							'class' => 'btn-unknown',
 							'hexColor' => '#4C4F53'];
 				default:

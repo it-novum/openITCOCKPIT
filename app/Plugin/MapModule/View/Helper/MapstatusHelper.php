@@ -206,8 +206,8 @@ class MapstatusHelper extends AppHelper{
 					'image' => 'critical.png',
 				],
 				3 => [
-					'human_state' => __('Unreachable'),
-					'image' => 'unreachable.png',
+					'human_state' => __('Unknown'),
+					'image' => 'unknown.png',
 				]
 			];
 			return [
@@ -366,8 +366,8 @@ class MapstatusHelper extends AppHelper{
 					'state' => 2
 				],
 				3 => [
-					'human_state' => __('Unreachable'),
-					'image' => 'unreachable.png',
+					'human_state' => __('Unknown'),
+					'image' => 'unknown.png',
 					'state' => 3
 				],
 				-1 => [
