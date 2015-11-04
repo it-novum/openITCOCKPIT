@@ -61,6 +61,10 @@ class GraphCollectionsController extends AppController{
 		$this->set('_serialize', ['all_collections']);
 	}
 
+	public function add(){
+		//foobar
+	}
+
 	/**
 	 * New/edit graph configuration.
 	 * @param int $collection_id
