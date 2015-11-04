@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
+			<i class="fa fa-terminal fa-fw "></i>
+				<?php echo __('Monitoring'); ?>
+			<span>>
 				<?php echo __('Commands'); ?>
 			</span>
 		</h1>
@@ -51,9 +51,9 @@
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
-						?> 
+						?>
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
 					<h2 class="hidden-mobile"><?php echo __('Commands'); ?></h2>
@@ -66,7 +66,7 @@
 								<a href="<?php echo Router::url(['action' => 'hostchecks']); ?>"> <i class="fa fa-lg fa-code"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Hostchecks'); ?></span> </a>
 							</li>
 						<?php endif; ?>
-						<?php if($this->Acl->hasPermission('notificatins')): ?>
+						<?php if($this->Acl->hasPermission('notifications')): ?>
 							<li class="">
 								<a href="<?php echo Router::url(['action' => 'notifications']); ?>"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notifications'); ?> </span></a>
 							</li>
