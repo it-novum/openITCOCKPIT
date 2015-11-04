@@ -62,13 +62,22 @@ class CurrentstatereportsController extends AppController {
 						]
 					]);
 					if(!isset($currentStateData[$services[$serviceId]['Host']['uuid']]['Host'])){
-						$hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid']);
+						$hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'], [
+								'fields' => [
+									'Hoststatus.current_state',
+									'Hoststatus.perfdata',
+									'Hoststatus.output',
+									'Hoststatus.last_state_change',
+									'Objects.*'
+								]
+							]
+						);
 						$currentStateData[$services[$serviceId]['Host']['uuid']]['Host']=[
 							'id' => $services[$serviceId]['Host']['id'],
 							'name' => $services[$serviceId]['Host']['name'],
 							'address' => $services[$serviceId]['Host']['address'],
 							'description' => $services[$serviceId]['Host']['description'],
-							'Hoststatus' => [
+							'Hoststatus' => (empty($hoststatus))?[]:[
 								'current_state' => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['current_state'],
 								'perfdata' =>  $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['perfdata'],
 								'output' => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['output'],
