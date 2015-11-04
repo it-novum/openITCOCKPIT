@@ -80,12 +80,24 @@ class NagvisMigrationShell extends AppShell {
 
 		$hostData = $this->getHostData();
 		$path = $this->configFilesPath();
+		$credentials = $this->getSelfCredentials();
+
+		if(!empty($credentials)){
+			$this->selfHost = $credentials['host'];
+			$this->selfCredentials = [
+				'email' => $credentials['user'],
+				'password' => $credentials['password']
+			];
+		}else{
+			$this->error('the logon credentials for the openITCOCKPIT v3 machine were properly entered!');
+		}
+
 		$session = $this->connectRemoteServer($hostData);
 
 		/*
 		  get config files
 		 */
-		$this->out('<info>Getting config files</info>');
+		$this->out('Getting config files');
 		$cfgPath = $path.'etc'.DS.'maps'.DS;
 		//receive a file list
 		$configFileList = $this->getFileList($session, $cfgPath, '/^.*\.(cfg)$/i');
@@ -102,7 +114,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get background images
 		 */
-		$this->out('<info>Getting Background images</info>');
+		$this->out('Getting Background images');
 		$bgPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'maps'.DS;
 		//receive a file list
 		$bgImgList = $this->getFileList($session, $bgPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -124,7 +136,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get iconsets
 		 */
-		$this->out('<info>Getting Iconsets</info>');
+		$this->out('Getting Iconsets');
 		$iconsetPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'iconsets'.DS;
 		//receive a file list
 		$iconsetList = $this->getFileList($session, $iconsetPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -151,7 +163,7 @@ class NagvisMigrationShell extends AppShell {
 		/*
 		  get stateless icons (shapes)
 		 */
-		$this->out('<info>Getting Shapes</info>');
+		$this->out('Getting Shapes');
 		$shapesPath = $path.DS.'share'.DS.'userfiles'.DS.'images'.DS.'shapes'.DS;
 		//receive a file list
 		$shapesList = $this->getFileList($session, $shapesPath, '/^.*\.(jpg|jpeg|png|gif)$/i');
@@ -175,12 +187,7 @@ class NagvisMigrationShell extends AppShell {
 			'ssl_verify_peer' => false
 		]);
 
-		$this->selfHost = 'https://172.16.13.45';
-		$this->selfCredentials = [
-			'email' => 'admin@it-novum.com',
-			'password' => 'asdf12',
-		];
-
+		
 		$loginUrl = $this->selfHost.'/login/login.json';
 		$loginData = [
 			'LoginUser' => [
@@ -202,6 +209,22 @@ class NagvisMigrationShell extends AppShell {
 
 		//cleanup the obsolete data
 		$this->cleanupData($session, $cfgDownloadDir);
+	}
+
+	/**
+	 * get the http address and the credentials of the openITCOCKPIT v3 machine
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @return mixed Array with http address and logon credentials or false if there is something empty
+	 */
+	protected function getSelfCredentials(){
+		$host = $this->in('Please Enter the http(s):// address of the v3 Server');
+		$user = $this->in('Please Enter an username of an Administrative openITCOCKPIT v3 user');
+		$pass = $this->in('Please Enter the Password for user '.$user);
+
+		if(!empty($host) && !empty($user) && !empty($pass)){
+			return ['host' => $host, 'user' => $user, 'password' => $pass];
+		}
+		return false;
 	}
 
 	/**
