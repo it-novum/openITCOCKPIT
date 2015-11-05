@@ -116,7 +116,8 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 				//defaultNodeType: 'border',
 				mouseWheelEnabled : true, //Mausrad Zoom
 				batchEdgesDrawing : false, //Sollen Verbindungen während der Startanimation gezeigt werden
-				animationsTime : 2000
+				animationsTime : 2000,
+				doubleClickEnabled:false
 			})
 
 			var camera = s.camera;
@@ -246,20 +247,13 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 				 }, 2100);
 
 			});
-
-
-			// When the stage is clicked, we just color each
-			// node and edge with its original color.
-			s.bind('clickStage', function(e) {
-				$("#autocomplete_results").html('');
+			$('#my_statusmap').dblclick(function(){
 				s.graph.nodes().forEach(function(n) {
 					n.color = n.originalColor;
 				});
-
 				s.graph.edges().forEach(function(e) {
 					e.color = e.originalColor;
 				});
-				//$('.popover').hide()
 				var $el = $('#divSmallBoxes').children();
 				$el.hide(300,function(){
 					$(this).remove();
@@ -276,7 +270,6 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 					}
 				);
 			});
-			setTimeout(function(){ s.stopForceAtlas2(); }, 5000);
 
 			//Nach Nodes suchen:
 			var onSearchClick = function(){
