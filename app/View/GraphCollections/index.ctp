@@ -84,14 +84,20 @@
 												value="<?php echo $collection['GraphCollection']['id']; ?>">
 										</td>
 										<td>
-											<?php echo $this->Html->link($collection['GraphCollection']['name'], [
-												'action' => 'edit',
-												$collection['GraphCollection']['id'],
-											]); ?>
+											<?php
+											if($this->Acl->hasPermission('display', 'graphcollections')):
+												echo $this->Html->link($collection['GraphCollection']['name'], [
+													'action' => 'display',
+													$collection['GraphCollection']['id'],
+												]);
+											else:
+												echo h($collection['GraphCollection']['name']);
+											endif;
+											?>
 										</td>
 										<!--										<td>--><?php //echo $template['GraphCollection']['relative_time']; ?><!--</td>-->
 										<td>
-											<?php h($collection['GraphCollection']['description']); ?>
+											<?php echo h($collection['GraphCollection']['description']); ?>
 										</td>
 										<td class="width-160">
 											<div class="btn-group">

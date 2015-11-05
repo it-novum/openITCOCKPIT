@@ -62,73 +62,54 @@ class GraphCollectionsController extends AppController{
 	}
 
 	public function add(){
-		//foobar
-	}
+		if($this->request->is('post') || $this->request->is('put')){
+			//Fix HABTM validation
+			$this->request->data['GraphCollection']['GraphgenTmpl'] = $this->request->data('GraphgenTmpl.GraphgenTmpl');
 
-	/**
-	 * New/edit graph configuration.
-	 * @param int $collection_id
-	 */
-	public function edit($collection_id = 0){
-		$collection_id = (int) $collection_id;
-		$isNew = $collection_id === 0;
-
-		$templates = $this->GraphgenTmpl->find('all');
-		$collections = $this->GraphCollection->find('all');
-		$saved_templates = Hash::combine($templates, '{n}.GraphgenTmpl.id', '{n}.GraphgenTmpl.name');
-
-		// Save a new or edited item.
-		if($this->request->is('post')){
-			$saved = $this->GraphCollection->saveAll($this->request->data);
-			if($saved){
+			if($this->GraphCollection->saveAll($this->request->data)){
 				$this->setFlash(__('Successfully saved.'));
 				$this->redirect(['action' => 'index']);
 			}else{
-				$this->setFlash(__('Could\'nt save.'));
-				$this->redirect(['action' => 'edit', $collection_id]);
+				$this->setFlash(__('Could not save data.'), false);
 			}
 		}
-
-		// Load date if the $collection_id was given.
-		$current_name = '';
-		$current_description = '';
-		$current_templates = [];
-		if(!$isNew){
-			$current_collection = $this->GraphCollection->find('first', [
-				'conditions' => ['GraphCollection.id' => $collection_id],
-			]);
-
-			if(isset($current_collection['GraphCollection']) && isset($current_collection['GraphgenTmpl'])){
-				if(trim($current_collection['GraphCollection']['name']) != ''){
-					$current_name = $current_collection['GraphCollection']['name'];
-				}
-				if(trim($current_collection['GraphCollection']['description']) != ''){
-					$current_description = $current_collection['GraphCollection']['description'];
-				}
-				if(!empty($current_collection['GraphgenTmpl'])){
-					$current_templates = Hash::extract($current_collection, 'GraphgenTmpl.{n}.id');
-				}
-			}
-		}
-
-		$this->set([
-			'collections' => $collections,
-			'templates' => $templates,
-			'saved_templates' => $saved_templates,
-			'current_name' => $current_name,
-			'current_description' => $current_description,
-			'current_templates' => $current_templates,
-			'collection_id' => $collection_id,
-		]);
+		$templates = $this->GraphgenTmpl->find('list');
+		$this->set(compact(['saved_templates', 'templates']));
 	}
 
-	public function display(){
-		$collections = $this->GraphCollection->find('all', [
-			'recursive' => -1,
-			'fields' => ['GraphCollection.id', 'GraphCollection.name'],
-		]);
-		$collections = Hash::combine($collections, '{n}.GraphCollection.id', '{n}.GraphCollection.name');
-		$this->set('collections', $collections);
+
+	public function edit($id = null){
+		if(!$this->GraphCollection->exists($id)){
+			throw new NotFoundException(__('Invalid Graph Collection'));
+		}
+
+		$collection = $this->GraphCollection->findById($id);
+		// Save a new or edited item.
+		if($this->request->is('post') || $this->request->is('put')){
+			//Fix HABTM validation
+			$this->request->data['GraphCollection']['GraphgenTmpl'] = $this->request->data('GraphgenTmpl.GraphgenTmpl');
+			if($this->GraphCollection->saveAll($this->request->data)){
+				$this->setFlash(__('Successfully saved.'));
+				$this->redirect(['action' => 'index']);
+			}else{
+				$this->setFlash(__('Could not save data.'), false);
+			}
+		}
+		$templates = $this->GraphgenTmpl->find('list');
+		$this->set(compact(['collection', 'templates']));
+		$this->request->data = Hash::merge($collection, $this->request->data);
+	}
+
+	public function display($id = null){
+		if(!$this->GraphCollection->exists($id)){
+			$this->Frontend->setJson('graphCollectionId', null);
+			$id = null;
+		}else{
+			$id = (int)$id;
+			$this->Frontend->setJson('graphCollectionId', $id);
+		}
+		$collections = $this->GraphCollection->find('list');
+		$this->set(compact(['collections', 'id']));
 	}
 
 	public function mass_delete(){

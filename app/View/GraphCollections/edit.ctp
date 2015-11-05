@@ -48,35 +48,11 @@
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
 				<header>
-					<div class="widget-toolbar" role="menu"></div>
-					<div class="jarviswidget-ctrls" role="menu"></div>
-					<span class="widget-icon"><i class="fa fa-area-chart"></i></span>
-
-					<h2 class="hidden-mobile hidden-tablet"><?php echo __('Graph Collections'); ?></h2>
-					<ul class="nav nav-tabs pull-right padding-left-20" id="widget-tab-1">
-						<?php if($this->Acl->hasPermission('index', 'graphcollections')): ?>
-							<li>
-								<a href="/graph_collections/index">
-									<i class="fa fa-lg fa-save"></i>
-									<span class="hidden-mobile hidden-tablet"> <?php echo __('List'); ?></span>
-								</a>
-							</li>
-						<?php endif; ?>
-						<li class="active">
-							<a href="/graph_collections/edit">
-								<i class="fa fa-lg fa-plus"></i>
-								<span class="hidden-mobile hidden-tablet"> <?php echo __('New'); ?></span>
-							</a>
-						</li>
-						<?php if($this->Acl->hasPermission('display', 'graphcollections')): ?>
-							<li>
-								<a href="/graph_collections/display">
-									<i class="fa fa-lg fa-list-alt"></i>
-									<span class="hidden-mobile hidden-tablet"> <?php echo __('View'); ?></span>
-								</a>
-							</li>
-						<?php endif;?>
-					</ul>
+					<div class="widget-toolbar" role="menu">
+						<?php echo $this->Utils->backButton();?>
+					</div>
+					<span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
+					<h2 class="hidden-mobile"><?php echo __('Edit Graph Collection'); ?></h2>
 				</header>
 
 				<div>
@@ -91,15 +67,13 @@
 								<div class="row">
 									<div class="col-xs-12 col-md-9 col-lg-7">
 										<?php
-										if($collection_id > 0){
-											echo $this->Form->input('id', [
-												'value' => $collection_id,
-												'hiddenField' => true,
-											]);
-										}
+										echo $this->Form->input('id', [
+											'value' => $collection['GraphCollection']['id'],
+											'hiddenField' => true,
+										]);
+
 										echo $this->Form->input('name', [
 											'label' => __('Name'),
-											'value' => $current_name,
 											'wrapInput' => 'col col-xs-8',
 											'div' => [
 												'class' => 'form-group required',
@@ -107,12 +81,10 @@
 										]);
 										echo $this->Form->input('description', [
 											'label' => __('Description'),
-											'value' => $current_description,
 											'wrapInput' => 'col col-xs-8',
 										]);
 										echo $this->Form->input('GraphgenTmpl', [
-											'options' => $this->Html->chosenPlaceholder($saved_templates),
-											'value' => $current_templates,
+											'options' => $this->Html->chosenPlaceholder($templates),
 											'class' => 'chosen',
 											'multiple' => 'multiple',
 											'wrapInput' => 'col col-xs-8',
@@ -139,4 +111,3 @@
 		</article>
 	</div>
 </section>
-
