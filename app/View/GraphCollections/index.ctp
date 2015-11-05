@@ -35,62 +35,32 @@
 	</div>
 </div>
 
-<div class="overlay" style="display: none;">
-	<div id="nag_longoutput_loader"
-		 style="position: absolute; top: 50%; left: 50%; margin-top: -29px; margin-left: -23px; z-index: 20; font-size: 40px; color: #fff;">
-		<i class="fa fa-cog fa-lg fa-spin"></i>
-	</div>
-</div>
-
 <section id="widget-grid" class="">
 	<div class="row">
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
 				<header>
-					<div class="widget-toolbar" role="menu"></div>
-					<div class="jarviswidget-ctrls" role="menu"></div>
-					<span class="widget-icon"><i class="fa fa-area-chart"></i></span>
-
-					<h2 class="hidden-mobile hidden-tablet"><?php echo __('Graph Collections'); ?></h2>
-					<ul class="nav nav-tabs pull-right padding-left-20" id="widget-tab-1">
-						<li class="active">
-							<a>
-								<i class="fa fa-lg fa-save"></i>
-								<span class="hidden-mobile hidden-tablet"> <?php echo __('List'); ?></span>
-							</a>
-						</li>
-						<?php if($this->Acl->hasPermission('edit', 'graphcollections')): ?>
-							<li>
-								<a href="/graph_collections/edit">
-									<i class="fa fa-lg fa-plus"></i>
-									<span class="hidden-mobile hidden-tablet"> <?php echo __('New'); ?></span>
-								</a>
-							</li>
-						<?php endif;?>
-						<?php if($this->Acl->hasPermission('display', 'graphcollections')): ?>
-							<li>
-								<a href="/graph_collections/display">
-									<i class="fa fa-lg fa-list-alt"></i>
-									<span class="hidden-mobile hidden-tablet"> <?php echo __('View'); ?></span>
-								</a>
-							</li>
-						<?php endif;?>
-					</ul>
+					<div class="widget-toolbar" role="menu">
+						<?php
+						if($this->Acl->hasPermission('add', 'graphcollections')):
+							echo $this->Html->link(__('New'), Router::url(['action' => 'add']), array('class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus'));
+							echo " "; //Need a space for nice buttons
+						endif;
+						?>
+					</div>
+					<span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
+					<h2 class="hidden-mobile"><?php echo __('Graph Collections'); ?></h2>
 				</header>
 				<div>
 					<div class="widget-body no-padding">
-						<!--						--><?php //echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false); ?>
 						<div class="mobile_table">
-							<table id="host_list" class="table table-striped table-bordered">
-								<!--							<table id="host_list" class="table table-striped table-bordered smart-form">-->
+							<table id="graphcolections_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>
 								<tr>
 									<?php $order = $this->Paginator->param('order'); ?>
 									<th class="no-sort"></th>
 									<th class="select_datatable no-sort">
 										<?php
-										//	echo $this->Utils->getDirection($order, 'Graphgen.current_state');
-										//	echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus');
 										echo $this->Utils->getDirection($order, 'GraphCollection.name');
 										echo $this->Paginator->sort('GraphCollection.name', __('Name'));
 										?>
@@ -101,6 +71,7 @@
 										echo $this->Paginator->sort('GraphCollection.description', __('Description'));
 										?>
 									</th>
+									<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 								</tr>
 								</thead>
 
@@ -109,21 +80,52 @@
 									<tr>
 										<td class="text-center width-5">
 											<input type="checkbox" class="massChange"
-												   data-delete-display-text="<?php echo $collection['GraphCollection']['name'] . ' (ID:' . $collection['GraphCollection']['id'] . ')'; ?>"
-												   value="<?php echo $collection['GraphCollection']['id']; ?>">
+												data-delete-display-text="<?php echo $collection['GraphCollection']['name'] . ' (ID:' . $collection['GraphCollection']['id'] . ')'; ?>"
+												value="<?php echo $collection['GraphCollection']['id']; ?>">
 										</td>
 										<td>
-											<?php echo $this->Html->link($collection['GraphCollection']['name'], [
-												'action' => 'edit',
-												$collection['GraphCollection']['id'],
-											]); ?>
+											<?php
+											if($this->Acl->hasPermission('display', 'graphcollections')):
+												echo $this->Html->link($collection['GraphCollection']['name'], [
+													'action' => 'display',
+													$collection['GraphCollection']['id'],
+												]);
+											else:
+												echo h($collection['GraphCollection']['name']);
+											endif;
+											?>
 										</td>
 										<!--										<td>--><?php //echo $template['GraphCollection']['relative_time']; ?><!--</td>-->
 										<td>
-											<?php echo $this->Html->link($collection['GraphCollection']['description'], [
-												'action' => 'edit',
-												$collection['GraphCollection']['id'],
-											]); ?>
+											<?php echo h($collection['GraphCollection']['description']); ?>
+										</td>
+										<td class="width-160">
+											<div class="btn-group">
+												<?php if($this->Acl->hasPermission('edit', 'graphcollections')): ?>
+													<a href="<?php echo Router::url(['action' => 'edit', $collection['GraphCollection']['id']]); ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<?php else: ?>
+													<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<?php endif; ?>
+												<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+												<ul class="dropdown-menu">
+													<?php if($this->Acl->hasPermission('edit', 'graphcollections')): ?>
+														<li>
+															<a href="<?php echo Router::url(['action' => 'edit', $collection['GraphCollection']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+														</li>
+													<?php endif; ?>
+													<?php if($this->Acl->hasPermission('display', 'graphcollections')): ?>
+														<li>
+															<a href="<?php echo Router::url(['action' => 'display', $collection['GraphCollection']['id']]); ?>"><i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
+														</li>
+													<?php endif; ?>
+													<?php if($this->Acl->hasPermission('mass_delete', 'graphcollections')): ?>
+														<li class="divider"></li>
+														<li>
+															<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'GraphCollections', 'action' => 'mass_delete', $collection['GraphCollection']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+														</li>
+													<?php endif; ?>
+												</ul>
+											</div>
 										</td>
 									</tr>
 								<?php endforeach; ?>
@@ -171,4 +173,3 @@
 		</article>
 	</div>
 </section>
-

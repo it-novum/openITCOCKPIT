@@ -24,33 +24,25 @@
 //	confirmation.
 
 App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.extend({
-	components: ['Rrd', 'Overlay', 'Ajaxloader'],
+	components: ['Rrd', 'Ajaxloader'],
 
 	_initialize: function(){
 		var self = this;
 
 		self.bindSelectBoxEvent('#GraphCollectionId', '#render-graph');
+		if(self.getVar('graphCollectionId') != null){
+			$('#GraphCollectionId').trigger('change');
+		}
 		self.Ajaxloader.setup();
-		self.Overlay.setup({
-			$ui: $('#widget-grid'),
-			on_activate: function(){
-				self.Ajaxloader.hide();
-			},
-			on_deactivate: function(){
-				self.Ajaxloader.show();
-			}
-		});
+
 
 		self.GRAPH_HEIGHT = 350;
-
-		App.Overlay = self.Overlay;
-		App.Ajaxloader = self.Ajaxloader;
 	},
 
 	bindSelectBoxEvent: function(select_box_selector, target_selector){
-		var self = this,
-			$select_box = $(select_box_selector),
-			$target = $(target_selector);
+		var self = this;
+		var $select_box = $(select_box_selector);
+		var $target = $(target_selector);
 
 		if($select_box.length < 1 || $target.length < 1){
 			throw new Error('Either the selector for the select box or the selector for the target container is invalid.');
@@ -63,9 +55,8 @@ App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.exten
 				return;
 			}
 
-			self.Overlay.deactivateFields();
-
 			self.loadCollectionGraphData(collection_id, function(data){
+				self.Ajaxloader.show();
 				if( data == null ||
 					data.responseJSON == null ||
 					data.responseJSON.collection == null ||
@@ -79,7 +70,7 @@ App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.exten
  					target_classes,
 					result,
 					i;
-				
+
 				if(template_amount === 0){
 					return;
 				}
@@ -126,13 +117,13 @@ App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.exten
 						error_callback: function(response, status){
 							throw new Error('An error occured with self.Rrd.setup()');
 						},
-						flot_options: { 
+						flot_options: {
 							zoom: {
 								interactive: false // Deactivates zoom.
-							}, 
+							},
 							pan: {
 								interactive: false // Deactivates pan.
-							}, 
+							},
 							legend: {
 								container: $('.graph_legend_' + (i + 1))
 							}
@@ -144,7 +135,7 @@ App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.exten
 					});
 				});
 
-				self.Overlay.activateFields();
+				self.Ajaxloader.hide();
 			});
 		});
 	},

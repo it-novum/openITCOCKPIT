@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
@@ -47,47 +48,56 @@
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
 				<header>
-					<div class="widget-toolbar" role="menu">
-						<?php echo $this->Utils->backButton();?>
-					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
-					<h2 class="hidden-mobile"><?php echo __('View Graph Collection'); ?></h2>
+					<h2 class="hidden-mobile"><?php echo __('Add Graph Collection'); ?></h2>
 				</header>
+
 				<div>
 					<div class="widget-body">
 						<div class="tab-content">
-							<div id="choose-collection">
-								<div class="padding-top-10"></div>
-
+							<div id="new-edit" class="tab-pane fade active in">
 								<?php echo $this->Form->create('GraphCollection', [
 									'class' => 'form-horizontal clear',
-								]) ?>
+								]); ?>
 
+								<div class="padding-top-10"></div>
 								<div class="row">
 									<div class="col-xs-12 col-md-9 col-lg-7">
-
 										<?php
-
-										echo $this->Form->input('id', [
-											'options' => $this->Html->chosenPlaceholder($collections),
-											'selected' => $id,
-											'class' => 'chosen',
+										echo $this->Form->input('name', [
+											'label' => __('Name'),
 											'wrapInput' => 'col col-xs-8',
-											'label' => __('Collections'),
+											'div' => [
+												'class' => 'form-group required',
+											]
 										]);
-
+										echo $this->Form->input('description', [
+											'label' => __('Description'),
+											'wrapInput' => 'col col-xs-8',
+										]);
+										echo $this->Form->input('GraphgenTmpl', [
+											'options' => $this->Html->chosenPlaceholder($templates),
+											'class' => 'chosen',
+											'multiple' => 'multiple',
+											'wrapInput' => 'col col-xs-8',
+											'label' => __('Templates'),
+											'div' => [
+												'class' => 'form-group required',
+											]
+										]);
 										?>
 									</div>
 								</div>
-								<?php echo $this->Form->end(); ?>
-							</div>
-
-							<div id="render-graph">
+								<?php echo $this->Form->formActions(); ?>
 
 							</div>
-							<div id="graph_data_tooltip"></div>
+
 						</div>
+						<!-- close tab content -->
 					</div>
+					<div class="padding-top-20"></div>
+					<div class="padding-top-20"></div>
+					<!-- close widget body -->
 				</div>
 			</div>
 		</article>

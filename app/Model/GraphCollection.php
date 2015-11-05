@@ -41,6 +41,14 @@ class GraphCollection extends AppModel{
 				'message' => 'This field cannot be left blank',
 				'required' => true
 			]
+		],
+		'GraphgenTmpl' => [
+			'multiple' => [
+				'rule' => [
+					'multiple', ['min' => 1]
+				],
+				'message' => 'Please select at least 1 template you attend'
+			],
 		]
 	];
 
