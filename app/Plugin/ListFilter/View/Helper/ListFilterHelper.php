@@ -11,7 +11,7 @@ class ListFilterHelper extends AppHelper {
 		$this->filters = $filters;
 	}
 
-	public function renderFilterbox(&$filters = null, $options = array(), $title = null, $showButton = true, $hide = false) {
+	public function renderFilterbox(&$filters = null, $options = array(), $title = null, $showButton = true, $hide = false, $isPlugin = false) {
 		if($filters) {
 			$this->setFilters($filters);
 		}
@@ -20,7 +20,7 @@ class ListFilterHelper extends AppHelper {
 		}
 		$ret = $this->open($title, $showButton, $hide);
 		$ret.= $this->renderAll();
-		$ret.= $this->close();
+		$ret.= $this->close(true,true,$isPlugin);
 		return $ret;
 	}
 
@@ -259,14 +259,14 @@ class ListFilterHelper extends AppHelper {
 		return $ret;
 	}
 
-	public function close($includeButton = true, $includeResetLink = true) {
+	public function close($includeButton = true, $includeResetLink = true, $isPlugin = false) {
 		$ret = '<div class="well formactions" style="margin-top: 15px;"><div class="pull-right">';
 		$ret.= '<span></span>';
 		if($includeButton) {
 			$ret.= $this->button();
 		}
 		if($includeResetLink) {
-			$ret.= ' ' . $this->resetLink();
+			$ret.= ' ' . $this->resetLink(null, [], $isPlugin);
 		}
 		$ret.= '</div></div>';
 		$ret.= $this->Form->end();
@@ -281,7 +281,7 @@ class ListFilterHelper extends AppHelper {
 		return $this->Form->submit(__($title), array('div' => false, 'class' => 'btn btn-mini btn-primary'));
 	}
 
-	public function resetLink($title = null, $options = array()) {
+	public function resetLink($title = null, $options = array(), $isPlugin = false) {
 		$_options = array('class' => 'btn-default btn-mini', 'icon' => '');
 		$options = Hash::merge($_options, $options);
 		if(!$title) {
@@ -299,12 +299,17 @@ class ListFilterHelper extends AppHelper {
 				}
 			}
 		}
-		//$params['controller'] = Inflector::underscore($this->params->controller).'/index';
+
 		$params['controller'] = Inflector::underscore($this->params->controller);
+		$redirectUrl = '/'.$params['controller'];
+		if($isPlugin){
+			$params['plugin'] = Inflector::underscore($this->params->plugin);
+			$redirectUrl = '/'.$params['plugin'].'/'.$params['controller'];
+		}
 
 		$params['action'] = $this->params->action;
 		if($params['action'] == 'index'){
-			return $this->Html->link($title, '/'.$params['controller'].'/index', array('class' => 'btn '.$options['class'], 'icon' => $options['icon']));
+			return $this->Html->link($title, $redirectUrl.'/index', array('class' => 'btn '.$options['class'], 'icon' => $options['icon']));
 		}
 		return $this->Html->link($title, Router::url($params), array('class' => 'btn '.$options['class'], 'icon' => $options['icon']));
 	}
