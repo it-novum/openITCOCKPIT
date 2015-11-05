@@ -195,12 +195,9 @@ class NagvisMigrationShell extends AppShell {
 				'password' => $this->selfCredentials['password'],
 			]
 		];
-		$httpResponse = $this->HttpSocket->post($loginUrl, $loginData);
-		if($httpResponse->isOk()){
-			$this->out('<success>'.$httpResponse->body().'</success>');
-		}else{
-			$this->error('Login Failed!', $httpResponse->code.' '.$httpResponse->body());
-		}
+
+		$this->connectToSelf($loginUrl, $loginData);
+
 
 		//transform the config files
 		if($configFilesReceived){
@@ -209,6 +206,36 @@ class NagvisMigrationShell extends AppShell {
 
 		//cleanup the obsolete data
 		$this->cleanupData($session, $cfgDownloadDir);
+
+	}
+
+	/**
+	 * connect to the self host
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  String $loginUrl  
+	 * @param  Array $loginData  Array with username and password for the v3 machine
+	 * @return void
+	 */
+	protected function connectToSelf($loginUrl, $loginData){
+		try{
+			$httpResponse = $this->HttpSocket->post($loginUrl, $loginData);
+			$result = json_decode($httpResponse->body());
+			if($httpResponse->isOk()){
+				if(preg_match('/success/', $result->message)){
+					$this->out('<success>Login to the openITCOCKPIT v3 Machine succeeded</success>');
+				}else{
+					throw new Exception('Login Failed!');
+				}
+			}else{
+				if(preg_match('/http/', $loginUrl)){
+					throw new Exception('The Requested site '.$loginUrl.' could not be found. Wrong Url?');
+				}else{
+					throw new Exception('http(s):// Prefix is missing!');
+				}
+			}
+		}catch(Exception $e){
+			$this->error($e->getMessage());
+		}
 	}
 
 	/**
