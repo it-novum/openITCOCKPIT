@@ -47,7 +47,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'), true); 
 						endif;
 						?> 
 					</div>
@@ -67,7 +67,7 @@
 
 					<!-- widget content -->
 					<div class="widget-body no-padding">
-						<?php echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+						<?php echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false, true); ?>
 						<!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
 						<div class="mobile_table">
 							<table id="datatable_fixed_column" class="table table-striped table-bordered smart-form">
