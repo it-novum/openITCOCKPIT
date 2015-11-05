@@ -28,23 +28,28 @@ class CronjobsShell extends AppShell{
 		'Cronjob',
 		'Cronschedule',
 	];
-		
+
 	public function main(){
 		//Configure::load('nagios');
 		$this->parser = $this->getOptionParser();
 		$this->force = false;
-		
-		$this->cronjobs = $this->Cronjob->find('all');
-		
+
+		try{
+			$this->cronjobs = $this->Cronjob->find('all');
+		}catch(Exception $e){
+			debug($e->getMessage());
+			exit(0);
+		}
+
 		if(array_key_exists('force', $this->params)){
 			$this->force = true;
 		}
-		
+
 		$this->quiet = false;
 		if(isset($this->params['quiet']) && $this->params['quiet'] == true){
 			$this->quiet = true;
 		}
-		
+
 		$this->cronjobsToExecute = [];
 		foreach($this->cronjobs as $cronjob){
 			if(
@@ -54,10 +59,10 @@ class CronjobsShell extends AppShell{
 			){
 				$this->scheduleCronjob($cronjob);
 			}
-			
+
 		}
 	}
-	
+
 	public function getOptionParser(){
 		$parser = parent::getOptionParser();
 		$parser->addOptions([
@@ -65,9 +70,9 @@ class CronjobsShell extends AppShell{
 		]);
 		return $parser;
 	}
-	
+
 	public function scheduleCronjob($cronjob){
-		
+
 		//Flag the cronjob as is_running in DB and set start_time
 		$cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
 		$cronjob['Cronschedule']['is_running'] = 1;
@@ -78,7 +83,7 @@ class CronjobsShell extends AppShell{
 				//Error in save
 				return false;
 			}
-			
+
 			// We saved new data and need to select this now again (because of DB truncate or cron never runs or what ever)
 			$cronjob = $this->Cronjob->find('first', [
 				'conditions' => [
@@ -86,7 +91,7 @@ class CronjobsShell extends AppShell{
 				]
 			]);
 		}
-		
+
 		//Executing the cron
 		if($cronjob['Cronjob']['plugin'] == 'Core'){
 			//This is Core cronjob, so we load the Task and lets rock
@@ -102,7 +107,7 @@ class CronjobsShell extends AppShell{
 				debug($e);
 			}
 		}
-		
+
 		//Cronjob is done, set is_running back to 0 and the end_time
 		$cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
 		$cronjob['Cronschedule']['is_running'] = 0;
@@ -110,12 +115,12 @@ class CronjobsShell extends AppShell{
 			//Cronjob done
 			return true;
 		}
-		
+
 		//Error on execution of the cron
 		return false;
-		
+
 	}
-	
+
 	public function m2s($minutes){
 		return $minutes * 60;
 	}
