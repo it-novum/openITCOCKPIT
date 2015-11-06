@@ -67,7 +67,12 @@ class GearmanWorkerShell extends AppShell{
 			return;
 		}
 
-		$this->_systemsettings = $this->Systemsetting->findAsArray();
+		try{
+			$this->_systemsettings = $this->Systemsetting->findAsArray();
+		}catch(Exception $e){
+			debug($e->getMessage());
+			exit(3);
+		}
 
 
 		if(array_key_exists('start', $this->params)){
