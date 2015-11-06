@@ -267,7 +267,7 @@
 						?>
 						<!-- Mapitems -->
 						<div id="<?php echo $uuid; ?>" class="itemElement iconContainer dragElement" style="position:absolute; top: <?php echo $item['y']; ?>px; left: <?php echo $item['x']; ?>px;">
-							<img src="/map_module/img/items/<?php echo $item['iconset']; ?>/ok.png">
+							<img src="/map_module/img/items/<?php echo $item['iconset']; ?>/ok.png" onerror="this.src='/map_module/img/items/missing.png';">
 							<input type="hidden" data-key="x" name="data[Mapitem][<?php echo $uuid; ?>][x]" value="<?php echo $item['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Mapitem][<?php echo $uuid; ?>][y]" value="<?php echo $item['y']; ?>" />
 							<input type="hidden" data-key="limit" name="data[Mapitem][<?php echo $uuid; ?>][limit]" value="<?php echo $item['limit']; ?>" />
@@ -307,7 +307,7 @@
 						<?php $uuid = UUID::v4(); ?>
 						<!-- Mapicons -->
 						<div id="<?php echo $uuid; ?>" class="itemElement statelessIconContainer dragElement" style="position:absolute; top: <?php echo $icon['y']; ?>px; left: <?php echo $icon['x']; ?>px;">
-							<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>">
+							<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" onerror="this.src='/map_module/img/items/missing.png';">
 							<input type="hidden" data-key="x" name="data[Mapicon][<?php echo $uuid; ?>][x]" value="<?php echo $icon['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Mapicon][<?php echo $uuid; ?>][y]" value="<?php echo $icon['y']; ?>" />
 							<input type="hidden" data-key="icon" name="data[Mapicon][<?php echo $uuid; ?>][icon]" value="<?php echo $icon['icon']; ?>" />
