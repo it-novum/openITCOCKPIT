@@ -441,9 +441,7 @@ class AppFormHelper extends BoostCakeFormHelper{
 			'selected' => [],
 			'escape' => true
 		];
-		
 		$options = Hash::merge($_options, $options);
-
 		$modelAndField = explode('.', $fieldName);
 		if(sizeof($modelAndField) == 2){
 			$model = $modelAndField[0];
@@ -460,7 +458,6 @@ class AppFormHelper extends BoostCakeFormHelper{
 		if(!is_array($options['selected'])){
 			$options['selected'] = [$options['selected']];
 		}
-
 		$hasError = false;
 		$validationError = [];
 		if(isset($this->validationErrors[$model][$field])){
@@ -490,7 +487,7 @@ class AppFormHelper extends BoostCakeFormHelper{
 						foreach($host as $hostName => $hostServices):
 							$html.= '<optgroup label="'.h($hostName).'">';
 							foreach($hostServices as $service_id => $serviceName):
-								$html.= '<option value="'.h($service_id).'" '.(in_array($service_id, $options['selected']) || array_key_exists($service_id, $options['selected'])? 'selected="selected"' :'').'>'.h($serviceName).'</option>';
+								$html.= '<option value="'.h($service_id).'" '.((in_array($service_id, $options['selected']))? 'selected="selected"' :'').'>'.h($serviceName).'</option>';
 							endforeach;
 							$html.= '</optgroup>';
 						endforeach;
