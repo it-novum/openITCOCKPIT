@@ -463,6 +463,9 @@ class NagvisMigrationShell extends AppShell {
 	 */
 	protected function transformDataForV3($mapname, $data){
 		$mapData = [];
+		if(!isset($data['global'][0]['iconset'])){
+			$data['global'][0]['iconset'] = 'missing';
+		}
 		foreach ($data as $key => $items) {
 			foreach ($items as $item) {
 				$currentData = [];
@@ -672,6 +675,7 @@ class NagvisMigrationShell extends AppShell {
 			case 'text':
 			case 'text2':
 			case 'text_wbg':
+			case 'text-value-only':
 				return 'Text';
 				break;
 			case 'graph':
