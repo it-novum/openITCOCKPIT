@@ -60,10 +60,11 @@ class NagvisMigrationShell extends AppShell {
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
-			$this->error('SSH2 not found!', 'Please install the SSH2 PHP package!');
+			$msg = 'On Ubuntu you will get the extension by installing the libssh2-php package'
+			$this->error('SSH2 not found!', 'Please install the SSH2 PHP package!',$msg);
 		}
 
-		//write the iconset map
+		//map old iconsets which should be replaced to new iconsets
 		//newIconset => [obsoleteIconset_1, obsoleteIconset_2, ... obsoleteIconset_n]
 		$this->iconsetMap = [
 			'std_mini_32px' => ['std_medium','std_small', 'std_small_sack', 'std_medium_sack', 'std_big_sack'],
@@ -80,7 +81,9 @@ class NagvisMigrationShell extends AppShell {
 
 		$hostData = $this->getHostData();
 		$path = $this->configFilesPath();
+		$this->hr(1);
 		$credentials = $this->getSelfCredentials();
+		$this->hr(1);
 
 		if(!empty($credentials)){
 			$this->selfHost = $credentials['host'];
@@ -244,9 +247,9 @@ class NagvisMigrationShell extends AppShell {
 	 * @return mixed Array with http address and logon credentials or false if there is something empty
 	 */
 	protected function getSelfCredentials(){
-		$host = $this->in('Please Enter the http(s):// address of the v3 Server');
-		$user = $this->in('Please Enter an username of an Administrative openITCOCKPIT v3 user');
-		$pass = $this->in('Please Enter the Password for user '.$user);
+		$host = $this->in('Please Enter the http(s):// address of the v3 Server (eg. https://123.234.123.234)');
+		$user = $this->in('Please Enter an username of an Administrative openITCOCKPIT v3 user on '.$host);
+		$pass = $this->in('Please Enter the Password for user '.$user.' on '.$host);
 
 		if(!empty($host) && !empty($user) && !empty($pass)){
 			return ['host' => $host, 'user' => $user, 'password' => $pass];
@@ -260,11 +263,10 @@ class NagvisMigrationShell extends AppShell {
 	 * @return Array 	hostname, user and password of the server
 	 */
 	protected function getHostData(){
-		$host = $this->in('Please Enter the Hostname OR the IP Adress of the Server');
-		$user = $this->in('Please Enter a valid user on '.$host);
+		$host = $this->in('Please Enter the Hostname OR the IP Adress of the openITCOCKPIT v2 Server');
+		$user = $this->in('Please Enter a valid SSH user on '.$host);
 		$pass = $this->in('Please Enter the Password for user '.$user.' on '.$host);
 
-		$this->hr(1);
 		return ['host' => $host, 'user' => $user, 'pass' => $pass];
 	}
 
@@ -426,7 +428,7 @@ class NagvisMigrationShell extends AppShell {
 		}
 		$this->out('<info>File Transformation Complete!</info>');
 	}
-private $lastResponse = null;
+
 	/**
 	 * save the map data from the config files into the v3 Database
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
@@ -440,8 +442,7 @@ private $lastResponse = null;
 				'header' => ['Content-Type' => 'application/json'],
 			];
 			
-			$this->lastResponse = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
-			$response = $this->lastResponse;
+			$response = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
 			}else{
