@@ -60,7 +60,7 @@ class NagvisMigrationShell extends AppShell {
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
-			$msg = 'On Ubuntu you will get the extension by installing the libssh2-php package'
+			$msg = 'On Ubuntu you will get the extension by installing the libssh2-php package';
 			$this->error('SSH2 not found!', 'Please install the SSH2 PHP package!',$msg);
 		}
 
