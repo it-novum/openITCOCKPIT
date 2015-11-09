@@ -223,6 +223,7 @@ class AdministratorsController extends AppController{
 		$Email->config('default');
 		$mailConfig = $Email->getConfig();
 
+		$recipientAddress = $this->Auth->user('email');
 
 		$this->set(compact([
 			'disks',
@@ -239,7 +240,8 @@ class AdministratorsController extends AppController{
 			'monitoring_engine',
 			'mailConfig',
 			'is_gearmand_running',
-			'gearmanStatus'
+			'gearmanStatus',
+			'recipientAddress'
 		]));
 	}
 

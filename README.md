@@ -1,7 +1,7 @@
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool build for different monitoring engines like [Nagios](https://www.nagios.org/) or [Naemon](http://www.naemon.org/).
 
-So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface wirtten in PHP
+So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
 # System requirements
 * Ubuntu 14.04 LTS x64
