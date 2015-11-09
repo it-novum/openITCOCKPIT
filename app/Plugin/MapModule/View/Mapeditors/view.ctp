@@ -42,7 +42,7 @@
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
-		<h2><?php echo __('View map');?></h2>
+		<h2><?php echo __('View map '.h($map['Map']['name']));?></h2>
 		<div class="widget-toolbar" role="menu">
 			<?php echo $this->Utils->backButton(null,'/map_module/maps');?>
 			<?php if(!$isFullscreen): ?>
