@@ -46,7 +46,7 @@
 				Configure::load('nagios');
 				Configure::load('version');
 				?>
-				
+
 				<dt><?php echo __('System name');?>:</dt>
 				<dd><?php echo h($systemsetting['FRONTEND']['FRONTEND.SYSTEMNAME']); ?></dd>
 				<dt><?php echo __('Version');?>:</dt>
@@ -90,6 +90,11 @@
 					<?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
 					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
+				<dt><?php echo __('Queuing engine');?>:</dt>
+				<dd>
+					<?php echo ($is_gearmand_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<?php /*?><dt><?php echo __('Database server');?>:</dt>
 				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
 				<dt><?php echo __('phpNSTA');?>:</dt>
@@ -129,7 +134,7 @@
 				<dt><?php echo __('Libraries');?>:</dt>
 				<dd><?php echo implode(', ', get_loaded_extensions()); ?></dd>
 			</dl>
-			
+
 			<b><?php echo __('Load average');?>:</b>
 			<br />
 			<?php if(empty($load)): ?>
@@ -176,7 +181,7 @@
 					</div>
 				<?php endif; ?>
 			<br />
-			
+
 			<b><?php echo __('Memory usage');?>:</b>
 			<?php if(empty($memory)): ?>
 				<div class="well text-danger">
@@ -185,26 +190,26 @@
 				<?php else: ?>
 					<?php if(isset($memory['Memory'])):?>
 						<div class="well">
-							<?php echo __('Total'); ?>: <?php echo $memory['Memory']['total'];?>M, 
+							<?php echo __('Total'); ?>: <?php echo $memory['Memory']['total'];?>M,
 							<span class="txt-color-green"><?php echo __('used');?>: <?php echo $memory['Memory']['used'];?>M, </span>
 							<span class="txt-color-orange"><?php echo __('cached');?>: <?php echo $memory['Memory']['cached'];?>M,</span>
 							<span class="txt-color-blue"><?php echo __('buffers');?>: <?php echo $memory['Memory']['buffers'];?>M</span>
-							
+
 							<div class="progress" style="margin-bottom: 0px;">
 								<div style="width: <?php echo (int)($memory['Memory']['used']/$memory['Memory']['total']*100); ?>%; position: unset;" class="progress-bar bg-color-green"> </div>
 								<div style="width: <?php echo (int)($memory['Memory']['cached']/$memory['Memory']['total']*100); ?>%; position: unset;" class="progress-bar bg-color-orange"> </div>
 								<div style="width: <?php echo (int)($memory['Memory']['buffers']/$memory['Memory']['total']*100); ?>%; position: unset;" class="progress-bar bg-color-blue"> </div>
-								
+
 							</div>
 						</div>
 					<?php endif;?>
-					
+
 					<?php if(isset($memory['Swap'])):?>
 						<br />
 						<b><?php echo __('Swap usage');?>:</b>
 						<br />
 						<div class="well">
-							<?php echo __('Total'); ?>: <?php echo $memory['Swap']['total'];?>M, 
+							<?php echo __('Total'); ?>: <?php echo $memory['Swap']['total'];?>M,
 							<?php echo __('used');?>: <?php echo $memory['Swap']['used'];?>M
 							<?php echo $this->Html->progressbar($memory['Swap']['used'], [
 								'unit' => '',
@@ -225,7 +230,7 @@
 						</div>
 					<?php endif;?>
 				<?php endif;?>
-			
+
 			<br />
 			<b><?php echo __('Disk usage');?>:</b>
 			<?php if(empty($disks)): ?>
@@ -241,6 +246,28 @@
 						<br />
 					<?php endforeach; ?>
 				<?php endif;?>
+				<br />
+				<b><?php echo __('Queuing engine');?>:</b>
+				<?php if($is_gearmand_running && !empty($gearmanStatus)): ?>
+					<div class="well">
+						<div class="container">
+							<div class="row">
+								<div class="col col-xs-3 bold"><?php echo __('Queue name'); ?></div>
+								<div class="col col-xs-3 bold text-center"><?php echo __('Jobs waiting'); ?></div>
+								<div class="col col-xs-3 bold text-center"><?php echo __('Active jobs'); ?></div>
+								<div class="col col-xs-3 bold text-center"><?php echo __('Worker available'); ?></div>
+								<?php foreach($gearmanStatus as $queueName => $queueStatus): ?>
+									<div class="col col-xs-3"><?php echo h($queueName); ?></div>
+									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['jobs']); ?></div>
+									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['running']); ?></div>
+									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['worker']); ?></div>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					</div>
+				<?php else: ?>
+					<h2 class="text-danger"><?php echo __('Error: Queuing engine not running!'); ?></h2>
+				<?php endif; ?>
 		</div>
 
 	</div>
@@ -258,19 +285,19 @@
 			<dl class="dl-horizontal">
 				<dt><?php echo __('Mail server address');?>:</dt>
 				<dd><?php echo h($mailConfig['host']); ?></dd>
-				
+
 				<dt><?php echo __('Mail server port');?>:</dt>
 				<dd><?php echo h($mailConfig['port']); ?></dd>
-				
+
 				<dt><?php echo __('Transport protocol');?>:</dt>
 				<dd><?php echo h($mailConfig['transport']); ?></dd>
-				
+
 				<dt><?php echo __('Username');?>:</dt>
 				<dd><?php echo h($mailConfig['username']); ?></dd>
-				
+
 				<dt><?php echo __('Password');?>:</dt>
 				<dd><i><?php echo __('Password hidden due to security please see the file /etc/openitcockpit/app/Config/email.php for detailed configuration information.'); ?></i></dd>
-				
+
 				<dt>&nbsp;</dt>
 				<dd>
 					<form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate" action="/Administrators/testMail">
@@ -293,7 +320,7 @@
 	<!-- widget div-->
 	<div>
 		<!-- end widget edit box -->
-		
+
 		<?php
 		$agent=$_SERVER['HTTP_USER_AGENT'];
 		$os   = "unknown";
@@ -320,13 +347,13 @@
 		elseif (strstr($agent, "Mac OS X 10_8"))			$os = "Mac OS X - Mountain Lion";
 		elseif (strstr($agent, "Mac OS X 10_9"))			$os = "Mac OS X - Mavericks";
 		elseif (strstr($agent, "Mac OS X 10_10"))			$os = "Mac OS X - Yosemite";
-		
+
 		elseif (strstr($agent, "Mac OS"))					$os = "Mac OS X";
 		elseif (strstr($agent, "Linux"))					$os = "Linux";
 		elseif (strstr($agent, "Unix"))						$os = "Unix";
 		elseif (strstr($agent, "Ubuntu"))					$os = "Ubuntu";
 		?>
-		
+
 		<div class="widget-body padding-10">
 			<dl class="dl-horizontal">
 				<dt><?php echo __('Your OS');?>:</dt>
@@ -336,7 +363,7 @@
 				<dt><?php echo __('Your Address');?>:</dt>
 				<dd><?php echo h($_SERVER['REMOTE_ADDR']);?></dd>
 			</dl>
-			
+
 		</div>
 
 	</div>

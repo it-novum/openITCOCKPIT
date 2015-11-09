@@ -32,27 +32,27 @@ class AdministratorsController extends AppController{
 
 	function index(){
 	}
-	
+
 	function debug(){
 		$this->loadModel('Systemsetting');
 		$this->loadModel('Cronjob');
 		$this->loadModel('Register');
 		$this->set('systemsetting', $this->Systemsetting->findAsArray());
-		
+
 		//Check if load cronjob exists
 		if(!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')){
 			//Cron does not exists, so we create it
 			$this->Cronjob->add('CpuLoad', 'Core', 15);
 		}
-		
+
 		$license = $this->Register->find('first');
 		$isEnterprise = false;
 		if(!empty($license)){
 			$isEnterprise = true;
 		}
-		
+
 		$load = null;
-		
+
 		if(file_exists(TMP.'loadavg')){
 			$this->Frontend->setJson('renderGraph', true);
 			$load = file(TMP.'loadavg');
@@ -83,9 +83,9 @@ class AdministratorsController extends AppController{
 				$this->Frontend->setJson('renderGraph', false);
 			}
 		}
-		
-		
-		
+
+
+
 		exec('LANG=C df -h', $output, $returncode);
 		$disks = [];
 		if($returncode == 0){
@@ -104,7 +104,7 @@ class AdministratorsController extends AppController{
 				}
 			}
 		}
-		
+
 		$output = null;
 		exec('LANG=C free -m', $output, $returncode);
 		$memory = [];
@@ -119,11 +119,11 @@ class AdministratorsController extends AppController{
 						'cached' => $value[6],
 					];
 				}
-				
+
 				if($value[0] == '-/+'){
 					$memory['Memory']['used'] = $value[2];
 				}
-				
+
 				if($value[0] == 'Swap:'){
 					$memory['Swap'] = [
 						'total' => $value[1],
@@ -141,20 +141,22 @@ class AdministratorsController extends AppController{
 		$is_phpNSTA_running = false;
 		$is_statusengine = false;
 		$is_statusengine_perfdata = false;
-		
+		$is_gearmand_running = false;
+		$gearmanStatus = [];
+
 		Configure::load('nagios');
 		exec(Configure::read('nagios.nagios_status'), $output, $returncode);
 		if($returncode == 0){
 			$is_nagios_running = true;
 		}
-		
+
 		$output = null;
 		//exec(Configure::read('nagios.ndo_status'), $output, $returncode);
 		exec('ps -eaf |grep ndo2db | grep -v grep', $output, $returncode);
 		if(sizeof($output) > 0){
 			$is_db_running = true;
 		}
-		
+
 		if(!$is_db_running){
 			exec('ps -eaf |grep statusengine | grep -v grep', $output, $returncode);
 			if(sizeof($output) > 0){
@@ -162,14 +164,14 @@ class AdministratorsController extends AppController{
 				$is_statusengine = true;
 			}
 		}
-		
+
 		$output = null;
 		//exec(Configure::read('nagios.npcd_status'), $output, $returncode);
 		exec('ps -eaf |grep npcd | grep -v grep', $output, $returncode);
 		if(sizeof($output) > 0){
 			$is_npcd_running = true;
 		}
-		
+
 		if(!$is_npcd_running){
 			$statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
 			if(file_exists($statusengineConfig)){
@@ -182,7 +184,25 @@ class AdministratorsController extends AppController{
 				}
 			}
 		}
-		
+
+		$output = null;
+		exec('ps -eaf |grep gearmand | grep -v grep', $output, $returncode);
+		if(sizeof($output) > 0){
+			$is_gearmand_running = true;
+			$output = null;
+			exec('gearadmin --status', $output);
+			//Parse output
+			$trash = array_pop($output);
+			foreach($output as $line){
+				$queueDetails = explode("\t", $line);
+				$gearmanStatus[$queueDetails[0]] = [
+					'jobs' => $queueDetails[1],
+					'running' => $queueDetails[2],
+					'worker' => $queueDetails[3]
+				];
+			}
+		}
+
 		/*exec(Configure::read('nagios.mysql_status'), $output, $returncode);
 		if($returncode == 0){
 			$is_mysql_running = true;
@@ -202,7 +222,7 @@ class AdministratorsController extends AppController{
 		$Email = new ItcMail();
 		$Email->config('default');
 		$mailConfig = $Email->getConfig();
-		
+
 
 		$this->set(compact([
 			'disks',
@@ -217,15 +237,17 @@ class AdministratorsController extends AppController{
 			'is_statusengine',
 			'is_statusengine_perfdata',
 			'monitoring_engine',
-			'mailConfig'
+			'mailConfig',
+			'is_gearmand_running',
+			'gearmanStatus'
 		]));
 	}
-	
+
 	public function testMail(){
 		$this->loadModel('Systemsetting');
 		$recipientAddress = $this->Auth->user('email');
 		$_systemsettings = $this->Systemsetting->findAsArray();
-		
+
 		$Email = new CakeEmail();
 		$Email->config('default');
 		$Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
@@ -243,11 +265,11 @@ class AdministratorsController extends AppController{
 
 App::uses('CakeEmail', 'Network/Email');
 class ItcMail extends CakeEmail{
-	
+
 	public function __construct($config = null){
 		parent::__construct($config);
 	}
-	
+
 	public function getConfig($removePassword = true){
 		if($removePassword === true){
 			$config = $this->_config;
