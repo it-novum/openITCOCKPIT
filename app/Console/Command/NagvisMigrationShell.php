@@ -494,7 +494,7 @@ class NagvisMigrationShell extends AppShell {
 							'id' => $mapId['Map']['id'],
 							'name' => $mapname, // neccesary for assigning the background image correctly
 							'title' => $mapId['Map']['title'],
-							'background' => $item['map_image']
+							'background' => empty($item['map_image'])?'':$item['map_image'],
 						];
 						$mapData['Map'] = $currentData;
 						$mapData['Map']['container_id'] = Hash::extract($mapId, 'Container.{n}.id');
@@ -513,6 +513,22 @@ class NagvisMigrationShell extends AppShell {
 							'type' => 'host',
 							'iconset' => $this->getNewIconset((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset']),
 						];
+
+						if($viewType == 'Mapline'){
+							$x = explode(',', $item['x']);
+							$y = explode(',', $item['y']);
+							$currentData = [
+								'object_id' => $ids['Service']['id'], //must be resolved from hostId
+								'startX' => $x[0],
+								'endX' => $x[1],
+								'startY' => $y[0],
+								'endY' => $y[1],
+								'type' => 'host',
+								'iconset' => 'std_line',
+								'gadget' => (isset($gadget))?$gadget:'null',
+							];
+						}
+
 						$mapData[$viewType][] = $currentData;
 						
 						break;
@@ -676,6 +692,7 @@ class NagvisMigrationShell extends AppShell {
 			case 'text2':
 			case 'text_wbg':
 			case 'text-value-only':
+			case 'rawOut':
 				return 'Text';
 				break;
 			case 'graph':
@@ -686,6 +703,9 @@ class NagvisMigrationShell extends AppShell {
 			case 'graph_traffic_in-out':
 				return 'RRDGraph';
 				break;
+			case 'temperatur':
+				return 'Cylinder';
+			break;
 			default:
 				return false;
 				break;
