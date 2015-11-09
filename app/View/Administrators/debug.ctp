@@ -252,15 +252,30 @@
 					<div class="well">
 						<div class="container">
 							<div class="row">
-								<div class="col col-xs-3 bold"><?php echo __('Queue name'); ?></div>
-								<div class="col col-xs-3 bold text-center"><?php echo __('Jobs waiting'); ?></div>
-								<div class="col col-xs-3 bold text-center"><?php echo __('Active jobs'); ?></div>
-								<div class="col col-xs-3 bold text-center"><?php echo __('Worker available'); ?></div>
+								<div class="col col-xs-12 col-md-12 col-lg-3 bold"><?php echo __('Queue name'); ?></div>
+								<div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Jobs waiting'); ?></div>
+								<div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Active jobs'); ?></div>
+								<div class="col col-xs-12 col-md-12 col-lg-3 bold text-center"><?php echo __('Worker available'); ?></div>
 								<?php foreach($gearmanStatus as $queueName => $queueStatus): ?>
-									<div class="col col-xs-3"><?php echo h($queueName); ?></div>
-									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['jobs']); ?></div>
-									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['running']); ?></div>
-									<div class="col col-xs-3 text-center"><?php echo h($queueStatus['worker']); ?></div>
+									<?php
+									$class = 'txt-color-green';
+									if($queueStatus['jobs'] > 5):
+										$class = 'text-primary';
+									endif;
+									if($queueStatus['jobs'] > 50):
+										$class = 'txt-color-orangeDark';
+									endif;
+									if($queueStatus['jobs'] > 500):
+										$class = 'txt-color-white bg-color-red';
+									endif;
+									if($queueStatus['worker'] == 0):
+										$class = 'txt-color-white bg-color-orangeDark';
+									endif;
+									?>
+									<div class="col col-xs-12 col-md-12 col-lg-3 <?php echo $class; ?>"><?php echo h($queueName); ?></div>
+									<div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['jobs']); ?></div>
+									<div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['running']); ?></div>
+									<div class="col col-xs-12 col-md-12 col-lg-3 text-center <?php echo $class; ?>"><?php echo h($queueStatus['worker']); ?></div>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -301,7 +316,7 @@
 				<dt>&nbsp;</dt>
 				<dd>
 					<form accept-charset="utf-8" method="post" class="form-horizontal clear" novalidate="novalidate" action="/Administrators/testMail">
-						<input type="submit" value="<?php echo __('Send test Email to my address'); ?>" class="btn btn-xs btn-default">
+						<input type="submit" value="<?php echo __('Send test Email to %s', h($recipientAddress)); ?>" class="btn btn-xs btn-default">
 					</form>
 				</dd>
 			</dl>
