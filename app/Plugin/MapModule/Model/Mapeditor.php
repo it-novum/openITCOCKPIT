@@ -135,6 +135,6 @@ class Mapeditor extends MapModuleAppModel{
 
 		$mapElements = Hash::filter($mapElements);
 
-		debug($mapElements);
+		//debug($mapElements);
 	}
 }
