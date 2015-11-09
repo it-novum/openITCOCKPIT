@@ -28,12 +28,12 @@ class UsergroupsController extends AppController {
 	public $components = ['Acl'];
 
 	public $uses = ['Usergroup', 'Aro', 'Tenant'];
-	
+
 	//public function beforeFilter(){
 	//	$this->Auth->allow();
 	//	parent::beforeFilter();
 	//}
-	
+
 	public function index(){
 		$options = [
 			'order' => [
@@ -58,7 +58,7 @@ class UsergroupsController extends AppController {
 				'Aro.foreign_key' => $id
 			]
 		]);
-		
+
 		$aros = Hash::extract($permissions, '{n}.Permission.aco_id');
 		unset($permissions);
 		$acos =  $this->Acl->Aco->find('threaded', [
@@ -118,7 +118,7 @@ class UsergroupsController extends AppController {
 					}
 				}
 			}
-			
+
 			//Add always allowd ACOs to request data
 			foreach($alwaysAllowedAcos as $acoId => $description){
 				$aclData[] = [
@@ -132,7 +132,7 @@ class UsergroupsController extends AppController {
 					]
 				];
 			}
-			
+
 			unset($this->request->data['Aco']);
 			if($this->Usergroup->save($this->request->data)){
 				//Delete old permissions
@@ -147,7 +147,7 @@ class UsergroupsController extends AppController {
 				$this->setFlash(__('User group could not be saved'), false);
 			}
 		}
-		
+
 		$this->set(compact([
 			'acos',
 			'aros',
@@ -164,7 +164,7 @@ class UsergroupsController extends AppController {
 		$alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
 		$acoDependencies = $this->Usergroup->getAcoDependencies($acos);
 		$dependenAcoIds =  $this->Usergroup->getAcoDependencyIds($acoDependencies);
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			if($this->Usergroup->saveAll($this->request->data)){
 				$this->Aro->save([
@@ -172,7 +172,7 @@ class UsergroupsController extends AppController {
 					'model' => 'Usergroup',
 					'parent_id' => $this->Usergroup->parentNode()
 				]);
-				
+
 				//Save permissions
 				$aro = $this->Acl->Aro->find('first', [
 					'recursive' => -1,
@@ -183,7 +183,7 @@ class UsergroupsController extends AppController {
 						'Aro.id'
 					]
 				]);
-				
+
 				$aclData = [];
 				$avoidMysqlDuplicate = [];
 				foreach($this->request->data('Usergroup.Aco') as $acoId => $value){
@@ -218,7 +218,7 @@ class UsergroupsController extends AppController {
 						}
 					}
 				}
-	
+
 				//Add always allowd ACOs to request data
 				foreach($alwaysAllowedAcos as $acoId => $description){
 					$aclData[] = [
@@ -232,7 +232,7 @@ class UsergroupsController extends AppController {
 						]
 					];
 				}
-	
+
 				unset($this->request->data['Aco']);
 				//Save new permissions
 				$this->Acl->Aro->Permission->saveAll($aclData);

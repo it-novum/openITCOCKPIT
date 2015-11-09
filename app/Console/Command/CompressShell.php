@@ -28,35 +28,36 @@ require_once APP . 'Vendor' . DS . 'minify' . DS . 'src' . DS . 'JS.php';
 
 use MatthiasMullie\Minify;
 class CompressShell extends AppShell{
-	
+
 	//This shell search all javascript files and compress it to one big javascript file
-	
+
 	public function main(){
 		App::uses('Folder', 'Utility');
 		App::uses('File', 'Utility');
-		
+		$this->stdout->styles('green', ['text' => 'green']);
+
 		$this->out('Compress JavaScript controller components...    ', false);
 		$components = $this->fetchAllJavaScriptComponents();
 		$this->compressFiles($components, 'compressed_components.js');
 		$this->minifyJsFile('compressed_components.js');
-		$this->out('done');
-		
+		$this->out('<green>done</green>');
+
 		$this->out('Compress JavaScript action controllers...    ', false);
 		$controllers = $this->fetchAllJavaScriptControllers();
 		$this->compressFiles($controllers, 'compressed_controllers.js');
 		$this->minifyJsFile('compressed_controllers.js');
-		$this->out('done');
+		$this->out('<green>done</green>');
 	}
-	
+
 	public function fetchAllJavaScriptComponents(){
 		$core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'components');
 		$components = $core->findRecursive('.*\.js');
-		
+
 		foreach(CakePlugin::loaded() as $pluginName){
 			$plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot'. DS . 'js' . DS . 'app' . DS . 'components');
 			$components = array_merge($components, $plugin->findRecursive('.*\.js'));
 		}
-		
+
 		//remove ._ controller files
 		$_components = [];
 		foreach($components as $component){
@@ -66,16 +67,16 @@ class CompressShell extends AppShell{
 		}
 		return $_components;
 	}
-	
+
 	public function fetchAllJavaScriptControllers(){
 		$core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'controllers');
 		$controllers = $core->findRecursive('.*\.js');
-		
+
 		foreach(CakePlugin::loaded() as $pluginName){
 			$plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot'. DS . 'js' . DS . 'app' . DS . 'controllers');
 			$controllers = array_merge($controllers, $plugin->findRecursive('.*\.js'));
 		}
-		
+
 		//remove ._ controller files
 		$_controllers = [];
 		foreach($controllers as $controller){
@@ -85,7 +86,7 @@ class CompressShell extends AppShell{
 		}
 		return $_controllers;
 	}
-	
+
 	public function compressFiles($files, $outFileName){
 		$outFile = new File(WWW_ROOT . 'js' . DS . $outFileName);
 		if($outFile->exists()){
@@ -105,7 +106,7 @@ class CompressShell extends AppShell{
 		$outFile->write($content);
 		$outFile->close();
 	}
-	
+
 	public function minifyJsFile($fileName){
 		$minifier = new Minify\JS(WWW_ROOT . 'js' . DS . $fileName);
 		$file = new File(WWW_ROOT . 'js' . DS . $fileName);
@@ -116,5 +117,9 @@ class CompressShell extends AppShell{
 		$file->write($minifier->minify());
 		$file->close();
 	}
-	
+
+	public function _welcome(){
+		//Disable CakePHP welcome messages
+	}
+
 }

@@ -88,6 +88,9 @@ oitc compress
 #Acc ALC dependencies config for itc core
 oitc AclExtras.AclExtras aco_sync
 
+#Set missing new ACL permissions
+#for always sllowed allowd and dependend ALC action
+oitc set_permissions
 
 service sudo_server stop
 service sudo_server start
