@@ -27,7 +27,8 @@ class SetPermissionsShell extends AppShell{
 	public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
 	public function main(){
-		$this->out('Set new user group permissions    ', false);
+		$this->stdout->styles('green', ['text' => 'green']);
+		$this->out('Set new user group permissions...    ', false);
 		App::import('Component', 'Acl');
 		$this->Acl = @new AclComponent(null);
 
@@ -161,7 +162,7 @@ class SetPermissionsShell extends AppShell{
 
 			//Continue with next usergroup
 		}
-		$this->out('done');
+		$this->out('<green>done</green>');
 	}
 
 	public function _welcome(){

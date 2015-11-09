@@ -1222,6 +1222,7 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 			'UNIQUE_NAME' => ['column' => ['container_id','name'], 'unique' => 1],
 		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $calendar_holidays = [
@@ -1233,6 +1234,7 @@ class AppSchema extends CakeSchema {
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $graphgen_tmpls = [
@@ -1242,6 +1244,7 @@ class AppSchema extends CakeSchema {
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $graphgen_tmpl_confs = [
@@ -1252,6 +1255,7 @@ class AppSchema extends CakeSchema {
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $graph_collections = [
@@ -1261,7 +1265,8 @@ class AppSchema extends CakeSchema {
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 			'UNIQUE_NAME' => ['column' => ['id','name'], 'unique' => 1],
-		]
+		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $graph_tmpl_to_graph_collection = [
@@ -1271,6 +1276,7 @@ class AppSchema extends CakeSchema {
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 		],
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	];
 
 	public $widgets = [
@@ -1399,7 +1405,10 @@ class AppSchema extends CakeSchema {
 		'alias' => array('type' => 'string', 'null' => true),
 		'lft' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1))
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
 	public $aros = array(
@@ -1410,7 +1419,10 @@ class AppSchema extends CakeSchema {
 		'alias' => array('type' => 'string', 'null' => true),
 		'lft' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
 		'rght' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1))
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
 	public $aros_acos = array(
@@ -1421,7 +1433,11 @@ class AppSchema extends CakeSchema {
 		'_read' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
 		'_update' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
 		'_delete' => array('type' => 'string', 'null' => false, 'default' => '0', 'length' => 2),
-		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1), 'ARO_ACO_KEY' => array('column' => array('aro_id', 'aco_id'), 'unique' => 1))
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'ARO_ACO_KEY' => array('column' => array('aro_id', 'aco_id'), 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
 	public $devicegroups = array(
