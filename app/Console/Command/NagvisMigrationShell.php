@@ -57,6 +57,8 @@ class NagvisMigrationShell extends AppShell {
 	private $iconsetMap = null;
 	/* @var array iconsets which are obsolete */
 	private $obsoleteIconsets = null;
+	/* @var maps which are existing in the v3 database */
+	private $availableMaps = null;
 	
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
@@ -190,7 +192,8 @@ class NagvisMigrationShell extends AppShell {
 			'ssl_verify_peer' => false
 		]);
 
-		
+		$this->availableMaps = $this->getMapNames();
+
 		$loginUrl = $this->selfHost.'/login/login.json';
 		$loginData = [
 			'LoginUser' => [
@@ -200,7 +203,6 @@ class NagvisMigrationShell extends AppShell {
 		];
 
 		$this->connectToSelf($loginUrl, $loginData);
-
 
 		//transform the config files
 		if($configFilesReceived){
@@ -417,16 +419,34 @@ class NagvisMigrationShell extends AppShell {
 				$this->out('<error> ...Transform Failed!</error>');
 			}else{
 				$mapname = preg_replace('/(\..*)/', '', $file);
-				if($data = $this->transformDataForV3($mapname, $fileData)){
-					$this->saveNewData($data);
-					$this->out('<success> ...Complete!</success>');
-				}else{
-					$this->out('<error> ...Save to Database Failed!</error>');
+				if(in_array($mapname, $this->availableMaps)){
+					if($data = $this->transformDataForV3($mapname, $fileData)){
+						$this->saveNewData($data);
+						$this->out('<success> ...Complete!</success>');
+					}else{
+						$this->out('<error> ...Save to Database Failed!</error>');
+					}
 				}
 			}
 			$this->hr(1);
 		}
 		$this->out('<info>File Transformation Complete!</info>');
+	}
+
+	/**
+	 * get all available maps from the v3 system 
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @return Array with all maps 
+	 */
+	protected function getMapNames(){
+		$mapnames = $this->map->find('all',[
+		'recursive' => -1,
+			'fields' => [
+				'Map.name',
+			]
+		]);
+		$mapnames = Hash::extract($mapnames, '{n}.Map.name');
+		return $mapnames;
 	}
 
 	/**
