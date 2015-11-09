@@ -38,7 +38,7 @@
 	</div>
 <?php endif; ?>
 <div id="error_msg"></div>
-<?php debug($mapstatus); ?>
+<?php  //debug($mapstatus); ?>
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>

@@ -390,8 +390,8 @@ class MapstatusHelper extends AppHelper{
 		$cumulative_service_state = [];
 		$cumulative_hostgroup_state = [];
 		$cumulative_servicegroup_state = [];
-debug($id);
-debug($mapstatus);
+//debug($id);
+//debug($mapstatus);
 		foreach ($mapstatus as $key => $map) {
 			switch ($key) {
 				case 'hoststatus':
@@ -400,7 +400,7 @@ debug($mapstatus);
 					foreach ($hostUuids as $key => $hostUuid) {
 						$hoststates[$key] = $this->hoststatus($hostUuid);
 					}
-debug($hoststates);
+//debug($hoststates);
 					$cumulative_host_state['Host'] = Hash::apply($hoststates, '{n}.state', 'max');
 
 					$stateKey = null;
