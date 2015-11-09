@@ -561,7 +561,7 @@ class QueryCache{
 					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
 				], [
 					'table' => 'nagios_hoststatus',
-					'type' => 'LEFT OUTER',
+					'type' => 'INNER',
 					'alias' => 'Hoststatus',
 					'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
 				], [
@@ -607,7 +607,7 @@ class QueryCache{
 			],
 			[
 				'table' => 'nagios_servicestatus',
-				'type' => 'LEFT OUTER',
+				'type' => 'INNER',
 				'alias' => 'Servicestatus',
 				'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
 			],
