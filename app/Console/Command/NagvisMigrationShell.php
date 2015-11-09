@@ -426,6 +426,8 @@ class NagvisMigrationShell extends AppShell {
 					}else{
 						$this->out('<error> ...Save to Database Failed!</error>');
 					}
+				}else{
+					$this->out('<info>Skipping file '.$file.' cause there is no such map in the Databse</info>');
 				}
 			}
 			$this->hr(1);
