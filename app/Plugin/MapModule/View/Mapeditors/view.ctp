@@ -38,7 +38,7 @@
 	</div>
 <?php endif; ?>
 <div id="error_msg"></div>
-
+<?php debug($mapstatus); ?>
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
@@ -96,7 +96,7 @@
 								$state = $this->Mapstatus->hostgroupstatus($item['Hostgroup']['uuid']);
 								break;
 							case 'map':
-								$state = $this->Mapstatus->mapstatus($item['Map']['id']);
+								$state = $this->Mapstatus->mapstatus($item['Mapitem']['object_id']);
 								break;
 						}
 						?>

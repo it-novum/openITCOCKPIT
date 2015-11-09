@@ -174,20 +174,11 @@ class MapeditorsController extends MapModuleAppController {
 
 		$mapstatus = [];
 
-		$map = $this->Map->find('first', [
-			'conditions' => [
-				'Map.id' => $id
-			],
-			'fields' => [
-				'Map.*'
-			]
-		]);
-
-		$map = Hash::extract($map, 'Map');
-
-		$mapstatus['Map'] = $map;
-
 		$map = $this->Map->findById($id);
+//debug($map);
+		$_map = Hash::extract($map, 'Map');
+
+		//$mapstatus['Map'] = $_map;
 
 		$map_items = $this->Mapitem->find('all', [
 			//'recursive' => -1,
@@ -244,12 +235,25 @@ class MapeditorsController extends MapModuleAppController {
 						]
 					],
 				],
+					[
+					'table' => 'maps',
+					'alias' => 'SubMap',
+					'type' => 'LEFT OUTER',
+					'conditions' => [
+						[
+							'AND' => [
+								'SubMap.id = Mapitem.object_id',
+								'Mapitem.type' => 'map'
+							]
+						]
+					],
+				],
 			],
 			'conditions' => [
 				'Mapitem.map_id' => $id,
 			],
 			'fields' => [
-				'Mapitem.*','Host.*', 'Hostgroup.*', 'Service.*', 'Servicegroup.*', 'Map.*'
+				'Mapitem.*','Host.*', 'Hostgroup.*', 'Service.*', 'Servicegroup.*', 'SubMap.*'
 			]
 		]);
 
@@ -394,6 +398,7 @@ class MapeditorsController extends MapModuleAppController {
 		$serviceUuids = Hash::extract($map_items, '{n}.Service.uuid');
 		$hostgroupUuids = Hash::extract($map_items, '{n}.Hostgroup.uuid');
 		$servicegroupUuids = Hash::extract($map_items, '{n}.Servicegroup.uuid');
+		$mapIds = Hash::extract($map_items, '{n}.SubMap.id');
 
 		$hostLineUuids = Hash::extract($map_lines, '{n}.Host.uuid');
 		$serviceLineUuids = Hash::extract($map_lines, '{n}.Service.uuid');
@@ -412,6 +417,10 @@ class MapeditorsController extends MapModuleAppController {
 		$servicegroupUuids = Hash::merge($servicegroupUuids, $servicegroupLineUuids, $servicegroupGadgetUuids);
 
 		$this->__unbindAssociations('Objects');
+
+		foreach ($mapIds as $id) {
+			$this->Mapeditor->mapStatus($id);
+		}
 
 		//just the Hosts
 		if(count($hostUuids) > 0){
