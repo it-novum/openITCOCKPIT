@@ -518,7 +518,7 @@ class NagvisMigrationShell extends AppShell {
 							$x = explode(',', $item['x']);
 							$y = explode(',', $item['y']);
 							$currentData = [
-								'object_id' => $ids['Service']['id'], //must be resolved from hostId
+								'object_id' => $hostId, //must be resolved from hostId
 								'startX' => $x[0],
 								'endX' => $x[1],
 								'startY' => $y[0],
