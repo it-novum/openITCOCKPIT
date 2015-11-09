@@ -787,10 +787,51 @@ class NagvisMigrationShell extends AppShell {
 			$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
 			return $hostId;
 		}
+
+
 		$errorMsg = '<warning>Could not resolve Host '.$hostname.'</warning>';
 		if($this->lastError != $errorMsg){
 			$this->out($errorMsg);
 			$this->lastError = $errorMsg;
+		}
+
+		//in some cases the host could not be resolved due to the addition of a domain name 
+		//if the first try fails then check again without the domain name
+		if(empty($hostId) && $this->hasDomain($hostname)){
+			$newName = $this->stripDomain($hostname);
+			$this->out('<info>retry with stripped name '.$newName.'</info>');
+			
+			$hostId = $this->host->find('first',[
+				'recursive' => -1,
+				'conditions' => [
+					'Host.name' => $newName
+				],
+				'fields' => [
+					'Host.id'
+				]
+			]);
+			if(!empty($hostId)){
+				$hostId = $hostId['Host']['id'];
+				$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
+				return $hostId;
+			}
+		}
+
+		return false;
+	}
+
+
+	protected function hasDomain($name){
+		if(preg_match('/([0-9a-z-]{2,}\.[0-9a-z-]{2,3}\.[0-9a-z-]{2,3}|[0-9a-z-]{2,}\.[0-9a-z-]{2,3})$/i', $name)){
+			return true;
+		}
+		return false;
+	}
+
+	protected function stripDomain($name){
+		$pattern = '/.([0-9a-z-]{2,}\.[0-9a-z-]{2,3}\.[0-9a-z-]{2,3}|[0-9a-z-]{2,}\.[0-9a-z-]{2,3})$/i';
+		if($result = preg_replace($pattern, '', $name)){
+			return $result;
 		}
 		return false;
 	}
