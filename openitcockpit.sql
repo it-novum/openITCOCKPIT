@@ -1336,7 +1336,7 @@ CREATE TABLE IF NOT EXISTS `nagios_contactnotificationmethods` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   `command_object_id` int(11) NOT NULL DEFAULT '0',
-  `command_args` varchar(1000) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `command_args` varchar(1000) COLLATE utf8_swedish_ci DEFAULT '',
   PRIMARY KEY (`contactnotificationmethod_id`,`start_time`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notification methods';
