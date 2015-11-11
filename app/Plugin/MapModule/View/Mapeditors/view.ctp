@@ -38,7 +38,7 @@
 	</div>
 <?php endif; ?>
 <div id="error_msg"></div>
-<?php  //debug($mapstatus); ?>
+
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
@@ -77,7 +77,7 @@
 				<div id="jsPlumb_playground" class="resetMargin" style="min-height:600px; <?php echo $css; ?>">
 					<?php App::uses('UUID', 'Lib'); ?>
 
-					<!-- Icons -->
+					<!-- Items -->
 					<?php foreach($map_items as $item):
 						$uuid = UUID::v4();
 						?>
@@ -100,12 +100,12 @@
 								break;
 						}
 						?>
-						<!-- add icons -->
-						<?php if($item['Mapitem']['type'] == 'map'): ?>
+						<!-- add Items -->
+					<?php if($item['Mapitem']['type'] == 'map'): ?>
 						<div id="<?php echo $uuid; ?>" 
 						class="elementHover" 
 						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
-						data-uuid="<?php echo $item['Map']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
+						data-uuid="<?php echo $item['SubMap']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
 					<?php else:?>
 						<div id="<?php echo $uuid; ?>" class="elementHover" data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
@@ -119,7 +119,15 @@
 					<?php endif; ?>
 							<img src="/map_module/img/items/<?php echo $item['Mapitem']['iconset']; ?>/<?php echo isset($state['image'])?$state['image']:''; ?>" onerror="this.src='/map_module/img/items/missing.png';">
 							<!-- hidden data field -->
-							<input type="hidden" name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]" value="<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>" />
+							<?php 	if($item['Mapitem']['type'] == 'map'){
+										$itemtypeKey = 'SubMap';
+									}else{
+										$itemtypeKey = $item['Mapitem']['type'];
+									}
+							 ?>
+							<input type="hidden" 
+								name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]" 
+								value="<?php echo $item[ucfirst($itemtypeKey)]['id']; ?>" />
 						</a>
 						</div>
 					<?php endforeach; ?>

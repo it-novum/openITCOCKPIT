@@ -602,7 +602,7 @@ class NagvisMigrationShell extends AppShell {
 						$viewType = $this->getViewType((!isset($item['view_type']))?'icon':$item['view_type']);//icon or line
 						$currentData = [
 							'object_id' => $hostgroupId,
-							'type' => 'Hostgroup',
+							'type' => 'hostgroup',
 							'x' => $item['x'],
 							'y' => $item['y'],
 							'iconset' => $this->getNewIconset(((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset'])),
@@ -618,7 +618,7 @@ class NagvisMigrationShell extends AppShell {
 						$viewType = $this->getViewType((!isset($item['view_type']))?'icon':$item['view_type']);//icon or line
 						$currentData = [
 							'object_id' => $servicegroupId,
-							'type' => 'Servicegroup', 
+							'type' => 'servicegroup', 
 							'x' => $item['x'],
 							'y' => $item['y'],
 							'iconset' => $this->getNewIconset(((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset'])),
