@@ -9,18 +9,31 @@
 <span class="label bg-color-green">New</span> Execute creation of monitoring configuration parallel
 <span class="label bg-color-green">New</span> Distributed Monitoring Module synchronize configuration parallel
 <span class="label bg-color-green">New</span> Extend debug page with queuing engine status
+<span class="label bg-color-green">New</span> Fix user permissions automatically on update
+<span class="label bg-color-green">New</span> HA cluster support
+<span class="label bg-color-green">New</span> Success messages links to new created or edited objects
 <span class="label bg-color-red">Bugfix</span> Report an issue
 <span class="label bg-color-red">Bugfix</span> Attaching of contacts and contact groups
 <span class="label bg-color-red">Bugfix</span> Generation of Host and Service dependency configuration
 <span class="label bg-color-red">Bugfix</span> LDAP user import
 <span class="label bg-color-red">Bugfix</span> Edit user profile
 <span class="label bg-color-red">Bugfix</span> Hostdependencies and Servicedependencies
+<span class="label bg-color-red">Bugfix</span> Host/Service browser check interval
 <span class="label bg-color-red">Bugfix</span> Clenup Graphgenerator configurations
 <span class="label bg-color-red">Bugfix</span> List as PDF
 <span class="label bg-color-red">Bugfix</span> Map Module Wizard select not monitored service
+<span class="label bg-color-red">Bugfix</span> Several Map Module issues
 <span class="label bg-color-red">Bugfix</span> Fixed Default state for Hostgroups and Servicegroups in Map Module
 <span class="label bg-color-red">Bugfix</span> Two-factor authentication
 <span class="label bg-color-red">Bugfix</span> Graph Collections
+<span class="label bg-color-red">Bugfix</span> Notification commands hidden on index action
+<span class="label bg-color-red">Bugfix</span> Search forms
+<span class="label bg-color-red">Bugfix</span> Current state report if no host status exists in database
+<span class="label bg-color-red">Bugfix</span> openitcockpit-update procedure
+<span class="label bg-color-red">Bugfix</span> Statusmap focus animation
+<span class="label bg-color-red">Bugfix</span> Servicegroup add and edit
+<span class="label bg-color-red">Bugfix</span> Set MySQL correlation for all tables to UTF-8
+
 
 3.0.4
 <span class="label bg-color-green">New</span> User permissions
