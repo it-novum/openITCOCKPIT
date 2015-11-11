@@ -90,7 +90,6 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 		//check if there are Gadgets
 		if(this.getVar('map_gadgets')){
 			var mapGadgets = this.getVar('map_gadgets');
-
 			for (var i = 0; i < mapGadgets.length; i++) {
 				//draw every gadget
 				//self.Gadget is the Gadget Component and the "index" is the function call 
@@ -105,7 +104,26 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				var state = currentElementData['currentState'];
 				var flapping = currentElementData['currentFlapping'];
 				var containerData = {'uuid':currentElementData['currentUuid'],type:self.capitaliseFirstLetter(currentElementData['currentType'])};
-				self.Gadget['draw'+mapGadgets[i]['gadget']]('svgContainer_'+mapGadgets[i]['id'], {id:currentElementData['currentUuid'], x:mapGadgets[i]['x'], y:mapGadgets[i]['y'], containerData:containerData, perfdata:currentElementData['currentPerfdata'], state:state.toString(), flapping:flapping, RRDGraphLink:currentElementData['currentRRDGraphLink']});
+
+				var options = {
+					id:currentElementData['currentUuid'], 
+					x:mapGadgets[i]['x'], y:mapGadgets[i]['y'], 
+					containerData:containerData, 
+					perfdata:currentElementData['currentPerfdata'], 
+					state:state.toString(), 
+					flapping:flapping, 
+					RRDGraphLink:currentElementData['currentRRDGraphLink']
+				}
+				//check if the RRD grah link is empty
+				if(!currentElementData['currentRRDGraphLink']){
+					var opt = {
+						demo:true
+					}
+					//merge the demo property into the options array so that there will be displayed
+					//the dummy graph (as in the edit mode) instead of nothing
+					options = $.extend({}, options, opt); 
+				}
+				self.Gadget['draw'+mapGadgets[i]['gadget']]('svgContainer_'+mapGadgets[i]['id'], options);
 			};
 		}
 
