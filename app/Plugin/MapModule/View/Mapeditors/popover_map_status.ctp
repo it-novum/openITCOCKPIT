@@ -31,23 +31,25 @@
  *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
  *      |__/                                    
 */
-$mapstatus2 = $this->Mapstatus->mapstatus($mapstatus['Map']['id']);
-
+$mapstatus = $this->Mapstatus->mapstatus($mapinfo['Map']['id']);
 $statusColor = null;
-foreach ($mapstatus2 as $key => $value) {
-	switch ($key) {
-		case 'Host':
-			$statusColor = $this->Status->HostStatusColorSimple($mapstatus2[$key]);
-			break;
-		case 'Service':
-			$statusColor = $this->Status->ServiceStatusColorSimple($mapstatus2[$key]);
-			break;
-		case 'Hostgroup':
-			$statusColor = $this->Status->HostStatusColorSimple($mapstatus2[$key]);
-			break;
-		case 'Servicegroup':
-			$statusColor = $this->Status->ServiceStatusColorSimple($mapstatus2[$key]);
-			break;
+if(!empty($mapstatus['allStates'])){
+	$allMapStates = $mapstatus['allStates'];
+	foreach ($allMapStates as $key => $value) {
+		switch ($key) {
+			case 'Host':
+				$statusColor = $this->Status->HostStatusColorSimple($allMapStates[$key]);
+				break;
+			case 'Service':
+				$statusColor = $this->Status->ServiceStatusColorSimple($allMapStates[$key]);
+				break;
+			case 'Hostgroup':
+				$statusColor = $this->Status->HostStatusColorSimple($allMapStates[$key]);
+				break;
+			case 'Servicegroup':
+				$statusColor = $this->Status->ServiceStatusColorSimple($allMapStates[$key]);
+				break;
+		}
 	}
 }
 ?>
@@ -57,11 +59,11 @@ foreach ($mapstatus2 as $key => $value) {
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Map Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $mapstatus['Map']['name']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $mapinfo['Map']['name']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Map Title'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $mapstatus['Map']['title']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $mapinfo['Map']['title']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
