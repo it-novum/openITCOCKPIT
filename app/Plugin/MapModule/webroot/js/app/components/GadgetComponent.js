@@ -372,6 +372,10 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 			text = perfdata[0].label;
 			value = perfdata[0].current_value;
 			unit = perfdata[0].unit;
+		}else{
+			text = 'Perfdata';
+			value = 'not';
+			unit = 'found!';
 		}
 
 		//build up the text
