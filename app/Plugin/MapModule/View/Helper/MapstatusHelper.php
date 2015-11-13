@@ -381,7 +381,6 @@ class MapstatusHelper extends AppHelper{
 	public function mapstatus($id){
 		//returns the summary state for a Map
 		$mapstatus = $this->mapstatus[$id];
-		
 		$cumulative_host_state = [];
 		$cumulative_service_state = [];
 		$cumulative_hostgroup_state = [];
@@ -390,22 +389,34 @@ class MapstatusHelper extends AppHelper{
 		foreach ($mapstatus as $key => $map) {
 			switch ($key) {
 				case 'hoststatus':
+					if(empty($mapstatus['hoststatus'])){
+						continue;
+					}
 					$hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
 					$servicestates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
 					$hostAndServiceStates = Hash::merge($hoststates, $servicestates);
 					$cumulative_host_state['Host'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
 					break;
 				case 'servicestatus':
+					if(empty($mapstatus['servicestatus'])){
+						continue;
+					}
 					$servicestates = Hash::extract($mapstatus['servicestatus'],'{n}.Servicestatus.current_state');
 					$cumulative_service_state['Service'] = Hash::apply($servicestates, '{n}', 'max');
 					break;
 				case 'hostgroupstatus':
+					if(empty($mapstatus['hostgroupstatus'][0])){
+						continue;
+					}
 					$hostgroupHoststates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Hoststatus.current_state');
 					$hostgroupServicestates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
 					$hostAndServiceStates = Hash::merge($hostgroupHoststates, $hostgroupServicestates);
 					$cumulative_hostgroup_state['Hostgroup'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
 					break;
 				case 'servicegroupstatus':
+					if(empty($mapstatus['servicegroupstatus'][0])){
+						continue;
+					}
 					$servicegroupServicestates = Hash::extract($mapstatus['servicegroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
 					$cumulative_servicegroup_state['Servicegroup'] = Hash::apply($servicegroupServicestates, '{n}', 'max');
 					break;
