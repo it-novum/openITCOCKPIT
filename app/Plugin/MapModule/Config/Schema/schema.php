@@ -61,7 +61,7 @@ class MapModuleSchema extends CakeSchema {
 		'limit' => array('type' => 'integer', 'null' => true, 'default' => 0),
 		'iconset' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'type' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'object_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'object_id' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(

@@ -152,7 +152,11 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				$(self.mapViewContainer).append('<div id="svgLineContainer_'+tempUuid+'"></div>');
 				$('<div id="svgLineContainer_'+tempUuid+'"></div>')
 				.appendTo(this.mapViewContainer);
-				
+
+				var drawRect = true;
+				if(mapLines[i].type == 'stateless'){
+					drawRect = false;
+				}
 				//fill the object for the current line
 				var tempObj = {
 					id:tempUuid,
@@ -163,6 +167,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 					link:true,
 					linkData:'',
 					objData: currentElementData,
+					drawRect:drawRect
 				};
 				//draw the Lines
 				self.Line.drawSVGLine(tempObj);
