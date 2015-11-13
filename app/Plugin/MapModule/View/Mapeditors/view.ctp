@@ -157,10 +157,27 @@
 						}
 						?>
 						<!-- add container for lines -->
-						<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
-							<input type="hidden" name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]" value="<?php echo $line[ucfirst($line['Mapline']['type'])]['id'] ?>">
-							<input type="hidden" id="popoverType_<?php echo $line['Mapline']['id']; ?>" class="popoverTypeHidden" data-type="<?php echo $line['Mapline']['type']; ?>" data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>" data-color="<?php echo $lineColor['hexColor']; ?>" data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
-						</div>
+						<?php if($line['Mapline']['type'] == 'stateless'): ?>
+							<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
+								<input type="hidden" 
+									name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]">
+								<input type="hidden" 
+									id="statelessLine_<?php echo $line['Mapline']['id']; ?>" 
+									data-type="<?php echo $line['Mapline']['type']; ?>" 
+									data-color="#00FF00" >
+							</div>
+						<?php else: ?>
+							<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
+								<input type="hidden" name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]" value="<?php echo $line[ucfirst($line['Mapline']['type'])]['id'] ?>">
+								<input type="hidden" 
+								id="popoverType_<?php echo $line['Mapline']['id']; ?>" 
+								class="popoverTypeHidden" 
+								data-type="<?php echo $line['Mapline']['type']; ?>" 
+								data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>" 
+								data-color="<?php echo $lineColor['hexColor']; ?>" 
+								data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
+							</div>
+						<?php endif; ?>
 				<?php endforeach; ?>
 
 				<!-- Gadgets -->

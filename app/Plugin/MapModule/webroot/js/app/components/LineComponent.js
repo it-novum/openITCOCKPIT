@@ -37,6 +37,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 		var link = (opt.link == null?false:opt.link);
 		var objData = opt.objData || ''; //optional but mandatory if link == true
 		var lineStatusColor = objData.currentColor || '#0f0';
+		var drawRect = (opt.drawRect ==null)?true:opt.drawRect;
 
 		var boxes = this.calculateLineBoxCenterPosition(opt);
 
@@ -53,70 +54,76 @@ App.Components.LineComponent = Frontend.Component.extend({
 			stroke: lineStatusColor, strokeWidth: 5, class: 'itemElement_line', id:id+'_line'
 		});
 
-		//style for the inner rect div
-		var rectStyle = {
-			'position' : 'absolute',
-			'width' : opt.rectWidth,
-			'height': opt.rectHeight,
-			'left' : boxes.centerX,
-			'top' : boxes.centerY,
-			'border':'1px solid #FFF',
-			'border-radius':'5px'
-		}
+		//check if the rect should be drawn -> this is not neccessary on stateless lines for example
+		if(drawRect){
+			//style for the inner rect div
+			var rectStyle = {
+				'position' : 'absolute',
+				'width' : opt.rectWidth,
+				'height': opt.rectHeight,
+				'left' : boxes.centerX,
+				'top' : boxes.centerY,
+				'border':'1px solid #FFF',
+				'border-radius':'5px'
+			}
 
-		var innerRectClass = '';
-		if(link){
-			//link is true -> so it must be the View mode
-			innerRectClass = 'elementHover';
-		}else{
-			//link is false -> so it must be the Edit mode
-			innerRectClass = 'itemElement';
-		}
-		//inner rect (cannot be an SVG obj. -> jQuery mouseover doesnt work on this)
-		$('#'+svgContainer).append($('<div>', {
-			id:id+'_rect',
-			class: innerRectClass
-		})
-		.data({'lineId':lineId})
-		.addClass('lineHoverElement lineSVGContainer')
-		.css(rectStyle));
+			var innerRectClass = '';
+			if(link){
+				//link is true -> so it must be the View mode
+				innerRectClass = 'elementHover';
+			}else{
+				//link is false -> so it must be the Edit mode
+				innerRectClass = 'itemElement';
+			}
 
-		if(link){
-			$('#'+id+'_rect')
-			.attr({'data-uuid':objData['currentUuid'], 'data-type':this.capitaliseFirstLetter(objData['currentType'])})
-		}
 
-		//outer rect style
-		var outerRectStyle = {
-			'position':'absolute',
-			'width':opt.rectWidth+2,
-			'height':opt.rectHeight+2,
-			'left':boxes.centerX-1,
-			'top':boxes.centerY-1,
-			'border':'1px solid #000',
-			'border-radius':'3px',
-		};
+			//inner rect (cannot be an SVG obj. -> jQuery mouseover doesnt work on this)
+			$('#'+svgContainer).append($('<div>', {
+				id:id+'_rect',
+				class: innerRectClass
+			})
+			.data({'lineId':lineId})
+			.addClass('lineHoverElement lineSVGContainer')
+			.css(rectStyle));
 
-		//outer rect
-		$('#'+svgContainer).append($('<div>',{
-			id:id+'_rectOuter',
-			class:'itemElement_rectOuter'
-		}).css(outerRectStyle));
+			if(link){
+				$('#'+id+'_rect')
+				.attr({'data-uuid':objData['currentUuid'], 'data-type':this.capitaliseFirstLetter(objData['currentType'])})
+			}
 
-		if(link){
-			if(objData['currentLink'] != null){
-				//link to the browser
-				$('<a>').attr({id:id+'_link',href:objData['currentLink']})
-				.css({'height':opt.rectHeight+'px', 'width':opt.rectWidth+'px'})
-				.appendTo($('#'+id+'_rect'));
+			//outer rect style
+			var outerRectStyle = {
+				'position':'absolute',
+				'width':opt.rectWidth+2,
+				'height':opt.rectHeight+2,
+				'left':boxes.centerX-1,
+				'top':boxes.centerY-1,
+				'border':'1px solid #000',
+				'border-radius':'3px',
+			};
 
-				$('<div>').css({'height':opt.rectHeight+'px', 'width':opt.rectWidth+'px'}).appendTo('#'+id+'_link');
+			//outer rect
+			$('#'+svgContainer).append($('<div>',{
+				id:id+'_rectOuter',
+				class:'itemElement_rectOuter'
+			}).css(outerRectStyle));
+
+			if(link){
+				if(objData['currentLink'] != null){
+					//link to the browser
+					$('<a>').attr({id:id+'_link',href:objData['currentLink']})
+					.css({'height':opt.rectHeight+'px', 'width':opt.rectWidth+'px'})
+					.appendTo($('#'+id+'_rect'));
+
+					$('<div>').css({'height':opt.rectHeight+'px', 'width':opt.rectWidth+'px'}).appendTo('#'+id+'_link');
+				}
+			}
+
+			if(el2append != undefined){
+				$('#'+id+'_rect').append(el2append);
 			}
 		}
-
-		if(el2append != undefined){
-			$('#'+id+'_rect').append(el2append);
-		}
+		
 	},
 
 
