@@ -196,15 +196,20 @@ class Mapeditor extends MapModuleAppModel{
 	 * @param  Array $conditions
 	 * @return Array Hoststatus array
 	 */
-	protected function _hoststatus($conditions){
+	protected function _hoststatus($conditions, $fields = null){
 		$_conditions = ['Objects.objecttype_id' => 1];
 		$conditions = Hash::merge($conditions, $_conditions);
+
+		$_fields = ['Hoststatus.current_state','Objects.name1'];
+		if(!empty($fields)){
+			$fields = Hash::merge($fields, $_fields);
+		}else{
+			$fields = $_fields;
+		}
+
 		$hoststatus = $this->Objects->find('all', [
 			'conditions' => $conditions,
-			'fields' => [
-				'Hoststatus.current_state',
-				'Objects.name1',
-			],
+			'fields' => $fields,
 			'joins' => [
 				[
 					'table' => 'nagios_hoststatus',
@@ -223,25 +228,94 @@ class Mapeditor extends MapModuleAppModel{
 	 * @param  Array $conditions
 	 * @return Array Servicestatus array
 	 */
-	protected function _servicestatus($conditions){
+	protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false){
 		$_conditions = ['Objects.objecttype_id' => 2];
 		$conditions = Hash::merge($conditions, $_conditions);
-		$servicestatus = $this->Objects->find('all', [
-			'recursive' => -1,
-			'conditions' => $conditions,
-			'fields' => [
-				'Servicestatus.current_state',
-				'Objects.name1',
-			],
-			'joins' => [
+
+		$_fields = ['Servicestatus.current_state','Objects.name1'];
+		if(!empty($fields)){
+			$fields = Hash::merge($fields, $_fields);
+		}else{
+			$fields = $_fields;
+		}
+
+		if($getServiceInfo){
+			$joins = [
+				[
+					'table' => 'services',
+					'alias' => 'Service',
+					'conditions' => [
+						'Objects.name2 = Service.uuid',
+					]
+				],
+				[
+					'table' => 'servicetemplates',
+					'type' => 'INNER',
+					'alias' => 'Servicetemplate',
+					'conditions' => [
+						'Servicetemplate.id = Service.servicetemplate_id',
+					]
+				],
 				[
 					'table' => 'nagios_servicestatus',
 					'type' => 'LEFT',
 					'alias' => 'Servicestatus',
 					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
 				]
-			],
+			];
+		}else{
+			$joins = [
+				[
+					'table' => 'nagios_servicestatus',
+					'type' => 'LEFT',
+					'alias' => 'Servicestatus',
+					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
+				]
+			];
+		}
+
+		$servicestatus = $this->Objects->find('all', [
+			'recursive' => -1,
+			'conditions' => $conditions,
+			'fields' => $fields,
+			'joins' => $joins,
 		]);
 		return $servicestatus;
+	}
+
+	/**
+	 * get hoststatus by uuid
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Mixed $uuid   String or array of uuids
+	 * @param  Array $fields fields which should be returned
+	 * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on success
+	 */
+	public function getHoststatusByUuid($uuid = null, $fields = null){
+		if(empty($uuid)){
+			return false;
+		}
+		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+		$conditions = [
+			'Host.uuid' => $uuid
+		];
+		return $this->_hoststatus($conditions, $fields);
+	}
+
+	/**
+	 * get servicestatus by uuid
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Mixed $uuid   String or Array of Uuids
+	 * @param  Array $fields fields which should be returned
+	 * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on success
+	 */
+	public function getServicestatusByHostUuid($uuid = null, $fields = null){
+		if(empty($uuid)){
+			return false;
+		}
+		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+		$conditions = [
+			'Objects.name1' => $uuid
+		];
+		return $this->_servicestatus($conditions, $fields, true);
 	}
 }

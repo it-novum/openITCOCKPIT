@@ -760,76 +760,36 @@ class MapeditorsController extends MapModuleAppController {
 	}
 
 	public function popoverHostStatus($uuid = null){
-		$hoststatus = $this->Objects->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'name1' => $uuid,
-				'objecttype_id' => 1
-			],
-			'fields' => [
-				'Objects.*',
-				'Hoststatus.*',
-				'Host.name',
-				'Host.description',
-				'Host.address'
-			],
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'conditions' => [
-						'Objects.name1 = Host.uuid',
-					]
-				],
-				[
-					'table' => 'nagios_hoststatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Hoststatus',
-					'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-				]
-			]
-		]);
-		$servicestatus = $this->Objects->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'name1' => $uuid,
-				'objecttype_id' => 2
-			],
-			'fields' => [
-				'Objects.*',
-				'Servicestatus.*',
-				'Service.name',
-				'Service.description',
-				'Servicetemplate.name',
-				'Servicetemplate.description'
-			],
-			'joins' => [
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'conditions' => [
-						'Objects.name2 = Service.uuid',
-					]
-				],
-				[
-					'table' => 'servicetemplates',
-					'type' => 'INNER',
-					'alias' => 'Servicetemplate',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id',
-					]
-				],
-				[
-					'table' => 'nagios_servicestatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Servicestatus',
-					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-				]
-			],
-			'order' => [
-				'Servicestatus.current_state DESC'
-			]
-		]);
+		$hoststatusFields = [
+			'Host.name',
+			'Host.description',
+			'Host.address',
+			'Hoststatus.output',
+			'Hoststatus.long_output',
+			'Hoststatus.last_check',
+			'Hoststatus.next_check',
+			'Hoststatus.last_state_change',
+			'Hoststatus.problem_has_been_acknowledged',
+			'Hoststatus.scheduled_downtime_depth',
+			'Hoststatus.is_flapping',
+			'Hoststatus.current_check_attempt',
+			'Hoststatus.max_check_attempts'
+		];
+		$hoststatus = $this->Mapeditor->getHoststatusByUuid($uuid, $hoststatusFields);
+
+		$servicestatusFields = [
+			'Objects.name2',
+			'Servicestatus.problem_has_been_acknowledged',
+			'Servicestatus.scheduled_downtime_depth',
+			'Servicestatus.is_flapping',
+			'Servicestatus.perfdata',
+			'Servicestatus.output',
+			'Service.name', // may obsolete .. just mapstatushelper is using that 
+			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+			'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+			'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+		];
+		$servicestatus = $this->Mapeditor->getServicestatusByHostUuid($uuid, $servicestatusFields);
 		$this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
 	}
 
