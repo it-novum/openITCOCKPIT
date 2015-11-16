@@ -80,9 +80,11 @@ class GearmanWorkerShell extends AppShell{
 			return;
 		}
 
-		if(array_key_exists('restart', $this->params)){
-			$this->restart();
-			return;
+		foreach(['restart', 'try-restart', 'reload', 'force-reload'] as $key){
+			if(array_key_exists($key, $this->params)){
+				$this->restart();
+				return;
+			}
 		}
 
 		if(array_key_exists('daemon', $this->params)){
@@ -103,6 +105,9 @@ class GearmanWorkerShell extends AppShell{
 			'start' => ['help' => __d('oitc_console', 'Start GearmanWorker in daemon mode and and fork the process in the background the daemon')],
 			'stop' => ['short' => 'k', 'help' => __d('oitc_console', 'Stops the daemon')],
 			'restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'try-restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'force-reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
 			'status' => ['short' => 's', 'help' => __d('oitc_console', 'Resturn the status of the daemon')],
 			'probe' => ['short' => 'p', 'help' => __d('oitc_console', 'Pacemaker likes this, but we dont know why :) (it\'s recommended to use with -q e.g.: gearman_worker -p -q)')],
 		]);
