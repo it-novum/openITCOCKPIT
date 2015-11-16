@@ -737,6 +737,7 @@
 											<option value="service"><?php echo __('Service'); ?></option>
 											<option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
 											<option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
+											<option value="stateless"><?php echo __('Stateless'); ?></option>
 										</select>
 									</div>
 								<!-- Host form -->
@@ -850,6 +851,20 @@
 												'content' => 'object_id'
 											]
 										);
+										echo $this->Form->input('startX', ['value' => 0, 'label' => __('Start X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'startX']);
+										echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'endX']);
+										echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'startY']);
+										echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'endY']);
+										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
+										echo $this->Form->end();
+										?>
+									</div>
+									<div class="col-xs-12" id="addLine_stateless" style="display:none;">
+										<div class="padding-top-20"></div>
+										<?php
+										echo $this->Form->create('addStatelessLine', [
+											'class' => 'form-horizontal clear'
+										]);
 										echo $this->Form->input('startX', ['value' => 0, 'label' => __('Start X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'startX']);
 										echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'endX']);
 										echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'startY']);

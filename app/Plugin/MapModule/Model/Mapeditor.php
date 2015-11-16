@@ -39,7 +39,8 @@ class Mapeditor extends MapModuleAppModel{
 				}else{
 					$filtered[$key] = array_filter($mapObject,
 						function($el){
-							return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
+							//return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
+							return (isset($el['type']));
 						}
 					);
 				}
