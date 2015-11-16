@@ -898,49 +898,13 @@
 						<div class="modal-body">
 							<div id="GadgetWizardModalContent">
 								<div class="row">
-									<div class="col-md-6">
+									<div class="col-md-6" style="display:none">
 										<select name="" id="GadgetWizardChoseType" class="chosen" data-placeholder="<?php echo __('Please select...'); ?>">
-											<option value=""></option>
-											<option value="host"><?php echo __('Host'); ?></option>
 											<option value="service"><?php echo __('Service'); ?></option>
-											<option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
-											<option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
 										</select>
 									</div>
-								<!-- Host form -->
-									<div class="col-xs-12" id="addGadget_host" style="display:none;">
-										<div class="padding-top-20"></div>
-										<?php
-										echo $this->Form->create('addHostGadget', [
-											'class' => 'form-horizontal clear'
-										]);
-										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($hosts),
-												'data-placeholder' => __('Please select...'),
-												'multiple' => false,
-												'class' => 'chosen gadgetInput',
-												'style' => 'width: 100%',
-												'label' => __('Host'),
-												'wrapInput' => 'col col-xs-8',
-												'element-property' => 'chosen',
-												'content' => 'object_id'
-											]
-										);
-										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'x']);
-										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'y']);
-										echo $this->Form->fancyCheckbox('transparent_background', [
-												'caption' => __('Transparent Background'),
-												'captionGridClass' => 'col col-md-2 hidden rrdBackground',
-												'class' => 'onoffswitch-checkbox gadgetInput',
-												'wrapGridClass' => 'col col-xs-8 hidden rrdBackground',
-												'content' => 'transparent_background',
-											]);
-										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'limit']);
-										echo $this->Form->end();
-										?>
-									</div>
 								<!-- Service form -->
-									<div class="col-xs-12" id="addGadget_service" style="display:none;">
+									<div class="col-xs-12" id="addGadget_service">
 										<div class="padding-top-20"></div>
 										<?php
 										echo $this->Form->create('addServiceGadget', [
@@ -964,70 +928,6 @@
 												'class' => 'chosen gadgetInput',
 												'style' => 'width: 100%',
 												'label' => __('Service'),
-												'wrapInput' => 'col col-xs-8',
-												'element-property' => 'chosen',
-												'content' => 'object_id'
-											]
-										);
-										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'x']);
-										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'y']);
-										echo $this->Form->fancyCheckbox('transparent_background', [
-												'caption' => __('Transparent Background'),
-												'captionGridClass' => 'col col-md-2 hidden rrdBackground',
-												'class' => 'onoffswitch-checkbox gadgetInput',
-												'wrapGridClass' => 'col col-xs-8 hidden rrdBackground',
-												'content' => 'transparent_background',
-											]);
-										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'limit']);
-										echo $this->Form->end();
-										?>
-									</div>
-								<!-- Servicegroup form -->
-									<div class="col-xs-12" id="addGadget_servicegroup" style="display:none;">
-										<div class="padding-top-20"></div>
-										<?php
-										echo $this->Form->create('addServicegroupGadget', [
-											'class' => 'form-horizontal clear'
-										]);
-										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($servicegroup),
-												'data-placeholder' => __('Please select...'),
-												'multiple' => false,
-												'class' => 'chosen gadgetInput',
-												'style' => 'width: 100%',
-												'label' => __('Servicegroup'),
-												'wrapInput' => 'col col-xs-8',
-												'element-property' => 'chosen',
-												'content' => 'object_id'
-											]
-										);
-										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'x']);
-										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'y']);
-										echo $this->Form->fancyCheckbox('transparent_background', [
-												'caption' => __('Transparent Background'),
-												'captionGridClass' => 'col col-md-2 hidden rrdBackground',
-												'class' => 'onoffswitch-checkbox gadgetInput',
-												'wrapGridClass' => 'col col-xs-8 hidden rrdBackground',
-												'content' => 'transparent_background',
-											]);
-										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'limit']);
-										echo $this->Form->end();
-										?>
-									</div>
-								<!-- Hostgroup form -->
-									<div class="col-xs-12" id="addGadget_hostgroup" style="display:none;">
-										<div class="padding-top-20"></div>
-										<?php
-										echo $this->Form->create('addHostgroupGadget', [
-											'class' => 'form-horizontal clear'
-										]);
-										echo $this->Form->input('object_id', [
-												'options' => $this->Html->chosenPlaceholder($hostgroup),
-												'data-placeholder' => __('Please select...'),
-												'multiple' => false,
-												'class' => 'chosen gadgetInput',
-												'style' => 'width: 100%',
-												'label' => __('Hostgroup'),
 												'wrapInput' => 'col col-xs-8',
 												'element-property' => 'chosen',
 												'content' => 'object_id'

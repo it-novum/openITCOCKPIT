@@ -714,18 +714,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			}
 
 			switch(type){
-				case 'host':
-					$('#addHostGadgetX').val(self.currentGadget['x']);
-					$('#addHostGadgetY').val(self.currentGadget['y']);
-					if('object_id' in self.currentGadget){
-						$('#addHostGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
-					}
-					$('#addHostGadgetTransparentBackground').prop('checked',self.currentGadget['transparent_background']);
-					//hide other forms
-					$('#addGadget_service').hide();
-					$('#addGadget_hostgroup').hide();
-					$('#addGadget_servicegroup').hide();
-					break;
 				case 'service':
 					$('#addServiceGadgetX').val(self.currentGadget['x']);
 					$('#addServiceGadgetY').val(self.currentGadget['y']);
@@ -740,34 +728,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 						$('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
 					}
 					$('#addServiceGadgetTransparentBackground').prop('checked',parseInt(self.currentGadget['transparent_background']));
-					//hide other forms
-					$('#addGadget_host').hide();
-					$('#addGadget_hostgroup').hide();
-					$('#addGadget_servicegroup').hide();
-					break;
-				case 'servicegroup':
-					$('#addServicegroupGadgetX').val(self.currentGadget['x']);
-					$('#addServicegroupGadgetY').val(self.currentGadget['y']);
-					if('object_id' in self.currentGadget){
-						$('#addServicegroupGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
-					}
-					$('#addServicegroupGadgetTransparentBackground').prop('checked',self.currentGadget['transparent_background']);
-					//hide other forms
-					$('#addGadget_host').hide();
-					$('#addGadget_service').hide();
-					$('#addGadget_hostgroup').hide();
-					break;
-				case 'hostgroup':
-					$('#addHostgroupGadgetX').val(self.currentGadget['x']);
-					$('#addHostgroupGadgetY').val(self.currentGadget['y']);
-					if('object_id' in self.currentGadget){
-						$('#addHostgroupGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
-					}
-					$('#addHostgroupGadgetTransparentBackground').prop('checked',self.currentGadget['transparent_background']);
-					//hide other forms
-					$('#addGadget_host').hide();
-					$('#addGadget_service').hide();
-					$('#addGadget_servicegroup').hide();
 					break;
 			}
 		});
@@ -1605,6 +1565,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 				//show modal edit dialog
 				$('#GadgetWizardModal').modal('show');
+				//trigger change event for dropdown list
+				$('#GadgetWizardChoseType').trigger('change');
 
 				$('#saveGadgetPropertiesBtn').text($('#gadgetEditSaveText').val());
 
@@ -1863,10 +1825,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				$('#GadgetWizardModal').modal('show');
 				$('.chosen-container').css('width', '100%');
 
+				
+
 				this.currentGadget = [];
 				this.currentGadget = drop;
 				//this.currentGadget['transparent_background'] = 0;
 				this.currentGadget['gadget'] = data;
+
+				$('#GadgetWizardChoseType').trigger('change');
 			break;
 		}
 	},
