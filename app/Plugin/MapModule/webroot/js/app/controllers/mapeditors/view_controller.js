@@ -90,6 +90,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 		//check if there are Gadgets
 		if(this.getVar('map_gadgets')){
 			var mapGadgets = this.getVar('map_gadgets');
+			console.log(mapGadgets);
 			for (var i = 0; i < mapGadgets.length; i++) {
 				//draw every gadget
 				//self.Gadget is the Gadget Component and the "index" is the function call 
@@ -103,6 +104,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
 				var state = currentElementData['currentState'];
 				var flapping = currentElementData['currentFlapping'];
+				console.log(currentElementData);
 				var containerData = {'uuid':currentElementData['currentUuid'],type:self.capitaliseFirstLetter(currentElementData['currentType'])};
 
 				var options = {
