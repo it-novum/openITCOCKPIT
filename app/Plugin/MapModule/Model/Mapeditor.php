@@ -36,11 +36,16 @@ class Mapeditor extends MapModuleAppModel{
 							return !empty(trim($el['text']));
 						}
 					);
+				}else if($key === 'Mapline'){
+					$filtered[$key] = array_filter($mapObject,
+						function($el){
+							return (isset($el['type']));
+						}
+					);
 				}else{
 					$filtered[$key] = array_filter($mapObject,
 						function($el){
-							//return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
-							return (isset($el['type']));
+							return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
 						}
 					);
 				}
