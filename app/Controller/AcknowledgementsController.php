@@ -23,18 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AcknowledgementsController extends AppController{	
+class AcknowledgementsController extends AppController{
 	/*
 	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
 	 * use this external model to fetch the required data out of the database
 	 */
 	public $uses = [MONITORING_ACKNOWLEDGED, MONITORING_SERVICESTATUS, 'Host', 'Service', MONITORING_HOSTSTATUS, 'Documentation'];
-	
-	
+
+
 	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler'];
 	public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
 	public $layout = 'Admin.default';
-	
+
 	public $listFilters = [
 		'service' => [
 			'fields' => [
@@ -49,12 +49,12 @@ class AcknowledgementsController extends AppController{
 			],
 		],
 	];
-	
+
 	public function service($id = null){
 		if(!$this->Service->exists($id)){
 			throw new NotFoundException(__('Invalid service'));
 		}
-		
+
 		/*
 		$service = $this->Service->find('first', [
 			'fields' => [
@@ -108,43 +108,48 @@ class AcknowledgementsController extends AppController{
 			return;
 		}
 
+		$allowEdit = false;
+		if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+			$allowEdit = true;
+		}
+
 		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
 			'fields' => [
 				'Objects.name2',
 				'Servicestatus.current_state'
 			]
 		]);
-		
+
 		$requestSettings = $this->Acknowledged->listSettingsService($this->request, $service['Service']['uuid']);
-		
+
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		}else{
 			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
 		}
-		
-		
+
+
 		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
+
 		$all_acknowledgements = $this->Paginator->paginate();
 
 		$this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
-		$this->set(compact(['service', 'all_acknowledgements', 'servicestatus']));
-		
-		
+		$this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit']));
+
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
 			$this->set('isFilter', false);
 		}
 	}
-	
+
 	public function host($id = null){
 		if(!$this->Host->exists($id)){
 			throw new NotFoundException(__('Invalid host'));
 		}
-		
+
 		$host = $this->Host->find('first', [
 			'fields' => [
 				'Host.id',
@@ -165,34 +170,34 @@ class AcknowledgementsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
 			'fields' => [
 				'Objects.name1',
 				'Hoststatus.current_state'
 			]
 		]);
-		
+
 		$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
-		
+
 		$requestSettings = $this->Acknowledged->listSettingsHost($this->request, $host['Host']['uuid']);
-		
+
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		}else{
 			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
 		}
-		
-		
+
+
 		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
+
 		$all_acknowledgements = $this->Paginator->paginate();
 
 		$this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
 		$this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'hostDocuExists']));
-		
-		
+
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{

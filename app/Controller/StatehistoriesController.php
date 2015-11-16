@@ -29,12 +29,12 @@ class StatehistoriesController extends AppController{
 	 * use this external model to fetch the required data out of the database
 	 */
 	public $uses = [MONITORING_STATEHISTORY, MONITORING_SERVICESTATUS, MONITORING_HOSTSTATUS, 'Host', 'Service', 'Documentation'];
-	
-	
+
+
 	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler'];
 	public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
 	public $layout = 'Admin.default';
-	
+
 	public $listFilters = [
 		'service' => [
 			'fields' => [
@@ -42,12 +42,12 @@ class StatehistoriesController extends AppController{
 			],
 		],
 	];
-	
+
 	public function service($id = null){
 		if(!$this->Service->exists($id)){
 			throw new NotFoundException(__('invalid service'));
 		}
-		
+
 		/*
 		$service = $this->Service->find('first', [
 			'fields' => [
@@ -95,31 +95,35 @@ class StatehistoriesController extends AppController{
 				'Service.id' => $id
 			],
 		]);
-		
+
 		if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
 			$this->render403();
 			return;
 		}
-		
-		
+
+		$allowEdit = false;
+		if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+			$allowEdit = true;
+		}
+
 		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
 			'fields' => [
 				'Objects.name2',
 				'Servicestatus.current_state'
 			]
 		]);
-		
-		
+
+
 		$requestSettings = $this->Statehistory->listSettings($this->request, $service['Service']['uuid'], $service['Host']['uuid']);
-		
+
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		}else{
 			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
 		}
-		
+
 		$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-		
+
 		//SQL Clenup
 		if(isset($this->Paginator->settings['conditions']['Statehistory.state'])){
 			$this->Paginator->settings['conditions']['Statehistory.state'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state']);
@@ -127,27 +131,27 @@ class StatehistoriesController extends AppController{
 		if(isset($this->Paginator->settings['conditions']['Statehistory.state_type'])){
 			$this->Paginator->settings['conditions']['Statehistory.state_type'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state_type']);
 		}
-		
+
 		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
+
 		$all_statehistories = $this->Paginator->paginate();
 
-		$this->set(compact(['service', 'all_statehistories', 'servicestatus']));
+		$this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit']));
 		$this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-		
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
 			$this->set('isFilter', false);
 		}
 	}
-	
+
 	public function host($id = null){
 		if(!$this->Host->exists($id)){
 			throw new NotFoundException(__('invalid host'));
 		}
-		
+
 		$host = $this->Host->find('first', [
 			'fields' => [
 				'Host.id',
@@ -163,39 +167,39 @@ class StatehistoriesController extends AppController{
 				'Container'
 			]
 		]);
-		
+
 		if(!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))){
 			$this->render403();
 			return;
 		}
-		
+
 		$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
 			'fields' => [
 				'Objects.name1',
 				'Hoststatus.current_state'
 			]
 		]);
-		
-		
+
+
 		$requestSettings = $this->Statehistory->listSettingsHost($this->request, $host['Host']['uuid']);
-		
+
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		}else{
 			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
 		}
-		
-		
+
+
 		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
+
 		$all_statehistories = $this->Paginator->paginate();
 
 		$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
 
 		$this->set(compact(['host', 'all_statehistories', 'hoststatus', 'hostDocuExists']));
 		$this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-		
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
