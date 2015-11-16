@@ -112,7 +112,7 @@ class GearmanWorkerShell extends AppShell{
 	public function start(){
 		if($this->status()){
 			$this->out("<info>Notice: oITC GearmanWorker is allready running!</info>");
-			exit(1);
+			exit(0);
 		}
 
 		$this->out("<info>Starting oITC GearmanWorker...</info>", false);

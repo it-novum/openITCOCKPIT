@@ -23,18 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServicechecksController extends AppController{	
+class ServicechecksController extends AppController{
 	/*
 	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
 	 * use this external model to fetch the required data out of the database
 	 */
 	public $uses = [MONITORING_SERVICECHECK, MONITORING_SERVICESTATUS, 'Host', 'Service'];
-	
-	
+
+
 	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler'];
 	public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
 	public $layout = 'Admin.default';
-	
+
 	public $listFilters = [
 		'index' => [
 			'fields' => [
@@ -42,12 +42,12 @@ class ServicechecksController extends AppController{
 			],
 		],
 	];
-	
+
 	public function index($id = null){
 		if(!$this->Service->exists($id)){
 			throw new NotFoundException(__('invalid service'));
 		}
-		
+
 		$service = $this->Service->find('first', [
 			'recursive' => -1,
 			'contain' => [
@@ -64,9 +64,9 @@ class ServicechecksController extends AppController{
 			'conditions' => [
 				'Service.id' => $id
 			],
-			
+
 		]);
-		
+
 		/*
 		$service = $this->Service->find('first', [
 			'fields' => [
@@ -102,32 +102,37 @@ class ServicechecksController extends AppController{
 			]
 		]);
 		*/
-		
+
 		if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
 			$this->render403();
 			return;
 		}
-			
+
+		$allowEdit = false;
+		if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+			$allowEdit = true;
+		}
+
 		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
 			'fields' => [
 				'Objects.name2',
 				'Servicestatus.current_state'
 			]
 		]);
-		
-		
+
+
 		$requestSettings = $this->Servicecheck->listSettings($this->request, $service['Service']['uuid']);
-		
+
 		$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
+
 		$all_servicechecks = $this->Paginator->paginate();
 
 		$this->set('ServicecheckListsettings', $requestSettings['Listsettings']);
-		$this->set(compact(['service', 'all_servicechecks', 'servicestatus']));
-		
-		
+		$this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'allowEdit']));
+
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
