@@ -705,9 +705,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		 */
 		$('#GadgetWizardChoseType').change(function(){
 			var type = $(this).val();
+			type = 'service';
 			$('#addGadget_'+type).show();
 			self.currentGadget['type'] = type;
-
+			
 			if(self.currentGadget['gadget'] == "RRDGraph"){
 				var $form = $('#addGadget_'+type).find('form');
 				$form.find('.rrdBackground').removeClass('hidden');
@@ -876,6 +877,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		 * Catch modal save event GADGET
 		 */
 		$('#saveGadgetPropertiesBtn').click(function(){
+			console.log(self.currentGadget);
 			$('#addGadget_'+self.currentGadget['type']+' *').filter(':input').each(function(){
 				if($(this).hasClass('gadgetInput')){
 					if($(this).attr('type') == 'checkbox'){
@@ -924,10 +926,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				self.makeDraggable();
 			}
 
-			$('#addGadget_host').hide();
-			$('#addGadget_service').hide();
-			$('#addGadget_hostgroup').hide();
-			$('#addGadget_servicegroup').hide();
 			$('#GadgetWizardModal').modal('hide');
 		});
 
@@ -1036,10 +1034,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			$('#saveGadgetPropertiesBtn').text($('#gadgetAddSaveText').val());
 
 			$('.rrdBackground').addClass('hidden');
-			$('#addGadget_host').hide();
-			$('#addGadget_service').hide();
-			$('#addGadget_hostgroup').hide();
-			$('#addGadget_servicegroup').hide();
 		});
 
 		$('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function(){
