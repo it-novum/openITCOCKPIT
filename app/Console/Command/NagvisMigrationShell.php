@@ -636,15 +636,19 @@ class NagvisMigrationShell extends AppShell {
 						$mapData['Maptext'][] = $currentData;
 						break;
 					case 'line': 
-						continue; // stateless line NOT IMPLEMENTED YET!
-
+						$x = explode(',', $item['x']);
+						$y = explode(',', $item['y']);
 						$currentData = [
-							'x' => $item['x'], // comma separated 
-							'y' => $item['y'], // comma separated
-							'lineType' => $item['line_type'] //10 for line with 2 arrows -><-, 11 for 1 arrow -->, 12 for no arrow -- CURRENTLY NOT IMPLEMENTED
+							'object_id' => 0, //must be resolved from hostId
+							'startX' => $x[0],
+							'endX' => $x[1],
+							'startY' => $y[0],
+							'endY' => $y[1],
+							'type' => 'stateless',
+							'iconset' => 'std_line',
 						];
 						
-						//$mapData['Mapline'][] = $currentData;
+						$mapData['Mapline'][] = $currentData;
 						break;
 					case 'shape':
 						//icon
