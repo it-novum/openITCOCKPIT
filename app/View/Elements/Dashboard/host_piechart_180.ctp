@@ -38,14 +38,14 @@
 					'critical',
 					'unknown'
 				];
-
+				
 				$bgColors = [
 					1 => 'bg-color-red',
 					2 => 'bg-color-blueDark'
 				];
-
+				
 				?>
-
+				
 			</div>
 			<div class="col-xs-12 stats180 margin-top-10" style="display:none; position: absolute; top:0px;">
 				<?php foreach([1, 2] as $state): ?>
@@ -57,7 +57,7 @@
 								'plugin' => '',
 								'Filter.Hoststatus.current_state['.$state.']' => 1
 							]); ?>" style="color:#FFF;">
-								<?php echo __('( %s ) '.strtolower($this->Status->humanSimpleHostStatus($state)), $widgetHostStateArray180['state'][$state]);?>
+								<?php echo __('( %s ) down', $widgetHostStateArray180['state'][$state]);?>
 							</a>
 						</div>
 						<div class="col-xs-12">
@@ -109,7 +109,7 @@
 				<?php endforeach; ?>
 			</div>
 		</div>
-
+		
 			<div class="text-center font-xs">
 				<div class="col-xs-12">
 					<div class="toggleDetailsForPiechart"><i class="fa fa-angle-down"></i></div>
