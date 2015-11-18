@@ -69,8 +69,8 @@ class LoginController extends AppController {
 		}
 		if($this->request->referer(true) === '/') {
 			$this->Auth->loginRedirect = array(
-				'controller' => 'home',
-				'action' => 'demo'
+				'controller' => 'dashboards',
+				'action' => 'index'
 			);
 		}
 
