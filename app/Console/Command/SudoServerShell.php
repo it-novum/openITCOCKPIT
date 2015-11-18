@@ -58,6 +58,13 @@ class SudoServerShell extends AppShell {
 			$this->probe();
 		}
 
+		foreach(['restart', 'try-restart', 'reload', 'force-reload'] as $key){
+			if(array_key_exists($key, $this->params)){
+				$this->restart();
+				return;
+			}
+		}
+
 		if(array_key_exists('status', $this->params)){
 			if($this->status()){
 				$this->stdout->styles('green', ['text' => 'green']);
@@ -92,6 +99,10 @@ class SudoServerShell extends AppShell {
 			'stop' => ['short' => 'k', 'help' => __d('oitc_console', 'Stops the daemon')],
 			'status' => ['short' => 's', 'help' => __d('oitc_console', 'Resturn the status of the daemon')],
 			'probe' => ['short' => 'p', 'help' => __d('oitc_console', 'Pacemaker likes this, but we dont know why :) (it\'s recommended to use with -q e.g.: sudo_server -p -q)')],
+			'restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'try-restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
+			'force-reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
 		]);
 		return $parser;
 	}
@@ -151,13 +162,26 @@ class SudoServerShell extends AppShell {
 		return $return;
 	}
 
-	public function stop(){
+	public function stop($exit = true){
 		if(!$this->status()){
 			$this->out("<info>Notice: SudoServer isn't running!</info>");
-			exit(0);
+			if($exit){
+				exit(0);
+			}
 		}
 
-		$this->_systemsettings = $this->Systemsetting->findAsArray();
+
+		try{
+			$this->_systemsettings = $this->Systemsetting->findAsArray();
+		}catch(Exception $e){
+			//Mysql server issue
+			//Set set default values to _systemsettings to to stop the sudo_server
+			debug($e->getMessage());
+			$this->_systemsettings = [];
+			$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] = '/usr/share/openitcockpit/app/run/';
+			$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'] = 'sudo.sock';
+
+		}
 
 		foreach($this->_getPid() as $pid){
 			posix_kill($pid, SIGTERM);
@@ -180,7 +204,16 @@ class SudoServerShell extends AppShell {
 		$this->stdout->styles('green', ['text' => 'green']);
 		$this->out('<green>SudoServer terminated, astalavista baby...</green>');
 		$this->deleteSocket();
-		exit(0);
+		if($exit){
+			exit(0);
+		}
+	}
+
+	public function restart(){
+		if($this->stop(false)){
+			sleep(1);
+			$this->daemonizing();
+		}
 	}
 
 	/*
