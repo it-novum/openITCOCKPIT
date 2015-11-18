@@ -1,3 +1,5 @@
+3.0.6
+
 3.0.5
 <span class="label bg-color-green">New</span> Add test mail function to debug page
 <span class="label bg-color-green">New</span> Restart oITC CMD after new monitoring configuration was written
