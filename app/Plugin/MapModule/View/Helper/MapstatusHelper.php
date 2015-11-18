@@ -70,7 +70,6 @@ class MapstatusHelper extends AppHelper{
 				$this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs['Servicegroup']['Servicestatus'];
 			}
 		}
-
 		if(isset($this->_View->viewVars['mapstatus'])){
 			$this->mapstatus = $this->_View->viewVars['mapstatus'];
 		}
@@ -381,97 +380,45 @@ class MapstatusHelper extends AppHelper{
 
 	public function mapstatus($id){
 		//returns the summary state for a Map
-		
-		$mapstatus = $this->mapstatus;
-		//remove the map array from the mapstatus
-		$mapstatus = Hash::remove($mapstatus, 'Map');
-
+		$mapstatus = $this->mapstatus[$id];
 		$cumulative_host_state = [];
 		$cumulative_service_state = [];
 		$cumulative_hostgroup_state = [];
 		$cumulative_servicegroup_state = [];
-//debug($id);
-//debug($mapstatus);
+
 		foreach ($mapstatus as $key => $map) {
 			switch ($key) {
 				case 'hoststatus':
-					$hostUuids = Hash::extract($map, '{n}.Objects.name1');
-					$hoststates = [];
-					foreach ($hostUuids as $key => $hostUuid) {
-						$hoststates[$key] = $this->hoststatus($hostUuid);
+					if(empty($mapstatus['hoststatus'])){
+						continue;
 					}
-//debug($hoststates);
-					$cumulative_host_state['Host'] = Hash::apply($hoststates, '{n}.state', 'max');
-
-					$stateKey = null;
-					foreach ($hoststates as $key => $value) {
-						if($value['state'] == $cumulative_host_state['Host']){
-							$stateKey = $key;
-						}
-					}
-					
-					if(sizeof($stateKey)>0){
-						$hoststate = $hoststates[$stateKey];
-					}
+					$hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
+					$servicestates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
+					$hostAndServiceStates = Hash::merge($hoststates, $servicestates);
+					$cumulative_host_state['Host'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
 					break;
 				case 'servicestatus':
-					$serviceUuids = Hash::extract($map, '{n}.Objects.name2');
-					$servicestates = [];
-					foreach ($serviceUuids as $key => $serviceUuid) {
-						$servicestates[$key] = $this->servicestatus($serviceUuid);
+					if(empty($mapstatus['servicestatus'])){
+						continue;
 					}
-
-					$cumulative_service_state['Service'] = Hash::apply($servicestates, '{n}.state', 'max');
-					
-					$stateKey = null;
-					foreach ($servicestates as $key => $value) {
-						if($value['state'] == $cumulative_service_state['Service']){
-							$stateKey = $key;
-						}
-					}
-					if(sizeof($stateKey)>0){
-						$servicestate = $servicestates[$stateKey];
-					}
+					$servicestates = Hash::extract($mapstatus['servicestatus'],'{n}.Servicestatus.current_state');
+					$cumulative_service_state['Service'] = Hash::apply($servicestates, '{n}', 'max');
 					break;
 				case 'hostgroupstatus':
-					$hostgroupUuids = Hash::extract($map, '{n}.Hostgroup.uuid');
-					$hostgroupstates = [];
-					foreach ($hostgroupUuids as $key => $hostgroupUuid) {
-						$hostgroupstates[$key] = $this->servicestatus($hostgroupUuid);
+					if(empty($mapstatus['hostgroupstatus'][0])){
+						continue;
 					}
-
-					$cumulative_hostgroup_state['Hostgroup'] = Hash::apply($hostgroupstates, '{n}.state', 'max');
-					
-					$stateKey = null;
-					foreach ($hostgroupstates as $key => $value) {
-						if($value['state'] == $cumulative_hostgroup_state['Hostgroup']){
-							$stateKey = $key;
-						}
-					}
-					
-					if(sizeof($stateKey)>0){
-						$hostgroupstate = $hostgroupstates[$stateKey];
-					}
+					$hostgroupHoststates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Hoststatus.current_state');
+					$hostgroupServicestates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
+					$hostAndServiceStates = Hash::merge($hostgroupHoststates, $hostgroupServicestates);
+					$cumulative_hostgroup_state['Hostgroup'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
 					break;
 				case 'servicegroupstatus':
-					$servicegroupUuids = Hash::extract($map, '{n}.Servicegroup.uuid');
-					$servicegroupstates = [];
-					foreach ($servicegroupUuids as $key => $servicegroupUuid) {
-						$servicegroupstates[$key] = $this->servicestatus($servicegroupUuid);
+					if(empty($mapstatus['servicegroupstatus'][0])){
+						continue;
 					}
-
-					$cumulative_servicegroup_state['Servicegroup'] = Hash::apply($servicegroupstates, '{n}.state', 'max');
-					
-					$stateKey = null;
-					foreach ($servicegroupstates as $key => $value) {
-						if($value['state'] == $cumulative_servicegroup_state['Servicegroup']){
-							$stateKey = $key;
-						}
-					}
-					
-					if(sizeof($stateKey)>0){
-						$servicegroupstate = $servicegroupstates[$stateKey];
-					}
+					$servicegroupServicestates = Hash::extract($mapstatus['servicegroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
+					$cumulative_servicegroup_state['Servicegroup'] = Hash::apply($servicegroupServicestates, '{n}', 'max');
 					break;
 			}
 		}
@@ -479,29 +426,11 @@ class MapstatusHelper extends AppHelper{
 		$cumulative_states = Hash::merge($cumulative_host_state, $cumulative_service_state, $cumulative_hostgroup_state, $cumulative_servicegroup_state);
 		//calculate whole cumulative state and determine which type it is (Host or service for the correct return state)
 		$cumulative_state = Hash::apply($cumulative_states, '{s}', 'max');
-		$cumulative_key = array_search($cumulative_state, $cumulative_states);
+		//the state wich will be displayed in the view mode
+		$baseStateForView = $this->ServicegroupstatusValues($cumulative_state);
+		$baseStateForView['allStates'] = $cumulative_states;
 
-		$typeAndState = [];
-		$typeAndState[$cumulative_key] = $cumulative_state;
-
-
-		switch ($cumulative_key) {
-			case 'Host':
-				$state = $hoststate;
-				break;
-			case 'Service':
-				$state = $servicestate;
-				break;
-			case 'Hostgroup':
-				$state = $hostgroupstate;
-				break;
-			case 'Servicegroup':
-				$state = $servicegroupstate;
-				break;
-		}
-		$return = Hash::merge($state, $typeAndState);
-
-		return $return;
+		return $baseStateForView;
 	}
 
 }
