@@ -194,6 +194,7 @@ class Mapeditor extends MapModuleAppModel{
 	 * return the Hoststatus for the given array of conditions
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Array $conditions
+	 * @param  Array $fields
 	 * @return Array Hoststatus array
 	 */
 	protected function _hoststatus($conditions, $fields = null){
@@ -226,6 +227,8 @@ class Mapeditor extends MapModuleAppModel{
 	 * return the servicestatus for the given array of conditions
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Array $conditions
+	 * @param  Array $fields 
+	 * @param  Bool  $getServiceInfo set to true if you also want to get the service and servicetemplate data
 	 * @return Array Servicestatus array
 	 */
 	protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false){
@@ -246,6 +249,13 @@ class Mapeditor extends MapModuleAppModel{
 					'alias' => 'Service',
 					'conditions' => [
 						'Objects.name2 = Service.uuid',
+					]
+				],
+				[
+					'table' => 'hosts',
+					'alias' => 'Host',
+					'conditions' => [
+						'Host.uuid = Objects.name1',
 					]
 				],
 				[
@@ -273,7 +283,6 @@ class Mapeditor extends MapModuleAppModel{
 				]
 			];
 		}
-
 		$servicestatus = $this->Objects->find('all', [
 			'recursive' => -1,
 			'conditions' => $conditions,
@@ -302,7 +311,7 @@ class Mapeditor extends MapModuleAppModel{
 	}
 
 	/**
-	 * get servicestatus by uuid
+	 * get servicestatus by HOST uuid
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Mixed $uuid   String or Array of Uuids
 	 * @param  Array $fields fields which should be returned
@@ -315,6 +324,24 @@ class Mapeditor extends MapModuleAppModel{
 		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
 		$conditions = [
 			'Objects.name1' => $uuid
+		];
+		return $this->_servicestatus($conditions, $fields, true);
+	}
+
+	/**
+	 * get servcestatus by uuid
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Mixed $uuid   String or Array of Uuids
+	 * @param  Array $fields fields which should be returned
+	 * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on success
+	 */
+	public function getServicestatusByUuid($uuid = null, $fields = null){
+		if(empty($uuid)){
+			return false;
+		}
+		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+		$conditions = [
+			'Objects.name2' => $uuid
 		];
 		return $this->_servicestatus($conditions, $fields, true);
 	}

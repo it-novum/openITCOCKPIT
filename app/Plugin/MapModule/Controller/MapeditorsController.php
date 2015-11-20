@@ -969,89 +969,28 @@ class MapeditorsController extends MapModuleAppController {
 
 
 	public function popoverServiceStatus($uuid = null){
-		$servicestatus = $this->Objects->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'name2' => $uuid,
-				'objecttype_id' => 2
-			],
-			'fields' => [
-				'Objects.*',
-				'Servicetemplate.name',
-				'Servicetemplate.description',
-				'Servicestatus.*',
-				'Service.name',
-				'Service.description',
-				'Host.name'
-			],
-			'joins' => [
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'conditions' => [
-						'Objects.name2 = Service.uuid',
-					]
-				],
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'conditions' => [
-						'Host.uuid = Objects.name1',
-					]
-				],
-				[
-					'table' => 'servicetemplates',
-					'type' => 'INNER',
-					'alias' => 'Servicetemplate',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id',
-					]
-				],
-				[
-					'table' => 'nagios_servicestatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Servicestatus',
-					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-				]
-			]
-		]);
+		$fields = [
+			'Host.name',
+			'Objects.name2',
+			'Service.name', // may obsolete .. just mapstatushelper is using that 
+			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+			'Servicestatus.problem_has_been_acknowledged',
+			'Servicestatus.scheduled_downtime_depth',
+			'Servicestatus.is_flapping',
+			'Servicestatus.perfdata',
+			'Servicestatus.output',
+			'Servicestatus.long_output',
+			'Servicestatus.current_check_attempt',
+			'Servicestatus.max_check_attempts',
+			'Servicestatus.last_check',
+			'Servicestatus.next_check',
+			'Servicestatus.last_state_change',
+			'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+			'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+		];
 
-		$service = $this->Service->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'Service.uuid' => $uuid,
-			],
-			'contains' =>[
-				'Host',
-				'Service',
-				'Servicetemplate'
-			],
-			'fields' => [
-				'Host.name',
-				'Service.id',
-				'Service.description',
-				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-				'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription'
-			],
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'conditions' => [
-						'Host.id = Service.host_id',
-					]
-				],
-				[
-					'table' => 'servicetemplates',
-					'type' => 'INNER',
-					'alias' => 'Servicetemplate',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id',
-					]
-				],
-			]
-		]);
-		$this->set(compact('uuid','servicestatus', 'service'));
+		$servicestatus = $this->Mapeditor->getServicestatusByUuid($uuid, $fields);
+		$this->set(compact('uuid','servicestatus'));
 	}
 
 	public function popoverMapStatus($id){

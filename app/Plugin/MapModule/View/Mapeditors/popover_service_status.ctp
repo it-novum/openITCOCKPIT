@@ -32,7 +32,7 @@
  *      |__/                                    
 */
 
-$servicestatus = $this->Mapstatus->servicestatus($uuid);
+$_servicestatus = $this->Mapstatus->servicestatus($uuid);
 $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
@@ -41,19 +41,19 @@ $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $service[0]['Host']['name']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0]['Host']['name']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Service Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $service[0][0]['ServiceName']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0][0]['ServiceName']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $service[0][0]['ServiceDescription']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0][0]['ServiceDescription']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('State'); ?></td>
-		<td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($servicestatus['state'])['class']; ?> "><?php echo $servicestatus['human_state']; ?></td>
+		<td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($_servicestatus['state'])['class']; ?> "><?php echo $_servicestatus['human_state']; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
