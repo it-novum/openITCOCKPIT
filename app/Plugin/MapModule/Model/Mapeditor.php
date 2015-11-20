@@ -231,7 +231,7 @@ class Mapeditor extends MapModuleAppModel{
 	 * @param  Bool  $getServiceInfo set to true if you also want to get the service and servicetemplate data
 	 * @return Array Servicestatus array
 	 */
-	protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false){
+	protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false, $type = 'all'){
 		$_conditions = ['Objects.objecttype_id' => 2];
 		$conditions = Hash::merge($conditions, $_conditions);
 
@@ -283,7 +283,7 @@ class Mapeditor extends MapModuleAppModel{
 				]
 			];
 		}
-		$servicestatus = $this->Objects->find('all', [
+		$servicestatus = $this->Objects->find($type, [
 			'recursive' => -1,
 			'conditions' => $conditions,
 			'fields' => $fields,
@@ -344,5 +344,42 @@ class Mapeditor extends MapModuleAppModel{
 			'Objects.name2' => $uuid
 		];
 		return $this->_servicestatus($conditions, $fields, true);
+	}
+
+	public function getServicegroupstatusByUuid($uuid = null, $fields = null){
+		if(empty($uuid)){
+			return false;
+		}
+		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+		$this->Servicegroup = ClassRegistry::init('Servicegroup');
+		$servicegroupstatus = [];
+		$servicegroup = $this->Servicegroup->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'uuid' => $uuid,
+			],
+			'contain' => [
+				'Container' => [
+					'fields' => [
+						'Container.name'
+					]
+				],
+				'Service' => [
+					'fields' => [
+						'Service.uuid'
+					],
+				],
+			],
+		]);
+		$servicegroupstatus = $servicegroup;
+		$currentServicegroupServiceUuids = Hash::extract($servicegroup, '{n}.Service.{n}.uuid');
+
+		foreach ($currentServicegroupServiceUuids as $key => $serviceUuid) {
+			$conditions = [
+				'Objects.name2' => $serviceUuid,
+			];
+			$servicegroupstatus[0]['Servicegroup']['Servicestatus'][$key] = $this->_servicestatus($conditions, $fields, true, 'first');
+		}
+		return $servicegroupstatus;
 	}
 }

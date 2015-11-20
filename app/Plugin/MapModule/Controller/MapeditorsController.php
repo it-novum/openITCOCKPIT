@@ -794,71 +794,8 @@ class MapeditorsController extends MapModuleAppController {
 	}
 
 	public function popoverServicegroupStatus($uuid = null){
-		$this->loadModel('Servicegroup');
-		$servicegroups = $this->Servicegroup->find('all',[
-			'recursive' => -1,
-			'conditions' => [
-				'uuid' => $uuid,
-			],
-			'contain' => [
-				'Container' => [
-					'fields' => [
-						'Container.name'
-					]
-				],
-				'Service' => [
-					'fields' => [
-						'Service.uuid'
-					],
-				],
-			],
-		]);
-		$currentServicegroupServiceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
-
-		foreach ($currentServicegroupServiceUuids as $key => $currentServicegroupServiceUuid) {
-			$servicestatus = $this->Objects->find('first', [
-				'recursive' => -1,
-				'conditions' => [
-					'name2' => $currentServicegroupServiceUuid,
-					'objecttype_id' => 2
-				],
-				'fields' => [
-					'Objects.*',
-					'Servicetemplate.name',
-					'Servicetemplate.description',
-					'Servicestatus.current_state',
-					'Service.name',
-					'Service.description',
-				],
-				'joins' => [
-					[
-						'table' => 'services',
-						'alias' => 'Service',
-						'conditions' => [
-							'Objects.name2 = Service.uuid',
-						]
-					],
-					[
-						'table' => 'servicetemplates',
-						'type' => 'INNER',
-						'alias' => 'Servicetemplate',
-						'conditions' => [
-							'Servicetemplate.id = Service.servicetemplate_id',
-						]
-					],
-					[
-						'table' => 'nagios_servicestatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Servicestatus',
-						'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-					]
-				],
-				'order' => [
-					'Servicestatus.current_state DESC'
-				]
-			]);
-			$servicegroups[0]['Servicegroup']['Servicestatus'][$key] = $servicestatus;
-		}
+		$fields = [];
+		$servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($uuid, $fields);
 		$this->set(compact(['uuid', 'servicegroups']));
 	}
 
