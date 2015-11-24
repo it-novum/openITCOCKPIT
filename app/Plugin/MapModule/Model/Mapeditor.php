@@ -346,6 +346,13 @@ class Mapeditor extends MapModuleAppModel{
 		return $this->_servicestatus($conditions, $fields, true);
 	}
 
+	/**
+	 * get servicegroupstatus by uuid
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Mixed $uuid   String or Array of Uuids
+	 * @param  Array $fields fields which should be returned
+	 * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on success
+	 */
 	public function getServicegroupstatusByUuid($uuid = null, $fields = null){
 		if(empty($uuid)){
 			return false;
@@ -381,5 +388,52 @@ class Mapeditor extends MapModuleAppModel{
 			$servicegroupstatus[0]['Servicegroup']['Servicestatus'][$key] = $this->_servicestatus($conditions, $fields, true, 'first');
 		}
 		return $servicegroupstatus;
+	}
+
+
+	public function getHostgroupstatusByUuid($uuid = null, $hostFields = null, $serviceFields = null){
+		if(empty($uuid)){
+			return false;
+		}
+		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+		$this->Hostgroup = ClassRegistry::init('Hostgroup');
+		$hostgroupstatus = [];
+		$hostgroups = $this->Hostgroup->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'uuid' => $uuid,
+			],
+			'contain' => [
+				'Container' => [
+					'fields' => [
+						'Container.name'
+					]
+				],
+				'Host' =>[
+					'fields' => [
+						'Host.name',
+						'Host.uuid',
+						'Host.description',
+						'Host.address'
+					]
+				]
+			],
+			'fields' => [
+				'Hostgroup.*'
+			]
+		]);
+		$hostgroupstatus = $hostgroups;
+
+		$HostgroupHostUuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
+
+		foreach ($HostgroupHostUuids as $key => $hostUuid) {
+			$conditions = [
+				'Objects.name1' => $hostUuid
+			];
+			$hostgroupstatus[0]['Host'][$key]['Hoststatus'] = $this->_hoststatus($conditions, $hostFields);
+
+			$hostgroupstatus[0]['Host'][$key]['Servicestatus'] = $this->_servicestatus($conditions, $serviceFields);
+		}
+		return $hostgroupstatus;
 	}
 }
