@@ -808,7 +808,6 @@ class MapeditorsController extends MapModuleAppController {
 		];
 		$serviceFields = [
 			'Servicestatus.current_state',
-			//'Servicestatus.'
 		];
 		$hostgroups = $this->Mapeditor->getHostgroupstatusByUuid($uuid, $hostFields, $serviceFields);
 		$this->set(compact(['hostgroups']));
