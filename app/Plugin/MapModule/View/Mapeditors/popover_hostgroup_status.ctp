@@ -108,7 +108,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
 			<td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
 			<?php else: ?>
 				<!-- there are no services for this host so display the hostdata -->
-				<?php $currentHostState = $host['Hoststatus']['Hoststatus']['current_state']; ?>
+				<?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state']; ?>
 				<td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
 			<?php endif; ?>
 			<!-- Output -->

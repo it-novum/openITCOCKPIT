@@ -800,108 +800,17 @@ class MapeditorsController extends MapModuleAppController {
 	}
 
 	public function popoverHostgroupStatus($uuid = null){
-		$this->loadModel('Hostgroup');
-		$hostgroups = $this->Hostgroup->find('all',[
-			'recursive' => -1,
-			'conditions' => [
-				'uuid' => $uuid,
-			],
-			'contain' => [
-				'Container' => [
-					'fields' => [
-						'Container.name'
-					]
-				],
-				'Host' =>[
-					'fields' => [
-						'Host.name',
-						'Host.uuid',
-						'Host.description',
-						'Host.address'
-					]
-				]
-			],
-			'fields' => [
-				'Hostgroup.*'
-			]
-		]);
-		$hostUuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
-
-		$hoststatus = [];
-
-		foreach ($hostUuids as $key => $hostUuid) {
-			$hoststate = $this->Objects->find('first', [
-				'recursive' => -1,
-				'conditions' => [
-					'name1' => $hostUuid,
-					'objecttype_id' => 1
-				],
-				'fields' => [
-					'Objects.*',
-					'Hoststatus.current_state',
-					'Hoststatus.problem_has_been_acknowledged',
-					'Hoststatus.scheduled_downtime_depth',
-					'Hoststatus.is_flapping'
-					//'Hoststatus.current_state',
-				],
-				'joins' => [
-					[
-						'table' => 'nagios_hoststatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Hoststatus',
-						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-					]
-				]
-			]);
-
-			$hoststatus[] = $hoststate;
-
-			$servicestatus = $this->Objects->find('all', [
-				'recursive' => -1,
-				'conditions' => [
-					'name1' => $hostUuid,
-					'objecttype_id' => 2
-				],
-				'fields' => [
-					'Objects.*',
-					'Servicetemplate.name',
-					'Servicetemplate.description',
-					'Servicestatus.current_state',
-					'Service.name',
-					'Service.description',
-				],
-				'joins' => [
-					[
-						'table' => 'services',
-						'alias' => 'Service',
-						'conditions' => [
-							'Objects.name2 = Service.uuid',
-						]
-					],
-					[
-						'table' => 'servicetemplates',
-						'type' => 'INNER',
-						'alias' => 'Servicetemplate',
-						'conditions' => [
-							'Servicetemplate.id = Service.servicetemplate_id',
-						]
-					],
-					[
-						'table' => 'nagios_servicestatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Servicestatus',
-						'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-					]
-				],
-				'order' => [
-					'Servicestatus.current_state DESC'
-				]
-			]);
-			$hostgroups[0]['Host'][$key]['Hoststatus'] = $hoststate;
-			$hostgroups[0]['Host'][$key]['Servicestatus'] = $servicestatus;
-		}
-
-		$this->set(compact(['hostgroups','hoststatus', 'servicestatus']));
+		$hostFields = [
+			'Hoststatus.current_state',
+			'Hoststatus.problem_has_been_acknowledged',
+			'Hoststatus.scheduled_downtime_depth',
+			'Hoststatus.is_flapping',
+		];
+		$serviceFields = [
+			'Servicestatus.current_state',
+		];
+		$hostgroups = $this->Mapeditor->getHostgroupstatusByUuid($uuid, $hostFields, $serviceFields);
+		$this->set(compact(['hostgroups']));
 	}
 
 
