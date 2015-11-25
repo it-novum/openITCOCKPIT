@@ -794,15 +794,20 @@ class NagvisMigrationShell extends AppShell {
 		$groupId = $this->$groupType->find('first',[
 			'recursive' => -1,
 			'fields' => [
-				$type.'.id'
+				$type.'.id',
+				'Container.id'
 			],
-			'contain' => [
-				'Container' => [
+			'joins' => [
+				[
+					'table' => 'containers',
+					'alias' => 'Container',
+					'type' => 'INNER',
 					'conditions' => [
+						$type.'.container_id = Container.id',
 						'Container.name' => $groupname
-					],
+					]
 				]
-			]
+			],
 		]);
 		if(!empty($groupId[$type]['id'])){
 			$groupId = $groupId[$type]['id'];
