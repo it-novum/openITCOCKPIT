@@ -613,7 +613,7 @@ class NagiosExportTask extends AppShell{
 				 * This will be available in one of the next versions...
 				 *
 				 * So this is a little workaround!!!
-				 * We only att the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
+				 * We only add the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
 				 */
 				if($host['Host']['satellite_id'] > 0){
 					$content.= $this->addContent('check_freshness', 1, 1);
