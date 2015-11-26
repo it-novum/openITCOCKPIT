@@ -608,6 +608,37 @@ class DocumentationsController extends AppController{
 					]
 				],
 			],
+			
+			'api' => [
+				'name' => ('REST API'),
+				'directory' => 'api',
+				'children' => [
+					'methods' => [
+						'name' => __('HTTP Request Methods'),
+						'description' => 'Which HTTP request method will call which action',
+						'file' => 'methods',
+						'icon' => 'fa fa-bolt',
+					],
+					'hosttemplates' => [
+						'name' => __('Hosttemplates'),
+						'description' => 'How to query hosttemplate objects using the REST API',
+						'file' => 'hosttemplates',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+					'hosts' => [
+						'name' => __('Hosts'),
+						'description' => 'How to query host objects using the REST API',
+						'file' => 'hosts',
+						'icon' => 'fa fa-desktop',
+					],
+					'servicetemplates' => [
+						'name' => __('Servicetemplates'),
+						'description' => 'How to query servicetemplate objects using the REST API',
+						'file' => 'servicetemplates',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+				],
+			],
 		];
 
 		$parsedMarkdown = '';

@@ -863,6 +863,7 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$this->set(compact(['all_services', 'all_hosts', 'servicetemplate']));
+		$this->set('_serialize', ['all_services']);
 		$this->set('back_url', $this->referer());
 	}
 
