@@ -127,6 +127,7 @@ $config = [
 				'delete' => ['mass_delete']
 			],
 			'Timeperiods' => [
+				'index' => ['view'],
 				'delete' => ['mass_delete'],
 			],
 			'Contactgroups' => [

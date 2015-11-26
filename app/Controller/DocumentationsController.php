@@ -643,6 +643,12 @@ class DocumentationsController extends AppController{
 						'file' => 'servicetemplates',
 						'icon' => 'fa fa-pencil-square-o',
 					],
+					'timeperiods' => [
+						'name' => __('Timeperiods'),
+						'description' => 'How to query timeperiod objects using the REST API',
+						'file' => 'timeperiods',
+						'icon' => 'fa fa-clock-o',
+					],
 				],
 			],
 		];
