@@ -2,7 +2,7 @@
 
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/servicetemplates.json">
+	<input type="text" class="form-control" readonly="readonly" value="/servicetemplates.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -56,7 +56,7 @@
 ## Query a servicetemplate by id:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/servicetemplates/1.json">
+	<input type="text" class="form-control" readonly="readonly" value="/servicetemplates/1.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -227,7 +227,7 @@
 ## Query all services that are using the given servicetemplate:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/servicetemplates/usedBy/1.json">
+	<input type="text" class="form-control" readonly="readonly" value="/servicetemplates/usedBy/1.json">
 </div>
 <br />
 <div class="panel panel-primary">

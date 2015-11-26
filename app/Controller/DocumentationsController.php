@@ -619,6 +619,12 @@ class DocumentationsController extends AppController{
 						'file' => 'methods',
 						'icon' => 'fa fa-bolt',
 					],
+					'commands' => [
+						'name' => __('Commands'),
+						'description' => 'How to query command objects using the REST API',
+						'file' => 'commands',
+						'icon' => 'fa fa-terminal',
+					],
 					'hosttemplates' => [
 						'name' => __('Hosttemplates'),
 						'description' => 'How to query hosttemplate objects using the REST API',

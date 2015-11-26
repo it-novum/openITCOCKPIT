@@ -121,6 +121,7 @@ $config = [
 				'delete' => ['mass_delete']
 			],
 			'Commands' => [
+				'index' => ['view'],
 				'add' => ['addCommandArg', 'loadMacros'],
 				'edit' => ['addCommandArg', 'loadMacros'],
 				'delete' => ['mass_delete']
@@ -174,6 +175,7 @@ $config = [
 				'edit' => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId']
 			],
 			'Hosttemplates' => [
+				'index' => ['view'],
 				'add' => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
 				'edit' => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId']
 			],
@@ -202,7 +204,7 @@ $config = [
 			],
 			'Services' => [
 				'deactivate' => ['mass_deactivate'],
-				'index' => ['serviceByHostId', 'listToPdf', 'loadServices'],
+				'index' => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
 				'browser' => ['servicesByHostId', 'longOutputByUuid'],
 				'delete' => ['mass_delete'],
 				'add' => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
@@ -214,6 +216,7 @@ $config = [
 				'edit' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId']
 			],
 			'Servicetemplates' => [
+				'index' => ['view'],
 				'add' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
 				'edit' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
 			],

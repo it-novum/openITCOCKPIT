@@ -58,7 +58,6 @@ class CommandsController extends AppController{
 
 	public function index(){
 		$query = [
-			'limit' => 150,
 			'recursive' => -1,
 			'order' => [
 				'Command.name' => 'asc'
@@ -69,12 +68,14 @@ class CommandsController extends AppController{
 		];
 
 		//Add all commands to result for API requests
-		if($this->isJsonRequest() || $this->isXmlRequest()){
+		if($this->isApiRequest()){
 			unset($query['conditions']['Command.command_type']);
-			$query['limit'] = 999999;
+			$all_commands = $this->Command->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
+			$all_commands = $this->Paginator->paginate();
 		}
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-		$all_commands = $this->Paginator->paginate();
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
@@ -85,7 +86,6 @@ class CommandsController extends AppController{
 
 	public function hostchecks(){
 		$query = [
-			'limit' => 150,
 			'recursive' => -1,
 			'order' => [
 				'Command.name' => 'asc'
@@ -95,8 +95,13 @@ class CommandsController extends AppController{
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-		$all_commands = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_commands = $this->Command->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
+			$all_commands = $this->Paginator->paginate();
+		}
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
@@ -107,7 +112,6 @@ class CommandsController extends AppController{
 
 	public function notifications(){
 		$query = [
-			'limit' => 150,
 			'recursive' => -1,
 			'order' => [
 				'Command.name' => 'asc'
@@ -117,8 +121,13 @@ class CommandsController extends AppController{
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-		$all_commands = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_commands = $this->Command->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
+			$all_commands = $this->Paginator->paginate();
+		}
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
@@ -129,7 +138,6 @@ class CommandsController extends AppController{
 
 	public function handler(){
 		$query = [
-			'limit' => 150,
 			'recursive' => -1,
 			'order' => [
 				'Command.name' => 'asc'
@@ -139,14 +147,32 @@ class CommandsController extends AppController{
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-		$all_commands = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_commands = $this->Command->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
+			$all_commands = $this->Paginator->paginate();
+		}
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
 		$this->set('_serialize', ['all_commands']);
 		$this->set(compact(['all_commands']));
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Command->exists($id)){
+			throw new NotFoundException(__('Invalid command'));
+		}
+		$command = $this->Command->findById($id);
+		$this->set('command', $command);
+		$this->set('_serialize', ['command']);
 	}
 
 	public function add(){

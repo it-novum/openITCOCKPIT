@@ -2,7 +2,7 @@
 
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosts.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosts.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -112,7 +112,7 @@
 ## Query a host by id:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosts/1.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosts/1.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -609,7 +609,7 @@
 ## Query all hosts that are not monitored:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosts/notMonitored.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosts/notMonitored.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -662,7 +662,7 @@
 ## Query all disabled hosts:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosts/disabled.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosts/disabled.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -696,7 +696,7 @@
 ## Query all deleted hosts:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/deleted_hosts/index.json">
+	<input type="text" class="form-control" readonly="readonly" value="/deleted_hosts/index.json">
 </div>
 <br />
 <div class="panel panel-primary">

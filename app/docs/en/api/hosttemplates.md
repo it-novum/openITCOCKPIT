@@ -2,7 +2,7 @@
 
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosttemplates.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosttemplates.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -48,7 +48,7 @@
 ## Query a hosttemplate by id:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosttemplates/1.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosttemplates/1.json">
 </div>
 <br />
 <div class="panel panel-primary">
@@ -202,7 +202,7 @@
 ## Query all hosts that are using the given hosttemplate:
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
-	<input type="text" class="form-control" value="/hosttemplates/usedBy/1.json">
+	<input type="text" class="form-control" readonly="readonly" value="/hosttemplates/usedBy/1.json">
 </div>
 <br />
 <div class="panel panel-primary">
