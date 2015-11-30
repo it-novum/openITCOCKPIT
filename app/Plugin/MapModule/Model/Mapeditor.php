@@ -207,7 +207,6 @@ class Mapeditor extends MapModuleAppModel{
 		}else{
 			$fields = $_fields;
 		}
-
 		$hoststatus = $this->Objects->find('all', [
 			'conditions' => $conditions,
 			'fields' => $fields,
@@ -299,7 +298,7 @@ class Mapeditor extends MapModuleAppModel{
 	 * @param  Array $fields fields which should be returned
 	 * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on success
 	 */
-	public function getHoststatusByUuid($uuid = null, $fields = null){
+	public function getHoststatusByUuid($uuid = [], $fields = null){
 		if(empty($uuid)){
 			return false;
 		}
@@ -390,7 +389,14 @@ class Mapeditor extends MapModuleAppModel{
 		return $servicegroupstatus;
 	}
 
-
+	/**
+	 * get hostgroupstate by uuid
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Mixed $uuid   String or Array of Uuids
+	 * @param  Array $hostFields    fields of the hosts which should be returned
+	 * @param  Array $serviceFields fields of the services which should be returned
+	 * @return Mixed                false if there wasnt uuid submitted, empty array if nothing found or filled array on success
+	 */
 	public function getHostgroupstatusByUuid($uuid = null, $hostFields = null, $serviceFields = null){
 		if(empty($uuid)){
 			return false;
@@ -435,5 +441,98 @@ class Mapeditor extends MapModuleAppModel{
 			$hostgroupstatus[0]['Host'][$key]['Servicestatus'] = $this->_servicestatus($conditions, $serviceFields);
 		}
 		return $hostgroupstatus;
+	}
+
+	public function getMapElements($type = 'Mapitem', $conditions = null, $fields = null){
+		$joins = [
+			[
+				'table' => 'hosts',
+				'alias' => 'Host',
+				'type' => 'LEFT OUTER',
+				'conditions' => [
+					[
+						'AND' => [
+							'Host.id = '.$type.'.object_id',
+							''.$type.'.type' => 'host'
+						]
+					]
+				],
+			],
+			[
+				'table' => 'services',
+				'alias' => 'Service',
+				'type' => 'LEFT OUTER',
+				'conditions' => [
+					[
+						'AND' => [
+							'Service.id = '.$type.'.object_id',
+							''.$type.'.type' => 'service'
+						]
+					]
+				],
+			],
+			[
+				'table' => 'hostgroups',
+				'alias' => 'Hostgroup',
+				'type' => 'LEFT OUTER',
+				'conditions' => [
+					[
+						'AND' => [
+							'Hostgroup.id = '.$type.'.object_id',
+							''.$type.'.type' => 'hostgroup'
+						]
+					]
+				],
+			],
+			[
+				'table' => 'servicegroups',
+				'alias' => 'Servicegroup',
+				'type' => 'LEFT OUTER',
+				'conditions' => [
+					[
+						'AND' => [
+							'Servicegroup.id = '.$type.'.object_id',
+							''.$type.'.type' => 'servicegroup'
+						]
+					]
+				],
+			],
+		];
+
+		switch ($type) {
+			case 'Mapitem':
+				$mapJoin = [
+					'table' => 'maps',
+					'alias' => 'SubMap',
+					'type' => 'LEFT OUTER',
+					'conditions' => [
+						[
+							'AND' => [
+								'SubMap.id = Mapitem.object_id',
+								'Mapitem.type' => 'map'
+							]
+						]
+					],
+				];
+				array_push($joins, $mapJoin);
+				//$joins = Hash::merge($mapJoin, $joins);
+				$this->Mapitem = ClassRegistry::init('Mapitem');
+				break;
+			case 'Mapline':
+				$this->Mapline = ClassRegistry::init('Mapline');
+				break;
+			case 'Mapgadget':
+				$this->Mapgadget = ClassRegistry::init('Mapgadget');
+				break;
+			default:
+				return false;
+				break;
+		}
+		$result = $this->$type->find('all',[
+			'conditions' => $conditions,
+			'fields' => $fields,
+			'joins' => $joins,
+		]);
+		return $result;
 	}
 }

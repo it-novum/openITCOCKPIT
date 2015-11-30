@@ -84,11 +84,11 @@ foreach($css as $cssFile): ?>
 						<tr>
 							<td class="text-center font-lg">
 							<?php
-							if(isset($host[0]['Hoststatus'])):
-								if($host[0]['Hoststatus']['is_flapping'] == 1):
-									echo $this->Monitoring->hostFlappingIconColored($host[0]['Hoststatus']['is_flapping'], '', $host[0]['Hoststatus']['current_state']);
+							if(isset($host['Hoststatus'])):
+								if($host['Hoststatus']['is_flapping'] == 1):
+									echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
 								else:
-									echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor($host[0]['Hoststatus']['current_state']).'"></i>';
+									echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor($host['Hoststatus']['current_state']).'"></i>';
 								endif;
 							else:
 								echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor(null).'"></i>';
@@ -96,22 +96,22 @@ foreach($css as $cssFile): ?>
 							?>
 							</td>
 							<td  class="text-center">
-								<?php if(isset($host[0]['Hoststatus']) && $host[0]['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
+								<?php if(isset($host['Hoststatus']) && $host['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
 									<i class="fa fa-user fa-lg"></i>
 								<?php endif;?>
 							</td>
 							<td  class="text-center">
-								<?php if(isset($host[0]['Hoststatus']) && $host[0]['Hoststatus']['scheduled_downtime_depth'] > 0): ?>
+								<?php if(isset($host['Hoststatus']) && $host['Hoststatus']['scheduled_downtime_depth'] > 0): ?>
 									<i class="fa fa-power-off fa-lg"></i>
 								<?php endif; ?>
 							</td>
-							<td class="font-xs"><?php echo $host[0]['Host']['name']; ?></td>
-							<?php if(isset($host[0]['Hoststatus'])): ?>
-								<td class="font-xs" data-original-title="<?php echo h($this->Time->format($host[0]['Hoststatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
-									<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host[0]['Hoststatus']['last_state_change']))); ?>
+							<td class="font-xs"><?php echo $host['Host']['name']; ?></td>
+							<?php if(isset($host['Hoststatus'])): ?>
+								<td class="font-xs" data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
+									<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_state_change']))); ?>
 								</td>
-								<td class="font-xs"><?php echo $this->Time->format($host[0]['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
-								<td class="font-xs"><?php echo $this->Time->format($host[0]['Hoststatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+								<td class="font-xs"><?php echo $this->Time->format($host['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+								<td class="font-xs"><?php echo $this->Time->format($host['Hoststatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
 							<?php else: ?>
 								<td><?php echo __('n/a');?></td>
 								<td><?php echo __('n/a');?></td>

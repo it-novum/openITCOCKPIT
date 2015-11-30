@@ -82,22 +82,22 @@ foreach($css as $cssFile): ?>
 						<tr>
 							<td class="text-center">
 							<?php
-							if($host[0]['Hoststatus']['is_flapping'] == 1):
-								echo $this->Monitoring->hostFlappingIconColored($host[0]['Hoststatus']['is_flapping'], '', $host[0]['Hoststatus']['current_state']);
+							if($host['Hoststatus']['is_flapping'] == 1):
+								echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
 							else:
-								echo $this->Status->humanHostStatus($host[0]['Host']['uuid'], '/hosts/browser/'.$host[0]['Host']['id'], [$host[0]['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host[0]['Hoststatus']['current_state']]]])['html_icon'];
+								echo $this->Status->humanHostStatus($host['Host']['uuid'], '/hosts/browser/'.$host['Host']['id'], [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host['Hoststatus']['current_state']]]])['html_icon'];
 							endif;
 							?>
 							</td>
 							<td class="text-center">
-								<?php if($host[0]['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
+								<?php if($host['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
 									<i class="fa fa-user fa-lg "></i>
 								<?php endif;?>
 							</td>
-							<td><?php echo $host[0]['Host']['name']; ?></td>
-							<td><?php echo $host[0]['Hoststatus']['last_state_change']; ?></td>
-							<td><?php echo $host[0]['Hoststatus']['last_check']; ?></td>
-							<td><?php echo $host[0]['Hoststatus']['next_check']; ?></td>
+							<td><?php echo $host['Host']['name']; ?></td>
+							<td><?php echo $host['Hoststatus']['last_state_change']; ?></td>
+							<td><?php echo $host['Hoststatus']['last_check']; ?></td>
+							<td><?php echo $host['Hoststatus']['next_check']; ?></td>
 						</tr>
 					<?php endforeach; ?>
 
@@ -111,6 +111,5 @@ foreach($css as $cssFile): ?>
 				</tbody>
 			</table>
 		</div>
-<?php $this->PdfList->test(); ?>
 	</div>
 </body>
