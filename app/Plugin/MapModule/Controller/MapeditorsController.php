@@ -173,210 +173,140 @@ class MapeditorsController extends MapModuleAppController {
 		}
 
 		$map = $this->Map->findById($id);
+debug(Hash::filter($map));
+		$uuidsByItemType = [
+			'host' => [],
+			'service' => [],
+			'servicegroup' => [],
+			'hostgroup' => []
+		];
+	//foreach (keys Mapitem -> Mapline -> ...)
+		if(!empty($map['Mapitem'])){
+			$mapitemObjectIds = Hash::combine($map['Mapitem'], '{n}.object_id', '{n}.object_id', '{n}.type');
+			if(!empty($mapitemObjectIds)){
+				foreach ($mapitemObjectIds as $itemType => $objectIds){
+					$uuidsByType = Hash::extract($this->{ucfirst($itemType)}->find('all', [ // gleiche var benutzen für lines, gadgets ... dann extracten und man hat alle uuids
+						'recursive' => -1,
+						'conditions' => [
+							'id' => array_unique(array_values($objectIds)) // array unique wenn mehrere gleiche objekte da sind 
+						],
+						'fields' => [
+							'id',
+							'uuid'
+						]
+					]),
+					'{n}.{s}'
+					);
+					$uuidsByItemType[$itemType] = array_merge($uuidsByItemType[$itemType], $uuidsByType);
+				}
+			}
+		}
+		
+		if(!empty($map['Mapgadget'])){
+			$mapgadgetObjectIds = Hash::combine($map['Mapgadget'], '{n}.object_id', '{n}.object_id', '{n}.type');
+			if(!empty($mapgadgetObjectIds)){
+				foreach ($mapgadgetObjectIds as $gadgetType => $objectIds){
+					$uuidsByType = Hash::extract($this->{ucfirst($gadgetType)}->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'id' => array_unique(array_values($objectIds))
+						],
+						'fields' => [
+							'id',
+							'uuid'
+						]
+					]),
+					'{n}.{s}'
+					);
+					$uuidsByItemType[$gadgetType] = array_merge($uuidsByItemType[$gadgetType], $uuidsByType);
+				}
+			}
+		}
+
+		if(!empty($map['Mapline'])){
+			$maplineObjectIds = Hash::combine($map['Mapline'], '{n}.object_id', '{n}.object_id', '{n}.type');
+			if(!empty($maplineObjectIds)){
+				foreach ($maplineObjectIds as $lineType => $objectIds){
+					if($lineType != 'stateless'){
+						$uuidsByType = Hash::extract($this->{ucfirst($lineType)}->find('all', [
+							'recursive' => -1,
+							'conditions' => [
+								'id' => array_unique(array_values($objectIds))
+							],
+							'fields' => [
+								'id',
+								'uuid'
+							]
+						]),
+						'{n}.{s}'
+						);
+						$uuidsByItemType[$lineType] = array_merge($uuidsByItemType[$lineType], $uuidsByType);
+					}
+				}
+			}
+		}
+$uuidsByItemType = Hash::filter($uuidsByItemType);
+pr($uuidsByItemType);
+
+
+
+
 		$_map = Hash::extract($map, 'Map');
 
-		$map_items = $this->Mapitem->find('all', [
-			//'recursive' => -1,
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Host.id = Mapitem.object_id',
-								'Mapitem.type' => 'host'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Service.id = Mapitem.object_id',
-								'Mapitem.type' => 'service'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'hostgroups',
-					'alias' => 'Hostgroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Hostgroup.id = Mapitem.object_id',
-								'Mapitem.type' => 'hostgroup'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'servicegroups',
-					'alias' => 'Servicegroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Servicegroup.id = Mapitem.object_id',
-								'Mapitem.type' => 'servicegroup'
-							]
-						]
-					],
-				],
-					[
-					'table' => 'maps',
-					'alias' => 'SubMap',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'SubMap.id = Mapitem.object_id',
-								'Mapitem.type' => 'map'
-							]
-						]
-					],
-				],
-			],
-			'conditions' => [
-				'Mapitem.map_id' => $id,
-			],
-			'fields' => [
-				'Mapitem.*','Host.*', 'Hostgroup.*', 'Service.*', 'Servicegroup.*', 'SubMap.*'
-			]
-		]);
+		//get the items
+		$mapitemConditions = [
+			'Mapitem.map_id' => $id
+		];
 
-		$map_lines = $this->Mapline->find('all', [
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Host.id = Mapline.object_id',
-								'Mapline.type' => 'host'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Service.id = Mapline.object_id',
-								'Mapline.type' => 'service'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'hostgroups',
-					'alias' => 'Hostgroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Hostgroup.id = Mapline.object_id',
-								'Mapline.type' => 'hostgroup'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'servicegroups',
-					'alias' => 'Servicegroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Servicegroup.id = Mapline.object_id',
-								'Mapline.type' => 'servicegroup'
-							]
-						]
-					],
-				],
-			],
-			'conditions' => [
-				'Mapline.map_id' => $id,
-			],
-			'fields' => [
-				'Mapline.*','Host.*', 'Hostgroup.*', 'Service.*', 'Servicegroup.*'
-			]
-		]);
+		$mapitemFields = [
+			'Mapitem.*',
+			'Host.id',
+			'Host.uuid',
+			'Hostgroup.id',
+			'Hostgroup.uuid',
+			'Service.id',
+			'Service.uuid',
+			'Servicegroup.id',
+			'Servicegroup.uuid',
+			'SubMap.*'
+		];
+		$map_items = $this->Mapeditor->getMapElements('Mapitem', $mapitemConditions, $mapitemFields);
 
-		$map_gadgets = $this->Mapgadget->find('all', [
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Host.id = Mapgadget.object_id',
-								'Mapgadget.type' => 'host'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Service.id = Mapgadget.object_id',
-								'Mapgadget.type' => 'service'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'hostgroups',
-					'alias' => 'Hostgroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Hostgroup.id = Mapgadget.object_id',
-								'Mapgadget.type' => 'hostgroup'
-							]
-						]
-					],
-				],
-				[
-					'table' => 'servicegroups',
-					'alias' => 'Servicegroup',
-					'type' => 'LEFT OUTER',
-					'conditions' => [
-						[
-							'AND' => [
-								'Servicegroup.id = Mapgadget.object_id',
-								'Mapgadget.type' => 'servicegroup'
-							]
-						]
-					],
-				],
-			],
-			'conditions' => [
-				'Mapgadget.map_id' => $id,
-			],
-			'fields' => [
-				'Mapgadget.*','Host.*', 'Hostgroup.*', 'Service.*', 'Servicegroup.*'
-			]
-		]);
+		//get the lines
+		$maplineConditions = [
+			'Mapline.map_id' => $id
+		];
+
+		$maplineFields = [
+			'Mapline.*',
+			'Host.id',
+			'Host.uuid',
+			'Hostgroup.id',
+			'Hostgroup.uuid',
+			'Service.id',
+			'Service.uuid',
+			'Servicegroup.id',
+			'Servicegroup.uuid',
+		];
+		$map_lines = $this->Mapeditor->getMapElements('Mapline', $maplineConditions, $maplineFields);
+
+		//get the gadgets
+		$mapgadgetConditions = [
+			'Mapgadget.map_id' => $id
+		];
+		$mapgadgetFields = [
+			'Mapgadget.*',
+			'Host.id',
+			'Host.uuid',
+			'Hostgroup.id',
+			'Hostgroup.uuid',
+			'Service.id',
+			'Service.uuid',
+			'Servicegroup.id',
+			'Servicegroup.uuid',
+		];
+		$map_gadgets = $this->Mapeditor->getMapElements('Mapgadget', $mapgadgetConditions, $mapgadgetFields);
+
 
 		$map_texts = $this->Maptext->find('all',[
 			'conditions' => [
@@ -389,314 +319,90 @@ class MapeditorsController extends MapModuleAppController {
 		$map_lines = Hash::filter($map_lines);
 		$map_gadgets = Hash::filter($map_gadgets);
 
-		$hostUuids = Hash::extract($map_items, '{n}.Host.uuid');
-		$serviceUuids = Hash::extract($map_items, '{n}.Service.uuid');
-		$hostgroupUuids = Hash::extract($map_items, '{n}.Hostgroup.uuid');
-		$servicegroupUuids = Hash::extract($map_items, '{n}.Servicegroup.uuid');
 		$mapIds = Hash::extract($map_items, '{n}.SubMap.id');
 
-		$hostLineUuids = Hash::extract($map_lines, '{n}.Host.uuid');
-		$serviceLineUuids = Hash::extract($map_lines, '{n}.Service.uuid');
-		$hostgroupLineUuids = Hash::extract($map_lines, '{n}.Hostgroup.uuid');
-		$servicegroupLineUuids = Hash::extract($map_lines, '{n}.Servicegroup.uuid');
 
-		$hostGadgetUuids = Hash::extract($map_gadgets, '{n}.Host.uuid');
-		$serviceGadgetUuids = Hash::extract($map_gadgets, '{n}.Service.uuid');
-		$hostgroupGadgetUuids = Hash::extract($map_gadgets, '{n}.Hostgroup.uuid');
-		$servicegroupGadgetUuids = Hash::extract($map_gadgets, '{n}.Servicegroup.uuid');
+		//get the Hoststatus
+		if(!empty($uuidsByItemType['host'])){
+			$hoststatusFields = [
+				'Host.name',
+				'Host.description',
+				'Host.address',
+				'Hoststatus.output',
+				'Hoststatus.long_output',
+				'Hoststatus.last_check',
+				'Hoststatus.next_check',
+				'Hoststatus.last_state_change',
+				'Hoststatus.problem_has_been_acknowledged',
+				'Hoststatus.scheduled_downtime_depth',
+				'Hoststatus.is_flapping',
+				'Hoststatus.current_check_attempt',
+				'Hoststatus.max_check_attempts'
+			];
 
-		//merge the LineUuids and the item uuids
-		$hostUuids = Hash::merge($hostUuids, $hostLineUuids, $hostGadgetUuids);
-		$serviceUuids = Hash::merge($serviceUuids, $serviceLineUuids, $serviceGadgetUuids);
-		$hostgroupUuids = Hash::merge($hostgroupUuids, $hostgroupLineUuids, $hostgroupGadgetUuids);
-		$servicegroupUuids = Hash::merge($servicegroupUuids, $servicegroupLineUuids, $servicegroupGadgetUuids);
-
-		$this->__unbindAssociations('Objects');
-
-
-		//just the Hosts
-		if(count($hostUuids) > 0){
-			$hoststatus = $this->Objects->find('all', [
-				'conditions' => [
-					'name1' => $hostUuids,
-					'objecttype_id' => 1
-				],
-				'fields' => [
-					'Objects.*',
-					'Hoststatus.*'
-				],
-				'joins' => [
-					[
-						'table' => 'nagios_hoststatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Hoststatus',
-						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-					],
-				]
-			]);
-
-			$currentHostUuids = Hash::extract($hoststatus,'{n}.Objects.name1');
-
-			foreach($currentHostUuids as $key => $currentHostUuid){
-				$hostServiceStatus = $this->Objects->find('all',[
-					'recursive' => -1,
-					'conditions' => [
-						'name1' => $currentHostUuid,
-						'objecttype_id' => 2
-					],
-					'fields' => [
-						'Objects.*',
-						'Servicetemplate.name',
-						'Servicetemplate.description',
-						'Servicestatus.*',
-						'Service.name',
-						'Service.description',
-					],
-					'joins' => [
-						[
-							'table' => 'services',
-							'alias' => 'Service',
-							'conditions' => [
-								'Objects.name2 = Service.uuid',
-							]
-						],
-						[
-							'table' => 'servicetemplates',
-							'type' => 'INNER',
-							'alias' => 'Servicetemplate',
-							'conditions' => [
-								'Servicetemplate.id = Service.servicetemplate_id',
-							]
-						],
-						[
-							'table' => 'nagios_servicestatus',
-							'type' => 'LEFT OUTER',
-							'alias' => 'Servicestatus',
-							'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-						]
-					]
-				]);
-				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $hostServiceStatus;
+			$servicestatusFields = [
+				'Objects.name2',
+				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.scheduled_downtime_depth',
+				'Servicestatus.is_flapping',
+				'Servicestatus.perfdata',
+				'Servicestatus.output',
+				'Service.name', // may obsolete .. just mapstatushelper is using that 
+				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+				'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+			];
+			$hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
+			$hoststatus = $this->Mapeditor->getHoststatusByUuid($hostUuids, $hoststatusFields);
+			foreach ($hoststatus as $key => $value) {
+				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($hostUuids[$key], $servicestatusFields);
 			}
-			//$mapstatus['hoststatus'] = $hoststatus;
 		}
 
-		//just the hostgroups
-		if(count($hostgroupUuids) > 0){
-			$hostgroups = [];
-			foreach ($hostgroupUuids as $k => $hostgroupUuid) {
-				$hostgroup = $this->Hostgroup->find('first',[
-					'recursive' => -1,
-					'conditions' => [
-						'uuid' => $hostgroupUuid,
-					],
-					'contain' => [
-						'Container' => [
-							'fields' => [
-								'Container.name'
-							]
-						],
-						'Host' =>[
-							'fields' => [
-								'Host.name',
-								'Host.uuid',
-								'Host.description',
-								'Host.address'
-							]
-						]
-					],
-					'fields' => [
-						'Hostgroup.*'
-					]
-				]);
-				$hostgroups[$k] = $hostgroup;
-				$currentHostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
-				$hostgroupHoststatus = [];
-				$hostgroupServicestatus = [];
-
-				foreach ($currentHostgroupHostUuids as $key => $currentHostgroupHostUuid) {
-					$hostgroupHoststatus = $this->Objects->find('first', [
-						'conditions' => [
-							'name1' => $currentHostgroupHostUuid,
-							'objecttype_id' => 1
-						],
-						'fields' => [
-							'Objects.*',
-							'Hoststatus.current_state',
-						],
-						'joins' => [
-							[
-								'table' => 'nagios_hoststatus',
-								'type' => 'LEFT OUTER',
-								'alias' => 'Hoststatus',
-								'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-							],
-						]
-					]);
-
-					$hostgroupServicestatus = $this->Objects->find('all', [
-						'recursive' => -1,
-						'conditions' => [
-							'name1' => $currentHostgroupHostUuid,
-							'objecttype_id' => 2
-						],
-						'fields' => [
-							'Objects.*',
-							'Servicetemplate.name',
-							'Servicetemplate.description',
-							'Servicestatus.current_state',
-							'Service.name',
-							'Service.description',
-						],
-						'joins' => [
-							[
-								'table' => 'services',
-								'alias' => 'Service',
-								'conditions' => [
-									'Objects.name2 = Service.uuid',
-								]
-							],
-							[
-								'table' => 'servicetemplates',
-								'type' => 'INNER',
-								'alias' => 'Servicetemplate',
-								'conditions' => [
-									'Servicetemplate.id = Service.servicetemplate_id',
-								]
-							],
-							[
-								'table' => 'nagios_servicestatus',
-								'type' => 'LEFT OUTER',
-								'alias' => 'Servicestatus',
-								'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-							]
-						]
-					]);
-					$hostgroups[$k]['Host'][$key]['Hoststatus'] = $hostgroupHoststatus;
-					$hostgroups[$k]['Host'][$key]['Servicestatus'] = $hostgroupServicestatus;
-
-				}
-			}
-			//$mapstatus['hostgroupstatus'] = $hostgroups;
+		//get the Hostgroupstatus
+		if(!empty($uuidsByItemType['hostgroup'])){
+			$hostFields = [
+				'Hoststatus.current_state',
+				'Hoststatus.problem_has_been_acknowledged',
+				'Hoststatus.scheduled_downtime_depth',
+				'Hoststatus.is_flapping',
+			];
+			$serviceFields = [
+				'Servicestatus.current_state',
+			];
+			$hostgroups = $this->Mapeditor->getHostgroupstatusByUuid(Hash::extract($uuidsByItemType['hostgroup'], '{n}.uuid'), $hostFields, $serviceFields);
 		}
 
-		//just the Servicegroups
-		if(count($servicegroupUuids) > 0){
-			$servicegroups = [];
-			foreach ($servicegroupUuids as $k => $servicegroupUuid) {
-				$servicegroup = $this->Servicegroup->find('first',[
-					'recursive' => -1,
-					'conditions' => [
-						'uuid' => $servicegroupUuid,
-					],
-					'contain' => [
-						'Container' => [
-							'fields' => [
-								'Container.name'
-							]
-						],
-						'Service' => [
-							'fields' => [
-								'Service.*'
-							],
-						],
-					],
-				]);
-				$servicegroups[$k] = $servicegroup;
-
-				$currentServicegroupServiceUuids = Hash::extract($servicegroup, 'Service.{n}.uuid');
-
-				foreach ($currentServicegroupServiceUuids as $key => $currentServicegroupServiceUuid) {
-					$servicestate = $this->Objects->find('first', [
-						'recursive' => -1,
-						'conditions' => [
-							'name2' => $currentServicegroupServiceUuid,
-							'objecttype_id' => 2
-						],
-						'fields' => [
-							'Objects.*',
-							'Servicetemplate.name',
-							'Servicetemplate.description',
-							'Servicestatus.*',
-							'Service.name',
-							'Service.description',
-						],
-						'joins' => [
-							[
-								'table' => 'services',
-								'alias' => 'Service',
-								'conditions' => [
-									'Objects.name2 = Service.uuid',
-								]
-							],
-							[
-								'table' => 'servicetemplates',
-								'type' => 'INNER',
-								'alias' => 'Servicetemplate',
-								'conditions' => [
-									'Servicetemplate.id = Service.servicetemplate_id',
-								]
-							],
-							[
-								'table' => 'nagios_servicestatus',
-								'type' => 'LEFT OUTER',
-								'alias' => 'Servicestatus',
-								'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-							]
-						]
-					]);
-
-					$servicegroups[$k]['Servicegroup']['Servicestatus'][$key] = $servicestate;
-				}
-
-			}
+		//get the Servicegroupstatus
+		if(!empty($uuidsByItemType['servicegroup'])){
+			$servicegroupUuids = Hash::extract($uuidsByItemType['servicegroup'], '{n}.uuid');
+			$servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($servicegroupUuids);
 			//$mapstatus['servicegroupstatus'] = $servicegroups;
 		}
 
-		//just the Services
-		if(count($serviceUuids) > 0){
-			$this->loadModel('Service');
-			$servicestatus = $this->Objects->find('all', [
-				'recursive' => -1,
-				'conditions' => [
-					'name2' => $serviceUuids,
-					'objecttype_id' => 2
-				],
-				'fields' => [
-					'Objects.*',
-					'Servicetemplate.name',
-					'Servicetemplate.description',
-					'Servicestatus.*',
-					'Service.name',
-					'Service.description',
-				],
-				'joins' => [
-					[
-						'table' => 'services',
-						'alias' => 'Service',
-						'conditions' => [
-							'Objects.name2 = Service.uuid',
-						]
-					],
-					[
-						'table' => 'servicetemplates',
-						'type' => 'INNER',
-						'alias' => 'Servicetemplate',
-						'conditions' => [
-							'Servicetemplate.id = Service.servicetemplate_id',
-						]
-					],
-					[
-						'table' => 'nagios_servicestatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Servicestatus',
-						'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-					]
-				]
-			]);
-			//$mapstatus['servicestatus'] = $servicestatus;
+		//get the Servicestatus
+		if(!empty($uuidsByItemType['service'])){
+			$fields = [
+				'Objects.name2',
+				'Service.name', // may obsolete .. just mapstatushelper is using that 
+				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.scheduled_downtime_depth',
+				'Servicestatus.is_flapping',
+				'Servicestatus.perfdata',
+				'Servicestatus.output',
+				'Servicestatus.long_output',
+				'Servicestatus.current_check_attempt',
+				'Servicestatus.max_check_attempts',
+				'Servicestatus.last_check',
+				'Servicestatus.next_check',
+				'Servicestatus.last_state_change',
+			];
+			$serviceUuids = Hash::extract($uuidsByItemType['service'], '{n}.uuid');
+			$servicestatus = $this->Mapeditor->getServicestatusByUuid($serviceUuids, $fields);
 		}
 
+		$serviceGadgetUuids = Hash::extract($map_gadgets, '{n}.Service.uuid');
 		//insert the Host UUID into the servicegadgets (eg. for RRDs)
 		foreach ($serviceGadgetUuids as $key => $serviceGadgetUuid) {
 			$map_gadgets[$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
@@ -716,7 +422,22 @@ class MapeditorsController extends MapModuleAppController {
 		foreach ($mapIds as $id) {
 			$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
 		}
-		$this->set(compact(['map', 'map_items', 'map_lines', 'map_gadgets', 'map_texts', 'backgroundThumbs', 'iconSets', 'mapstatus', 'hoststatus', 'servicestatus', 'hostgroups', 'servicegroups', 'isFullscreen', 'icons']));
+		$this->set(compact([
+			'map', 
+			'map_items', 
+			'map_lines', 
+			'map_gadgets', 
+			'map_texts', 
+			'backgroundThumbs', 
+			'iconSets', 
+			'mapstatus', 
+			'hoststatus', 
+			'servicestatus', 
+			'hostgroups', 
+			'servicegroups', 
+			'isFullscreen', 
+			'icons'
+		]));
 	}
 
 	public function hostUuidFromServiceUuid($serviceUuid = null){
@@ -738,18 +459,6 @@ class MapeditorsController extends MapModuleAppController {
 		]);
 
 		$hostUuid = Hash::extract($hostUuid, 'Host.uuid');
-
-/*
-		$hostUuid = $this->Objects->find('first',[
-			'recursive' => -1,
-			'conditions' => [
-				'name2' => $serviceUuid,
-			],
-			'fields' => [
-				'Objects.name1',
-			]
-		]);
-		$hostUuid = Hash::extract($hostUuid, 'Objects.name1');*/
 		return $hostUuid;
 	}
 
@@ -775,7 +484,7 @@ class MapeditorsController extends MapModuleAppController {
 			'Hoststatus.current_check_attempt',
 			'Hoststatus.max_check_attempts'
 		];
-		$hoststatus = $this->Mapeditor->getHoststatusByUuid($uuid, $hoststatusFields);
+		$hoststatus = $this->Mapeditor->getHoststatusByUuid([$uuid], $hoststatusFields);
 
 		$servicestatusFields = [
 			'Objects.name2',
