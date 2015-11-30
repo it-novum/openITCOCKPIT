@@ -2139,41 +2139,37 @@ class HostsController extends AppController{
 	}
 
 	public function listToPdf(){
-		$hosts = $this->Host->find('all');
-
-		$hostUuids = Hash::extract($hosts, '{n}.Host.uuid');
-
-		$hoststatus = [];
-		foreach($hostUuids as $k => $hostUuid){
-			$hoststatus[$k] = $this->Objects->find('all', [
-				'recursive' => -1,
-				'conditions' => [
-					'Objects.name1' => $hostUuid,
-					'Host.disabled' => 0,
-					'Host.container_id' => $this->MY_RIGHTS,
+		$hoststatus = $this->Objects->find('all', [
+			'recursive' => -1,
+			'conditions' => [
+				'Host.disabled' => 0,
+				'Host.container_id' => $this->MY_RIGHTS,
+			],
+			'fields' => [
+				'Host.name',
+				'Hoststatus.current_state',
+				'Hoststatus.last_check',
+				'Hoststatus.is_flapping',
+				'Hoststatus.next_check',
+				'Hoststatus.last_state_change',
+				'Hoststatus.problem_has_been_acknowledged',
+				'Hoststatus.scheduled_downtime_depth',
+			],
+			'joins' => [
+				[
+					'table' => 'hosts',
+					'type' => 'INNER',
+					'alias' => 'Host',
+					'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1'
 				],
-				'fields' => [
-					'Objects.*',
-					'Host.*',
-					'Hoststatus.*'
+				[
+					'table' => 'nagios_hoststatus',
+					'type' => 'INNER',
+					'alias' => 'Hoststatus',
+					'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
 				],
-				'joins' => [
-					[
-						'table' => 'hosts',
-						'type' => 'INNER',
-						'alias' => 'Host',
-						'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1'
-					],
-					[
-						'table' => 'nagios_hoststatus',
-						'type' => 'LEFT OUTER',
-						'alias' => 'Hoststatus',
-						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-					],
-				]
-			]);
-		}
-		$hoststatus = Hash::filter($hoststatus);
+			]
+		]);
 
 		$hostCount = count($hoststatus);
 
