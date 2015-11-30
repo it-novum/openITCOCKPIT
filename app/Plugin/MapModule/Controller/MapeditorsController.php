@@ -173,7 +173,6 @@ class MapeditorsController extends MapModuleAppController {
 		}
 
 		$map = $this->Map->findById($id);
-debug(Hash::filter($map));
 		$uuidsByItemType = [
 			'host' => [],
 			'service' => [],
@@ -185,10 +184,10 @@ debug(Hash::filter($map));
 			$mapitemObjectIds = Hash::combine($map['Mapitem'], '{n}.object_id', '{n}.object_id', '{n}.type');
 			if(!empty($mapitemObjectIds)){
 				foreach ($mapitemObjectIds as $itemType => $objectIds){
-					$uuidsByType = Hash::extract($this->{ucfirst($itemType)}->find('all', [ // gleiche var benutzen für lines, gadgets ... dann extracten und man hat alle uuids
+					$uuidsByType = Hash::extract($this->{ucfirst($itemType)}->find('all', [
 						'recursive' => -1,
 						'conditions' => [
-							'id' => array_unique(array_values($objectIds)) // array unique wenn mehrere gleiche objekte da sind 
+							'id' => array_unique(array_values($objectIds))
 						],
 						'fields' => [
 							'id',
@@ -245,11 +244,7 @@ debug(Hash::filter($map));
 				}
 			}
 		}
-$uuidsByItemType = Hash::filter($uuidsByItemType);
-pr($uuidsByItemType);
-
-
-
+		$uuidsByItemType = Hash::filter($uuidsByItemType);
 
 		$_map = Hash::extract($map, 'Map');
 
