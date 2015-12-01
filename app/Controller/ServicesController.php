@@ -2188,7 +2188,7 @@ class ServicesController extends AppController{
 				'top' => 15
 			],
 			'encoding' => 'UTF-8',
-			'download' => false,
+			'download' => true,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
