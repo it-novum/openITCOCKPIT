@@ -334,7 +334,7 @@ $data = array(
         ),
     )
 );
-$url = $RestApi->getUrl();
+$url  = $RestApi->getUrl();
 $url .= '/commands/'.$commandId.'.json';
 $response = $RestApi->httpSocket->put($url, $data, array('redirect' => true));
 $response = $RestApi->parseResponse($response);
@@ -359,7 +359,7 @@ $data = array(
         'id' => 121,
     )
 );
-$url = $RestApi->getUrl();
+$url  = $RestApi->getUrl();
 $url .= '/commands/'.$commandId.'.json';
 $response = $RestApi->httpSocket->delete($url, $data, array('redirect' => true));
 $response = $RestApi->parseResponse($response);

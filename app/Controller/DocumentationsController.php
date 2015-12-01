@@ -631,6 +631,12 @@ class DocumentationsController extends AppController{
 						'file' => 'commands',
 						'icon' => 'fa fa-terminal',
 					],
+					'timeperiods' => [
+						'name' => __('Timeperiods'),
+						'description' => 'How to query timeperiod objects using the REST API',
+						'file' => 'timeperiods',
+						'icon' => 'fa fa-clock-o',
+					],
 					'hosttemplates' => [
 						'name' => __('Hosttemplates'),
 						'description' => 'How to query hosttemplate objects using the REST API',
@@ -649,11 +655,11 @@ class DocumentationsController extends AppController{
 						'file' => 'servicetemplates',
 						'icon' => 'fa fa-pencil-square-o',
 					],
-					'timeperiods' => [
-						'name' => __('Timeperiods'),
-						'description' => 'How to query timeperiod objects using the REST API',
-						'file' => 'timeperiods',
-						'icon' => 'fa fa-clock-o',
+					'services' => [
+						'name' => __('Services'),
+						'description' => 'How to query service objects using the REST API',
+						'file' => 'services',
+						'icon' => 'fa fa-cogs',
 					],
 				],
 			],

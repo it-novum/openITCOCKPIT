@@ -243,7 +243,7 @@ class ServicesController extends AppController{
 			$conditions = Hash::merge($conditions, $_conditions);
 		}
 		$all_services = [];
-		$this->Paginator->settings = [
+		$query = [
 // 			'recursive' => -1,
 			'conditions' => $conditions,
 			'contain' => ['Servicetemplate'],
@@ -322,7 +322,12 @@ class ServicesController extends AppController{
 			]
 		];
 
-		$all_services = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_services = $this->Service->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_services = $this->Paginator->paginate();
+		}
 		$hostContainers = [];
 		if(!empty($all_services)){
 			$hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
@@ -364,6 +369,35 @@ class ServicesController extends AppController{
 		}
 	}
 
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Service->exists($id)){
+			throw new NotFoundException(__('Invalid service'));
+		}
+		$service = $this->Service->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)){
+			$this->render403();
+			return;
+		}
+
+		$_servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+		if(isset($_servicestatus[$service['Service']['uuid']])){
+			$servicestatus = $_servicestatus[$service['Service']['uuid']];
+		}else{
+			$servicestatus = [
+				'Servicestatus' => [],
+				'Objects' => [],
+			];
+		}
+		$service = Hash::merge($service, $servicestatus);
+		
+		$this->set('service', $service);
+		$this->set('_serialize', ['service']);
+	}
+
 	public function notMonitored(){
 		$this->__unbindAssociations('Host');
 
@@ -394,9 +428,8 @@ class ServicesController extends AppController{
 		}
 
 		$all_services = [];
-		$this->Paginator->settings = [
-// 			'recursive' => -1,
-
+		$query = [
+//			'recursive' => -1,
 			'contain' => ['Servicetemplate'],
 			'limit' => 150,
 			'fields' => [
@@ -439,7 +472,13 @@ class ServicesController extends AppController{
 			],
 			'conditions' => $conditions,
 		];
-		$all_services = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_services = $this->Service->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = $query;
+			$all_services = $this->Paginator->paginate();
+		}
 		$hostContainers = [];
 		if(!empty($all_services)){
 			$hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
@@ -516,11 +555,9 @@ class ServicesController extends AppController{
 		}
 
 		$all_services = [];
-		$this->Paginator->settings = [
-// 			'recursive' => -1,
-
+		$query = [
+//			'recursive' => -1,
 			'contain' => ['Servicetemplate'],
-			'limit' => 150,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -578,7 +615,13 @@ class ServicesController extends AppController{
 				'Service.id'
 			]
 		];
-		$all_services = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_services = $this->Service->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = $query;
+			$all_services = $this->Paginator->paginate();
+		}
 		$hostContainers = [];
 		if(!empty($all_services)){
 			$hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
@@ -1794,10 +1837,9 @@ class ServicesController extends AppController{
 		$this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
 
 		$all_services = [];
-		$this->Paginator->settings = [
+		$query = [
 //			'recursive' => -1,
 			'contain' => ['Servicetemplate'],
-			'limit' => 150,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -1864,7 +1906,13 @@ class ServicesController extends AppController{
 			],
 		];
 
-		$all_services = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_services = $this->Service->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = $query;
+			$all_services = $this->Paginator->paginate();
+		}
 
 		$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
@@ -1875,6 +1923,7 @@ class ServicesController extends AppController{
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
 		$this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'deletedServices', 'username', 'allowEdit']));
+		$this->set('_serialize', ['all_services']);
 	}
 
 	//public function pnp($id){
