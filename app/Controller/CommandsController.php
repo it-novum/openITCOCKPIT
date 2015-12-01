@@ -284,7 +284,7 @@ class CommandsController extends AppController{
 
 	public function delete($id = null){
 		$userId = $this->Auth->user('id');
-		if(!$this->request->is('post')){
+		if(!$this->request->is('post') && !$this->request->is('delete')){
 			throw new MethodNotAllowedException();
 		}
 

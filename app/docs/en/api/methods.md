@@ -29,11 +29,6 @@
 
 #### Update an existing object by id
 <div class="input-group">
-	<span class="input-group-addon bg-color-blue txt-color-white">POST</span>
-	<input type="text" class="form-control" readonly="readonly" value="/hosttemplates/1.json">
-</div>
-
-<div class="input-group">
 	<span class="input-group-addon bg-color-blueDark txt-color-white">PUT</span>
 	<input type="text" class="form-control" readonly="readonly" value="/hosttemplates/1.json">
 </div>

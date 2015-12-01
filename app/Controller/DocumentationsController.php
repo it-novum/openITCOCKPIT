@@ -619,6 +619,12 @@ class DocumentationsController extends AppController{
 						'file' => 'methods',
 						'icon' => 'fa fa-bolt',
 					],
+					'login' => [
+						'name' => __('Login'),
+						'description' => 'How to login to the REST API',
+						'file' => 'login',
+						'icon' => 'fa fa-sign-in',
+					],
 					'commands' => [
 						'name' => __('Commands'),
 						'description' => 'How to query command objects using the REST API',

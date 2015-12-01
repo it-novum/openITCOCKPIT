@@ -221,3 +221,149 @@ command types:
 	</div>
 </div>
 
+## Create a new command:
+<div class="input-group">
+	<span class="input-group-addon bg-color-blue txt-color-white">POST</span>
+	<input type="text" class="form-control" readonly="readonly" value="/commands.json">
+</div>
+<br />
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h3 class="panel-title">PHP request code:</h3>
+	</div>
+	<div class="panel-body">
+		<pre>
+$data = array(
+	'Command' => array(
+		'name' => 'Example Command with arguments',
+		'command_line' => '$USER1$/check_ping -H $HOSTADDRESS$ -w $ARG1$ -c $ARG2$ -p 5',
+		'command_type' => 1
+	),
+	'Commandargument' => array(
+		array(
+			'name' => '$ARG1$',
+			'human_name' => 'Warning'
+		),
+		array(
+			'name' => '$ARG2$',
+			'human_name' => 'Critical'
+		),
+	)
+);
+$url  = $RestApi->getUrl();
+$url .= '/commands.json';
+$response = $RestApi->httpSocket->post($url, $data, array('redirect' => true));
+$response = $RestApi->parseResponse($response);
+		</pre>
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Response:</h3>
+	</div>
+	<div class="panel-body">
+		<pre>
+Array (
+    [status_code] => 200
+    [reason_phrase] => OK
+    [content_type] => application/json; charset=UTF-8
+    [result] => Array (
+        [id] => 121
+        [command_arguments] => Array(
+            [0] => Array (
+                [Commandargument] => Array (
+                    [name] => $ARG1$
+                    [human_name] => Warning
+                    [command_id] => 121
+                    [modified] => 2015-12-01 12:24:04
+                    [created] => 2015-12-01 12:24:04
+                    [id] => 163
+                 )
+            )
+            [1] => Array (
+                [Commandargument] => Array (
+                    [name] => $ARG2$
+                    [human_name] => Critical
+                    [command_id] => 121
+                    [modified] => 2015-12-01 12:24:04
+                    [created] => 2015-12-01 12:24:04
+                    [id] => 164
+                )
+            )
+       )
+    )
+)
+		</pre>
+	</div>
+</div>
+You created successfully the command with the ID 121.
+
+## Edit existing command by ID:
+<div class="input-group">
+	<span class="input-group-addon bg-color-blueDark txt-color-white">PUT</span>
+	<input type="text" class="form-control" readonly="readonly" value="/commands/121.json">
+</div>
+<br />
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h3 class="panel-title">PHP request code:</h3>
+	</div>
+	<div class="panel-body">
+		<pre>
+$commandId = 121;
+$data = array(
+    'Command' => array(
+        'id' => $commandId,
+        'name' => 'Rename my command to a new name',
+        'command_line' => '$USER1$/check_ping -H $HOSTADDRESS$ -w $ARG1$ -c $ARG2$ -p 5',
+        'command_type' => 1
+    ),
+    'Commandargument' => array(
+        array(
+            'id' => 163,
+            'command_id' => $commandId,
+            'name' => '$ARG1$',
+            'human_name' => 'Warning'
+        ),
+        array(
+            'id' => 164,
+            'command_id' => $commandId,
+            'name' => '$ARG2$',
+            'human_name' => 'Critical'
+        ),
+    )
+);
+$url = $RestApi->getUrl();
+$url .= '/commands/'.$commandId.'.json';
+$response = $RestApi->httpSocket->put($url, $data, array('redirect' => true));
+$response = $RestApi->parseResponse($response);
+		</pre>
+	</div>
+</div>
+
+## Delete existing command by ID:
+<div class="input-group">
+	<span class="input-group-addon bg-color-red txt-color-white">DELETE</span>
+	<input type="text" class="form-control" readonly="readonly" value="/commands/121.json">
+</div>
+<br />
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<h3 class="panel-title">PHP request code:</h3>
+	</div>
+	<div class="panel-body">
+		<pre>
+$data = array(
+    'Command' => array(
+        'id' => 121,
+    )
+);
+$url = $RestApi->getUrl();
+$url .= '/commands/'.$commandId.'.json';
+$response = $RestApi->httpSocket->delete($url, $data, array('redirect' => true));
+$response = $RestApi->parseResponse($response);
+		</pre>
+	</div>
+</div>
+
