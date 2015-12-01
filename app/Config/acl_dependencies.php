@@ -212,7 +212,7 @@ $config = [
 				'edit' => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros']
 			],
 			'Servicetemplategroups' => [
-				'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+				'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view'],
 				'add' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
 				'edit' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId']
 			],

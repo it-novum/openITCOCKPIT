@@ -639,7 +639,7 @@ class DocumentationsController extends AppController{
 					],
 					'hosttemplates' => [
 						'name' => __('Hosttemplates'),
-						'description' => 'How to query hosttemplate objects using the REST API',
+						'description' => 'How to query host template objects using the REST API',
 						'file' => 'hosttemplates',
 						'icon' => 'fa fa-pencil-square-o',
 					],
@@ -651,7 +651,7 @@ class DocumentationsController extends AppController{
 					],
 					'servicetemplates' => [
 						'name' => __('Servicetemplates'),
-						'description' => 'How to query servicetemplate objects using the REST API',
+						'description' => 'How to query service template objects using the REST API',
 						'file' => 'servicetemplates',
 						'icon' => 'fa fa-pencil-square-o',
 					],
@@ -660,6 +660,18 @@ class DocumentationsController extends AppController{
 						'description' => 'How to query service objects using the REST API',
 						'file' => 'services',
 						'icon' => 'fa fa-cogs',
+					],
+					'servicetemplategroups' => [
+						'name' => __('Servicetemplategroups'),
+						'description' => 'How to query service template group objects using the REST API',
+						'file' => 'servicetemplategroups',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+					'hostgroups' => [
+						'name' => __('Hostgroups'),
+						'description' => 'How to query host group objects using the REST API',
+						'file' => 'hostgroups',
+						'icon' => 'fa fa-sitemap',
 					],
 				],
 			],
