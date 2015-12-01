@@ -1686,7 +1686,8 @@ class NagiosExportTask extends AppShell{
 					'Host' => [
 						'fields' => [
 							'Host.id',
-							'Host.uuid'
+							'Host.uuid',
+							'Host.disabled'
 						]
 					]
 				],
@@ -1711,7 +1712,15 @@ class NagiosExportTask extends AppShell{
 		}
 
 		foreach($hostgroups as $hostgroup){
-			if(!empty($hostgroup['Host'])){
+			$_hosts = $hostgroup['Host'];
+			$hosts = [];
+			foreach($_hosts as $_host){
+				if($_host['disabled'] == 0){
+					$hosts[] = $_host['uuid'];
+				}
+			}
+			
+			if(!empty($hosts)){
 				if(!$this->conf['minified']){
 					$file = new File($this->conf['path'].$this->conf['hostgroups'].$hostgroup['Hostgroup']['uuid'].$this->conf['suffix']);
 					$content = $this->fileHeader();
@@ -1723,7 +1732,7 @@ class NagiosExportTask extends AppShell{
 				$content.= $this->addContent('define hostgroup{', 0);
 				$content.= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
 				$content.= $this->addContent('alias', 1, $hostgroup['Hostgroup']['description']);
-				$content.= $this->addContent('members', 1, implode(',', Hash::extract($hostgroup['Host'], '{n}.uuid')));
+				$content.= $this->addContent('members', 1, implode(',', $hosts));
 				$content.= $this->addContent('}', 0);
 
 				if(!$this->conf['minified']){

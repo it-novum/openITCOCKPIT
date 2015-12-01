@@ -63,7 +63,7 @@ class ServicegroupsController extends AppController{
 		if(isset($this->Paginator->settings['conditions'])){
 			$conditions = Hash::merge($this->Paginator->settings['conditions'], $conditions);
 		}
-		$this->Paginator->settings = [
+		$query = [
 			'recursive' => -1,
 			'joins'	=> [
 				[
@@ -122,16 +122,23 @@ class ServicegroupsController extends AppController{
 				'Servicetemplate.name'
 			],
 			'conditions' => $conditions,
-			'limit' => 150
 		];
 
-		$this->Paginator->settings['order'] = [	'Container.name' => 'asc',
-												'Host.name'	=> 'asc',
-												'Service.name' => 'asc',
-												'Servicetemplate.name' => 'asc'
-												];
-		$all_servicegroups = $this->Paginator->paginate();
-		$all_servicegroups = Hash::merge([], Set::combine($all_servicegroups, '{n}.Servicegroup.id', '{n}.{(Servicegroup|Container)}'), Set::combine($all_servicegroups, '{n}.Service.id', '{n}.{(Service$|Servicetemplate|Host)}', '{n}.Servicegroup.id'));
+		$this->Paginator->settings['order'] = [
+			'Container.name' => 'asc',
+			'Host.name'	=> 'asc',
+			'Service.name' => 'asc',
+			'Servicetemplate.name' => 'asc'
+		];
+		if($this->isApiRequest()){
+			$all_servicegroups = $this->Servicegroup->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = $query;
+			$all_servicegroups = $this->Paginator->paginate();
+			$all_servicegroups = Hash::merge([], Set::combine($all_servicegroups, '{n}.Servicegroup.id', '{n}.{(Servicegroup|Container)}'), Set::combine($all_servicegroups, '{n}.Service.id', '{n}.{(Service$|Servicetemplate|Host)}', '{n}.Servicegroup.id'));
+		}
+		
 		$this->set('all_servicegroups', $all_servicegroups);
 
 		//Aufruf für json oder xml view: /nagios_module/services.json oder /nagios_module/services.xml
@@ -140,6 +147,24 @@ class ServicegroupsController extends AppController{
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Servicegroup->exists($id)){
+			throw new NotFoundException(__('Invalid Servicegroup'));
+		}
+
+		$servicegroup = $this->Servicegroup->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))){
+			$this->render403();
+			return;
+		}
+		
+		$this->set('servicegroup', $servicegroup);
+		$this->set('_serialize', ['servicegroup']);
 	}
 
 	public function edit($id = null){

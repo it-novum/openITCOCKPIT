@@ -673,6 +673,12 @@ class DocumentationsController extends AppController{
 						'file' => 'hostgroups',
 						'icon' => 'fa fa-sitemap',
 					],
+					'servicegroups' => [
+						'name' => __('Servicegroups'),
+						'description' => 'How to query service group objects using the REST API',
+						'file' => 'servicegroups',
+						'icon' => 'fa fa-cogs',
+					],
 				],
 			],
 		];

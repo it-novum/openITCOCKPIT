@@ -198,7 +198,7 @@ $config = [
 				'edit' => ['loadElementsByContainerId']
 			],
 			'Servicegroups' => [
-				'index' => ['listToPdf'],
+				'index' => ['listToPdf', 'view'],
 				'add' => ['loadServices', 'mass_add'],
 				'edit' => ['loadServices'],
 				'delete' => ['mass_delete'],
