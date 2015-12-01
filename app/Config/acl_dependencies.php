@@ -161,7 +161,7 @@ $config = [
 				'edit' => ['loadElementsByContainerId']
 			],
 			'Hostgroups' => [
-				'index' => ['listToPdf'],
+				'index' => ['listToPdf', 'view'],
 				'extended' => ['listToPdf'],
 				'add' => ['loadHosts', 'mass_add'],
 				'edit' => ['loadHosts'],
