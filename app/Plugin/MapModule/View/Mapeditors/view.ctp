@@ -83,7 +83,9 @@
 					<?php App::uses('UUID', 'Lib'); ?>
 
 					<!-- Items -->
-					<?php foreach($map_items as $item):
+					<?php 
+					if(isset($mapElements['map_items'])):
+						foreach($mapElements['map_items'] as $item):
 						$uuid = UUID::v4();
 						?>
 					<?php
@@ -135,59 +137,66 @@
 								value="<?php echo $item[ucfirst($itemtypeKey)]['id']; ?>" />
 						</a>
 						</div>
-					<?php endforeach; ?>
+					<?php endforeach; 
+					endif;
+					?>
 
 					<!-- Lines -->
-					<?php foreach($map_lines as $line):
-						$uuid = UUID::v4();
-						?>
-						<?php
-						switch ($line['Mapline']['type']) {
-							case 'host':
-								$state = $this->Mapstatus->hoststatus($line['Host']['uuid']);
-								$lineColor = $this->Status->HostStatusColorSimple($state['state']);
-								break;
-							case 'service':
-								$state = $this->Mapstatus->servicestatus($line['Service']['uuid']);
-								$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
-								break;
-							case 'servicegroup':
-								$state = $this->Mapstatus->servicegroupstatus($line['Servicegroup']['uuid']);
-								$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
-								break;
-							case 'hostgroup':
-								$state = $this->Mapstatus->hostgroupstatus($line['Hostgroup']['uuid']);
-								$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
-								break;
-						}
-						?>
-						<!-- add container for lines -->
-						<?php if($line['Mapline']['type'] == 'stateless'): ?>
-							<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
-								<input type="hidden" 
-									name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]">
-								<input type="hidden" 
-									id="statelessLine_<?php echo $line['Mapline']['id']; ?>" 
+					<?php 
+					if(isset($mapElements['map_lines'])):
+						foreach($mapElements['map_lines'] as $line):
+							$uuid = UUID::v4();
+							?>
+							<?php
+							switch ($line['Mapline']['type']) {
+								case 'host':
+									$state = $this->Mapstatus->hoststatus($line['Host']['uuid']);
+									$lineColor = $this->Status->HostStatusColorSimple($state['state']);
+									break;
+								case 'service':
+									$state = $this->Mapstatus->servicestatus($line['Service']['uuid']);
+									$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
+									break;
+								case 'servicegroup':
+									$state = $this->Mapstatus->servicegroupstatus($line['Servicegroup']['uuid']);
+									$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
+									break;
+								case 'hostgroup':
+									$state = $this->Mapstatus->hostgroupstatus($line['Hostgroup']['uuid']);
+									$lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
+									break;
+							}
+							?>
+							<!-- add container for lines -->
+							<?php if($line['Mapline']['type'] == 'stateless'): ?>
+								<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
+									<input type="hidden" 
+										name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]">
+									<input type="hidden" 
+										id="statelessLine_<?php echo $line['Mapline']['id']; ?>" 
+										data-type="<?php echo $line['Mapline']['type']; ?>" 
+										data-color="#00FF00" >
+								</div>
+							<?php else: ?>
+								<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
+									<input type="hidden" name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]" value="<?php echo $line[ucfirst($line['Mapline']['type'])]['id'] ?>">
+									<input type="hidden" 
+									id="popoverType_<?php echo $line['Mapline']['id']; ?>" 
+									class="popoverTypeHidden" 
 									data-type="<?php echo $line['Mapline']['type']; ?>" 
-									data-color="#00FF00" >
-							</div>
-						<?php else: ?>
-							<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
-								<input type="hidden" name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]" value="<?php echo $line[ucfirst($line['Mapline']['type'])]['id'] ?>">
-								<input type="hidden" 
-								id="popoverType_<?php echo $line['Mapline']['id']; ?>" 
-								class="popoverTypeHidden" 
-								data-type="<?php echo $line['Mapline']['type']; ?>" 
-								data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>" 
-								data-color="<?php echo $lineColor['hexColor']; ?>" 
-								data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
-							</div>
-						<?php endif; ?>
-				<?php endforeach; ?>
+									data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>" 
+									data-color="<?php echo $lineColor['hexColor']; ?>" 
+									data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
+								</div>
+							<?php endif; ?>
+					<?php endforeach; 
+					endif;
+				?>
 
 				<!-- Gadgets -->
 				<?php
-					foreach($map_gadgets as $gadget):
+					if($mapElements['map_gadgets']):
+					foreach($mapElements['map_gadgets'] as $gadget):
 						$uuid = UUID::v4();
 						?>
 					<?php
@@ -256,7 +265,9 @@
 						<?php endif;?>
 						</a>
 						</div>
-					<?php endforeach; ?>
+					<?php endforeach; 
+					endif;
+					?>
 				<!-- Stateless Icons -->
 					<?php foreach ($map['Mapicon'] as $key => $icon):
 							$uuid = UUID::v4(); ?>
@@ -265,12 +276,16 @@
 							</div>
 					<?php endforeach; ?>
 
-					<?php foreach ($map_texts as $text):
+					<?php
+					if(isset($mapElemens['map_texts'])):
+						foreach ($mapElemens['map_texts'] as $text):
 							$uuid = UUID::v4();?>
 							<div id="<?php echo $uuid; ?>" class="textContainer" style="position:absolute;top:<?php echo $text['Maptext']['y']; ?>px;left:<?php echo $text['Maptext']['x']; ?>px;">
 								<span id="spanText_<?php echo $uuid; ?>" class="textElement" style="font-size:<?php echo $text['Maptext']['font_size']; ?>px;"><?php echo $text['Maptext']['text']; ?></span>
 							</div>
-					<?php endforeach; ?>
+					<?php endforeach; 
+					endif;
+					?>
 				</div>
 			</div>
 			<?php echo $this->Form->end(); ?>
