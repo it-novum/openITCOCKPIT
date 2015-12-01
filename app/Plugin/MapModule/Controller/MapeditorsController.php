@@ -314,9 +314,6 @@ class MapeditorsController extends MapModuleAppController {
 		//keep the null values out
 		$mapElements = Hash::filter($mapElements);
 
-
-
-		//$mapIds = Hash::extract($map_items, '{n}.SubMap.id');
 		$mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
 
 		//get the Hoststatus
@@ -399,15 +396,20 @@ class MapeditorsController extends MapModuleAppController {
 			$servicestatus = $this->Mapeditor->getServicestatusByUuid($serviceUuids, $fields);
 		}
 
-		$serviceGadgetUuids = Hash::extract($mapElements['map_gadgets'], '{n}.Service.uuid');
-		//insert the Host UUID into the servicegadgets (eg. for RRDs)
-		foreach ($serviceGadgetUuids as $key => $serviceGadgetUuid) {
-			$mapElements['map_gadgets'][$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
+		if(!empty($mapElements['map_gadgets'])){
+			$serviceGadgetUuids = Hash::extract($mapElements['map_gadgets'], '{n}.Service.uuid');
+			//insert the Host UUID into the servicegadgets (eg. for RRDs)
+			foreach ($serviceGadgetUuids as $key => $serviceGadgetUuid) {
+				$mapElements['map_gadgets'][$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
+			}
 		}
 
+		//get the icons, iconsets and background images
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
+
+		//set json data for javascript components
 		if(!empty($mapElements['map_lines'])){
 			$this->Frontend->setJson('map_lines', Hash::Extract($mapElements['map_lines'], '{n}.Mapline'));
 		}
@@ -415,22 +417,22 @@ class MapeditorsController extends MapModuleAppController {
 		if(!empty($mapElements['map_gadgets'])){
 			$this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
 		}
-		
+
 		foreach ($mapIds as $id) {
 			$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
 		}
 
 		$this->set(compact([
-			'map', 
+			'map',
 			'mapElements',
-			'backgroundThumbs', 
-			'iconSets', 
-			'mapstatus', 
-			'hoststatus', 
-			'servicestatus', 
-			'hostgroups', 
-			'servicegroups', 
-			'isFullscreen', 
+			'backgroundThumbs',
+			'iconSets',
+			'mapstatus',
+			'hoststatus',
+			'servicestatus',
+			'hostgroups',
+			'servicegroups',
+			'isFullscreen',
 			'icons'
 		]));
 	}
