@@ -2092,27 +2092,29 @@ class ServicesController extends AppController{
 				'Host.container_id' => $this->MY_RIGHTS,
 			],
 			'fields' => [
-				'Host.*'
+				'Host.uuid',
+				'Host.name',
+				'Host.address'
 			],
 		]);
-		$hostUuids = Hash::extract($hosts, '{n}.Host.uuid');
 
 		$servicestatus = $hosts;
 
-		foreach($hostUuids as $key => $hostUuid){
+		foreach($hosts as $key => $host){
 			$hoststatus = $this->Objects->find('all', [
 				'recursive' => -1,
 				'conditions' => [
-					'name1' => $hostUuid,
+					'name1' => $host['Host']['uuid'],
 					'objecttype_id' => 1
 				],
 				'fields' => [
-					'Hoststatus.*',
+					'Hoststatus.current_state',
+					'Hoststatus.is_flapping',
 				],
 				'joins' => [
 					[
 						'table' => 'nagios_hoststatus',
-						'type' => 'LEFT OUTER',
+						'type' => 'INNER',
 						'alias' => 'Hoststatus',
 						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
 					]
@@ -2122,13 +2124,20 @@ class ServicesController extends AppController{
 			$services = $this->Objects->find('all', [
 				'recursive' => -1,
 				'conditions' => [
-					'name1' => $hostUuid,
+					'name1' => $host['Host']['uuid'],
 					'objecttype_id' => 2
 				],
 				'fields' => [
 					'Servicetemplate.name',
 					'Servicetemplate.description',
-					'Servicestatus.*',
+					'Servicestatus.current_state',
+					'Servicestatus.is_flapping',
+					'Servicestatus.next_check',
+					'Servicestatus.last_check',
+					'Servicestatus.last_state_change',
+					'Servicestatus.problem_has_been_acknowledged',
+					'Servicestatus.scheduled_downtime_depth',
+					'Servicestatus.output',
 					'Service.name',
 					'Service.description',
 					'Service.uuid',
@@ -2153,7 +2162,7 @@ class ServicesController extends AppController{
 					],
 					[
 						'table' => 'nagios_servicestatus',
-						'type' => 'LEFT OUTER',
+						'type' => 'INNER',
 						'alias' => 'Servicestatus',
 						'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
 					]
@@ -2179,7 +2188,7 @@ class ServicesController extends AppController{
 				'top' => 15
 			],
 			'encoding' => 'UTF-8',
-			'download' => true,
+			'download' => false,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
