@@ -2085,51 +2085,45 @@ class ServicesController extends AppController{
 	}
 
 	public function listToPdf(){
-		$hosts = $this->Host->find('all', [
+		
+		$servicestatus = $this->Objects->find('all', [
 			'recursive' => -1,
 			'conditions' => [
 				'Host.disabled' => 0,
 				'Host.container_id' => $this->MY_RIGHTS,
 			],
 			'fields' => [
-				'Host.uuid',
+				'Host.id',
 				'Host.name',
-				'Host.address'
+				'Host.address',
+				'Hoststatus.current_state',
+				'Hoststatus.is_flapping',
 			],
+			'joins' => [
+				[
+					'table' => 'hosts',
+					'type' => 'INNER',
+					'alias' => 'Host',
+					'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1'
+				],
+				[
+					'table' => 'nagios_hoststatus',
+					'type' => 'INNER',
+					'alias' => 'Hoststatus',
+					'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
+				],
+			],
+			'order' => [
+				'Host.name'
+			]
 		]);
-
-		$servicestatus = $hosts;
-
-		foreach($hosts as $key => $host){
-			$hoststatus = $this->Objects->find('all', [
+		$serviceCount = 0;
+		foreach($servicestatus as $key => $hostdata){
+			$servicestatus[$key]['ServiceData'] = $this->Service->find('all', [
 				'recursive' => -1,
-				'conditions' => [
-					'name1' => $host['Host']['uuid'],
-					'objecttype_id' => 1
-				],
 				'fields' => [
-					'Hoststatus.current_state',
-					'Hoststatus.is_flapping',
-				],
-				'joins' => [
-					[
-						'table' => 'nagios_hoststatus',
-						'type' => 'INNER',
-						'alias' => 'Hoststatus',
-						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-					]
-				]
-			]);
-
-			$services = $this->Objects->find('all', [
-				'recursive' => -1,
-				'conditions' => [
-					'name1' => $host['Host']['uuid'],
-					'objecttype_id' => 2
-				],
-				'fields' => [
+					'Service.name',
 					'Servicetemplate.name',
-					'Servicetemplate.description',
 					'Servicestatus.current_state',
 					'Servicestatus.is_flapping',
 					'Servicestatus.next_check',
@@ -2138,42 +2132,35 @@ class ServicesController extends AppController{
 					'Servicestatus.problem_has_been_acknowledged',
 					'Servicestatus.scheduled_downtime_depth',
 					'Servicestatus.output',
-					'Service.name',
-					'Service.description',
-					'Service.uuid',
-					'Service.id'
+				],
+				'conditions' => [
+					'Service.host_id' => $hostdata['Host']['id']
 				],
 				'joins' => [
-
-					[
-						'table' => 'services',
-						'alias' => 'Service',
-						'conditions' => [
-							'Objects.name2 = Service.uuid',
-						]
-					],
 					[
 						'table' => 'servicetemplates',
 						'type' => 'INNER',
 						'alias' => 'Servicetemplate',
-						'conditions' => [
-							'Servicetemplate.id = Service.servicetemplate_id',
-						]
+						'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+					],
+					[
+						'table' => 'nagios_objects',
+						'type' => 'INNER',
+						'alias' => 'Objects',
+						'conditions' => 'Objects.name2 = Service.uuid'
 					],
 					[
 						'table' => 'nagios_servicestatus',
 						'type' => 'INNER',
 						'alias' => 'Servicestatus',
-						'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
+						'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
 					]
 				]
 			]);
-			$servicestatus[$key]['Host']['Hoststatus'] = $hoststatus;
-			$servicestatus[$key]['Host']['Service'] = $services;
+			$serviceCount+=sizeof($servicestatus[$key]['ServiceData']);
 		}
-		$serviceCount = Hash::apply($servicestatus, '{n}.Host.Service.{n}', 'count');
-		$this->set(compact('servicestatus', 'serviceCount'));
-
+		$this->set(compact('servicestatus', 'serviceCount'));	
+		unset($servicestatus);
 		$filename = 'Services_' . strtotime('now') . '.pdf';
 		$binary_path = '/usr/bin/wkhtmltopdf';
 		if(file_exists('/usr/local/bin/wkhtmltopdf')){
@@ -2188,16 +2175,15 @@ class ServicesController extends AppController{
 				'top' => 15
 			],
 			'encoding' => 'UTF-8',
-			'download' => true,
+			'download' => false,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
 			'no-pdf-compression' => '*',
 			'image-dpi' => '900',
 			'background' => true,
-			'no-background' => false,
+			'no-background' => false
 		];
-
 	}
 
 	/*
