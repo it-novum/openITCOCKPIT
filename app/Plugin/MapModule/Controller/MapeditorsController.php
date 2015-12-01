@@ -248,6 +248,8 @@ class MapeditorsController extends MapModuleAppController {
 
 		$_map = Hash::extract($map, 'Map');
 
+		$mapElements = [];
+
 		//get the items
 		$mapitemConditions = [
 			'Mapitem.map_id' => $id
@@ -265,7 +267,7 @@ class MapeditorsController extends MapModuleAppController {
 			'Servicegroup.uuid',
 			'SubMap.*'
 		];
-		$map_items = $this->Mapeditor->getMapElements('Mapitem', $mapitemConditions, $mapitemFields);
+		$mapElements['map_items'] = $this->Mapeditor->getMapElements('Mapitem', $mapitemConditions, $mapitemFields);
 
 		//get the lines
 		$maplineConditions = [
@@ -283,7 +285,7 @@ class MapeditorsController extends MapModuleAppController {
 			'Servicegroup.id',
 			'Servicegroup.uuid',
 		];
-		$map_lines = $this->Mapeditor->getMapElements('Mapline', $maplineConditions, $maplineFields);
+		$mapElements['map_lines'] = $this->Mapeditor->getMapElements('Mapline', $maplineConditions, $maplineFields);
 
 		//get the gadgets
 		$mapgadgetConditions = [
@@ -300,22 +302,22 @@ class MapeditorsController extends MapModuleAppController {
 			'Servicegroup.id',
 			'Servicegroup.uuid',
 		];
-		$map_gadgets = $this->Mapeditor->getMapElements('Mapgadget', $mapgadgetConditions, $mapgadgetFields);
+		$mapElements['map_gadgets'] = $this->Mapeditor->getMapElements('Mapgadget', $mapgadgetConditions, $mapgadgetFields);
 
-
-		$map_texts = $this->Maptext->find('all',[
+		//get the maptexts
+		$mapElements['map_texts'] = $this->Maptext->find('all',[
 			'conditions' => [
 				'map_id' => $id
 			]
 		]);
 
 		//keep the null values out
-		$map_items = Hash::filter($map_items);
-		$map_lines = Hash::filter($map_lines);
-		$map_gadgets = Hash::filter($map_gadgets);
+		$mapElements = Hash::filter($mapElements);
 
-		$mapIds = Hash::extract($map_items, '{n}.SubMap.id');
 
+
+		//$mapIds = Hash::extract($map_items, '{n}.SubMap.id');
+		$mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
 
 		//get the Hoststatus
 		if(!empty($uuidsByItemType['host'])){
@@ -397,32 +399,30 @@ class MapeditorsController extends MapModuleAppController {
 			$servicestatus = $this->Mapeditor->getServicestatusByUuid($serviceUuids, $fields);
 		}
 
-		$serviceGadgetUuids = Hash::extract($map_gadgets, '{n}.Service.uuid');
+		$serviceGadgetUuids = Hash::extract($mapElements['map_gadgets'], '{n}.Service.uuid');
 		//insert the Host UUID into the servicegadgets (eg. for RRDs)
 		foreach ($serviceGadgetUuids as $key => $serviceGadgetUuid) {
-			$map_gadgets[$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
+			$mapElements['map_gadgets'][$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
 		}
 
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
-		if(!empty($map_lines)){
-			$this->Frontend->setJson('map_lines', Hash::Extract($map_lines, '{n}.Mapline'));
+		if(!empty($mapElements['map_lines'])){
+			$this->Frontend->setJson('map_lines', Hash::Extract($mapElements['map_lines'], '{n}.Mapline'));
 		}
 
-		if(!empty($map_gadgets)){
-			$this->Frontend->setJson('map_gadgets', Hash::Extract($map_gadgets, '{n}.Mapgadget'));
+		if(!empty($mapElements['map_gadgets'])){
+			$this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
 		}
 		
 		foreach ($mapIds as $id) {
 			$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
 		}
+
 		$this->set(compact([
 			'map', 
-			'map_items', 
-			'map_lines', 
-			'map_gadgets', 
-			'map_texts', 
+			'mapElements',
 			'backgroundThumbs', 
 			'iconSets', 
 			'mapstatus', 
