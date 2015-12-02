@@ -625,6 +625,12 @@ class DocumentationsController extends AppController{
 						'file' => 'login',
 						'icon' => 'fa fa-sign-in',
 					],
+					'macros' => [
+						'name' => __('User defined macros'),
+						'description' => 'How to query user defined macros using the REST API',
+						'file' => 'macros',
+						'icon' => 'fa fa-usd',
+					],
 					'commands' => [
 						'name' => __('Commands'),
 						'description' => 'How to query command objects using the REST API',
