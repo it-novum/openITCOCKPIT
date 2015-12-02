@@ -110,12 +110,16 @@
 						<!-- add Items -->
 					<?php if($item['Mapitem']['type'] == 'map'): ?>
 						<div id="<?php echo $uuid; ?>" 
-						class="elementHover" 
+						class="elementHover iconContainer" 
 						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
 						data-uuid="<?php echo $item['SubMap']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
 					<?php else:?>
-						<div id="<?php echo $uuid; ?>" class="elementHover" data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
+						<div id="<?php echo $uuid; ?>" 
+							class="elementHover iconContainer" 
+							data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
+							data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>" 
+							style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<?php
 							if($item['Mapitem']['type'] !== 'servicegroup'):
 						?>

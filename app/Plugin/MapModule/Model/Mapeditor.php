@@ -109,7 +109,6 @@ class Mapeditor extends MapModuleAppModel{
 				'Mapgadget.object_id'
 			]
 		]);
-
 		//get the service ids
 		$mapServices = Hash::extract($mapElements, '{s}.{n}.{s}[type=/service$/].object_id');
 		//resolve the serviceids into uuids

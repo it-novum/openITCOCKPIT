@@ -51,6 +51,8 @@ if(!empty($mapstatus['allStates'])){
 				break;
 		}
 	}
+}else{
+	$statusColor = $this->Status->HostStatusColorSimple(-1);
 }
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
