@@ -281,8 +281,8 @@
 					<?php endforeach; ?>
 
 					<?php
-					if(isset($mapElemens['map_texts'])):
-						foreach ($mapElemens['map_texts'] as $text):
+					if(isset($mapElements['map_texts'])):
+						foreach ($mapElements['map_texts'] as $text):
 							$uuid = UUID::v4();?>
 							<div id="<?php echo $uuid; ?>" class="textContainer" style="position:absolute;top:<?php echo $text['Maptext']['y']; ?>px;left:<?php echo $text['Maptext']['x']; ?>px;">
 								<span id="spanText_<?php echo $uuid; ?>" class="textElement" style="font-size:<?php echo $text['Maptext']['font_size']; ?>px;"><?php echo $text['Maptext']['text']; ?></span>
