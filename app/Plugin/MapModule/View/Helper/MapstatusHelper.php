@@ -385,11 +385,10 @@ class MapstatusHelper extends AppHelper{
 		$cumulative_service_state = [];
 		$cumulative_hostgroup_state = [];
 		$cumulative_servicegroup_state = [];
-
 		foreach ($mapstatus as $key => $map) {
 			switch ($key) {
 				case 'hoststatus':
-					if(empty($mapstatus['hoststatus'])){
+					if(empty($mapstatus['hoststatus'][0])){
 						continue;
 					}
 					$hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
@@ -398,7 +397,7 @@ class MapstatusHelper extends AppHelper{
 					$cumulative_host_state['Host'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
 					break;
 				case 'servicestatus':
-					if(empty($mapstatus['servicestatus'])){
+					if(empty($mapstatus['servicestatus'][0])){
 						continue;
 					}
 					$servicestates = Hash::extract($mapstatus['servicestatus'],'{n}.Servicestatus.current_state');
@@ -425,7 +424,10 @@ class MapstatusHelper extends AppHelper{
 
 		$cumulative_states = Hash::merge($cumulative_host_state, $cumulative_service_state, $cumulative_hostgroup_state, $cumulative_servicegroup_state);
 		//calculate whole cumulative state and determine which type it is (Host or service for the correct return state)
-		$cumulative_state = Hash::apply($cumulative_states, '{s}', 'max');
+		$cumulative_state = -1;
+		if(!empty($cumulative_states)){
+			$cumulative_state = Hash::apply($cumulative_states, '{s}', 'max');
+		}
 		//the state wich will be displayed in the view mode
 		$baseStateForView = $this->ServicegroupstatusValues($cumulative_state);
 		$baseStateForView['allStates'] = $cumulative_states;

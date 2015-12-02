@@ -177,26 +177,29 @@ class MapeditorsController extends MapModuleAppController {
 			'host' => [],
 			'service' => [],
 			'servicegroup' => [],
-			'hostgroup' => []
+			'hostgroup' => [],
+			'map' => []
 		];
 	//foreach (keys Mapitem -> Mapline -> ...)
 		if(!empty($map['Mapitem'])){
 			$mapitemObjectIds = Hash::combine($map['Mapitem'], '{n}.object_id', '{n}.object_id', '{n}.type');
 			if(!empty($mapitemObjectIds)){
 				foreach ($mapitemObjectIds as $itemType => $objectIds){
-					$uuidsByType = Hash::extract($this->{ucfirst($itemType)}->find('all', [
-						'recursive' => -1,
-						'conditions' => [
-							'id' => array_unique(array_values($objectIds))
-						],
-						'fields' => [
-							'id',
-							'uuid'
-						]
-					]),
-					'{n}.{s}'
-					);
-					$uuidsByItemType[$itemType] = array_merge($uuidsByItemType[$itemType], $uuidsByType);
+					if($itemType != 'map'){
+						$uuidsByType = Hash::extract($this->{ucfirst($itemType)}->find('all', [
+							'recursive' => -1,
+							'conditions' => [
+								'id' => array_unique(array_values($objectIds))
+							],
+							'fields' => [
+								'id',
+								'uuid'
+							]
+						]),
+						'{n}.{s}'
+						);
+						$uuidsByItemType[$itemType] = array_merge($uuidsByItemType[$itemType], $uuidsByType);
+					}
 				}
 			}
 		}
@@ -313,7 +316,6 @@ class MapeditorsController extends MapModuleAppController {
 
 		//keep the null values out
 		$mapElements = Hash::filter($mapElements);
-		
 		if(!empty($mapElements['map_items'])){
 			$mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
 		}
