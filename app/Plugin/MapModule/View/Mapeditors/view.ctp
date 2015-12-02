@@ -195,7 +195,7 @@
 
 				<!-- Gadgets -->
 				<?php
-					if($mapElements['map_gadgets']):
+					if(!empty($mapElements['map_gadgets'])):
 					foreach($mapElements['map_gadgets'] as $gadget):
 						$uuid = UUID::v4();
 						?>
