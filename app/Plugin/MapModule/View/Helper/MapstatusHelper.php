@@ -393,15 +393,17 @@ class MapstatusHelper extends AppHelper{
 					}
 					$hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
 					$servicestates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
-					$hostAndServiceStates = Hash::merge($hoststates, $servicestates);
-					$cumulative_host_state['Host'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
+
+					//$hostAndServiceStates = Hash::merge($hoststates, $servicestates);
+					$cumulative_host_state['Host']['Host'] = Hash::apply($hoststates, '{n}', 'max');
+					$cumulative_host_state['Host']['Service'] = Hash::apply($servicestates, '{n}', 'max');
 					break;
 				case 'servicestatus':
 					if(empty($mapstatus['servicestatus'][0])){
 						continue;
 					}
 					$servicestates = Hash::extract($mapstatus['servicestatus'],'{n}.Servicestatus.current_state');
-					$cumulative_service_state['Service'] = Hash::apply($servicestates, '{n}', 'max');
+					$cumulative_service_state['Service']['Service'] = Hash::apply($servicestates, '{n}', 'max');
 					break;
 				case 'hostgroupstatus':
 					if(empty($mapstatus['hostgroupstatus'][0])){
@@ -409,15 +411,17 @@ class MapstatusHelper extends AppHelper{
 					}
 					$hostgroupHoststates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Hoststatus.current_state');
 					$hostgroupServicestates = Hash::extract($mapstatus['hostgroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
-					$hostAndServiceStates = Hash::merge($hostgroupHoststates, $hostgroupServicestates);
-					$cumulative_hostgroup_state['Hostgroup'] = Hash::apply($hostAndServiceStates, '{n}', 'max');
+					//$hostAndServiceStates = Hash::merge($hostgroupHoststates, $hostgroupServicestates);
+					
+					$cumulative_hostgroup_state['Hostgroup']['Host'] = Hash::apply($hostgroupHoststates, '{n}', 'max');
+					$cumulative_hostgroup_state['Hostgroup']['Service'] = Hash::apply($hostgroupServicestates, '{n}', 'max');
 					break;
 				case 'servicegroupstatus':
 					if(empty($mapstatus['servicegroupstatus'][0])){
 						continue;
 					}
 					$servicegroupServicestates = Hash::extract($mapstatus['servicegroupstatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
-					$cumulative_servicegroup_state['Servicegroup'] = Hash::apply($servicegroupServicestates, '{n}', 'max');
+					$cumulative_servicegroup_state['Servicegroup']['Service'] = Hash::apply($servicegroupServicestates, '{n}', 'max');
 					break;
 			}
 		}
@@ -425,12 +429,21 @@ class MapstatusHelper extends AppHelper{
 		$cumulative_states = Hash::merge($cumulative_host_state, $cumulative_service_state, $cumulative_hostgroup_state, $cumulative_servicegroup_state);
 		//calculate whole cumulative state and determine which type it is (Host or service for the correct return state)
 		$cumulative_state = -1;
+		$key = null;
 		if(!empty($cumulative_states)){
-			$cumulative_state = Hash::apply($cumulative_states, '{s}', 'max');
+			$cumulative_state = Hash::apply($cumulative_states, '{s}.{s}', 'max');
+			foreach ($cumulative_states as $type => $value) {
+				foreach($cumulative_states[$type] as $typeKey => $state){
+					if($cumulative_state == $state){
+						$key = $typeKey;
+						break;
+					}
+				}
+			}
 		}
 		//the state wich will be displayed in the view mode
 		$baseStateForView = $this->ServicegroupstatusValues($cumulative_state);
-		$baseStateForView['allStates'] = $cumulative_states;
+		$baseStateForView['cumulated_type_key'] = $key;
 
 		return $baseStateForView;
 	}
