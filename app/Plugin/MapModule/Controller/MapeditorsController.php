@@ -313,8 +313,11 @@ class MapeditorsController extends MapModuleAppController {
 
 		//keep the null values out
 		$mapElements = Hash::filter($mapElements);
+		
+		if(!empty($mapElements['map_items'])){
+			$mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
+		}
 
-		$mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
 
 		//get the Hoststatus
 		if(!empty($uuidsByItemType['host'])){
@@ -418,8 +421,10 @@ class MapeditorsController extends MapModuleAppController {
 			$this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
 		}
 
-		foreach ($mapIds as $id) {
-			$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
+		if(!empty($mapIds)){
+			foreach ($mapIds as $id) {
+				$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
+			}
 		}
 
 		$this->set(compact([
