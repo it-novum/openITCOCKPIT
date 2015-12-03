@@ -82,6 +82,30 @@ class ContactgroupsController extends AppController{
 			$this->set('isFilter', true);
 		}
 	}
+	
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Contactgroup->exists($id)){
+			throw new NotFoundException(__('Invalid contact group'));
+		}
+		if($this->hasRootPrivileges === true){
+			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+		}else{
+			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+		}
+		$contactgroup = $this->Contactgroup->findById($id);
+
+
+		if(!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))){
+			throw new ForbiddenException('404 Forbidden');
+		}
+
+		$this->set('contactgroup', $contactgroup);
+		$this->set('_serialize', ['contactgroup']);
+	}
 
 	public function edit($id = null){
 		$userId = $this->Auth->user('id');

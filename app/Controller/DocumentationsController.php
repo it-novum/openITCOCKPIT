@@ -685,6 +685,18 @@ class DocumentationsController extends AppController{
 						'file' => 'servicegroups',
 						'icon' => 'fa fa-cogs',
 					],
+					'contacts' => [
+						'name' => __('Contacts'),
+						'description' => 'How to query contact objects using the REST API',
+						'file' => 'contacts',
+						'icon' => 'fa fa-user',
+					],
+					'contactgroups' => [
+						'name' => __('Contactgroups'),
+						'description' => 'How to query contact group objects using the REST API',
+						'file' => 'contactgroups',
+						'icon' => 'fa fa-users',
+					],
 				],
 			],
 		];

@@ -131,11 +131,13 @@ $config = [
 				'delete' => ['mass_delete'],
 			],
 			'Contactgroups' => [
+				'index' => ['view'],
 				'add' => ['loadContacts'],
 				'edit' => ['loadContacts'],
 				'delete' => ['mass_delete']
 			],
 			'Contacts' => [
+				'index' => ['view'],
 				'add' => ['loadTimeperiods'],
 				'edit' => ['loadTimeperiods']
 			],
