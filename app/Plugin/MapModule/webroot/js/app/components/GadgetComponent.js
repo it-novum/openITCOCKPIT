@@ -249,7 +249,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var containSVG = (opt.contain == null?true:opt.contain);
 		var containerData = opt.containerData || false;
 		var perfdata = opt.perfdata || false;
-
+		
 		$('#'+svgContainerId).css({'top':y+'px', 'left':x+'px','height':height+25+'px', 'width':width+'px','position':'absolute'}).svg();
 		var svg = $('#'+svgContainerId).svg('get');
 		
@@ -281,9 +281,6 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var newTopEllipseY = newRectY;
 
 		var topEllipseColor = color;
-		if(value==100){
-			topEllipseColor = color;
-		}
 
 		//the id schema must be like this "cyliner_"+id
 		var cylinder = svg.group('cylinder_'+id);
@@ -306,26 +303,25 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		svg.rect(cylinerGroup, rectX, rectY-10, width, height+10, rx, ry, {
 			fill: 'url(#fadeGray_'+id+')', fillOpacity: 0.5, id: 'background_'+id, strokeWidth: 2, stroke: '#CECECE', strokeOpacity: 0.2}
 		);
-
 		//top ellipse
 		svg.ellipse(cylinerGroup, ellipseCx, ellipseTopCy, rx, ry, {
 			fill: 'url(#fadeDarkGray_'+id+')', fillOpacity: 0.3, strokeWidth: 2, stroke: '#CECECE', strokeOpacity: 0.2
 		});
 
 		//inner Cylinder (the value)
-		//bottom ellipse
-
-		svg.ellipse(cylinerGroup, ellipseCx, ellipseBottomCy-11, rx, ry, {
-			fill: 'url(#fadeGreen_'+id+')'
-		});
-		//center rect
-		svg.rect(cylinerGroup, rectX, newRectY-10, width, pxValue,{
-			fill: 'url(#fadeGreen_'+id+')'
-		});
-
+		if(value > 1){
+			//bottom ellipse
+			svg.ellipse(cylinerGroup, ellipseCx, ellipseBottomCy-11, rx, ry, {
+				fill: 'url(#fadeGreen_'+id+')'
+			});
+			//center rect
+			svg.rect(cylinerGroup, rectX, newRectY-10, width, pxValue,{
+				fill: 'url(#fadeGreen_'+id+')'
+			});
+		}
 		//top ellipse
 		svg.ellipse(cylinerGroup, ellipseCx, newTopEllipseY-10, rx, ry, {
-			fill: 'url(#fadeDarkGreen_'+id+')'
+			fill: 'url(#fade'+((value==1)?'darkGray':'Green')+'_'+id+')'
 		});
 
 		//container Div

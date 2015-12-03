@@ -268,6 +268,7 @@
 						<!-- Mapitems -->
 						<div id="<?php echo $uuid; ?>" class="itemElement iconContainer dragElement" style="position:absolute; top: <?php echo $item['y']; ?>px; left: <?php echo $item['x']; ?>px;">
 							<img src="/map_module/img/items/<?php echo $item['iconset']; ?>/ok.png" onerror="this.src='/map_module/img/items/missing.png';">
+							<input type="hidden" data-key="id" name="data[Mapitem][<?php echo $uuid; ?>][id]" value="<?php echo $item['id']; ?>" />
 							<input type="hidden" data-key="x" name="data[Mapitem][<?php echo $uuid; ?>][x]" value="<?php echo $item['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Mapitem][<?php echo $uuid; ?>][y]" value="<?php echo $item['y']; ?>" />
 							<input type="hidden" data-key="limit" name="data[Mapitem][<?php echo $uuid; ?>][limit]" value="<?php echo $item['limit']; ?>" />
@@ -280,6 +281,7 @@
 						<?php $uuid = UUID::v4(); ?>
 						<!-- Maplines -->
 						<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['id'] ?>" class="itemElement lineContainer">
+							<input type="hidden" class="itemElementSVG" data-key="id" name="data[Mapline][<?php echo $uuid; ?>][id]" value="<?php echo $line['id']; ?>" />
 							<input type="hidden" class="itemElementSVG" data-key="startX" name="data[Mapline][<?php echo $uuid; ?>][startX]" value="<?php echo $line['startX']; ?>" />
 							<input type="hidden" class="itemElementSVG" data-key="endX" name="data[Mapline][<?php echo $uuid; ?>][endX]" value="<?php echo $line['endX']; ?>" />
 							<input type="hidden" class="itemElementSVG" data-key="startY" name="data[Mapline][<?php echo $uuid; ?>][startY]" value="<?php echo $line['startY']; ?>" />
@@ -294,6 +296,7 @@
 						<?php $uuid = UUID::v4(); ?>
 						<!-- Mapgadgets -->
 						<div id="<?php echo $uuid; ?>" data-gadgetId="<?php echo $gadget['id'] ?>" class="itemElement gadgetContainer">
+							<input type="hidden" data-key="id" name="data[Mapgadget][<?php echo $uuid; ?>][id]" value="<?php echo $gadget['id']; ?>" />
 							<input type="hidden" data-key="x" name="data[Mapgadget][<?php echo $uuid; ?>][x]" value="<?php echo $gadget['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Mapgadget][<?php echo $uuid; ?>][y]" value="<?php echo $gadget['y']; ?>" />
 							<input type="hidden" data-key="limit" name="data[Mapgadget][<?php echo $uuid; ?>][limit]" value="<?php echo $gadget['limit']; ?>" />
@@ -308,6 +311,7 @@
 						<!-- Mapicons -->
 						<div id="<?php echo $uuid; ?>" class="itemElement statelessIconContainer dragElement" style="position:absolute; top: <?php echo $icon['y']; ?>px; left: <?php echo $icon['x']; ?>px;">
 							<img src="/map_module/img/icons/<?php echo $icon['icon']; ?>" onerror="this.src='/map_module/img/items/missing.png';">
+							<input type="hidden" data-key="id" name="data[Mapicon][<?php echo $uuid; ?>][id]" value="<?php echo $icon['id']; ?>" />
 							<input type="hidden" data-key="x" name="data[Mapicon][<?php echo $uuid; ?>][x]" value="<?php echo $icon['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Mapicon][<?php echo $uuid; ?>][y]" value="<?php echo $icon['y']; ?>" />
 							<input type="hidden" data-key="icon" name="data[Mapicon][<?php echo $uuid; ?>][icon]" value="<?php echo $icon['icon']; ?>" />
@@ -318,6 +322,7 @@
 						<!-- Maptext -->
 						<div id="<?php echo $uuid; ?>" class="textContainer dragElement" style="position:absolute;top:<?php echo $text['y']; ?>px; left: <?php echo $text['x']; ?>px;">
 							<span id="spanText_<?php echo $uuid; ?>" class="textElement" style="position:absolute;font-size:<?php echo $text['font_size']; ?>px;"><?php echo $text['text'];?></span>
+							<input type="hidden" data-key="id" name="data[Maptext][<?php echo $uuid; ?>][id]" value="<?php echo $text['id']; ?>" />
 							<input type="hidden" data-key="x" name="data[Maptext][<?php echo $uuid; ?>][x]" value="<?php echo $text['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Maptext][<?php echo $uuid; ?>][y]" value="<?php echo $text['y']; ?>" />
 							<input type="hidden" data-key="text" name="data[Maptext][<?php echo $uuid; ?>][text]" value="<?php echo $text['text']; ?>" />

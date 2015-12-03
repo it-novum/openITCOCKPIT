@@ -61,6 +61,21 @@ class Mapeditor extends MapModuleAppModel{
 	}
 
 	/**
+	 * return an array with obsolete IDs which can be deleted from Database
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $oldData the old data to compare with
+	 * @param  Array $newData the new base data 
+	 * @return Array          Array with ids to delete
+	 */
+	public function getObsoleteIds($oldData, $newData){
+		$idsToDelete = [];
+		foreach($oldData as $key => $data){
+			$idsToDelete[$key] = array_diff(Hash::extract($data, '{n}.id'), (!empty($newData[$key]))?Hash::extract($newData[$key], '{s}.id'):[]);
+		}
+		return $idsToDelete;
+	}
+
+	/**
 	 * return states of all elements from a specific map 
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  $id the Id of the map
