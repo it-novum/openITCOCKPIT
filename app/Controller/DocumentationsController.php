@@ -697,6 +697,18 @@ class DocumentationsController extends AppController{
 						'file' => 'contactgroups',
 						'icon' => 'fa fa-users',
 					],
+					'tenants' => [
+						'name' => __('Tenants'),
+						'description' => 'How to query tenant objects using the REST API',
+						'file' => 'tenants',
+						'icon' => 'fa fa-home',
+					],
+					'containers' => [
+						'name' => __('Container'),
+						'description' => 'How to query container objects using the REST API',
+						'file' => 'containers',
+						'icon' => 'fa fa-cube',
+					],
 				],
 			],
 		];

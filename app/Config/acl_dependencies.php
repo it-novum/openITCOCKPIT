@@ -228,6 +228,7 @@ $config = [
 				'edit' => ['resetPassword']
 			],
 			'Tenants' => [
+				'index' => ['view'],
 				'delete' => ['mass_delete'],
 			],
 			'Downtimes' => [
@@ -239,6 +240,9 @@ $config = [
 			],
 			'Exports' => [
 				'index' => ['broadcast', 'launchExport', 'verifyConfig'],
+			],
+			'Containers' => [
+				'index' => ['view', 'nest'],
 			],
 		]
 	]

@@ -65,15 +65,39 @@ class TenantsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
+		
+		if($this->isApiRequest()){
+			$all_tenants = $this->Tenant->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_tenants = $this->Paginator->paginate();
+		}
 
-		$all_tenants = $this->Paginator->paginate();
 		$this->set(compact(['all_tenants']));
 		$this->set('_serialize', ['all_tenants']);
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Tenant->exists($id)){
+			throw new NotFoundException(__('Invalid tenant'));
+		}
+		$tenant = $this->Tenant->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($tenant, 'Container.id'))){
+			$this->render403();
+			return;
+		}
+
+		$this->set('tenant', $tenant);
+		$this->set('_serialize', ['tenant']);
 	}
 
 	public function add(){

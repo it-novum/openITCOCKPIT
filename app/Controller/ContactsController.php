@@ -100,8 +100,13 @@ class ContactsController extends AppController{
 			'group' => ['Contact.id']
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
-		$all_contacts = $this->Paginator->paginate();
+		$query = Hash::merge($options, $this->Paginator->settings);
+		if($this->isApiRequest()){
+			$all_contacts = $this->Contact->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_contacts = $this->Paginator->paginate();
+		}
 
 		$contactsWithContainers = [];
 		$MY_RIGHTS = $this->MY_RIGHTS;

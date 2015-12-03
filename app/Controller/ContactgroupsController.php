@@ -72,9 +72,16 @@ class ContactgroupsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$this->set('all_contactgroups', $this->Paginator->paginate());
+		if($this->isApiRequest()){
+			$all_contactgroups = $this->Contactgroup->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_contactgroups = $this->Paginator->paginate();
+		}
+
+		$this->set('all_contactgroups', $all_contactgroups);
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_contactgroups']);
 		$this->set('isFilter', false);
