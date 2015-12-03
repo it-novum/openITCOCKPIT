@@ -47,10 +47,15 @@ class DeletedHostsController extends AppController{
 		$this->Paginator->settings['order'] = [
 			'created' => 'DESC'
 		];
-		$deletedHosts = $this->Paginator->paginate();
-
+		
+		if($this->isApiRequest()){
+			$deletedHosts = $this->DeletedHost->find('all');
+		}else{
+			$deletedHosts = $this->Paginator->paginate();
+		}
 		
 		$this->set(compact(['deletedHosts']));
+		$this->set('_serialize', ['deletedHosts']);
 		
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);

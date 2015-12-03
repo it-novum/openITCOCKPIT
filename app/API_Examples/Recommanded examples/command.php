@@ -33,8 +33,8 @@ function login(){
 	$url = "https://172.16.2.44/login/login.json";
 	$data = [
 		'LoginUser' => [
-			'email'       => 'daniel@open-itcockpit.org',
-			'password'    => 'asdf12',
+			'email'       => 'api@openitcockpit.org',
+			'password'    => '123456789',
 			'remember_me' => 0,
 		]
 	];

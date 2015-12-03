@@ -213,9 +213,8 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
 
 		$all_services = [];
-		$this->Paginator->settings = [
+		$query = [
 			'conditions' => $conditions,
-			'limit' => 150,
 			'fields' => [
 				'Host.id',
 				'Host.uuid',
@@ -269,7 +268,7 @@ class HostsController extends AppController{
 			],
 			'group' => [
 				'Host.id'
-			]
+			],
 		];
 
 		$this->Host->unbindModel([
@@ -278,7 +277,13 @@ class HostsController extends AppController{
 				'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
 			]
 		);
-		$all_hosts = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_hosts = $this->Host->find('all', $query);
+		}else{
+			$query['limit'] = 150;
+			$this->Paginator->settings = $query;
+			$all_hosts = $this->Paginator->paginate();
+		}
 
 		/*$hostCount = $this->Host->find('count', [
 			'conditions' => ['Host.disabled' => 0]
@@ -312,7 +317,7 @@ class HostsController extends AppController{
 
 		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-		$this->set('_serialize', array('all_hosts'));
+		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			if(isset($this->request->data['Filter']['HostStatus']['current_state'])){
 				//$this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
@@ -326,7 +331,7 @@ class HostsController extends AppController{
 	}
 
 	public function view($id = null){
-		if(!in_array($this->request->ext, ['json', 'xml'])){
+		if(!$this->isApiRequest()){
 			throw new MethodNotAllowedException();
 
 		}
@@ -334,6 +339,24 @@ class HostsController extends AppController{
 			throw new NotFoundException(__('Invalid host'));
 		}
 		$host = $this->Host->findById($id);
+		$containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $host['Host']['container_id'];
+		if(!$this->allowedByContainerId($containerIdsToCheck)){
+			$this->render403();
+			return;
+		}
+
+		$_hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+		if(isset($_hoststatus[$host['Host']['uuid']])){
+			$hoststatus = $_hoststatus[$host['Host']['uuid']];
+		}else{
+			$hoststatus = [
+				'Hoststatus' => [],
+				'Objects' => [],
+			];
+		}
+		$host = Hash::merge($host, $hoststatus);
+		
 		$this->set('host', $host);
 		$this->set('_serialize', ['host']);
 	}
@@ -373,7 +396,7 @@ class HostsController extends AppController{
 		}
 
 		$all_services = [];
-		$this->Paginator->settings = [
+		$query = [
 			'conditions' => $conditions,
 			'limit' => 150,
 			'fields' => [
@@ -399,7 +422,8 @@ class HostsController extends AppController{
 					'type' => 'LEFT OUTER',
 					'alias' => 'HostObject',
 					'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-				], [
+				],
+				[
 					'table' => 'hosts_to_containers',
 					'alias' => 'HostsToContainers',
 					'type' => 'LEFT',
@@ -419,7 +443,12 @@ class HostsController extends AppController{
 				'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
 			]
 		);
-		$all_hosts = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_hosts = $this->Host->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_hosts = $this->Paginator->paginate();
+		}
 
 		$hoststatus = [];
 
@@ -436,7 +465,7 @@ class HostsController extends AppController{
 
 		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-		$this->set('_serialize', array('all_hosts'));
+		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			if(isset($this->request->data['Filter']['HostStatus']['current_state'])){
 				//$this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
@@ -1355,9 +1384,7 @@ class HostsController extends AppController{
 	}
 
 	public function disabled(){
-
-		$this->__unbindAssociations('Service');
-
+		//$this->__unbindAssociations('Service');
 		if(!isset($this->request->params['named']['BrowserContainerId'])){
 			$conditions = [
 				'Host.disabled' => 1,
@@ -1365,14 +1392,14 @@ class HostsController extends AppController{
 			];
 		}
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
-		$this->Paginator->settings = [
+		$query = [
 			'recurisve' => -1,
 			'conditions' => [
 				$conditions
 			],
 			'contain' => [
 				'Hosttemplate',
-				'Container'
+				//'Container'
 			],
 			//'contain' => [],
 			'fields' => [
@@ -1383,8 +1410,7 @@ class HostsController extends AppController{
 				//'Host.active_checks_enabled',
 				'Host.address',
 				'Host.satellite_id',
-
-				'Hosttemplate.name'
+				'Hosttemplate.name',
 
 			],
 			'joins' => [
@@ -1403,7 +1429,14 @@ class HostsController extends AppController{
 			]
 		];
 
-		$disabledHosts = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$disabledHosts = $this->Host->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$disabledHosts = $this->Paginator->paginate();
+		}
+		
+
 		/*$activeHostCount = $this->Host->find('count', [
 			'conditions' => ['Host.disabled' => 0]
 		]);
@@ -1414,7 +1447,8 @@ class HostsController extends AppController{
 
 		$deletedHostCount = $this->DeletedHost->find('count');*/
 		$this->set(compact(['disabledHosts']));
-
+		$this->set('_serialize', ['disabledHosts']);
+		
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{

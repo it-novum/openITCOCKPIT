@@ -72,18 +72,43 @@ class HostgroupsController extends AppController{
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
-			]
+			],
 		];
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
+		if($this->isApiRequest()){
+			$all_hostgroups = $this->Hostgroup->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_hostgroups = $this->Paginator->paginate();
+		}
 
-		$this->set('all_hostgroups', $this->Paginator->paginate());
+		$this->set('all_hostgroups', $all_hostgroups);
+		
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', array('all_hostgroups'));
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Hostgroup->exists($id)){
+			throw new NotFoundException(__('Invalid Hostgroup'));
+		}
+
+		$hostgroup = $this->Hostgroup->findById($id);
+		if(!$this->allowedByContainerId($hostgroup['Container']['parent_id'])){
+			$this->render403();
+			return;
+		}
+		
+		$this->set('hostgroup', $hostgroup);
+		$this->set('_serialize', ['hostgroup']);
 	}
 
 	public function extended($hostgroup_id = null){

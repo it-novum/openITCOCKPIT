@@ -58,7 +58,7 @@ class Location extends AppModel{
 		$Host = ClassRegistry::init('Host');
 		//CakePHP will delete the device groups for us but we need to cleanup the hosts
 		$devicegroups = $Devicegroup->find('all', [
-			'condtitions' => [
+			'conditions' => [
 				'Container.parent_id' => $location['Container']['id']
 			]
 		]);

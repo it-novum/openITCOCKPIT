@@ -608,6 +608,85 @@ class DocumentationsController extends AppController{
 					]
 				],
 			],
+			
+			'api' => [
+				'name' => ('REST API'),
+				'directory' => 'api',
+				'children' => [
+					'methods' => [
+						'name' => __('HTTP Request Methods'),
+						'description' => 'Which HTTP request method will call which action',
+						'file' => 'methods',
+						'icon' => 'fa fa-bolt',
+					],
+					'login' => [
+						'name' => __('Login'),
+						'description' => 'How to login to the REST API',
+						'file' => 'login',
+						'icon' => 'fa fa-sign-in',
+					],
+					'macros' => [
+						'name' => __('User defined macros'),
+						'description' => 'How to query user defined macros using the REST API',
+						'file' => 'macros',
+						'icon' => 'fa fa-usd',
+					],
+					'commands' => [
+						'name' => __('Commands'),
+						'description' => 'How to query command objects using the REST API',
+						'file' => 'commands',
+						'icon' => 'fa fa-terminal',
+					],
+					'timeperiods' => [
+						'name' => __('Timeperiods'),
+						'description' => 'How to query timeperiod objects using the REST API',
+						'file' => 'timeperiods',
+						'icon' => 'fa fa-clock-o',
+					],
+					'hosttemplates' => [
+						'name' => __('Hosttemplates'),
+						'description' => 'How to query host template objects using the REST API',
+						'file' => 'hosttemplates',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+					'hosts' => [
+						'name' => __('Hosts'),
+						'description' => 'How to query host objects using the REST API',
+						'file' => 'hosts',
+						'icon' => 'fa fa-desktop',
+					],
+					'servicetemplates' => [
+						'name' => __('Servicetemplates'),
+						'description' => 'How to query service template objects using the REST API',
+						'file' => 'servicetemplates',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+					'services' => [
+						'name' => __('Services'),
+						'description' => 'How to query service objects using the REST API',
+						'file' => 'services',
+						'icon' => 'fa fa-cogs',
+					],
+					'servicetemplategroups' => [
+						'name' => __('Servicetemplategroups'),
+						'description' => 'How to query service template group objects using the REST API',
+						'file' => 'servicetemplategroups',
+						'icon' => 'fa fa-pencil-square-o',
+					],
+					'hostgroups' => [
+						'name' => __('Hostgroups'),
+						'description' => 'How to query host group objects using the REST API',
+						'file' => 'hostgroups',
+						'icon' => 'fa fa-sitemap',
+					],
+					'servicegroups' => [
+						'name' => __('Servicegroups'),
+						'description' => 'How to query service group objects using the REST API',
+						'file' => 'servicegroups',
+						'icon' => 'fa fa-cogs',
+					],
+				],
+			],
 		];
 
 		$parsedMarkdown = '';

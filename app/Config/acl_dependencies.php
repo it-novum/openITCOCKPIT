@@ -121,11 +121,13 @@ $config = [
 				'delete' => ['mass_delete']
 			],
 			'Commands' => [
+				'index' => ['view'],
 				'add' => ['addCommandArg', 'loadMacros'],
 				'edit' => ['addCommandArg', 'loadMacros'],
 				'delete' => ['mass_delete']
 			],
 			'Timeperiods' => [
+				'index' => ['view'],
 				'delete' => ['mass_delete'],
 			],
 			'Contactgroups' => [
@@ -159,7 +161,7 @@ $config = [
 				'edit' => ['loadElementsByContainerId']
 			],
 			'Hostgroups' => [
-				'index' => ['listToPdf'],
+				'index' => ['listToPdf', 'view'],
 				'extended' => ['listToPdf'],
 				'add' => ['loadHosts', 'mass_add'],
 				'edit' => ['loadHosts'],
@@ -174,6 +176,7 @@ $config = [
 				'edit' => ['gethostbyname', 'gethostbyaddr', 'loadHosttemplate', 'addCustomMacro', 'loadTemplateMacros', 'loadParametersByCommandId', 'loadArguments', 'loadArgumentsAdd', 'loadHosttemplatesArguments', 'addParentHosts', 'loadElementsByContainerId']
 			],
 			'Hosttemplates' => [
+				'index' => ['view'],
 				'add' => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
 				'edit' => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId']
 			],
@@ -195,25 +198,26 @@ $config = [
 				'edit' => ['loadElementsByContainerId']
 			],
 			'Servicegroups' => [
-				'index' => ['listToPdf'],
+				'index' => ['listToPdf', 'view'],
 				'add' => ['loadServices', 'mass_add'],
 				'edit' => ['loadServices'],
 				'delete' => ['mass_delete'],
 			],
 			'Services' => [
 				'deactivate' => ['mass_deactivate'],
-				'index' => ['serviceByHostId', 'listToPdf', 'loadServices'],
+				'index' => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
 				'browser' => ['servicesByHostId', 'longOutputByUuid'],
 				'delete' => ['mass_delete'],
 				'add' => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
 				'edit' => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros']
 			],
 			'Servicetemplategroups' => [
-				'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
+				'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view'],
 				'add' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
 				'edit' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId']
 			],
 			'Servicetemplates' => [
+				'index' => ['view'],
 				'add' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
 				'edit' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
 			],

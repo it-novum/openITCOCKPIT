@@ -43,6 +43,7 @@ class TimeperiodsController extends AppController{
 
 	function index(){
 		$options = [
+			'recursive' => -1,
 			'order' => [
 				'Timeperiod.name' => 'asc'
 			],
@@ -51,18 +52,35 @@ class TimeperiodsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
-
-		$this->Timeperiod->unbindModel([
-			'hasMany' => ['Timerange']
-		]);
-		$this->set('all_timeperiods', $this->Paginator->paginate());
+		if($this->isApiRequest()){
+			$this->set('all_timeperiods', $this->Timeperiod->find('all', $options));
+		}else{
+			$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+			$this->set('all_timeperiods', $this->Paginator->paginate());
+		}
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_timeperiods']);
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Timeperiod->exists($id)){
+			throw new NotFoundException(__('Invalid timeperiod'));
+		}
+		$timeperiod = $this->Timeperiod->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))){
+			$this->render403();
+			return;
+		}
+		$this->set('timeperiod', $timeperiod);
+		$this->set('_serialize', ['timeperiod']);
 	}
 
 	public function edit($id = null){

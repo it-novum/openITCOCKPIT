@@ -72,31 +72,77 @@ class ServicetemplatesController extends AppController{
 
 	public function index(){
 		$options = [
+			'recursive' => -1,
 			'order' => [
 				'Servicetemplate.name' => 'asc'
 			],
 			'conditions' => [
 				'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
 				'Container.id' => $this->MY_RIGHTS
+			],
+			'fields' => [
+				'Servicetemplate.id',
+				'Servicetemplate.uuid',
+				'Servicetemplate.name',
+				'Servicetemplate.container_id',
+				'Servicetemplate.description',
+				'Container.*',
+			],
+			'contain' => [
+				'Container'
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		if($this->isApiRequest()){
+			$all_servicetemplates = $this->Servicetemplate->find('all', $options);
+		}else{
+			$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+			$all_servicetemplates = $this->Paginator->paginate();
+		}
 
-		$this->Servicetemplate->unbindModel([
-			'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Servicetemplategroup'],
-			'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand', 'EventhandlerCommand'],
-			'hasMany' => ['Customvariable', 'Servicetemplatecommandargumentvalue', 'Service'],
-		]);
-
-		$all_servicetemplates = $this->Paginator->paginate();
 		$this->set(compact(['all_servicetemplates']));
 		$this->set('_serialize', ['all_servicetemplates']);
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
 			$this->set('isFilter', false);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Servicetemplate->exists($id)){
+			throw new NotFoundException(__('404 Not Found'));
+		}
+		$servicetemplate = $this->Servicetemplate->find('first', [
+			'recursive' => -1,
+			'contain' => [
+				'Container',
+				'CheckPeriod',
+				'NotifyPeriod',
+				'CheckCommand',
+				'EventhandlerCommand',
+				'Customvariable',
+				'Servicetemplatecommandargumentvalue',
+				'Servicetemplateeventcommandargumentvalue',
+				'Contactgroup',
+				'Contact'
+			],
+			'conditions' => [
+				'Servicetemplate.id' => $id
+			]
+		]);
+
+		if(!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))){
+			$this->render403();
+			return;
+		}
+
+		$this->set(compact(['servicetemplate']));
+		$this->set('_serialize', ['servicetemplate']);
 	}
 
 	public function edit($id = null, $servicetemplatetype_id = null){
@@ -817,6 +863,7 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$this->set(compact(['all_services', 'all_hosts', 'servicetemplate']));
+		$this->set('_serialize', ['all_services']);
 		$this->set('back_url', $this->referer());
 	}
 

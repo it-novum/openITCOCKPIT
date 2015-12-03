@@ -43,6 +43,7 @@ class MacrosController extends AppController{
 		}
 	
 		$this->set(compact(['all_macros']));
+		$this->set('_serialize', ['all_macros']);
 	
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);

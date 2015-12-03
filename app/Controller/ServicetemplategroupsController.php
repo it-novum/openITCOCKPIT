@@ -65,12 +65,17 @@ class ServicetemplategroupsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
 		$this->Servicetemplategroup->unbindModel([
 			'hasAndBelongsToMany' => ['Servicetemplate']
 		]);
-		$all_servicetemplategroups = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_servicetemplategroups = $this->Servicetemplategroup->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_servicetemplategroups = $this->Paginator->paginate();
+		}
 		$this->set(compact('all_servicetemplategroups'));
 		$this->set('_serialize', array('all_servicetemplategroups'));
 
@@ -79,6 +84,24 @@ class ServicetemplategroupsController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+	}
+	
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+		}
+		if(!$this->Servicetemplategroup->exists($id)){
+			throw new NotFoundException(__('Invalid Servicetemplategroup'));
+		}
+
+		$servicetemplategroup = $this->Servicetemplategroup->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))){
+			$this->render403();
+			return;
+		}
+		
+		$this->set('servicetemplategroup', $servicetemplategroup);
+		$this->set('_serialize', ['servicetemplategroup']);
 	}
 
 	public function add(){

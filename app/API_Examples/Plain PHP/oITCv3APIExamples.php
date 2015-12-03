@@ -18,8 +18,8 @@ $API->close();
 class oITCv3APIExamples{
 	function __construct(){
 		$this->server = "https://172.16.2.44";
-		$this->username = "admin@itnovum.com";
-		$this->password = "asdf12";
+		$this->username = "api@openitcockpit.org";
+		$this->password = "123456789";
 		$this->remember_me = 1;
 		$this->_cookieFileLocation = dirname(__FILE__).'/cookie.txt';
 		$this->verbose = true;

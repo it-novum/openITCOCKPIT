@@ -707,6 +707,10 @@ class AppController extends Controller{
 				if((int)$value === WRITE_RIGHT){
 					return true;
 				}
+
+				if($this->isApiRequest()){
+					throw new ForbiddenException('403 Forbidden');
+				}
 				return false;
 			});
 			$MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
@@ -718,6 +722,9 @@ class AppController extends Controller{
 				return true;
 			}
 
+			if($this->isApiRequest()){
+				throw new ForbiddenException('403 Forbidden');
+			}
 			return false;
 		}
 
@@ -734,6 +741,9 @@ class AppController extends Controller{
 			}
 		}
 
+		if($this->isApiRequest()){
+			throw new ForbiddenException('404 Forbidden');
+		}
 		return false;
 	}
 
@@ -775,6 +785,14 @@ class AppController extends Controller{
 		}
 
 		return $models;
+	}
+
+	protected function isApiRequest(){
+		if($this->isJsonRequest() || $this->isXmlRequest()){
+			return true;
+		}
+
+		return false;
 	}
 
 	protected function isJsonRequest(){

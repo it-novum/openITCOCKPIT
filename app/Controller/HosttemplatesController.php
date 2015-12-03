@@ -73,23 +73,33 @@ class HosttemplatesController extends AppController{
 
 
 	public function index(){
-		$options = [
+		$query = [
 			'order' => [
 				'Hosttemplate.name' => 'asc'
 			],
 			'conditions' => [
 				'Container.id' => $this->MY_RIGHTS
+			],
+			'contain' => [
+				'Container'
+			],
+			'fields' => [
+				'Hosttemplate.id',
+				'Hosttemplate.uuid',
+				'Hosttemplate.name',
+				'Hosttemplate.description',
+				'Hosttemplate.container_id',
+				'Container.id',
+				'Container.parent_id',
 			]
 		];
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$this->Paginator->settings = Hash::merge($query, $this->Paginator->settings);
 
-		$this->Hosttemplate->unbindModel([
-			'hasAndBelongsToMany' => ['Contactgroup', 'Contact'],
-			'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
-			'hasMany' => ['Customvariable', 'Hosttemplatecommandargumentvalue']
-		]);
-
-		$all_hosttemplates = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			$all_hosttemplates = $this->Hosttemplate->find('all', $query);
+		}else{
+			$all_hosttemplates = $this->Paginator->paginate();
+		}
 
 		$this->set(compact(['all_hosttemplates']));
 		$this->set('_serialize', ['all_hosttemplates']);
@@ -98,6 +108,23 @@ class HosttemplatesController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Hosttemplate->exists($id)){
+			throw new NotFoundException(__('Invalid host'));
+		}
+		$hosttemplate = $this->Hosttemplate->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))){
+			$this->render403();
+			return;
+		}
+		$this->set(compact(['hosttemplate']));
+		$this->set('_serialize', ['hosttemplate']);
 	}
 
 	public function edit($id = null, $hosttemplatetype_id = null){
@@ -750,12 +777,12 @@ class HosttemplatesController extends AppController{
 		$all_hosts = $this->Host->find('all', [
 			'recursive' => -1,
 			'contain' => [
-				'Hosttemplate' => [
-					'fields' => [
-						'id', 'name'
-					]
-				],
-				'Container'
+				//'Hosttemplate' => [
+				//	'fields' => [
+				//		'id', 'name'
+				//	]
+				//],
+				//'Container'
 			],
 			'order' => [
 				'Host.name' => 'ASC'
@@ -773,10 +800,17 @@ class HosttemplatesController extends AppController{
 			'conditions' => [
 				'HostsToContainers.container_id' => $this->MY_RIGHTS,
 				'Host.hosttemplate_id' => $id
-			]
+			],
+			'fields' => [
+				'Host.id',
+				'Host.uuid',
+				'Host.name',
+				'Host.address'
+			],
 		]);
 
 		$this->set(compact(['all_hosts', 'hosttemplate']));
+		$this->set('_serialize', ['all_hosts']);
 		$this->set('back_url', $this->referer());
 	}
 
