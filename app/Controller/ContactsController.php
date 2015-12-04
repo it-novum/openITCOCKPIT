@@ -102,6 +102,7 @@ class ContactsController extends AppController{
 
 		$query = Hash::merge($options, $this->Paginator->settings);
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_contacts = $this->Contact->find('all', $query);
 		}else{
 			$this->Paginator->settings = $query;

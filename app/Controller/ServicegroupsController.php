@@ -131,6 +131,7 @@ class ServicegroupsController extends AppController{
 			'Servicetemplate.name' => 'asc'
 		];
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_servicegroups = $this->Servicegroup->find('all', $query);
 		}else{
 			$query['limit'] = 150;

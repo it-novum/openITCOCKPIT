@@ -48,11 +48,36 @@ class LocationsController extends AppController{
 			]
 		];
 		
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 		
-		$all_locations = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_locations = $this->Location->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_locations = $this->Paginator->paginate();
+		}
 		$this->set(compact(['all_locations']));
+		$this->set('_serialize', ['all_locations']);
 		$this->_isFilter();
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Location->exists($id)){
+			throw new NotFoundException(__('Invalid location'));
+		}
+		$location = $this->Location->findById($id);
+		if(!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))){
+			$this->render403();
+			return;
+		}
+
+		$this->set('location', $location);
+		$this->set('_serialize', ['location']);
 	}
 
 	public function add(){

@@ -709,6 +709,12 @@ class DocumentationsController extends AppController{
 						'file' => 'containers',
 						'icon' => 'fa fa-cube',
 					],
+					'locations' => [
+						'name' => __('Locations'),
+						'description' => 'How to query location objects using the REST API',
+						'file' => 'locations',
+						'icon' => 'fa fa-location-arrow',
+					],
 				],
 			],
 		];

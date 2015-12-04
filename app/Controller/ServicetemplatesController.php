@@ -94,6 +94,7 @@ class ServicetemplatesController extends AppController{
 		];
 
 		if($this->isApiRequest()){
+			unset($options['limit']);
 			$all_servicetemplates = $this->Servicetemplate->find('all', $options);
 		}else{
 			$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);

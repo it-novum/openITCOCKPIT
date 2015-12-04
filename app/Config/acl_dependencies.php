@@ -244,6 +244,9 @@ $config = [
 			'Containers' => [
 				'index' => ['view', 'nest'],
 			],
+			'Locations' => [
+				'index' => ['view'],
+			]
 		]
 	]
 ];

@@ -96,6 +96,7 @@ class HosttemplatesController extends AppController{
 		$this->Paginator->settings = Hash::merge($query, $this->Paginator->settings);
 
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_hosttemplates = $this->Hosttemplate->find('all', $query);
 		}else{
 			$all_hosttemplates = $this->Paginator->paginate();
