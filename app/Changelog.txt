@@ -1,5 +1,6 @@
 3.0.6
 <span class="label bg-color-red">Bugfix</span> Deletion of locations
+<span class="label bg-color-red">Bugfix</span> Interval length for host- and service escalations
 
 3.0.5
 <span class="label bg-color-green">New</span> Add test mail function to debug page
