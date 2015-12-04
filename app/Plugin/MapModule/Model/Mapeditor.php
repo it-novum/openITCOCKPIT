@@ -30,24 +30,35 @@ class Mapeditor extends MapModuleAppModel{
 		$filtered = [];
 		foreach($request as $key => $mapObject){
 			if($key !== 'Map'){
-				if($key === 'Maptext'){
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return !empty(trim($el['text']));
-						}
-					);
-				}else if($key === 'Mapline'){
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return (isset($el['type']));
-						}
-					);
-				}else{
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
-						}
-					);
+				switch ($key) {
+					case 'Maptext':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return !empty(trim($el['text']));
+							}
+						);
+						break;
+					case 'Mapline':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['type']));
+							}
+						);
+						break;
+					case 'Mapicon':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['icon']));
+							}
+						);
+						break;
+					default:
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
+							}
+						);
+						break;
 				}
 			}
 		}
@@ -58,6 +69,21 @@ class Mapeditor extends MapModuleAppModel{
 		);
 		$filtered = array_merge(['Map' => $request['Map']], $filtered);
 		return $filtered;
+	}
+
+	/**
+	 * return an array with obsolete IDs which can be deleted from Database
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array $oldData the old data to compare with
+	 * @param  Array $newData the new base data 
+	 * @return Array          Array with ids to delete
+	 */
+	public function getObsoleteIds($oldData, $newData){
+		$idsToDelete = [];
+		foreach($oldData as $key => $data){
+			$idsToDelete[$key] = array_diff(Hash::extract($data, '{n}.id'), (!empty($newData[$key]))?Hash::extract($newData[$key], '{s}.id'):[]);
+		}
+		return $idsToDelete;
 	}
 
 	/**

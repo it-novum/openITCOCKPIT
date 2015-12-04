@@ -36,7 +36,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 		var el2append = opt.el2append || null; //optional
 		var link = (opt.link == null?false:opt.link);
 		var objData = opt.objData || ''; //optional but mandatory if link == true
-		var lineStatusColor = objData.currentColor || '#0f0';
+		var lineStatusColor = objData.currentColor || '#5CB85C';
 		var drawRect = (opt.drawRect ==null)?true:opt.drawRect;
 
 		var boxes = this.calculateLineBoxCenterPosition(opt);

@@ -96,15 +96,18 @@ class MapeditorsController extends MapModuleAppController {
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$request = $this->Mapeditor->prepareForSave($this->request->data);
+			//implement deleteObsoleteRecords() in model
+			$elementIdsToDelete = $this->Mapeditor->getObsoleteIds($map,$request);
 
-			//@TODO deleteAll is not the good way to refresh the map items
-			//-> pass the itemId and lineId as hidden field!
-			//Delete old map items
-			$this->Mapitem->deleteAll(['Mapitem.map_id' => $map['Map']['id']]);
-			$this->Mapline->deleteAll(['Mapline.map_id' => $map['Map']['id']]);
-			$this->Mapgadget->deleteAll(['Mapgadget.map_id' => $map['Map']['id']]);
-			$this->Mapicon->deleteAll(['Mapicon.map_id' => $map['Map']['id']]);
-			$this->Maptext->deleteAll(['Maptext.map_id' => $map['Map']['id']]);
+			foreach ($elementIdsToDelete as $mapElementType => $ids) {
+				if(!empty($ids)){
+					$this->{$mapElementType}->deleteAll([
+						$mapElementType.'.map_id' => $map['Map']['id'],
+						$mapElementType.'.id' => $ids
+					]);
+				}
+			}
+
 			if($this->Map->saveAll($request)){
 				if($this->request->ext === 'json'){
 					$this->serializeId();
@@ -120,7 +123,6 @@ class MapeditorsController extends MapModuleAppController {
 				$this->setFlash(__('Data could not be saved'), false);
 			}
 		}
-
 		$this->Frontend->setJson('lang_minutes', __('minutes'));
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
 		$this->Frontend->setJson('lang_and', __('and'));
@@ -135,7 +137,18 @@ class MapeditorsController extends MapModuleAppController {
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
-		$this->set(compact(['map', 'maps', 'mapList', 'servicegroup', 'hostgroup', 'hosts', 'services','backgroundThumbs', 'iconSets', 'icons']));
+		$this->set(compact([
+			'map', 
+			'maps', 
+			'mapList', 
+			'servicegroup', 
+			'hostgroup', 
+			'hosts', 
+			'services',
+			'backgroundThumbs', 
+			'iconSets', 
+			'icons'
+		]));
 	}
 
 	public function view($id = null){

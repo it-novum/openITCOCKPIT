@@ -136,42 +136,31 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				}
 
 				//create a new uuid
-				var id = self.Uuid.v4();
+				var elementUuid = self.Uuid.v4();
 				self.currentText = {};
 
-				//if(self.gridEnabled){
-					//grid is enabled
-					if(self.magneticGridEnabled){
-						//magnetic grid enabled
-						//snap to the nearest grid axis
-						//console.log('snap grid to the nearest axis');
+				if(self.magneticGridEnabled){
+					//magnetic grid enabled
+					//snap to the nearest grid axis
+					var newPosX = self.roundCoordinates(textPosition.x);
+					var newPosY = self.roundCoordinates(textPosition.y);
 
-						var newPosX = self.roundCoordinates(textPosition.x);
-						var newPosY = self.roundCoordinates(textPosition.y);
+					//create the Text container div
+					$('<div>',{
+						id:elementUuid
+					}).addClass('textContainerStyle dragElement')
+					.css({'top':newPosY+'px', 'left':newPosX+'px'})
+					.appendTo(self.$mapContainer);
 
-						//create the Text container div
-						$('<div>',{
-							id:id
-						}).addClass('textContainerStyle dragElement')
-						.css({'top':newPosY+'px', 'left':newPosX+'px'})
-						.appendTo(self.$mapContainer);
+					//append the current id to the global Text obj
+					self.currentText = {
+						elementUuid:elementUuid,
+						x:newPosX,
+						y:newPosY
+					}
+					$(self.mapEditorContainer).unbind('click');
 
-						//append the current id to the global Text obj
-						self.currentText = {
-							id:id,
-							x:newPosX,
-							y:newPosY
-						}
-						$(self.mapEditorContainer).unbind('click');
-
-						$('#textWizardModal').modal('show');
-
-				/*	}else{
-						//magnetic grid is disabled
-						//free text creation
-						console.log('grid is active, magnetic isnt -> free text creation');
-
-					}*/
+					$('#textWizardModal').modal('show');
 				}else{
 					//grid is disabled
 					//free text creation
@@ -179,14 +168,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 					//create the Text container div
 					$('<div>',{
-						id:id
+						id:elementUuid
 					}).addClass('textContainerStyle dragElement')
 					.css({'top':textPosition.y+'px', 'left':textPosition.x+'px'})
 					.appendTo(self.$mapContainer);
 
 					//append the current id to the global Text obj
 					self.currentText = {
-						id:id,
+						elementUuid:elementUuid,
 						x:textPosition.x,
 						y:textPosition.y
 					}
@@ -203,6 +192,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		 * save text
 		 */
 		$('#saveTextPropertiesBtn').click(function(){
+			var test = self.currentText
+			console.log(test);
+
+			//console.log($('#editText *'));
 			$('#editText *').filter(':input').each(function(){
 				if($(this).hasClass('textInput')){
 					self.currentText[$(this).attr('content')] = $(this).val();
@@ -757,6 +750,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 						}
 					}
 				});
+				console.log(self.current);
 			}else{
 				//create new element
 				//Set icon to map
@@ -1995,21 +1989,22 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 	saveText:function(textObj){
 		var self = this;
 		//check if the Text div already has its hidden fields
-		if($('#'+textObj.id+' *').filter(':input').length <=0){
+		console.log(textObj);
+		if($('#'+textObj.elementUuid+' *').filter(':input').length <=0){
 			//Fields not exist -> Add mode
 			//text field
 			$('<span>',{
-				id:'spanText_'+textObj.id
+				id:'spanText_'+textObj.elementUuid
 			})
 			.text(textObj.text)
 			.css({'font-size':textObj.font_size+'px'})
 			.addClass('textElement')
-			.appendTo($('#'+textObj.id));
+			.appendTo($('#'+textObj.elementUuid));
 			//arrange text
-			$('#spanText_'+textObj.id).basify({font_size:textObj.font_size});
+			$('#spanText_'+textObj.elementUuid).basify({font_size:textObj.font_size});
 			//append eventlistener
 			//add eventlistener on newly created items
-			var el = document.getElementById('spanText_'+self.currentText['id']);
+			var el = document.getElementById('spanText_'+self.currentText['elementUuid']);
 			el.addEventListener('dblclick', function(){self.editText(el);});
 			//$('#spanText_'+textObj.id).bind('dblclick', self.editText);
 
@@ -2017,44 +2012,44 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			$('<input>',{
 				type:'hidden',
 				value:textObj.text,
-				name:'data[Maptext]['+textObj.id+'][text]',
+				name:'data[Maptext]['+textObj.elementUuid+'][text]',
 			}).data({'key':'text'})
-			.appendTo($('#'+textObj.id));
+			.appendTo($('#'+textObj.elementUuid));
 
 			//font size field
 			$('<input>',{
 				type:'hidden',
 				value:textObj.font_size,
-				name:'data[Maptext]['+textObj.id+'][font_size]',
+				name:'data[Maptext]['+textObj.elementUuid+'][font_size]',
 			}).data({'key':'font_size'})
-			.appendTo($('#'+textObj.id));
+			.appendTo($('#'+textObj.elementUuid));
 
 			//x field
 			$('<input>',{
 				type:'hidden',
 				value:textObj.x,
-				name:'data[Maptext]['+textObj.id+'][x]',
+				name:'data[Maptext]['+textObj.elementUuid+'][x]',
 			}).data({'key':'x'})
-			.appendTo($('#'+textObj.id));
+			.appendTo($('#'+textObj.elementUuid));
 
 			//y field
 			$('<input>',{
 				type:'hidden',
 				value:textObj.y,
-				name:'data[Maptext]['+textObj.id+'][y]',
+				name:'data[Maptext]['+textObj.elementUuid+'][y]',
 			})
 			.data({'key':'y'})
-			.appendTo($('#'+textObj.id));
+			.appendTo($('#'+textObj.elementUuid));
 
 			self.makeDraggable();
 		}else{
 			//Fields exist -> Edit mode
 			//change text and font size
-			$('#spanText_'+textObj.id).text(textObj.text).css({'font-size':textObj.font_size+'px'});
+			$('#spanText_'+textObj.elementUuid).text(textObj.text).css({'font-size':textObj.font_size+'px'});
 			//rearrange the text
-			$('#spanText_'+textObj.id).basify({fontSize:textObj.font_size});
+			$('#spanText_'+textObj.elementUuid).basify({fontSize:textObj.font_size});
 			//update form fields
-			$('#'+textObj.id).children().filter(':input').each(function(){
+			$('#'+textObj.elementUuid).children().filter(':input').each(function(){
 				$(this).val(textObj[$(this).data('key')]);
 			});
 
@@ -2081,8 +2076,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		self.currentText = {};
 
 		var $parent = $(el).parent()
-
-		self.currentText['id'] = $parent.attr('id');
+		self.currentText['elementUuid'] = $parent.attr('id');
 
 		$parent.children().filter(':input').each(function(){
 			self.currentText[$(this).data('key')] = $(this).val()
