@@ -45,14 +45,28 @@ App.Components.LineComponent = Frontend.Component.extend({
 		var svgContainerLeft = boxes.containerLeft-2;
 		var svgContainerHeight = boxes.containerHeight+4;
 		var svgContainerWidth = boxes.containerWidth+4;
-
-		$('#'+svgContainer).css({'top':svgContainerTop+'px', 'left':svgContainerLeft+'px','height':svgContainerHeight+'px', 'width':svgContainerWidth+'px','position':'absolute'}).svg();
+console.log(svgContainerTop);
+console.log(svgContainerLeft);
+		//$('#'+svgContainer).css({'top':svgContainerTop+'px', 'left':svgContainerLeft+'px','height':svgContainerHeight+'px', 'width':svgContainerWidth+'px','position':'absolute'}).svg();
+		$('#'+svgContainer).css({'top':svgContainerTop+'px', 'left':svgContainerLeft+'px', 'width':svgContainerWidth+'px','position':'absolute'}).svg();
+		
 		var svg = $('#'+svgContainer).svg('get');
-
+console.log('boxes.newLineStartX '+boxes.newLineStartX);
+console.log('boxes.newLineStartY '+boxes.newLineStartY);
+console.log('boxes.newLineEndX '+boxes.newLineEndX);
+console.log('boxes.newLineEndY '+boxes.newLineEndY);
 		var lineGroup = svg.group('line_'+id);
 		svg.line(boxes.newLineStartX, boxes.newLineStartY, boxes.newLineEndX, boxes.newLineEndY,{
 			stroke: lineStatusColor, strokeWidth: 5, class: 'itemElement_line', id:id+'_line'
 		});
+
+
+//console.log(typeof opt.rectHeight+ ' '+ opt.rectHeight);
+//console.log('lineCenter -> '+ svgContainerHeight/2+ ' newCalculatedCenter '+ ((svgContainerHeight/2)-(opt.rectHeight/2)));
+
+//console.log('boxes.centerX '+boxes.centerX+ ' boxes.centerY '+boxes.centerY);
+
+
 
 		//check if the rect should be drawn -> this is not neccessary on stateless lines for example
 		if(drawRect){
@@ -123,7 +137,8 @@ App.Components.LineComponent = Frontend.Component.extend({
 				$('#'+id+'_rect').append(el2append);
 			}
 		}
-		
+		//workaround for centering horizontal lines 
+		$('#'+svgContainer).children('svg').attr({'height':svgContainerHeight+7+'px'});
 	},
 
 
