@@ -33,23 +33,14 @@
 */
 $mapstatus = $this->Mapstatus->mapstatus($mapinfo['Map']['id']);
 $statusColor = null;
-if(!empty($mapstatus['allStates'])){
-	$allMapStates = $mapstatus['allStates'];
-	foreach ($allMapStates as $key => $value) {
-		switch ($key) {
-			case 'Host':
-				$statusColor = $this->Status->HostStatusColorSimple($allMapStates[$key]);
-				break;
-			case 'Service':
-				$statusColor = $this->Status->ServiceStatusColorSimple($allMapStates[$key]);
-				break;
-			case 'Hostgroup':
-				$statusColor = $this->Status->HostStatusColorSimple($allMapStates[$key]);
-				break;
-			case 'Servicegroup':
-				$statusColor = $this->Status->ServiceStatusColorSimple($allMapStates[$key]);
-				break;
-		}
+if(!empty($mapstatus['cumulated_type_key'])){
+	switch ($mapstatus['cumulated_type_key']) {
+		case 'Host':
+			$statusColor = $this->Status->HostStatusColorSimple($mapstatus['state']);
+			break;
+		case 'Service':
+			$statusColor = $this->Status->ServiceStatusColorSimple($mapstatus['state']);
+			break;
 	}
 }else{
 	$statusColor = $this->Status->HostStatusColorSimple(-1);
