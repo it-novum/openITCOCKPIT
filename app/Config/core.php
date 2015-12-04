@@ -329,22 +329,29 @@ $prefix = 'app_';
  * Configure the cache used for general framework caching. Path information,
  * object listings, and translation cache files are stored with this configuration.
  */
-Cache::config('_cake_core_', array(
-	'engine' => $engine,
-	'prefix' => $prefix . 'cake_core_',
-	'path' => CACHE . 'persistent' . DS,
-	'serialize' => ($engine === 'File'),
-	'duration' => $duration
-));
+if(php_sapi_name() != 'cli'){
+	Cache::config('_cake_core_', array(
+		'engine' => $engine,
+		'prefix' => $prefix . 'cake_core_',
+		'path' => CACHE . 'persistent' . DS,
+		'serialize' => ($engine === 'File'),
+		'duration' => $duration
+	));
 
-/**
- * Configure the cache for model and datasource caches. This cache configuration
- * is used to store schema descriptions, and table listings in connections.
- */
-Cache::config('_cake_model_', array(
-	'engine' => $engine,
-	'prefix' => $prefix . 'cake_model_',
-	'path' => CACHE . 'models' . DS,
-	'serialize' => ($engine === 'File'),
-	'duration' => $duration
-));
+
+	/**
+	 * Configure the cache for model and datasource caches. This cache configuration
+	 * is used to store schema descriptions, and table listings in connections.
+	 */
+	Cache::config('_cake_model_', array(
+		'engine' => $engine,
+		'prefix' => $prefix . 'cake_model_',
+		'path' => CACHE . 'models' . DS,
+		'serialize' => ($engine === 'File'),
+		'duration' => $duration
+	));
+}
+
+if(php_sapi_name() == 'cli'){
+	Configure::write('Cache.disable', true);
+}

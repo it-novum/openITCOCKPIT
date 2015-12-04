@@ -48,7 +48,6 @@ class SmsNotificationShell extends AppShell{
 	];
 	
 	public function main(){
-		
 		$this->config = [
 			'nrpe' => [
 				'port' => 5666,
