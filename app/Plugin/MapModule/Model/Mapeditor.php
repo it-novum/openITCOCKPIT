@@ -30,24 +30,35 @@ class Mapeditor extends MapModuleAppModel{
 		$filtered = [];
 		foreach($request as $key => $mapObject){
 			if($key !== 'Map'){
-				if($key === 'Maptext'){
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return !empty(trim($el['text']));
-						}
-					);
-				}else if($key === 'Mapline'){
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return (isset($el['type']));
-						}
-					);
-				}else{
-					$filtered[$key] = array_filter($mapObject,
-						function($el){
-							return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
-						}
-					);
+				switch ($key) {
+					case 'Maptext':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return !empty(trim($el['text']));
+							}
+						);
+						break;
+					case 'Mapline':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['type']));
+							}
+						);
+						break;
+					case 'Mapicon':
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['icon']));
+							}
+						);
+						break;
+					default:
+						$filtered[$key] = array_filter($mapObject,
+							function($el){
+								return (isset($el['type'], $el['object_id']) && $el['object_id'] > 0);
+							}
+						);
+						break;
 				}
 			}
 		}
