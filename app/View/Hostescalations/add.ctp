@@ -62,8 +62,12 @@
 				'placeholder' => 0, 'min' => 0]);
 				echo $this->Form->input('Hostescalation.last_notification', ['label' => __('Last escalation notice'),
 					'placeholder' => 0, 'min' => 0]);
-				echo $this->Form->input('Hostescalation.notification_interval', ['label' => __('Notification interval'),
-					'placeholder' => 60, 'min' => 0]);
+				echo $this->Form->input('Hostescalation.notification_interval', [
+					'label' => __('Notification interval'),
+					'placeholder' => 60,
+					'min' => 0,
+					'help' => __('Interval in minutes')
+				]);
 				echo $this->Form->input('Hostescalation.timeperiod_id', ['options' => $timeperiods, 'class' => 'chosen', 'multiple' => false, 'style' => 'width:100%;', 'label' => __('Timeperiod'), 'data-placeholder' => __('Please choose a contact')]);
 				echo $this->Form->input('Hostescalation.Contact', ['options' => $contacts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contacts'), 'data-placeholder' => __('Please choose a contact')]);
 				echo $this->Form->input('Hostescalation.Contactgroup', ['options' => $contactgroups, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contactgroups'), 'data-placeholder' => __('Please choose a contactgroup')]);

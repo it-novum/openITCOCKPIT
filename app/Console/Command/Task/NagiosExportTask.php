@@ -1920,7 +1920,7 @@ class NagiosExportTask extends AppShell{
 					}
 					$content.= $this->addContent('first_notification', 1, $hostescalation['Hostescalation']['first_notification']);
 					$content.= $this->addContent('last_notification', 1, $hostescalation['Hostescalation']['last_notification']);
-					$content.= $this->addContent('notification_interval', 1, $hostescalation['Hostescalation']['notification_interval']);
+					$content.= $this->addContent('notification_interval', 1, (int)$hostescalation['Hostescalation']['notification_interval'] * 60);
 					$content.= $this->addContent('escalation_period', 1, $hostescalation['Timeperiod']['uuid']);
 					$content.= $this->addContent('escalation_options', 1, $this->hostEscalationString($hostescalation['Hostescalation']));
 
@@ -2040,7 +2040,7 @@ class NagiosExportTask extends AppShell{
 					}
 					$content.= $this->addContent('first_notification', 1, $serviceescalation['Serviceescalation']['first_notification']);
 					$content.= $this->addContent('last_notification', 1, $serviceescalation['Serviceescalation']['last_notification']);
-					$content.= $this->addContent('notification_interval', 1, $serviceescalation['Serviceescalation']['notification_interval']);
+					$content.= $this->addContent('notification_interval', 1, (int)$serviceescalation['Serviceescalation']['notification_interval'] * 60);
 					$content.= $this->addContent('escalation_period', 1, $serviceescalation['Timeperiod']['uuid']);
 					$content.= $this->addContent('escalation_options', 1, $this->serviceEscalationString($serviceescalation['Serviceescalation']));
 

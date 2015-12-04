@@ -72,15 +72,47 @@ class ContactgroupsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$this->set('all_contactgroups', $this->Paginator->paginate());
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_contactgroups = $this->Contactgroup->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_contactgroups = $this->Paginator->paginate();
+		}
+
+		$this->set('all_contactgroups', $all_contactgroups);
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_contactgroups']);
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+	
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Contactgroup->exists($id)){
+			throw new NotFoundException(__('Invalid contact group'));
+		}
+		if($this->hasRootPrivileges === true){
+			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+		}else{
+			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+		}
+		$contactgroup = $this->Contactgroup->findById($id);
+
+
+		if(!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))){
+			throw new ForbiddenException('404 Forbidden');
+		}
+
+		$this->set('contactgroup', $contactgroup);
+		$this->set('_serialize', ['contactgroup']);
 	}
 
 	public function edit($id = null){

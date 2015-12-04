@@ -71,6 +71,7 @@ class ServicetemplategroupsController extends AppController{
 			'hasAndBelongsToMany' => ['Servicetemplate']
 		]);
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_servicetemplategroups = $this->Servicetemplategroup->find('all', $query);
 		}else{
 			$this->Paginator->settings = $query;

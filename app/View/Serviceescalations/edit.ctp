@@ -154,7 +154,8 @@
 				echo $this->Form->input('Serviceescalation.notification_interval', [
 					'label' => __('Notification interval'),
 					'placeholder' => 60,
-					'value' => $this->request->data['Serviceescalation']['notification_interval']
+					'value' => $this->request->data['Serviceescalation']['notification_interval'],
+					'help' => __('Interval in minutes')
 				]);
 
 				echo $this->Form->input('Serviceescalation.timeperiod_id', [

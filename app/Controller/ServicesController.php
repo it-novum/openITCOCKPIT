@@ -323,6 +323,7 @@ class ServicesController extends AppController{
 		];
 
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
 			$this->Paginator->settings = $query;
@@ -473,6 +474,7 @@ class ServicesController extends AppController{
 			'conditions' => $conditions,
 		];
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
 			$query['limit'] = 150;
@@ -616,6 +618,7 @@ class ServicesController extends AppController{
 			]
 		];
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
 			$query['limit'] = 150;
@@ -1907,6 +1910,7 @@ class ServicesController extends AppController{
 		];
 
 		if($this->isApiRequest()){
+			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
 			$query['limit'] = 150;

@@ -131,11 +131,13 @@ $config = [
 				'delete' => ['mass_delete'],
 			],
 			'Contactgroups' => [
+				'index' => ['view'],
 				'add' => ['loadContacts'],
 				'edit' => ['loadContacts'],
 				'delete' => ['mass_delete']
 			],
 			'Contacts' => [
+				'index' => ['view'],
 				'add' => ['loadTimeperiods'],
 				'edit' => ['loadTimeperiods']
 			],
@@ -226,6 +228,7 @@ $config = [
 				'edit' => ['resetPassword']
 			],
 			'Tenants' => [
+				'index' => ['view'],
 				'delete' => ['mass_delete'],
 			],
 			'Downtimes' => [
@@ -237,6 +240,15 @@ $config = [
 			],
 			'Exports' => [
 				'index' => ['broadcast', 'launchExport', 'verifyConfig'],
+			],
+			'Containers' => [
+				'index' => ['view', 'nest'],
+			],
+			'Locations' => [
+				'index' => ['view'],
+			],
+			'Devicegroups' => [
+				'index' => ['view'],
 			],
 		]
 	]

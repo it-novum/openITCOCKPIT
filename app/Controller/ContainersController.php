@@ -35,6 +35,15 @@ class ContainersController extends AppController{
 	public $helpers = ['Nest'];
 
 	public function index(){
+		if($this->isApiRequest()){
+			$all_container = $this->Container->find('all', [
+				'recursive' => -1
+			]);
+			$this->set('all_container', $all_container);
+			$this->set('_serialize', ['all_container']);
+			$this->render();
+		}
+		
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container']['containertype_id'] = CT_NODE;
 			if($this->Container->save($this->request->data)){
@@ -68,6 +77,35 @@ class ContainersController extends AppController{
 		}
 		$this->set('validationError', (!empty($this->Container->validationErrors)?true:false));
 		$this->set('selected_tenant', $selected_tenant);
+	}
+
+	public function nest(){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+		}
+		$all_container = $this->Container->find('all', [
+			'recursive' => -1
+		]);
+		$all_container = Hash::nest($all_container);
+		$this->set('all_container', $all_container);
+		$this->set('_serialize', ['all_container']);
+	}
+	
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Container->exists($id)){
+			throw new NotFoundException(__('Invalid container'));
+		}
+		$container = $this->Container->findById($id);
+		if(!$this->allowedByContainerId($container['Container']['id'])){
+			throw new ForbiddenException('404 Forbidden');
+		}
+
+		$this->set('container', $container);
+		$this->set('_serialize', ['container']);
 	}
 
 	protected function tree($id = 0){

@@ -163,7 +163,8 @@
 				echo $this->Form->input('Hostescalation.notification_interval', [
 					'label' => __('Notification interval'),
 					'placeholder' => 60,
-					'value' => $hostescalation['Hostescalation']['notification_interval']
+					'value' => $hostescalation['Hostescalation']['notification_interval'],
+					'help' => __('Interval in minutes')
 				]);
 				
 				echo $this->Form->input('Hostescalation.timeperiod_id', [
