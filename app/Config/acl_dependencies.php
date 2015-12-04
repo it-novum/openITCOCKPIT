@@ -159,6 +159,7 @@ $config = [
 				'edit' => ['loadElementsByContainerId']
 			],
 			'Hostescalations' => [
+				'index' => ['view'],
 				'add' => ['loadElementsByContainerId'],
 				'edit' => ['loadElementsByContainerId']
 			],
@@ -196,6 +197,7 @@ $config = [
 				'edit' => ['loadElementsByContianerId']
 			],
 			'Serviceescalations' => [
+				'index' => ['view'],
 				'add' => ['loadElementsByContainerId'],
 				'edit' => ['loadElementsByContainerId']
 			],
