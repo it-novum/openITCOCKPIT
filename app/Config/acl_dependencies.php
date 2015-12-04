@@ -246,7 +246,10 @@ $config = [
 			],
 			'Locations' => [
 				'index' => ['view'],
-			]
+			],
+			'Devicegroups' => [
+				'index' => ['view'],
+			],
 		]
 	]
 ];
