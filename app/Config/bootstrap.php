@@ -9,7 +9,11 @@ App::uses('PhpReader', 'SilentPhpReader');
 
 $Constants = new ConstantsComponent();
 
-Cache::config('default', array('engine' => 'File'));
+if(php_sapi_name() != 'cli'){
+	Cache::config('default', array('engine' => 'File'));
+}else{
+	Configure::write('Cache.disable', true);
+}
 
 CakePlugin::loadAll();
 
@@ -93,25 +97,25 @@ CakeLog::config('otherFile', array(
 // Avoid broken permissions for the interface
 if(php_sapi_name() == 'cli'){
 	// Caching Setup
-	Cache::config('default', array(
-		'engine' => 'File',
-		'duration' => '+24hour',
-		'probability' => 100,
-		'path' => TMP . 'cache_cli/',
-		'prefix' => 'app_',
-		'lock' => false,
-		'serialize' => true
-	));
-
-	Cache::config('short', array(
-		'engine' => 'File',
-		'duration' => '+1hour',
-		'probability' => 100,
-		'path' => TMP . 'cache_cli/',
-		'prefix' => 'app_',
-		'lock' => false,
-		'serialize' => true
-	));
+	//Cache::config('default', array(
+	//	'engine' => 'File',
+	//	'duration' => '+24hour',
+	//	'probability' => 100,
+	//	'path' => TMP . 'cache_cli/',
+	//	'prefix' => 'app_',
+	//	'lock' => false,
+	//	'serialize' => true
+	//));
+    //
+	//Cache::config('short', array(
+	//	'engine' => 'File',
+	//	'duration' => '+1hour',
+	//	'probability' => 100,
+	//	'path' => TMP . 'cache_cli/',
+	//	'prefix' => 'app_',
+	//	'lock' => false,
+	//	'serialize' => true
+	//));
 }else{
 	// Caching Setup
 	Cache::config('default', array(

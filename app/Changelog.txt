@@ -1,4 +1,5 @@
 3.0.6
+<span class="label bg-color-green">New</span> Add SMS box support
 <span class="label bg-color-red">Bugfix</span> Deletion of locations
 <span class="label bg-color-red">Bugfix</span> Interval length for host- and service escalations
 
