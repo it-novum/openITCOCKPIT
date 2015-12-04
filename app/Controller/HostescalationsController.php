@@ -100,9 +100,15 @@ class HostescalationsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$all_hostescalations = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_hostescalations = $this->Hostescalation->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_hostescalations = $this->Paginator->paginate();
+		}
 
 		$this->set('all_hostescalations', $all_hostescalations);
 
@@ -111,6 +117,41 @@ class HostescalationsController extends AppController{
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Hostescalation->exists($id)){
+			throw new NotFoundException(__('Invalid hostescalation'));
+		}
+		$hostescalation = $this->Hostescalation->find('first', [
+			'conditions' => [
+				'Hostescalation.id' => $id
+			],
+			'contain' => [
+				'HostescalationHostMembership' => [
+					'Host'
+				],
+				'Contact',
+				'Contactgroup' => [
+					'Container'
+				],
+				'HostescalationHostgroupMembership' => [
+					'Hostgroup'
+				],
+				'Timeperiod'
+			]
+		]);
+		if(!$this->allowedByContainerId($hostescalation['Hostescalation']['container_id'])){
+			$this->render403();
+			return;
+		}
+
+		$this->set('hostescalation', $hostescalation);
+		$this->set('_serialize', ['hostescalation']);
 	}
 
 	public function edit($id = null) {

@@ -721,6 +721,18 @@ class DocumentationsController extends AppController{
 						'file' => 'devicegroups',
 						'icon' => 'fa fa-cloud',
 					],
+					'hostescalations' => [
+						'name' => __('Hostescalations'),
+						'description' => 'How to query host escalations objects using the REST API',
+						'file' => 'hostescalations',
+						'icon' => 'fa fa-bomb',
+					],
+					'serviceescalations' => [
+						'name' => __('Serviceescalations'),
+						'description' => 'How to query service ecalations objects using the REST API',
+						'file' => 'serviceescalations',
+						'icon' => 'fa fa-bomb',
+					],
 				],
 			],
 		];

@@ -106,14 +106,72 @@ class ServiceescalationsController extends AppController{
 			]
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$this->set('all_serviceescalations', $this->Paginator->paginate());
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_serviceescalations = $this->Serviceescalation->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_serviceescalations = $this->Paginator->paginate();
+		}
+
+		$this->set('all_serviceescalations', $all_serviceescalations);
 		$this->set('_serialize', ['all_serviceescalations']);
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Serviceescalation->exists($id)){
+			throw new NotFoundException(__('Invalid serviceescalation'));
+		}
+		$serviceescalation = $this->Serviceescalation->find('first', [
+			'conditions' => [
+				'Serviceescalation.id' => $id
+			],
+			'contain' => [
+				'ServiceescalationServiceMembership' => [
+					'Service' => [
+						'Servicetemplate' => [
+							'fields' => [
+								'id',
+								'name',
+							]
+						],
+						'Host' => [
+							'fields' => [
+								'id',
+								'name',
+							]
+						]
+					]
+				],
+				'Contact',
+				'Contactgroup' => [
+					'Container'
+				],
+				'ServiceescalationServicegroupMembership' => [
+					'Servicegroup' => [
+						'Container'
+					]
+				],
+				'Timeperiod'
+			]
+		]);
+		if(!$this->allowedByContainerId($serviceescalation['Serviceescalation']['container_id'])){
+			$this->render403();
+			return;
+		}
+
+		$this->set('serviceescalation', $serviceescalation);
+		$this->set('_serialize', ['serviceescalation']);
 	}
 
 	public function edit($id = null) {
