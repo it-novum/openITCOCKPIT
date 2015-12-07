@@ -66,7 +66,7 @@
                 "lastname": "it-novum",
                 "firstname": "Admin"
             }
-        e
+        }
     ]
 }
 		</pre>

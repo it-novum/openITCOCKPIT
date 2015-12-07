@@ -610,7 +610,7 @@ class DocumentationsController extends AppController{
 			],
 			
 			'api' => [
-				'name' => ('REST API'),
+				'name' => ('REST API (read-only)'),
 				'directory' => 'api',
 				'children' => [
 					'methods' => [
