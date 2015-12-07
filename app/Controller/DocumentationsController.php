@@ -745,6 +745,18 @@ class DocumentationsController extends AppController{
 						'file' => 'servicedependencies',
 						'icon' => 'fa fa-sitemap',
 					],
+					'changelog' => [
+						'name' => __('Changelog'),
+						'description' => 'How to query changelog objects using the REST API',
+						'file' => 'changelog',
+						'icon' => 'fa fa-code-fork',
+					],
+					'proxy' => [
+						'name' => __('Proxy'),
+						'description' => 'How to query proxy configuration using the REST API',
+						'file' => 'proxy',
+						'icon' => 'fa fa-bolt',
+					],
 				],
 			],
 		];

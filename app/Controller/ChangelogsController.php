@@ -52,7 +52,7 @@ class ChangelogsController extends AppController{
 				'ChangelogsToContainers.container_id' => $this->MY_RIGHTS,
 		];
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
-		$this->Paginator->settings = [
+		$query = [
 			'recursive' => -1,
 			'fields' => [
 				'DISTINCT Changelog.*', 'User.id', 'User.lastname', 'User.firstname'
@@ -84,7 +84,13 @@ class ChangelogsController extends AppController{
 			],
 		];
 
-		$all_changes = $this->Paginator->paginate();
+		$this->Paginator->settings = $query;
+		if($this->isApiRequest()){
+			$this->Paginator->settings['limit'] = 250;
+			$all_changes = $this->Paginator->paginate();
+		}else{
+			$all_changes = $this->Paginator->paginate();
+		}
 		$this->set('_serialize', ['all_changes']);
 
 		$this->set('isFilter', false);
