@@ -733,6 +733,18 @@ class DocumentationsController extends AppController{
 						'file' => 'serviceescalations',
 						'icon' => 'fa fa-bomb',
 					],
+					'hostdependencies' => [
+						'name' => __('Hostdependencies'),
+						'description' => 'How to query host dependency objects using the REST API',
+						'file' => 'hostdependencies',
+						'icon' => 'fa fa-sitemap',
+					],
+					'servicedependencies' => [
+						'name' => __('Servicedependencies'),
+						'description' => 'How to query service dependency objects using the REST API',
+						'file' => 'servicedependencies',
+						'icon' => 'fa fa-sitemap',
+					],
 				],
 			],
 		];

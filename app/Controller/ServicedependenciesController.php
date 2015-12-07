@@ -94,14 +94,41 @@ class ServicedependenciesController extends AppController{
 				]
 			]
 		];
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$this->set('all_servicedependencies', $this->Paginator->paginate());
+		if($this->isApiRequest){
+			unset($query['limit']);
+			$all_servicedependencies = $this->Servicedependency->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_servicedependencies = $this->Paginator->paginate();
+		}
+
+		$this->set('all_servicedependencies', $all_servicedependencies);
 		$this->set('_serialize', array('all_servicedependencies'));
 		$this->set('isFilter', false);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Servicedependency->exists($id)){
+			throw new NotFoundException(__('Invalid servicedependency'));
+		}
+		$servicedependency = $this->Servicedependency->findById($id);
+		$serviceDependencyContainerId = $servicedependency['Servicedependency']['container_id'];
+		if(!$this->allowedByContainerId($serviceDependencyContainerId)){
+			$this->render403();
+			return;
+		}
+
+		$this->set('servicedependency', $servicedependency);
+		$this->set('_serialize', ['servicedependency']);
 	}
 
 	public function edit($id = null){
