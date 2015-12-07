@@ -155,6 +155,7 @@ $config = [
 				'listing' => ['saveGraphTemplate', 'loadGraphTemplate']
 			],
 			'Hostdependencies' => [
+				'index' => ['view'],
 				'add' => ['loadElementsByContainerId'],
 				'edit' => ['loadElementsByContainerId']
 			],
@@ -193,6 +194,7 @@ $config = [
 				'index' => ['check']
 			],
 			'Servicedependencies' => [
+				'index' => ['view'],
 				'add' => ['loadElementsByContainerId'],
 				'edit' => ['loadElementsByContianerId']
 			],

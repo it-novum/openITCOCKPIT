@@ -81,9 +81,15 @@ class HostdependenciesController extends AppController{
 			]
 		];
 		
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
-
-		$all_hostdependencies = $this->Paginator->paginate();
+		$query = Hash::merge($options, $this->Paginator->settings);
+		
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_hostdependencies = $this->Hostdependency->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_hostdependencies = $this->Paginator->paginate();
+		}
 
 		$this->set(compact('all_hostdependencies'));
 		$this->set('_serialize', array('all_hostdependencies'));
@@ -92,6 +98,24 @@ class HostdependenciesController extends AppController{
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Hostdependency->exists($id)){
+			throw new NotFoundException(__('Invalid hostdependency'));
+		}
+		$hostdependency = $this->Hostdependency->findById($id);
+		if(!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])){
+			$this->render403();
+			return;
+		}
+
+		$this->set('hostdependency', $hostdependency);
+		$this->set('_serialize', ['hostdependency']);
 	}
 
 	public function edit($id = null) {
