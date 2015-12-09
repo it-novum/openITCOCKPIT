@@ -49,5 +49,6 @@ class SystemsettingsController extends AppController{
 		}
 		
 		$this->set(compact(['all_systemsettings']));
+		$this->set('_serialize', ['all_systemsettings']);
 	}
 }

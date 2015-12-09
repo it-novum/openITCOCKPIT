@@ -757,6 +757,12 @@ class DocumentationsController extends AppController{
 						'file' => 'proxy',
 						'icon' => 'fa fa-bolt',
 					],
+					'systemsettings' => [
+						'name' => __('Systemsettings'),
+						'description' => 'How to query system settings the REST API',
+						'file' => 'systemsettings',
+						'icon' => 'fa fa-wrench',
+					],
 				],
 			],
 		];
