@@ -610,7 +610,7 @@ class DocumentationsController extends AppController{
 			],
 			
 			'api' => [
-				'name' => ('REST API'),
+				'name' => ('REST API (read-only)'),
 				'directory' => 'api',
 				'children' => [
 					'methods' => [
@@ -744,6 +744,24 @@ class DocumentationsController extends AppController{
 						'description' => 'How to query service dependency objects using the REST API',
 						'file' => 'servicedependencies',
 						'icon' => 'fa fa-sitemap',
+					],
+					'changelog' => [
+						'name' => __('Changelog'),
+						'description' => 'How to query changelog objects using the REST API',
+						'file' => 'changelog',
+						'icon' => 'fa fa-code-fork',
+					],
+					'proxy' => [
+						'name' => __('Proxy'),
+						'description' => 'How to query proxy configuration using the REST API',
+						'file' => 'proxy',
+						'icon' => 'fa fa-bolt',
+					],
+					'systemsettings' => [
+						'name' => __('Systemsettings'),
+						'description' => 'How to query system settings the REST API',
+						'file' => 'systemsettings',
+						'icon' => 'fa fa-wrench',
 					],
 				],
 			],
