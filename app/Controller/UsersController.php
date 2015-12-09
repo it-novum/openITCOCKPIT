@@ -103,7 +103,7 @@ class UsersController extends AppController{
 		$query = Hash::merge($options, $this->Paginator->settings);
 
 		if($this->isApiRequest()){
-			unset($query['limite']);
+			unset($query['limit']);
 			$all_users = $this->User->find('all', $query);
 		}else{
 			$this->Paginator->settings = $query;
