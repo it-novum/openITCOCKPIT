@@ -625,6 +625,12 @@ class DocumentationsController extends AppController{
 						'file' => 'login',
 						'icon' => 'fa fa-sign-in',
 					],
+					'automaps' => [
+						'name' => __('Automaps'),
+						'description' => 'How to query automap objects the REST API',
+						'file' => 'automaps',
+						'icon' => 'fa fa-magic',
+					],
 					'macros' => [
 						'name' => __('User defined macros'),
 						'description' => 'How to query user defined macros using the REST API',
