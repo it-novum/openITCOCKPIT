@@ -757,6 +757,12 @@ class DocumentationsController extends AppController{
 						'file' => 'proxy',
 						'icon' => 'fa fa-bolt',
 					],
+					'users' => [
+						'name' => __('Users'),
+						'description' => 'How to query user objects the REST API',
+						'file' => 'users',
+						'icon' => 'fa fa-user',
+					],
 					'systemsettings' => [
 						'name' => __('Systemsettings'),
 						'description' => 'How to query system settings the REST API',
