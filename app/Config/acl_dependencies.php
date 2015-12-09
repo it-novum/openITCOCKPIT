@@ -255,6 +255,9 @@ $config = [
 			'Devicegroups' => [
 				'index' => ['view'],
 			],
+			'Usergroups' => [
+				'index' => ['view'],
+			],
 		]
 	]
 ];

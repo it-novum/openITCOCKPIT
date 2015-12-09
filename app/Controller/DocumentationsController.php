@@ -763,6 +763,12 @@ class DocumentationsController extends AppController{
 						'file' => 'users',
 						'icon' => 'fa fa-user',
 					],
+					'usergroups' => [
+						'name' => __('Usergroups'),
+						'description' => 'How to query user group objects the REST API',
+						'file' => 'usergroups',
+						'icon' => 'fa fa-users',
+					],
 					'systemsettings' => [
 						'name' => __('Systemsettings'),
 						'description' => 'How to query system settings the REST API',
