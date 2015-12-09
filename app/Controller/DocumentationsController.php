@@ -763,6 +763,12 @@ class DocumentationsController extends AppController{
 						'file' => 'systemsettings',
 						'icon' => 'fa fa-wrench',
 					],
+					'cronjobs' => [
+						'name' => __('Cronjobs'),
+						'description' => 'How to query cronjob settings the REST API',
+						'file' => 'cronjobs',
+						'icon' => 'fa fa-clock-o',
+					],
 				],
 			],
 		];

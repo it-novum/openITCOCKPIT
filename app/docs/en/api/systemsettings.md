@@ -1,4 +1,4 @@
-## Query systemsettings (output snippet):
+## Query systemsettings:
 
 <div class="input-group">
 	<span class="input-group-addon bg-color-green txt-color-white">GET</span>
