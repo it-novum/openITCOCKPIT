@@ -92,6 +92,7 @@ class UsersController extends AppController{
 				'User.status',
 				'User.full_name',
 				'User.samaccountname',
+				'Usergroup.id',
 				'Usergroup.name',
 				'UsersToContainer.container_id'
 			],
@@ -99,9 +100,15 @@ class UsersController extends AppController{
 				'User.id'
 			]
 		];
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
-		$all_users = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_users = $this->User->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_users = $this->Paginator->paginate();
+		}
 
 		//Get users container ids
 		$userContainerIds = [];
@@ -111,8 +118,55 @@ class UsersController extends AppController{
 		}
 
 		$this->set('users', $all_users);
+		if($this->isApiRequest()){
+			$this->set('all_users', $all_users);
+			$this->set('_serialize', ['all_users']);
+		}
 		$this->set('userContainerIds', $userContainerIds);
 		$this->set('systemsettings', $systemsettings);
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->User->exists($id)){
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$user = $this->User->findById($id);
+		$permissionsUser = $this->User->find('first', [
+			'joins' => [
+				[
+					'table' => 'users_to_containers',
+					'type' => 'LEFT',
+					'alias' => 'UsersToContainer',
+					'conditions' => 'UsersToContainer.user_id = User.id'
+				],
+			],
+			'conditions' => [
+				'User.id' => $id,
+				'UsersToContainer.container_id' => $this->MY_RIGHTS
+			],
+			'fields' => [
+				'User.id',
+				'User.email',
+				'User.company',
+				'User.status',
+				'User.full_name',
+				'User.samaccountname',
+			],
+			'group' => [
+				'User.id'
+			]
+		]);
+
+		if(empty($permissionsUser)){
+			$this->render403();
+			return;
+		}
+		$this->set('user', $user);
+		$this->set('_serialize', ['user']);
 	}
 
 //	public function view($id = null){

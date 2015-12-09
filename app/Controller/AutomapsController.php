@@ -37,10 +37,17 @@ class AutomapsController extends AppController{
 			]
 		];
 		
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($options, $this->Paginator->settings);
 		
-		$all_automaps = $this->Paginator->paginate();
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_automaps = $this->Automap->find('all', $query);
+		}else{
+			$this->Paginator->settings = $query;
+			$all_automaps = $this->Paginator->paginate();
+		}
 		$this->set(compact(['all_automaps']));
+		$this->set('_serialize', ['all_automaps']);
 		
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
@@ -234,6 +241,7 @@ class AutomapsController extends AppController{
 		$username = $this->Auth->user('full_name');
 		
 		$this->set(compact(['fontSizes', 'automap', 'hosts', 'services', 'username']));
+		$this->set('_serialize', ['automap', 'hosts', 'services']);
 	}
 	
 	public function loadServiceDetails($serviceId = null){

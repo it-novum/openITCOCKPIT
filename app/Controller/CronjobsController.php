@@ -29,6 +29,7 @@ class CronjobsController extends AppController{
 	public function index(){
 		$cronjobs = $this->Cronjob->find('all');
 		$this->set(compact('cronjobs'));
+		$this->set('_serialize', ['cronjobs']);
 	}
 	
 	public function add(){

@@ -228,6 +228,7 @@ $config = [
 				'edit' => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
 			],
 			'Users' => [
+				'index' => ['view'],
 				'add' => ['addFromLdap'],
 				'edit' => ['resetPassword']
 			],
@@ -252,6 +253,9 @@ $config = [
 				'index' => ['view'],
 			],
 			'Devicegroups' => [
+				'index' => ['view'],
+			],
+			'Usergroups' => [
 				'index' => ['view'],
 			],
 		]

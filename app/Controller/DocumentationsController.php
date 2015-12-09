@@ -625,6 +625,12 @@ class DocumentationsController extends AppController{
 						'file' => 'login',
 						'icon' => 'fa fa-sign-in',
 					],
+					'automaps' => [
+						'name' => __('Automaps'),
+						'description' => 'How to query automap objects the REST API',
+						'file' => 'automaps',
+						'icon' => 'fa fa-magic',
+					],
 					'macros' => [
 						'name' => __('User defined macros'),
 						'description' => 'How to query user defined macros using the REST API',
@@ -757,11 +763,29 @@ class DocumentationsController extends AppController{
 						'file' => 'proxy',
 						'icon' => 'fa fa-bolt',
 					],
+					'users' => [
+						'name' => __('Users'),
+						'description' => 'How to query user objects the REST API',
+						'file' => 'users',
+						'icon' => 'fa fa-user',
+					],
+					'usergroups' => [
+						'name' => __('Usergroups'),
+						'description' => 'How to query user group objects the REST API',
+						'file' => 'usergroups',
+						'icon' => 'fa fa-users',
+					],
 					'systemsettings' => [
 						'name' => __('Systemsettings'),
 						'description' => 'How to query system settings the REST API',
 						'file' => 'systemsettings',
 						'icon' => 'fa fa-wrench',
+					],
+					'cronjobs' => [
+						'name' => __('Cronjobs'),
+						'description' => 'How to query cronjob settings the REST API',
+						'file' => 'cronjobs',
+						'icon' => 'fa fa-clock-o',
 					],
 				],
 			],

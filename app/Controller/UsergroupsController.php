@@ -36,14 +36,37 @@ class UsergroupsController extends AppController {
 
 	public function index(){
 		$options = [
+			'recursive' => -1,
 			'order' => [
 				'Usergroup.name' => 'asc'
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
-		$usergroups = $this->Paginator->paginate();
+		$query = Hash::merge($options, $this->Paginator->settings);
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_usergroups = $this->Usergroup->find('all', $query);
+			$this->set('all_usergroups', $all_usergroups);
+			$this->set('_serialize', ['all_usergroups']);
+		}else{
+			$this->Paginator->settings = $query;
+			$usergroups = $this->Paginator->paginate();
+		}
 		$this->set(compact(['usergroups']));
+	}
+
+	public function view($id = null){
+		if(!$this->isApiRequest()){
+			throw new MethodNotAllowedException();
+
+		}
+		if(!$this->Usergroup->exists($id)){
+			throw new NotFoundException(__('Invalid usergroup'));
+		}
+		$usergroup = $this->Usergroup->findById($id);
+		
+		$this->set('usergroup', $usergroup);
+		$this->set('_serialize', ['usergroup']);
 	}
 
 	public function edit($id = null){
