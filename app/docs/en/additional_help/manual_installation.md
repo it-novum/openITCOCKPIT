@@ -206,10 +206,10 @@ chmod +x /opt/openitc/nagios/libexec/process_perfdata.pl
 
 Now we need to copy the npcd configuration files from the official openITCOCKPIT installation
 
-Replace **UBUNTU_SYSTEM** the ip address of your installation
+Replace **UBUNTU_SYSTEM** with the ip address of your installation
 ````
 scp -r root@UBUNTU_SYSTEM:/etc/openitcockpit/pnp /etc/openitcockpit/
-scp -r root@UBUNTU_SYSTEM:/etc/init.d/npcd /etc/init.d/npcd
+scp root@UBUNTU_SYSTEM:/etc/init.d/npcd /etc/init.d/npcd
 ````
 **Notice:** May be you need to modify the files in /etc/openitcockpit/pnp/ for your distribution!
 
@@ -236,6 +236,8 @@ cp -r app/Config/* /etc/openitcockpit/app/Config/
 ln -s /etc/openitcockpit/app/Config /usr/share/openitcockpit/app/Config
 mv /etc/openitcockpit/app/Config/database.php_example /etc/openitcockpit/app/Config/database.php
 chown www-data:nagios /etc/openitcockpit/app/Config/database.php
+ln -s /usr/share/openitcockpit/app/UPDATE.sh /usr/sbin/openitcockpit-update
+
 scp root@UBUNTU_SYSTEM:/usr/bin/oitc /usr/bin/oitc
 ````
 
