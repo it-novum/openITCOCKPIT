@@ -17,7 +17,7 @@ If some packages are not available you need to download and compile them yoursel
 
 #### Install basic requirements:
 ````
-apt-get install screen libgd-dev build-essential mysql-server libmysqlclient-dev \
+apt-get install screen libgd-dev build-essential mysql-server \
 php5-ldap php5-dev php5-cli mysql-server rrdtool nginx php5-fpm libssl-dev \
 ssl-cert php5-rrd php5-gd php5-curl php5-xmlrpc libssh2-php \
 php5-mcrypt php5-gearman gearman-job-server gearman-tools php5-mysql
@@ -86,9 +86,9 @@ chown nagios:nagios /opt/openitc/nagios/var -R
 
 Now we need to copy the naemon configuration files from the official openITCOCKPIT installation
 
-Replace **UBUNTU_SYSTEM** the ip address of your installation
+Replace **UBUNTU_SYSTEM** with the ip address of your installation
 ````
-scp root@UBUNTU_SYSTEM:/etc/openitcockpit/nagios.cfg /etc/openitcockpit
+scp root@UBUNTU_SYSTEM:/etc/openitcockpit/nagios.cfg /etc/openitcockpit/
 ln -n /etc/openitcockpit/nagios.cfg /etc/openitcockpit/naemon.cfg
 ln -n /etc/openitcockpit/nagios.cfg /opt/openitc/nagios/etc/nagios.cfg
 
@@ -133,7 +133,7 @@ make install
 
 ## Install NDOUtils:
 ````
-apt-get install librrds-perl librrdp-perl librrd-simple-perl
+apt-get install libmysqlclient-dev
 wget https://github.com/NagiosEnterprises/ndoutils/archive/ndoutils-2-0-0.tar.gz
 tar xfv ndoutils-2-0-0.tar.gz
 cd ndoutils-ndoutils-2-0-0/
@@ -150,7 +150,7 @@ chown nagios:nagios /etc/openitcockpit/ndomod.cfg
 ln -s /etc/openitcockpit/ndo2db.cfg /opt/openitc/nagios/etc/ndo2db.cfg
 ````
 
-Configure your mysql username and password and set all max_*_age to zero in **/etc/openitcockpit/ndo2db.cfg**
+Configure your mysql username and password and set all max_\*_age to zero in **/etc/openitcockpit/ndo2db.cfg**
 ````
 db_name=openitcockpit
 db_user=openitcockpit
@@ -178,6 +178,7 @@ broker_module=/opt/openitc/nagios/bin/ndomod.o config_file=/etc/openitcockpit/nd
 
 ## Install NPCD:
 ````
+apt-get install librrds-perl librrdp-perl librrd-simple-perl
 wget -O pnp4nagios-latest.tar.gz https://sourceforge.net/projects/pnp4nagios/files/latest
 tar xfv pnp4nagios-latest.tar.gz
 cd pnp4nagios-0.6.25/
