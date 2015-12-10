@@ -605,6 +605,12 @@ class DocumentationsController extends AppController{
 						'description' => 'A few tips to optimize your MySQL performance.',
 						'file' => 'mysql_performance',
 						'icon' => 'fa fa-database',
+					],
+					'manual_installation' => [
+						'name' => __('Manual installation'),
+						'description' => 'Describes how to install openITCOCKPIT on a different distribution',
+						'file' => 'manual_installation',
+						'icon' => 'fa fa-download',
 					]
 				],
 			],
@@ -786,6 +792,12 @@ class DocumentationsController extends AppController{
 						'description' => 'How to query cronjob settings the REST API',
 						'file' => 'cronjobs',
 						'icon' => 'fa fa-clock-o',
+					],
+					'satellites' => [
+						'name' => __('Satellites'),
+						'description' => 'How to query satellite objects the REST API',
+						'file' => 'satellites',
+						'icon' => 'fa fa-globe',
 					],
 				],
 			],
