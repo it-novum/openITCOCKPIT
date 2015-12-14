@@ -2202,6 +2202,9 @@ class HostsController extends AppController{
 					'alias' => 'Hoststatus',
 					'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
 				],
+			],
+			'order' => [
+				'Host.name ASC'
 			]
 		]);
 
