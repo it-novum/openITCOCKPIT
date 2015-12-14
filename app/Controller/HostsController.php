@@ -2173,12 +2173,37 @@ class HostsController extends AppController{
 	}
 
 	public function listToPdf(){
+		$args = func_get_args();
+
+		$conditions = [
+			'Host.disabled' => 0,
+			'Host.container_id' => $this->MY_RIGHTS,
+		];
+
+		if(is_array($args) && !empty($args)){
+			if(end($args) == '.pdf' && (sizeof($args) > 1)){
+				$host_ids = $args;
+				end($host_ids);
+				$last_key = key($host_ids);
+				unset($host_ids[$last_key]);
+
+				$_conditions = [
+					'Host.id' => $host_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}else{
+				$host_ids = $args;
+
+				$_conditions = [
+					'Host.id' => $host_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}
+		}
+
 		$hoststatus = $this->Objects->find('all', [
 			'recursive' => -1,
-			'conditions' => [
-				'Host.disabled' => 0,
-				'Host.container_id' => $this->MY_RIGHTS,
-			],
+			'conditions' => $conditions,
 			'fields' => [
 				'Host.name',
 				'Hoststatus.current_state',
@@ -2207,7 +2232,7 @@ class HostsController extends AppController{
 				'Host.name ASC'
 			]
 		]);
-
+//debug($hoststatus);
 		$hostCount = count($hoststatus);
 
 		$this->set(compact('hoststatus', 'hostCount'));

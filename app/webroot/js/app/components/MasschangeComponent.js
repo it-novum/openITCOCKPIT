@@ -142,6 +142,7 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 		this.createCopyAllHref();
 		this.createDisableAllHref();
 		this.createAppendGroupAllHref();
+		this.createListAsPDFAllHref();
 	},
 	
 	createDeleteAllHref: function(){
@@ -228,6 +229,15 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 			$('#editDetailAll').attr('href', '/'+this.controller+'/edit_details/'+this.selectedIds.join('/')+this.extendUrl);
 		}else{
 			$('#editDetailAll').attr('href', 'javascript:void(0);');
+		}
+	},
+
+	createListAsPDFAllHref: function(){
+		if(this.selectedIds.length > 0){
+			console.log(this.extendUrl);
+			$('#listAsPDF').attr('href', '/'+this.controller+'/listToPdf/'+this.selectedIds.join('/')+this.extendUrl+'/.pdf');
+		}else{
+			$('#listAsPDF').attr('href', 'listToPdf/.pdf');
 		}
 	},
 	
