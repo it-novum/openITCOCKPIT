@@ -77,7 +77,7 @@ class CmdController extends AppController{
 
 	
 	/*
-	 * /nagios_module/cmd/ack/api_key:<API_KEY>/cmdType:<CMD_TYP>/hostUuid:<HOST_UUID>/serviceUuid:<SERVICE_UUID>/sticky:1/notify:1/persistent:1/comment:<TicketNumber>/author:TicketSystem
+	 * https://xx.xx.xx.xx/nagios_module/cmd/ack/api_key:<API_KEY>/cmdType:<CMD_TYP>/hostUuid:<HOST_UUID>/serviceUuid:<SERVICE_UUID>/sticky:1/notify:1/persistent:1/comment:<TicketNumber>/author:TicketSystem
 	 */
 	
 	public function ack(){
