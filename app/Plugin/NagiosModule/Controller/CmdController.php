@@ -71,7 +71,82 @@ class CmdController extends AppController{
 		
 		//Command is now ready to submit to sudo_server
 		$this->GearmanClient->sendBackground('cmd_external_command', ['command' => $externalCommand, 'parameters' => $parameters]);
+		echo '200 OK';
+	}
+	
+
+	
+	/*
+	 * /nagios_module/cmd/ack/api_key:<API_KEY>/cmdType:<CMD_TYP>/hostUuid:<HOST_UUID>/serviceUuid:<SERVICE_UUID>/sticky:1/notify:1/persistent:1/comment:<TicketNumber>/author:TicketSystem
+	 */
+	
+	public function ack(){
+		$this->autoRender = false;
+		$commands = $this->__externalCommands();
 		
+		if(!isset($this->request->params['named']['api_key'])){
+			throw new NotFoundException(__('API key is missing!'));
+		}
+		
+		//Check for required parameters
+		$paramsToCheck = ['cmdType', 'hostUuid', 'comment', 'author'];
+		foreach($paramsToCheck as $param){
+			if(!isset($this->request->params['named'][$param])){
+				throw new NotFoundException($param.' missing missing!');
+			}
+		}
+		
+		//Set default values if missing
+		$paramsToCheck = ['sticky', 'notify', 'persistent'];
+		foreach($paramsToCheck as $param){
+			if(!isset($this->request->params['named'][$param])){
+				$this->request->params['named'][$param] = 1;
+			}
+			if($this->request->params['named'][$param] != 0 || $this->request->params['named'][$param] != 1){
+				$this->request->params['named'][$param] = 1;
+			}
+		}
+		
+		$systemsettings = $this->Systemsetting->findAsArray();
+		
+		if($this->request->params['named']['api_key'] != $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']){
+			throw new ForbiddenException(__('API key mismatch!'));
+		}
+		
+		switch($this->request->params['named']['cmdType']){
+			case 33:
+			//Ack for hosts
+			$this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_HOST_PROBLEM', 'parameters' => [
+				'hostUuid' => $this->request->params['named']['hostUuid'],
+				'sticky' => $this->request->params['named']['sticky'],
+				'notify' => $this->request->params['named']['notify'],
+				'persistent' => $this->request->params['named']['persistent'],
+				'author' => $this->request->params['named']['author'],
+				'comment' => $this->request->params['named']['comment']
+			]]);
+			break;
+			
+			case 34:
+			//Ack for services
+			if(!isset($this->request->params['named']['serviceUuid'])){
+				throw new NotFoundException(__('serviceUuid missing missing!'));
+			}
+			$this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_SERVICE_PROBLEM', 'parameters' => [
+				'hostUuid' => $this->request->params['named']['hostUuid'],
+				'serviceUuid' => $this->request->params['named']['serviceUuid'],
+				'sticky' => $this->request->params['named']['sticky'],
+				'notify' => $this->request->params['named']['notify'],
+				'persistent' => $this->request->params['named']['persistent'],
+				'author' => $this->request->params['named']['author'],
+				'comment' => $this->request->params['named']['comment']
+			]]);
+			break;
+			
+			default:
+				throw new NotFoundException(__('cmdType not suported yet!'));
+			break;
+		}
+		echo '200 OK';
 	}
 	
 	protected function __externalCommands(){

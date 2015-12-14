@@ -400,7 +400,7 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 	<table>
 		<tr>
 			<td>
-				<h5>&nbsp;<?php echo __('Service');?> <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['serviceUuid'] ?>/action:browser/model:Service' style="text-decoration:none" class="<?php echo $parameters['servicestate']; ?>"><?php echo $parameters['servicedesc']; ?></a></span> on Host <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host' style="text-decoration:none" class="<?php echo $parameters['hoststate']; ?>"><?php echo $parameters['hostname']; ?></a></span></h5>
+				<h5>&nbsp;<?php echo __('Service');?> <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['serviceUuid'] ?>/action:browser/model:Service' style="text-decoration:none" class="<?php echo $parameters['servicestate']; ?>"><?php echo $parameters['servicedesc']; ?></a></span> on Host <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host' style="text-decoration:none" class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span></h5>
 				<hr noshade width="560" size="3" align="left"><br>
 				<table width="100%">
 					<tr>
@@ -409,24 +409,24 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 					</tr>	
 					<tr>
 						<td><strong><?php echo __('Hostname'); ?>:</strong></td>
-						<td><?php echo $parameters['hostname']; ?></td>
+						<td><?php echo h($parameters['hostname']); ?></td>
 					</tr>
 					<tr>
 						<td><strong><?php echo __('Hostaddress');?>:</strong></td>
-						<td><?php echo $parameters['hostaddress']; ?></td>
+						<td><?php echo h($parameters['hostaddress']); ?></td>
 					</tr>
 					<tr>
 						<td><strong><?php echo __('Servicename');?>:</strong></td>
-						<td><?php echo $parameters['servicedesc']; ?></td>
+						<td><?php echo h($parameters['servicedesc']); ?></td>
 					</tr>
 					<tr>
 						<td><strong><?php echo __('State');?>:</strong></td>
-						<td class=<?php echo $parameters['servicestate']; ?>><?php echo $parameters['servicestate']; ?></td>
+						<td class=<?php echo h($parameters['servicestate']); ?>><?php echo h($parameters['servicestate']); ?></td>
 					</tr>
 				</table>
 				<br />
 				<strong><?php echo __('Output');?>:</strong>
-				<p class="lead"> <?php echo $parameters['serviceoutput']; ?> </p>
+				<p class="lead"> <?php echo h($parameters['serviceoutput']); ?> </p>
 				<br />	
 				<table class="social" width="100%">
 				<?php foreach($contentIDs as $contentID):?>
@@ -471,3 +471,15 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 	<td></td>
 </tr>
 </table>
+
+<!--
+--- BEGIN TICKET SYSTEM INFORMATION ---
+TICKET_HOSTNAME: <?php echo h($parameters['hostname']); echo PHP_EOL;?>
+TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; echo PHP_EOL;?>
+TICKET_SERVICEDESC: <?php echo $parameters['servicedesc']; echo PHP_EOL;?>
+TICKET_SERVICEUUID: <?php echo $parameters['serviceUuid']; echo PHP_EOL;?>
+TICKET_STATE: <?php echo h($parameters['servicestate']); echo PHP_EOL;?>
+TICKET_NOTIFICATIONTYPE: SERVICE
+TICKET_COMMAND_NUMBER: 34
+--- END TICKET SYSTEM INFORMATION ---
+-->
