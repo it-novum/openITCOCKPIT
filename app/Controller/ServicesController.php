@@ -2137,13 +2137,57 @@ class ServicesController extends AppController{
 		return '';
 	}
 
-	public function listToPdf(){
-		
-		$servicestatus = $this->Objects->find('all', [
+	public function getSelectedServices($ids){
+		$servicestatus = $this->Service->find('all', [
+			'recursive' => -1,
+			'fields' => [
+				'Service.id',
+				'Service.name',
+				'Service.host_id',
+				'Servicetemplate.name',
+				'Servicestatus.current_state',
+				'Servicestatus.is_flapping',
+				'Servicestatus.next_check',
+				'Servicestatus.last_check',
+				'Servicestatus.last_state_change',
+				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.scheduled_downtime_depth',
+				'Servicestatus.output',
+			],
+			'conditions' => [
+				'Service.id' => $ids
+			],
+			'joins' => [
+				[
+					'table' => 'servicetemplates',
+					'type' => 'INNER',
+					'alias' => 'Servicetemplate',
+					'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+				],
+				[
+					'table' => 'nagios_objects',
+					'type' => 'INNER',
+					'alias' => 'Objects',
+					'conditions' => 'Objects.name2 = Service.uuid'
+				],
+				[
+					'table' => 'nagios_servicestatus',
+					'type' => 'INNER',
+					'alias' => 'Servicestatus',
+					'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
+				]
+			]
+		]);
+
+		$hostIds = Hash::extract($servicestatus, '{n}.Service.host_id');
+		$hostIds = array_unique($hostIds);
+
+		$hosts = $this->Objects->find('all', [
 			'recursive' => -1,
 			'conditions' => [
 				'Host.disabled' => 0,
 				'Host.container_id' => $this->MY_RIGHTS,
+				'Host.id' => $hostIds
 			],
 			'fields' => [
 				'Host.id',
@@ -2170,48 +2214,120 @@ class ServicesController extends AppController{
 				'Host.name'
 			]
 		]);
+		$hosts = Hash::combine($hosts, '{n}.Host.id', '{n}');
+		$servicestatus = Hash::combine($servicestatus, '{n}.Service.id', '{n}', '{n}.Service.host_id');
+
+		$result = [];
 		$serviceCount = 0;
-		foreach($servicestatus as $key => $hostdata){
-			$servicestatus[$key]['ServiceData'] = $this->Service->find('all', [
+		foreach ($hosts as $currentHostId => $host) {
+			$hosts[$currentHostId]['ServiceData'] = $servicestatus[$currentHostId];
+			$result[$currentHostId] = $hosts[$currentHostId];
+			$serviceCount+=sizeof($servicestatus[$currentHostId]);
+		}
+		$ret = [
+			'list' => $result,
+			'count' => $serviceCount,
+		];
+		return $ret;
+	}
+
+	public function listToPdf(){
+		$args = func_get_args();
+
+		$conditions = [
+			'Host.disabled' => 0,
+			'Host.container_id' => $this->MY_RIGHTS,
+		];
+
+		if(is_array($args) && !empty($args)){
+			if(end($args) == '.pdf' && (sizeof($args) > 1)){
+				$service_ids = $args;
+				end($service_ids);
+				$last_key = key($service_ids);
+				unset($service_ids[$last_key]);
+				$servicestatus = $this->getSelectedServices($service_ids)['list'];
+				$serviceCount = $this->getSelectedServices($service_ids)['count'];
+			}else{
+				$service_ids = $args;
+				$servicestatus = $this->getSelectedServices($service_ids)['list'];
+				$serviceCount = $this->getSelectedServices($service_ids)['count'];
+			}
+		}else{
+			$servicestatus = $this->Objects->find('all', [
 				'recursive' => -1,
-				'fields' => [
-					'Service.name',
-					'Servicetemplate.name',
-					'Servicestatus.current_state',
-					'Servicestatus.is_flapping',
-					'Servicestatus.next_check',
-					'Servicestatus.last_check',
-					'Servicestatus.last_state_change',
-					'Servicestatus.problem_has_been_acknowledged',
-					'Servicestatus.scheduled_downtime_depth',
-					'Servicestatus.output',
-				],
 				'conditions' => [
-					'Service.host_id' => $hostdata['Host']['id']
+					'Host.disabled' => 0,
+					'Host.container_id' => $this->MY_RIGHTS,
+				],
+				'fields' => [
+					'Host.id',
+					'Host.name',
+					'Host.address',
+					'Hoststatus.current_state',
+					'Hoststatus.is_flapping',
 				],
 				'joins' => [
 					[
-						'table' => 'servicetemplates',
+						'table' => 'hosts',
 						'type' => 'INNER',
-						'alias' => 'Servicetemplate',
-						'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+						'alias' => 'Host',
+						'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1'
 					],
 					[
-						'table' => 'nagios_objects',
+						'table' => 'nagios_hoststatus',
 						'type' => 'INNER',
-						'alias' => 'Objects',
-						'conditions' => 'Objects.name2 = Service.uuid'
+						'alias' => 'Hoststatus',
+						'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
 					],
-					[
-						'table' => 'nagios_servicestatus',
-						'type' => 'INNER',
-						'alias' => 'Servicestatus',
-						'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
-					]
+				],
+				'order' => [
+					'Host.name'
 				]
 			]);
-			$serviceCount+=sizeof($servicestatus[$key]['ServiceData']);
+			$serviceCount = 0;
+			foreach($servicestatus as $key => $hostdata){
+				$servicestatus[$key]['ServiceData'] = $this->Service->find('all', [
+					'recursive' => -1,
+					'fields' => [
+						'Service.name',
+						'Servicetemplate.name',
+						'Servicestatus.current_state',
+						'Servicestatus.is_flapping',
+						'Servicestatus.next_check',
+						'Servicestatus.last_check',
+						'Servicestatus.last_state_change',
+						'Servicestatus.problem_has_been_acknowledged',
+						'Servicestatus.scheduled_downtime_depth',
+						'Servicestatus.output',
+					],
+					'conditions' => [
+						'Service.host_id' => $hostdata['Host']['id']
+					],
+					'joins' => [
+						[
+							'table' => 'servicetemplates',
+							'type' => 'INNER',
+							'alias' => 'Servicetemplate',
+							'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+						],
+						[
+							'table' => 'nagios_objects',
+							'type' => 'INNER',
+							'alias' => 'Objects',
+							'conditions' => 'Objects.name2 = Service.uuid'
+						],
+						[
+							'table' => 'nagios_servicestatus',
+							'type' => 'INNER',
+							'alias' => 'Servicestatus',
+							'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
+						]
+					]
+				]);
+				$serviceCount+=sizeof($servicestatus[$key]['ServiceData']);
+			}
 		}
+
 		$this->set(compact('servicestatus', 'serviceCount'));	
 		unset($servicestatus);
 		$filename = 'Services_' . strtotime('now') . '.pdf';
@@ -2228,7 +2344,7 @@ class ServicesController extends AppController{
 				'top' => 15
 			],
 			'encoding' => 'UTF-8',
-			'download' => false,
+			'download' => true,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
