@@ -612,11 +612,52 @@ class HostgroupsController extends AppController{
 		$this->redirect(['action' => 'index']);
 	}
 
+	public function getSelectedHostgroups($ids){
+
+	}
+
 	public function listToPdf(){
+		$args = func_get_args();
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$conditions = [
+			'Container.parent_id' => $containerIds
+		];
+
+		if(is_array($args) && !empty($args)){
+			if(end($args) == '.pdf' && (sizeof($args) > 1)){
+				$hostgroup_ids = $args;
+				end($hostgroup_ids);
+				$last_key = key($hostgroup_ids);
+				unset($hostgroup_ids[$last_key]);
+
+				$_conditions = [
+					'Hostgroup.id' => $hostgroup_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}else{
+				$hostgroup_ids = $args;
+
+				$_conditions = [
+					'Hostgroup.id' => $hostgroup_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}
+		}
+
 		$hostgroups = $this->Hostgroup->find('all', [
-			'conditions' => [
-				'Container.parent_id' => $containerIds
+			'conditions' => $conditions,
+			'fields' => [
+				'Hostgroup.description',
+				'Container.name',
+			],
+			'contain' => [
+				'Host' => [
+					'fields' => [
+						'Host.name',
+						'Host.uuid'
+					]
+				],
+				'Container',
 			]
 		]);
 
@@ -631,7 +672,13 @@ class HostgroupsController extends AppController{
 						'objecttype_id' => 1
 					],
 					'fields' => [
-						'Hoststatus.*'
+						'Hoststatus.current_state',
+						'Hoststatus.is_flapping',
+						'Hoststatus.problem_has_been_acknowledged',
+						'Hoststatus.scheduled_downtime_depth',
+						'Hoststatus.last_state_change',
+						'Hoststatus.last_check',
+						'Hoststatus.next_check',
 					],
 					'joins' => [
 						[
