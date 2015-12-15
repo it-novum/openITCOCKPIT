@@ -499,17 +499,94 @@ class ServicegroupsController extends AppController{
 	}
 
 	public function listToPdf(){
+		$args = func_get_args();
+		$conditions = [
+			'Container.parent_id' => $this->MY_RIGHTS
+		];
+
+		if(is_array($args) && !empty($args)){
+			if(end($args) == '.pdf' && (sizeof($args) > 1)){
+				$servicegroup_ids = $args;
+				end($servicegroup_ids);
+				$last_key = key($servicegroup_ids);
+				unset($servicegroup_ids[$last_key]);
+
+				$_conditions = [
+					'Servicegroup.id' => $servicegroup_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}else{
+				$servicegroup_ids = $args;
+
+				$_conditions = [
+					'Servicegroup.id' => $servicegroup_ids,
+				];
+				$conditions = Hash::merge($conditions, $_conditions);
+			}
+		}
+
+
+
 		$servicegroups = $this->Servicegroup->find('all', [
 			'order' => [
 				'Container.name' => 'ASC',
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
+			],
+			'fields' => [
+				'Servicegroup.description',
+				'Container.name'
+			],
+			'contain' => [
+				'Service' => [
+					'fields' => [
+						'Service.id',
+						'Service.uuid',
+						'Service.name',
+						'Service.host_id'
+					]
+				],
+				'Container'
 			]
 		]);
+
 		$servicegroupstatus = [];
-		$servicegroupServicestatus = [];
-		//iterate through each servicegroup
+		$servicegroupHosts = [];
+		foreach ($servicegroups as $servicegroup) {
+			$servicesByHostId = Hash::combine($servicegroup, 'Service.{n}.id', 'Service.{n}', 'Service.{n}.host_id');
+			$hostIds = array_keys($servicesByHostId);
+			//debug($hostIds);
+			//debug($servicesByHostId);
+			$hosts = $this->Host->find('all',[
+				'recursive' => -1,
+				'conditions' => [
+					'Host.id' => $hostIds,
+				],
+				'fields' => [
+					'Host.name',
+					'Host.id'
+				],
+			]);
+			$hosts = Hash::combine($hosts, '{n}.Host.id', '{n}');
+			foreach ($hosts as $hostId => $host) {
+				$host['Service'] = $servicesByHostId[$hostId];
+				debug($host);
+				$servicegroupHosts[] = $host;
+			}
+			debug($servicegroup);
+			$data = [
+				'Servicegroup' => $servicegroup['Servicegroup'],
+				'Container' => $servicegroup['Container']
+			];
+
+			$servicegroupstatus = $data;
+			$servicegroup['elements'] = $servicegroupHosts;
+			$servicegroupstatus[] = $servicegroup;
+			//debug($servicegroupHosts);
+		}
+		debug($servicegroupstatus);
+		/*//iterate through each servicegroup
 		foreach ($servicegroups as $key => $servicegroup) {
 			//write Servicegroupt & container into the new array
 			$servicegroupstatus[$key]['Servicegroup'] = $servicegroup['Servicegroup'];
@@ -616,12 +693,13 @@ class ServicegroupsController extends AppController{
 					}
 				}
 			}
-		}
+		}*/
 		//counter
 		$servicegroupCount = count($servicegroups);
 		$hostCount = Hash::apply($servicegroupstatus, '{n}.Host.{n}', 'count');
 		$serviceCount = Hash::apply($servicegroups, '{n}.Service.{n}', 'count');
-
+debug($servicegroupstatus);
+die();
 		$this->set(compact('servicegroupstatus', 'servicegroupCount', 'hostCount', 'serviceCount'));
 
 		$filename = 'Servicegroups_'.strtotime('now').'.pdf';
@@ -638,7 +716,7 @@ class ServicegroupsController extends AppController{
 				'top'=>15
 			],
 			'encoding'=>'UTF-8',
-			'download' =>true,
+			'download' =>false,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
