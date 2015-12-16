@@ -525,181 +525,138 @@ class ServicegroupsController extends AppController{
 			}
 		}
 
-
-
 		$servicegroups = $this->Servicegroup->find('all', [
+			'recursive' => -1,
 			'order' => [
 				'Container.name' => 'ASC',
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'fields' => [
-				'Servicegroup.description',
-				'Container.name'
-			],
-			'contain' => [
-				'Service' => [
-					'fields' => [
-						'Service.id',
-						'Service.uuid',
-						'Service.name',
-						'Service.host_id'
+			'joins'	=> [
+				[
+					'table' => 'containers',
+					'alias' => 'Container',
+					'type' => 'LEFT',
+					'conditions' => [
+						'Servicegroup.container_id = Container.id'
 					]
 				],
-				'Container'
+				[
+					'table' => 'services_to_servicegroups',
+					'alias' => 'servicesToServicegroups',
+					'type' => 'LEFT',
+					'conditions' => [
+						'servicesToServicegroups.servicegroup_id = Servicegroup.id'
+					]
+				],
+				[
+					'table' => 'services',
+					'alias' => 'Service',
+					'type' => 'LEFT',
+					'conditions' => [
+						'Service.id = servicesToServicegroups.service_id'
+					]
+				],
+				[
+					'table' => 'servicetemplates',
+					'alias' => 'Servicetemplate',
+					'type' => 'INNER',
+					'conditions' => [
+						'Servicetemplate.id = Service.servicetemplate_id'
+					]
+				],
+				[
+					'table' => 'hosts',
+					'alias' => 'Host',
+					'type' => 'INNER',
+					'conditions' => [
+						'Host.id = Service.host_id'
+					]
+				],
+			],
+			'fields' => [
+				'Container.name',
+				'Servicegroup.description',
+				'Servicegroup.id',
+				'Service.id',
+				'Service.uuid',
+				'Service.name',
+				'Service.host_id',
+				'Servicetemplate.name',
+				'Host.id',
+				'Host.name',
 			]
 		]);
+		//debug($servicegroups);
+		$serviceUuids = Hash::extract($servicegroups, '{n}.Service.uuid');
+		$servicestatus = $this->Objects->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'name2' => $serviceUuids,
+				'objecttype_id' => 2,
+			],
+			'fields' => [
+				'Servicestatus.current_state',
+				'Servicestatus.is_flapping',
+				'Servicestatus.last_state_change',
+				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.scheduled_downtime_depth',
+				'Servicestatus.last_check',
+				'Servicestatus.next_check',
+				'Servicestatus.output',
+				'Service.id'
+			],
+			'joins' => [
+				[
+					'table' => 'services',
+					'alias' => 'Service',
+					'type' => 'LEFT',
+					'conditions' => [
+						'Service.uuid = Objects.name2'
+					]
+				],
+				[
+					'table' => 'nagios_servicestatus',
+					'type' => 'LEFT',
+					'alias' => 'Servicestatus',
+					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
+				]
+			],
+		]);
+		$servicestatus = Hash::combine($servicestatus, '{n}.Service.id', '{n}.Servicestatus');
+		$servicegroupsAndContainers = Set::combine($servicegroups, '{n}.Servicegroup.id', '{n}.{^(Servicegroup|Container)$}');
+		$servicesByServicegroupId = Set::combine($servicegroups, '{n}.Service.id', '{n}.{^(Service|Servicetemplate|Host)$}', '{n}.Servicegroup.id');
+		$hosts = Hash::combine($servicegroups, '{n}.Service.id', '{n}.Host');
 
 		$servicegroupstatus = [];
-		$servicegroupHosts = [];
-		foreach ($servicegroups as $servicegroup) {
-			$servicesByHostId = Hash::combine($servicegroup, 'Service.{n}.id', 'Service.{n}', 'Service.{n}.host_id');
-			$hostIds = array_keys($servicesByHostId);
-			//debug($hostIds);
-			//debug($servicesByHostId);
-			$hosts = $this->Host->find('all',[
-				'recursive' => -1,
-				'conditions' => [
-					'Host.id' => $hostIds,
-				],
-				'fields' => [
-					'Host.name',
-					'Host.id'
-				],
-			]);
-			$hosts = Hash::combine($hosts, '{n}.Host.id', '{n}');
-			foreach ($hosts as $hostId => $host) {
-				$host['Service'] = $servicesByHostId[$hostId];
-				debug($host);
-				$servicegroupHosts[] = $host;
-			}
-			debug($servicegroup);
-			$data = [
-				'Servicegroup' => $servicegroup['Servicegroup'],
-				'Container' => $servicegroup['Container']
-			];
+		foreach ($servicegroupsAndContainers as $servicegroupId => $servicegroup) {
 
-			$servicegroupstatus = $data;
-			$servicegroup['elements'] = $servicegroupHosts;
-			$servicegroupstatus[] = $servicegroup;
-			//debug($servicegroupHosts);
-		}
-		debug($servicegroupstatus);
-		/*//iterate through each servicegroup
-		foreach ($servicegroups as $key => $servicegroup) {
-			//write Servicegroupt & container into the new array
-			$servicegroupstatus[$key]['Servicegroup'] = $servicegroup['Servicegroup'];
-			$servicegroupstatus[$key]['Container'] = $servicegroup['Container'];
-			//initalize a new Host array
-			$hosts = [];
-			//iterate through each service from the servicegroup
-			foreach ($servicegroup['Service'] as $k => $service) {
-				//get the Host UUIDs
-				$hostUuid = $this->Objects->find('all', [
-					'recursive' => -1,
-					'conditions' => [
-						'name2' => $service['uuid'],
-						'objecttype_id' => 2,
-					],
-					'fields' => [
-						'Objects.name1'
-					]
-				]);
-				//get the Host data for each host of the servicegroup
-				$currentHostData = $this->Host->find('first', [
-					'recursive' => -1,
-					'conditions' => [
-						'uuid' => $hostUuid[0]['Objects']['name1'],
-					],
-					'fields' => [
-						'Host.uuid',
-						'Host.name',
-						'Host.address'
-					],
-					'order' => [
-						'Host.name' => 'ASC'
-					]
-				]);
-				//write the data into the Hosts array
-				$hosts[] = $currentHostData;
-			}
-			//get the duplicate hosts out of the array
-			$servicegroupstatus[$key]['Host'] = array_unique($hosts, SORT_REGULAR);
-
-			//get the UUIDs of every service from the servicegroup
-			$serviceUuids = Hash::extract($servicegroup,'Service.{n}.uuid');
-			//iterate through each Host
-			foreach($servicegroupstatus[$key]['Host'] as $hKey => $host){
-				//get every Service from the current Host
-				$hostServiceUuids = $this->Objects->find('all', [
-					'recursive' => -1,
-					'conditions' => [
-						'name1' => $host['Host']['uuid'],
-						'objecttype_id' => 2
-					],
-					'fields' => [
-						'Objects.name2'
-					]
-				]);
-
-				//extract the UUIDs from every service of the Host
-				$hostServiceUuids = Hash::extract($hostServiceUuids, '{n}.Objects.name2');
-				//iterate through the services from the Servicegroup
-				foreach($serviceUuids as $serviceUuid){
-					//if the serviceUUID from the servicegroup is in the array of the Host Services
-					if(in_array($serviceUuid, $hostServiceUuids)){
-						//get the Data of the Service
-						$servicegroupServiceData = $this->Objects->find('all', [
-							'recursive' => -1,
-							'conditions' => [
-								'name2' => $serviceUuid,
-								'objecttype_id' => 2,
-							],
-							'fields' => [
-								'Service.name',
-								'Servicetemplate.name',
-								'Servicestatus.*'
-							],
-							'joins' => [
-								[
-									'table' => 'services',
-									'alias' => 'Service',
-									'conditions' => [
-										'Objects.name2 = Service.uuid',
-									]
-								],
-								[
-									'table' => 'servicetemplates',
-									'type' => 'INNER',
-									'alias' => 'Servicetemplate',
-									'conditions' => [
-										'Servicetemplate.id = Service.servicetemplate_id',
-									]
-								],
-								[
-									'table' => 'nagios_servicestatus',
-									'type' => 'LEFT OUTER',
-									'alias' => 'Servicestatus',
-									'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-								]
-							],
-							'order' => [
-								'IF(Service.name IS NULL OR Service.name = "", Servicetemplate.name, Service.name)' => 'ASC'
-							]
-						]);
-						//append the data to the Servicegroupstatus array
-						$servicegroupstatus[$key]['Host'][$hKey]['Host']['Service'][] = $servicegroupServiceData;
-					}
+			$currentHosts = [];
+			foreach ($servicesByServicegroupId[$servicegroupId] as $serviceId => $service) {
+				//$service['Status'] = $servicestatus[$serviceId];
+				$host = $hosts[$serviceId];
+				$hostId = $host['id'];
+				if(!array_key_exists($hostId, $currentHosts)){
+					$currentHosts[$hostId] = $host;
 				}
+				$data = [
+					'Service' => $service['Service'],
+					'Servicetemplate' => $service['Servicetemplate'],
+					'Servicename' => (!isset($service['Service']['name'])?$service['Servicetemplate']['name']:$service['Service']['name']),
+					'Status' => $servicestatus[$serviceId]
+				];
+				$currentHosts[$hostId]['Services'][] = $data;
 			}
-		}*/
+			$servicegroup['elements'] = $currentHosts;
+			$servicegroupstatus[] = $servicegroup;
+		}
+
 		//counter
-		$servicegroupCount = count($servicegroups);
-		$hostCount = Hash::apply($servicegroupstatus, '{n}.Host.{n}', 'count');
-		$serviceCount = Hash::apply($servicegroups, '{n}.Service.{n}', 'count');
-debug($servicegroupstatus);
-die();
+		$servicegroupCount = count($servicegroupstatus);
+		$hostCount = Hash::apply($servicegroupstatus, '{n}.elements.{n}', 'count');
+		$serviceCount = Hash::apply($servicegroupstatus, '{n}.elements.{n}.Services.{n}', 'count');
+
 		$this->set(compact('servicegroupstatus', 'servicegroupCount', 'hostCount', 'serviceCount'));
 
 		$filename = 'Servicegroups_'.strtotime('now').'.pdf';
