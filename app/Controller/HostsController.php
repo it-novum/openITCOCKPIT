@@ -478,7 +478,7 @@ class HostsController extends AppController{
 		}
 	}
 
-	function edit($id = null){
+	public function edit($id = null){
 		$this->set('MY_RIGHTS', $this->MY_RIGHTS);
 		$userId = $this->Auth->user('id');
 
