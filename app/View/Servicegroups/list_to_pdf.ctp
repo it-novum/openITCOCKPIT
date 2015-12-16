@@ -96,57 +96,52 @@ foreach($css as $cssFile): ?>
 								<span style="font-size:small;font-weight:bold;"><?php echo $servicegroup['Container']['name']; ?></span>
 							</td>
 						</tr>
-						<?php foreach ($servicegroup['Host'] as $host): ?>
+						<?php foreach ($servicegroup['elements'] as $host):?>
 							<!-- Host -->
 							<tr>
 								<td class="bg-color-lightGray" colspan="8">
-									<span class="padding-left-10" style="font-size:x-small;"><?php echo $host['Host']['name']; ?></span>
+									<span class="padding-left-10" style="font-size:x-small;"><?php echo $host['name']; ?></span>
 								</td>
 							</tr>
-							<?php if(!empty($host['Host']['Service'])): ?>
-								<?php foreach ($host['Host']['Service'] as $key => $servicestatus): ?>
+							<?php if(!empty($host['Services'])): ?>
+								<?php foreach ($host['Services'] as $key => $servicestatus): ?>
 									<!-- Status -->
 									<tr> 
 										<td class="text-center">
 											<?php
-												if($servicestatus[0]['Servicestatus']['is_flapping'] == 1):
-													echo $this->Monitoring->serviceFlappingIconColored($servicestatus[0]['Servicestatus']['is_flapping'], '', $servicestatus[0]['Servicestatus']['current_state']);
+												if($servicestatus['Status']['is_flapping'] == 1):
+													echo $this->Monitoring->serviceFlappingIconColored($servicestatus['Status']['is_flapping'], '', $servicestatus['Status']['current_state']);
 												else:
-													echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($servicestatus[0]['Servicestatus']['current_state']).'"></i>';
+													echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($servicestatus['Status']['current_state']).'"></i>';
 												endif;
 											?>
 										</td>
 										<!-- ACK -->
 										<td style="font-size:x-small;" class="text-center">
-											<?php if($servicestatus[0]['Servicestatus']['problem_has_been_acknowledged'] > 0):?>
+											<?php if($servicestatus['Status']['problem_has_been_acknowledged'] > 0):?>
 												<i class="fa fa-user fa-lg"></i>
 											<?php endif;?>
 										</td>
 										<!-- downtime -->
 										<td style="font-size:x-small;" class="text-center">
-											<?php if($servicestatus[0]['Servicestatus']['scheduled_downtime_depth'] > 0): ?>
+											<?php if($servicestatus['Status']['scheduled_downtime_depth'] > 0): ?>
 												<i class="fa fa-power-off fa-lg"></i>
 											<?php endif; ?>
 										</td>
 										<!-- name -->
 										<td style="font-size:x-small;">
-										<?php if(!empty($servicestatus[0]['Service']['name'])){
-													echo $servicestatus[0]['Service']['name'];
-												}else{
-													echo $servicestatus[0]['Servicetemplate']['name'];
-												} 
-											?>
+										<?php echo $servicestatus['Servicename']; ?>
 										</td>
 										<!-- Status Since -->
-										<td style="font-size:x-small;" data-original-title="<?php echo h($this->Time->format($servicestatus[0]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
-											<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($servicestatus[0]['Servicestatus']['last_state_change']))); ?>
+										<td style="font-size:x-small;" data-original-title="<?php echo h($this->Time->format($servicestatus['Status']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
+											<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($servicestatus['Status']['last_state_change']))); ?>
 										</td>
 										<!-- Last check -->
-										<td style="font-size:x-small;"><?php echo $this->Time->format($servicestatus[0]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+										<td style="font-size:x-small;"><?php echo $this->Time->format($servicestatus['Status']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
 										<!-- Next check -->
-										<td style="font-size:x-small;"><?php echo $this->Time->format($servicestatus[0]['Servicestatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+										<td style="font-size:x-small;"><?php echo $this->Time->format($servicestatus['Status']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
 										<!-- Service output -->
-										<td style="font-size:x-small;"><?php echo $servicestatus[0]['Servicestatus']['output']; ?></td>
+										<td style="font-size:x-small;"><?php echo $servicestatus['Status']['output']; ?></td>
 									</tr>
 								<?php endforeach; ?>
 							<?php else: ?>

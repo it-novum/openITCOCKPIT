@@ -91,82 +91,75 @@ foreach($css as $cssFile): ?>
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach($servicegroupstatus as $k => $servicegroup): ?>
-						<!-- Servicegroup -->
-						<tr>
-							<td class="bg-color-lightGray" colspan="8">
-								<i class="fa fa-sitemap txt-color-blueDark padding-left-10"></i>
-								<span style="font-weight:bold;"><?php echo $servicegroup['Container']['name']; ?></span>
-							</td>
-						</tr>
-						<?php foreach ($servicegroup['Host'] as $host): ?>
-							<!-- Host -->
+					<?php if(!empty($servicegroupstatus)):?>
+						<?php foreach($servicegroupstatus as $k => $servicegroup): ?>
+							<!-- Servicegroup -->
 							<tr>
 								<td class="bg-color-lightGray" colspan="8">
-									<i class="fa fa-desktop txt-color-blueDark padding-left-20"></i>
-									<span ><?php echo $host['Host']['name']; ?></span>
+									<i class="fa fa-sitemap txt-color-blueDark padding-left-10"></i>
+									<span style="font-weight:bold;"><?php echo $servicegroup['Container']['name']; ?></span>
 								</td>
 							</tr>
-							<?php if(!empty($host['Host']['Service'])): ?>
-								<?php foreach ($host['Host']['Service'] as $key => $servicestatus): ?>
-									<!-- Status -->
-									<tr> 
-										<td class="text-center font-lg">
-											<?php
-												if($servicestatus[0]['Servicestatus']['is_flapping'] == 1):
-													echo $this->Monitoring->serviceFlappingIconColored($servicestatus[0]['Servicestatus']['is_flapping'], '', $servicestatus[0]['Servicestatus']['current_state']);
-												else:
-													echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($servicestatus[0]['Servicestatus']['current_state']).'"></i>';
-												endif;
-											?>
-										</td>
-										<!-- ACK -->
-										<td class="text-center">
-											<?php if($servicestatus[0]['Servicestatus']['problem_has_been_acknowledged'] > 0):?>
-												<i class="fa fa-user fa-lg"></i>
-											<?php endif;?>
-										</td>
-										<!-- downtime -->
-										<td class="text-center">
-											<?php if($servicestatus[0]['Servicestatus']['scheduled_downtime_depth'] > 0): ?>
-												<i class="fa fa-power-off fa-lg"></i>
-											<?php endif; ?>
-										</td>
-										<!-- name -->
-										<td class="font-xs">
-										<?php if(!empty($servicestatus[0]['Service']['name'])){
-													echo $servicestatus[0]['Service']['name'];
-												}else{
-													echo $servicestatus[0]['Servicetemplate']['name'];
-												} 
-											?>
-										</td>
-										<!-- Status Since -->
-										<td class="font-xs" data-original-title="<?php echo h($this->Time->format($servicestatus[0]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
-											<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($servicestatus[0]['Servicestatus']['last_state_change']))); ?>
-										</td>
-										<!-- Last check -->
-										<td class="font-xs"><?php echo $this->Time->format($servicestatus[0]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
-										<!-- Next check -->
-										<td class="font-xs"><?php echo $this->Time->format($servicestatus[0]['Servicestatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
-										<!-- Service output -->
-										<td class="font-xs"><?php echo $servicestatus[0]['Servicestatus']['output']; ?></td>
-									</tr>
-								<?php endforeach; ?>
-							<?php else: ?>
+							<?php foreach ($servicegroup['elements'] as $host): ?>
+								<!-- Host -->
 								<tr>
-									<td class="text-center font-xs" colspan="8"><?php echo __('This host has no Services'); ?></td>
+									<td class="bg-color-lightGray" colspan="8">
+										<i class="fa fa-desktop txt-color-blueDark padding-left-20"></i>
+										<span ><?php echo $host['name']; ?></span>
+									</td>
 								</tr>
-							<?php endif;?>
+								<?php if(!empty($host['Services'])): ?>
+									<?php foreach ($host['Services'] as $key => $servicestatus): ?>
+										<!-- Status -->
+										<tr> 
+											<td class="text-center font-lg">
+												<?php
+													if($servicestatus['Status']['is_flapping'] == 1):
+														echo $this->Monitoring->serviceFlappingIconColored($servicestatus['Status']['is_flapping'], '', $servicestatus['Status']['current_state']);
+													else:
+														echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($servicestatus['Status']['current_state']).'"></i>';
+													endif;
+												?>
+											</td>
+											<!-- ACK -->
+											<td class="text-center">
+												<?php if($servicestatus['Status']['problem_has_been_acknowledged'] > 0):?>
+													<i class="fa fa-user fa-lg"></i>
+												<?php endif;?>
+											</td>
+											<!-- downtime -->
+											<td class="text-center">
+												<?php if($servicestatus['Status']['scheduled_downtime_depth'] > 0): ?>
+													<i class="fa fa-power-off fa-lg"></i>
+												<?php endif; ?>
+											</td>
+											<!-- name -->
+											<td class="font-xs">
+											<?php echo $servicestatus['Servicename']; ?>
+											</td>
+											<!-- Status Since -->
+											<td class="font-xs" data-original-title="<?php echo h($this->Time->format($servicestatus['Status']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>" data-placement="bottom" rel="tooltip" data-container="body">
+												<?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($servicestatus['Status']['last_state_change']))); ?>
+											</td>
+											<!-- Last check -->
+											<td class="font-xs"><?php echo $this->Time->format($servicestatus['Status']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+											<!-- Next check -->
+											<td class="font-xs"><?php echo $this->Time->format($servicestatus['Status']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+											<!-- Service output -->
+											<td class="font-xs"><?php echo $servicestatus['Status']['output']; ?></td>
+										</tr>
+									<?php endforeach; ?>
+								<?php else: ?>
+									<tr>
+										<td class="text-center font-xs" colspan="8"><?php echo __('This host has no Services'); ?></td>
+									</tr>
+								<?php endif;?>
+							<?php endforeach; ?>
 						<?php endforeach; ?>
-					<?php endforeach; ?>
-					
-					<?php if(empty($servicegroupstatus)):?>
-						<div class="noMatch">
-							<center>
-								<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
-							</center>
-						</div>
+						<?php else: ?>
+							<tr>
+								<td class="text-center font-xs" colspan="8"><?php echo __('search.noVal'); ?></td>
+							</tr>
 					<?php endif;?>
 				</tbody>
 			</table>

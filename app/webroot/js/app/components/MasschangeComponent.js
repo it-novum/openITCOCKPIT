@@ -234,10 +234,9 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 
 	createListAsPDFAllHref: function(){
 		if(this.selectedIds.length > 0){
-			console.log(this.extendUrl);
 			$('#listAsPDF').attr('href', '/'+this.controller+'/listToPdf/'+this.selectedIds.join('/')+this.extendUrl+'/.pdf');
 		}else{
-			$('#listAsPDF').attr('href', 'listToPdf/.pdf');
+			$('#listAsPDF').attr('href', '/'+this.controller+'/listToPdf/.pdf');
 		}
 	},
 	

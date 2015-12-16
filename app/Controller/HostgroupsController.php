@@ -612,10 +612,6 @@ class HostgroupsController extends AppController{
 		$this->redirect(['action' => 'index']);
 	}
 
-	public function getSelectedHostgroups($ids){
-
-	}
-
 	public function listToPdf(){
 		$args = func_get_args();
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
