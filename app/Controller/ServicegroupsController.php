@@ -530,9 +530,7 @@ class ServicegroupsController extends AppController{
 			'order' => [
 				'Container.name' => 'ASC',
 			],
-			'conditions' => [
-				'Container.parent_id' => $this->MY_RIGHTS
-			],
+			'conditions' => $conditions,
 			'joins'	=> [
 				[
 					'table' => 'containers',
@@ -588,7 +586,7 @@ class ServicegroupsController extends AppController{
 				'Host.name',
 			]
 		]);
-		//debug($servicegroups);
+
 		$serviceUuids = Hash::extract($servicegroups, '{n}.Service.uuid');
 		$servicestatus = $this->Objects->find('all',[
 			'recursive' => -1,
@@ -673,7 +671,7 @@ class ServicegroupsController extends AppController{
 				'top'=>15
 			],
 			'encoding'=>'UTF-8',
-			'download' =>false,
+			'download' =>true,
 			'binary' => $binary_path,
 			'orientation' => 'portrait',
 			'filename' => $filename,
