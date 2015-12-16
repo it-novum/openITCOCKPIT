@@ -23,21 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-foreach($parameters as $parameter):
-	if(!is_array($parameter))
-		echo $parameter."\n";
-endforeach;
-?>
-
-
-
---- BEGIN TICKET SYSTEM INFORMATION ---
-TICKET_HOSTNAME: <?php echo h($parameters['hostname']); ?>
-TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; ?>
-TICKET_SERVICEDESC: <?php echo $parameters['servicedesc']; ?>
-TICKET_SERVICEUUID: <?php echo $parameters['serviceUuid']; ?>
-TICKET_STATE: <?php echo h($parameters['servicestate']); ?>
-TICKET_NOTIFICATIONTYPE: SERVICE
-TICKET_COMMAND_NUMBER: 34
---- END TICKET SYSTEM INFORMATION ---
-
+$config = [
+	'acl_dependencies' => [
+		'AppController' => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403'],
+		'always_allowed' => [
+		],
+		'dependencies' => [
+			'Cmd' => [
+				'submit' => ['ack']
+			],
+		]
+	]
+];

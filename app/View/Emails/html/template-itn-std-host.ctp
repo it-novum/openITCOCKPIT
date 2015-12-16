@@ -405,29 +405,29 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 	<table>
 		<tr>
 			<td>
-				<h5>&nbsp;<?php echo __('Host');?> <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host' style="text-decoration:none" class="<?php echo $parameters['hoststate']; ?>"><?php echo $parameters['hostname']; ?></a></span></h5>
+				<h5>&nbsp;<?php echo __('Host');?> <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host' style="text-decoration:none" class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span></h5>
 				<hr noshade width="560" size="3" align="left"><br>
 				<table width="100%">
-				        <tr>
-				                <td><strong><?php echo __('Time'); ?>:</strong></td>
-				                <td><?php echo date('H:i:s T'); ?></td>
-				        </tr>	
+					<tr>
+						<td><strong><?php echo __('Time'); ?>:</strong></td>
+						<td><?php echo date('H:i:s T'); ?></td>
+					</tr>
 					<tr>
 						<td><strong><?php echo __('Hostname'); ?>:</strong></td>
-						<td><?php echo $parameters['hostname']; ?></td>
+						<td><?php echo h($parameters['hostname']); ?></td>
 					</tr>
 					<tr>
 						<td><strong><?php echo __('Hostaddress'); ?>:</strong></td>
-						<td><?php echo $parameters['hostaddress']; ?></td>
+						<td><?php echo h($parameters['hostaddress']); ?></td>
 					</tr>
 					<tr>
 						<td><strong><?php echo __('State');?>:</strong></td>
-						<td class=<?php echo $parameters['hoststate']; ?>><?php echo $parameters['hoststate']; ?></td>
+						<td class=<?php echo h($parameters['hoststate']); ?>><?php echo h($parameters['hoststate']); ?></td>
 						</tr
 				</table>
 				<br />
 				<strong><?php echo __('Output');?>:</strong>
-				<p class="lead"> <?php echo $parameters['hostoutput']; ?> </p>
+				<p class="lead"> <?php echo h($parameters['hostoutput']); ?> </p>
 			</td>
 		</tr>
 	</table>
@@ -464,3 +464,16 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 	<td></td>
 </tr>
 </table>
+
+<!--
+--- BEGIN TICKET SYSTEM INFORMATION ---
+TICKET_HOSTNAME: <?php echo h($parameters['hostname']); echo PHP_EOL;?>
+TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; echo PHP_EOL;?>
+TICKET_SERVICEDESC:
+TICKET_SERVICEUUID:
+TICKET_STATE: <?php echo h($parameters['hoststate']); echo PHP_EOL;?>
+TICKET_NOTIFICATIONTYPE: HOST
+TICKET_COMMAND_NUMBER: 33
+--- END TICKET SYSTEM INFORMATION ---
+-->
+
