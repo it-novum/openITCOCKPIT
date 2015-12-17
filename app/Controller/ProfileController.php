@@ -41,10 +41,12 @@ class ProfileController extends AppController {
 	
 	public function edit(){
 		$user = $this->User->find('first', [
-			'User.id' => $this->Auth->user('id'),
+			'conditions' => [
+				'User.id' => $this->Auth->user('id'),
+			],
 			'contain' => false
 		]);
-		
+
 		$dateformats = [
 			1  => '%B %e, %Y %H:%M:%S',
 			2  => '%m-%d-%Y  %H:%M:%S',
@@ -66,8 +68,6 @@ class ProfileController extends AppController {
 					$selectedUserTime = $key;
 			}
 		}
-		
-	
 
 		if($this->request->is('post') || $this->request->is('put')){
 			/***** Change user data *****/
