@@ -188,7 +188,7 @@ $plugin_version = '1.5';
 				<h4 class="modal-title" id="myModalLabel"><i class="fa fa-list-alt"></i> <?php echo __('Package installation log');?></h4>
 			</div>
 			<div class="modal-body">
-				<textarea class="form-control" disabled="disabled" style="width: 100%; height: 250px;" ></textarea>
+				<textarea class="form-control" disabled="disabled" style="width: 100%; height: 250px; resize:none;" ></textarea>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default btn-reload" data-dismiss="modal">
