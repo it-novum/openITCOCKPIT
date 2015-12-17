@@ -807,6 +807,7 @@ class Service extends AppModel{
 					'flap_detection_on_unknown',
 					'flap_detection_on_critical',
 					'freshness_checks_enabled',
+					'freshness_threshold',
 					'eventhandler_command_id',
 					'priority',
 					'service_url',

@@ -144,13 +144,57 @@ class MapsController extends MapModuleAppController {
 			throw new MethodNotAllowedException();
 		}
 
-		if($this->Map->delete($id)){
+		if($this->Map->delete($id, true)){
 			$this->setFlash(__('Map deleted'));
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(['action' => 'index']);
 		}
 
 		$this->setFlash(__('Could not delete map'), false);
-		$this->redirect(array('action' => 'index'));
+		$this->redirect(['action' => 'index']);
+	}
+
+	public function mass_delete(){
+		$userId = $this->Auth->user('id');
+		foreach (func_get_args() as $mapId) {
+			if(!$this->Map->exists($mapId)){
+				throw new NotFoundException(__('Invalid Map'));
+			}
+			$map = $this->Map->find('first',[
+				'recursive' => -1,
+				'conditions' => [
+					'Map.id' => $mapId,
+				],
+				'fields' => [
+					'Map.name',
+				],
+				'contain' => [
+					'Container' => [
+						'fields' => [
+							'Container.id',
+							'Container.parent_id'
+						]
+					]
+				],
+			]);
+			if($this->Map->delete($map['Map']['id'], true)){
+			/*	$changelog_data = $this->Changelog->parseDataForChangelog(
+					$this->params['action'],
+					$this->params['controller'],
+					$ids,
+					OBJECT_SERVICEGROUP,
+					$servicegroup['Container']['parent_id'],
+					$userId,
+					$map['Map']['name'],
+					$map
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
+				*/
+			}
+		}
+		$this->setFlash(__('Maps deleted'));
+		$this->redirect(['action' => 'index']);
 	}
 
 	public function loadUsersForTenant($tenantId = []){

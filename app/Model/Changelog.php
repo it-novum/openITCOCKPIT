@@ -119,6 +119,9 @@ class Changelog extends AppModel{
 				'Contact' => '{n}.{(id|name)}',
 				'Contactgroup' => '{n}.{(id|name)}',
 			],
+			'map' => [
+				'Map' => '{(name|description)}',
+			]
 		];
 		return $_objectDefaults;
 	}

@@ -97,7 +97,11 @@
 							<tbody>
 								<?php foreach($all_maps as $map): ?>
 									<tr>
-										<td class="text-center"><input class="multiselect" type="checkbox" name="map[<?php echo $map['Map']['id']; ?>]" /></td>
+										<td class="text-center">
+											<?php if($this->Acl->hasPermission('edit')):?>
+												<input class="massChange" type="checkbox" name="map[<?php echo $map['Map']['id']; ?>]" mapname="<?php echo h($map['Map']['name']); ?>" value="<?php echo $map['Map']['id']; ?>"/>
+											<?php endif;?>
+										</td>
 										<td><?php echo $map['Map']['name']; ?></td>
 										<td><?php echo $map['Map']['title']?></td>
 										<td>
@@ -129,6 +133,9 @@
 								<?php endforeach; ?>
 							</tbody>
 						</table>
+	
+						<?php echo $this->element('map_mass_changes'); ?>
+
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
