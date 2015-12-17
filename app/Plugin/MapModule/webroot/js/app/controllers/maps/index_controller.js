@@ -28,7 +28,6 @@ App.Controllers.MapsIndexController = Frontend.AppController.extend({
 		this.Masschange.setup({
 			'controller': 'map_module/maps',
 			'checkboxattr': 'mapname',
-			'useDeleteMessage': 'true'
 		});
 	}
 });
