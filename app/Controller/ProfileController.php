@@ -95,6 +95,9 @@ class ProfileController extends AppController {
 			
 			/***** Change users profile image *****/
 			if(isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])){
+				if(!file_exists(WWW_ROOT.'userimages')){
+					mkdir(WWW_ROOT.'userimages');
+				}
 				$this->Upload->setPath(WWW_ROOT.'userimages'.DS);
 				if(isset($this->request->data['Picture']['Image']) && isset($this->request->data['Picture']['Image']['tmp_name']) && isset($this->request->data['Picture']['Image']['name'])){
 					$filename = $this->Upload->uploadUserimage($this->request->data['Picture']['Image']);
