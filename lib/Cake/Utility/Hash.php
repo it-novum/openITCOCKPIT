@@ -150,16 +150,16 @@ class Hash {
  * @return boolean
  */
 	protected static function _matchToken($key, $token) {
-		if ($token === '{n}') {
-			return is_numeric($key);
-		}
-		if ($token === '{s}') {
-			return is_string($key);
-		}
-		if (is_numeric($token)) {
-			return ($key == $token);
-		}
-		return ($key === $token);
+		switch ($token) {
+			case '{n}':
+				return is_numeric($key);
+			case '{s}':
+				return is_string($key);
+			case '{*}':
+				return true;
+			default:
+				return is_numeric($token) ? ($key == $token) : $key === $token;
+ 		}
 	}
 
 /**
