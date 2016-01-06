@@ -2455,8 +2455,8 @@ CREATE TABLE IF NOT EXISTS `nagios_statehistory` (
   `max_check_attempts` smallint(6) NOT NULL DEFAULT '0',
   `last_state` smallint(6) NOT NULL DEFAULT '-1',
   `last_hard_state` smallint(6) NOT NULL DEFAULT '-1',
-  `output` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `long_output` text COLLATE utf8_swedish_ci NOT NULL,
+  `output` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `long_output` text COLLATE utf8_swedish_ci,
   PRIMARY KEY (`statehistory_id`,`state_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical host and service state changes';
 
