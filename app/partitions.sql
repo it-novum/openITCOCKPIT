@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `nagios_hostchecks` (
   `return_code` smallint(6) NOT NULL DEFAULT '0',
   `output` varchar(255) CHARACTER SET utf8 DEFAULT '',
   `long_output` text CHARACTER SET utf8,
-  `perfdata` varchar(255) COLLATE utf8_swedish_ci NOT DEFAULT '',
+  `perfdata` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
   PRIMARY KEY (`hostcheck_id`, `start_time`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical host checks'
