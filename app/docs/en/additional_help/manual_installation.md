@@ -86,7 +86,7 @@ chown nagios:nagios /opt/openitc/nagios/var -R
 
 Now we need to copy the naemon configuration files from the official openITCOCKPIT installation
 
-Replace **UBUNTU_SYSTEM** with the ip address of your installation
+Replace **UBUNTU_SYSTEM** with the ip address of your installation (or add it to /etc/hosts and be lazy :))
 ````
 scp root@UBUNTU_SYSTEM:/etc/openitcockpit/nagios.cfg /etc/openitcockpit/
 ln -n /etc/openitcockpit/nagios.cfg /etc/openitcockpit/naemon.cfg
