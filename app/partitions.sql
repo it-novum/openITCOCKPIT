@@ -14,16 +14,16 @@ CREATE TABLE IF NOT EXISTS `nagios_servicechecks` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   `command_object_id` int(11) NOT NULL DEFAULT '0',
-  `command_args` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `command_line` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `command_args` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `command_line` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
   `timeout` smallint(6) NOT NULL DEFAULT '0',
   `early_timeout` smallint(6) NOT NULL DEFAULT '0',
   `execution_time` double NOT NULL DEFAULT '0',
   `latency` double NOT NULL DEFAULT '0',
   `return_code` smallint(6) NOT NULL DEFAULT '0',
-  `output` varchar(1000) COLLATE utf8_swedish_ci NOT NULL,
-  `long_output` text COLLATE utf8_swedish_ci NOT NULL,
-  `perfdata` varchar(1000) COLLATE utf8_swedish_ci NOT NULL,
+  `output` varchar(1000) COLLATE utf8_swedish_ci,
+  `long_output` text COLLATE utf8_swedish_ci,
+  `perfdata` varchar(1000) COLLATE utf8_swedish_ci,
   PRIMARY KEY (`servicecheck_id`, `start_time`),
   KEY `start_time` (`start_time`),
   KEY `instance_id` (`instance_id`),
@@ -53,18 +53,17 @@ CREATE TABLE IF NOT EXISTS `nagios_hostchecks` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   `command_object_id` int(11) NOT NULL DEFAULT '0',
-  `command_args` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `command_line` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `command_args` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `command_line` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
   `timeout` smallint(6) NOT NULL DEFAULT '0',
   `early_timeout` smallint(6) NOT NULL DEFAULT '0',
   `execution_time` double NOT NULL DEFAULT '0',
   `latency` double NOT NULL DEFAULT '0',
   `return_code` smallint(6) NOT NULL DEFAULT '0',
-  `output` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
-  `long_output` text CHARACTER SET utf8 NOT NULL,
-  `perfdata` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `output` varchar(255) CHARACTER SET utf8 DEFAULT '',
+  `long_output` text CHARACTER SET utf8,
+  `perfdata` varchar(255) COLLATE utf8_swedish_ci NOT DEFAULT '',
   PRIMARY KEY (`hostcheck_id`, `start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`host_object_id`,`start_time`,`start_time_usec`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical host checks'
 PARTITION BY RANGE ( TO_DAYS(start_time) ) (
@@ -88,8 +87,8 @@ CREATE TABLE IF NOT EXISTS `nagios_statehistory` (
   `max_check_attempts` smallint(6) NOT NULL DEFAULT '0',
   `last_state` smallint(6) NOT NULL DEFAULT '-1',
   `last_hard_state` smallint(6) NOT NULL DEFAULT '-1',
-  `output` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `long_output` text COLLATE utf8_swedish_ci NOT NULL,
+  `output` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `long_output` text COLLATE utf8_swedish_ci,
   PRIMARY KEY (`statehistory_id`, `state_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical host and service state changes'
 PARTITION BY RANGE ( TO_DAYS(state_time) ) (
@@ -133,12 +132,11 @@ CREATE TABLE IF NOT EXISTS `nagios_notifications` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   `state` smallint(6) NOT NULL DEFAULT '0',
-  `output` varchar(255) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
-  `long_output` text COLLATE utf8_swedish_ci NOT NULL,
+  `output` varchar(255) COLLATE utf8_swedish_ci DEFAULT '',
+  `long_output` text COLLATE utf8_swedish_ci,
   `escalated` smallint(6) NOT NULL DEFAULT '0',
   `contacts_notified` smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (`notification_id`, `start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`object_id`,`start_time`,`start_time_usec`),
   KEY `top10` (`object_id`,`start_time`,`contacts_notified`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of host and service notifications'
@@ -160,7 +158,6 @@ CREATE TABLE IF NOT EXISTS `nagios_contactnotifications` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`contactnotification_id`, `start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`contact_object_id`,`start_time`,`start_time_usec`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notifications'
 PARTITION BY RANGE ( TO_DAYS(start_time) ) (
@@ -180,9 +177,8 @@ CREATE TABLE IF NOT EXISTS `nagios_contactnotificationmethods` (
   `end_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   `command_object_id` int(11) NOT NULL DEFAULT '0',
-  `command_args` varchar(1000) COLLATE utf8_swedish_ci NOT NULL DEFAULT '',
+  `command_args` varchar(1000) COLLATE utf8_swedish_ci DEFAULT '',
   PRIMARY KEY (`contactnotificationmethod_id`, `start_time`),
-  UNIQUE KEY `instance_id` (`instance_id`,`contactnotification_id`,`start_time`,`start_time_usec`),
   KEY `start_time` (`start_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notification methods'
 PARTITION BY RANGE ( TO_DAYS(start_time) ) (
