@@ -759,6 +759,7 @@ class Service extends AppModel{
 			'fields' => [
 				'Service.id',
 				'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
+				'IF((Service.description IS NULL OR Service.description = ""), Servicetemplate.description, Service.description) AS ServiceDescr',
 				'Service.uuid',
 				'Service.service_type'
 			],
