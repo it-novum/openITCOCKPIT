@@ -1058,6 +1058,11 @@ a.autocomplete-items {
 	color: rgba(90, 90, 90, 1) !important;
 }
 
+.popoverTable>tbody>tr>td {
+	font-size: 11px;
+	padding: 1px !important;
+}
+
 #calendar .popover {
 	z-index: 10;
 }
