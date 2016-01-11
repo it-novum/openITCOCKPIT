@@ -1063,6 +1063,11 @@ a.autocomplete-items {
 	padding: 1px !important;
 }
 
+.popoverListTable>tbody>tr>td {
+	font-size: 11px;
+	padding: 1px !important;
+}
+
 #calendar .popover {
 	z-index: 10;
 }
