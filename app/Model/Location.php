@@ -62,20 +62,55 @@ class Location extends AppModel{
 				'Container.parent_id' => $location['Container']['id']
 			]
 		]);
+
+		$hostIds = [];
 		foreach($devicegroups as $devicegroup){
 			$hosts = $Host->find('all', [
 				'conditions' => [
 					'Host.container_id' => $devicegroup['Container']['id']
 				]
 			]);
-			foreach($hosts as $host){
-				$Host->__delete($host, $userId);
-			}
+			$hostIds[] = Hash::extract($hosts,'{n}.Host.id');
 		}
-		
-		if($Container->delete($location['Container']['id'])){
-			return true;
+
+		if($this->__allowDelete($hostIds)){
+			foreach ($hostIds as $currentHostIds) {
+				foreach($hosts as $host){
+					$Host->__delete($host, $userId);
+				}
+			}
+			if($Container->delete($location['Container']['id'])){
+				return true;
+			}
+			return false;
 		}
 		return false;
+	}
+
+	public function __allowDelete($hostIds){
+		//check if the hosts are used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$notInUse = true;
+			$result = [];
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			foreach ($hostIds as $currentHostIds) {
+				foreach ($currentHostIds as $hostId) {
+					$evcCount = $this->Eventcorrelation->find('count',[
+						'conditions' => [
+							'host_id' => $hostId
+						]
+					]);
+					$result[] = $evcCount;
+				}
+			}
+
+			foreach ($result as $value) {
+				if($value > 0){
+					$notInUse = false;
+				}
+			}
+			return $notInUse;
+		}
+		return true;
 	}
 }

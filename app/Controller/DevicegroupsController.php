@@ -185,6 +185,7 @@ class DevicegroupsController extends AppController{
 			$this->redirect(['action' => 'index']);
 		}else{
 			$this->setFlash(__('Could not delete data'), false);
+			$this->redirect(['action' => 'index']);
 		}
 	}
 

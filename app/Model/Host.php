@@ -903,66 +903,85 @@ class Host extends AppModel{
 				'GraphgenTmplConf.service_id' => $serviceIds
 			]
 		]);
-		if($this->delete()){
-			//Delete was successfully - delete Graphgenerator configurations
-			foreach($graphgenTmplConfs as $graphgenTmplConf){
-				$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
+		if($this->__allowDelete($host)){
+			if($this->delete()){
+				//Delete was successfully - delete Graphgenerator configurations
+				foreach($graphgenTmplConfs as $graphgenTmplConf){
+					$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
+				}
+
+				$changelog_data = $Changelog->parseDataForChangelog(
+					'delete',
+					'hosts',
+					$id,
+					OBJECT_HOST,
+					$host['Host']['container_id'],
+					$userId,
+					$host['Host']['name'],
+					$host
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
+
+
+				//Add host to deleted objects table
+				$DeletedHost = ClassRegistry::init('DeletedHost');
+				$DeletedService = ClassRegistry::init('DeletedService');
+				$DeletedHost->create();
+				$data = [
+					'DeletedHost' => [
+						'host_id' => $host['Host']['id'],
+						'uuid' => $host['Host']['uuid'],
+						'hosttemplate_id' => $host['Host']['hosttemplate_id'],
+						'name' => $host['Host']['name'],
+						'description' => $host['Host']['description'],
+						'deleted_perfdata' => 0,
+					]
+				];
+				if($DeletedHost->save($data)){
+					// The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
+					$DeletedService->deleteAll([
+						'DeletedService.host_id' => $id
+					]);
+				}
+
+
+				/*
+				 * Check if the host was part of an hostgroup, hostescalation or hostdependency
+				 * If yes, cake delete the records by it self, but may be we have an empty hostescalation or hostgroup now.
+				 * Nagios don't relay like this so we need to check this and delete the hostescalation/hostgroup or host dependency if empty
+				 */
+				$this->_cleanupHostEscalationDependency($host);
+
+				$Documentation = ClassRegistry::init('Documentation');
+				//Delete the Documentation of the Host
+				$documentation = $Documentation->findByUuid($host['Host']['uuid']);
+				if(isset($documentation['Documentation']['id'])){
+					$Documentation->delete($documentation['Documentation']['id']);
+					unset($documentation);
+				}
+				return true;
 			}
+		}
+		
+		return false;
+	}
 
-			$changelog_data = $Changelog->parseDataForChangelog(
-				'delete',
-				'hosts',
-				$id,
-				OBJECT_HOST,
-				$host['Host']['container_id'],
-				$userId,
-				$host['Host']['name'],
-				$host
-			);
-			if($changelog_data){
-				CakeLog::write('log', serialize($changelog_data));
-			}
-
-
-			//Add host to deleted objects table
-			$DeletedHost = ClassRegistry::init('DeletedHost');
-			$DeletedService = ClassRegistry::init('DeletedService');
-			$DeletedHost->create();
-			$data = [
-				'DeletedHost' => [
-					'host_id' => $host['Host']['id'],
-					'uuid' => $host['Host']['uuid'],
-					'hosttemplate_id' => $host['Host']['hosttemplate_id'],
-					'name' => $host['Host']['name'],
-					'description' => $host['Host']['description'],
-					'deleted_perfdata' => 0,
+	public function __allowDelete($host){
+		//check if the host is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$evcCount = $this->Eventcorrelation->find('count',[
+				'conditions' => [
+					'host_id' => $host['Host']['id']
 				]
-			];
-			if($DeletedHost->save($data)){
-				// The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
-				$DeletedService->deleteAll([
-					'DeletedService.host_id' => $id
-				]);
-			}
-
-
-			/*
-			 * Check if the host was part of an hostgroup, hostescalation or hostdependency
-			 * If yes, cake delete the records by it self, but may be we have an empty hostescalation or hostgroup now.
-			 * Nagios don't relay like this so we need to check this and delete the hostescalation/hostgroup or host dependency if empty
-			 */
-			$this->_cleanupHostEscalationDependency($host);
-
-			$Documentation = ClassRegistry::init('Documentation');
-			//Delete the Documentation of the Host
-			$documentation = $Documentation->findByUuid($host['Host']['uuid']);
-			if(isset($documentation['Documentation']['id'])){
-				$Documentation->delete($documentation['Documentation']['id']);
-				unset($documentation);
+			]);
+			if($evcCount > 0){
+				return false;
 			}
 			return true;
 		}
-		return false;
 	}
 
 	/**
