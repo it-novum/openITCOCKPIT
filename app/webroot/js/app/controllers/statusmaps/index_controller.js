@@ -231,6 +231,7 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 								complete: function(response){
 									//console.log(response.responseText);
 									$.smallBox({
+										//class: 'statusmapInfoBox',
 										title : 'Hoststatus',
 										content : response.responseText,
 										color : 'rgba(249, 249, 249, 1)',
@@ -240,6 +241,7 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 									$('.textoFoto').first('<span>').css({'color':titleAndIconColor});
 									$('.textoFoto').css('color', titleAndIconColor);
 									$('.foto').css({'color':titleAndIconColor});
+									$('.SmallBox').addClass('statusmapInfoBox');
 								}.bind(self)
 							});
 						}, 300);
