@@ -1556,7 +1556,7 @@ class HostsController extends AppController{
 			$this->redirect(array('action' => 'index'));
 		}
 
-		$this->setFlash(__('Could not delete host'));
+		$this->setFlash(__('Could not delete host'), false);
 		$this->redirect(array('action' => 'index'));
 
 	}

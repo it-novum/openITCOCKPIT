@@ -42,20 +42,46 @@ class Devicegroup extends AppModel{
 		
 		$Container = ClassRegistry::init('Container');
 		$Host = ClassRegistry::init('Host');
-		if($Container->delete($devicegroup['Container']['id'])){
-			//Delete all hosts that are inside of this container
-			$hosts = $Host->find('all', [
-				'conditions' => [
-					'Host.container_id' => $devicegroup['Container']['id']
-				]
-			]);
-				
-			foreach($hosts as $host){
-				$Host->__delete($host, $userId);
+		$hosts = $Host->find('all', [
+			'conditions' => [
+				'Host.container_id' => $devicegroup['Container']['id']
+			]
+		]);
+		if($this->__allowDelete($hosts)){
+			if($Container->delete($devicegroup['Container']['id'])){
+				//Delete all hosts that are inside of this container
+				foreach($hosts as $host){
+					$Host->__delete($host, $userId);
+				}
+				return true;
 			}
-			return true;
+			return false;
 		}
 		return false;
 	}
-	
+
+	public function __allowDelete($hosts){
+		//check if the host is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$notInUse = true;
+			$result = [];
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			foreach ($hosts as $host) {
+				$evcCount = $this->Eventcorrelation->find('count',[
+					'conditions' => [
+						'host_id' => $host['Host']['id']
+					]
+				]);
+				$result[] = $evcCount;
+			}
+
+			foreach ($result as $value) {
+				if($value > 0){
+					$notInUse = false;
+				}
+			}
+			return $notInUse;
+		}
+		return true;
+	}
 }

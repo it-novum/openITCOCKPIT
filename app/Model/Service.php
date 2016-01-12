@@ -935,65 +935,68 @@ class Service extends AppModel{
 		];
 		$Changelog = ClassRegistry::init('Changelog');
 
-		if($this->delete($id)){
-			//Delete was successfully - delete Graphgenerator configurations
-			$GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-			$graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-				'conditions' => [
-					'GraphgenTmplConf.service_id' => $id
-				]
-			]);
-			foreach($graphgenTmplConfs as $graphgenTmplConf){
-				$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
+		if($this->__allowDelete($id)){
+			if($this->delete($id)){
+				//Delete was successfully - delete Graphgenerator configurations
+				$GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+				$graphgenTmplConfs = $GraphgenTmplConf->find('all', [
+					'conditions' => [
+						'GraphgenTmplConf.service_id' => $id
+					]
+				]);
+				foreach($graphgenTmplConfs as $graphgenTmplConf){
+					$GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
+				}
+
+				$changelog_data = $Changelog->parseDataForChangelog(
+					'delete',
+					'services',
+					$id,
+					OBJECT_SERVICE,
+					$service['Host']['container_id'],
+					$userId,
+					$service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
+					$service
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
+
+				//Add service to deleted objects table
+				$_serviceName = $service['Service']['name'];
+				if($service['Service']['name'] == null || $service['Service']['name'] == ''){
+					$_serviceName = $service['Servicetemplate']['name'];
+				}
+				//Add host to deleted objects table
+				$DeletedService = ClassRegistry::init('DeletedService');
+				$DeletedService->create();
+				$data = [
+					'DeletedService' => [
+						'uuid' => $service['Service']['uuid'],
+						'host_uuid' => $service['Host']['uuid'],
+						'servicetemplate_id' => $service['Service']['servicetemplate_id'],
+						'host_id' => $service['Service']['host_id'],
+						'name' => $_serviceName,
+						'description' => $service['Service']['description'],
+						'deleted_perfdata' => 0,
+					]
+				];
+				$DeletedService->save($data);
+
+				/*
+				 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
+				 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+				 * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
+				 */
+				$this->_clenupServiceEscalationDependencyAndGroup($service);
+
+				//Delete nagios configuration
+				//$this->GearmanClient->sendBackground('deleteServiceConfiguration', $payload);
+
+				return true;
 			}
-
-			$changelog_data = $Changelog->parseDataForChangelog(
-				'delete',
-				'services',
-				$id,
-				OBJECT_SERVICE,
-				$service['Host']['container_id'],
-				$userId,
-				$service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
-				$service
-			);
-			if($changelog_data){
-				CakeLog::write('log', serialize($changelog_data));
-			}
-
-			//Add service to deleted objects table
-			$_serviceName = $service['Service']['name'];
-			if($service['Service']['name'] == null || $service['Service']['name'] == ''){
-				$_serviceName = $service['Servicetemplate']['name'];
-			}
-			//Add host to deleted objects table
-			$DeletedService = ClassRegistry::init('DeletedService');
-			$DeletedService->create();
-			$data = [
-				'DeletedService' => [
-					'uuid' => $service['Service']['uuid'],
-					'host_uuid' => $service['Host']['uuid'],
-					'servicetemplate_id' => $service['Service']['servicetemplate_id'],
-					'host_id' => $service['Service']['host_id'],
-					'name' => $_serviceName,
-					'description' => $service['Service']['description'],
-					'deleted_perfdata' => 0,
-				]
-			];
-			$DeletedService->save($data);
-
-			/*
-			 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
-			 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
-			 * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
-			 */
-			$this->_clenupServiceEscalationDependencyAndGroup($service);
-
-			//Delete nagios configuration
-			//$this->GearmanClient->sendBackground('deleteServiceConfiguration', $payload);
-
-			return true;
 		}
+		
 		return false;
 	}
 
@@ -1042,6 +1045,22 @@ class Service extends AppModel{
 					$Container->delete($servicegroup['Container']['id'], true);
 				}
 			}
+		}
+	}
+
+	public function __allowDelete($serviceId){
+		//check if the service is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$evcCount = $this->Eventcorrelation->find('count',[
+				'conditions' => [
+					'service_id' => $serviceId
+				]
+			]);
+			if($evcCount > 0){
+				return false;
+			}
+			return true;
 		}
 	}
 }
