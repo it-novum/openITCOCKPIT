@@ -669,33 +669,37 @@ class HosttemplatesController extends AppController{
 			return;
 		}
 
-		if($this->Hosttemplate->delete()){
-			$changelog_data = $this->Changelog->parseDataForChangelog(
-				$this->params['action'],
-				$this->params['controller'],
-				$id,
-				OBJECT_HOSTTEMPLATE,
-				$hosttemplate['Hosttemplate']['container_id'],
-				$userId,
-				$hosttemplate['Hosttemplate']['name'],
-				$hosttemplate
-			);
-			if($changelog_data){
-				CakeLog::write('log', serialize($changelog_data));
-			}
+		if($this->Hosttemplate->__allowDelete($id)){
+			if($this->Hosttemplate->delete()){
+				$changelog_data = $this->Changelog->parseDataForChangelog(
+					$this->params['action'],
+					$this->params['controller'],
+					$id,
+					OBJECT_HOSTTEMPLATE,
+					$hosttemplate['Hosttemplate']['container_id'],
+					$userId,
+					$hosttemplate['Hosttemplate']['name'],
+					$hosttemplate
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
 
-			//Hosttemplate deleted, now we need to delete all hosts + services that are using this template
-			$this->loadModel('Host');
-			$hosts = $this->Host->find('all', [
-				'conditions' => [
-					'Host.hosttemplate_id' => $id
-				]
-			]);
-			foreach($hosts as $host){
-				$this->Host->__delete($host, $this->Auth->user('id'));
-			}
+				//Hosttemplate deleted, now we need to delete all hosts + services that are using this template
+				$this->loadModel('Host');
+				$hosts = $this->Host->find('all', [
+					'conditions' => [
+						'Host.hosttemplate_id' => $id
+					]
+				]);
+				foreach($hosts as $host){
+					$this->Host->__delete($host, $this->Auth->user('id'));
+				}
 
-			$this->setFlash(__('Hosttemplate deleted'));
+				$this->setFlash(__('Hosttemplate deleted'));
+				$this->redirect(array('action' => 'index'));
+			}
+			$this->setFlash(__('Could not delete hosttemplate'), false);
 			$this->redirect(array('action' => 'index'));
 		}
 		$this->setFlash(__('Could not delete hosttemplate'), false);

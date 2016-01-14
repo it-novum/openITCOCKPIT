@@ -417,4 +417,40 @@ class Hosttemplate extends AppModel{
 			]
 		]);
 	}
+
+	public function __allowDelete($hosttemplateId){
+		$Host = ClassRegistry::init('Host');
+		$hosts = $Host->find('all', [
+			'recursive' => -1,
+			'conditions' => [
+				'Host.hosttemplate_id' => $hosttemplateId
+			],
+			'fields' => [
+				'Host.id'
+			]
+		]);
+
+		//check if the host is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$notInUse = true;
+			$result = [];
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			foreach ($hosts as $host) {
+				$evcCount = $this->Eventcorrelation->find('count',[
+					'conditions' => [
+						'host_id' => $host['Host']['id']
+					]
+				]);
+				$result[] = $evcCount;
+			}
+			foreach ($result as $value) {
+				if($value > 0){
+					$notInUse = false;
+				}
+			}
+			return $notInUse;
+		}
+		
+		return false;
+	}
 }

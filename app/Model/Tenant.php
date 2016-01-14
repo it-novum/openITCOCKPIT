@@ -161,4 +161,15 @@ class Tenant extends AppModel{
 		}
 	}
 
+	public function __allowDelete($containerId){
+		$Container = ClassRegistry::init('Container');
+		$Container->children($containerId);
+		/*$currentContainer = $Container->find('all', [
+
+		]);
+		$childrenContainer = $container*/
+		debug($container);
+		die();
+		return false;
+	}
 }

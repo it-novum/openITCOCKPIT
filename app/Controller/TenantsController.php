@@ -146,8 +146,15 @@ class TenantsController extends AppController{
 			return;
 		}
 
-		if($this->Container->delete($container['Tenant']['container_id'])){
-			$this->setFlash(__('Tenant deleted'));
+		debug('delete');
+		debug($this->Tenant->__allowDelete($container['Tenant']['container_id']));
+		die();
+		if($this->Tenant->__allowDelete()){
+			if($this->Container->delete($container['Tenant']['container_id'])){
+				$this->setFlash(__('Tenant deleted'));
+				$this->redirect(['action' => 'index']);
+			}
+			$this->setFlash(__('Could not delete tenant'), false);
 			$this->redirect(['action' => 'index']);
 		}
 		$this->setFlash(__('Could not delete tenant'), false);
@@ -165,6 +172,10 @@ class TenantsController extends AppController{
 						'Tenant.id' => $tenantId
 					]
 				]);
+				debug('mass_delete');
+				debug($this->Tenant->__allowDelete($container['Tenant']['container_id']));
+				die();
+				return;
 				if($this->allowedByContainerId(Hash::extract($container, 'Container.id'))){
 					$this->Container->delete($container['Tenant']['container_id']);
 				}
