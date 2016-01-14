@@ -68,4 +68,36 @@ class Servicestatus extends NagiosModuleAppModel{
 		}
 		return $return;
 	}
+
+	/**
+	 * Return the service status as string for given uuid
+	 *
+	 * @param	string  $uuid you want to get service status for
+	 * @param	array $options for the find request (see cakephp's find for all options)
+	 * @return	void
+	 * @author	Irina Bering <irina.bering@it-novum.com>
+	 * @since	3.0.6
+	 * @version	3.0.6
+	 *
+	 */
+	public function currentStateByUuid($uuid = null){
+		$return = null;
+		if($uuid !== null){
+
+			$_options = [
+				'conditions' => [
+					'Objects.name2' => $uuid,
+					'Objects.objecttype_id' => 2
+				],
+			];
+			$servicestatus = $this->find('all', $_options);
+
+			if(!empty($servicestatus)){
+				foreach($servicestatus as $nagios_servicestatus){
+					return $nagios_servicestatus['Servicestatus']['current_state'];
+				}
+			}
+		}
+		return $return;
+	}
 }
