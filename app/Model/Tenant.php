@@ -164,6 +164,7 @@ class Tenant extends AppModel{
 	public function __allowDelete($containerId){
 		$Container = ClassRegistry::init('Container');
 		$Host = ClassRegistry::init('Host');
+		$Service = ClassRegistry::init('Service');
 		$children = $Container->children($containerId);
 
 		$newContainerIds = [];
@@ -186,16 +187,29 @@ class Tenant extends AppModel{
 			]
 		]),'{n}.Host.id');
 
+		$serviceIds = Hash::extract($Service->find('all',[
+			'conditions' => [
+				'Service.host_id' => $hostIds
+			],
+			'fields' => [
+				'Service.id'
+			]
+		]),'{n}.Service.id');
+
 		//check if the host is used somwhere
 		if(CakePlugin::loaded('EventcorrelationModule')){
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
-			$evcCount = $this->Eventcorrelation->find('count',[
+			$evcCount = $this->Eventcorrelation->find('all',[
 				'conditions' => [
-					'Eventcorrelation.host_id' => $hostIds
+					'OR' => [
+						'Eventcorrelation.host_id' => $hostIds,
+						'Eventcorrelation.service_id' => $serviceIds
+					]
+					
 				]
 			]);
 
-			if($evcCount > 0){
+			if(!empty($evcCount) && $evcCount > 0){
 				return false;
 			}
 			return true;
