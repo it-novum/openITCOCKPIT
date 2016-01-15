@@ -146,10 +146,7 @@ class TenantsController extends AppController{
 			return;
 		}
 
-		debug('delete');
-		debug($this->Tenant->__allowDelete($container['Tenant']['container_id']));
-		die();
-		if($this->Tenant->__allowDelete()){
+		if($this->Tenant->__allowDelete($container['Tenant']['container_id'])){
 			if($this->Container->delete($container['Tenant']['container_id'])){
 				$this->setFlash(__('Tenant deleted'));
 				$this->redirect(['action' => 'index']);
@@ -162,6 +159,7 @@ class TenantsController extends AppController{
 	}
 
 	public function mass_delete($id = null){
+		$deleteAllowedValues = [];
 		foreach(func_get_args() as $tenantId){
 			if($this->Tenant->exists($tenantId)){
 				$container = $this->Tenant->find('first', [
@@ -172,14 +170,19 @@ class TenantsController extends AppController{
 						'Tenant.id' => $tenantId
 					]
 				]);
-				debug('mass_delete');
-				debug($this->Tenant->__allowDelete($container['Tenant']['container_id']));
-				die();
-				return;
 				if($this->allowedByContainerId(Hash::extract($container, 'Container.id'))){
-					$this->Container->delete($container['Tenant']['container_id']);
+					$deleteAllowed = $this->Tenant->__allowDelete($container['Tenant']['container_id']);
+					$deleteAllowedValues[] = $deleteAllowed;
+					if($deleteAllowed){
+						$this->Container->delete($container['Tenant']['container_id']);
+					}
 				}
 			}
+		}
+
+		if(in_array(false, $deleteAllowedValues)){
+			$this->setFlash(__('Some of the Tenants could not be deleted'), false);
+			$this->redirect(['action' => 'index']);
 		}
 		$this->setFlash(__('Tenants deleted'));
 		$this->redirect(['action' => 'index']);
