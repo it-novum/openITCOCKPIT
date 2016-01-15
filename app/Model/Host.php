@@ -911,6 +911,7 @@ class Host extends AppModel{
 				'GraphgenTmplConf.service_id' => $serviceIds
 			]
 		]);
+
 		if($this->__allowDelete($host) || $isAllowed === true){
 			if($this->delete()){
 				//Delete was successfully - delete Graphgenerator configurations
