@@ -173,6 +173,8 @@ class TenantsController extends AppController{
 				if($this->allowedByContainerId(Hash::extract($container, 'Container.id'))){
 					$deleteAllowed = $this->Tenant->__allowDelete($container['Tenant']['container_id']);
 					$deleteAllowedValues[] = $deleteAllowed;
+
+
 					if($deleteAllowed){
 						$this->Container->delete($container['Tenant']['container_id']);
 					}
@@ -180,9 +182,17 @@ class TenantsController extends AppController{
 			}
 		}
 
+		//array contains at least one false
 		if(in_array(false, $deleteAllowedValues)){
-			$this->setFlash(__('Some of the Tenants could not be deleted'), false);
-			$this->redirect(['action' => 'index']);
+			if(count(array_unique($deleteAllowedValues)) === 1 && end($deleteAllowedValues) == false){
+				//no tenant could be deleted
+				$this->setFlash(__('Tenants could not be deleted'), false);
+				$this->redirect(['action' => 'index']);
+			}else{
+				//at least one tenant couldnt be deleted
+				$this->setFlash(__('Some of the Tenants could not be deleted'), false);
+				$this->redirect(['action' => 'index']);
+			}
 		}
 		$this->setFlash(__('Tenants deleted'));
 		$this->redirect(['action' => 'index']);
