@@ -207,6 +207,7 @@ class ContainersController extends AppController{
 				'Container.id' => $id
 			]
 		]);
+
 		$childElements = $this->Container->find('all', [
 			'recursive' => -1,
 			'conditions' => [
@@ -222,62 +223,13 @@ class ContainersController extends AppController{
 				]
 			]
 		]);
+		$allowDeleteRoot = true;
 		$childContainers = Hash::combine($childElements, '{n}.Container.id', '{n}.Container.name', '{n}.Container.containertype_id');
 		if(is_array($childContainers) && !empty($childContainers)){
 			foreach($childContainers as $containerTypeId => $containers){
 				$containerIds = array_keys($containers);
 				switch($containerTypeId){
 					case CT_NODE:
-						//Check users to delete
-						$User = ClassRegistry::init('User');
-						$usersToDelete = $this->User->find('all', [
-							'recursive' => -1,
-							'joins' => [
-								[
-									'table' => 'users_to_containers',
-									'type' => 'LEFT',
-									'alias' => 'UsersToContainer',
-									'conditions' => 'UsersToContainer.user_id = User.id'
-								]
-							],
-							'conditions' => [
-								'UsersToContainer.container_id' => $containerIds
-							],
-							'fields' => [
-								'User.id'
-							]
-						]);
-						foreach($usersToDelete as $user){
-							$User->__delete($user, $userId);
-						}
-						//Check satellites to delete
-						if(in_array('DistributeModule', $modulePlugins)){
-							$Satellite = ClassRegistry::init('DistributeModule.Satellite');
-							$satellitesToDelete = $Satellite->find('all', [
-								'recursive' => -1,
-								'joins' => [
-									[
-										'table' => 'containers',
-										'alias' => 'Container',
-										'type' => 'INNER',
-										'conditions' => [
-											'Container.id = Satellite.container_id',
-										],
-									]
-								],
-								'conditions' => [
-									'Satellite.container_id' => $containerIds
-								],
-
-								'fields' => [
-									'Satellite.id',
-									'Container.id'
-								]
-							]);
-							foreach($satellitesToDelete as $satellite){
-								$Satellite->__delete($satellite, $userId);
-							}
-						}
 						//Check hosts to delete
 						$Host = ClassRegistry::init('Host');
 						$hostsToDelete = $Host->find('all', [
@@ -304,8 +256,70 @@ class ContainersController extends AppController{
 								'Host.container_id'
 							]
 						]);
-						foreach($hostsToDelete as $host){
-							$Host->__delete($host, $userId);
+						$hostIds = Hash::extract($hostsToDelete,'{n}.Host.id');
+						$allowDelete = $this->Container->__allowDelete($hostIds);
+						$allowDeleteRoot = $allowDelete;
+						
+						//Check users to delete
+						$User = ClassRegistry::init('User');
+						$usersToDelete = $this->User->find('all', [
+							'recursive' => -1,
+							'joins' => [
+								[
+									'table' => 'users_to_containers',
+									'type' => 'LEFT',
+									'alias' => 'UsersToContainer',
+									'conditions' => 'UsersToContainer.user_id = User.id'
+								]
+							],
+							'conditions' => [
+								'UsersToContainer.container_id' => $containerIds
+							],
+							'fields' => [
+								'User.id'
+							]
+						]);
+						if($allowDelete){
+							foreach($usersToDelete as $user){
+								$User->__delete($user, $userId);
+							}
+						}
+						
+						//Check satellites to delete
+						if(in_array('DistributeModule', $modulePlugins)){
+							$Satellite = ClassRegistry::init('DistributeModule.Satellite');
+							$satellitesToDelete = $Satellite->find('all', [
+								'recursive' => -1,
+								'joins' => [
+									[
+										'table' => 'containers',
+										'alias' => 'Container',
+										'type' => 'INNER',
+										'conditions' => [
+											'Container.id = Satellite.container_id',
+										],
+									]
+								],
+								'conditions' => [
+									'Satellite.container_id' => $containerIds
+								],
+
+								'fields' => [
+									'Satellite.id',
+									'Container.id'
+								]
+							]);
+							if($allowDelete){
+								foreach($satellitesToDelete as $satellite){
+									$Satellite->__delete($satellite, $userId);
+								}
+							}
+						}
+						
+						if($allowDelete){
+							foreach($hostsToDelete as $host){
+								$Host->__delete($host, $userId);
+							}
 						}
 						break;
 					case CT_LOCATION:
@@ -384,12 +398,17 @@ class ContainersController extends AppController{
 				}
 			}
 		}
-		if($this->Container->__delete($rootContainer, $userId)){
-			$this->setFlash(__('Container deleted'));
-			$this->redirect(array('action' => 'index'));
-		}else{
-			$this->setFlash(__('Could not delete container'), false);
-			$this->redirect(['action' => 'index']);
+		if($allowDeleteRoot){
+			if($this->Container->__delete($rootContainer, $userId)){
+				$this->setFlash(__('Container deleted'));
+				$this->redirect(array('action' => 'index'));
+			}else{
+				$this->setFlash(__('Could not delete container'), false);
+				$this->redirect(['action' => 'index']);
+			}
 		}
+		$this->setFlash(__('Could not delete container'), false);
+		$this->redirect(['action' => 'index']);
+		
 	}
 }
