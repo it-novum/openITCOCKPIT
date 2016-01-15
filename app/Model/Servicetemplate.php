@@ -428,4 +428,39 @@ class Servicetemplate extends AppModel{
 		}
 		return true;
 	}
+
+	public function __allowDelete($servicetemplateId){
+		$Service = ClassRegistry::init('Service');
+		$services = $Service->find('all', [
+			'recursive' => -1,
+			'conditions' => [
+				'Service.servicetemplate_id' => $servicetemplateId
+			],
+			'fields' => [
+				'Service.id'
+			]
+		]);
+
+		//check if the host is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$notInUse = true;
+			$result = [];
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			foreach ($services as $service) {
+				$evcCount = $this->Eventcorrelation->find('count',[
+					'conditions' => [
+						'service_id' => $service['Service']['id']
+					]
+				]);
+				$result[] = $evcCount;
+			}
+			foreach ($result as $value) {
+				if($value > 0){
+					$notInUse = false;
+				}
+			}
+			return $notInUse;
+		}
+		return false;
+	}
 }

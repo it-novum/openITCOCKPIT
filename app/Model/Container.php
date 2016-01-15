@@ -228,4 +228,25 @@ class Container extends AppModel{
 		}
 		return false;
 	}
+
+	public function __allowDelete($hostIds){
+		if(empty($hostIds)){
+			return true;
+		}
+		//check if the hosts are used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$evcCount = $this->Eventcorrelation->find('count',[
+				'conditions' => [
+					'Eventcorrelation.host_id' => $hostIds
+				]
+			]);
+
+			if($evcCount > 0){
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}
 }

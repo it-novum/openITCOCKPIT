@@ -878,7 +878,15 @@ class Host extends AppModel{
 		return [];
 	}
 
-	public function __delete($host, $userId){
+	/**
+	 * deletes a Host
+	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+	 * @param  Array  $host        the Host to delete
+	 * @param  Integer  $userId    the Id of the User
+	 * @param  boolean $isAllowed  eludes the __allowDelete() fn. This is needed when a host shall be deleted e.g from the EventcorrelationModule
+	 * @return boolean
+	 */
+	public function __delete($host, $userId, $isAllowed = false){
 		if(empty($host)){
 			return false;
 		}
@@ -903,7 +911,7 @@ class Host extends AppModel{
 				'GraphgenTmplConf.service_id' => $serviceIds
 			]
 		]);
-		if($this->__allowDelete($host)){
+		if($this->__allowDelete($host) || $isAllowed === true){
 			if($this->delete()){
 				//Delete was successfully - delete Graphgenerator configurations
 				foreach($graphgenTmplConfs as $graphgenTmplConf){
@@ -964,7 +972,6 @@ class Host extends AppModel{
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
@@ -974,7 +981,7 @@ class Host extends AppModel{
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
 			$evcCount = $this->Eventcorrelation->find('count',[
 				'conditions' => [
-					'host_id' => $host['Host']['id']
+					'Eventcorrelation.host_id' => $host['Host']['id']
 				]
 			]);
 			if($evcCount > 0){

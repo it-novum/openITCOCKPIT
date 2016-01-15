@@ -161,4 +161,45 @@ class Tenant extends AppModel{
 		}
 	}
 
+	public function __allowDelete($containerId){
+		$Container = ClassRegistry::init('Container');
+		$Host = ClassRegistry::init('Host');
+		$children = $Container->children($containerId);
+
+		$newContainerIds = [];
+		//get rid of the locations
+		foreach ($children as $key => $child) {
+			if($child['Container']['containertype_id'] != CT_LOCATION){
+				$newContainerIds[] = $child['Container']['id'];
+			}
+		}
+		//append the containerID itself
+		$newContainerIds[] = $containerId;
+		//get the hosts of these containers
+		$hostIds = Hash::extract($Host->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'Host.container_id' => $newContainerIds
+			],
+			'fields' => [
+				'Host.id'
+			]
+		]),'{n}.Host.id');
+
+		//check if the host is used somwhere
+		if(CakePlugin::loaded('EventcorrelationModule')){
+			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$evcCount = $this->Eventcorrelation->find('count',[
+				'conditions' => [
+					'Eventcorrelation.host_id' => $hostIds
+				]
+			]);
+
+			if($evcCount > 0){
+				return false;
+			}
+			return true;
+		}
+		return true;
+	}
 }

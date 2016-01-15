@@ -77,7 +77,7 @@ class ServicetemplatesController extends AppController{
 				'Servicetemplate.name' => 'asc'
 			],
 			'conditions' => [
-				'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
+				//'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
 				'Container.id' => $this->MY_RIGHTS
 			],
 			'fields' => [
@@ -760,38 +760,42 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$this->Servicetemplate->id = $id;
-		if($this->Servicetemplate->delete()){
-			$changelog_data = $this->Changelog->parseDataForChangelog(
-				$this->params['action'],
-				$this->params['controller'],
-				$id,
-				OBJECT_SERVICETEMPLATE,
-				$servicetemplate['Servicetemplate']['container_id'],
-				$userId,
-				$servicetemplate['Servicetemplate']['name'],
-				$servicetemplate
-			);
-			if($changelog_data){
-				CakeLog::write('log', serialize($changelog_data));
-			}
+		debug($this->Servicetemplate->__allowDelete($id));
+		if($this->Servicetemplate->__allowDelete($id)){
+			if($this->Servicetemplate->delete()){
+				$changelog_data = $this->Changelog->parseDataForChangelog(
+					$this->params['action'],
+					$this->params['controller'],
+					$id,
+					OBJECT_SERVICETEMPLATE,
+					$servicetemplate['Servicetemplate']['container_id'],
+					$userId,
+					$servicetemplate['Servicetemplate']['name'],
+					$servicetemplate
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
 
-			//Delete all services that were created using this template
-			$this->loadModel('Service');
-			$services = $this->Service->find('all', [
-				'conditions' => [
-					'Service.servicetemplate_id' => $id
-				]
-			]);
-			foreach($services as $service){
-				$this->Service->__delete($service, $this->Auth->user('id'));
+				//Delete all services that were created using this template
+				$this->loadModel('Service');
+				$services = $this->Service->find('all', [
+					'conditions' => [
+						'Service.servicetemplate_id' => $id
+					]
+				]);
+				foreach($services as $service){
+					$this->Service->__delete($service, $this->Auth->user('id'));
+				}
+				$this->setFlash(__('Servicetemplate deleted.'));
+				$this->redirect(array('action' => 'index'));
 			}
-
-			$this->setFlash(__('Servicetemplate deleted.'));
+			$this->setFlash(__('Could not delete servicetemplate'), false);
 			$this->redirect(array('action' => 'index'));
-
 		}
-		$this->setFlash(__('Could not delete servicetemplate'));
+		$this->setFlash(__('Could not delete servicetemplate'), false);
 		$this->redirect(array('action' => 'index'));
+		
 	}
 
 	public function usedBy($id = null){
