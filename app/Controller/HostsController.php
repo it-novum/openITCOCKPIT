@@ -1567,6 +1567,7 @@ class HostsController extends AppController{
 	 * Or as HTML URL: /hosts/mass_delete/3/6/5/4/8/2/1/9
 	 */
 	public function mass_delete($id = null){
+		$deleteAllowedValues = [];
 		foreach(func_get_args() as $host_id){
 			if($this->Host->exists($host_id)){
 				$host = $this->Host->findById($host_id);
@@ -1578,7 +1579,20 @@ class HostsController extends AppController{
 					return;
 				}
 
-				$this->Host->__delete($host, $this->Auth->user('id'));
+				$deleteAllowedValues[] = $this->Host->__delete($host, $this->Auth->user('id'));
+			}
+		}
+
+		//array contains at least one false
+		if(in_array(false, $deleteAllowedValues)){
+			if(count(array_unique($deleteAllowedValues)) === 1 && end($deleteAllowedValues) == false){
+				//no host could be deleted
+				$this->setFlash(__('Hosts could not be deleted'), false);
+				$this->redirect(['action' => 'index']);
+			}else{
+				//at least one host couldnt be deleted
+				$this->setFlash(__('Some of the Hosts could not be deleted'), false);
+				$this->redirect(['action' => 'index']);
 			}
 		}
 		$this->setFlash(__('Hosts deleted'));
