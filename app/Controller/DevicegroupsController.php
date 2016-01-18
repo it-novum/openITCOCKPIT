@@ -30,6 +30,7 @@ class DevicegroupsController extends AppController{
 		'Container',
 		'Host',
 		'Changelog',
+		'Location'
 	];
 	public $layout = 'Admin.default';
 	public $components = [
@@ -57,6 +58,23 @@ class DevicegroupsController extends AppController{
 			]
 		];
 		
+		if($this->hasRootPrivileges === true){
+			$container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_DEVICEGROUP, [], $this->hasRootPrivileges);
+		}else{
+			$container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_DEVICEGROUP, [], $this->hasRootPrivileges);
+		}
+		$locationIds = $this->Location->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'Location.container_id' => array_keys($container)
+			],
+			'fields' => [
+				'Location.id',
+				'Location.container_id'
+			]
+		]);
+		$containerToLocation = Hash::combine($locationIds,'{n}.Location.container_id','{n}.Location.id');
+
 		$query = Hash::merge($options, $this->Paginator->settings);
 		
 		if($this->isApiRequest()){
@@ -66,7 +84,7 @@ class DevicegroupsController extends AppController{
 			$this->Paginator->settings = $query;
 			$all_devicegroups = $this->Paginator->paginate();
 		}
-		$this->set(compact(['all_devicegroups']));
+		$this->set(compact(['all_devicegroups', 'container', 'containerToLocation']));
 		$this->set('_serialize', ['all_devicegroups']);
 		$this->_isFilter();
 	}

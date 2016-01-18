@@ -69,8 +69,9 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('name', _('Name')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('Container.name', __('Name')); ?></th>
+										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Devicegroup.description'); echo $this->Paginator->sort('Devicegroup.description', __('Description')); ?></th>
+										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.path'); echo $this->Paginator->sort('Container.path', __('Container')); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -80,6 +81,7 @@
 										<tr>
 											<td><?php echo $devicegroup['Container']['name']; ?></td>
 											<td><?php echo $devicegroup['Devicegroup']['description']; ?></td>
+											<td><a href="/locations/edit/<?php echo $containerToLocation[$devicegroup['Container']['parent_id']]; ?>"><?php echo h($container[$devicegroup['Container']['parent_id']]); ?></a></td>
 											<td class="width-160">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
