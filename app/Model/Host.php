@@ -911,7 +911,9 @@ class Host extends AppModel{
 				'GraphgenTmplConf.service_id' => $serviceIds
 			]
 		]);
+
 		if($this->__allowDelete($host) || $isAllowed === true){
+			
 			if($this->delete()){
 				//Delete was successfully - delete Graphgenerator configurations
 				foreach($graphgenTmplConfs as $graphgenTmplConf){
@@ -976,12 +978,26 @@ class Host extends AppModel{
 	}
 
 	public function __allowDelete($host){
+		$Service = ClassRegistry::init('Service');
+		$serviceIds = Hash::extract($Service->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'host_id' => $host['Host']['id'],
+			],
+			'fields' => [
+				'Service.id'
+			]
+		]), '{n}.Service.id');
+
 		//check if the host is used somwhere
 		if(CakePlugin::loaded('EventcorrelationModule')){
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
 			$evcCount = $this->Eventcorrelation->find('count',[
 				'conditions' => [
-					'Eventcorrelation.host_id' => $host['Host']['id']
+					'OR' => [
+						'Eventcorrelation.host_id' => $host['Host']['id'],
+						'Eventcorrelation.service_id' => $serviceIds
+					]
 				]
 			]);
 			if($evcCount > 0){

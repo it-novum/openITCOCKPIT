@@ -93,11 +93,25 @@ class Location extends AppModel{
 			$notInUse = true;
 			$result = [];
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$Service = ClassRegistry::init('Service');
 			foreach ($hostIds as $currentHostIds) {
 				foreach ($currentHostIds as $hostId) {
+					$serviceIds = Hash::extract($Service->find('all',[
+						'recursive' => -1,
+						'conditions' => [
+							'host_id' => $hostId,
+						],
+						'fields' => [
+							'Service.id'
+						]
+					]), '{n}.Service.id');
 					$evcCount = $this->Eventcorrelation->find('count',[
 						'conditions' => [
-							'host_id' => $hostId
+							'OR' => [
+								'host_id' => $hostId,
+								'service_id' => $serviceIds
+							]
+							
 						]
 					]);
 					$result[] = $evcCount;

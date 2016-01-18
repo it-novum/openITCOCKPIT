@@ -235,10 +235,24 @@ class Container extends AppModel{
 		}
 		//check if the hosts are used somwhere
 		if(CakePlugin::loaded('EventcorrelationModule')){
+			$Service = ClassRegistry::init('Service');
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$serviceIds = Hash::extract($Service->find('all',[
+				'recursive' => -1,
+				'conditions' => [
+					'host_id' => $hostIds,
+				],
+				'fields' => [
+					'Service.id'
+				]
+			]), '{n}.Service.id');
 			$evcCount = $this->Eventcorrelation->find('count',[
 				'conditions' => [
-					'Eventcorrelation.host_id' => $hostIds
+					'OR' => [
+						'Eventcorrelation.host_id' => $hostIds,
+						'Eventcorrelation.service_id' => $serviceIds
+					]
+					
 				]
 			]);
 
