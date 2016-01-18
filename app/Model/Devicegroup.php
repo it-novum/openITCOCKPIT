@@ -66,10 +66,24 @@ class Devicegroup extends AppModel{
 			$notInUse = true;
 			$result = [];
 			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+			$Service = ClassRegistry::init('Service');
 			foreach ($hosts as $host) {
+				$serviceIds = Hash::extract($Service->find('all',[
+					'recursive' => -1,
+					'conditions' => [
+						'host_id' => $host['Host']['id'],
+					],
+					'fields' => [
+						'Service.id'
+					]
+				]), '{n}.Service.id');
 				$evcCount = $this->Eventcorrelation->find('count',[
 					'conditions' => [
-						'host_id' => $host['Host']['id']
+						'OR' => [
+							'host_id' => $host['Host']['id'],
+							'service_id' => $serviceIds
+						]
+						
 					]
 				]);
 				$result[] = $evcCount;
