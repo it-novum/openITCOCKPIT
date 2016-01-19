@@ -1,3 +1,37 @@
+3.0.7
+<span class="label bg-color-green">New</span> The event correlation module is now completed and can be installed via the package
+manager. A valid enterprise license is required to do this.
+<span class="label bg-color-green">New</span> Conclusion of the REST API to generate json or xml objecs. Detailed information on how to use the REST API can be found in the internal documentation.
+<span class="label bg-color-green">New</span> Selected hosts can now be exported into a PDF.
+<span class="label bg-color-green">New</span> The map module now supports stateless lines.
+<span class="label bg-color-green">New</span> The index page of devicegroups got extended to show the corresponding container of the devicegroup.
+<span class="label bg-color-green">Improvement</span> Sorting of elements for PDF export Sorting by name will now effect the PDF export. This concerns hosts, hostgroups, services
+and servicegroups.
+<span class="label bg-color-green">Improvement</span> Textgadget in map module. The textgadget in the map module now displays a default text if a service without performance data gets selected.
+<span class="label bg-color-red">Bugfix</span> RRD graph in map module. If a service wouldn't have performance data the RRD graph gadget wouldn't display
+anything. Now a default picture will be shown.
+<span class="label bg-color-red">Bugfix</span> Migration V2 → V3 SatelliteRestApiItem. While migrating from V2 to V3 of openITCOCKPIT the location of a satellite wasn't saved correctly.
+<span class="label bg-color-red">Bugfix</span> Map Rotation “Back to list” button link. The “Back to list” button while creating or modifying a map rotation contained a wrong
+link. Now the button links correctly to the index page of map rotations.
+<span class="label bg-color-red">Bugfix</span> Widget for dashboard hosts / services piechart 180. The piechart widget on the dashboard used wrong headlines and links for the different states of hosts and services. This is now fixed and displayed correctly.
+<span class="label bg-color-red">Bugfix</span> Maps: RRD graph gadget. Referencing a servicegroup, hostgroup or host to a RRD gadget lead to a display error in the view mode of a map. This got fixed. Those objects can't be assinged to this gadget anymore.
+<span class="label bg-color-red">Bugfix</span> Maps: RRD and text gadget. RRD and text gadgets without an assigned service lead to a display error in the view mode of a map. This got fixed by the automated deletion of empty gadgets while saving the map.
+<span class="label bg-color-red">Bugfix</span> Maps: Item error. Modifying an item in a map changing the assigned host to a service produced an error in the view mode of this map. This got fixed now.
+<span class="label bg-color-red">Bugfix</span> Maps: Lines. Straight horizontal lines in the map module been buggy. They got displayed about 12 pixel lower then they should be. This is fixed and those lines will be displayed exactly where they got drawn.
+<span class="label bg-color-red">Bugfix</span> Maps: Checkboxes at index page. Checkboxes at the index page of the map module been without any functionality. Now the common index functions got added.
+<span class="label bg-color-red">Bugfix</span> Autoreports filter error. The “Reset Filter” button in the index page for autoreports linked to a wrong page. Clicking the button now removes the selected filters correctly and links back to the index page.
+<span class="label bg-color-red">Bugfix</span> nagvis Migration shell for stateless lines. The nagvis migration got extended to support stateless lines.
+<span class="label bg-color-red">Bugfix</span> Servicelist as PDF export. The display of an exported servicelist in a PDF wasn't responsive and may been displayed incorrect. This is now fixed.
+<span class="label bg-color-red">Bugfix</span> Interval length for host and service escalations. The input field for “Notifaction interval” at the host and service page gave the impression that the input is made in minutes but it was actually in seconds. Now the value gets saved correctly as minutes.
+<span class="label bg-color-red">Bugfix</span> Layout for the packetmanager installationpopup. The display of content in the popup of the packetmanager been buggy. Content now gets
+displayed correctly.
+<span class="label bg-color-red">Bugfix</span> Service freshness_threshold wasn't saved correctly. The service freshness_threshold value wasn't saved correctly. This is now fixed and gets saved correctly.
+<span class="label bg-color-red">Bugfix</span> Changing own password. You couldn't change your own password in your profile due to a buggy password check. This bug is now removed and the password can be changed.
+<span class="label bg-color-red">Bugfix</span> Picture upload in the profile. The picture upload in the profile didn't work due to some permission errors while trying to
+create the folder where the image needs to be saved. Now the folder is created correctly and therefor the upload now works.
+<span class="label bg-color-red">Bugfix</span> Statusmaps: Info window for the hoststatus. If there are a lot of services associated to a host the statusmap infowindow for a host
+couldn't display everything. Now the infowindow receives a scrollbar automatically if content extends the size of the window.
+
 3.0.6
 <span class="label bg-color-green">New</span> Add SMS box support
 <span class="label bg-color-red">Bugfix</span> Deletion of locations
