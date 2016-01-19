@@ -47,6 +47,7 @@ App.Components.FullcalendarComponent = Frontend.Component.extend({
 				center:'title',
 				right: 'prev, next',
 			},
+			firstDay:1,
 			weekNumbers: true,
 			editable: true,
 			disableResizing: true,
