@@ -96,7 +96,6 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				//eg. drawTacho, drawText, drawCylinder ... 
 				
 				var currentElementData = self.findParentGadgetData(mapGadgets[i]['id']);
-
 				$(self.mapViewContainer).append('<div id="svgContainer_'+currentElementData['currentUuid']+'"></div>');
 				$('<div id="svgContainer_'+mapGadgets[i]['id']+'"></div>')
 				.appendTo(self.mapViewContainer);
@@ -124,6 +123,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 					options = $.extend({}, options, opt); 
 				}
 				self.Gadget['draw'+mapGadgets[i]['gadget']]('svgContainer_'+mapGadgets[i]['id'], options);
+
+				//wrap browser link around the gadget
+				$('#svgContainer_'+mapGadgets[i]['id']).children().wrap('<a href="'+currentElementData['currentLink']+'"></a>');
 			};
 		}
 
