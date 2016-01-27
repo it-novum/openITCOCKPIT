@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-
+require_once APP . 'Vendor' . DS . 'parsedown' . DS . 'Parsedown.php';
+require_once APP . 'Vendor' . DS . 'parsedown' . DS . 'ParsedownExtra.php';
 
 $widgetData = $widgetNotices[$widget['Widget']['id']];
 
@@ -32,6 +33,8 @@ $note = null;
 if(isset($widgetData['Widget']['WidgetNotice']['id']) && $widgetData['Widget']['WidgetNotice']['id'] !== null && is_numeric($widgetData['Widget']['WidgetNotice']['id'])):
 	$widgetNoticeId = $widgetData['Widget']['WidgetNotice']['id'];
 	$note = htmlspecialchars_decode($widgetData["Widget"]["WidgetNotice"]["note"]);
+	$parsedown = new ParsedownExtra();
+	$note = $parsedown->text($note);
 endif;
 ?>
 <div class="widget-body notice-body" style="padding:0;">
