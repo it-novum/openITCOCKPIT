@@ -707,6 +707,10 @@ class HosttemplatesController extends AppController{
 
 	}
 
+	public function copy($id = null){
+
+	}
+
 	public function addCustomMacro($counter){
 		$this->allowOnlyAjaxRequests();
 

@@ -52,7 +52,6 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 		 * Bind "Select all"
 		 */
 		$('#selectAll').click(function(){
-			console.log('select fired');
 			self.selectedIds = [];
 			self.selectedUuids = [];
 			self.uuidsArray = [];
