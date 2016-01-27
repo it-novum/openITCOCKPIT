@@ -973,7 +973,7 @@ class DashboardsController extends AppController{
 	public function saveNotice(){
 		if($this->request->is('post') || $this->request->is('put')){
 			$noticeConfig = $this->request->data['dashboard'];
-
+			$widgetNoticeId = null;
 			$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
 			$note = htmlspecialchars($note);
 
