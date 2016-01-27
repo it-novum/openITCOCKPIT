@@ -17,6 +17,11 @@ if(php_sapi_name() != 'cli'){
 
 CakePlugin::loadAll();
 
+//HtmlPurifier Config
+CakePlugin::load('HtmlPurifier', array('bootstrap' => true));
+$config = HTMLPurifier_Config::createDefault();
+Purifier::config('StandardConfig', $config);
+
 // FIXME: App::uses() doesn't seem to work in this context
 require_once APP . 'Lib/AppExceptionRenderer.php';
 

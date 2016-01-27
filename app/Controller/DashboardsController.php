@@ -51,6 +51,7 @@ class DashboardsController extends AppController{
 		'Servicegroup',
 		'Hostgroup',
 		'WidgetTacho',
+		'WidgetNotice',
 	];
 
 	const UPDATE_DISABLED = 0;
@@ -68,7 +69,7 @@ class DashboardsController extends AppController{
 			$this->DashboardHandler = new Dashboard\DashboardHandler($this);
 		}
 	}
-	
+
 	public function index($tabId = null){
 		$userId = $this->Auth->user('id');
 		$tab = [];
@@ -106,7 +107,7 @@ class DashboardsController extends AppController{
 		}else{
 			$tabId = $tab['DashboardTab']['id'];
 		}
-		
+
 		//Find all tabs of the user, to create tab bar
 		$tabs = $this->DashboardTab->find('all', [
 			'recursive' => -1,
@@ -118,14 +119,14 @@ class DashboardsController extends AppController{
 				'position' => 'ASC'
 			]
 		]);
-		
+
 		$allWidgets = $this->DashboardHandler->getAllWidgets();
-		
+
 		$preparedWidgets = $this->DashboardHandler->prepareForRender($tab);
-		
+
 		$this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
 		$this->Frontend->setJson('tabId', $tabId);
-		
+
 		//Find shared tabs
 		$this->DashboardTab->bindModel([
 			'belongsTo' => [
@@ -159,7 +160,7 @@ class DashboardsController extends AppController{
 		foreach($_sharedTabs as $sharedTab){
 			$sharedTabs[$sharedTab['DashboardTab']['id']] = $sharedTab['User']['firstname'].' '.$sharedTab['User']['lastname'].DS.$sharedTab['DashboardTab']['name'];
 		}
-		
+
 		//Was this tab created from a shared tab?
 		$updateAvailable = false;
 		if($tab['DashboardTab']['source_tab_id'] > 0){
@@ -180,7 +181,7 @@ class DashboardsController extends AppController{
 						//Display update available message
 						$updateAvailable = true;
 					}
-					
+
 					if($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE){
 						//Delete old widgets
 						foreach($tab['Widget'] as $widget){
@@ -208,7 +209,7 @@ class DashboardsController extends AppController{
 				$this->DashboardTab->saveField('check_for_updates', $tab['DashboardTab']['check_for_updates']);
 			}
 		}
-		
+
 		//Get tab rotate interval
 		$user = $this->User->find('first', [
 			'recursive' => -1,
@@ -221,7 +222,7 @@ class DashboardsController extends AppController{
 			]
 		]);
 		$tabRotateInterval = $user['User']['dashboard_tab_rotation'];
-		
+
 		$this->Frontend->setJson('updateAvailable', $updateAvailable);
 		$this->Frontend->setJson('tabRotationInterval', $tabRotateInterval);
 		$this->Frontend->setJson('lang_minutes', __('minutes'));
@@ -238,7 +239,7 @@ class DashboardsController extends AppController{
 			'tabRotateInterval'
 		]));
 	}
-	
+
 	//Will redirect the user to the next tab
 	public function next($currentTabId){
 		$userId = $this->Auth->user('id');
@@ -258,7 +259,7 @@ class DashboardsController extends AppController{
 		]);
 		$tabs = Hash::extract($tabs, '{n}.DashboardTab.id');
 		$nextTabId = $tabs[0];
-		
+
 		$currentKey = array_search($currentTabId, $tabs);
 		$nextKey = $currentKey + 1;
 		if(isset($tabs[$nextKey])){
@@ -269,7 +270,7 @@ class DashboardsController extends AppController{
 			$nextTabId
 		]);
 	}
-	
+
 	public function add(){
 		$widget = [];
 		if(!$this->request->is('ajax')){
@@ -313,7 +314,7 @@ class DashboardsController extends AppController{
 		//Set the widget or an empty array
 		$this->set('widget', $widget);
 	}
-	
+
 	public function createTab(){
 		if($this->request->is('post') || $this->request->is('put')){
 			if(isset($this->request->data['dashboard']['name'])){
@@ -336,7 +337,7 @@ class DashboardsController extends AppController{
 			'action' => 'index'
 		]);
 	}
-	
+
 	public function createTabFromSharing(){
 		$sourceTabId = $this->request->data('dashboard.source_tab');
 		$sourceTab = $this->DashboardTab->find('first', [
@@ -356,9 +357,9 @@ class DashboardsController extends AppController{
 			'source_tab_id' => $sourceTab['DashboardTab']['id'],
 			'check_for_updates' => 1
 		]);
-		
+
 		$error = $this->Widget->copySharedWidgets($sourceTab, $newTab, $userId);
-		
+
 		if($error === false){
 			$this->setFlash(__('Tab copied successfully'));
 			$this->redirect([
@@ -366,17 +367,17 @@ class DashboardsController extends AppController{
 				$newTab['DashboardTab']['id']
 			]);
 		}
-		
+
 		$this->setFlash(__('Could not use shared tab'), false);
 		$this->redirect(['action' => 'index']);
 	}
-	
+
 	public function updateSharedTab(){
 		if($this->request->is('post') || $this->request->is('put')){
 			$tabId = $this->request->data('dashboard.tabId');
 			$askAgain = $this->request->data('dashboard.ask_again');
 			$userId = $this->Auth->user('id');
-		
+
 			$tab = $this->DashboardTab->find('first', [
 				'recursive' => -1,
 				'contain' => [
@@ -392,7 +393,7 @@ class DashboardsController extends AppController{
 				foreach($tab['Widget'] as $widget){
 					$this->Widget->delete($widget['id']);
 				}
-				
+
 				if($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])){
 					$sourceTab = $this->DashboardTab->find('first', [
 						'recursive' => -1,
@@ -403,13 +404,13 @@ class DashboardsController extends AppController{
 						],
 					]);
 					$error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
-					
+
 					$this->DashboardTab->id = $tab['DashboardTab']['id'];
 					if($askAgain == 1){
 						$this->DashboardTab->saveField('check_for_updates', self::AUTO_UPDATE);
 					}
 					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-					
+
 					if($error === false){
 						$this->setFlash(__('Tab updated successfully'));
 						$this->redirect([
@@ -423,7 +424,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function disableUpdate(){
 		if(!$this->request->is('post')){
 			throw new MethodNotAllowedException();
@@ -447,7 +448,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function renameTab(){
 		if($this->request->is('post') || $this->request->is('put')){
 			if(isset($this->request->data['dashboard']['name']) && isset($this->request->data['dashboard']['id'])){
@@ -481,7 +482,7 @@ class DashboardsController extends AppController{
 			$tabId
 		]);
 	}
-	
+
 	public function deleteTab($tabId = null){
 		if(!$this->DashboardTab->exists($tabId)){
 			throw new NotFoundException(__('Invalid tab'));
@@ -490,7 +491,7 @@ class DashboardsController extends AppController{
 		if(!$this->request->is('post')){
 			throw new MethodNotAllowedException();
 		}
-		
+
 		$tab = $this->DashboardTab->findById($tabId);
 		$userId = $this->Auth->user('id');
 		if($tab['DashboardTab']['user_id'] == $userId){
@@ -504,7 +505,7 @@ class DashboardsController extends AppController{
 		$this->setFlash(__('Could not delete tab'), false);
 		$this->redirect(['action' => 'index']);
 	}
-	
+
 	public function restoreDefault($tabId = null){
 		$tab = $this->DashboardTab->find('first', [
 			'conditions' => [
@@ -523,7 +524,7 @@ class DashboardsController extends AppController{
 		}
 		$this->redirect(['action' => 'index', $tabId]);
 	}
-	
+
 	public function updateTitle(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
@@ -542,7 +543,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function updateColor(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
@@ -561,7 +562,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function updatePosition(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
@@ -629,7 +630,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function updateTabPosition(){
 		if(!$this->request->is('post')){
 			throw new MethodNotAllowedException();
@@ -660,7 +661,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function saveTabRotationInterval(){
 		if(!$this->request->is('post')){
 			throw new MethodNotAllowedException();
@@ -685,7 +686,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function startSharing($tabId){
 		$userId = $this->Auth->user('id');
 		$tab = $this->DashboardTab->find('first', [
@@ -703,7 +704,7 @@ class DashboardsController extends AppController{
 		if(empty($tab)){
 			throw new NotFoundException(__('Invalid tab'));
 		}
-		
+
 		$this->DashboardTab->id = $tabId;
 		$this->DashboardTab->saveField('shared', 1);
 		$this->redirect([
@@ -711,7 +712,7 @@ class DashboardsController extends AppController{
 			$tabId
 		]);
 	}
-	
+
 	public function stopSharing($tabId){
 		$userId = $this->Auth->user('id');
 		$tab = $this->DashboardTab->find('first', [
@@ -729,7 +730,7 @@ class DashboardsController extends AppController{
 		if(empty($tab)){
 			throw new NotFoundException(__('Invalid tab'));
 		}
-		
+
 		$this->DashboardTab->id = $tabId;
 		$this->DashboardTab->saveField('shared', 0);
 		$this->redirect([
@@ -744,7 +745,7 @@ class DashboardsController extends AppController{
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
-		
+
 		if(isset($this->request->data['widgetId'])){
 			$widgetId = $this->request->data['widgetId'];
 			$userId = $this->Auth->user('id');
@@ -765,12 +766,12 @@ class DashboardsController extends AppController{
 				}
 			}
 		}
-		
+
 		//Set the widget or an empty array
 		$this->set('widget', $widget);
 		$this->set('element', $element);
 	}
-	
+
 	public function saveStatuslistSettings(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
@@ -780,12 +781,12 @@ class DashboardsController extends AppController{
 			$widgetId = $this->request->data['widgetId'];
 			$settings = $this->request->data['settings'];
 			$widgetTypeId = $this->request->data['widgetTypeId'];
-			
+
 			if($widgetTypeId == 9 || $widgetTypeId == 10){
 				if($widgetTypeId == 9){
 					$contain = 'WidgetHostStatusList';
 				}
-				
+
 				if($widgetTypeId == 10){
 					$contain = 'WidgetServiceStatusList';
 				}
@@ -814,7 +815,7 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function saveTrafficLightService(){
 		$this->autoRender = false;
 		if(!$this->request->is('ajax')){
@@ -835,12 +836,12 @@ class DashboardsController extends AppController{
 			}
 		}
 	}
-	
+
 	public function getTachoPerfdata(){
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
-		
+
 		$perfdata = [];
 		if(isset($this->request->data['widgetId']) && isset($this->request->data['serviceId'])){
 			$widgetId = $this->request->data['widgetId'];
@@ -853,7 +854,7 @@ class DashboardsController extends AppController{
 					//$this->Widget->save($widget);
 					//$this->DashboardTab->id = $widget['DashboardTab']['id'];
 					//$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-					
+
 					$service = $this->Service->find('first', [
 						'recursive' => -1,
 						'contain' => [],
@@ -881,9 +882,9 @@ class DashboardsController extends AppController{
 							'Servicestatus.perfdata',
 						]
 					]);
-					
-				
-					
+
+
+
 					if(isset($service['Servicestatus']['perfdata'])){
 						$perfdata = [];
 						$_perfdata = $this->Rrd->parsePerfData($service['Servicestatus']['perfdata']);
@@ -907,7 +908,7 @@ class DashboardsController extends AppController{
 		$this->set('perfdata', $perfdata);
 		$this->set('_serialize', ['perfdata']);
 	}
-	
+
 	public function saveTachoConfig(){
 		if($this->request->is('post') || $this->request->is('put')){
 			$tachoConfig = $this->request->data['dashboard'];
@@ -931,7 +932,7 @@ class DashboardsController extends AppController{
 					return $this->redirect(['action' => 'index']);
 				}
 			}
-			
+
 			$userId = $this->Auth->user('id');
 			$tab = $this->DashboardTab->find('first', [
 				'recursive' => -1,
@@ -945,7 +946,7 @@ class DashboardsController extends AppController{
 				$this->setFlash(__('Given tab not found in database'), false);
 				return $this->redirect(['action' => 'index']);
 			}
-			
+
 			$data = [
 				'WidgetTacho' => [
 					'widget_id' => $tachoConfig['widgetId'],
@@ -965,7 +966,52 @@ class DashboardsController extends AppController{
 			}
 			return $this->redirect(['action' => 'index', $tachoConfig['tabId']]);
 		}
-		
+
+		return $this->redirect(['action' => 'index']);
+	}
+
+	public function saveNotice(){
+		if($this->request->is('post') || $this->request->is('put')){
+			$noticeConfig = $this->request->data['dashboard'];
+
+			$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
+			$note = htmlspecialchars($note);
+
+			if(isset($noticeConfig['WidgetNoticeId'])){
+				$widgetNoticeId = $noticeConfig['WidgetNoticeId'];
+			}
+			$userId = $this->Auth->user('id');
+			$tab = $this->DashboardTab->find('first', [
+				'recursive' => -1,
+				'contain' => [],
+				'conditions' => [
+					'id' => $noticeConfig['tabId'],
+					'user_id' => $userId
+				],
+			]);
+			if(empty($tab) && !$this->Widget->exists($noticeConfig['widgetId'])){
+				$this->setFlash(__('Given tab not found in database'), false);
+				return $this->redirect(['action' => 'index']);
+			}
+
+			$data = [
+				'WidgetNotice' => [
+					'widget_id' => $noticeConfig['widgetId'],
+					'note' => $note,
+				]
+			];
+			if($widgetNoticeId !== null){
+				$data['WidgetNotice']['id'] = $widgetNoticeId;
+			}
+			if($this->WidgetNotice->save($data)){
+				$this->Widget->id = $data['WidgetNotice']['widget_id'];
+			}
+			/*if(){
+				$this->Widget->id = $data['WidgetNotice']['widget_id'];
+			}*/
+			return $this->redirect(['action' => 'index', $noticeConfig['tabId']]);
+		}
+
 		return $this->redirect(['action' => 'index']);
 	}
 }

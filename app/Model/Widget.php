@@ -36,9 +36,9 @@ class Widget extends AppModel{
 		'WidgetHostStatusList' => [
 			'dependent' => true
 		],
-		//'WidgetNotice' => [
-		//	'dependent' => true
-		//],
+		'WidgetNotice' => [
+			'dependent' => true
+		],
 		//'WidgetGraphgenerator' => [
 		//	'dependent' => true
 		//],
@@ -81,14 +81,14 @@ class Widget extends AppModel{
 			],
 		],
 	];
-	
+
 	public function copySharedWidgets($sourceTab, $targetTab, $userId){
 		$sourceWidgets = $this->find('all', [
 			'conditions' => [
 				'Widget.dashboard_tab_id' => $sourceTab['DashboardTab']['id']
 			]
 		]);
-		
+
 		foreach($sourceWidgets as $sourceWidget){
 			if(isset($sourceWidget['Service'])){
 				unset($sourceWidget['Service']);
@@ -96,10 +96,10 @@ class Widget extends AppModel{
 			if(isset($sourceWidget['Host'])){
 				unset($sourceWidget['Host']);
 			}
-			
+
 			$sourceWidget = Hash::remove($sourceWidget, '{s}.id');
 			$sourceWidget = Hash::remove($sourceWidget, '{s}.widget_id');
-			
+
 			$sourceWidget['DashboardTab'] = [
 				'id' => $targetTab['DashboardTab']['id'],
 				'name' => $sourceTab['DashboardTab']['name'],

@@ -1362,6 +1362,16 @@ class AppSchema extends CakeSchema {
 		],
 	];
 
+	public $widget_notices = [
+		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+		'widget_id' => ['type' => 'integer', 'null' => false],
+		'note' => ['type' => 'string', 'null' => false],
+		'indexes' => [
+			'PRIMARY' => ['column' => 'id', 'unique' => 1],
+			'KEY' => ['column' => 'widget_id', 'unique' => 1],
+		],
+	];
+
 	public $automaps = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
