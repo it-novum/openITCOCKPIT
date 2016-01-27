@@ -40,17 +40,18 @@ class DashboardHandler{
 		'ServiceStatusList',
 		'Trafficlight',
 		'Tachometer',
+		'Notice',
 	];
-	
+
 	protected $__widgetClasses = [];
-	
+
 	public function __construct(\Controller $controller){
 		$this->Controller = $controller;
 		require_once 'widgets' . DS . 'Widget.php';
-		
+
 		require_once 'widgets' . DS . 'QueryCache.php';
 		$QueryCache = new Widget\QueryCache($this->Controller);
-		
+
 		foreach($this->_widgets as $_widget){
 			require_once 'widgets' . DS . $_widget . '.php';
 			$_widget = 'Dashboard\Widget\\'. $_widget;
@@ -58,7 +59,7 @@ class DashboardHandler{
 			$this->__widgetClasses[$this->{$_widget}->typeId] = $_widget;
 		}
 	}
-	
+
 	public function getAllWidgets(){
 		$widgets = [];
 		foreach($this->_widgets as $widgetClassName){
@@ -72,7 +73,7 @@ class DashboardHandler{
 		}
 		return $widgets;
 	}
-	
+
 	public function getWidgetByTypeId($typeId, $tabId = null){
 		$result = [
 			'Widget' => [
@@ -89,14 +90,14 @@ class DashboardHandler{
 				'color' => $this->{$this->__widgetClasses[$typeId]}->defaultColor,
 			]
 		];
-		
+
 		if($this->{$this->__widgetClasses[$typeId]}->hasInitialConfig === true){
 			$result = \Hash::merge($result, $this->{$this->__widgetClasses[$typeId]}->initialConfig);
 		}
-		
+
 		return $result;
 	}
-	
+
 	public function getDefaultDashboards($tabId){
 		$data = [];
 		foreach($this->_widgets as $widgetClassName){
@@ -107,7 +108,7 @@ class DashboardHandler{
 		}
 		return $data;
 	}
-	
+
 	public function prepareForRender($tab){
 		$widgetData = [];
 		if(isset($tab['Widget'])){
@@ -126,7 +127,7 @@ class DashboardHandler{
 		}
 		return $widgetData;
 	}
-	
+
 	public function refresh($widget){
 		if(isset($widget['Widget']['type_id'])){
 			$result = $this->{$this->__widgetClasses[$widget['Widget']['type_id']]}->refresh($widget);
