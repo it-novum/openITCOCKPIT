@@ -1005,6 +1005,7 @@ class Host extends AppModel{
 			}
 			return true;
 		}
+		return true;
 	}
 
 	/**
