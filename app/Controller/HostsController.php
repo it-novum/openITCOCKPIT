@@ -1683,6 +1683,8 @@ class HostsController extends AppController{
 
 						$data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($service, $servicetemplate), $service, 'add');
 						$this->Service->create();
+						debug($data_to_save);
+						die();
 						$this->Service->saveAll($data_to_save);
 					}
 				}

@@ -708,7 +708,78 @@ class HosttemplatesController extends AppController{
 	}
 
 	public function copy($id = null){
+		//get the source ids from the Hosttemplates which shall be copied
+		$sourceIds = func_get_args();
+		//get the data of the Hosttemplates
+		$hosttemplates = $this->Hosttemplate->find('all',[
+			//'recursive' => -1,
+			'conditions' => [
+				'Hosttemplate.id' => $sourceIds
+			],
+			'contain' => [
+				'Contact' => [
+					'fields' => [
+						'Contact.id'
+					]
+				],
+				'Contactgroup' => [
+					'fields' => [
+						'Contactgroup.id'
+					]
+				]
+			]
+		]);
+		debug($hosttemplates);
 
+		$hosttemplates = Hash::combine($hosttemplates, '{n}.Hosttemplate.id', '{n}');
+		$oldHosttemplatesCopy = $hosttemplates;
+
+		foreach ($oldHosttemplatesCopy as $key => $oldHosttemplate) {
+			unset($oldHosttemplatesCopy[$key]['Hosttemplate']['created']);
+			unset($oldHosttemplatesCopy[$key]['Hosttemplate']['modified']);
+			unset($oldHosttemplatesCopy[$key]['Hosttemplate']['id']);
+			unset($oldHosttemplatesCopy[$key]['Hosttemplate']['uuid']);
+		}
+
+		if($this->request->is('post') || $this->request->is('put')){
+			$errorCount = 0;
+			$loopCount = 0;
+			foreach ($this->request->data['Hosttemplate'] as $key => $newHosttemplate) {
+				$newHosttemplateData = [
+					'Hosttemplate' => [
+						'name' => $newHosttemplate['name'],
+						'description' => $newHosttemplate['description']
+					]
+				];
+
+				$dataToSave = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']], $newHosttemplateData);
+				debug($dataToSave);
+				//die();
+				if($this->Hosttemplate->save($dataToSave)){
+					//$this->setFlash(__('Hosttemplate successfully copied'));
+					//$this->redirect(array('action' => 'index'));
+				}else{
+					debug($this->validationErrors);
+					die();
+					$errorCount++;
+				}
+				$loopCount++;
+			}
+debug($errorCount);
+die();
+			if($errorCount == 0){
+				$this->setFlash(__('Hosttemplate successfully copied'));
+				$this->redirect(array('action' => 'index'));
+			}else if($errorCount > 0 && $loopCount > $errorCount){
+				$this->setFlash(__('Some of the Hosttemplates could not be copied'), false);
+				$this->redirect(array('action' => 'index'));
+			}
+			$this->setFlash(__('Hosttemplates could not be copied'), false);
+			$this->redirect(array('action' => 'index'));
+		}
+
+		$this->set(compact('hosttemplates'));
+		$this->set('back_url', $this->referer());
 	}
 
 	public function addCustomMacro($counter){

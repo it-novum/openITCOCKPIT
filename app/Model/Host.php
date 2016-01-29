@@ -911,7 +911,7 @@ class Host extends AppModel{
 				'GraphgenTmplConf.service_id' => $serviceIds
 			]
 		]);
-
+debug($this->__allowDelete($host));
 		if($this->__allowDelete($host) || $isAllowed === true){
 			
 			if($this->delete()){
