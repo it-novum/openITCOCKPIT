@@ -1062,5 +1062,6 @@ class Service extends AppModel{
 			}
 			return true;
 		}
+		return true;
 	}
 }
