@@ -1005,6 +1005,7 @@ debug($this->__allowDelete($host));
 			}
 			return true;
 		}
+		return true;
 	}
 
 	/**
