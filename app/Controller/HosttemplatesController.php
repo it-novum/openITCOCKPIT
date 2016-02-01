@@ -760,7 +760,6 @@ class HosttemplatesController extends AppController{
 					//$this->redirect(array('action' => 'index'));
 				}else{
 					debug($this->validationErrors);
-					die();
 					$errorCount++;
 				}
 				$loopCount++;

@@ -465,6 +465,6 @@ class Hosttemplate extends AppModel{
 			return $notInUse;
 		}
 		
-		return false;
+		return true;
 	}
 }
