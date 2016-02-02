@@ -707,6 +707,67 @@ class HosttemplatesController extends AppController{
 
 	}
 
+	public function mass_delete($id = null){
+		$userId = $this->Auth->user('id');
+		$errorCount = 0;
+		$loopCount = 0;
+		foreach(func_get_args() as $hosttemplate_id){
+			if(!$this->Hosttemplate->exists($hosttemplate_id)){
+				throw new NotFoundException(__('Invalid hosttemplate'));
+			}
+
+			$hosttemplate = $this->Hosttemplate->findById($hosttemplate_id);
+			$containerIdsToCheck = Hash::extract($hosttemplate, 'Hosttemplate.container_id');
+			if(!$this->allowedByContainerId($containerIdsToCheck)){
+				$this->render403();
+				return;
+			}
+			$this->Hosttemplate->id = $hosttemplate_id;
+			if($this->Hosttemplate->__allowDelete($hosttemplate_id)){
+				if($this->Hosttemplate->delete()){
+					$changelog_data = $this->Changelog->parseDataForChangelog(
+						$this->params['action'],
+						$this->params['controller'],
+						$hosttemplate_id,
+						OBJECT_HOSTTEMPLATE,
+						$hosttemplate['Hosttemplate']['container_id'],
+						$userId,
+						$hosttemplate['Hosttemplate']['name'],
+						$hosttemplate
+					);
+					if($changelog_data){
+						CakeLog::write('log', serialize($changelog_data));
+					}
+
+					//Hosttemplate deleted, now we need to delete all hosts + services that are using this template
+					$this->loadModel('Host');
+					$hosts = $this->Host->find('all', [
+						'conditions' => [
+							'Host.hosttemplate_id' => $hosttemplate_id
+						]
+					]);
+					foreach($hosts as $host){
+						$this->Host->__delete($host, $this->Auth->user('id'));
+					}
+				}else{
+					$errorCount++;
+				}
+			}else{
+				$errorCount++;
+			}
+			$loopCount++;
+		}
+		if($errorCount == 0){
+			$this->setFlash(__('Hosttemplates deleted'));
+			$this->redirect(array('action' => 'index'));
+		}else if($errorCount > 0 && $loopCount > $errorCount){
+			$this->setFlash(__('Some of the Hosttemplates could not be deleted'), false);
+			$this->redirect(array('action' => 'index'));
+		}
+		$this->setFlash(__('Could not delete hosttemplates'), false);
+		$this->redirect(array('action' => 'index'));
+	}
+
 	public function copy($id = null){
 		//get the source ids from the Hosttemplates which shall be copied
 		$sourceIds = func_get_args();
@@ -729,7 +790,6 @@ class HosttemplatesController extends AppController{
 				]
 			]
 		]);
-		debug($hosttemplates);
 
 		$hosttemplates = Hash::combine($hosttemplates, '{n}.Hosttemplate.id', '{n}');
 		$oldHosttemplatesCopy = $hosttemplates;
@@ -744,28 +804,31 @@ class HosttemplatesController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			$errorCount = 0;
 			$loopCount = 0;
-			foreach ($this->request->data['Hosttemplate'] as $key => $newHosttemplate) {
+			foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
+				$contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contact.{n}.id');
+				$contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contactgroup.{n}.id');
 				$newHosttemplateData = [
 					'Hosttemplate' => [
+						'uuid' => $this->Hosttemplate->createUUID(),
 						'name' => $newHosttemplate['name'],
-						'description' => $newHosttemplate['description']
+						'description' => $newHosttemplate['description'],
+						'Contact' => $contactIds,
+						'Contactgroup' => $contactgroupIds,
 					]
 				];
 
-				$dataToSave = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']], $newHosttemplateData);
-				debug($dataToSave);
-				//die();
-				if($this->Hosttemplate->save($dataToSave)){
-					//$this->setFlash(__('Hosttemplate successfully copied'));
-					//$this->redirect(array('action' => 'index'));
-				}else{
-					debug($this->validationErrors);
+				$dataToSave = [];
+				$dataToSave['Hosttemplate'] = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplate'], $newHosttemplateData['Hosttemplate']);
+//debug($newHosttemplateData);
+//debug($dataToSave);
+
+				if(!$this->Hosttemplate->save($dataToSave)){
 					$errorCount++;
 				}
 				$loopCount++;
 			}
-debug($errorCount);
-die();
+//debug($loopCount);
+//debug($errorCount);
 			if($errorCount == 0){
 				$this->setFlash(__('Hosttemplate successfully copied'));
 				$this->redirect(array('action' => 'index'));
