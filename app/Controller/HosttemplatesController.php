@@ -819,16 +819,13 @@ class HosttemplatesController extends AppController{
 
 				$dataToSave = [];
 				$dataToSave['Hosttemplate'] = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplate'], $newHosttemplateData['Hosttemplate']);
-//debug($newHosttemplateData);
-//debug($dataToSave);
 
-				if(!$this->Hosttemplate->save($dataToSave)){
+				if(!$this->Hosttemplate->saveAll($dataToSave)){
 					$errorCount++;
 				}
 				$loopCount++;
 			}
-//debug($loopCount);
-//debug($errorCount);
+			
 			if($errorCount == 0){
 				$this->setFlash(__('Hosttemplate successfully copied'));
 				$this->redirect(array('action' => 'index'));
