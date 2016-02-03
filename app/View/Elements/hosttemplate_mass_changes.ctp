@@ -28,16 +28,21 @@
 	<div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
 	<div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
 	<div class="col-xs-12 col-md-2">
+		<?php if($this->Acl->hasPermission('copy')):?>
+			<a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy');?></a>
+		<?php endif; ?>
+	</div>
+	<div class="col-xs-12 col-md-2">
 		<?php if($this->Acl->hasPermission('delete', 'hosts')): ?>
-			<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete hosts'); ?></a>
+			<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete hosttemplates'); ?></a>
 		<?php endif;?>
 	</div>
 	
 	<!-- hidden fields for multi language -->
 	<input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>" />
-	<input type="hidden" id="delete_message_h2" value="<?php echo __('Do you really want delete the selected hosts?'); ?>" />
+	<input type="hidden" id="delete_message_h2" value="<?php echo __('Do you really want delete the selected hosttemplates?'); ?>" />
 	<input type="hidden" id="disable_message_h1" value="<?php echo __('Notice!'); ?>" />
-	<input type="hidden" id="disable_message_h2" value="<?php echo __('Do you really want disable the selected hosts?'); ?>" />
+	<input type="hidden" id="disable_message_h2" value="<?php echo __('Do you really want disable the selected hosttemplates?'); ?>" />
 	<input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>" />
 	<input type="hidden" id="message_no" value="<?php echo __('No'); ?>" />
 </div>
