@@ -52,9 +52,9 @@
 				echo $this->Form->create('Map', array(
 					'class' => 'form-horizontal clear'
 				));
+				echo $this->Form->input('container_id', ['options' => $container, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Container')]);
 				echo $this->Form->input('Map.name', ['label' => __('Map Name')]);
 				echo $this->Form->input('Map.title', ['label' => __('Map Title')]);
-				echo $this->Form->input('container_id', ['options' => $tenants, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Tenant')]);
 			?>
 			<br>
 			<br>

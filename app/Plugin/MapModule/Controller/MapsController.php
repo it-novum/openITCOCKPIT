@@ -57,13 +57,9 @@ class MapsController extends MapModuleAppController {
 	public function add(){
 		$this->loadModel('Container');
 
-		$tenants = $this->Container->find('list',[
-			'conditions' => [
-				'containertype_id' => CT_TENANT
-			]
-		]);
+		$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
 
-		$this->set(compact('tenants'));
+		$this->set(compact('container'));
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
@@ -113,7 +109,8 @@ class MapsController extends MapModuleAppController {
 			),
 			'{n}.Container.id', '{n}.Container.name'
 		);
-		$this->set(compact('map', 'tenants'));
+		$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
+		$this->set(compact('map', 'container'));
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
