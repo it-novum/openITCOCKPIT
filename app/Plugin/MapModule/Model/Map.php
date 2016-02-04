@@ -77,8 +77,20 @@ class Map extends MapModuleAppModel{
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
+		],
+		'container_id' => [
+			'atLeastOne' => [
+				'rule' => ['atLeastOne'],
+				'message' => 'You must specify at least one Container.',
+				'required' => true
+			]
 		]
 	];
 
-
+	/*
+		Custom validation rule for map field
+	*/
+	public function atLeastOne($data) {
+		return !empty($this->data[$this->name]['container_id']);
+	}
 }

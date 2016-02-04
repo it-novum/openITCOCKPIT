@@ -52,9 +52,9 @@
 					'class' => 'form-horizontal clear'
 				));
 				echo $this->Form->input('id', ['type' => 'hidden', 'value' => $map['Map']['id']]);
+				echo $this->Form->input('container_id', ['options' => $container, 'selected' => Hash::extract($map, 'Container.{n}.id'), 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Container')]);
 				echo $this->Form->input('Map.name', ['label' => __('Map Name'), 'value' => $map['Map']['name']]);
 				echo $this->Form->input('Map.title', ['label' => __('Map Title'), 'value' => $map['Map']['title']]);
-				echo $this->Form->input('container_id', ['options' => $tenants, 'selected' => Hash::extract($map, 'Container.{n}.id'), 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Tenant')]);
 			?>
 			<br>
 			<br>
