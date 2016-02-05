@@ -87,7 +87,6 @@ Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/m
 
 # Need help or support?
 * Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
-* [Community forum](http://openitcockpit.org/forum.html)
 * [it-novum GmbH](http://www.it-novum.com/en/support-openitcockpit-en.html) provides commercial support
 
 # License
