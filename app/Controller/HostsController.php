@@ -356,7 +356,7 @@ class HostsController extends AppController{
 			];
 		}
 		$host = Hash::merge($host, $hoststatus);
-		
+
 		$this->set('host', $host);
 		$this->set('_serialize', ['host']);
 	}
@@ -1435,7 +1435,7 @@ class HostsController extends AppController{
 			$this->Paginator->settings = $query;
 			$disabledHosts = $this->Paginator->paginate();
 		}
-		
+
 
 		/*$activeHostCount = $this->Host->find('count', [
 			'conditions' => ['Host.disabled' => 0]
@@ -1448,7 +1448,7 @@ class HostsController extends AppController{
 		$deletedHostCount = $this->DeletedHost->find('count');*/
 		$this->set(compact(['disabledHosts']));
 		$this->set('_serialize', ['disabledHosts']);
-		
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
@@ -2130,7 +2130,7 @@ class HostsController extends AppController{
 		];
 		$compare_array = [
 			'Host' => [
-				['Host.{(' . implode('|', array_values(Hash::merge($fields, ['name', 'description', 'address', 'host_url', 'satellite_id']))) . ')}', false],
+				['Host.{(' . implode('|', array_values(Hash::merge($fields, ['name', 'description', 'address', 'host_url', 'satellite_id', 'host_type']))) . ')}', false],
 				['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
 				['Hostcommandargumentvalue.{n}.{(commandargument_id|value|id)}', false],
 				['Customvariable.{n}.{(name|value)}', false]
