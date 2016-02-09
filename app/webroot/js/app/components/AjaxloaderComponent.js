@@ -23,16 +23,16 @@
 //	confirmation.
 
 App.Components.AjaxloaderComponent = Frontend.Component.extend({
-    $ajaxloader:null,
+	$ajaxloader:null,
 
-    setup: function(){
+	setup: function(){
 		this.$ajaxloader = $('#global_ajax_loader');
-    },
+	},
 
 	show: function(){
 		this.$ajaxloader.show();
 	},
-	
+
 	hide: function(){
 		this.$ajaxloader.fadeOut('slow')
 	}
