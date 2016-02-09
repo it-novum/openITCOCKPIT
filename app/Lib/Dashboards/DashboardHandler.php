@@ -41,6 +41,7 @@ class DashboardHandler{
 		'Trafficlight',
 		'Tachometer',
 		'Notice',
+		'Map',
 	];
 
 	protected $__widgetClasses = [];
@@ -125,6 +126,7 @@ class DashboardHandler{
 				$this->{$this->__widgetClasses[$widget['type_id']]}->setData($currentWidgetData);
 			}
 		}
+		//debug($widgetData);
 		return $widgetData;
 	}
 

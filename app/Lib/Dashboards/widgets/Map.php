@@ -24,46 +24,58 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Widget{
-	//Integer value of the dashboard type
-	public $typeId = null;
-	//Is this a default widget (restorDefault)
+use CakePlugin;
+
+class Map extends Widget{
 	public $isDefault = false;
-	//Default color
-	public $defaultColor = 'jarviswidget-color-blueDark';
-	//Default icon of the widget
-	public $icon = 'fa-question';
-	//Element to render
-	public $element = '404';
-	//Default row
-	public $row = 0;
-	//Default col
-	public $col = 0;
-	//Default width
-	public $width = 5;
-	//Default height
-	public $height = 11;
-	//Is ther a initical configuration we want to save into the database
-	public $hasInitialConfig = false;
-
-
-	public $Controller = null;
+	public $icon = 'fa-globe';
+	public $element = 'map';
+	public $width = 4;
+	public $height = 16;
 
 	public function __construct(\Controller $controller, $QueryCache){
-		$this->Controller = $controller;
-		$this->QueryCache = $QueryCache;
+		parent::__construct($controller, $QueryCache);
+		$this->typeId = 14;
+		$this->title = __('Map');
 	}
 
-	//This function will set all required variables for the view
 	public function setData($widgetData){
+		if(!CakePlugin::loaded('MapModule')){
+			throw new NotFoundException(__('MapModule not loaded'));
+		}
 
+		$mapsListForWidget = $this->Controller->Map->find('all',[
+			'conditions' => [
+				'MapsToContainers.container_id' => $this->Controller->MY_RIGHTS,
+			],
+			'fields' => [
+				'Map.id',
+				'Map.name',
+				'MapsToContainers.container_id'
+			],
+			'joins' => [
+				[
+					'table' => 'maps_to_containers',
+					'alias' => 'MapsToContainers',
+					'type' => 'LEFT',
+					'conditions' => [
+						'MapsToContainers.map_id = Map.id',
+					]
+				],
+			]
+		]);
+
+		$this->Controller->viewVars['widgetMaps'][$widgetData['Widget']['id']] = [
+			'Widget' => $widgetData,
+		];
+		$this->Controller->set('mapsListForWidget', $mapsListForWidget);
 	}
 
 	public function refresh($widget){
-
+		$this->setData($widget);
+		return [
+			'element' => 'Dashboard'.DS.$this->element
+		];
 	}
 
-	public function getElement($widget){
-		return $this->element;
-	}
 }
