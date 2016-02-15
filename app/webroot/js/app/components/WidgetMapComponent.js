@@ -62,7 +62,7 @@ App.Components.WidgetMapComponent = Frontend.Component.extend({
 
 	initMap: function(object){
 		var $object = $(object);
-		widgetId = parseInt($object.parents('.grid-stack-item').data('widget-id'), 10);
+		var widgetId = parseInt($object.parents('.grid-stack-item').data('widget-id'), 10);
 		var $container = $object;
 		var $wrapper = $object.parents('.map-body').find('.mapWrapper');
 		var $widgetContainer = $object.parents('.grid-stack-item');

@@ -42,7 +42,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 				self.saveService(widgetId, serviceId);
 			}
 		});
-		
+
 		var gridstack = $('.grid-stack');
 		gridstack.on('resizestop', function(event, ui){
 			var $element = $(ui.element);
@@ -54,12 +54,12 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 				}
 			}
 		}.bind(this));
-		
+
 		$('.trafficlightContainer').each(function(key, object){
 			this.initTrafficlight(object);
 		}.bind(this));
 	},
-	
+
 	initTrafficlight: function(object){
 		var $object = $(object);
 		widgetId = parseInt($object.parents('.grid-stack-item').data('widget-id'), 10);
@@ -79,6 +79,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			widgetContainer: $widgetContainer
 		};
 		if(this.trafficlights[widgetId].idService > 0){
+			//console.log($(this.trafficlights[widgetId].widgetContainer));
 			this.drawTrafficLight(widgetId, $container);
 		}
 	},
@@ -96,7 +97,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		var sizeY = 150;
 
 		var lightRadius = 17;
-		
+
 		var blinkLight = false;
 		if(this.trafficlights[widgetId].is_flapping == 1 || this.trafficlights[widgetId].current_state == 3){
 			blinkLight = true;
@@ -104,9 +105,9 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 
 		//SVG Container
 		//$svgContainer.css({width: '150px'}).svg();
-		
+
 		var height = this.calculateHeight(widgetId);
-		
+
 		$svgContainer.svg();
 		var svg = $svgContainer.svg('get');
 
@@ -230,9 +231,9 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		svg.circle(backgrounds, 50, 112, lightRadius,{
 			fill:'url(#greenLightPattern_'+id+')', stroke:'#333', strokeWidth:2
 		});
-		
+
 		this.trafficlights[widgetId].svg = svg;
-		
+
 		if(this.trafficlights[widgetId].current_state == 3 || this.trafficlights[widgetId].is_flapping == 1){
 			this.blinking(widgetId);
 		}
@@ -249,7 +250,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			$green.fadeIn(2000);
 		}, 3000);
 	},
-	
+
 	startRefreshInterval: function(widgetId){
 		if(this.trafficlights[widgetId].refreshTimer != null){
 			clearTimeout(this.trafficlights[widgetId].refreshTimer);
@@ -260,7 +261,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			}.bind(this), (this.trafficlights[widgetId].check_interval * 1000));
 		}
 	},
-	
+
 	saveService: function(widgetId, serviceId){
 		this.Ajaxloader.show();
 		$.ajax({
@@ -276,7 +277,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			}
 		});
 	},
-	
+
 	refresh: function(widgetId){
 		var $wrapper = this.trafficlights[widgetId].wrapper;
 		var $trafficLightBody = $wrapper.parents('.trafficLight-body').parent();
