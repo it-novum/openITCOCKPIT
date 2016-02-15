@@ -406,6 +406,7 @@ class ServicetemplatesController extends AppController{
 			}
 			$this->request->data['Contact']['Contact'] = $this->request->data('Servicetemplate.Contact');
 			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
+
 			// Save everything including custom variables
 			if($this->Servicetemplate->saveAll($this->request->data)){
 				$requestData = array_merge($this->request->data, $ext_data_for_changelog);
@@ -429,7 +430,7 @@ class ServicetemplatesController extends AppController{
 					return;
 				}
 
-				$this->setFlash(__('<a href="/services/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
+				$this->setFlash(__('<a href="/servicetemplates/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
 				$this->redirect(array('action' => 'index'));
 			}else{
 				if($isJson){
@@ -797,6 +798,163 @@ class ServicetemplatesController extends AppController{
 		$this->redirect(array('action' => 'index'));
 		
 	}
+
+	public function mass_delete($id = null){
+
+		$userId = $this->Auth->user('id');
+
+		$datasource = $this->Servicetemplate->getDataSource();
+		try{
+		    $datasource->begin();
+		    $deletedServicetemplates = [];
+
+		    // $counter = 0;
+			foreach(func_get_args() as $serviceTemplateId){
+				// if(++$counter == 3)
+				// throw new Exception('Invalid servicetemplate test', 1);
+				if(!$this->Servicetemplate->exists($serviceTemplateId)){
+					throw new Exception('Invalid servicetemplate', 1);
+				}
+
+				$servicetemplate = $this->Servicetemplate->findById($serviceTemplateId);
+				$containerIdsToCheck = Hash::extract($servicetemplate, 'Servicetemplate.container_id');
+				if(!$this->allowedByContainerId($containerIdsToCheck)){
+					throw new Exception('', 403);
+				}
+
+				$this->Servicetemplate->id = $serviceTemplateId;
+				if(!$this->Servicetemplate->__allowDelete($serviceTemplateId)){
+					throw new Exception('Some of the Servicetemplates could not be deleted', 1);					
+				}
+
+				if(!$this->Servicetemplate->delete()){
+					throw new Exception('Some of the Servicetemplates could not be deleted', 1);
+				}
+
+
+				//Servicetemplate deleted, now we need to delete all services that are using this template
+				$this->loadModel('Service');
+				$services = $this->Service->find('all', [
+					'conditions' => [
+						'Service.servicetemplate_id' => $serviceTemplateId
+					]
+				]);
+				foreach($services as $service){
+					if(!$this->Service->__delete($service, $this->Auth->user('id'))){
+						throw new Exception('Some of the Servicetemplates could not be deleted', 1);
+					}
+				}
+
+				$deletedServicetemplates[] = $servicetemplate;
+
+			}		    
+
+		    foreach($deletedServicetemplates as $deletedServicetemplate){
+				$changelog_data = $this->Changelog->parseDataForChangelog(
+					$this->params['action'],
+					$this->params['controller'],
+					$deletedServicetemplate['Servicetemplate']['id'],
+					OBJECT_SERVICETEMPLATE,
+					$deletedServicetemplate['Servicetemplate']['container_id'],
+					$userId,
+					$deletedServicetemplate['Servicetemplate']['name'],
+					$deletedServicetemplate
+				);
+				if($changelog_data){
+					if(!CakeLog::write('log', serialize($changelog_data))) {
+						throw new Exception('Cannot write logs. Servicetemplates was not deleted.', 1);
+					}										
+				}
+		    }
+
+		    $datasource->commit();
+
+			$this->setFlash(__('Servicetemplates deleted'));
+			$this->redirect(['action' => 'index']);
+
+		} catch(Exception $e) {
+		    $datasource->rollback();
+		    switch($e->getCode()){
+		    	case 403:
+		    		$this->render403();
+		    		break;
+		    	default:
+					$this->setFlash(__($e->getMessage()), false);
+					$this->redirect(['action' => 'index']);
+		    }
+		}
+
+	}	
+
+	public function copy($id = null){
+
+		$servicetmpl = $this->Servicetemplate->find('all',[
+			'conditions' => [
+				'Servicetemplate.id' => func_get_args()
+			],
+			'contain' => [
+				'Contact' => [
+					'fields' => [
+						'Contact.id'
+					]
+				],
+				'Contactgroup' => [
+					'fields' => [
+						'Contactgroup.id'
+					]
+				]
+			]
+		]);
+
+		$servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');	
+
+		if($this->request->is('post') || $this->request->is('put')){
+
+			foreach ($servicetemplates as $key => $servicetemplate) {
+				unset($servicetemplates[$key]['Servicetemplate']['created']);
+				unset($servicetemplates[$key]['Servicetemplate']['modified']);
+				unset($servicetemplates[$key]['Servicetemplate']['id']);
+				unset($servicetemplates[$key]['Servicetemplate']['uuid']);
+			}
+
+			$datasource = $this->Servicetemplate->getDataSource();
+			try{
+			    $datasource->begin();
+				foreach ($this->request->data['Servicetemplate'] as $newServicetemplate) {
+					$contactIds = Hash::extract($servicetemplates[$newServicetemplate['source']],'Contact.{n}.id');
+					$contactgroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']],'Contactgroup.{n}.id');
+					$newServicetemplateData = [
+						'Servicetemplate' => [
+							'uuid' => $this->Servicetemplate->createUUID(),
+							'name' => $newServicetemplate['name'],
+							'description' => $newServicetemplate['description']								
+						]					];
+
+					$dataToSave = [];
+					$dataToSave['Servicetemplate'] = Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], $newServicetemplateData['Servicetemplate']);
+					$dataToSave['Contact']['Contact'] = $contactIds;
+					$dataToSave['Contactgroup']['Contactgroup'] = $contactIds;
+					if(!$this->Servicetemplate->saveAll($dataToSave)){
+						throw new Exception('Some of the Servicetemplates could not be copied');
+					}
+				}
+
+			    $datasource->commit();
+
+				$this->setFlash(__('Servicetemplates are successfully copied'));
+				$this->redirect(array('action' => 'index'));
+
+			} catch(Exception $e) {
+			    $datasource->rollback();
+				$this->setFlash(__($e->getMessage()), false);
+				$this->redirect(['action' => 'index']);
+			}				
+
+		}
+
+		$this->set(compact('servicetemplates'));
+		$this->set('back_url', $this->referer());
+	}	
 
 	public function usedBy($id = null){
 		if(!$this->Servicetemplate->exists($id)){
