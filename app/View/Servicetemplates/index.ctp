@@ -68,6 +68,7 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
+										<th class="no-sort text-center" ><i class="fa fa-check-square-o fa-lg"></i></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
@@ -76,6 +77,11 @@
 									<?php foreach($all_servicetemplates as $servicetemplate): ?>
 										<?php $allowEdit = $this->Acl->isWritableContainer($servicetemplate['Servicetemplate']['container_id']); ?>
 										<tr>
+											<td class="text-center width-5">
+												<?php if($allowEdit): ?>
+													<input type="checkbox" class="massChange" hostname="<?= h($servicetemplate['Servicetemplate']['name']); ?>" value="<?= $servicetemplate['Servicetemplate']['id']; ?>" uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
+												<?php endif;?>
+											</td>											
 											<td><?php echo $servicetemplate['Servicetemplate']['name']; ?></td>
 											<td class="width-160">
 												<div class="btn-group">
@@ -122,6 +128,8 @@
 								</center>
 							</div>
 						<?php endif;?>
+
+						<?= $this->element('servicetemplate_mass_changes'); ?>
 
 						<div style="padding: 5px 10px;">
 							<div class="row">
