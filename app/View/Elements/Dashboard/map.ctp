@@ -50,17 +50,16 @@ endif;
 			</div>
 		</div>
 	</div>
-
-		<div class="mapWrapper">
-			<?php if($mapId): ?>
-				<div class="mapContainer" data-id-map="<?php echo $mapId; ?>">
-				<iframe width="100%" height="200" style="border:0px;" src="/map_module/mapeditors/view/<?php echo $mapId; ?>/fullscreen:1"/>
-				</div>
-			<?php else: ?>
-				<div class="mapContainer" data-id-map="0">
-					<center><?php echo __('No map selected or selected map has been deleted');?></center>
-				</div>
-			<?php endif; ?>
-		</div>
+	<div class="mapWrapper">
+		<?php
+		if($mapId): ?>
+			<div class="mapContainer" data-id-map="<?php echo $mapId; ?>">
+				<iframe width="100%" height="200" style="border:0px;" scrolling="no" src="/map_module/mapeditors/view/<?php echo $mapId; ?>/fullscreen:1" /></iframe>
+			</div>
+		<?php else: ?>
+			<div class="mapContainer" data-id-map="0">
+				<center><?php echo __('No map selected or selected map has been deleted');?></center>
+			</div>
+		<?php endif; ?>
+	</div>
 </div>
-
