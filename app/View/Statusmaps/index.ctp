@@ -22,6 +22,34 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+echo $this->Html->script('vendor/sigmajs/sigma.core.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/conrad.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/utils/sigma.utils.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/utils/sigma.polyfills.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/sigma.settings.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.dispatcher.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.configurable.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.graph.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.camera.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.quad.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/classes/sigma.classes.edgequad.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/captors/sigma.captors.mouse.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/captors/sigma.captors.touch.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/renderers/sigma.renderers.canvas.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/renderers/canvas/sigma.canvas.labels.def.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/renderers/canvas/sigma.canvas.hovers.def.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/renderers/canvas/sigma.canvas.nodes.def.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/renderers/canvas/sigma.canvas.edges.arrow.js', ['inline' => false]);
+// echo $this->Html->script('vendor/sigmajs/renderers/canvas/sigma.canvas.extremities.def.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/middlewares/sigma.middlewares.rescale.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/misc/sigma.misc.animation.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/misc/sigma.misc.bindEvents.js', ['inline' => false]);
+// echo $this->Html->script('vendor/sigmajs/misc/sigma.misc.bindDOMEvents.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/misc/sigma.misc.drawHovers.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/plugins/sigma.plugins.neighborhoods/sigma.plugins.neighborhoods.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/plugins/sigma.layout.forceAtlas2/supervisor.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/plugins/sigma.layout.forceAtlas2/worker.js', ['inline' => false]);
+echo $this->Html->script('vendor/sigmajs/plugins/sigma.parsers.json/sigma.parsers.json.js', ['inline' => false]);
 ?>
 <?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
 <div class="row">
