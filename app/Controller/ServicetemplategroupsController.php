@@ -58,7 +58,7 @@ class ServicetemplategroupsController extends AppController{
 	public function index(){
 		$options = [
 			'order' => [
-				'Servicetemplategroup.name' => 'asc'
+				'Container.name' => 'asc'
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
