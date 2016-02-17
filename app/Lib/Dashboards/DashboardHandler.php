@@ -25,6 +25,7 @@
 
 namespace Dashboard;
 use Dashboard\Widget;
+use CakePlugin;
 class DashboardHandler{
 	//List of all exsisting widgets classes
 	private $_widgets = [
@@ -41,6 +42,7 @@ class DashboardHandler{
 		'Trafficlight',
 		'Tachometer',
 		'Notice',
+		'Map',
 	];
 
 	protected $__widgetClasses = [];
@@ -64,12 +66,22 @@ class DashboardHandler{
 		$widgets = [];
 		foreach($this->_widgets as $widgetClassName){
 			$widgetClassName = 'Dashboard\Widget\\' . $widgetClassName;
-			$widgets[] = [
-				'typeId' => $this->{$widgetClassName}->typeId,
-				'title' => $this->{$widgetClassName}->title,
-				'icon' => $this->{$widgetClassName}->icon,
-				'element' => 'Dashboard'.DS.$this->{$widgetClassName}->element,
-			];
+			if($this->{$widgetClassName}->typeId !== 14){
+				$widgets[] = [
+					'typeId' => $this->{$widgetClassName}->typeId,
+					'title' => $this->{$widgetClassName}->title,
+					'icon' => $this->{$widgetClassName}->icon,
+					'element' => 'Dashboard'.DS.$this->{$widgetClassName}->element,
+				];
+			}elseif(CakePlugin::loaded('MapModule') && $this->{$widgetClassName}->typeId === 14){
+				$widgets[] = [
+					'typeId' => $this->{$widgetClassName}->typeId,
+					'title' => $this->{$widgetClassName}->title,
+					'icon' => $this->{$widgetClassName}->icon,
+					'element' => 'Dashboard'.DS.$this->{$widgetClassName}->element,
+				];
+			}
+
 		}
 		return $widgets;
 	}
@@ -125,6 +137,7 @@ class DashboardHandler{
 				$this->{$this->__widgetClasses[$widget['type_id']]}->setData($currentWidgetData);
 			}
 		}
+		//debug($widgetData);
 		return $widgetData;
 	}
 
