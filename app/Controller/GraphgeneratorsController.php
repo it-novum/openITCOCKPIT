@@ -129,6 +129,11 @@ class GraphgeneratorsController extends AppController{
 		]);
 	}
 
+	public function view($configuration_id = 0){
+		$this->layout = 'Admin.fullscreen';
+		$this->index($configuration_id);
+	}
+
 	/**
 	 * Listing the existing configurations to load and edit them.
 	 */
