@@ -112,9 +112,13 @@ class ArchiveMigrationShell extends AppShell{
 							'last_state' => $statehistoryRecord['ArchiveStatehistory']['last_state'],
 							'last_hard_state' => $statehistoryRecord['ArchiveStatehistory']['last_hard_state'],
 							'output' => $statehistoryRecord['ArchiveStatehistory']['output'],
-							'long_output' => $statehistoryRecord['ArchiveStatehistory']['long_output'],
+							'long_output' => ''
 						]
 					];
+					
+					if(isset($statehistoryRecord['ArchiveStatehistory']['long_output'])){
+						$data['long_output'] = $statehistoryRecord['ArchiveStatehistory']['long_output'];
+					}
 					
 					if($this->simulation === false){
 						$this->Statehistory->create();
