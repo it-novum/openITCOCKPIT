@@ -1286,6 +1286,7 @@ class AppSchema extends CakeSchema {
 		'service_id' => ['type' => 'integer', 'null' => true],
 		'host_id' => ['type' => 'integer', 'null' => true],
 		'map_id' => ['type' => 'integer', 'null' => true],
+		'graph_id' => ['type' => 'integer', 'null' => true],
 		'row' => ['type' => 'integer', 'null' => false],
 		'col' => ['type' => 'integer', 'null' => false],
 		'width' => ['type' => 'integer', 'null' => false],

@@ -43,6 +43,7 @@ class DashboardHandler{
 		'Tachometer',
 		'Notice',
 		'Map',
+		'Graphgenerator',
 	];
 
 	protected $__widgetClasses = [];

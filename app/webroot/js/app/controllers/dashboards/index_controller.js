@@ -39,6 +39,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'WidgetTrafficLight',
 		'WidgetTacho',
 		'WidgetMap',
+		'WidgetGraphgenerator',
 	],
 
 	_initialize: function(){
@@ -59,6 +60,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 		this.WidgetMap.setAjaxloader(this.Ajaxloader);
 		this.WidgetMap.initMaps();
+
+		this.WidgetGraphgenerator.setAjaxloader(this.Ajaxloader);
+		this.WidgetGraphgenerator.initGraphs();
 
 		if(this.getVar('updateAvailable') === true){
 			$('#updateAvailableModal').modal('show');
@@ -158,6 +162,10 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 						case 14:
 							this.WidgetMap.initMap($(widgetHtml).find('.mapWrapper'));
+							$('.chosen').chosen();
+
+						case 15:
+							this.WidgetGraphgenerator.initGraph($(widgetHtml).find('.graphWrapper'));
 							$('.chosen').chosen();
 							break;
 						}

@@ -53,6 +53,7 @@ class DashboardsController extends AppController{
 		'WidgetTacho',
 		'WidgetNotice',
 		'MapModule.Map',
+		'GraphgenTmpl',
 	];
 
 	const UPDATE_DISABLED = 0;
@@ -854,6 +855,30 @@ class DashboardsController extends AppController{
 				$widget = $this->Widget->findById($widgetId);
 				if($widget['DashboardTab']['user_id'] == $userId){
 					$widget['Widget']['map_id'] = $mapId;
+					$this->Widget->save($widget);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+				}
+			}
+		}
+	}
+
+	public function saveGraphId(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$graphId = (int)$this->request->data['graphId'];
+			if($graphId === 0){
+				$graphId = null;
+			}
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['graph_id'] = $graphId;
 					$this->Widget->save($widget);
 					$this->DashboardTab->id = $widget['DashboardTab']['id'];
 					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
