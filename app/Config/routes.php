@@ -28,7 +28,8 @@ Router::mapResources([
 	'servicetemplategroups',
 	'MapModule.maps',
 	'EventcorrelationModule.eventcorrelations',
-	'AutoreportModule.autoreports'
+	'AutoreportModule.autoreports',
+	'MkModule.mkservicedata'
 ]);
 
 // Caution: Do NOT mix controller names with those controller names from plugins! It's a bug and may not work.
