@@ -201,12 +201,16 @@ class ListFilterHelper extends AppHelper {
 						break;
 					}
 
+				//set a variable for the form to not add required class listfilter = true
+
 				$inputOptions = Set::merge(array(
 					'label' => __($options['label']),
 					'type' => $options['type'],
 					'options' => $options['options'],
+					'listfilter' => true,
 					'empty' => $options['empty']
 				), $options['inputOptions']);
+				//debug($inputOptions);
 				$ret.= $this->Form->input('Filter.' . $field, $inputOptions);
 				break;
 		}

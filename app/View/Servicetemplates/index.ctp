@@ -68,8 +68,9 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
-										<th class="no-sort text-center" ><i class="fa fa-check-square-o fa-lg"></i></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
+										<th class="no-sort text-center" style="width:5%"><i class="fa fa-check-square-o fa-lg"></i></th>
+										<th class="no-sort" style="width:30%"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
+										<th class="no-sort" style="width:55%"><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -81,9 +82,10 @@
 												<?php if($allowEdit): ?>
 													<input type="checkbox" class="massChange" hostname="<?= h($servicetemplate['Servicetemplate']['name']); ?>" value="<?= $servicetemplate['Servicetemplate']['id']; ?>" uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
 												<?php endif;?>
-											</td>											
+											</td>
 											<td><?php echo $servicetemplate['Servicetemplate']['name']; ?></td>
-											<td class="width-160">
+											<td><?php echo $servicetemplate['Servicetemplate']['description']; ?></td>
+											<td class="width-160 text-center">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplate['Servicetemplate']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -91,7 +93,7 @@
 														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 													<?php endif;?>
 													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
+													<ul class="dropdown-menu pull-right">
 														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 															<li>
 																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicetemplate['Servicetemplate']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
