@@ -78,7 +78,8 @@ class HosttemplatesController extends AppController{
 				'Hosttemplate.name' => 'asc'
 			],
 			'conditions' => [
-				'Container.id' => $this->MY_RIGHTS
+				'Container.id' => $this->MY_RIGHTS,
+				'Hosttemplate.hosttemplatetype_id' => GENERIC_HOSTTEMPLATE,
 			],
 			'contain' => [
 				'Container'
@@ -802,40 +803,47 @@ class HosttemplatesController extends AppController{
 		}
 
 		if($this->request->is('post') || $this->request->is('put')){
-			$errorCount = 0;
-			$loopCount = 0;
-			foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
-				$contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contact.{n}.id');
-				$contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contactgroup.{n}.id');
-				$newHosttemplateData = [
-					'Hosttemplate' => [
-						'uuid' => $this->Hosttemplate->createUUID(),
-						'name' => $newHosttemplate['name'],
-						'description' => $newHosttemplate['description'],
+			$datasource = $this->Hosttemplate->getDataSource();
+			try{
+				$datasource->begin();
+				foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
+					$contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contact.{n}.id');
+					$contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contactgroup.{n}.id');
+					
+					$newHosttemplateData = [
+						'Hosttemplate' => [
+							'uuid' => $this->Hosttemplate->createUUID(),
+							'name' => $newHosttemplate['name'],
+							'description' => $newHosttemplate['description'],
+							'Contact' => $contactIds,
+							'Contactgroup' => $contactgroupIds,
+						],
 						'Contact' => $contactIds,
-						'Contactgroup' => $contactgroupIds,
-					]
-				];
+						'Contactgroup' => $contactgroupIds
+					];
 
-				$dataToSave = [];
-				$dataToSave['Hosttemplate'] = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplate'], $newHosttemplateData['Hosttemplate']);
+					unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contact']);
+					unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contactgroup']);
 
-				if(!$this->Hosttemplate->saveAll($dataToSave)){
-					$errorCount++;
+					$dataToSave = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']], $newHosttemplateData);
+					if(!$this->Hosttemplate->saveAll($dataToSave)){
+						throw new Exception("Hosttemplate could not be saved");
+					}
 				}
-				$loopCount++;
-			}
-			
-			if($errorCount == 0){
+
+				$datasource->commit();
+
 				$this->setFlash(__('Hosttemplate successfully copied'));
 				$this->redirect(array('action' => 'index'));
-			}else if($errorCount > 0 && $loopCount > $errorCount){
-				$this->setFlash(__('Some of the Hosttemplates could not be copied'), false);
+			}catch(Exception $e){
+				$datasource->rollback();
+				//@TODO switch for error msg
+				$this->setFlash(__('Hosttemplates could not be copied'), false);
 				$this->redirect(array('action' => 'index'));
 			}
-			$this->setFlash(__('Hosttemplates could not be copied'), false);
-			$this->redirect(array('action' => 'index'));
 		}
+
+		
 
 		$this->set(compact('hosttemplates'));
 		$this->set('back_url', $this->referer());
