@@ -282,7 +282,10 @@ class ServicesController extends AppController{
 
 				'HostsToContainers.container_id'
 			],
-			'order' => ['Host.name' => 'asc'],
+			'order' => [
+				'Host.name' => 'asc',
+				'Service.name' => 'asc'
+			],
 			'joins' => [[
 				'table' => 'hosts',
 				'type' => 'INNER',
