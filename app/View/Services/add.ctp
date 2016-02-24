@@ -203,7 +203,7 @@ echo $this->Form->create('Service', [
 					'icon' => '<i class="fa ' . $icon . '"></i> ',
 					'class' => 'onoffswitch-checkbox notification_control',
 					'checked' => $this->CustomValidationErrors->refill($notification_setting, false),
-					'wrapGridClass' => 'col col-xs-2',
+					'wrapGridClass' => 'col col-xs-1',
 				]); ?>
 			</div>
 		<?php endforeach; ?>
@@ -359,7 +359,7 @@ echo $this->Form->create('Service', [
 <div class="form-group">
 	<?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
 		'caption' => __('Flap detection'),
-		'wrapGridClass' => 'col col-xs-2',
+		'wrapGridClass' => 'col col-xs-1',
 		'captionGridClass' => 'col col-xs-2 text-left',
 		'captionClass' => 'control-label',
 		'checked' => $this->CustomValidationErrors->refill('flap_detection_enabled', false),
@@ -384,7 +384,7 @@ echo $this->Form->create('Service', [
 				'icon' => '<i class="fa ' . $icon . '"></i> ',
 				'class' => 'onoffswitch-checkbox flapdetection_control',
 				'checked' => $this->CustomValidationErrors->refill($flapDetection_setting, false),
-				'wrapGridClass' => 'col col-xs-2',
+				'wrapGridClass' => 'col col-xs-1',
 				'captionGridClass' => 'col col-xs-2',
 			]); ?>
 		</div>
@@ -401,7 +401,7 @@ echo $this->Form->create('Service', [
 		'icon' => '<i class="fa fa-asterisk"></i> ',
 		'class' => 'onoffswitch-checkbox',
 		'checked' => $this->CustomValidationErrors->refill('is_volatile', false),
-		'wrapGridClass' => 'col col-xs-2',
+		'wrapGridClass' => 'col col-xs-1',
 		'captionGridClass' => 'col col-md-2'
 	]); ?>
 </div>
@@ -410,7 +410,7 @@ echo $this->Form->create('Service', [
 		'caption' => __('Freshness checks enabled'),
 		'icon' => '<i class="fa fa-foursquare"></i> ',
 		'class' => 'onoffswitch-checkbox',
-		'wrapGridClass' => 'col col-xs-2',
+		'wrapGridClass' => 'col col-xs-1',
 		'captionGridClass' => 'col col-md-2'
 	]); ?>
 </div>
@@ -419,9 +419,9 @@ echo $this->Form->create('Service', [
 echo $this->Form->input('Service.freshness_threshold', [
 	'label' => [
 		'text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'),
-		'class' => 'col col-md-4 control-label text-left',
+		'class' => 'col col-md-2 control-label text-left',
 	],
-	'class' => 'col col-md-9',
+	'class' => 'col col-md-12',
 	'wrapInput' => 'col col-xs-8',
 ]);
 ?>
