@@ -342,9 +342,12 @@
 								<div class="clearfix"></div>
 								<div class="padding-left-10">
 									<?php
-									echo $this->Form->input('freshness_threshold', [ 'label' => ['text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'), 'class' => 'col col-md-4 control-label text-left'],
-										'class' => 'col col-md-9', 'wrapInput' => 'col col-xs-8']);
-								?>
+									echo $this->Form->input('freshness_threshold', [
+										'label' => ['text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'),'class' => 'col col-md-2 control-label text-left'],
+										'class' => 'col col-md-12', 
+										'wrapInput' => 'col col-xs-8'
+									]);
+									?>
 								</div>
 							</div>
 							<br>
