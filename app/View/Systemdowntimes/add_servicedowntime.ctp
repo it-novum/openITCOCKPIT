@@ -47,7 +47,7 @@
 	<div>
 		<div class="widget-body">
 				<div class="row">
-					<div class="col-xs-12 col-md-9 col-lg-7">
+					<div class="col-xs-12 col-md-12 col-lg-12">
 							<?php
 							echo $this->Form->create('Systemdowntime', [
 								'class' => 'form-horizontal clear',
@@ -58,19 +58,37 @@
 								2 => __('Host and dependent Hosts (triggered)'),
 								3 => __('Host and dependent Hosts (non-triggered)')
 							];
-							?>
-							<?php echo $this->CustomValidationErrors->errorHTML('downtimetype', ['class' => 'text-danger']); ?>
-							<?php echo $this->Form->input('objecttype_id', ['type' => 'hidden', 'value' => OBJECT_SERVICE]);?>
-							<?php echo $this->Form->input('downtimetype', ['type' => 'hidden', 'value' => 'service']);?>
-							<?php echo $this->Form->input('object_id', ['options' => $services, 'multiple' => true, 'label' => __('Service'), 'class' => 'chosen col col-xs-12', 'selected' => $selected]); ?>
-							<?php echo $this->Form->input('comment', ['value' => __('In maintenance'), 'label' => __('Comment')]); ?>
 							
-							<?php
+							echo $this->CustomValidationErrors->errorHTML('downtimetype', [
+								'class' => 'text-danger'
+							]);
+							echo $this->Form->input('objecttype_id', [
+								'type' => 'hidden', 
+								'value' => OBJECT_SERVICE
+							]);
+							echo $this->Form->input('downtimetype', [
+								'type' => 'hidden', 
+								'value' => 'service'
+							]);
+							echo $this->Form->input('object_id', [
+								'options' => $services, 
+								'multiple' => true, 
+								'label' => ['text' => __('Service'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12', 
+								'selected' => $selected,
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							echo $this->Form->input('comment', [
+								'value' => __('In maintenance'), 
+								'label' => ['text' => __('Comment'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							
 							echo $this->Form->fancyCheckbox('is_recurring', [
 								'caption' => __('Recurring downtime'),
 								'captionGridClass' => 'col col-md-2',
 								'captionClass' => 'control-label',
-								'wrapGridClass' => 'col col-md-10',
+								'wrapGridClass' => 'col col-md-1',
 								'class' => 'onoffswitch-checkbox notification_control',
 								'checked' => (bool)$this->CustomValidationErrors->refill('is_recurring', false)
 							]);
@@ -88,15 +106,24 @@
 									7 => __('Sunday'),
 								];
 							
-								echo $this->Form->input('weekdays', ['options' => $weekdays, 'multiple' => true, 'label' => __('Weekdays'), 'class' => 'chosen col col-xs-12']);
-								echo $this->Form->input('day_of_month', ['placeholder' => __('1,2,3,4,5 or <blank>'), 'label' => __('Days of month')]);
+								echo $this->Form->input('weekdays', [
+									'options' => $weekdays, 
+									'multiple' => true, 
+									'label' => ['text' => __('Weekdays'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+									'class' => 'chosen col col-xs-12',
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('day_of_month', [
+									'placeholder' => __('1,2,3,4,5 or <blank>'), 
+									'label' => ['text' => __('Days of month'), 'class' => 'col-xs-1 col-md-1 col-lg-1']
+								]);
 								?>
 							</div>
 							<br />
 							<!-- from -->
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('from_date'); ?>">
-								<label class="col col-md-2 control-label" for="SystemdowntimeFromDate"><?php echo __('From');?>:</label>
-								<div class="col col-xs-4 col-md-5" style="padding-right: 0px;">
+								<label class="col col-md-1 control-label" for="SystemdowntimeFromDate"><?php echo __('From');?>:</label>
+								<div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
 									<input type="text" id="SystemdowntimeFromDate" value="<?php echo $this->CustomValidationErrors->refill('check_interval', date('d.m.Y')); ?>" class="form-control" name="data[Systemdowntime][from_date]">
 									<div>
 										<?php echo $this->CustomValidationErrors->errorHTML('from_date'); ?>
@@ -113,8 +140,8 @@
 
 							<!-- to -->
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('to_date'); ?>">
-								<label class="col col-md-2 control-label" for="SystemdowntimeToDate"><?php echo __('To');?>:</label>
-								<div class="col col-xs-4 col-md-5" style="padding-right: 0px;">
+								<label class="col col-md-1 control-label" for="SystemdowntimeToDate"><?php echo __('To');?>:</label>
+								<div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
 									<input type="text" id="SystemdowntimeToDate" value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control" name="data[Systemdowntime][to_date]">
 									<div>
 										<?php echo $this->CustomValidationErrors->errorHTML('to_date'); ?>
