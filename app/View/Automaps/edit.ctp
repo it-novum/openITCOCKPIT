@@ -49,18 +49,39 @@
 	<div>
 		<div class="widget-body">
 			<div class="row">
-				<div class="col-xs-12 col-md-9 col-lg-7">
+				<div class="col-xs-12 col-md-12 col-lg-12">
 					<?php
 						echo $this->Form->create('Automap', array(
 							'class' => 'form-horizontal clear'
 						));
-						echo $this->Form->input('id', ['type' => 'hidden', 'value' => $automap['Automap']['id']]);
-						echo $this->Form->input('container_id', ['options' => $containers, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container')]);
-						echo $this->Form->input('name', ['label' => __('Name')]);
-						echo $this->Form->input('description', ['label' => __('Description')]);
+						echo $this->Form->input('id', [
+							'type' => 'hidden', 
+							'value' => $automap['Automap']['id']
+						]);
+						echo $this->Form->input('container_id', [
+							'options' => $containers, 
+							'class' => 'chosen', 
+							'style' => 'width: 100%;', 
+							'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]);
+						echo $this->Form->input('name', [
+							'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]);
+						echo $this->Form->input('description', [
+							'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]);
 				
-						echo $this->Form->input('host_regex', []);
-						echo $this->Form->input('service_regex', []);
+						echo $this->Form->input('host_regex', [
+							'label' => ['text' => __('Host RegEx'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]);
+						echo $this->Form->input('service_regex', [
+							'label' => ['text' => __('Service RegEx'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]);
 						?>
 						
 						<?php $errorClass = $this->CustomValidationErrors->errorClass('show_ok'); ?>
@@ -69,7 +90,7 @@
 								'caption' => __('Show Ok'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding ',
+								'captionClass' => 'control-label text-left no-padding ',
 								'icon' => '<i class="fa fa-square txt-color-greenLight"></i> ',
 								'required' => false,
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_ok', true)
@@ -80,7 +101,7 @@
 								'caption' => __('Show Warning'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-square txt-color-orange"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_warning', true)
 							]); ?>
@@ -90,7 +111,7 @@
 								'caption' => __('Show Critical'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-square txt-color-redLight"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_critical', true)
 							]); ?>
@@ -100,7 +121,7 @@
 								'caption' => __('Show Unknown'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-square txt-color-blueDark"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_unknown', true)
 							]); ?>
@@ -110,7 +131,7 @@
 								'caption' => __('Show Downtime'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-power-off"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_downtime', true)
 							]); ?>
@@ -120,7 +141,7 @@
 								'caption' => __('Show Acknowledged'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-user"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_acknowledged', true)
 							]); ?>
@@ -136,15 +157,15 @@
 								'caption' => __('Show Label'),
 								'wrapGridClass' => 'col col-xs-2',
 								'captionGridClass' => 'col col-xs-2 no-padding',
-								'captionClass' => 'control-label text-right no-padding',
+								'captionClass' => 'control-label text-left no-padding',
 								'icon' => '<i class="fa fa-tag"></i> ',
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_label', false)
 							]); ?>
 						</div>
 						
 						<div class="form-group form-group-slider">
-							<label class="col col-md-2 control-label" for="AutomapFontSize"><?php echo __('Icon size'); ?></label>
-							<div class="col col-md-10">
+							<label class="col col-md-1 control-label text-left" for="AutomapFontSize"><?php echo __('Icon size'); ?></label>
+							<div class="col col-md-2">
 								<input
 									type="text"
 									id="AutomapFontSize"

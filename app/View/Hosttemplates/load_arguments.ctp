@@ -42,7 +42,7 @@ if(!empty($commandarguments)):
 				'class' => 'form-group'
 			],
 			'class' => 'form-control',
-			'wrapInput' => 'col col-md-10',
+			'wrapInput' => 'col col-md-9',
 			'value' => h((isset($commandargument['Hosttemplatecommandargumentvalue']['value']) && $commandargument['Hosttemplatecommandargumentvalue']['value'] !== null)?$commandargument['Hosttemplatecommandargumentvalue']['value']:'')
 		]);
 		echo $this->Form->input('Hosttemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id',[

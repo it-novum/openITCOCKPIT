@@ -44,7 +44,7 @@
 	<div>
 		<div class="widget-body">
 			<div class="row">
-				<div class="col-xs-12 col-md-9 col-lg-7">
+				<div class="col-xs-12 col-md-12 col-lg-12">
 					<div class="padding-bottom-10">
 						<i class="fa fa-info-circle text-info"></i>
 						<?php echo __('In some cases you may be need to send an external command to the monitoring engine for transmit a passive service state or something like this.'); ?>
@@ -62,7 +62,13 @@
 						$_commands[$commandName] = $commandName;
 					endforeach;
 		
-					echo $this->Form->input('Command', ['options' => $this->Html->chosenPlaceholder($_commands), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('External Command')]);
+					echo $this->Form->input('Command', [
+						'options' => $this->Html->chosenPlaceholder($_commands), 
+						'class' => 'chosen', 
+						'style' => 'width: 100%;', 
+						'label' => ['text' => __('External Command'), 'class' => 'col-xs-2 col-md-2 col-lg-2'],
+						'wrapInput' => 'col col-xs-9 col-md-9 col-lg-9',
+					]);
 					echo $this->Form->end();
 					?>
 		
