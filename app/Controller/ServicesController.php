@@ -284,7 +284,7 @@ class ServicesController extends AppController{
 			],
 			'order' => [
 				'Host.name' => 'asc',
-				'Service.name' => 'asc'
+				'Service.servicename' => 'asc'
 			],
 			'joins' => [[
 				'table' => 'hosts',
@@ -397,7 +397,7 @@ class ServicesController extends AppController{
 			];
 		}
 		$service = Hash::merge($service, $servicestatus);
-		
+
 		$this->set('service', $service);
 		$this->set('_serialize', ['service']);
 	}
@@ -2331,7 +2331,7 @@ class ServicesController extends AppController{
 			}
 		}
 
-		$this->set(compact('servicestatus', 'serviceCount'));	
+		$this->set(compact('servicestatus', 'serviceCount'));
 		unset($servicestatus);
 		$filename = 'Services_' . strtotime('now') . '.pdf';
 		$binary_path = '/usr/bin/wkhtmltopdf';

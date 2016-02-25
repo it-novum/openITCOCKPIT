@@ -52,11 +52,11 @@
 								echo " "; //Fix HTML
 							endif;
 						endif;
-								
+
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
 						?>
 					</div>
@@ -78,7 +78,7 @@
 													<th><?php echo $this->Utils->getDirection($order, 'full_name'); echo $this->Paginator->sort('full_name', __('Full name')); ?></th>
 													<th><?php echo $this->Utils->getDirection($order, 'email'); echo $this->Paginator->sort('email', __('Email')); ?></th>
 													<th><?php echo $this->Utils->getDirection($order, 'company'); echo $this->Paginator->sort('company', __('Company')); ?></th>
-													<th><?php echo $this->Utils->getDirection($order, 'Usergroup.name'); echo $this->Paginator->sort('Usergroup.name', __('User group')); ?></th>
+													<th><?php echo $this->Utils->getDirection($order, 'Usergroup.name'); echo $this->Paginator->sort('Usergroup.name', __('User role')); ?></th>
 													<th><?php echo $this->Utils->getDirection($order, 'status'); echo $this->Paginator->sort('status', __('Status')); ?></th>
 													<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 												</tr>
