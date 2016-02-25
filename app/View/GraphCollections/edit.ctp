@@ -65,7 +65,7 @@
 
 								<div class="padding-top-10"></div>
 								<div class="row">
-									<div class="col-xs-12 col-md-9 col-lg-7">
+									<div class="col-xs-12 col-md-12 col-lg-12">
 										<?php
 										echo $this->Form->input('id', [
 											'value' => $collection['GraphCollection']['id'],
@@ -73,22 +73,22 @@
 										]);
 
 										echo $this->Form->input('name', [
-											'label' => __('Name'),
-											'wrapInput' => 'col col-xs-8',
+											'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 											'div' => [
 												'class' => 'form-group required',
 											]
 										]);
 										echo $this->Form->input('description', [
-											'label' => __('Description'),
-											'wrapInput' => 'col col-xs-8',
+											'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 										]);
 										echo $this->Form->input('GraphgenTmpl', [
 											'options' => $this->Html->chosenPlaceholder($templates),
 											'class' => 'chosen',
 											'multiple' => 'multiple',
-											'wrapInput' => 'col col-xs-8',
-											'label' => __('Templates'),
+											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+											'label' => ['text' => __('Templates'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 											'div' => [
 												'class' => 'form-group required',
 											]
