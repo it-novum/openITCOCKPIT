@@ -115,7 +115,8 @@
 								]);
 								echo $this->Form->input('day_of_month', [
 									'placeholder' => __('1,2,3,4,5 or <blank>'), 
-									'label' => ['text' => __('Days of month'), 'class' => 'col-xs-1 col-md-1 col-lg-1']
+									'label' => ['text' => __('Days of month'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 								]);
 								?>
 							</div>
