@@ -71,6 +71,7 @@ class GraphgeneratorsController extends AppController{
 				'conditions' => ['Host.uuid' => $hostUuids],
 			]
 		);
+		$host_uuids = [];
 		$host_ids_for_select = [];
 		foreach($all_hosts as $host){
 			if($this->Rrd->isValidHostUuid($host['Host']['uuid'])){
