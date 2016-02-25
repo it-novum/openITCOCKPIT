@@ -48,25 +48,32 @@
 	<div>
 		<div class="widget-body">
 			<div class="row">
-				<div class="col-xs-12 col-md-9 col-lg-7">
+				<div class="col-xs-12 col-md-12 col-lg-12">
 					<?php
 					echo $this->Form->create('Rotation', array(
 						'class' => 'form-horizontal clear'
 					));
 			
 					echo $this->Form->input('name', [
-						'label' => __('Name'),
-						'wrapInput' => 'col col-xs-8',
+						'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
 					]);
 			
 					echo $this->Form->input('interval', [
-						'label' => __('Interval'),
-						'wrapInput' => 'col col-xs-8',
+						'label' => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
 						'value' => 90,
 						'help' => __('Interval in seconds')
 					]);
 					
-					echo $this->Form->input('Rotation.Map', ['options' => $maps, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Maps'), 'wrapInput' => 'col col-xs-8']);
+					echo $this->Form->input('Rotation.Map', [
+						'options' => $maps, 
+						'multiple' => true, 
+						'class' => 'chosen', 
+						'style' => 'width:100%;', 
+						'label' => ['text' => __('Maps'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10'
+					]);
 					?>
 				</div>
 			</div>
