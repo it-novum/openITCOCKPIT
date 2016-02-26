@@ -43,7 +43,7 @@ if(!empty($commandarguments)):
 				'class' => 'form-group'
 			],
 			'class' => 'form-control',
-			'wrapInput' => 'col col-md-8',
+			'wrapInput' => 'col col-md-9',
 			'value' => (isset($commandargument['Servicetemplatecommandargumentvalue']['value']) && $commandargument['Servicetemplatecommandargumentvalue']['value'] !== null)?$commandargument['Servicetemplatecommandargumentvalue']['value']:''
 		]);
 		echo $this->Form->input('Servicetemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id',[
