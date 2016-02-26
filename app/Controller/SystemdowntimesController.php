@@ -200,8 +200,6 @@ class SystemdowntimesController extends AppController{
 					 * Normal downtimes, will be sent to sudo_servers unix socket.
 					 */
 					$this->setFlash(__('Downtime successfully saved'));
-					
-					
 					if($request['Systemdowntime']['is_recurring'] == 1){
 						$this->Systemdowntime->save($request);
 					}else{
@@ -209,7 +207,15 @@ class SystemdowntimesController extends AppController{
 						$end = strtotime($request['Systemdowntime']['to_date'].' '.$request['Systemdowntime']['to_time']);
 						//Just a normal nagios downtime
 						if($request['Systemdowntime']['downtimetype'] == 'hostgroup'){
-							$hostgroup = $this->Hostgroup->findById($request['Systemdowntime']['object_id']);
+							$hostgroup = $this->Hostgroup->find('first', [
+								'recursive' => -1,
+								'conditions' => [
+									'Hostgroup.container_id' => $request['Systemdowntime']['object_id'] 
+								],
+								'fields' => [
+									'Hostgroup.uuid'
+								],
+							]);
 							$payload = [
 								'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
 								'downtimetype' => $request['Systemdowntime']['downtimetype_id'],
@@ -218,8 +224,9 @@ class SystemdowntimesController extends AppController{
 								'comment' => $request['Systemdowntime']['comment'],
 								'author' => $this->Auth->user('full_name')
 							];
+
 							$this->GearmanClient->sendBackground('createHostgroupDowntime',$payload);
-						}	
+						}
 					}
 					
 				}else{
