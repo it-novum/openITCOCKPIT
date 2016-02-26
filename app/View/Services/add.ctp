@@ -94,6 +94,7 @@ echo $this->Form->create('Service', [
 		'label' => __('Host'),
 		'wrapInput' => 'col col-xs-8',
 		'style' => 'width: 100%',
+		'value' => $hostId,
 	]);
 	echo $this->Form->input('Service.servicetemplate_id', [
 		'options' => $this->Html->chosenPlaceholder($servicetemplates),
@@ -167,7 +168,7 @@ echo $this->Form->create('Service', [
 		<div class="col col-md-5 hidden-mobile">
 			<input
 				type="text"
-				id="ServiceNotificationinterval" 
+				id="ServiceNotificationinterval"
 				maxlength="255"
 				value=""
 				class="form-control slider slider-success"
@@ -288,7 +289,7 @@ echo $this->Form->create('Service', [
 
 		<div class="col col-xs-5">
 			<input
-				type="text" 
+				type="text"
 				id="ServiceCheckinterval"
 				maxlength="255"
 				value=""
