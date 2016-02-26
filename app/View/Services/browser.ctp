@@ -414,7 +414,7 @@
 				<!-- widget content -->
 				<div class="widget-body no-padding">
 					<!-- widget body text-->
-					<div class="padding-30">
+					<div class="padding-35">
 						<div id="graph_legend" class="graph_legend"></div>
 						<div id="graph_loader"><center><i class="fa fa-cog fa-4x fa-spin"></i></center></div>
 						<div id="graph_data_tooltip"></div>
