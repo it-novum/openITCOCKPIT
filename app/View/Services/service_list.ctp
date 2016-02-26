@@ -111,7 +111,7 @@
 					<div class="widget-toolbar" role="menu">
 						<?php
 						if($this->Acl->hasPermission('add', 'services') && $allowEdit):
-							echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', array('class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus'));
+							echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add/'.$host_id, array('class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus'));
 							echo " "; //Fix HTML
 						endif;
 						if($this->Acl->hasPermission('browser', 'hosts')):
@@ -326,7 +326,7 @@
 									</table>
 								</div>
 							</div>
-							
+
 							<!-- Deleted services -->
 							<div id="tab3" class="tab-pane fade">
 								<div class="mobile_table">

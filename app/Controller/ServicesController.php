@@ -699,6 +699,13 @@ class ServicesController extends AppController{
 
 		$this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
+		//Check if a host was selected before adding new service (host service list)
+		$hostId = null;
+		if(!empty($this->request->params['pass'])){
+			$hostId = $this->request->params['pass'][0];
+		}
+		//debug($hostId);
+
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
@@ -729,6 +736,7 @@ class ServicesController extends AppController{
 
 		$this->set(compact([
 			'hosts',
+			'hostId',
 			'servicetemplates',
 			'servicegroups',
 			'timeperiods',
