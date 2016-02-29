@@ -89,7 +89,7 @@ $plugin_version = '1.5';
 										</tr>
 										<tr>
 											<td><i class="fa fa-list"></i></td>
-											<td>&nbsp;<?php echo __('Licence:'); ?></td>
+											<td>&nbsp;<?php echo __('License:'); ?></td>
 											<td>&nbsp;<?php echo h($module->Module->licence); ?></td>
 										</tr>
 										<tr>
