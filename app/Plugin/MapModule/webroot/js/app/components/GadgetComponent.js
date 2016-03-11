@@ -505,7 +505,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 
 
 		//Traffic light "protector"
-		var protector1 = svg.createPath(); 
+	/*	var protector1 = svg.createPath(); 
 		svg.path(tLBackground, protector1.move(5,15).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
 			fill:'url(#protectorGradient_'+id+')'
 		});
@@ -521,7 +521,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		svg.path(tLBackground, protector3.move(5,95).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
 			fill:'url(#protectorGradient_'+id+')'
 		});
-
+*/
 		//the main background for the traffic light where the lights are placed
 		svg.rect(tLBackground, 20, 0, sizeX, sizeY, 10, 10, {
 			fill:'url(#tlBg_'+id+')', stroke: '#333', strokeWidth:2
