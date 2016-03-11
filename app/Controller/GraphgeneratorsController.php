@@ -234,13 +234,18 @@ class GraphgeneratorsController extends AppController{
 	public function saveGraphTemplate(){
 		$this->allowOnlyAjaxRequests();
 		$this->allowOnlyPostRequests();
-
-		if($this->GraphgenTmpl->saveAll($this->request->data)){
-			$this->set('success', true);
+		//debug($this->request->data['GraphgenTmpl']['id']);
+		//die();
+		if($this->GraphgenTmpl->validates($this->request->data)){
+			$this->GraphgenTmplConf->deleteAll([
+				'GraphgenTmplConf.graphgen_tmpl_id' => $this->request->data['GraphgenTmpl']['id']
+			]);
+			if($this->GraphgenTmpl->saveAll($this->request->data)){
+				$this->set('success', true);
+			}
 		}else{
 			$this->set('success', false);
 		}
-
 		$this->set('_serialize', ['success']);
 	}
 
