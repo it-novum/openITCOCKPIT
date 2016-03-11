@@ -124,9 +124,9 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		//style definitions for the Traffic light
 		var defs = svg.defs();
 		//background gradient
-		svg.linearGradient(defs, 'tlBg_'+id, [[0.02, '#111'], [0.02, '#111'], [0.03, '#222'], [0.3, '#111']],0,0,0,1);
+		svg.linearGradient(defs, 'tlBg_'+id, [[0.02, '#323232'], [0.02, '#323232'], [0.03, '#333'], [0.3, '#323232']],0,0,0,1);
 
-		svg.linearGradient(defs, 'protectorGradient_'+id, [[0, '#444'], [0.03, '#333'],[0.07, '#222'],[0.12, '#111']], 0,0,0,1);
+		svg.linearGradient(defs, 'protectorGradient_'+id, [[0, '#555'], [0.03, '#444'],[0.07, '#333'],[0.12, '#222']], 0,0,0,1);
 
 		//red light gradient
 		svg.radialGradient(defs, 'redLight_'+id, [['0%', 'brown'], ['25%', 'transparent']], 1, 1, 4, 0, 0,{
@@ -141,27 +141,9 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 			gradientUnits:'userSpaceOnUse'
 		});
 
-		//Traffic light "protector"
-		var protector1 = svg.createPath();
-		svg.path(tLBackground, protector1.move(5,15).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
-			fill:'url(#protectorGradient_'+id+')'
-		});
-
-		//Traffic light "protector"
-		var protector2 = svg.createPath();
-		svg.path(tLBackground, protector2.move(5,55).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
-			fill:'url(#protectorGradient_'+id+')'
-		});
-
-		//Traffic light "protector"
-		var protector3 = svg.createPath();
-		svg.path(tLBackground, protector3.move(5,95).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
-			fill:'url(#protectorGradient_'+id+')'
-		});
-
 		//the main background for the traffic light where the lights are placed
 		svg.rect(tLBackground, 20, 0, sizeX, sizeY, 10, 10, {
-			fill:'url(#tlBg_'+id+')', stroke: '#333', strokeWidth:2
+			fill:'url(#tlBg_'+id+')', stroke: '#444', strokeWidth:2
 		});
 
 		//pattern which are the small green, red and yellow "Dots" within a light
@@ -205,7 +187,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		}
 		//red
 		svg.circle(backgrounds, 50, 30, lightRadius,{
-			fill:'url(#redLightPattern_'+id+')', stroke:'#333', strokeWidth:2
+			fill:'url(#redLightPattern_'+id+')', stroke:'#444', strokeWidth:2
 		});
 
 		//var yellowLightGroup = svg.group(lights, 'yellowLightGroup_'+id);
@@ -217,7 +199,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		}
 		//yellow
 		svg.circle(backgrounds, 50, 71, lightRadius,{
-			fill:'url(#yellowLightPattern_'+id+')', stroke:'#333', strokeWidth:2
+			fill:'url(#yellowLightPattern_'+id+')', stroke:'#444', strokeWidth:2
 		});
 
 		//var greenLightGroup = svg.group(lights, 'greenLightGroup_'+id);
@@ -229,7 +211,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		}
 		//green
 		svg.circle(backgrounds, 50, 112, lightRadius,{
-			fill:'url(#greenLightPattern_'+id+')', stroke:'#333', strokeWidth:2
+			fill:'url(#greenLightPattern_'+id+')', stroke:'#444', strokeWidth:2
 		});
 
 		this.trafficlights[widgetId].svg = svg;
