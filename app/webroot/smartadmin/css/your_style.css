@@ -1411,3 +1411,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .white-space-nowrap{
 	white-space: nowrap;
 }
+
+#FilterIndexForm label:after{
+	content:'';
+}
