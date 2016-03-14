@@ -209,7 +209,6 @@ class ListFilterHelper extends AppHelper {
 					'listfilter' => true,
 					'empty' => $options['empty']
 				), $options['inputOptions']);
-				//debug($inputOptions['label']);
 				$ret.= $this->Form->input('Filter.' . $field, $inputOptions);
 				break;
 		}
