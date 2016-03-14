@@ -1285,8 +1285,7 @@ debug($modelName);
 		if (
 
 			$this->_extractOption('required', $options) !== false &&
-			$this->_introspectModel($this->model(), 'validates', $this->field()) &&
-			$this->_extractOption('listfilter', $options) !== true
+			$this->_introspectModel($this->model(), 'validates', $this->field())
 		) {
 			$divOptions = $this->addClass($divOptions, 'required');
 		}
