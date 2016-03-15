@@ -33,6 +33,8 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 	_initialize: function() {
 		var self = this;
 
+		var previousHosttemplateId = $('#HostHosttemplateId').val();
+
 		this.Ajaxloader.setup();
 		this.ContainerSelectbox.setup(this.Ajaxloader);
 		this.ContainerSelectbox.addContainerEventListener({ // Bind change event for Container Selectbox
@@ -49,7 +51,8 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 				contactgroups: '#HostContactgroup'
 			},
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-			dataPlaceholder: self.getVar('data_placeholder')
+			dataPlaceholder: self.getVar('data_placeholder'),
+			previousHosttemplateId:previousHosttemplateId
 		});
 		this.CustomVariables.setup({
 			controller: 'Hosts',

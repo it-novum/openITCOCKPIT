@@ -57,6 +57,7 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
 				error: function(){},
 				success: function(){},
 				complete: function(response){
+					var prevHosttemplateId = (options.previousHosttemplateId != null)?options.previousHosttemplateId:'';
 					var fieldType,
 						key,
 						$querySelect;
@@ -85,17 +86,38 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
 						}
 					}
 
-					for(fieldType in response.responseJSON){
-						$querySelect = $(options.fieldTypes[fieldType]);
-						$querySelect.html('');
-						$querySelect.attr('data-placeholder', options.dataPlaceholderEmpty);
-						for(key in response.responseJSON[fieldType]){
-							if(Object.keys(response.responseJSON[fieldType]).length > 0){
-								$querySelect.attr('data-placeholder', options.dataPlaceholder);
-								$querySelect.append('<option value="' + response.responseJSON[fieldType][key].key + '">' + response.responseJSON[fieldType][key].value + '</option>');
+					//may a better statement (requires to reverse the if):
+					//if(prevHosttemplateId != '' && response.responseJSON['hosttemplates'] != null && response.responseJSON['hosttemplates'][prevHosttemplateId] != null){ .. }
+					if(prevHosttemplateId == '' || (prevHosttemplateId == '' && response.responseJSON['hosttemplates'] == null && response.responseJSON['hosttemplates'][prevHosttemplateId] == null)){
+						//hosttemplate does not exist so just continue with the normal operation
+						for(fieldType in response.responseJSON){
+							$querySelect = $(options.fieldTypes[fieldType]);
+							$querySelect.html('');
+							$querySelect.attr('data-placeholder', options.dataPlaceholderEmpty);
+							for(key in response.responseJSON[fieldType]){
+								if(Object.keys(response.responseJSON[fieldType]).length > 0){
+									$querySelect.attr('data-placeholder', options.dataPlaceholder);
+									$querySelect.append('<option value="' + response.responseJSON[fieldType][key].key + '">' + response.responseJSON[fieldType][key].value + '</option>');
+								}
+							}
+							$querySelect.trigger("chosen:updated");
+						}
+					}else{
+						//hosttemplate exist so just refresh the hosttemplate box and reselect the template
+						for(fieldType in response.responseJSON){
+							if(fieldType == 'hosttemplates'){
+								$querySelect = $(options.fieldTypes[fieldType]);
+								$querySelect.html('');
+								for(key in response.responseJSON[fieldType]){
+									if(Object.keys(response.responseJSON[fieldType]).length > 0){
+										$querySelect.attr('data-placeholder', options.dataPlaceholder);
+										$querySelect.append('<option value="' + response.responseJSON[fieldType][key].key + '">' + response.responseJSON[fieldType][key].value + '</option>');
+									}
+								}
+								$querySelect.val(prevHosttemplateId);
+								$querySelect.trigger("chosen:updated");
 							}
 						}
-						$querySelect.trigger("chosen:updated");
 					}
 					self.Ajaxloader.hide();
 				}
