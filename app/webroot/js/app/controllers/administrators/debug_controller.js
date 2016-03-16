@@ -24,6 +24,8 @@
 
 App.Controllers.AdministratorsDebugController = Frontend.AppController.extend({
 
+	components: ['WebsocketSudo'],
+
 	argumentNames: null,
 
 	_initialize: function() {
@@ -82,7 +84,12 @@ App.Controllers.AdministratorsDebugController = Frontend.AppController.extend({
 
 			var plot = $.plot($("#loadGraph"), [line1, line5, line15], options);
 		}
-		
+
+		this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
+		this.WebsocketSudo._errorCallback = function(){
+			$('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
+		}
+		this.WebsocketSudo.connect();
 	}
 	
 });

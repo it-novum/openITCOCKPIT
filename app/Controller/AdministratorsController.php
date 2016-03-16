@@ -225,6 +225,10 @@ class AdministratorsController extends AppController{
 
 		$recipientAddress = $this->Auth->user('email');
 
+		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+		
 		$this->set(compact([
 			'disks',
 			'memory',
