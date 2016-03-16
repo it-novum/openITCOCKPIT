@@ -25,6 +25,7 @@ Router::mapResources([
 	'hosttemplates',
 	'devicegroups',
 	'users',
+	'calendars',
 	'servicetemplategroups',
 	'MapModule.maps',
 	'EventcorrelationModule.eventcorrelations',
