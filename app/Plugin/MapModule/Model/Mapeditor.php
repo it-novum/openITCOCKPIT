@@ -63,6 +63,10 @@ class Mapeditor extends MapModuleAppModel{
 			}
 		}
 
+		if(empty($request['Map']['background'])){
+			$request['Map']['background'] = null;
+		}
+
 		$filtered =  Hash::insert(
 			Hash::filter($filtered),
 			'{s}.{s}.map_id', $request['Map']['id']
