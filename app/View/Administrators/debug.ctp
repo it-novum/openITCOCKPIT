@@ -59,7 +59,7 @@
 				<dd><?php echo h(Configure::read('nagios.export.backupSource')); ?></dd>
 				<dt><?php echo __('Path for backups');?>:</dt>
 				<dd><?php echo h(Configure::read('nagios.export.backupTarget')); ?></dd>
-				<dt><?php echo __('Command interfcace');?>:</dt>
+				<dt><?php echo __('Command interface');?>:</dt>
 				<dd><?php echo h($systemsetting['MONITORING']['MONITORING.CMD']); ?></dd>
 			</dl>
 		</div>
