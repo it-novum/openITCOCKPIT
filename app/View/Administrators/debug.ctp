@@ -32,6 +32,8 @@
 	</div>
 </div>
 
+<div id="error_msg"></div>
+
 <div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
 <header>
 		<span class="widget-icon"> <i class="fa fa-globe"></i></span>
