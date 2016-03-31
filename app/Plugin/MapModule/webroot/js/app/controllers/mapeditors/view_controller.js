@@ -28,40 +28,26 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
 	mapViewContainer:'#jsPlumb_playground',
 
-
 	_initialize: function(){
 		self = this;
 
 		//wait till everything is loaded (needed for the lines)
 		$(document).ready(function(){
-			$('.elementHover').mouseover(function(){
-
-				var elementType = $(this).data('type');
-				var elementUuid = $(this).data('uuid');
-				var titleAndIconColor = 'rgb(90,90,90)';
-				$.ajax({
-					url: "/map_module/mapeditors/popover"+elementType+"Status/" + encodeURIComponent(elementUuid),
-					type: "POST",
-					dataType: "html",
-					error: function(){},
-					success: function(){},
-					complete: function(response){
-						$.smallBox({
-							title : elementType,
-							content : response.responseText,
-							color : 'rgba(249, 249, 249, 1)',
-							//timeout: 8000,
-							icon : "fa fa-desktop"
-						});
-						$('.textoFoto').first('<span>').css({'color':titleAndIconColor});
-						$('.textoFoto').css('color', '#000000');
-						$('.foto').css({'color':titleAndIconColor});
-					}.bind(self)
+			$('.elementHover').mouseenter(function(){
+				var el = this;
+				var $popovers = $('#divSmallBoxes').children();
+				$popovers.hide(200,function(){
+					$(this).remove();
 				});
+				timer = window.setTimeout(function(){
+					self.getPopoverInfo(el);
+				},400);
 			});
+
 			$('.elementHover').mouseleave(function(){
+				clearTimeout(timer);
 				var $el = $('#divSmallBoxes').children();
-				$el.hide(300,function(){
+				$el.hide(200,function(){
 					$(this).remove();
 				});
 			});
@@ -175,6 +161,32 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				self.Line.drawSVGLine(tempObj);
 			};
 		}
+	},
+
+	getPopoverInfo: function(el){
+		var $this = $(el);
+		var elementType = $this.data('type');
+		var elementUuid = $this.data('uuid');
+		var titleAndIconColor = 'rgb(90,90,90)';
+		$.ajax({
+			url: "/map_module/mapeditors/popover"+elementType+"Status/" + encodeURIComponent(elementUuid),
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(){},
+			complete: function(response){
+				 $.smallBox({
+					title : elementType,
+					content : response.responseText,
+					color : 'rgba(249, 249, 249, 1)',
+					//timeout: 8000,
+					icon : "fa fa-desktop"
+				});
+				$('.textoFoto').first('<span>').css({'color':titleAndIconColor});
+				$('.textoFoto').css('color', '#000000');
+				$('.foto').css({'color':titleAndIconColor});
+			}
+		});
 	},
 
 

@@ -1025,7 +1025,7 @@ class DashboardsController extends AppController{
 			$noticeConfig = $this->request->data['dashboard'];
 			$widgetNoticeId = null;
 			//$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
-			$note = htmlspecialchars($note);
+			$note = htmlspecialchars($noticeConfig['noticeText']);
 
 			if(isset($noticeConfig['WidgetNoticeId'])){
 				$widgetNoticeId = $noticeConfig['WidgetNoticeId'];
@@ -1053,6 +1053,7 @@ class DashboardsController extends AppController{
 			if($widgetNoticeId !== null){
 				$data['WidgetNotice']['id'] = $widgetNoticeId;
 			}
+
 			if($this->WidgetNotice->save($data)){
 				$this->Widget->id = $data['WidgetNotice']['widget_id'];
 			}

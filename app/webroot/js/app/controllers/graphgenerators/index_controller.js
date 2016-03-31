@@ -259,6 +259,7 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 				for(var host_uuid in save_service_rules){
 					for(var service_id in save_service_rules[host_uuid]){
 						submitData['GraphgenTmplConf'].push({
+							//graphgen_tmpl_id: App.loaded_graph_config.GraphgenTmpl.id,
 							service_id: service_id,
 							data_sources: JSON.stringify(save_service_rules[host_uuid][service_id])
 						});
@@ -270,7 +271,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 
 					return;
 				}
-
 				self._saveGraphTemplate(submitData, function(response){
 					if(response.responseJSON && response.responseJSON.success){
 						self.BootstrapModal.show('successfully-saved');
@@ -579,7 +579,7 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 						service_uuid = $service_rule.data('service-uuid');
 
 					// Set the state of the removed service to 'unloaded'.
-					self.currently_loaded_service_rules[self.host_id][service_uuid] = false;
+					self.currently_loaded_service_rules[host.id][service_uuid] = false;
 
 					// Hide it with a pretty animation and finally remove it.
 					$chosen_service.slideUp('fast', function(){

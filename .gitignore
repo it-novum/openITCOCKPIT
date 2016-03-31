@@ -30,3 +30,4 @@ app/Plugin/DistributeModule
 app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule
 app/Plugin/MkModule
+app/Plugin/AxiosAssystModule
