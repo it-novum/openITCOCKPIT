@@ -86,7 +86,7 @@ class ServicetemplategroupsController extends AppController{
 			$this->set('isFilter', false);
 		}
 	}
-	
+
 	public function view($id = null){
 		if(!$this->isApiRequest()){
 			throw new MethodNotAllowedException();
@@ -100,7 +100,7 @@ class ServicetemplategroupsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		$this->set('servicetemplategroup', $servicetemplategroup);
 		$this->set('_serialize', ['servicetemplategroup']);
 	}
