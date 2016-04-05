@@ -96,6 +96,11 @@
 										<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
 									</li>
 								<?php endif; ?>
+								<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
+									<li>
+										<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
+									</li>
+								<?php endif; ?>
 								<?php
 								if($this->Acl->hasPermission('edit') && $allowEdit):
 									echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
