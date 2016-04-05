@@ -37,7 +37,8 @@ class LoginController extends AppController {
 		$this->redirect('/login/login');
 	}
 
-	public function login($redirectBack = 0){
+	public function login($redirectBack = 0){		
+	
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$displayMethod = false;
 		$authMethods = [
@@ -59,7 +60,6 @@ class LoginController extends AppController {
 		}
 		if($this->Auth->loggedIn()){
 			$this->redirect($this->Auth->loginRedirect);
-
 			return;
 		}
 		if(!empty($this->params['url']['redirectUrl'])) {
@@ -67,11 +67,36 @@ class LoginController extends AppController {
 		} else if(($redirectUrl = $this->Auth->redirectUrl()) != '/') {
 			$this->Session->write('Login.redirectUrl', $redirectUrl);
 		}
+
 		if($this->request->referer(true) === '/') {
 			$this->Auth->loginRedirect = array(
 				'controller' => 'dashboards',
 				'action' => 'index'
 			);
+		}
+
+		// Automatic login if Client SSL Certificate is sent
+		if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && !empty($_SERVER['SSL_DN'])){
+			$emailAddress = '';
+			$parameters = explode('/', $_SERVER['SSL_DN']);
+			foreach ($parameters as $eqVal) {
+				$SSLVar = explode('=', $eqVal);
+				if(empty($SSLVar)) continue;
+				if(isset($SSLVar[0]) && $SSLVar[0] === 'emailAddress' && isset($SSLVar[1])){
+					$emailAddress = trim($SSLVar[1]);
+					break;
+				}
+			}
+
+			if($emailAddress !== ''){
+				$user = $this->User->findByEmail($emailAddress);
+				if(!empty($user) && $this->Auth->login($user)){
+					$this->Session->delete('Message.auth');
+					$this->setFlash(__('login.automatically_logged_in'));
+					$this->redirect($this->Auth->loginRedirect);
+				}
+			}
+
 		}
 
 		if($this->request->is('post') || $this->request->is('put')){

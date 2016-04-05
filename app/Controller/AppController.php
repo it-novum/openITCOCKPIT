@@ -109,6 +109,10 @@ class AppController extends Controller{
 		'Constants',
 		'Tree',
 		'AdditionalLinks',
+	    'Security' => array(
+	    	'csrfCheck' => true,
+	        'csrfExpires' => '+1 hour'
+	    )		
 		//'DebugKit.Toolbar'
 	);
 
