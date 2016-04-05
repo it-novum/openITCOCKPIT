@@ -142,7 +142,7 @@
 
 									echo $this->Form->input('hosttemplate_id', [
 											'label' => [
-												'text' => '<a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Hosttemplate'), 
+												'text' => '<a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Hosttemplate'),
 												'class' => 'col-xs-1 col-md-1 col-lg-1'],
 											'options' => $this->Html->chosenPlaceholder($_hosttemplates),
 											'data-placeholder' => __('Please select...'),
