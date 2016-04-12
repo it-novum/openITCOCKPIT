@@ -28,7 +28,7 @@ App.Controllers.ServicetemplategroupsAllocateToHostController = Frontend.AppCont
 
 	_initialize: function(){
 		this.Ajaxloader.setup();
-		
+
 		var self = this;
 		/*
 		 * Bind change event on host selectbox
@@ -61,19 +61,19 @@ App.Controllers.ServicetemplategroupsAllocateToHostController = Frontend.AppCont
 			});
 		});
 	},
-	
+
 	enableAll: function(){
 		$('.createThisService').prop('checked', true);
 	},
-	
+
 	disableAll: function(){
 		$('.createThisService').prop('checked', null);
 	},
-	
+
 	hideAllDuplicate: function(){
 		$('.createServiceDuplicate').hide();
 	},
-	
+
 	hideAllDuplicateDisabled: function(){
 		$('.createServiceDuplicateDisabled').hide();
 	}

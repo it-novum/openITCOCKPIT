@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
+App.Controllers.GraphgeneratorsViewController = Frontend.AppController.extend({
 	host_uuid: null,
 	host_name: '',
 	service_uuid: null,
@@ -35,7 +35,7 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 	_service_rules_timeout_id: 0,
 	_service_rules_remove_timeout_id: 0,
 
-	components: ['Ajaxloader', 'Rrd', 'BootstrapModal', 'Overlay'],
+	components: ['Ajaxloader', 'Rrd', 'BootstrapModal', 'Overlay', 'Time'],
 
 	_initialize: function(){
 		this.Ajaxloader.setup();
@@ -49,17 +49,15 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 
 		this.$services_select_box = $('#GraphgeneratorServiceUuid');
 
-		this.bindChangeEventForHostSelectBox(); // Retrieve the services of the chosen host when the host is changed.
-		this.bindChangeEventForServicesSelectBox(); // Retrieve the services rules for when the services is changed.
 		this.bindChangeEventForServiceRules(); // Fetches the data and updates the graph when the service rules are changed.
-		this.bindClickEventForRefreshGraphButton();
-		this.bindClickEventForResetGraphButton();
 
 		this.initValidation(); // This is done once.
-		this.bindClickEventForSave();
-		this.deselectHostSelectBox(); // Necessity for Firefox.
 
+		$('#content').css({'backgroundColor':'white'})
 		this.renderGraphConfiguration(window.App.loaded_graph_config);
+		setTimeout(function () {
+			location.reload(true);
+		}, 90000);
 	},
 
 	/**
@@ -113,9 +111,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 		}
 	},
 
-	deselectHostSelectBox: function(){
-		$('#GraphgeneratorHostUuid').find(':selected').prop('selected', false).trigger('chosen:updated');
-	},
 
 	initValidation: function(){
 		$.validator.addMethod(
@@ -208,80 +203,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 		});
 	},
 
-	/**
-	 * @param {Object} data
-	 * @param {Function} on_complete
-	 */
-	_saveGraphTemplate: function(data, on_complete){
-		var self = this,
-			url = '/graphgenerators/saveGraphTemplate.json';
-
-		data = typeof data === 'object' ? data : {};
-		self.xhrRequestData(url, on_complete, data);
-	},
-
-	bindClickEventForSave: function(){
-		var self = this,
-			onSaveClickCallback = function(){
-				var $this = $(this),
-					$form = $this.parents('form');
-
-				// Fix all forms without name -> jquery.validate requires all inputs to have a name...
-				$form.find('input:not([name])').attr('name', 'noname');
-				$this.prop('disabled', true);
-
-				if(!$form.valid()){
-					// TODO replace both statements with a notification
-					console.warn('Form isn\'t valid. The data wasn\'t saved.');
-					$this.prop('disabled', false);
-
-					return;
-				}
-
-				var name = $form.find('#GraphgeneratorName').val(),
-					time = $form.find('#GraphgeneratorRelativeTime').val(),
-					save_service_rules = self.getCurrentServiceRulesForSave(),
-					submitData = {
-						GraphgenTmpl: {
-							name: name,
-							relative_time: time
-						},
-						GraphgenTmplConf: []
-					};
-
-				if( App.loaded_graph_config != null &&
-					App.loaded_graph_config.GraphgenTmpl != null &&
-					App.loaded_graph_config.GraphgenTmpl.id > 0
-				){
-					submitData.GraphgenTmpl.id = App.loaded_graph_config.GraphgenTmpl.id;
-				}
-
-				for(var host_uuid in save_service_rules){
-					for(var service_id in save_service_rules[host_uuid]){
-						submitData['GraphgenTmplConf'].push({
-							//graphgen_tmpl_id: App.loaded_graph_config.GraphgenTmpl.id,
-							service_id: service_id,
-							data_sources: JSON.stringify(save_service_rules[host_uuid][service_id])
-						});
-					}
-				}
-
-				if(Object.keys(save_service_rules).length == 0){
-					self.BootstrapModal.show('was-not-saved-no-service-chosen', true);
-
-					return;
-				}
-				self._saveGraphTemplate(submitData, function(response){
-					if(response.responseJSON && response.responseJSON.success){
-						self.BootstrapModal.show('successfully-saved');
-					}else{
-						self.BootstrapModal.show('not-saved');
-					}
-				});
-			};
-
-		$('#saveGraph').on('click', onSaveClickCallback);
-	},
 
 	/**
 	 * @returns {Object} - An array of objects.
@@ -349,7 +270,7 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 			service_rules[host_uuid][service_uuid][ds_number]['service_rule_name'] = service_rule_name;
 			service_rules[host_uuid][service_uuid][ds_number]['host_name'] = host_name;
 		});
-
+		//console.log(service_rules);
 		return service_rules;
 	},
 
@@ -382,68 +303,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 		$.ajax(defaults);
 	},
 
-	bindChangeEventForHostSelectBox: function(){
-		var self = this;
-
-		$('#GraphgeneratorHostUuid').change(function(){
-			var host_id = $(this).val(),
-				host_name = $(this).find(':selected').text(),
-				$services_select_box = self.$services_select_box,
-				onComplete = function(response){
-					$services_select_box
-						.html('')
-						.trigger('chosen:updated')
-						.trigger('chosen:activate');
-
-					if(!response.responseJSON || response.responseJSON.sizeof <= 0){
-						return;
-					}
-
-					var response_json = response.responseJSON,
-						content = [],
-						index;
-
-					for(index in response_json.Services){
-						content.push(
-							$('<option>', {
-								value: response_json.Services[index].uuid,
-								text: response_json.Services[index].name,
-								data: {
-									'service-id': response_json.Services[index].service_id
-								}
-							})
-						);
-					}
-					$.fn.append.apply($services_select_box, content);
-
-					$services_select_box
-						.val(null)
-						.trigger('chosen:updated')
-						.trigger('chosen:activate');
-
-					self._updateServicesSelectBox();
-				};
-
-			//console.info(host_uuid);
-			if(host_id == '0'){ // The user has clicked on the 'X' to deselect the currently selected item.
-				self.$services_select_box
-					.html('')
-					.trigger('chosen:updated');
-				$(this).trigger('chosen:activate');
-
-				return; // Prevent a XHR request.
-			}
-
-			// Store the uuid for further uses. The services select box uses this value.
-			self.host_uuid = window.App.host_uuids[host_id];
-			self.host_id = host_id;
-			self.host_name = host_name;
-
-			// Do the AJAX request and execute the callback function.
-			self._loadServicesByHostId(host_id, onComplete);
-		});
-	},
-
 	/**
 	 * @param {number} host_id
 	 * @param {function} on_complete
@@ -454,43 +313,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 			self = this;
 
 		self.xhrRequestData(url, on_complete);
-	},
-
-
-	bindChangeEventForServicesSelectBox: function(){
-		var self = this;
-
-		self.$services_select_box.change(function(){
-			if(!self.host_uuid){
-				return;
-			}
-
-			var $serviceSelectBox = $(this);
-
-			self.service_uuid = $serviceSelectBox.val();
-			self.service_name = $serviceSelectBox.find(':selected').text();
-			self.service_id = $serviceSelectBox.find(':selected').data('service-id');
-
-			var host = {
-					id: self.host_id,
-					uuid: self.host_uuid,
-					name: self.host_name
-				},
-				service = {
-					id: self.service_id,
-					uuid: self.service_uuid,
-					name: self.service_name
-				},
-				on_complete = function(){
-					// Update the select box. Gray out already chosen items.
-					self._updateServicesSelectBox();
-
-					// Select the first value and update the fancy chosen select box.
-					$serviceSelectBox.val(null).trigger('chosen:updated');
-				};
-
-			self._loadServiceRule(host, service, on_complete);
-		});
 	},
 
 	/**
@@ -579,7 +401,7 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 						service_uuid = $service_rule.data('service-uuid');
 
 					// Set the state of the removed service to 'unloaded'.
-					self.currently_loaded_service_rules[host.id][service_uuid] = false;
+					self.currently_loaded_service_rules[self.host_id][service_uuid] = false;
 
 					// Hide it with a pretty animation and finally remove it.
 					$chosen_service.slideUp('fast', function(){
@@ -698,7 +520,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 			host_and_service_uuids = {},
 			service_uuid,
 			host_uuid;
-
 		// No update (and no deactivation of the UI of the user) when no services rules are activated!
 		if(Object.keys(service_rules).length == 0){
 			self.Ajaxloader.hide();
@@ -776,45 +597,6 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 		$('#resetGraph').show();
 	},
 
-	_updateServicesSelectBox: function(){
-		var self = this,
-			$service_select_box = $('#GraphgeneratorServiceUuid');
-
-		if(!self.currently_loaded_service_rules[self.host_id]){
-			return; // Do nothing.
-		}
-
-		var activated_service_uuids = [];
-		for(var loaded_service_uuid in self.currently_loaded_service_rules[self.host_id]){
-			if(!self.currently_loaded_service_rules[self.host_id][loaded_service_uuid]){
-				continue;
-			}
-
-			activated_service_uuids.push(loaded_service_uuid);
-		}
-
-		var all_service_uuids = [];
-		$service_select_box.find('option').each(function(){
-			if($(this).val() == '0'){
-				return; // Jump over empty item.
-			}
-			all_service_uuids.push($(this).val());
-		});
-
-		// Deactivate all active items in the select box.
-		for(var i = 0; i < all_service_uuids.length; i++){
-			var service_uuid = all_service_uuids[i],
-				$option = $service_select_box.find('option[value="' + service_uuid + '"]');
-
-			if($.inArray(service_uuid, activated_service_uuids) != -1){ // Item found.
-				$option.attr('disabled', ''); // Gray out the active items.
-			}else{
-				$option.removeAttr('disabled'); // Activate all other items.
-			}
-		}
-
-		$service_select_box.trigger('chosen:updated'); // Update the fancy checkbox.
-	},
 
 	/**
 	 * Returns the currently configured time period.
@@ -825,16 +607,17 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 	 */
 	getConfiguredTimePeriod: function(){
 		//console.log(this.Time.getCurrentTimeWithOffset(0).getTime());
-		var $field = $('#GraphgeneratorRelativeTime'),
-			now = parseInt(this.Time.getCurrentTimeWithOffset(0).getTime() / 1000, 10),
+		var now = parseInt(this.Time.getCurrentTimeWithOffset(0).getTime() / 1000, 10),
+			timeframe = window.App.loaded_graph_config.GraphgenTmpl.relative_time,
 			substract_seconds,
 			result;
 
-		if($field.length > 0){
-			substract_seconds = parseInt($field.val(), 10);
+		if(timeframe > 0){
+			substract_seconds = parseInt(timeframe, 10);
 		}else{
 			substract_seconds = 3600 * 3;
 		}
+
 
 		result = {
 			'start': now - substract_seconds,
@@ -845,45 +628,5 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 		return result;
 	},
 
-	bindClickEventForResetGraphButton: function(){
-		var self = this;
 
-		$('#resetGraph').click(function(){
-			self.Rrd.resetGraph();
-			$('#serviceRules').html('');
-
-			// Reset 'Starttime' and 'Endtime' field to it's default
-			var $start_time_text_field = $('#GraphgeneratorStart'),
-				$stop_time_text_field = $('#GraphgeneratorEnd');
-
-			$start_time_text_field.val($start_time_text_field.data('default-date'));
-			$stop_time_text_field.val($stop_time_text_field.data('default-date'));
-
-			// Reset 'Host' select box
-			$('#GraphgeneratorHostUuid').val(null).trigger('chosen:updated');
-
-			// Reset 'Services' select box
-			self.$services_select_box.val(null).trigger('chosen:updated');
-
-			// Resets the loaded services rules
-			self.currently_loaded_service_rules = [];
-
-			$('.graph_legend').hide();
-		});
-	},
-
-	bindClickEventForRefreshGraphButton: function(){
-		var self = this;
-
-		$('#refreshGraph').on('click', function(){
-			self.Ajaxloader.show();
-
-			// Clear the timeout, if any.
-			if(self._service_rules_timeout_id != 0){
-				clearTimeout(self._service_rules_timeout_id);
-				self._service_rules_timeout_id = 0;
-			}
-			self._updateGraphByServiceRules();
-		});
-	}
 });

@@ -31,9 +31,9 @@ class Usergroup extends AppModel{
 			'type' => 'requester'
 		]
 	];
-	
+
 	public $hasMany = 'User';
-	
+
 	public $validate = [
 		'name' => [
 			'notEmpty' => [
@@ -44,21 +44,21 @@ class Usergroup extends AppModel{
 			],
 			'isUnique' => [
 				'rule' => 'isUnique',
-				'message' => 'This user group name has already been taken.',
+				'message' => 'This user role name has already been taken.',
 				'required' => true,
 				'allowEmpty' => false
 			],
 		]
 	];
-	
+
 	public function parentNode(){
 		return 'Usergroups';
 	}
-	
+
 	//Return a array of aco ids that needs to enabled for every user! (for ajax requests etc..)
 	public function getAlwaysAllowedAcos($acosAsNest){
 		Configure::load('acl_dependencies');
-		
+
 		//Load Plugin configuration files
 		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
 			return strpos($value, 'Module') !== false;
@@ -69,14 +69,14 @@ class Usergroup extends AppModel{
 				Configure::load($moduleName.'.acl_dependencies');
 			}
 		}
-		
+
 		$config = Configure::read('acl_dependencies');
 		$appControllerAcoNames = $config['AppController'];
 		$alwaysAllowedAcos = $config['always_allowed'];
 		unset($config);
-		
+
 		$result = [];
-		
+
 		foreach($acosAsNest as $usergroupAcos){
 			foreach($usergroupAcos['children'] as $controllerAcos){
 				$controllerName = $controllerAcos['Aco']['alias'];
@@ -85,7 +85,7 @@ class Usergroup extends AppModel{
 					foreach($controllerAcos['children'] as $actionAco){
 						$actionName = $actionAco['Aco']['alias'];
 						$acoId = $actionAco['Aco']['id'];
-					
+
 						$permitRight = false;
 						if(!isset($result[$acoId])){
 							if(in_array($actionName, $appControllerAcoNames)){
@@ -94,7 +94,7 @@ class Usergroup extends AppModel{
 							if(isset($alwaysAllowedAcos[$controllerName]) && in_array($actionName, $alwaysAllowedAcos[$controllerName])){
 								$permitRight = true;
 							}
-						
+
 							if($permitRight === true){
 								$result[$acoId] = $controllerName.DS.$actionName;
 							}
@@ -109,7 +109,7 @@ class Usergroup extends AppModel{
 						foreach($controllerAcos['children'] as $actionAco){
 							$actionName = $actionAco['Aco']['alias'];
 							$acoId = $actionAco['Aco']['id'];
-					
+
 							$permitRight = false;
 							if(!isset($result[$acoId])){
 								if(in_array($actionName, $appControllerAcoNames)){
@@ -118,7 +118,7 @@ class Usergroup extends AppModel{
 								if(isset($alwaysAllowedAcos[$controllerName]) && in_array($actionName, $alwaysAllowedAcos[$controllerName])){
 									$permitRight = true;
 								}
-						
+
 								if($permitRight === true){
 									$result[$acoId] = $pluginName.DS.$controllerName.DS.$actionName;
 								}
@@ -130,26 +130,26 @@ class Usergroup extends AppModel{
 		}
 		return $result;
 	}
-	
+
 	//Return an array of aco ids + dependenc aco ids
 	public function getAcoDependencies($acosAsNest){
 		Configure::load('acl_dependencies');
-		
+
 		//Load Plugin configuration files
 		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
 			return strpos($value, 'Module') !== false;
 		});
-		
+
 		foreach($modulePlugins as $moduleName){
 			$pluginAclConfigFile = APP . 'Plugin' . DS. $moduleName. DS . 'Config' . DS . 'acl_dependencies.php';
 			if(file_exists($pluginAclConfigFile)){
 				Configure::load($moduleName.'.acl_dependencies');
 			}
 		}
-		
+
 		$acoDependencies = Configure::read('acl_dependencies.dependencies');
 		$appControllerAcoNames = Configure::read('acl_dependencies.AppController');
-		
+
 		$result = [];
 		foreach($acosAsNest as $usergroupAcos){
 			foreach($usergroupAcos['children'] as $controllerAcos){
@@ -205,7 +205,7 @@ class Usergroup extends AppModel{
 		}
 		return $result;
 	}
-	
+
 	//Return an array with all aco ids that depend to an other aco, to remove them from the interface
 	public function getAcoDependencyIds($acoDependencies){
 		$result = [];

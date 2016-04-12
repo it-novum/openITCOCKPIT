@@ -100,7 +100,7 @@
 
 								<?php echo $this->Form->create('Graphgenerator', [
 									'class' => 'form-horizontal clear',
-								]); ?>
+								]);?>
 
 								<div class="row">
 									<div class="col-xs-12 col-md-9 col-lg-7">
@@ -204,7 +204,7 @@
 								<div class="row">
 									<div class="col-xs-1"></div>
 									<div class="col-xs-10">
-										<div class="padding-10">
+										<div class="padding-10" id="graph_container">
 											<div class="graph_legend" style="display: none;"></div>
 											<div id="graph_loader" style="display: none; text-align: center;">
 												<i class="fa fa-cog fa-4x fa-spin"></i>

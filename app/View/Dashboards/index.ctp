@@ -91,7 +91,7 @@
 							<?php endforeach;?>
 						</ul>
 					</div>
-					
+
 					<div class="widget-toolbar" role="menu">
 						<div class="btn-group">
 							<button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
@@ -126,7 +126,7 @@
 							<i class="fa fa-plus"></i>
 						</button>
 					</div>
-					
+
 				</header>
 				<div>
 					<div class="widget-body no-padding padding-top-10">
@@ -320,7 +320,7 @@
 						<div class="form-group form-group-slider ">
 							<label class="col" for="tabRotationInterval"><?php echo __('Choose tab rotation interval'); ?></label>
 							<div class="col">
-								<input 
+								<input
 									type="text"
 									id="TabRotationInterval"
 									maxlength="255"

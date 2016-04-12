@@ -282,7 +282,10 @@ class ServicesController extends AppController{
 
 				'HostsToContainers.container_id'
 			],
-			'order' => ['Host.name' => 'asc'],
+			'order' => [
+				'Host.name' => 'asc',
+				'Service.servicename' => 'asc'
+			],
 			'joins' => [[
 				'table' => 'hosts',
 				'type' => 'INNER',
@@ -394,7 +397,7 @@ class ServicesController extends AppController{
 			];
 		}
 		$service = Hash::merge($service, $servicestatus);
-		
+
 		$this->set('service', $service);
 		$this->set('_serialize', ['service']);
 	}
@@ -696,6 +699,13 @@ class ServicesController extends AppController{
 
 		$this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
+		//Check if a host was selected before adding new service (host service list)
+		$hostId = null;
+		if(!empty($this->request->params['pass'])){
+			$hostId = $this->request->params['pass'][0];
+		}
+		//debug($hostId);
+
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
@@ -726,6 +736,7 @@ class ServicesController extends AppController{
 
 		$this->set(compact([
 			'hosts',
+			'hostId',
 			'servicetemplates',
 			'servicegroups',
 			'timeperiods',
@@ -2328,7 +2339,7 @@ class ServicesController extends AppController{
 			}
 		}
 
-		$this->set(compact('servicestatus', 'serviceCount'));	
+		$this->set(compact('servicestatus', 'serviceCount'));
 		unset($servicestatus);
 		$filename = 'Services_' . strtotime('now') . '.pdf';
 		$binary_path = '/usr/bin/wkhtmltopdf';

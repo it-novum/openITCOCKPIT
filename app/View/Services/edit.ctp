@@ -86,7 +86,7 @@ echo $this->Form->create('Service', [
 ]); ?>
 <div class="row">
 <!-- basic settings -->
-<div class="col-xs-12 col-md-9 col-lg-7">
+<div class="col-xs-12 col-md-12 col-lg-12">
 <div class="tab-content">
 <div id="tab1" class="tab-pane fade active in">
 	<span class="note"><?php echo __('Basic configuration'); ?>:</span>
@@ -107,13 +107,20 @@ echo $this->Form->create('Service', [
 	]);*/
 	?>
 	<div class="form-group">
-		<label class="col col-md-2 control-label" for="ServiceName"><?php echo __('Host'); ?></label>
+		<label class="col col-md-1 control-label text-left" for="ServiceName"><?php echo __('Host'); ?></label>
 		<div class="col col-xs-10 padding-top-5"><?php echo $service['Host']['name']; ?></div>
-		<?php echo $this->Form->input('Service.host_id', ['type' => 'hidden', 'value' => $service['Service']['host_id']]); ?>
+		<?php 
+		echo $this->Form->input('Service.host_id', [
+			'type' => 'hidden', 
+			'value' => $service['Service']['host_id']
+		]); ?>
 	</div>
 	<?php
 	if($service['Service']['service_type'] == MK_SERVICE):
-		echo $this->Form->input('Service.servicetemplate_id', ['type' => 'hidden', 'value' => $service['Service']['servicetemplate_id']]);
+		echo $this->Form->input('Service.servicetemplate_id', [
+			'type' => 'hidden', 
+			'value' => $service['Service']['servicetemplate_id']
+		]);
 		?>
 		<div class="form-group">
 			<label class="col col-md-2 control-label" for="ServiceName"><?php echo __('Servicetemplate'); ?></label>
@@ -125,56 +132,56 @@ echo $this->Form->create('Service', [
 			'options' => $this->Html->chosenPlaceholder($servicetemplates),
 			'data-placeholder' => __('Please select...'),
 			'class' => 'chosen',
-			'label' => '<a href="/servicetemplates/edit/' . $service['Service']['servicetemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Servicetemplate'),
+			'label' => ['text' => '<a href="/servicetemplates/edit/' . $service['Service']['servicetemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Servicetemplate'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 			'selected' => $service['Service']['servicetemplate_id'],
-			'wrapInput' => 'col col-xs-8',
+			'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 			'style' => 'width: 100%',
 		]);
 	endif;
 	if($service['Service']['service_type'] == MK_SERVICE): ?>
 	<div class="form-group">
-		<label class="col col-md-2 control-label" for="ServiceName"><?php echo __('Name'); ?></label>
+		<label class="col col-md-1 control-label" for="ServiceName"><?php echo __('Name'); ?></label>
 		<div class="col col-xs-10 padding-top-5"><?php echo $service['Service']['name']; ?></div>
 		<?php echo $this->Form->input('Service.name', ['type' => 'hidden', 'value' => $service['Service']['name']]); ?>
 	</div>
 	<?php endif;
 	if($service['Service']['service_type'] != MK_SERVICE):
 		echo $this->Form->input('Service.name', [
-			'label' => __('Name'),
+			'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 			'value' => $service['Service']['name'],
-			'wrapInput' => 'col col-xs-8',
+			'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 		]);
 	endif;
 	echo $this->Form->input('Service.description', [
-		'label' => __('Description'),
+		'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'value' => $service['Service']['description'],
-		'wrapInput' => 'col col-xs-8',
+		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 	]);
 	echo $this->Form->input('Service.Servicegroup', [
 		'options' => $this->Html->chosenPlaceholder($servicegroups),
 		'data-placeholder' => __('Please select...'),
 		'class' => 'chosen',
-		'label' => __('Servicegroup'),
+		'label' => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'selected' => Hash::extract($service['Servicegroup'], '{n}.id', '{n}.id'),
-		'wrapInput' => 'col col-xs-8',
+		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 		'style' => 'width: 100%',
 		'multiple' => true,
 	]);
 	echo $this->Form->input('Service.notes', [
-		'label' => __('Notes'),
+		'label' => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'value' => $service['Service']['notes'],
-		'wrapInput' => 'col col-xs-8',
+		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 	]);
 	echo $this->Form->input('Service.service_url', [
-		'label' => __('Service URL'),
+		'label' => ['text' => __('Service URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'value' => $service['Service']['service_url'],
-		'wrapInput' => 'col col-xs-8',
+		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 	]);
 	?>
 	<div class="form-group <?php echo isset($validationErrors['priority']) ? 'has-error' : '' ?>">
-		<label class="col col-md-2 control-label"><?php echo __('Priority'); ?></label>
+		<label class="col col-md-1 control-label text-left"><?php echo __('Priority'); ?></label>
 
-		<div class="col col-xs-8 smart-form">
+		<div class="col col-xs-10 col-md-10 col-lg-10 smart-form">
 			<div class="rating pull-left">
 				<?php //The smallest priority is 1 at the moment
 				$priority = $this->CustomValidationErrors->refill('priority', ($service['Service']['priority'] !== null) ? $service['Service']['priority'] : $service['Servicetemplate']['priority']);
@@ -197,20 +204,20 @@ echo $this->Form->create('Service', [
 	<?php echo $this->Form->input('Service.notify_period_id', [
 		'options' => $this->Html->chosenPlaceholder($timeperiods),
 		'data-placeholder' => __('Please select...'),
-		'label' => __('Notification period'),
+		'label' => ['text' => __('Notification period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'class' => 'chosen',
 		'style' => 'width: 100%;',
 		'selected' => $service['Service']['notify_period_id'],
-		'wrapInput' => 'col col-xs-8',
+		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 	]);	?>
 	<br/>
 
 	<div
 		class="form-group form-group-slider required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
-		<label class="col col-md-2 control-label"
+		<label class="col col-md-1 control-label"
 			   for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
 
-		<div class="col col-md-5 hidden-mobile">
+		<div class="col col-md-7 hidden-mobile">
 			<input
 				type="text"
 				id="ServiceNotificationinterval"
@@ -245,11 +252,11 @@ echo $this->Form->create('Service', [
 			<div class="form-group no-padding" style="border-bottom:1px solid lightGray;">
 				<?php echo $this->Form->fancyCheckbox($notification_setting, [
 					'caption' => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
-					'captionGridClass' => 'col col-xs-3',
+					'captionGridClass' => 'col col-xs-2',
 					'icon' => '<i class="fa ' . $icon . '"></i> ',
 					'class' => 'onoffswitch-checkbox notification_control',
 					'checked' => $service['Service'][$notification_setting],
-					'wrapGridClass' => 'col col-xs-2',
+					'wrapGridClass' => 'col col-xs-1',
 				]); ?>
 			</div>
 		<?php endforeach; ?>
@@ -260,8 +267,8 @@ echo $this->Form->create('Service', [
 	<div class="form-group padding-left-20">
 		<?php echo $this->Form->fancyCheckbox('process_performance_data', [
 			'caption' => __('Enable graph'),
-			'wrapGridClass' => 'col col-xs-2',
-			'captionGridClass' => 'col col-xs-3 no-padding',
+			'wrapGridClass' => 'col col-xs-1',
+			'captionGridClass' => 'col col-xs-2 no-padding',
 			'captionClass' => 'control-label text-left no-padding',
 			'checked' => $this->CustomValidationErrors->refill('process_performance_data', $service['Service']['process_performance_data']),
 			'icon' => '<i class="fa fa-area-chart"></i> '
@@ -271,8 +278,8 @@ echo $this->Form->create('Service', [
 	<div class="form-group padding-left-20">
 		<?php echo $this->Form->fancyCheckbox('active_checks_enabled', [
 			'caption' => __('Enable active checks'),
-			'wrapGridClass' => 'col col-xs-2',
-			'captionGridClass' => 'col col-xs-3 no-padding',
+			'wrapGridClass' => 'col col-xs-1',
+			'captionGridClass' => 'col col-xs-2 no-padding',
 			'captionClass' => 'control-label text-left no-padding',
 			'checked' => $this->CustomValidationErrors->refill('active_checks_enabled', $service['Service']['active_checks_enabled']),
 			'icon' => '<i class="fa fa-sign-in"></i> '
@@ -322,8 +329,8 @@ echo $this->Form->create('Service', [
 			'multiple' => true,
 			'class' => 'chosen',
 			'style' => 'width:100%;',
-			'label' => __('Contact'),
-			'wrapInput' => 'col col-xs-8',
+			'label' => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+			'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 		])); ?>
 
 		<?php echo $this->Form->input('Service.Contactgroup', Hash::merge($contactGroupOptions, [
@@ -332,8 +339,8 @@ echo $this->Form->create('Service', [
 			'multiple' => true,
 			'class' => 'chosen',
 			'style' => 'width:100%;',
-			'label' => __('Contactgroups'),
-			'wrapInput' => 'col col-xs-8',
+			'label' => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+			'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 		])); ?>
 	</div>
 </div>
@@ -345,10 +352,10 @@ echo $this->Form->create('Service', [
 <?php echo $this->Form->input('Service.command_id', [
 	'options' => $this->Html->chosenPlaceholder($commands),
 	'data-placeholder' => __('Please select...'),
-	'label' => __('Checkcommand'),
+	'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 	'class' => 'chosen col col-xs-12',
 	'selected' => $service['Service']['command_id'],
-	'wrapInput' => 'col col-xs-8',
+	'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 ]); ?>
 <!-- Command arguments -->
 <div id="CheckCommandArgs">
@@ -390,20 +397,20 @@ echo $this->Form->create('Service', [
 <?php echo $this->Form->input('Service.check_period_id', [
 	'options' => $this->Html->chosenPlaceholder($timeperiods),
 	'data-placeholder' => __('Please select...'),
-	'label' => __('Check period'),
+	'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 	'class' => 'chosen',
 	'selected' => $service['Service']['check_period_id'],
-	'wrapInput' => 'col col-xs-8',
+	'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 ]); ?>
 <?php echo $this->Form->input('Service.max_check_attempts', [
-	'label' => __('Max. number of check attempts'),
+	'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 	'value' => $service['Service']['max_check_attempts'],
-	'wrapInput' => 'col col-xs-8',
+	'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 ]); ?>
 <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
-	<label class="col col-md-2 control-label" for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
+	<label class="col col-md-1 control-label text-left" for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
 
-	<div class="col col-xs-5">
+	<div class="col col-xs-7">
 		<input
 			type="text"
 			id="ServiceCheckinterval"
@@ -433,9 +440,9 @@ echo $this->Form->create('Service', [
 	</div>
 </div>
 <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
-	<label class="col col-md-2 control-label" for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
+	<label class="col col-md-1 control-label text-left" for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
 
-	<div class="col col-xs-5">
+	<div class="col col-xs-7">
 		<input
 			type="text"
 			id="ServiceRetryinterval"
@@ -467,16 +474,17 @@ echo $this->Form->create('Service', [
 <br class="clearfix"/>
 <!-- key words -->
 <?php echo $this->Form->input('tags', [
+	'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 	'class' => 'form-control tagsinput',
 	'data-role' => 'tagsinput',
 	'value' => $service['Service']['tags'],
-	'wrapInput' => 'col col-xs-8',
+	'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 ]);?>
 <div class="form-group">
 	<?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
 		'caption' => __('Flap detection'),
-		'wrapGridClass' => 'col col-xs-2',
-		'captionGridClass' => 'col col-xs-2',
+		'wrapGridClass' => 'col col-xs-1',
+		'captionGridClass' => 'col col-xs-2 text-left',
 		'captionClass' => 'control-label',
 		'checked' => $service['Service']['flap_detection_enabled'],
 	]); ?>
@@ -500,7 +508,7 @@ echo $this->Form->create('Service', [
 				'icon' => '<i class="fa ' . $icon . '"></i> ',
 				'class' => 'onoffswitch-checkbox flapdetection_control',
 				'checked' => $service['Service'][$flapDetection_setting],
-				'wrapGridClass' => 'col col-xs-2',
+				'wrapGridClass' => 'col col-xs-1',
 				'captionGridClass' => 'col col-xs-2',
 			]); ?>
 		</div>
@@ -517,7 +525,8 @@ echo $this->Form->create('Service', [
 		'icon' => '<i class="fa fa-asterisk"></i> ',
 		'class' => 'onoffswitch-checkbox',
 		'checked' => $this->CustomValidationErrors->refill('is_volatile', false),
-		'wrapGridClass' => 'col col-xs-3',
+		'wrapGridClass' => 'col col-xs-1',
+		'captionGridClass' => 'col col-md-2'
 	]); ?>
 </div>
 <div class="form-group no-padding">
@@ -526,16 +535,17 @@ echo $this->Form->create('Service', [
 		'icon' => '<i class="fa fa-foursquare"></i> ',
 		'class' => 'onoffswitch-checkbox',
 		'checked' => $service['Service']['freshness_checks_enabled'],
-		'wrapGridClass' => 'col col-xs-3',
+		'captionGridClass' => 'col col-md-2',
+		'wrapGridClass' => 'col col-xs-1',
 	]); ?>
 </div>
 <?php
 echo $this->Form->input('Service.freshness_threshold', [
 	'label' => [
 		'text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'),
-		'class' => 'col col-md-4 control-label text-left',
+		'class' => 'col col-md-2 control-label text-left',
 	],
-	'class' => 'col col-md-9',
+	'class' => 'col col-md-12',
 	'wrapInput' => 'col col-xs-8',
 	'value' => $service['Service']['freshness_threshold'],
 ]);
@@ -544,11 +554,11 @@ echo $this->Form->input('Service.freshness_threshold', [
 <?php echo $this->Form->input('Service.eventhandler_command_id', [
 	'options' => $this->Html->chosenPlaceholder($eventhandlers),
 	'data-placeholder' => __('Please select...'),
-	'label' => __('Eventhandler'),
+	'label' => ['text' => __('Eventhandler'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 	'class' => 'chosen',
 	'style' => 'width:100%;',
 	'selected' => $service['Service']['eventhandler_command_id'],
-	'wrapInput' => 'col col-xs-8',
+	'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 ]); ?>
 <!-- <div id="EventhandlerCommandArgs"></div> -->
 <div id="EventhandlerCommandArgs">

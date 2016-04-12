@@ -480,6 +480,15 @@ class QueryCache{
 		return $services;
 	}
 
+	public function maps(){
+		if($this->isCached(__FUNCTION__)){
+			return $this->getCache(__FUNCTION__);
+		}
+		$maps = $this->Map->find('all' ,'list');
+		$this->setCache(__FUNCTION__, $maps);
+		return $maps;
+	}
+
 	public function tachometerServices(){
 		if($this->isCached(__FUNCTION__)){
 			return $this->getCache(__FUNCTION__);

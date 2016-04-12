@@ -64,7 +64,7 @@ class UsergroupsController extends AppController {
 			throw new NotFoundException(__('Invalid usergroup'));
 		}
 		$usergroup = $this->Usergroup->findById($id);
-		
+
 		$this->set('usergroup', $usergroup);
 		$this->set('_serialize', ['usergroup']);
 	}
@@ -72,7 +72,7 @@ class UsergroupsController extends AppController {
 	public function edit($id = null){
 		$userId = $this->Auth->user('id');
 		if(!$this->Usergroup->exists($id)){
-			throw new NotFoundException(__('Invalid user group'));
+			throw new NotFoundException(__('Invalid user role'));
 		}
 		$usergroup = $this->Usergroup->findById($id);
 
@@ -164,10 +164,10 @@ class UsergroupsController extends AppController {
 				]);
 				//Save new permissions
 				$this->Acl->Aro->Permission->saveAll($aclData);
-				$this->setFlash(__('User group successfully saved'));
+				$this->setFlash(__('User role successfully saved'));
 				$this->redirect(array('action' => 'index'));
 			}else{
-				$this->setFlash(__('User group could not be saved'), false);
+				$this->setFlash(__('User role could not be saved'), false);
 			}
 		}
 
@@ -259,7 +259,7 @@ class UsergroupsController extends AppController {
 				unset($this->request->data['Aco']);
 				//Save new permissions
 				$this->Acl->Aro->Permission->saveAll($aclData);
-				$this->setFlash(__('User group successfully saved.'));
+				$this->setFlash(__('User role successfully saved.'));
 				$this->redirect(['action' => 'index']);
 			}else{
 				$this->setFlash(__('Could not save data'), false);
@@ -278,14 +278,14 @@ class UsergroupsController extends AppController {
 			throw new MethodNotAllowedException();
 		}
 		if(!$this->Usergroup->exists($id)){
-			throw new NotFoundException(__('invalid_usergroup'));
+			throw new NotFoundException(__('invalid_userrole'));
 		}
 
 		if($this->Usergroup->delete($id)){
-			$this->setFlash(__('User group deleted'));
+			$this->setFlash(__('User role deleted'));
 			$this->redirect(array('action' => 'index'));
 		}
-		$this->setFlash(__('Could not delete user group'), false);
+		$this->setFlash(__('Could not delete user role'), false);
 		$this->redirect(array('action' => 'index'));
 	}
 

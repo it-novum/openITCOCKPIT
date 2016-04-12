@@ -52,6 +52,8 @@ class DashboardsController extends AppController{
 		'Hostgroup',
 		'WidgetTacho',
 		'WidgetNotice',
+		'MapModule.Map',
+		'GraphgenTmpl',
 	];
 
 	const UPDATE_DISABLED = 0;
@@ -837,6 +839,54 @@ class DashboardsController extends AppController{
 		}
 	}
 
+	public function saveMapId(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$mapId = (int)$this->request->data['mapId'];
+			if($mapId === 0){
+				$mapId = null;
+			}
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['map_id'] = $mapId;
+					$this->Widget->save($widget);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+				}
+			}
+		}
+	}
+
+	public function saveGraphId(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$graphId = (int)$this->request->data['graphId'];
+			if($graphId === 0){
+				$graphId = null;
+			}
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['graph_id'] = $graphId;
+					$this->Widget->save($widget);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+				}
+			}
+		}
+	}
+
 	public function getTachoPerfdata(){
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
@@ -974,8 +1024,8 @@ class DashboardsController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			$noticeConfig = $this->request->data['dashboard'];
 			$widgetNoticeId = null;
-			$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
-			$note = htmlspecialchars($note);
+			//$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
+			$note = htmlspecialchars($noticeConfig['noticeText']);
 
 			if(isset($noticeConfig['WidgetNoticeId'])){
 				$widgetNoticeId = $noticeConfig['WidgetNoticeId'];
@@ -1003,15 +1053,33 @@ class DashboardsController extends AppController{
 			if($widgetNoticeId !== null){
 				$data['WidgetNotice']['id'] = $widgetNoticeId;
 			}
+
 			if($this->WidgetNotice->save($data)){
 				$this->Widget->id = $data['WidgetNotice']['widget_id'];
 			}
-			/*if(){
-				$this->Widget->id = $data['WidgetNotice']['widget_id'];
-			}*/
 			return $this->redirect(['action' => 'index', $noticeConfig['tabId']]);
 		}
-
 		return $this->redirect(['action' => 'index']);
+	}
+
+	public function saveMap(){
+		$this->autoRender = false;
+		if(!$this->request->is('ajax')){
+			throw new MethodNotAllowedException();
+		}
+		if(isset($this->request->data['widgetId']) && isset($this->request->data['mapId'])){
+			$widgetId = $this->request->data['widgetId'];
+			$mapId = (int)$this->request->data['mapId'];
+			$userId = $this->Auth->user('id');
+			if($this->Widget->exists($widgetId)){
+				$widget = $this->Widget->findById($widgetId);
+				if($widget['DashboardTab']['user_id'] == $userId){
+					$widget['Widget']['map_id'] = $mapId;
+					$this->Widget->save($widget);
+					$this->DashboardTab->id = $widget['DashboardTab']['id'];
+					$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+				}
+			}
+		}
 	}
 }

@@ -76,18 +76,34 @@
 				]); ?>
 			<div class="row">
 				<!-- basic settings -->
-				<div class="col-xs-12 col-md-9 col-lg-7">
+				<div class="col-xs-12 col-md-12 col-lg-12">
 					<div class="tab-content">
 						<div id="tab1" class="tab-pane fade active in">
 							<span class="note"><?php echo __('Basic configuration'); ?>:</span>
 							<?php
-								echo $this->Form->input('container_id', ['options' => $this->Html->chosenPlaceholder($containers),'data-placeholder' => __('Please select...'), 'class' => 'chosen col col-xs-12', 'label' => __('Container')]);
-								echo $this->Form->input('name', ['label' => __('Templatename'), 'help' => __('This is the default name for the service if you create it out of the template')]);
-								echo $this->Form->input('description', ['label' => __('Description')]);
-								echo $this->Form->input('notes', ['label' => __('Notes')]);
+								echo $this->Form->input('container_id', [
+									'options' => $this->Html->chosenPlaceholder($containers),
+									'data-placeholder' => __('Please select...'), 
+									'class' => 'chosen col col-xs-12', 
+									'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('name', [
+									'label' => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+									'help' => __('This is the default name for the service if you create it out of the template'),
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('description', [
+									'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('notes', [
+									'label' => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
 							?>
 							<div class="form-group <?php echo (isset($validationErrors['priority']))?'has-error':'' ?>">
-								<label class="col col-md-2 control-label"><?php echo __('Priority'); ?></label>
+								<label class="col col-md-1 control-label text-left"><?php echo __('Priority'); ?></label>
 								<div class="col col-xs-10 smart-form">
 									<div class="rating pull-left">
 										<?php
@@ -107,9 +123,16 @@
 							</div>
 							<!-- notification settings -->
 							<span class="note"><?php echo __('Notification settings'); ?>:</span>
-							<?php echo $this->Form->input('Servicetemplate.notify_period_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods),'data-placeholder' => __('Please select...'), 'label' => __('Notification period'), 'class' => 'chosen col col-xs-12']); ?>
+							<?php 
+							echo $this->Form->input('Servicetemplate.notify_period_id', [
+								'options' => $this->Html->chosenPlaceholder($_timeperiods),
+								'data-placeholder' => __('Please select...'), 
+								'label' => ['text' => __('Notification period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]); ?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
-								<label class="col col-md-2 control-label" for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+								<label class="col col-md-1 control-label" for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
 								<div class="col col-xs-7">
 									<input type="text" id="ServiceNotificationinterval" maxlength="255" value="" class="form-control slider slider-success" name="data[Servicetemplate][notification_interval]"
 									data-slider-min="0"
@@ -134,29 +157,35 @@
 										'caption' => ucfirst(preg_replace('/notify_on_/','',$notification_setting)),
 										'icon' => '<i class="fa '.$icon.'"></i> ',
 										'class' => 'onoffswitch-checkbox notification_control',
-										'checked' => $this->CustomValidationErrors->refill($notification_setting, false)
+										'checked' => $this->CustomValidationErrors->refill($notification_setting, false),
+										'captionGridClass' => 'col col-xs-2',
+										'wrapGridClass' => 'col col-xs-1',
 									]); ?>
 									<div class="clearfix"></div>
 								</div>
 								<?php endforeach;?>
 							</div>
 							<br />
-							<?php echo $this->Form->fancyCheckbox('process_performance_data', [
-								'caption' => __('Enable graph'),
-								'wrapGridClass' => 'col col-md-8',
-								'captionGridClass' => 'col col-md-4 no-padding',
-								'captionClass' => 'control-label text-left no-padding',
-								'checked' => $this->CustomValidationErrors->refill('process_performance_data', false),
-								'icon' => '<i class="fa fa-area-chart"></i> '
-							]); ?>
-							<?php echo $this->Form->fancyCheckbox('active_checks_enabled', [
-								'caption' => __('Enable active checks'),
-								'wrapGridClass' => 'col col-md-8',
-								'captionGridClass' => 'col col-md-4 no-padding',
-								'captionClass' => 'control-label text-left no-padding',
-								'checked' => $this->CustomValidationErrors->refill('active_checks_enabled', false),
-								'icon' => '<i class="fa fa-sign-in"></i> '
-							]); ?>
+							<div class="form-group padding-left-20">
+								<?php echo $this->Form->fancyCheckbox('process_performance_data', [
+									'caption' => __('Enable graph'),
+									'wrapGridClass' => 'col col-md-1',
+									'captionGridClass' => 'col col-md-2 no-padding',
+									'captionClass' => 'control-label text-left no-padding',
+									'checked' => $this->CustomValidationErrors->refill('process_performance_data', false),
+									'icon' => '<i class="fa fa-area-chart"></i> '
+								]); ?>
+							</div>
+							<div class="form-group padding-left-20">
+								<?php echo $this->Form->fancyCheckbox('active_checks_enabled', [
+									'caption' => __('Enable active checks'),
+									'wrapGridClass' => 'col col-md-1',
+									'captionGridClass' => 'col col-md-2 no-padding',
+									'captionClass' => 'control-label text-left no-padding',
+									'checked' => $this->CustomValidationErrors->refill('active_checks_enabled', false),
+									'icon' => '<i class="fa fa-sign-in"></i> '
+								]); ?>
+							</div>
 							<div class="padding-20"><!-- spacer --><br /><br /></div>
 
 							<?php echo $this->Form->input('Servicetemplate.Contact', [
@@ -164,14 +193,16 @@
 								'multiple' => true,
 								'class' => 'chosen',
 								'style' => 'width:100%;',
-								'label' => __('Contact'),
+								'label' => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]); ?>
 							<?php echo $this->Form->input('Servicetemplate.Contactgroup', [
 								'options' => $_contactgroups,
 								'multiple' => true,
 								'class' => 'chosen',
 								'style' => 'width:100%;',
-								'label' => __('Contactgroups'),
+								'label' => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]); ?>
 						</div> <!-- close 1st table -->
 
@@ -180,14 +211,34 @@
 							<!-- check settings -->
 							<span class="note pull-left"><?php echo __('Check settings'); ?>:</span>
 							<br class="clearfix" />
-							<?php echo $this->Form->input('Servicetemplate.command_id', ['options' => $this->Html->chosenPlaceholder($commands), 'label' => __('Checkcommand'), 'class' => 'chosen col col-xs-12']); ?>
+							<?php 
+							echo $this->Form->input('Servicetemplate.command_id', [
+								'options' => $this->Html->chosenPlaceholder($commands), 
+								'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div id="CheckCommandArgs">
 								<!-- Contacnt gets loaded by AJAX -->
 							</div>
-							<?php echo $this->Form->input('Servicetemplate.check_period_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods),'data-placeholder' => __('Please select...'), 'label' => __('Check period'), 'class' => 'chosen col col-xs-12']); ?>
-							<?php echo $this->Form->input('Servicetemplate.max_check_attempts', ['label' => __('Max. numer of check attempts')]); ?>
+							<?php 
+							echo $this->Form->input('Servicetemplate.check_period_id', [
+								'options' => $this->Html->chosenPlaceholder($_timeperiods),
+								'data-placeholder' => __('Please select...'), 
+								'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
+							<?php 
+							echo $this->Form->input('Servicetemplate.max_check_attempts', [
+								'label' => ['text' => __('Max. numer of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
-								<label class="col col-md-2 control-label" for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
+								<label class="col col-md-1 control-label text-left" for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
 								<div class="col col-xs-7">
 									<input type="text" id="ServiceCheckinterval" maxlength="255" value="" class="form-control slider slider-success" name="data[Servicetemplate][check_interval]"
 									data-slider-min="<?php echo Configure::read('NagiosModule.SLIDER_MIN'); ?>"
@@ -204,7 +255,7 @@
 								</div>
 							</div>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
-								<label class="col col-md-2 control-label" for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
+								<label class="col col-md-1 control-label text-left" for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
 								<div class="col col-xs-7">
 									<input type="text" id="ServiceRetryinterval" maxlength="255" value="" class="form-control slider slider-primary" name="data[Servicetemplate][retry_interval]"
 									data-slider-min="<?php echo Configure::read('NagiosModule.SLIDER_MIN'); ?>"
@@ -226,14 +277,22 @@
 							<span class="note pull-left"><?php echo __('Expert settings'); ?>:</span>
 							<br class="clearfix" />
 							<!-- key words -->
-							<?php echo $this->Form->input('tags', ['class' => 'form-control tagsinput', 'data-role' => 'tagsinput']);?>
-							<?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
-								'caption' => __('Flap detection'),
-								'wrapGridClass' => 'col col-md-8',
-								'captionGridClass' => 'col col-md-4 no-padding',
-								'captionClass' => 'control-label text-left no-padding',
-								'checked' => $this->CustomValidationErrors->refill('flap_detection_enabled', false),
-							]); ?>
+							<?php echo $this->Form->input('tags', [
+								'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'class' => 'form-control tagsinput', 
+								'data-role' => 'tagsinput',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
+							<div class="form-group">
+								<?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
+									'caption' => __('Flap detection'),
+									'wrapGridClass' => 'col col-md-1',
+									'captionGridClass' => 'col col-md-2 no-padding',
+									'captionClass' => 'control-label text-left no-padding',
+									'checked' => $this->CustomValidationErrors->refill('flap_detection_enabled', false),
+								]); ?>
+							</div>
 							<br />
 							<legend class="font-sm">
 								<!-- this legend creates the nice border  -->
@@ -249,7 +308,9 @@
 										'caption' => ucfirst(preg_replace('/flap_detection_on_/','',$flapDetection_setting)),
 										'icon' => '<i class="fa '.$icon.'"></i> ',
 										'class' => 'onoffswitch-checkbox flapdetection_control',
-										'checked' => $this->CustomValidationErrors->refill($flapDetection_setting, false)
+										'checked' => $this->CustomValidationErrors->refill($flapDetection_setting, false),
+										'wrapGridClass' => 'col col-xs-1',
+										'captionGridClass' => 'col col-xs-2',
 									]); ?>
 									<div class="clearfix"></div>
 								</div>
@@ -258,28 +319,35 @@
 							<br />
 							<legend class="font-sm">
 							</legend>
-							<div style="border-bottom:1px solid lightGray;">
+							<div class="form-group no-padding" style="border-bottom:1px solid lightGray;">
 								<?php echo $this->Form->fancyCheckbox('Servicetemplate.is_volatile', [
 										'caption' =>  __(ucfirst('Status volatile')),
 										'icon' => '<i class="fa fa-asterisk"></i> ',
 										'class' => 'onoffswitch-checkbox',
-										'checked' => $this->CustomValidationErrors->refill('is_volatile', false)
+										'checked' => $this->CustomValidationErrors->refill('is_volatile', false),
+										'wrapGridClass' => 'col col-xs-1',
+										'captionGridClass' => 'col col-xs-2',
 									]); ?>
 								<div class="clearfix"></div>
 							</div>
-							<div style="border-bottom:1px solid lightGray;">
+							<div  class="form-group no-padding" style="border-bottom:1px solid lightGray;">
 								<?php echo $this->Form->fancyCheckbox('Servicetemplate.freshness_checks_enabled', [
 										'caption' =>  __(ucfirst('Check freshness')),
 										'icon' => '<i class="fa fa-foursquare"></i> ',
 										'class' => 'onoffswitch-checkbox',
-										'checked' => $this->CustomValidationErrors->refill('freshness_checks_enabled', false)
+										'checked' => $this->CustomValidationErrors->refill('freshness_checks_enabled', false),
+										'wrapGridClass' => 'col col-xs-1',
+										'captionGridClass' => 'col col-xs-2',
 									]); ?>
 								<div class="clearfix"></div>
 								<div class="padding-left-10">
 									<?php
-									echo $this->Form->input('freshness_threshold', [ 'label' => ['text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'), 'class' => 'col col-md-4 control-label text-left'],
-										'class' => 'col col-md-9', 'wrapInput' => 'col col-xs-8']);
-								?>
+									echo $this->Form->input('freshness_threshold', [
+										'label' => ['text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'),'class' => 'col col-md-2 control-label text-left'],
+										'class' => 'col col-md-12', 
+										'wrapInput' => 'col col-xs-8'
+									]);
+									?>
 								</div>
 							</div>
 							<br>
@@ -287,8 +355,9 @@
 							echo $this->Form->input('Servicetemplate.eventhandler_command_id', [
 								'options' => $this->Html->chosenPlaceholder($eventhandlers),
 								'data-placeholder' => __('Please select...'),
-								'label' => __('Eventhandler'),
+								'label' => ['text' => __('Eventhandler'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]);
 							?>
 							<div id="EventhandlerCommandArgs"></div>

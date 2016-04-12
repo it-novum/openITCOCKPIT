@@ -74,7 +74,7 @@
 					'class' => 'form-horizontal clear'
 				]); ?>
 				<div class="row">
-					<div class="col-xs-12 col-md-9 col-lg-7">
+					<div class="col-xs-12 col-md-12 col-lg-12">
 						<div class="tab-content">
 						<!-- basic settings -->
 						<div id="tab1" class="tab-pane fade active in">
@@ -85,16 +85,29 @@
 										'multiple' => false,
 										'class' => 'chosen',
 										'style' => 'width: 100%',
-										'label' => __('Container'),
+										'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+										'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 									)
 								);
-								echo $this->Form->input('name', ['label' => __('Templatename')]);
-								echo $this->Form->input('description', ['label' => __('Description')]);
-								echo $this->Form->input('notes', ['label' => __('Notes')]);
-								echo $this->Form->input('host_url', ['label' => __('Host URL')]);
+								echo $this->Form->input('name', [
+									'label' => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('description', [
+									'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('notes', [
+									'label' => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
+								echo $this->Form->input('host_url', [
+									'label' => ['text' => __('Host URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+								]);
 							?>
 							<div class="form-group <?php echo (isset($validationErrors['priority']))?'has-error':'' ?>">
-								<label class="col col-md-2 control-label"><?php echo __('Priority'); ?></label>
+								<label class="col col-md-1 control-label text-left"><?php echo __('Priority'); ?></label>
 								<div class="col col-xs-10 smart-form">
 									<div class="rating pull-left">
 										<?php
@@ -113,14 +126,28 @@
 								</div>
 							</div>
 							<!-- key words -->
-							<?php echo $this->Form->input('tags', ['class' => 'form-control tagsinput', 'data-role' => 'tagsinput']);?>
+							<?php
+							echo $this->Form->input('tags', [
+								'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'class' => 'form-control tagsinput', 
+								'data-role' => 'tagsinput',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div class="padding-top-10"></div>
 
 							<!-- notification settings -->
 							<span class="note"><?php echo __('Notification settings'); ?>:</span>
-							<?php echo $this->Form->input('Hosttemplate.notify_period_id', ['options' => $_timeperiods, 'label' => __('Notification period'), 'class' => 'chosen col col-xs-12']); ?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.notify_period_id', [
+								'options' => $_timeperiods, 
+								'label' => ['text' => __('Notification period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
-								<label class="col col-md-2 control-label" for="HostNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+								<label class="col col-md-1 control-label" for="HostNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
 								<div class="col col-md-7 hidden-mobile">
 									<input type="text" id="HostNotificationinterval" maxlength="255" value="" class="form-control slider slider-success" name="data[Hosttemplate][notification_interval]"
 									data-slider-min="0"
@@ -144,7 +171,9 @@
 										'caption' => ucfirst(preg_replace('/notify_on_/','',$notification_setting)),
 										'icon' => '<i class="fa '.$icon.'"></i> ',
 										'class' => 'onoffswitch-checkbox notification_control',
-										'checked' => $this->CustomValidationErrors->refill($notification_setting, false)
+										'checked' => $this->CustomValidationErrors->refill($notification_setting, false),
+										'captionGridClass' => 'col col-xs-2',
+										'wrapGridClass' => 'col col-xs-1',
 									]); ?>
 									<div class="clearfix"></div>
 								</div>
@@ -154,30 +183,67 @@
 
 							<?php echo $this->Form->fancyCheckbox('active_checks_enabled', [
 								'caption' => __('Enable active checks'),
-								'wrapGridClass' => 'col col-md-8',
-								'captionGridClass' => 'col col-md-4 no-padding',
+								'wrapGridClass' => 'col col-md-1',
+								'captionGridClass' => 'col col-md-2 no-padding',
 								'captionClass' => 'control-label text-left no-padding',
 								'checked' => $this->CustomValidationErrors->refill('active_checks_enabled', false),
 								'icon' => '<i class="fa fa-sign-in"></i> '
 							]); ?>
 							<div class="padding-20"><!-- spacer --><br /><br /></div>
 
-							<?php echo $this->Form->input('Hosttemplate.Contact', ['options' => $_contacts, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Contact')]);?>
-							<?php echo $this->Form->input('Hosttemplate.Contactgroup', ['options' => $_contactgroups, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Contactgroups')]);?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.Contact', [
+								'options' => $_contacts, 
+								'multiple' => true, 
+								'class' => 'chosen', 
+								'style' => 'width:100%;', 
+								'label' => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.Contactgroup', [
+								'options' => $_contactgroups, 
+								'multiple' => true, 
+								'class' => 'chosen', 
+								'style' => 'width:100%;', 
+								'label' => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 						</div>
 
 						<div id="tab2" class="tab-pane fade">
 							<!-- check settings -->
 							<span class="note pull-left"><?php echo __('Check settings'); ?>:</span>
 							<br class="clearfix" />
-							<?php echo $this->Form->input('Hosttemplate.command_id', ['options' => $this->Html->chosenPlaceholder($commands), 'label' => __('Checkcommand'), 'class' => 'chosen col col-xs-12']); ?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.command_id', [
+								'options' => $this->Html->chosenPlaceholder($commands), 
+								'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div id="CheckCommandArgs">
 								<!-- Contacnt gets loaded by AJAX -->
 							</div>
-							<?php echo $this->Form->input('Hosttemplate.check_period_id', ['options' => $_timeperiods, 'label' => __('Check period'), 'class' => 'chosen col col-xs-12']); ?>
-							<?php echo $this->Form->input('Hosttemplate.max_check_attempts', ['label' => __('Max. numer of check attempts')]); ?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.check_period_id', [
+								'options' => $_timeperiods, 
+								'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'class' => 'chosen col col-xs-12',
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
+							<?php 
+							echo $this->Form->input('Hosttemplate.max_check_attempts', [
+								'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+							]);
+							?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
-								<label class="col col-md-2 control-label" for="HostCheckinterval"><?php echo __('Checkinterval'); ?></label>
+								<label class="col col-md-1 control-label text-left" for="HostCheckinterval"><?php echo __('Checkinterval'); ?></label>
 								<div class="col col-xs-7">
 									<input type="text" id="HostCheckinterval" maxlength="255" value="<?php echo $this->CustomValidationErrors->refill('check_interval', 0); ?>" class="form-control slider slider-success" name="data[Hosttemplate][check_interval]"
 									data-slider-min="<?php echo Configure::read('NagiosModule.SLIDER_MIN'); ?>"
@@ -194,7 +260,7 @@
 								</div>
 							</div>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
-								<label class="col col-md-2 control-label" for="HostCheckinterval"><?php echo __('Retryinterval'); ?></label>
+								<label class="col col-md-1 control-label text-left" for="HostCheckinterval"><?php echo __('Retryinterval'); ?></label>
 								<div class="col col-xs-7">
 									<input type="text" id="HostRetryinterval" maxlength="255" value="<?php echo $this->CustomValidationErrors->refill('retry_interval', 0); ?>" class="form-control slider slider-primary" name="data[Hosttemplate][retry_interval]"
 									data-slider-min="<?php echo Configure::read('NagiosModule.SLIDER_MIN'); ?>"
@@ -216,13 +282,15 @@
 							<!-- expert settings -->
 							<span class="note pull-left"><?php echo __('Expert settings'); ?>:</span>
 							<br class="clearfix" />
-							<?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
+							<?php 
+							echo $this->Form->fancyCheckbox('flap_detection_enabled', [
 								'caption' => __('Flap detection'),
-								'wrapGridClass' => 'col col-md-8',
-								'captionGridClass' => 'col col-md-2',
+								'wrapGridClass' => 'col col-md-1',
+								'captionGridClass' => 'col col-md-2 text-left',
 								'captionClass' => 'control-label',
 								'checked' => $this->CustomValidationErrors->refill('flap_detection_enabled', false),
-							]); ?>
+							]);
+							?>
 							<br />
 							<legend class="font-sm">
 								<!-- this legend creates the nice border  -->
@@ -238,7 +306,9 @@
 										'caption' => ucfirst(preg_replace('/flap_detection_on_/','',$flapDetection_setting)),
 										'icon' => '<i class="fa '.$icon.'"></i> ',
 										'class' => 'onoffswitch-checkbox flapdetection_control',
-										'checked' => $this->CustomValidationErrors->refill($flapDetection_setting, false)
+										'checked' => $this->CustomValidationErrors->refill($flapDetection_setting, false),
+										'captionGridClass' => 'col col-xs-2',
+										'wrapGridClass' => 'col col-xs-1',
 									]); ?>
 									<div class="clearfix"></div>
 								</div>

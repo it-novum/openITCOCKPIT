@@ -88,10 +88,20 @@ class CalendarsController extends AppController{
 				$this->request->data['CalendarHoliday'] = $this->Calendar->prepareForSave($this->request->data['CalendarHoliday']);
 			}
 			if($this->Calendar->saveAll($this->request->data)){
-				$this->setFlash(__('Calendar successfully saved.'));
-				$this->redirect(['action' => 'index']);
+				if($this->request->ext == 'json'){
+					$this->serializeId();
+					return;
+				}else{
+					$this->setFlash(__('Calendar successfully saved.'));
+					$this->redirect(['action' => 'index']);
+				}
 			}else{
-				$this->setFlash(__('Could not save data'), false);
+				if($this->request->ext == 'json'){
+					$this->serializeErrorMessage();
+					return;
+				}else{
+					$this->setFlash(__('Could not save data'), false);
+				}
 			}
 		}
 	}

@@ -82,7 +82,8 @@ class Map extends MapModuleAppModel{
 			'atLeastOne' => [
 				'rule' => ['atLeastOne'],
 				'message' => 'You must specify at least one Container.',
-				'required' => true
+				'required' => true,
+				'on' => 'create'
 			]
 		]
 	];

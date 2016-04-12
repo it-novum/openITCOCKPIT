@@ -85,7 +85,7 @@
 				</div>
 				<?php
 				echo $this->Form->input('usergroup_id', array(
-					'label' => __('User group'),
+					'label' => __('User role'),
 					'options' => $usergroups,
 					'class' => 'select2 chosen',
 					'style' => 'width: 100%'

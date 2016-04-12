@@ -45,9 +45,9 @@ class SetupShell extends AppShell{
 		$this->out('This shell helps you to setup your fresh installation of openITCOCKPIT.');
 		$this->out('<red>NOTICE:</red>');
 		$this->out('<red>Only run this shell, if you installed openITCOCKPIT right now and never logged in to the interface!</red>');
-		$this->out('<red>If you continue, you will lost all your archive data!</red>');
+		$this->out('<red>If you continue, you will lose all your archive data!</red>');
 		$this->hr();
-		$this->out(__d('oitc_console', '[Y]es i want to continue setup openITCOCKPIT'));
+		$this->out(__d('oitc_console', '[Y]es I want to continue the setup of openITCOCKPIT'));
 		$this->out(__d('oitc_console', '[N]o and exit shell'));
 		$this->stdout->styles('red_bold', ['text' => 'red', 'bold' => true]);
 
@@ -56,7 +56,7 @@ class SetupShell extends AppShell{
 		$this->Systemdata = ['Systemsetting' => []];
 		$this->Mail = [];
 
-		$menuSelection = strtoupper($this->in(__d('oitc_console', 'Are you sure that you want to continue?'), array('Y', 'N')));
+		$menuSelection = strtoupper($this->in(__d('oitc_console', 'Are you sure to continue?'), array('Y', 'N')));
 		switch($menuSelection){
 			case 'Y':
 				$this->setup();
@@ -212,7 +212,7 @@ class SetupShell extends AppShell{
 	}
 
 	public function askSystemIp(){
-		$input = $this->in(__d('oitc_console', 'Please enter the FQDN or IP address of your openITCOCKPIT Server. If you dont know your IP address enter a randome one and change it via the interface later.'));
+		$input = $this->in(__d('oitc_console', 'Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later.'));
 		$input = trim($input);
 		if(strlen($input) > 0){
 			return $input;
@@ -221,10 +221,10 @@ class SetupShell extends AppShell{
 	}
 
 	public function fetchMailconfig(){
-		$this->out('<blue>The installer will you ask now for your mail configuration</blue>');
+		$this->out('<blue>The installer will ask you now for your mail configuration</blue>');
 		$this->out('<blue>This configuration is used by the interface and the monitoring software to send emails</blue>');
 		$this->out('<blue>You don\'t need to install a local mailserver</blue>');
-		$this->out('<blue>If you want to changes this settings later </blue>', false);
+		$this->out('<blue>If you want to change this settings later </blue>', false);
 		$this->out('<red>' . APP . 'Config' . DS . 'email.php </red>', false);
 		$this->out('<blue> is the place you need to search for</blue>');
 
@@ -271,7 +271,7 @@ class SetupShell extends AppShell{
 	}
 
 	public function askMailUser(){
-		$this->out('<blue>Your username may look like </blue>', false);
+		$this->out('<blue>Your username may looks like </blue>', false);
 		$this->out('<red>domain\jdoe</red> or <red>john.doe@example.org</red>');
 		$input = $this->in(__d('oitc_console', 'Please enter your username, or leave it blank if you don\'t need a user'));
 		$input = trim($input);
@@ -295,7 +295,7 @@ class SetupShell extends AppShell{
 			$this->out('<red> ...ERROR</red>');
 			return false;
 		}
-		$this->out('<red> MySQL configuration file /etc/openitcockpit/mysql.cnf does not exists</red>');
+		$this->out('<red> MySQL configuration file /etc/openitcockpit/mysql.cnf does not exist</red>');
 		return false;
 	}
 
@@ -343,7 +343,7 @@ class EmailConfig {
 	}
 
 	public function createCronjobs(){
-		$this->out('<blue>Check for missing cronjobs</blue>');
+		$this->out('<blue>Checking for missing cronjobs</blue>');
 		//Check if load cronjob exists
 		if(!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')){
 			//Cron does not exists, so we create it

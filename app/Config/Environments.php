@@ -61,6 +61,6 @@ class Environments {
 		}
 
 		return $environment;
-		
+
 	}
 }

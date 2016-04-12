@@ -1,3 +1,4 @@
+<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -22,18 +23,41 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Components.AjaxloaderComponent = Frontend.Component.extend({
-	$ajaxloader:null,
+namespace Dashboard\Widget;
 
-	setup: function(){
-		this.$ajaxloader = $('#global_ajax_loader');
-	},
+class Graphgenerator extends Widget{
+	public $isDefault = false;
+	public $icon = 'fa-area-chart';
+	public $element = 'graphgenerator';
+	public $width = 12;
+	public $height = 29;
 
-	show: function(){
-		this.$ajaxloader.show();
-	},
-
-	hide: function(){
-		this.$ajaxloader.fadeOut('slow')
+	public function __construct(\Controller $controller, $QueryCache){
+		parent::__construct($controller, $QueryCache);
+		$this->typeId = 15;
+		$this->title = __('Graphgenerator');
 	}
-});
+
+	public function setData($widgetData){
+
+		$graphListForWidget = $this->Controller->GraphgenTmpl->find('all',[
+			'fields' => [
+				'GraphgenTmpl.id',
+				'GraphgenTmpl.name'
+			],
+		]);
+
+		$this->Controller->viewVars['widgetMaps'][$widgetData['Widget']['id']] = [
+			'Widget' => $widgetData,
+		];
+		$this->Controller->set('graphListForWidget', $graphListForWidget);
+	}
+
+	public function refresh($widget){
+		$this->setData($widget);
+		return [
+			'element' => 'Dashboard'.DS.$this->element
+		];
+	}
+
+}

@@ -90,7 +90,7 @@ class MapeditorsController extends MapModuleAppController {
 			]
 		]);
 		$maps = $this->Map->find('all');
-		$maps = Hash::remove($maps, '{n}.Tenant');
+		$maps = Hash::remove($maps, '{n}.Container');
 
 		$mapList = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
 

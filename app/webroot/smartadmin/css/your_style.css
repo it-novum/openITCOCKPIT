@@ -510,6 +510,10 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	padding: 20px;
 }
 
+.padding-35 {
+	padding: 35px;
+}
+
 .padding-left-50 {
 	padding-left: 50px;
 }
@@ -1406,4 +1410,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 
 .white-space-nowrap{
 	white-space: nowrap;
+}
+
+#FilterIndexForm label:after{
+	content:'';
 }

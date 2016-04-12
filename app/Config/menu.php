@@ -39,7 +39,7 @@ $config = [
 					]*/
 			]
 		],
-		
+
 		'maps' => [
 			'url' => ['controller' => 'statusmaps', 'action' => 'index', 'plugin' => ''],
 			'title' => 'Maps',
@@ -95,7 +95,7 @@ $config = [
 				],
 				'usergroups' => [
 					'url' => ['plugin' => '', 'controller' => 'usergroups', 'action' => 'index'],
-					'title' => 'Manage User Groups',
+					'title' => 'Manage User Roles',
 					'icon' => 'users',
 					'parent_controller' => 'Administrators'
 				],

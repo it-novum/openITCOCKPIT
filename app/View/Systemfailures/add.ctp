@@ -52,12 +52,17 @@
 					'class' => 'form-horizontal clear'
 				]); ?>
 				<div class="row">
-					<div class="col-xs-12 col-md-9 col-lg-7">
-						<?php echo $this->Form->input('comment', ['label' => __('Comment')]); ?>
+					<div class="col-xs-12 col-md-12 col-lg-12">
+						<?php 
+						echo $this->Form->input('comment', [
+							'label' => ['text' => __('Comment'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+						]); 
+						?>
 						<!-- from -->
 						<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('from_date'); ?>">
-							<label class="col col-md-2 control-label" for="SystemdowntimeFromDate"><?php echo __('From');?>:</label>
-							<div class="col col-xs-4 col-md-5" style="padding-right: 0px;">
+							<label class="col col-md-1 control-label" for="SystemdowntimeFromDate"><?php echo __('From');?>:</label>
+							<div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
 								<input type="text" id="SystemdowntimeFromDate" value="<?php echo $this->CustomValidationErrors->refill('from_date', date('d.m.Y')); ?>" class="form-control" name="data[Systemfailure][from_date]">
 								<div>
 									<?php echo $this->CustomValidationErrors->errorHTML('from_date'); ?>
@@ -74,8 +79,8 @@
 
 						<!-- to -->
 						<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('to_date'); ?>">
-							<label class="col col-md-2 control-label" for="SystemdowntimeToDate"><?php echo __('To');?>:</label>
-							<div class="col col-xs-4 col-md-5" style="padding-right: 0px;">
+							<label class="col col-md-1 control-label" for="SystemdowntimeToDate"><?php echo __('To');?>:</label>
+							<div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
 								<input type="text" id="SystemdowntimeToDate" value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control" name="data[Systemfailure][to_date]">
 								<div>
 									<?php echo $this->CustomValidationErrors->errorHTML('to_date'); ?>

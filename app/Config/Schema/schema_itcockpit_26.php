@@ -1286,6 +1286,7 @@ class AppSchema extends CakeSchema {
 		'service_id' => ['type' => 'integer', 'null' => true],
 		'host_id' => ['type' => 'integer', 'null' => true],
 		'map_id' => ['type' => 'integer', 'null' => true],
+		'graph_id' => ['type' => 'integer', 'null' => true],
 		'row' => ['type' => 'integer', 'null' => false],
 		'col' => ['type' => 'integer', 'null' => false],
 		'width' => ['type' => 'integer', 'null' => false],
@@ -1365,7 +1366,7 @@ class AppSchema extends CakeSchema {
 	public $widget_notices = [
 		'id' => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
 		'widget_id' => ['type' => 'integer', 'null' => false],
-		'note' => ['type' => 'string', 'null' => false],
+		'note' => ['type' => 'text', 'null' => false],
 		'indexes' => [
 			'PRIMARY' => ['column' => 'id', 'unique' => 1],
 			'KEY' => ['column' => 'widget_id', 'unique' => 1],

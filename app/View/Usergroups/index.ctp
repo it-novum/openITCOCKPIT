@@ -30,7 +30,7 @@
 			<i class="fa fa-users fa-fw "></i>
 				<?php echo __('Administration'); ?>
 			<span>>
-				<?php echo __('Manage user groups'); ?>
+				<?php echo __('Manage user roles'); ?>
 			</span>
 		</h1>
 	</div>
@@ -63,7 +63,7 @@
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-users"></i> </span>
-					<h2 class="hidden-mobile"><?php echo __('User group'); ?></h2>
+					<h2 class="hidden-mobile"><?php echo __('User role'); ?></h2>
 				</header>
 				<div>
 					<div class="widget-body no-padding">

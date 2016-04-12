@@ -53,7 +53,7 @@ $defaultActions = [
 			<i class="fa fa-users fa-fw "></i>
 				<?php echo __('Administration'); ?>
 			<span>>
-				<?php echo __('Manage User Groups'); ?>
+				<?php echo __('Manage User Roles'); ?>
 			</span>
 		</h1>
 	</div>
@@ -61,7 +61,7 @@ $defaultActions = [
 <div class="jarviswidget">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-users"></i> </span>
-		<h2><?php echo __('Edit User Group'); ?></h2>
+		<h2><?php echo __('Edit User Role'); ?></h2>
 		<div class="widget-toolbar" role="menu">
 			<?php echo $this->Utils->backButton() ?>
 		</div>

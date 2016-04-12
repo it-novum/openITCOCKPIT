@@ -27,11 +27,11 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-pencil-square-o fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
+				<?php echo __('Hosts'); ?>
 			<span>>
-				<?php echo $this->Utils->pluralize($hosttemplates, __('Hosttemplates'), __('Hosttemplates'));?>
+				<?php echo __('Allocate Servicetemplategroup');?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+			<div class="third_level"> <?php __('Allocate to host'); ?></div>
 		</h1>
 	</div>
 </div>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-		<h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?> <?php echo $this->Utils->pluralize($hostemplates, __('hostemplate'), __('hostemplates'));?></h2>
+		<h2 class="hidden-mobile hidden-tablet"><?php echo __('Allocate servicetemplategroup to'); ?> <strong><?php echo $host['Host']['name'];?></strong> </h2>
 		<div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
 			<?php echo $this->Utils->backButton(__('Back'), $back_url);?>
 		</div>
@@ -48,25 +48,33 @@
 	<div>
 		<div class="widget-body">
 			<?php
-				echo $this->Form->create('Hosttemplate', [
+				echo $this->Form->create('Host', [
 					'class' => 'form-horizontal clear'
 				]); ?>
-				<?php foreach($hosttemplates as $key => $hosttemplate):?>
 				<div class="row">
-					<div class="col-xs-12 col-md-9 col-lg-7">
+					<div class="col-xs-12 col-lg-12">
+						<?php echo $this->Form->input('Servicetemplategroup.id', [
+							'options' => $this->Html->chosenPlaceholder($serviceTemplateGroups),
+							'data-placeholder' => __('Please select...'),
+							'class' => 'chosen',
+							'wrapInput' => 'col col-xs-12 col-md-8',
+							'style' => 'width: 100%',
+							'label' => [
+								'class' => 'col col-md-2 control-label',
+								'text' => __('Servicetemplategroup'),
+							],
+						]); ?>
+
 						<fieldset>
-							<legend><?php echo $hosttemplate['Hosttemplate']['name']?></legend>
-							<?php 
-							echo $this->Form->input('Hosttemplate.'.$key.'.name', ['value' => $hosttemplate['Hosttemplate']['name'], 'label' => __('Templatename'), 'required' => true]);
-							echo $this->Form->input('Hosttemplate.'.$key.'.description', ['value' => $hosttemplate['Hosttemplate']['description'], 'label' => __('Description'), 'required' => false]);
-							echo $this->Form->input('Hosttemplate.'.$key.'.source', ['value' => $hosttemplate['Hosttemplate']['id'], 'type' => 'hidden']);
-							?>
+							<legend><?php echo __('Services out of servicetemplategroup:'); ?></legend>
+								<div id="allServicesFromGroup" class="padding-left-10 padding-bottom-5">
+
+								</div>
 						</fieldset>
-					</div> <!-- close col -->
-				</div> <!-- close row-->
-			<?php endforeach; ?>
-			<br />
+					</div>
+				</div>
+				<br />
 			<?php echo $this->Form->formActions(); ?>
-		</div> <!-- close widget body -->
+		</div>
 	</div>
-</div> <!-- end jarviswidget -->
+</div>

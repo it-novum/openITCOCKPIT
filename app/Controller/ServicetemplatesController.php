@@ -53,7 +53,8 @@ class ServicetemplatesController extends AppController{
 	public $listFilters = [
 		'index' => [
 			'fields' => [
-				'Servicetemplate.name' => array('label' => 'Templatename', 'searchType' => 'wildcard'),
+				'Servicetemplate.name' => array('label' => 'Template name', 'searchType' => 'wildcard'),
+				'Servicetemplate.description' => array('label' => 'Template description', 'searchType' => 'wildcard'),
 			],
 		],
 	];
@@ -796,7 +797,7 @@ class ServicetemplatesController extends AppController{
 		}
 		$this->setFlash(__('Could not delete servicetemplate'), false);
 		$this->redirect(array('action' => 'index'));
-		
+
 	}
 
 	public function mass_delete($id = null){
@@ -824,7 +825,7 @@ class ServicetemplatesController extends AppController{
 
 				$this->Servicetemplate->id = $serviceTemplateId;
 				if(!$this->Servicetemplate->__allowDelete($serviceTemplateId)){
-					throw new Exception('Some of the Servicetemplates could not be deleted', 1);					
+					throw new Exception('Some of the Servicetemplates could not be deleted', 1);
 				}
 
 				if(!$this->Servicetemplate->delete()){
@@ -847,7 +848,7 @@ class ServicetemplatesController extends AppController{
 
 				$deletedServicetemplates[] = $servicetemplate;
 
-			}		    
+			}
 
 		    foreach($deletedServicetemplates as $deletedServicetemplate){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -863,7 +864,7 @@ class ServicetemplatesController extends AppController{
 				if($changelog_data){
 					if(!CakeLog::write('log', serialize($changelog_data))) {
 						throw new Exception('Cannot write logs. Servicetemplates was not deleted.', 1);
-					}										
+					}
 				}
 		    }
 
@@ -884,7 +885,7 @@ class ServicetemplatesController extends AppController{
 		    }
 		}
 
-	}	
+	}
 
 	public function copy($id = null){
 
@@ -906,7 +907,7 @@ class ServicetemplatesController extends AppController{
 			]
 		]);
 
-		$servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');	
+		$servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');
 
 		if($this->request->is('post') || $this->request->is('put')){
 
@@ -927,7 +928,7 @@ class ServicetemplatesController extends AppController{
 						'Servicetemplate' => [
 							'uuid' => $this->Servicetemplate->createUUID(),
 							'name' => $newServicetemplate['name'],
-							'description' => $newServicetemplate['description']								
+							'description' => $newServicetemplate['description']
 						]					];
 
 					$dataToSave = [];
@@ -948,13 +949,13 @@ class ServicetemplatesController extends AppController{
 			    $datasource->rollback();
 				$this->setFlash(__($e->getMessage()), false);
 				$this->redirect(['action' => 'index']);
-			}				
+			}
 
 		}
 
 		$this->set(compact('servicetemplates'));
 		$this->set('back_url', $this->referer());
-	}	
+	}
 
 	public function usedBy($id = null){
 		if(!$this->Servicetemplate->exists($id)){

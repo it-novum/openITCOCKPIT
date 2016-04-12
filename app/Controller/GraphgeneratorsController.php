@@ -71,6 +71,7 @@ class GraphgeneratorsController extends AppController{
 				'conditions' => ['Host.uuid' => $hostUuids],
 			]
 		);
+		$host_uuids = [];
 		$host_ids_for_select = [];
 		foreach($all_hosts as $host){
 			if($this->Rrd->isValidHostUuid($host['Host']['uuid'])){
@@ -127,6 +128,11 @@ class GraphgeneratorsController extends AppController{
 			'default_end_timestamp' => $default_end_timestamp,
 			'host_uuids' => $host_uuids,
 		]);
+	}
+
+	public function view($configuration_id = 0){
+		$this->layout = 'Admin.fullscreen';
+		$this->index($configuration_id);
 	}
 
 	/**
@@ -228,13 +234,18 @@ class GraphgeneratorsController extends AppController{
 	public function saveGraphTemplate(){
 		$this->allowOnlyAjaxRequests();
 		$this->allowOnlyPostRequests();
-
-		if($this->GraphgenTmpl->saveAll($this->request->data)){
-			$this->set('success', true);
+		//debug($this->request->data['GraphgenTmpl']['id']);
+		//die();
+		if($this->GraphgenTmpl->validates($this->request->data)){
+			$this->GraphgenTmplConf->deleteAll([
+				'GraphgenTmplConf.graphgen_tmpl_id' => $this->request->data['GraphgenTmpl']['id']
+			]);
+			if($this->GraphgenTmpl->saveAll($this->request->data)){
+				$this->set('success', true);
+			}
 		}else{
 			$this->set('success', false);
 		}
-
 		$this->set('_serialize', ['success']);
 	}
 

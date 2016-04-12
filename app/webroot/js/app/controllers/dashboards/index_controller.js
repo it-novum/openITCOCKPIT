@@ -37,7 +37,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'WidgetChart180',
 		'WidgetStatusList',
 		'WidgetTrafficLight',
-		'WidgetTacho'
+		'WidgetTacho',
+		'WidgetMap',
+		'WidgetGraphgenerator',
 	],
 
 	_initialize: function(){
@@ -49,27 +51,33 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		this.WidgetStatusList.setAjaxloader(this.Ajaxloader);
 		this.WidgetStatusList.initLists();
 		this.gridCallbacks.push(this.updatePosition);
-		
+
 		this.WidgetTrafficLight.setAjaxloader(this.Ajaxloader);
 		this.WidgetTrafficLight.initTrafficlights();
-		
+
 		this.WidgetTacho.setAjaxloader(this.Ajaxloader);
 		this.WidgetTacho.initTachos();
-		
+
+		this.WidgetMap.setAjaxloader(this.Ajaxloader);
+		this.WidgetMap.initMaps();
+
+		this.WidgetGraphgenerator.setAjaxloader(this.Ajaxloader);
+		this.WidgetGraphgenerator.initGraphs();
+
 		if(this.getVar('updateAvailable') === true){
-			$('#updateAvailableModal').modal('show'); 
+			$('#updateAvailableModal').modal('show');
 		}
-		
+
 		this.tabRotationInterval = parseInt(this.getVar('tabRotationInterval'), 10);
-		
+
 		this.lang = [];
 		this.lang[1] = this.getVar('lang_minutes');
 		this.lang[2] = this.getVar('lang_seconds');
 		this.lang[3] = this.getVar('lang_and');
 		this.lang[4] = this.getVar('lang_disabled');
-		
+
 		var self = this;
-		
+
 		$('.nav-tabs').sortable({
 			update: function(){
 				var $tabbar = $(this);
@@ -95,7 +103,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			},
 			placeholder: 'tabTargetDestination'
 		});
-		
+
 		//Bind click evento for noAutoUpdate
 		$('#noAutoUpdate').click(function(){
 			var askAgain = $('#dashboardAskAgain').prop('checked');
@@ -116,7 +124,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				});
 			}
 		});
-		
+
 		// Bind click event to create new widgets
 		$('.addWidget').click(function(){
 			var $object = $(this);
@@ -134,21 +142,30 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 						grid.add_widget(widgetHtml);
 						//New widget added. So we need to save all the new positions
 						self.updatePosition();
-						
+
 						//Do we need to call any javascript actions?
 						switch(parseInt($object.data('type-id'), 10)){
 						case 9:
 						case 10:
 							this.WidgetStatusList.initList($(widgetHtml).find('.statusListTable'));
 							break;
-							
+
 						case 11:
 							this.WidgetTrafficLight.initTrafficlight($(widgetHtml).find('.trafficlightContainer'));
 							$('.chosen').chosen();
 							break;
-						
+
 						case 12:
 							this.WidgetTacho.initTacho($(widgetHtml).find('.tachometerContainer'));
+							$('.chosen').chosen();
+							break;
+
+						case 14:
+							this.WidgetMap.initMap($(widgetHtml).find('.mapWrapper'));
+							$('.chosen').chosen();
+
+						case 15:
+							this.WidgetGraphgenerator.initGraph($(widgetHtml).find('.graphWrapper'));
 							$('.chosen').chosen();
 							break;
 						}
@@ -158,9 +175,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				complete: function(response) {
 				}
 			});
-			
+
 		});
-		
+
 		// Bind click event to change widget title
 		$(document).on('click', '.changeTitle', function(){
 			var widgetId = $(this).data('widget-id');
@@ -187,23 +204,23 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				}
 			});
 		});
-		
+
 		//Bind click event to change widget color
 		$(document).on('click', "[select-color='true']", function(){
 			var $colorChoosDiv = $(this).parent().parent().parent();
 			var $selectButton = $colorChoosDiv.find('a');
 			var widgetId = $selectButton.data('widget-id');
 			var newColor = $(this).attr('class');
-			
+
 			var newColorJs = newColor.replace('bg-', 'jarviswidget-');
 			var oldColorJs = $selectButton.attr('current-color');
 			$selectButton.removeClass(oldColorJs);
 			$selectButton.addClass(newColorJs);
 			$selectButton.attr('current-color', newColorJs);
-			
+
 			$('#widget-color-'+widgetId).removeClass(oldColorJs);
 			$('#widget-color-'+widgetId).addClass(newColorJs);
-			
+
 			self.Ajaxloader.show();
 			$.ajax({
 				url: "/dashboards/updateColor",
@@ -217,13 +234,13 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				}
 			});
 		});
-		
+
 		//Bind click event to delete widget
 		$(document).on('click', '.deleteWidget', function(){
 			var widgetId = $(this).data('widget-id');
 			self.Ajaxloader.show();
 			self.$gridstack.data('gridstack').remove_widget($(this).parents('.grid-stack-item'));
-			
+
 			$.ajax({
 				url: "/dashboards/deleteWidget",
 				type: "POST",
@@ -237,7 +254,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				}
 			});
 		});
-		
+
 		//Create tab rotation slider
 		var $tabRotationSlider = $('#TabRotationInterval');
 		$tabRotationSlider.slider({ tooltip: 'hide' });
@@ -248,7 +265,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 			var min = parseInt(ev.value / 60, 10);
 			var sec = parseInt(ev.value % 60, 10);
-			
+
 			if(parseInt(ev.value, 10) === 0){
 				//Disabled
 				$('#TabRotationInterval_human').html(self.lang[4]);
@@ -260,18 +277,18 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			// NOTICE BOOTSTRAP BUG
 			// slideStop will get called twice due to a bug in bootstrap
 			// If ev.target.form is undefiend, we return to avoid two AJAX requests :)
-			
+
 			if(typeof ev.target.form == 'undefined'){
 				return true;
 			}
-			
+
 			if(ev.value == null){
 				ev.value = 0;
 			}
 
 			var min = parseInt(ev.value / 60, 10);
 			var sec = parseInt(ev.value % 60, 10);
-			
+
 			if(parseInt(ev.value, 10) === 0){
 				//Disabled
 				$('#TabRotationInterval_human').html(self.lang[4]);
@@ -280,7 +297,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			}
 			//Save new slider value
 			self.Ajaxloader.show();
-		
+
 			$.ajax({
 				url: "/dashboards/saveTabRotationInterval",
 				type: "POST",
@@ -293,19 +310,19 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				complete: function(response) {
 				}
 			});
-			
+
 			//Update tab rotation interval
 			self.tabRotationInterval = parseInt(ev.value, 10);
 			self.startTabRotationInterval();
 		});
-		
+
 		//Start tab rotation
 		if(this.tabRotationInterval > 0){
 			this.startTabRotationInterval();
 		}
-		
+
 	},
-	
+
 	buildGridstack: function(){
 		this.$gridstack = $('.grid-stack');
 		var options = {
@@ -327,14 +344,14 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				_self.gridCallbacks[key].apply(_self, []);
 			}
 		});
-		
+
 		this.$gridstack.on('resizestop', function(event, ui){
 			for(var key in _self.gridCallbacks){
 				_self.gridCallbacks[key].apply(_self, []);
 			}
 		});
 	},
-	
+
 	updatePosition: function(){
 		this.Ajaxloader.show();
 		var data = [];
@@ -350,9 +367,11 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				widget.width = node.width;
 				widget.height = node.height;
 				data.push(widget);
+
 			}
 		});
-		
+
+
 		$.ajax({
 			url: "/dashboards/updatePosition",
 			type: "POST",
@@ -365,7 +384,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			}
 		});
 	},
-	
+
 	startTabRotationInterval: function(){
 		this.stopTabRotationInterval();
 		if(this.tabRotationInterval > 0){
@@ -381,11 +400,11 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			}, interval);
 		}
 	},
-	
+
 	stopTabRotationInterval: function(){
 		if(this.tabRotationIntervalId != null){
 			clearTimeout(this.tabRotationIntervalId);
 		}
 	}
-	
+
 });

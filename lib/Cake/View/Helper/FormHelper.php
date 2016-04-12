@@ -253,7 +253,6 @@ class FormHelper extends AppHelper {
 		if (empty($validationRules) || count($validationRules) === 0) {
 			return false;
 		}
-
 		$isUpdate = $this->requestType === 'put';
 		foreach ($validationRules as $rule) {
 			$rule->isUpdate($isUpdate);
@@ -1284,6 +1283,7 @@ debug($modelName);
 			$divOptions = array_merge($divOptions, $div);
 		}
 		if (
+
 			$this->_extractOption('required', $options) !== false &&
 			$this->_introspectModel($this->model(), 'validates', $this->field())
 		) {

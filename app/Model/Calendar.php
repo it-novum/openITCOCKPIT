@@ -69,4 +69,39 @@ class Calendar extends AppModel{
 		}
 		return $holidays;
 	}
+
+	public function calendarsByContainerId($container_ids = [], $type = 'all'){
+		if(!is_array($container_ids)){
+			$container_ids = [$container_ids];
+		}
+
+		$container_ids = array_unique($container_ids);
+
+		//Lookup for the tenant container of $container_id
+		$this->Container = ClassRegistry::init('Container');
+
+		$tenantContainerIds = [];
+
+		foreach($container_ids as $container_id){
+			if($container_id != ROOT_CONTAINER){
+
+				// Get contaier id of the tenant container
+				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+				$path = $this->Container->getPath($container_id);
+				$tenantContainerIds[] = $path[1]['Container']['id'];
+			}else{
+				$tenantContainerIds[] = ROOT_CONTAINER;
+			}
+		}
+		$tenantContainerIds = array_unique($tenantContainerIds);
+
+		return $this->find($type, [
+			'conditions' => [
+				'Calendar.container_id' => $tenantContainerIds
+			],
+			'order' => [
+				'Calendar.name' => 'ASC'
+			]
+		]);
+	}
 }

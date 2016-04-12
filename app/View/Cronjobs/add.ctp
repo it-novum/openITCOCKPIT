@@ -48,29 +48,32 @@
 	<div>
 		<div class="widget-body">
 			<div class="row">
-				<div class="col-xs-12 col-md-9 col-lg-7">
+				<div class="col-xs-12 col-md-12 col-lg-12">
 					<?php
 					echo $this->Form->create('Cronjob', array(
 						'class' => 'form-horizontal clear'
 					));
 			
 					echo $this->Form->input('plugin', [
-						'label' => __('Plugin'),
+						'label' => ['text' => __('Plugin'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 						'wrapInput' => 'col col-xs-8',
 						'options' => $plugins,
-						'selected' => 'Core'
+						'selected' => 'Core',
+						'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 					]);
 			
 					echo $this->Form->input('task', [
-						'label' => __('Task'),
+						'label' => ['text' => __('Task'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 						'wrapInput' => 'col col-xs-8',
-						'options' => $coreTasks
+						'options' => $coreTasks,
+						'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 					]);
 					
 					echo $this->Form->input('interval', [
-						'label' => __('Interval'),
+						'label' => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 						'wrapInput' => 'col col-xs-8',
-						'help' => __('Cronjob schedule interval in minutes')
+						'help' => __('Cronjob schedule interval in minutes'),
+						'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 					]);
 					?>
 				</div>
