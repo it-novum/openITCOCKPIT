@@ -2567,6 +2567,33 @@ class ServicesController extends AppController{
 		return $changelogData;
 	}
 
+	public function showCheckMKLogfile($id = null){
+		if($this->Service->exists($id)){
+			$service = $this->Service->find('first', [
+				'fields' => [
+					'Service.id',
+					'Service.name',
+					'Host.uuid'
+				],
+				'conditions' => [
+					'Service.id' => $id
+				],
+				'contain' => [
+					'Host' => [
+						'UUID'
+					],
+				],
+			]);
+		}
+		debug($service);
+		debug($service['Host']['uuid']);
+		//$this->Frontend->set('list', $list);
+	}
+
+	public function loadCheckMkLogfile(){
+
+	}
+
 	//Acl
 	public function checkcommand(){
 		return null;
