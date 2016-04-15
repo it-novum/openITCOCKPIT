@@ -46,7 +46,11 @@
 	<?php if($this->Acl->hasPermission('edit', 'services')): ?>
 		<a href="/services/edit/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
 	<?php endif; ?>
+	<?php if($service['Servicetemplate']['name'] === "CHECK_MK_LOGWATCH"): ?>
+		<a href="/services/showCheckMKLogfile/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Check_MK Logfile'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-list fa-lg"></i></a>
+	<?php endif; ?>
 <?php endif;?>
+
 	<div class="btn-group">
 		<a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More');?></a>
 		<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span class="caret"></span></a>

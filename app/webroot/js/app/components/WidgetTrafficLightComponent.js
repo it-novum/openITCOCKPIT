@@ -99,7 +99,7 @@ App.Components.WidgetTrafficLightComponent = Frontend.Component.extend({
 		var lightRadius = 17;
 
 		var blinkLight = false;
-		if(this.trafficlights[widgetId].is_flapping == 1 || this.trafficlights[widgetId].current_state == 3){
+		if(this.trafficlights[widgetId].is_flapping == 1 || this.trafficlights[widgetId].current_state == 3){
 			blinkLight = true;
 		}
 
