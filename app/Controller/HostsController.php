@@ -930,6 +930,7 @@ class HostsController extends AppController{
 			$this->render403();
 			return;
 		}
+		$containersPrimary = $this->Tree->easyPath([$host['Host']['container_id']], OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		$sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
 		if($this->request->is('post') || $this->request->is('put')){
@@ -950,7 +951,7 @@ class HostsController extends AppController{
 				}
 			}
 		}
-		$this->set(compact(['host','containers', 'sharingContainers']));
+		$this->set(compact(['host', 'containersPrimary','containers', 'sharingContainers']));
 	}
 
 	function edit_details($host_id = null){
