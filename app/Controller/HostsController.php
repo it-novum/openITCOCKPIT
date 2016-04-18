@@ -606,6 +606,7 @@ class HostsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}
+		$containersPrimary = $this->Tree->easyPath([$host['Host']['container_id']], OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 
 		//Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
 		$commandarguments = $this->Commandargument->find('all', [
@@ -660,6 +661,7 @@ class HostsController extends AppController{
 		$this->set('back_url', $this->referer());
 		$this->set(compact([
 			'host',
+			'containersPrimary',
 			'containers',
 			'timeperiods',
 			'commands',
@@ -834,20 +836,30 @@ class HostsController extends AppController{
 			if(isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])){
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
-			$data_to_save = Hash::merge(
-				$this->_diffWithTemplate($this->request->data, $hosttemplate),
-				[
-					'Host' => [
-						'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
-						'container_id' => $this->request->data['Host']['container_id']
-					],
-					'Container' => [
-						'container_id' => $this->request->data['Host']['container_id']
-					]
-				]
-			);
+			// $data_to_save = Hash::merge(
+			// 	$this->_diffWithTemplate($this->request->data, $hosttemplate),
+			// 	[
+			// 		'Host' => [
+			// 			'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
+			// 			'container_id' => $this->request->data['Host']['container_id']
+			// 		],
+			// 		'Container' => [
+			// 			'container_id' => $this->request->data['Host']['container_id']
+			// 		]
+			// 	]
+			// );
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
+
+
+			$primaryContainerId = $host['Host']['container_id'];
+			$sharedContaners = $host['Containers'];
+			if(($key = array_search($primaryContainerId, $sharedContaners)) !== false) {
+			    unset($sharedContaners[$key]);
+			}	
+			array_push($sharedContaners, $data_to_save['Host']['container_id']);
+			$data_to_save['Containers'] = $sharedContaners;
+
 
 			//Delete Command argument values
 			//Fetching all commandargument_id of the command arguments out of database:
