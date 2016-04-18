@@ -52,7 +52,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				});
 			});
 		});
-		
+
 		//reload the page in a 90sec interval
 		//Do not refresh inside of a rotation
 		if(self.getVar('interval') == 0){
@@ -78,9 +78,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 			var mapGadgets = this.getVar('map_gadgets');
 			for (var i = 0; i < mapGadgets.length; i++) {
 				//draw every gadget
-				//self.Gadget is the Gadget Component and the "index" is the function call 
-				//eg. drawTacho, drawText, drawCylinder ... 
-				
+				//self.Gadget is the Gadget Component and the "index" is the function call
+				//eg. drawTacho, drawText, drawCylinder ...
+
 				var currentElementData = self.findParentGadgetData(mapGadgets[i]['id']);
 				$(self.mapViewContainer).append('<div id="svgContainer_'+currentElementData['currentUuid']+'"></div>');
 				$('<div id="svgContainer_'+mapGadgets[i]['id']+'"></div>')
@@ -91,13 +91,14 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				var containerData = {'uuid':currentElementData['currentUuid'],type:self.capitaliseFirstLetter(currentElementData['currentType'])};
 
 				var options = {
-					id:currentElementData['currentUuid'], 
-					x:mapGadgets[i]['x'], y:mapGadgets[i]['y'], 
-					containerData:containerData, 
-					perfdata:currentElementData['currentPerfdata'], 
-					state:state.toString(), 
-					flapping:flapping, 
-					RRDGraphLink:currentElementData['currentRRDGraphLink']
+					id:currentElementData['currentUuid'],
+					x:mapGadgets[i]['x'], y:mapGadgets[i]['y'],
+					containerData:containerData,
+					perfdata:currentElementData['currentPerfdata'],
+					state:state.toString(),
+					flapping:flapping,
+					RRDGraphLink:currentElementData['currentRRDGraphLink'],
+					color: currentElementData['currentColor']
 				}
 				//check if the RRD grah link is empty
 				if(!currentElementData['currentRRDGraphLink']){
@@ -106,7 +107,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 					}
 					//merge the demo property into the options array so that there will be displayed
 					//the dummy graph (as in the edit mode) instead of nothing
-					options = $.extend({}, options, opt); 
+					options = $.extend({}, options, opt);
 				}
 				self.Gadget['draw'+mapGadgets[i]['gadget']]('svgContainer_'+mapGadgets[i]['id'], options);
 
@@ -136,7 +137,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
 				var tempUuid = this.Uuid.v4();
 				var currentElementData = this.findParentLineData(mapLines[i]['id']);
-				
+
 				$(self.mapViewContainer).append('<div id="svgLineContainer_'+tempUuid+'"></div>');
 				$('<div id="svgLineContainer_'+tempUuid+'"></div>')
 				.appendTo(this.mapViewContainer);
@@ -219,6 +220,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 					currentState:$(this).data('state'),
 					currentFlapping:$(this).data('flapping'),
 					currentRRDGraphLink:$(this).data('rrdlink'),
+					currentColor:$(this).data('color'),
 				}
 			}
 		});
