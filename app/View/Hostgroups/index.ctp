@@ -127,9 +127,9 @@
 								</tbody>
 							</table>
 						</div>
-						
+
 						<?php echo $this->element('hostgroup_mass_changes'); ?>
-						
+
 						<div style="padding: 5px 10px;">
 							<?php /*
 							<div class="row">
