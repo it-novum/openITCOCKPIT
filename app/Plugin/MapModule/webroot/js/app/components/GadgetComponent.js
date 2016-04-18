@@ -42,7 +42,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var containerData = opt.containerData || false;
 		var perfdata = opt.perfdata || false;
 		var showPercentScale = opt.showPercentScale || true;
-		
+
 		$('#'+svgContainerId).css({'top':y+'px', 'left':x+'px','height':radius*2+10+'px', 'width':radius*2+10+'px','position':'absolute'}).svg();
 		var svg = $('#'+svgContainerId).svg('get');
 
@@ -249,10 +249,10 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var containSVG = (opt.contain == null?true:opt.contain);
 		var containerData = opt.containerData || false;
 		var perfdata = opt.perfdata || false;
-		
+
 		$('#'+svgContainerId).css({'top':y+'px', 'left':x+'px','height':height+25+'px', 'width':width+'px','position':'absolute'}).svg();
 		var svg = $('#'+svgContainerId).svg('get');
-		
+
 		//max min current_value
 		if(perfdata[0] != undefined){
 			if(perfdata[0].max != ''){
@@ -351,6 +351,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var id = (opt.id == false || opt.id != null?opt.id:'');
 		var textX = opt.x || 0;
 		var textY = opt.y || 0;
+		var color = opt.color || '#5CB85C';
 		var text = opt.text || 'Perfdata:';
 		var value = opt.value || 'to';
 		var unit = opt.unit || 'Text';
@@ -394,11 +395,12 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var textGroup = svg.group('text_'+id);
 		var perfdataText = svg.group(textGroup, 'textGroup');
 
-
+		console.log(color);
 		//draw the string
 		svg.text(perfdataText, textX, textY, textString, {
 			fontFamily:'monospace, Courier New',
-			fontSize:'13px'
+			fontSize:'13px',
+			fill: color,
 		});
 
 		if(containSVG){
@@ -505,19 +507,19 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 
 
 		//Traffic light "protector"
-	/*	var protector1 = svg.createPath(); 
+	/*	var protector1 = svg.createPath();
 		svg.path(tLBackground, protector1.move(5,15).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
 			fill:'url(#protectorGradient_'+id+')'
 		});
 
 		//Traffic light "protector"
-		var protector2 = svg.createPath(); 
+		var protector2 = svg.createPath();
 		svg.path(tLBackground, protector2.move(5,55).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
 			fill:'url(#protectorGradient_'+id+')'
 		});
 
 		//Traffic light "protector"
-		var protector3 = svg.createPath(); 
+		var protector3 = svg.createPath();
 		svg.path(tLBackground, protector3.move(5,95).line(90,0,true).line(-15,35,true).line(-60,0,true).close(),{
 			fill:'url(#protectorGradient_'+id+')'
 		});
@@ -670,7 +672,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 				});
 			}
 		}
-		
+
 
 		//SVG Container
 		$('#'+svgContainerId).css({'top':y+'px', 'left':x+'px','position':'absolute', 'height':sizeY, 'width': sizeX}).svg();
