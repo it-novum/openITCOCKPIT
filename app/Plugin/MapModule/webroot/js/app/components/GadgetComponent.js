@@ -395,7 +395,6 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 		var textGroup = svg.group('text_'+id);
 		var perfdataText = svg.group(textGroup, 'textGroup');
 
-		console.log(color);
 		//draw the string
 		svg.text(perfdataText, textX, textY, textString, {
 			fontFamily:'monospace, Courier New',
