@@ -209,7 +209,6 @@ class LoginController extends AppController {
 						]);
 					}
 
-
 					$this->setFlash(__('login.logout_successfull'));
 					$this->redirect('/login/login');
 				}
