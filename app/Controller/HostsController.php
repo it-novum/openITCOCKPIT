@@ -854,12 +854,15 @@ class HostsController extends AppController{
 
 			$primaryContainerId = $host['Host']['container_id'];
 			$sharedContaners = $host['Containers'];
+			if(empty($data_to_save['Host']['container_id'])){
+				$data_to_save['Host']['container_id'] = $primaryContainerId;
+			}			
+
 			if(($key = array_search($primaryContainerId, $sharedContaners)) !== false) {
 			    unset($sharedContaners[$key]);
 			}	
 			array_push($sharedContaners, $data_to_save['Host']['container_id']);
 			$data_to_save['Containers'] = $sharedContaners;
-
 
 			//Delete Command argument values
 			//Fetching all commandargument_id of the command arguments out of database:
