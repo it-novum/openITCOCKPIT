@@ -152,7 +152,6 @@ class AppController extends Controller{
 		//DANGER ZONE - ALLOW ALL ACTIONS
 		//$this->Auth->allow();
 
-
 		$this->Auth->authorize = 'Actions';
 		//$this->Auth->authorize = 'Controller';
 		$this->_beforeAction();

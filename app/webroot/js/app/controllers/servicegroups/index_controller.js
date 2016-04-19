@@ -41,7 +41,7 @@ App.Controllers.ServicegroupsIndexController = Frontend.AppController.extend({
 			self.fnShowHide($(this).attr('my-column'), $(this).children());
 		});
 
-		$('#host_list').dataTable({
+		$('#servicegroup_list').dataTable({
 			"bPaginate": false,
 			"bFilter": false,
 			"bInfo": false,
