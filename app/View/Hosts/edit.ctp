@@ -116,13 +116,14 @@
 										);
 									elseif(!$hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
 										echo $this->Form->input('container_id', [
-												'options' => $containers,
+												'options' => $containersPrimary,
 												'multiple' => false,
 												'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'class' => 'chosen',
 												'style' => 'width: 100%',
 												'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+												'disabled' => true
 											]
 										);
 									else:
