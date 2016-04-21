@@ -37,7 +37,7 @@ class GraphCollection extends AppModel{
 	var $validate = [
 		'name' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank',
 				'required' => true
 			]

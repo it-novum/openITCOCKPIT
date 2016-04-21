@@ -111,8 +111,8 @@ class Service extends AppModel{
 	];
 	public $validate = [
 		'host_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -127,8 +127,8 @@ class Service extends AppModel{
 			]
 		],
 		'servicetemplate_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

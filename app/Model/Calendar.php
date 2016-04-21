@@ -35,15 +35,15 @@ class Calendar extends AppModel{
 	public $belongsTo = ['Container'];
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'container_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

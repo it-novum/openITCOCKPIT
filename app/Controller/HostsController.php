@@ -676,6 +676,10 @@ class HostsController extends AppController{
 			'ContactsInherited',
 		]));
 		if($this->request->is('post') || $this->request->is('put')){
+
+			debug($this->request->data);
+
+
 			$ext_data_for_changelog = [
 				'Contact' => [],
 				'Contactgroup' => [],

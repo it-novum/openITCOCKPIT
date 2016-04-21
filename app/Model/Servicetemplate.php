@@ -98,29 +98,29 @@ class Servicetemplate extends AppModel{
 
 	public $validate = [
 		'container_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			]
 		],
 		'name' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank',
 				'required' => true
 			]
 		],
 		'description' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank',
 				'required' => true
 			]
 		],
 		'command_id' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -132,7 +132,7 @@ class Servicetemplate extends AppModel{
 		],
 		'check_period_id' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -144,7 +144,7 @@ class Servicetemplate extends AppModel{
 		],
 		'max_check_attempts' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -159,7 +159,7 @@ class Servicetemplate extends AppModel{
 		],
 		'check_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -174,7 +174,7 @@ class Servicetemplate extends AppModel{
 		],
 		'retry_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -260,15 +260,15 @@ class Servicetemplate extends AppModel{
 			]
 		],
 		'notify_period_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'notification_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

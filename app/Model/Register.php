@@ -26,8 +26,8 @@
 class Register extends AppModel{
 	public $validate = [
 		'license' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

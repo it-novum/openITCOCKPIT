@@ -209,6 +209,7 @@ class ServicesController extends AppController{
 			'HostsToContainers.container_id' => $this->MY_RIGHTS
 		];
 		$conditions = $this->ListFilter->buildConditions($this->request->data, $conditions);
+
 		if(isset($this->request->params['named']['BrowserContainerId'])){
 			if(is_array($this->request->params['named']['BrowserContainerId'])){
 				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
@@ -241,7 +242,9 @@ class ServicesController extends AppController{
 				'Host.container_id' => $all_container_ids
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
+			debug($all_container_ids);
 		}
+
 		$all_services = [];
 		$query = [
 // 			'recursive' => -1,
@@ -324,7 +327,8 @@ class ServicesController extends AppController{
 				'Service.id'
 			]
 		];
-
+//		debug($this->MY_RIGHTS);
+//debug($this->Service->find('all', $query));
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
@@ -357,6 +361,56 @@ class ServicesController extends AppController{
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
+debug($this->Service->find('all',[
+	'recursive' => '-1',
+	'conditions' => $conditions,
+	'contain' => ['Servicetemplate'],
+	'fields' => [
+		'Service.id',
+		'Service.name',
+		'Service.host_id',
+		'Servicetemplate.name'
+
+	],
+	'joins' => [[
+		'table' => 'hosts',
+		'type' => 'INNER',
+		'alias' => 'Host',
+		'conditions' => 'Service.host_id = Host.id'
+	], [
+		'table' => 'nagios_objects',
+		'type' => 'INNER',
+		'alias' => 'HostObject',
+		'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
+	], /*[
+		'table' => 'nagios_hoststatus',
+		'type' => 'INNER',
+		'alias' => 'Hoststatus',
+		'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
+	], [
+		'table' => 'nagios_objects',
+		'type' => 'INNER',
+		'alias' => 'ServiceObject',
+		'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+	],*/
+		/*[
+		'table' => 'nagios_servicestatus',
+		'type' => 'LEFT OUTER',
+		'alias' => 'Servicestatus',
+		'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
+	],*/ [
+		'table' => 'hosts_to_containers',
+		'alias' => 'HostsToContainers',
+		'type' => 'LEFT',
+		'conditions' => [
+			'HostsToContainers.host_id = Host.id',
+		]
+	]
+	],
+	'group' => [
+		'Service.id'
+	]
+]));
 		$this->set(compact(['all_services', 'username', 'hostContainers']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_services']);

@@ -28,8 +28,8 @@ class WidgetNotice extends AppModel{
 	public $belongsTo = ['Widget'];
 	public $validate = [
 		'widget_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 			], 'numeric' => [
 				'rule' => 'numeric',

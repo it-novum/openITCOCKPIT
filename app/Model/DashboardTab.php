@@ -33,19 +33,19 @@ class DashboardTab extends AppModel{
 	//public $belongsTo = ['Container'];
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'user_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
-			'notEmpty' => [
+			'notBlank' => [
 				'rule' => 'numeric',
 				'message' => 'This field need to be numeric.',
 				'required' => true
