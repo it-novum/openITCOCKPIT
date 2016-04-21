@@ -86,7 +86,7 @@
  						<?php
  						echo $this->Form->create('notifications', [
  							'class' => 'form-horizontal clear',
- 							'action' => 'index' // reset the URL on submit
+ 							'url' => 'index' // reset the URL on submit
  						]);
 
  						?>
