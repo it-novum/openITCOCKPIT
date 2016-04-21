@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-power-off fa-fw "></i> 
-				<?php echo __('Downtimes'); ?> 
-			<span>> 
+			<i class="fa fa-power-off fa-fw "></i>
+				<?php echo __('Downtimes'); ?>
+			<span>>
 				<?php echo __('Hosts'); ?>
 			</span>
 		</h1>
@@ -58,17 +58,17 @@
 							<ul class="dropdown-menu pull-right">
 								<?php if($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
 									</li>
 								<?php endif; ?>
 								<?php if($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
 									</li>
 								<?php endif;?>
 								<?php if($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
 									</li>
 								<?php endif;?>
 							</ul>
@@ -76,7 +76,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']); 
+							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
 						endif;
 						?>
 						</div>
@@ -94,21 +94,21 @@
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					 
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('downtimes', [
 							'class' => 'form-horizontal clear',
-							'action' => 'host' //reset the URL on submit
+							'url' => 'host' //reset the URL on submit
 						]);
-						
+
 						?>
-						
+
 						<div class="widget-toolbar pull-left hidden-mobile" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('From:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 78%;" type="text" maxlength="255" value="<?php echo $DowntimeListsettings['from']; ?>" name="data[Listsettings][from]">
 						</div>
-						
+
 						<div class="widget-toolbar pull-left hidden-mobile" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('To:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 85%;" type="text" maxlength="255" value="<?php echo $DowntimeListsettings['to']; ?>" name="data[Listsettings][to]">
@@ -120,22 +120,22 @@
 								<ul class="dropdown-menu pull-right">
 									<?php if($this->Acl->hasPermission('host', 'downtimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'host']); ?>"><?php echo __('Host downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'downtimes', 'url' => 'host']); ?>"><?php echo __('Host downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 									<?php if($this->Acl->hasPermission('service', 'downtimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'service']); ?>"><?php echo __('Service downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'downtimes', 'url' => 'service']); ?>"><?php echo __('Service downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 									<?php if($this->Acl->hasPermission('index', 'systemdowntimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'index']); ?>"><?php echo __('Recurring downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'index']); ?>"><?php echo __('Recurring downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 								</ul>
 							</div>
-							
+
 							<div class="btn-group hidden-mobile">
 								<?php
 									$listoptions = [
@@ -164,7 +164,7 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
+
 									$selected = 30;
 									if(isset($DowntimeListsettings['limit']) && isset($listoptions[$DowntimeListsettings['limit']]['human'])){
 										$selected = $listoptions[$DowntimeListsettings['limit']]['human'];
@@ -196,19 +196,19 @@
 								</button>
 								<ul class="dropdown-menu pull-right">
 									<li>
-										<input type="hidden" value="0" name="data[Listsettings][hide_expired]" /> 
+										<input type="hidden" value="0" name="data[Listsettings][hide_expired]" />
 										<li style="width: 100%;"><a href="javascript:void(0)" class="listoptions_checkbox text-left"><input type="checkbox" name="data[Listsettings][hide_expired]" value="1" <?php echo $checked; ?>/> &nbsp; <?php echo __('Hide expired'); ?></a></li>
 									</li>
 								</ul>
 							</div>
-							
+
 							<button class="btn btn-xs btn-success toggle hidden-mobile"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
  				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
