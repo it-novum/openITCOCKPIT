@@ -56,17 +56,17 @@
 							<ul class="dropdown-menu pull-right">
 								<?php if($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
 									</li>
 								<?php endif; ?>
 								<?php if($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
 									</li>
 								<?php endif;?>
 								<?php if($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')):?>
 									<li>
-										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
+										<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
 									</li>
 								<?php endif;?>
 							</ul>
@@ -110,17 +110,17 @@
 								<ul class="dropdown-menu pull-right">
 									<?php if($this->Acl->hasPermission('host', 'downtimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'downtimes', 'url' => 'host']); ?>"><?php echo __('Host downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'host']); ?>"><?php echo __('Host downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 									<?php if($this->Acl->hasPermission('service', 'downtimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'downtimes', 'url' => 'service']); ?>"><?php echo __('Service downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'service']); ?>"><?php echo __('Service downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 									<?php if($this->Acl->hasPermission('index', 'systemdowntimes')):?>
 										<li>
-											<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'url' => 'index']); ?>"><?php echo __('Recurring downtimes'); ?></a>
+											<a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'index']); ?>"><?php echo __('Recurring downtimes'); ?></a>
 										</li>
 									<?php endif;?>
 								</ul>
