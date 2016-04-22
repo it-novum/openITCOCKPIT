@@ -1,4 +1,41 @@
 3.0.7
+<span class="label bg-color-green">New</span> New Logo of openITCOCKPIT in the Reports now
+<span class="label bg-color-green">New</span> Check MK LOG checks working now
+<span class="label bg-color-green">New</span> Autoreports can be send by Mail now
+<span class="label bg-color-green">New</span> The Container path is now listed in the Hostgroup overview
+<span class="label bg-color-green">New</span> The Text Gadget is now in the color of its State
+<span class="label bg-color-green">New</span> Hosttemplates can be copied now
+<span class="label bg-color-green">New</span> Servicetemplates can be copied now
+<span class="label bg-color-green">New</span> You can now log in with Client SSL Certificates
+<span class="label bg-color-green">New</span> New Dashboard Widgets: Map, Notes and Graphgenerator
+<span class="label bg-color-green">Improvement</span> If you change the host container and the previous selected Hosttemplate is also available in the new Container the fields will not be overridden anymore
+<span class="label bg-color-green">Improvement</span> The Theshold of the Popovers in the Map Module is now a little bit higher
+<span class="label bg-color-green">Improvement</span> Services in the Service List are now ordered by Host and Service
+<span class="label bg-color-green">Improvement</span> Allocate servicetemplategroup in host context menu
+<span class="label bg-color-green">Improvement</span> Missing Plugins check_dns, check_pgsql and check_snmp added
+<span class="label bg-color-green">Improvement</span> The SudoWebsocket Server Error is also available at the debugging page
+<span class="label bg-color-green">Improvement</span> Renamed Usergroup to User Role
+<span class="label bg-color-green">Improvement</span> Larger field width in almost all Forms
+<span class="label bg-color-green">Improvement</span> The Description of Servicetemplategroups is displayed now
+<span class="label bg-color-green">Improvement</span> Map Module Traffic light protector removed
+<span class="label bg-color-green">Improvement</span> Map Module is now a NULL value in the database instead of an empty string
+<span class="label bg-color-red">Bugfix</span> action parameter missing in modules
+<span class="label bg-color-red">Bugfix</span> DateTime overlaps graph area when scrolling horizontal
+<span class="label bg-color-red">Bugfix</span> Naemon logrotate
+<span class="label bg-color-red">Bugfix</span> Fixed perfdata text link wich didnt work in mapmodule
+<span class="label bg-color-red">Bugfix</span> The Host is now preselected if you want to create a service out of the Host browser view
+<span class="label bg-color-red">Bugfix</span> The Text of the Dropdown boxes in the Check_mk view will be displayed correctly now
+<span class="label bg-color-red">Bugfix</span> Map Module Container is a mandatory Field now
+<span class="label bg-color-red">Bugfix</span> Upgrade of openITCOCKPIT deletes dashboards widgets
+<span class="label bg-color-red">Bugfix</span> Fixed phpNSTA doesn&#39;t restart on Reboot
+<span class="label bg-color-red">Bugfix</span> Fixed Edit Map Fails after save
+<span class="label bg-color-red">Bugfix</span> The Servicetemplategroup Description is now shown in the overview
+<span class="label bg-color-red">Bugfix</span> Localhost rename to default host
+<span class="label bg-color-red">Bugfix</span> Fixed create hostgroup donwntime
+<span class="label bg-color-red">Bugfix</span> Fixed Graphgenerator Servicerules Not Deleteable
+<span class="label bg-color-red">Bugfix</span> Host-, Service- and templates can be allocated to Nodes
+
+3.0.6
 <span class="label bg-color-green">New</span> The event correlation module is now completed and can be installed via the package
 manager. A valid enterprise license is required to do this.
 <span class="label bg-color-green">New</span> Conclusion of the REST API to generate json or xml objecs. Detailed information on how to use the REST API can be found in the internal documentation.
@@ -31,8 +68,6 @@ displayed correctly.
 create the folder where the image needs to be saved. Now the folder is created correctly and therefor the upload now works.
 <span class="label bg-color-red">Bugfix</span> Statusmaps: Info window for the hoststatus. If there are a lot of services associated to a host the statusmap infowindow for a host
 couldn't display everything. Now the infowindow receives a scrollbar automatically if content extends the size of the window.
-
-3.0.6
 <span class="label bg-color-green">New</span> Add SMS box support
 <span class="label bg-color-red">Bugfix</span> Deletion of locations
 <span class="label bg-color-red">Bugfix</span> Interval length for host- and service escalations

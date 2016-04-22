@@ -44,7 +44,7 @@
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
 		<h2><?php echo __('View map '.h($map['Map']['name']));?></h2>
 		<div class="widget-toolbar" role="menu">
-			<?php 
+			<?php
 			$backLink = '/map_module/maps';
 			if(isset($this->params['named']['rotate'])){
 				$backLink = '/map_module/rotations';
@@ -83,7 +83,7 @@
 					<?php App::uses('UUID', 'Lib'); ?>
 
 					<!-- Items -->
-					<?php 
+					<?php
 					if(isset($mapElements['map_items'])):
 						foreach($mapElements['map_items'] as $item):
 						$uuid = UUID::v4();
@@ -109,16 +109,16 @@
 						?>
 						<!-- add Items -->
 					<?php if($item['Mapitem']['type'] == 'map'): ?>
-						<div id="<?php echo $uuid; ?>" 
-						class="elementHover iconContainer" 
-						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
+						<div id="<?php echo $uuid; ?>"
+						class="elementHover iconContainer"
+						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
 						data-uuid="<?php echo $item['SubMap']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
 					<?php else:?>
-						<div id="<?php echo $uuid; ?>" 
-							class="elementHover iconContainer" 
-							data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>" 
-							data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>" 
+						<div id="<?php echo $uuid; ?>"
+							class="elementHover iconContainer"
+							data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
+							data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>"
 							style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
 						<?php
 							if($item['Mapitem']['type'] !== 'servicegroup'):
@@ -136,17 +136,17 @@
 										$itemtypeKey = $item['Mapitem']['type'];
 									}
 							 ?>
-							<input type="hidden" 
-								name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]" 
+							<input type="hidden"
+								name="data[Mapitem][<?php echo $uuid; ?>][<?php echo $item['Mapitem']['type']; ?>_id]"
 								value="<?php echo $item[ucfirst($itemtypeKey)]['id']; ?>" />
 						</a>
 						</div>
-					<?php endforeach; 
+					<?php endforeach;
 					endif;
 					?>
 
 					<!-- Lines -->
-					<?php 
+					<?php
 					if(isset($mapElements['map_lines'])):
 						foreach($mapElements['map_lines'] as $line):
 							$uuid = UUID::v4();
@@ -174,26 +174,26 @@
 							<!-- add container for lines -->
 							<?php if($line['Mapline']['type'] == 'stateless'): ?>
 								<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
-									<input type="hidden" 
+									<input type="hidden"
 										name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]">
-									<input type="hidden" 
-										id="statelessLine_<?php echo $line['Mapline']['id']; ?>" 
-										data-type="<?php echo $line['Mapline']['type']; ?>" 
+									<input type="hidden"
+										id="statelessLine_<?php echo $line['Mapline']['id']; ?>"
+										data-type="<?php echo $line['Mapline']['type']; ?>"
 										data-color="#00FF00" >
 								</div>
 							<?php else: ?>
 								<div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>" class="lineContainer">
 									<input type="hidden" name="data[Mapline][<?php echo $uuid; ?>][<?php echo $line['Mapline']['type']; ?>_id]" value="<?php echo $line[ucfirst($line['Mapline']['type'])]['id'] ?>">
-									<input type="hidden" 
-									id="popoverType_<?php echo $line['Mapline']['id']; ?>" 
-									class="popoverTypeHidden" 
-									data-type="<?php echo $line['Mapline']['type']; ?>" 
-									data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>" 
-									data-color="<?php echo $lineColor['hexColor']; ?>" 
+									<input type="hidden"
+									id="popoverType_<?php echo $line['Mapline']['id']; ?>"
+									class="popoverTypeHidden"
+									data-type="<?php echo $line['Mapline']['type']; ?>"
+									data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>"
+									data-color="<?php echo $lineColor['hexColor']; ?>"
 									data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
 								</div>
 							<?php endif; ?>
-					<?php endforeach; 
+					<?php endforeach;
 					endif;
 				?>
 
@@ -207,15 +207,19 @@
 						switch ($gadget['Mapgadget']['type']) {
 							case 'host':
 								$state = $this->Mapstatus->hoststatus($gadget['Host']['uuid']);
+								$gadgetColor = $this->Status->HostStatusColorSimple($state['state']);
 								break;
 							case 'service':
 								$state = $this->Mapstatus->servicestatus($gadget['Service']['uuid']);
+								$gadgetColor = $this->Status->ServiceStatusColorSimple($state['state']);
 								break;
 							case 'servicegroup':
 								$state = $this->Mapstatus->servicegroupstatus($gadget['Servicegroup']['uuid']);
+								$gadgetColor = $this->Status->ServiceStatusColorSimple($state['state']);
 								break;
 							case 'hostgroup':
 								$state = $this->Mapstatus->hostgroupstatus($gadget['Hostgroup']['uuid']);
+								$gadgetColor = $this->Status->ServiceStatusColorSimple($state['state']);
 								break;
 						}
 						$RRDGraphLink = '';
@@ -265,11 +269,12 @@
 							data-link="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>"
 							data-perfdata='<?php echo (empty($state['perfdata']))?'':json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?>'
 							data-state='<?php echo $state['state']; ?>'
-							data-flapping='<?php echo (isset($state['is_flapping']))?$state['is_flapping']:0 ?>'>
+							data-flapping='<?php echo (isset($state['is_flapping']))?$state['is_flapping']:0 ?>'
+							data-color='<?php echo $gadgetColor['hexColor']; ?>'>
 						<?php endif;?>
 						</a>
 						</div>
-					<?php endforeach; 
+					<?php endforeach;
 					endif;
 					?>
 				<!-- Stateless Icons -->
@@ -287,7 +292,7 @@
 							<div id="<?php echo $uuid; ?>" class="textContainer" style="position:absolute;top:<?php echo $text['Maptext']['y']; ?>px;left:<?php echo $text['Maptext']['x']; ?>px;">
 								<span id="spanText_<?php echo $uuid; ?>" class="textElement" style="font-size:<?php echo $text['Maptext']['font_size']; ?>px;"><?php echo $text['Maptext']['text']; ?></span>
 							</div>
-					<?php endforeach; 
+					<?php endforeach;
 					endif;
 					?>
 				</div>
