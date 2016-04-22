@@ -34,8 +34,8 @@ class Rotation extends MapModuleAppModel{
 
 	var $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule'     => 'notEmpty',
+			'notBlank' => [
+				'rule'     => 'notBlank',
 				'message'  => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -48,8 +48,8 @@ class Rotation extends MapModuleAppModel{
 			]
 		],
 		'interval' => [
-			'notEmpty' => [
-				'rule'     => 'notEmpty',
+			'notBlank' => [
+				'rule'     => 'notBlank',
 				'message'  => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -65,7 +65,7 @@ class Rotation extends MapModuleAppModel{
 		],
 	];
 
-	
+
 	/*
 	Custom validation rule for map field
 	*/
