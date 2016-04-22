@@ -77,7 +77,7 @@
 											<?php endif ?>
 											<li class="divider"></li>
 											<li>
-												<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'dashboards', 'action' => 'deleteTab', $_tab['DashboardTab']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+												<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'dashboards', 'url' => 'deleteTab', $_tab['DashboardTab']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
 											</li>
 										</ul>
 									</li>
@@ -160,7 +160,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'createTab'
+						'url' => 'createTab'
 					]);
 					echo $this->Form->input('name');
 					?>
@@ -181,7 +181,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'createTabFromSharing'
+						'url' => 'createTabFromSharing'
 					]);
 					echo $this->Form->input('source_tab', [
 						'options' => $sharedTabs,
@@ -227,7 +227,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'renameTab'
+						'url' => 'renameTab'
 					]);
 					echo $this->Form->input('name', [
 						'value' => $tab['DashboardTab']['name']
@@ -272,7 +272,7 @@
 				<?php
 				echo $this->Form->create('dashboard', [
 					'class' => 'form-horizontal clear',
-					'action' => 'updateSharedTab'
+					'url' => 'updateSharedTab'
 				]);
 				echo $this->Form->input('ask_again', [
 					'type' => 'checkbox',
