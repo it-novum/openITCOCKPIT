@@ -81,7 +81,7 @@ class ProfileController extends AppController {
 				$this->request->data['User']['id'] = $user['User']['id'];
 				$this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
 				$this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
-				
+
 				if($this->User->save($this->request->data)){
 					$this->setFlash(__('Profile edit successfully'));
 					$sessionUser = $this->Session->read('Auth');
@@ -147,12 +147,11 @@ class ProfileController extends AppController {
 					return $this->redirect(['action' => 'edit']);
 				}
 			}
-
-
 		}
+		$paginatorLength = $this->PAGINATOR_LENGTH;
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$user = $this->User->findById($this->Auth->user('id'));
-		$this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime'));
+		$this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
 	}
 
 	public function deleteImage(){

@@ -86,7 +86,7 @@
 			<?php
 				echo $this->Form->input('paginatorlength', [
 					'label' => __('Listelement Length'),
-					'value' => 50,
+					'value' => $paginatorLength,
 					'help' => __('This field defines the length of every list in the openITCOCKPIT System for your Profile')
 				]);
 			?>
