@@ -26,7 +26,7 @@
 class ProfileController extends AppController {
 	public $layout = 'Admin.default';
 	public $uses = ['User', 'Systemsetting'];
-	
+
 	public $components = ['Upload'];
 
 	/*public function change_password() {
@@ -38,7 +38,7 @@ class ProfileController extends AppController {
 			}
 		}
 	}*/
-	
+
 	public function edit(){
 		$user = $this->User->find('first', [
 			'conditions' => [
@@ -53,16 +53,16 @@ class ProfileController extends AppController {
 			3  => '%m-%d-%Y  %H:%M',
 			4  => '%m-%d-%Y  %l:%M:%S %p',
 			5  => '%H:%M:%S  %m-%d-%Y',
-			
+
 			6  => '%e %B %Y, %H:%M:%S',
 			7  => '%d.%m.%Y - %H:%M:%S',
 			9  => '%d.%m.%Y - %l:%M:%S %p',
 			10 => '%H:%M:%S - %d.%m.%Y', //Default date format
 			11 => '%H:%M - %d.%m.%Y',
 		];
-		
+
 		$selectedUserTime = 10;
-		
+
 		foreach($dateformats as $key => $dateformat){
 			if($dateformat == $user['User']['dateformat']){
 					$selectedUserTime = $key;
@@ -74,17 +74,18 @@ class ProfileController extends AppController {
 			if(isset($this->request->data['User'])){
 				//Convert dateformat ID into real dateformat for MySQL database
 				$this->request->data['User']['dateformat'] = $dateformats[$this->request->data['User']['dateformat']];
-				
+
 				//Fix container for validation
 				$user = $this->User->findById($this->Auth->user('id'));
 				$this->request->data['ContainerUserMembership'] = $user['ContainerUserMembership'];
 				$this->request->data['User']['id'] = $user['User']['id'];
 				$this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
 				$this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
+				
 				if($this->User->save($this->request->data)){
 					$this->setFlash(__('Profile edit successfully'));
 					$sessionUser = $this->Session->read('Auth');
-					
+
 					$merged = Hash::merge($sessionUser, $this->request->data);
 					$this->Session->write('Auth', $merged);
 					return $this->redirect(['action' => 'edit']);
@@ -92,7 +93,7 @@ class ProfileController extends AppController {
 				$this->setFlash(__('Could not save data'), false);
 				return $this->redirect(['action' => 'edit']);
 			}
-			
+
 			/***** Change users profile image *****/
 			if(isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])){
 				if(!file_exists(WWW_ROOT.'userimages')){
@@ -106,7 +107,7 @@ class ProfileController extends AppController {
 						$this->User->id = $this->Auth->user('id');
 						if($this->User->saveField('image', $filename)){
 							$this->Session->write('Auth.User.image', $filename);
-							
+
 							//Delete old image
 							if(file_exists(WWW_ROOT.'userimages'.DS.$user['User']['image']) && !is_dir(WWW_ROOT.'userimages'.DS.$user['User']['image'])){
 								unlink(WWW_ROOT.'userimages'.DS.$user['User']['image']);
@@ -119,14 +120,14 @@ class ProfileController extends AppController {
 					return $this->redirect(['action' => 'edit']);
 				}
 			}
-			
+
 			/***** Change users password *****/
 			if(isset($this->request->data['Password'])){
 				if(Security::hash($this->request->data['Password']['current_password'], null, true) != $user['User']['password']){
 					$this->setFlash(__('The entered password is not your current password'), false);
 					return $this->redirect(['action' => 'edit']);
 				}
-				
+
 				if(isset($this->request->data['Password']['new_password']) && isset($this->request->data['Password']['new_password_repeat'])){
 					if($this->request->data['Password']['new_password'] == $this->request->data['Password']['new_password_repeat']){
 						$user = $this->User->findById($this->Auth->user('id'));
@@ -146,17 +147,17 @@ class ProfileController extends AppController {
 					return $this->redirect(['action' => 'edit']);
 				}
 			}
-			
-			
+
+
 		}
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$user = $this->User->findById($this->Auth->user('id'));
 		$this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime'));
 	}
-	
+
 	public function deleteImage(){
 		$user = $this->User->findById($this->Auth->user('id'));
-		
+
 		if($user['User']['image'] != null && $user['User']['image'] != ''){
 			if(file_exists(WWW_ROOT.'userimages'.DS.$user['User']['image'])){
 				unlink(WWW_ROOT.'userimages'.DS.$user['User']['image']);

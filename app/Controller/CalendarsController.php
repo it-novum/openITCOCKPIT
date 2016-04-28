@@ -67,7 +67,8 @@ class CalendarsController extends AppController{
 			],
 			'order' => [
 				'Calendar.name' => 'ASC'
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
 		$calendars = $this->Paginator->paginate();
 		$this->set(compact(['calendars']));

@@ -35,12 +35,12 @@
  */
 class HostdependenciesController extends AppController{
 	public $uses = [
-		'Hostdependency', 
-		'Timeperiod', 
-		'Host', 
-		'Hostgroup', 
-		'HostdependencyHostMembership', 
-		'HostdependencyHostgroupMembership', 
+		'Hostdependency',
+		'Timeperiod',
+		'Host',
+		'Hostgroup',
+		'HostdependencyHostMembership',
+		'HostdependencyHostgroupMembership',
 		'Container',
 	];
 	public $layout = 'Admin.default';
@@ -78,11 +78,12 @@ class HostdependenciesController extends AppController{
 				'Timeperiod' => [
 					'fields' => 'name'
 				]
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
-		
-		$query = Hash::merge($options, $this->Paginator->settings);
-		
+
+		$query = Hash::merge($this->Paginator->settings, $options);
+
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_hostdependencies = $this->Hostdependency->find('all', $query);
@@ -149,7 +150,7 @@ class HostdependenciesController extends AppController{
 				$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
 				$timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 			}
-			
+
 			$_hosts = (is_array($this->request->data['Hostdependency']['Host']))?$this->request->data['Hostdependency']['Host']:[];
 			$dependent_hosts = (is_array($this->request->data['Hostdependency']['HostDependent']))?$this->request->data['Hostdependency']['HostDependent']:[];
 			$this->request->data['HostdependencyHostMembership'] = $this->Hostdependency->parseHostMembershipData($_hosts, $dependent_hosts);
@@ -181,7 +182,7 @@ class HostdependenciesController extends AppController{
 
 				}
 			}
-			
+
 			if($this->Hostdependency->saveAll($this->request->data)){
 				$this->setFlash(__('Hostdependency successfully saved'));
 				$this->redirect(array('action' => 'index'));
@@ -194,23 +195,23 @@ class HostdependenciesController extends AppController{
 			$hostdependency['Hostdependency']['Hostgroup'] = Hash::combine($hostdependency['HostdependencyHostgroupMembership'], '{n}[dependent=0].hostgroup_id', '{n}[dependent=0].hostgroup_id');
 			$hostdependency['Hostdependency']['HostgroupDependent'] = Hash::combine($hostdependency['HostdependencyHostgroupMembership'], '{n}[dependent=1].hostgroup_id', '{n}[dependent=1].hostgroup_id');
 		}
-		
-		
-		
+
+
+
 		$this->request->data = Hash::merge($hostdependency, $this->request->data);
-		
+
 		$this->set(compact(['hostdependency', 'hosts', 'hostgroups', 'timeperiods', 'containers']));
 	}
 
 	public function add(){
-		
+
 		$hosts = [];
 		$hostgroups = [];
 		$timeperiods = [];
-		
+
 		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
-		
-		
+
+
 		$customFildsToRefill = [
 			'Hostdependency' => [
 				'inherits_parent',
@@ -227,10 +228,10 @@ class HostdependenciesController extends AppController{
 			]
 		];
 		$this->CustomValidationErrors->checkForRefill($customFildsToRefill);
-		
+
 		$this->Frontend->set('data_placeholder', __('Please choose'));
 		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			App::uses('UUID', 'Lib');
 			$this->request->data['Hostdependency']['uuid'] = UUID::v4();
@@ -267,13 +268,13 @@ class HostdependenciesController extends AppController{
 		if (!$this->request->is('post')){
 			throw new MethodNotAllowedException();
 		}
-		
+
 		if (!$this->Hostdependency->exists($id)){
 			throw new NotFoundException(__('Invalid hostdependency'));
 		}
-		
+
 		$hostdependency = $this->Hostdependency->findById($id);
-		
+
 		if(!$this->allowedByContainerId($hostdependency['Hostdependency']['container_id'])){
 			$this->render403();
 			return;
@@ -286,7 +287,7 @@ class HostdependenciesController extends AppController{
 		$this->setFlash(__('Could not delete hostdependency'), false);
 		$this->redirect(array('action' => 'index'));
 	}
-	
+
 	public function loadElementsByContainerId($containerId = null){
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();

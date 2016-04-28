@@ -29,7 +29,7 @@ class MapsController extends MapModuleAppController {
 	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler','CustomValidationErrors'];
 	public $helpers = ['CustomValidationErrors', 'ListFilter.ListFilter'];
 	//public $uses = ['Tenant'];
-	
+
 	public $listFilters = ['index' => [
 		'fields' => [
 			'Map.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
@@ -42,6 +42,7 @@ class MapsController extends MapModuleAppController {
 		if(!isset($this->Paginator->settings['conditions'])){
 			$this->Paginator->settings['conditions'] = [];
 		}
+		$this->Paginator->settings['limit'] = $this->PAGINATOR_LENGTH;
 		$this->Paginator->settings['order'] = ['Map.name' => 'asc'];
 		$all_maps = $this->Paginator->paginate();
 		$this->set('all_maps', $all_maps);
@@ -88,20 +89,20 @@ class MapsController extends MapModuleAppController {
 		$this->loadModel('Tenant');
 		$this->Map->recursive = -1;
 		$this->Map->autoFields = false;
-	
-	
+
+
 		$this->Map->contain([
 			'Container' => [
 				'fields' => ['id', 'name']
 			]
 		]);
-	
+
 		$map = $this->Map->findById($id);
 		//'Tenant.description' <-> Container.name
 		$tenants = Set::combine($this->Tenant->find('all',[
 
 				'fields' => [
-						'Container.id', 
+						'Container.id',
 						'Container.name'
 					],
 					'order' => 'Container.name ASC'
@@ -121,7 +122,7 @@ class MapsController extends MapModuleAppController {
 				}
 				$this->setFlash(__('Map properties successfully saved'));
 				$this->redirect(['action' => 'index']);
-				
+
 			}else{
 				if($this->request->ext === 'json'){
 					$this->serializeErrorMessage();
@@ -196,7 +197,7 @@ class MapsController extends MapModuleAppController {
 
 	public function loadUsersForTenant($tenantId = []){
 		return;
-		
+
 		foreach ($tenantId as $key => $value) {
 		//	debug($key);
 		//	debug($value);
