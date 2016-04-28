@@ -53,7 +53,7 @@
 				'label' => __('Last name'),
 				'value' => $user['User']['lastname']
 			]);
-			
+
 			if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap' && $user['User']['samaccountname'] !== null):
 				echo $this->Form->input('samaccountname', [
 					'label' => __('Username'),
@@ -62,7 +62,7 @@
 					'help' => __('This is the username, you need to for the login!')
 				]);
 			endif;
-			
+
 			echo $this->Form->input('email', [
 				'label' => __('Email'),
 				'value' => $user['User']['email']
@@ -72,9 +72,9 @@
 				'value' => $user['User']['phone']
 			]);
 			?>
-			
+
 			<hr />
-			
+
 			<?php echo $this->Form->fancyCheckbox('showstatsinmenu', [
 				'caption' => __('Show status stats in menu'),
 				'wrapGridClass' => 'col col-xs-10',
@@ -82,7 +82,14 @@
 				'captionClass' => 'col col-md-2 control-label',
 				'checked' => (boolean)$user['User']['showstatsinmenu'],
 			]); ?>
-			
+
+			<?php
+				echo $this->Form->input('paginatorlength', [
+					'label' => __('Listelement Length'),
+					'value' => 50,
+					'help' => __('This field defines the length of every list in the openITCOCKPIT System for your Profile')
+				]);
+			?>
 			<br />
 			<hr />
 			<?php
@@ -92,7 +99,7 @@
 			foreach($dateformats as $key => $dateformat):
 				$options[$key] = $this->Time->format($timestamp, $dateformat);
 			endforeach;
-			
+
 			echo $this->Form->input('dateformat', [
 				'label' => __('Date format'),
 				'options' => $options,
@@ -113,7 +120,7 @@
 				'options' => [__('English')],
 				'value' => $user['User']['language']
 			]); */?>
-				
+
 			<?php echo $this->Form->formActions(__('Save'), ['cancelButton' => [
 				'title' => __('Cancel'),
 				'url' => '/admin/dashboard'
@@ -146,7 +153,7 @@
 			echo $this->Form->create('Picture', [
 				'enctype' => 'multipart/form-data',
 			]);
-				
+
 			echo $this->Form->input('Image', [
 				'type' => 'file',
 				'accept' => 'image/png,image/jpeg,image/gif',
@@ -155,7 +162,7 @@
 				'label' => __('Select image')
 			]);
 			?>
-			
+
 			<br /><br /><div class="padding-top-20"></div>
 			<?php
 			 echo $this->Form->formActions(__('Upload image'), ['cancelButton' => [
@@ -208,7 +215,7 @@
 					'label' => __('Retype password'),
 					'required' => true,
 				]);
-			
+
 				echo $this->Form->formActions('Change password', ['cancelButton' => [
 					'title' => __('Cancel'),
 					'url' => '/admin/dashboard',

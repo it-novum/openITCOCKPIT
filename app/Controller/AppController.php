@@ -133,6 +133,7 @@ class AppController extends Controller{
 	public $MY_RIGHTS = [];
 	public $MY_RIGHTS_LEVEL = [];
 	protected $PERMISSIONS = [];
+	public $PAGINATOR_LENGTH = null;
 
 	/**
 	 * Translated strings to be passed to the front end. Can be added via
@@ -236,6 +237,13 @@ class AppController extends Controller{
 				}
 			}
 		}
+
+		if(!empty($this->Auth->user('paginatorlength'))){
+			$this->PAGINATOR_LENGTH = $this->Auth->user('paginatorlength');
+		}else{
+			$this->PAGINATOR_LENGTH = 50;
+		}
+
 		$this->MY_RIGHTS = array_unique($rights);
 		$this->MY_RIGHTS_LEVEL = $rights_levels;
 		$this->PERMISSIONS = $permissions;

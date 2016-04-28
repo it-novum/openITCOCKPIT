@@ -45,11 +45,12 @@ class LocationsController extends AppController{
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
-		
-		$query = Hash::merge($options, $this->Paginator->settings);
-		
+
+		$query = Hash::merge($this->Paginator->settings, $options);
+
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_locations = $this->Location->find('all', $query);
@@ -86,7 +87,7 @@ class LocationsController extends AppController{
 		}else{
 			$container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
 		}
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->Location->create();
 			App::uses('UUID', 'Lib');
@@ -162,7 +163,7 @@ class LocationsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		if($this->Location->__delete($location, $this->Auth->user('id'))){
 			$this->setFlash(__('Location successfully deleted'));
 			$this->redirect(['action' => 'index']);

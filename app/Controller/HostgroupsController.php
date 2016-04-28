@@ -73,8 +73,9 @@ class HostgroupsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
+			'limit' => $this->PAGINATOR_LENGTH
 		];
-		$query = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($this->Paginator->settings, $options);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);
@@ -84,8 +85,9 @@ class HostgroupsController extends AppController{
 			$all_hostgroups = $this->Paginator->paginate();
 		}
 
+
 		$this->set('all_hostgroups', $all_hostgroups);
-		
+
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', array('all_hostgroups'));
 		$this->set('isFilter', false);
@@ -107,7 +109,7 @@ class HostgroupsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		$this->set('hostgroup', $hostgroup);
 		$this->set('_serialize', ['hostgroup']);
 	}

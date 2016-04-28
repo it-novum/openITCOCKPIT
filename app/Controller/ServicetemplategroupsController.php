@@ -62,10 +62,11 @@ class ServicetemplategroupsController extends AppController{
 			],
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
-		$query = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($this->Paginator->settings, $options);
 
 		$this->Servicetemplategroup->unbindModel([
 			'hasAndBelongsToMany' => ['Servicetemplate']

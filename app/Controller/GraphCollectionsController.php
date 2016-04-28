@@ -51,7 +51,7 @@ class GraphCollectionsController extends AppController{
 		];
 		$this->Paginator->settings = [
 			'conditions' => $conditions,
-			'limit' => 150,
+			'limit' => $this->PAGINATOR_LENGTH,
 			'order' => ['GraphCollection.name' => 'asc'],
 		];
 

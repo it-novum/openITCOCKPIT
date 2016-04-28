@@ -48,22 +48,23 @@ class SystemfailuresController extends AppController{
 			],
 		],
 	];
-	
+
 	public function index(){
+		$this->Paginator->settings['limit'] = $this->PAGINATOR_LENGTH;
 		$all_systemfailures = $this->Paginator->paginate();
 
 		$this->set(compact(['all_systemfailures']));
-		
+
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
 		}else{
 			$this->set('isFilter', false);
 		}
 	}
-	
+
 	public function add(){
 		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-		
+
 		$customFildsToRefill = [
 			'Systemfailure' => [
 				'from_date',
@@ -72,9 +73,9 @@ class SystemfailuresController extends AppController{
 				'to_time',
 			]
 		];
-		
+
 		$this->CustomValidationErrors->checkForRefill($customFildsToRefill);
-		
+
 		$this->set('back_url', $this->referer());
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Systemfailure']['user_id'] = $this->Auth->user('id');
@@ -96,25 +97,25 @@ class SystemfailuresController extends AppController{
 			$this->CustomValidationErrors->fetchErrors();
 		}
 	}
-	
+
 	public function delete($id = null){
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
-		
+
 		$this->Systemfailure->id = $id;
-		
+
 		if(!$this->Systemfailure->exists($id)){
 			throw new NotFoundException(__('Systemfailure not found'));
 		}
-		
-		
+
+
 		if($this->Systemfailure->delete()){
 			$this->setFlash(__('Systemfailure deleted'));
 			$this->redirect(array('action' => 'index'));
 		}
 		$this->setFlash(__('Could not delete systemfailure'));
 		$this->redirect(array('action' => 'index'));
-		
+
 	}
 }

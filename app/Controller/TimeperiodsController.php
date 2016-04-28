@@ -49,13 +49,14 @@ class TimeperiodsController extends AppController{
 			],
 			'conditions' => [
 				'Timeperiod.container_id' => $this->MY_RIGHTS
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		if($this->isApiRequest()){
 			$this->set('all_timeperiods', $this->Timeperiod->find('all', $options));
 		}else{
-			$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$this->set('all_timeperiods', $this->Paginator->paginate());
 		}
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml

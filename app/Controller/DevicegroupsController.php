@@ -57,7 +57,7 @@ class DevicegroupsController extends AppController{
 				'Container.parent_id' => $this->MY_RIGHTS
 			]
 		];
-		
+
 		if($this->hasRootPrivileges === true){
 			$container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_DEVICEGROUP, [], $this->hasRootPrivileges);
 		}else{
@@ -71,12 +71,13 @@ class DevicegroupsController extends AppController{
 			'fields' => [
 				'Location.id',
 				'Location.container_id'
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		]);
 		$containerToLocation = Hash::combine($locationIds,'{n}.Location.container_id','{n}.Location.id');
 
-		$query = Hash::merge($options, $this->Paginator->settings);
-		
+		$query = Hash::merge($this->Paginator->settings, $options);
+
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_devicegroups = $this->Devicegroup->find('all', $query);
@@ -130,7 +131,7 @@ class DevicegroupsController extends AppController{
 				if($changelog_data){
 					CakeLog::write('log', serialize($changelog_data));
 				}
-				
+
 				if($this->request->ext == 'json'){
 					$this->serializeId();
 
@@ -196,7 +197,7 @@ class DevicegroupsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		$userId = $this->Auth->user('id');
 		if($this->Devicegroup->__delete($devicegroup, $userId)){
 			$this->setFlash(__('Devicegroup successfully deleted'));
