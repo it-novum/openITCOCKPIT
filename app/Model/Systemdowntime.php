@@ -32,8 +32,8 @@ class Systemdowntime extends AppModel{
 			'message' => 'An error occurred',
 		],
 		'from_date' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -43,8 +43,8 @@ class Systemdowntime extends AppModel{
 			]
 		],
 		'from_time' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -54,8 +54,8 @@ class Systemdowntime extends AppModel{
 			]
 		],
 		'to_date' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -65,8 +65,8 @@ class Systemdowntime extends AppModel{
 			]
 		],
 		'to_time' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -76,8 +76,8 @@ class Systemdowntime extends AppModel{
 			]
 		],
 		'comment' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			]

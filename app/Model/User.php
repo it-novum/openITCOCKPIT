@@ -64,8 +64,8 @@ class User extends AppModel {
 
 	public $validate = [
 		'status' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'users.illegal_status'
 			]
 		],
@@ -88,15 +88,15 @@ class User extends AppModel {
 			],
 		],
 		'firstname' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'lastname' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

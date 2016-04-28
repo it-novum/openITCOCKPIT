@@ -36,8 +36,8 @@ class Usergroup extends AppModel{
 
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 				'allowEmpty' => false

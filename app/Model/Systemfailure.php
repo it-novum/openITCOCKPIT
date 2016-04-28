@@ -34,15 +34,15 @@ class Systemfailure extends AppModel{
 	
 	public $validate = [
 		'comment' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'from_date' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -52,8 +52,8 @@ class Systemfailure extends AppModel{
 			]
 		],
 		'from_time' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -63,8 +63,8 @@ class Systemfailure extends AppModel{
 			]
 		],
 		'to_date' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -74,8 +74,8 @@ class Systemfailure extends AppModel{
 			]
 		],
 		'to_time' => [
-			'notEmpty' => [
-				'rule'=> 'notEmpty',
+			'notBlank' => [
+				'rule'=> 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -85,12 +85,12 @@ class Systemfailure extends AppModel{
 			]
 		],
 		'user_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
-			'notEmpty' => [
+			'notBlank' => [
 				'rule'    => 'numeric',
 				'message' => 'Please enter a number',
 				'required' => true

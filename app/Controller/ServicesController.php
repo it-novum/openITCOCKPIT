@@ -209,6 +209,7 @@ class ServicesController extends AppController{
 			'HostsToContainers.container_id' => $this->MY_RIGHTS
 		];
 		$conditions = $this->ListFilter->buildConditions($this->request->data, $conditions);
+
 		if(isset($this->request->params['named']['BrowserContainerId'])){
 			if(is_array($this->request->params['named']['BrowserContainerId'])){
 				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
@@ -241,10 +242,12 @@ class ServicesController extends AppController{
 				'Host.container_id' => $all_container_ids
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
+			debug($all_container_ids);
 		}
+
 		$all_services = [];
 		$query = [
-// 			'recursive' => -1,
+ 			'recursive' => -1,
 			'conditions' => $conditions,
 			'contain' => ['Servicetemplate'],
 			'limit' => $this->PAGINATOR_LENGTH,

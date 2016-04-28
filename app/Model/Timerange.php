@@ -28,15 +28,15 @@ class Timerange extends AppModel{
 
 	public $validate = array(
 		'day'     => array(
-			'notEmpty'  => array(
-			'rule'          => 'notEmpty',
+			'notBlank'  => array(
+			'rule'          => 'notBlank',
 			'message' => 'This field cannot be left blank.',
 			'required' => true
 			),
 		),
 		'start'     => array(
-			'notEmpty'  => array(
-				'rule'          => 'notEmpty',
+			'notBlank'  => array(
+				'rule'          => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			),
@@ -51,8 +51,8 @@ class Timerange extends AppModel{
 			),
 		),
 		'end'     => array(
-			'notEmpty'  => array(
-				'rule'          => 'notEmpty',
+			'notBlank'  => array(
+				'rule'          => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			),

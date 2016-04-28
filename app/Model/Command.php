@@ -34,8 +34,8 @@ class Command extends AppModel{
 
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			],
@@ -47,8 +47,8 @@ class Command extends AppModel{
 			],
 		],
 		'uuid' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 				'on' => 'create',
