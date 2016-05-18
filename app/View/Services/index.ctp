@@ -273,16 +273,16 @@
 							<div class="col-xs-12 col-md-2 text-muted"><center><span id="selectionCount"></span></center></div>
 							<div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
 							<div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
-							
+
 							<div class="col-xs-12 col-md-2">
-								<?php if($this->Acl->hasPermission('edit')): ?>
-									<a href="javascript:void(0);" style="text-decoration: none; color:#333;" data-toggle="modal" data-target="#nag_command_schedule_downtime"><i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?></a>
+								<?php if($this->Acl->hasPermission('copy')):?>
+									<a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy');?></a>
 								<?php endif; ?>
 							</div>
 							<div class="col-xs-12 col-md-2">
-								<?php if($this->Acl->hasPermission('edit')): ?>
-									<a href="javascript:void(0);" style="text-decoration: none; color:#333;" data-toggle="modal" data-target="#nag_command_ack_state"><i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?></a>
-								<?php endif; ?>
+								<?php if($this->Acl->hasPermission('delete')):?>
+									<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+								<?php endif; ?> 
 							</div>
 							<div class="col-xs-12 col-md-2">
 								<div class="btn-group">
@@ -301,6 +301,13 @@
 											</li>
 											<li>
 												<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_enable_notifications"><i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?></a>
+											</li>
+											<li class="divider"></li>
+											<li>
+												<a href="javascript:void(0);" style="text-decoration: none; color:#333;" data-toggle="modal" data-target="#nag_command_schedule_downtime"><i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?></a>
+											</li>
+											<li>
+												<a href="javascript:void(0);" style="text-decoration: none; color:#333;" data-toggle="modal" data-target="#nag_command_ack_state"><i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?></a>
 											</li>
 										<?php endif; ?>
 									</ul>
@@ -539,3 +546,7 @@
 		</div>
 	</div>
 </div>
+<input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>" />
+<input type="hidden" id="delete_message_h2" value="<?php echo __('Do you really want delete the selected services?'); ?>" />
+<input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>" />
+<input type="hidden" id="message_no" value="<?php echo __('No'); ?>" />
