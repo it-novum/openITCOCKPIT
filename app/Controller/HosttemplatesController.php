@@ -92,7 +92,8 @@ class HosttemplatesController extends AppController{
 				'Hosttemplate.container_id',
 				'Container.id',
 				'Container.parent_id',
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
 		$this->Paginator->settings = Hash::merge($query, $this->Paginator->settings);
 
@@ -809,7 +810,7 @@ class HosttemplatesController extends AppController{
 				foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
 					$contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contact.{n}.id');
 					$contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']],'Contactgroup.{n}.id');
-					
+
 					$newHosttemplateData = [
 						'Hosttemplate' => [
 							'uuid' => $this->Hosttemplate->createUUID(),
@@ -843,7 +844,7 @@ class HosttemplatesController extends AppController{
 			}
 		}
 
-		
+
 
 		$this->set(compact('hosttemplates'));
 		$this->set('back_url', $this->referer());

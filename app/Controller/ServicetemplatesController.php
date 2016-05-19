@@ -91,14 +91,15 @@ class ServicetemplatesController extends AppController{
 			],
 			'contain' => [
 				'Container'
-			]
+			],
+			'limit' => $this->PAGINATOR_LENGTH
 		];
 
 		if($this->isApiRequest()){
 			unset($options['limit']);
 			$all_servicetemplates = $this->Servicetemplate->find('all', $options);
 		}else{
-			$this->Paginator->settings = Hash::merge($options, $this->Paginator->settings);
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$all_servicetemplates = $this->Paginator->paginate();
 		}
 

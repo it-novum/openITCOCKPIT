@@ -281,7 +281,7 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$all_hosts = $this->Host->find('all', $query);
 		}else{
-			$query['limit'] = 150;
+			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = $query;
 			$all_hosts = $this->Paginator->paginate();
 		}
@@ -606,7 +606,6 @@ class HostsController extends AppController{
 		}else{
 			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		}
-		$containersPrimary = $this->Tree->easyPath([$host['Host']['container_id']], OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 
 		//Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
 		$commandarguments = $this->Commandargument->find('all', [
@@ -661,7 +660,6 @@ class HostsController extends AppController{
 		$this->set('back_url', $this->referer());
 		$this->set(compact([
 			'host',
-			'containersPrimary',
 			'containers',
 			'timeperiods',
 			'commands',
@@ -836,33 +834,20 @@ class HostsController extends AppController{
 			if(isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])){
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
-			// $data_to_save = Hash::merge(
-			// 	$this->_diffWithTemplate($this->request->data, $hosttemplate),
-			// 	[
-			// 		'Host' => [
-			// 			'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
-			// 			'container_id' => $this->request->data['Host']['container_id']
-			// 		],
-			// 		'Container' => [
-			// 			'container_id' => $this->request->data['Host']['container_id']
-			// 		]
-			// 	]
-			// );
+			$data_to_save = Hash::merge(
+				$this->_diffWithTemplate($this->request->data, $hosttemplate),
+				[
+					'Host' => [
+						'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
+						'container_id' => $this->request->data['Host']['container_id']
+					],
+					'Container' => [
+						'container_id' => $this->request->data['Host']['container_id']
+					]
+				]
+			);
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
-
-
-			$primaryContainerId = $host['Host']['container_id'];
-			$sharedContaners = $host['Containers'];
-			if(empty($data_to_save['Host']['container_id'])){
-				$data_to_save['Host']['container_id'] = $primaryContainerId;
-			}			
-
-			if(($key = array_search($primaryContainerId, $sharedContaners)) !== false) {
-			    unset($sharedContaners[$key]);
-			}	
-			array_push($sharedContaners, $data_to_save['Host']['container_id']);
-			$data_to_save['Containers'] = $sharedContaners;
 
 			//Delete Command argument values
 			//Fetching all commandargument_id of the command arguments out of database:
@@ -945,7 +930,6 @@ class HostsController extends AppController{
 			$this->render403();
 			return;
 		}
-		$containersPrimary = $this->Tree->easyPath([$host['Host']['container_id']], OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 		$sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
 		if($this->request->is('post') || $this->request->is('put')){
@@ -966,7 +950,7 @@ class HostsController extends AppController{
 				}
 			}
 		}
-		$this->set(compact(['host', 'containersPrimary','containers', 'sharingContainers']));
+		$this->set(compact(['host','containers', 'sharingContainers']));
 	}
 
 	function edit_details($host_id = null){

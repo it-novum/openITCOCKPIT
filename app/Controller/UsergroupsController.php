@@ -40,9 +40,10 @@ class UsergroupsController extends AppController {
 			'order' => [
 				'Usergroup.name' => 'asc'
 			],
+			'limit' => $this->PAGINATOR_LENGTH
 		];
 
-		$query = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($this->Paginator->settings, $options);
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_usergroups = $this->Usergroup->find('all', $query);

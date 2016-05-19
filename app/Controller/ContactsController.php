@@ -97,10 +97,11 @@ class ContactsController extends AppController{
 				'ContactsToContainer.container_id' => $this->MY_RIGHTS
 			],
 			'order' => ['Contact.name' => 'asc'],
-			'group' => ['Contact.id']
+			'group' => ['Contact.id'],
+			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
-		$query = Hash::merge($options, $this->Paginator->settings);
+		$query = Hash::merge($this->Paginator->settings, $options);
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_contacts = $this->Contact->find('all', $query);

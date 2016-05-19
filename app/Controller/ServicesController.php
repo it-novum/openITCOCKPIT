@@ -247,7 +247,7 @@ class ServicesController extends AppController{
 // 			'recursive' => -1,
 			'conditions' => $conditions,
 			'contain' => ['Servicetemplate'],
-			'limit' => 150,
+			'limit' => $this->PAGINATOR_LENGTH,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',

@@ -72,7 +72,7 @@ class CommandsController extends AppController{
 			unset($query['conditions']['Command.command_type']);
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = 150;
+			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -98,7 +98,7 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = 150;
+			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -124,7 +124,7 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = 150;
+			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -150,7 +150,7 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = 150;
+			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
