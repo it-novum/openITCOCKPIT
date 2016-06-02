@@ -1,0 +1,50 @@
+---
+- include: naemon.yml
+
+- name: enable production mode
+  become: yes
+  hostname:
+    name: master
+  when: oitc.production
+  register: production_mode
+
+- name: create oitc cli
+  become: yes
+  file:
+    src: /usr/share/openitcockpit/app/Console/cake
+    dest: /usr/bin/oitc
+    state: link
+
+- name: Make my directory tree readable
+  file:
+    path: "{{ nginx.doc_root }}"
+    owner: www-data
+    group: www-data
+    mode: 0744
+    recurse: yes
+
+- name: Ensure that Cache folder ist present
+  file:
+    path: "{{ nginx.doc_root }}/app/tmp/"
+    state: directory
+    mode: 0777
+
+- name: Make cache folder writeable
+  file:
+    path: "{{ nginx.doc_root }}/app/tmp/"
+    mode: 0777
+    recurse: yes
+
+- name: set setup wrapper
+  become: yes
+  template:
+    src: setup_wrapper.sh.j2
+    dest: /usr/share/openitcockpit/setup_wrapper.sh
+    owner: root
+    group: root
+    mode: 700
+
+- name: start setup wrapper
+  become: yes
+  command: /usr/share/openitcockpit/setup_wrapper.sh
+  when: (db_created.changed or production_mode.changed)

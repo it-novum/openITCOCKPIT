@@ -1,0 +1,60 @@
+---
+server:
+    install: '1'
+    timezone: Europe/Berlin
+    locale: de_DE.UTF-8
+    packages:
+      - expect
+vagrant_local:
+    install: '1'
+    vm:
+      base_box: trusty64
+      hostname: default
+      ip: 192.168.33.99
+      memory: '1024'
+      sharedfolder: ./
+      syncType: rsync
+nginx:
+    install: '1'
+    doc_root: /usr/share/openitcockpit
+    servername: oitc.vb
+mysql:
+    install: '1'
+    root_password: 'root_password'
+    database: 'openitcockpit'
+    user: 'oitc'
+    password: 'mysql_password'
+    dump: openitcockpit.sql
+php:
+    install: '1'
+    ppa: php5-5.6
+    packages: [php5-cli, php5-intl, php5-mcrypt, php5-mysql]
+xdebug:
+    install: '1'
+composer:
+    install: '0'
+oitc:
+    production: yes
+    install: '1'
+    db_name: '{{ mysql.database }}'
+    db_user: '{{ mysql.user }}'
+    db_user_password: '{{ mysql.password }}'
+    db_root_password: '{{ mysql.root_password }}'
+    mailserver: localhost
+    smtpport: 25
+    senderaddress: oitc@example.com
+    user_firstname: root
+    user_surname: wheel
+    user_email: root@example.com
+    user_password: Apd67z
+    monitoring_system:
+    manage_monitoring:
+    phpnsta_user_name:
+    phpnsta_user_password:
+    ssh_key_public_slave:
+    nagios_home:
+    after_export_user:
+    api_host:
+    api_user:
+    api_password:
+    api_user_ldap:

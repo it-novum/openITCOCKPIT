@@ -1,0 +1,24 @@
+---
+- name: Add ppa Repository
+  become: yes
+  apt_repository: repo=ppa:ondrej/{{ php.ppa }}
+
+- name: Update apt
+  become: yes
+  apt: update_cache=yes
+
+- name: Install php5
+  become: yes
+  apt: pkg=php5 state=latest
+
+- name: Install php5-fpm
+  become: yes
+  apt: pkg=php5-fpm state=latest
+
+- name: Install PHP Packages
+  become: yes
+  apt: pkg={{ item }} state=latest
+  with_items: "{{ php.packages | default([]) }}"
+
+- include: configure.yml
+- include: pecl.yml

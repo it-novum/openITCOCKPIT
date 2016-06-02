@@ -1,0 +1,14 @@
+---
+- name: Install Nginx
+  become: yes
+  apt: pkg=nginx state=latest
+
+- name: Change default nginx site
+  become: yes
+  template: src=default.tpl dest=/etc/nginx/sites-available/default
+  notify: restart nginx
+
+- name: Create self-signed SSL cert
+  become: yes
+  command: openssl req -new -nodes -x509 -subj "/C=DE/ST=Hessen/L=Fulda/O=IT/CN={{ nginx.servername }}" -days 3650 -keyout /etc/ssl/private/oitc.key -out /etc/ssl/certs/oitc.crt -extensions v3_ca creates=/etc/ssl/certs/oitc.crt
+  notify: restart nginx

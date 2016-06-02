@@ -1,0 +1,62 @@
+---
+- name: add openITCOCKPIT repository key
+  become: yes
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: A7D3EAFA
+
+- name: add openITCOCKPIT repository
+  become: yes
+  apt_repository:
+    repo: 'deb https://apt.open-itcockpit.com trusty main'
+    state: present
+    update_cache: yes
+
+- name: ensure that dbconfig-common folder ist present
+  become: yes
+  file:
+    path: /etc/dbconfig-common
+    state: directory
+
+- name: set dbconfig-common
+  become: yes
+  template:
+    src: openitcockpit.conf.j2
+    dest: /etc/dbconfig-common/openitcockpit.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: set phpnsta config
+  become: yes
+  template:
+    src: phpnsta_config.php.j2
+    dest: /etc/dbconfig-common/phpnsta_config.php
+
+- name: ensure that oitc config folder ist present
+  become: yes
+  file:
+    path: /etc/openitcockpit/app/Config/
+    state: directory
+    owner: root
+    group: root
+    mode: 0600
+
+- name: set database config
+  become: yes
+  file:
+    src: /usr/share/openitcockpit/app/Config/database.php
+    dest: /etc/openitcockpit/app/Config/database.php
+    state: link
+
+- name: install naemon and dependancies
+  become: yes
+  apt:
+    name: '{{ item }}'
+    state: latest  #present
+    update_cache: yes
+  with_items:
+    - openitcockpit-naemon
+    - openitcockpit-statusengine-naemon
+    - openitcockpit-npcd
+  
