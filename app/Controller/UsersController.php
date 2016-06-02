@@ -100,12 +100,13 @@ class UsersController extends AppController{
 				'User.id'
 			],
 		];
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+		$query = Hash::merge($this->Paginator->settings, $options);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_users = $this->User->find('all', $query);
 		}else{
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$all_users = $this->Paginator->paginate();
 		}
 

@@ -42,13 +42,14 @@ class UsergroupsController extends AppController {
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+		$query= Hash::merge($this->Paginator->settings, $options);
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_usergroups = $this->Usergroup->find('all', $query);
 			$this->set('all_usergroups', $all_usergroups);
 			$this->set('_serialize', ['all_usergroups']);
 		}else{
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$usergroups = $this->Paginator->paginate();
 		}
 		$this->set(compact(['usergroups']));

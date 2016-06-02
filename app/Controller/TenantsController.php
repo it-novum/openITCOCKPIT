@@ -65,12 +65,13 @@ class TenantsController extends AppController{
 			],
 		];
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+		$query = Hash::merge($this->Paginator->settings, $options);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_tenants = $this->Tenant->find('all', $query);
 		}else{
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$all_tenants = $this->Paginator->paginate();
 		}
 
