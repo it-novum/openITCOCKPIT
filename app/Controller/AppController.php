@@ -238,14 +238,12 @@ class AppController extends Controller{
 			}
 		}
 
-		debug($this->Paginator->settings);
-
 		if(!empty($this->Auth->user('paginatorlength'))){
 			$this->Paginator->settings['limit'] = $this->Auth->user('paginatorlength');
 		}else{
 			$this->Paginator->settings['limit'] = 25;
 		}
-debug($this->Paginator->settings);
+
 		$this->MY_RIGHTS = array_unique($rights);
 		$this->MY_RIGHTS_LEVEL = $rights_levels;
 		$this->PERMISSIONS = $permissions;

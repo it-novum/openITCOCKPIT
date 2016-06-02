@@ -212,7 +212,7 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
 		$this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
-debug($this->Paginator->settings);
+		
 		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
