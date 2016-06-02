@@ -40,17 +40,15 @@ class UsergroupsController extends AppController {
 			'order' => [
 				'Usergroup.name' => 'asc'
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 
-		$query = Hash::merge($this->Paginator->settings, $options);
+		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_usergroups = $this->Usergroup->find('all', $query);
 			$this->set('all_usergroups', $all_usergroups);
 			$this->set('_serialize', ['all_usergroups']);
 		}else{
-			$this->Paginator->settings = $query;
 			$usergroups = $this->Paginator->paginate();
 		}
 		$this->set(compact(['usergroups']));

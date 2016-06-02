@@ -50,7 +50,6 @@ class TimeperiodsController extends AppController{
 			'conditions' => [
 				'Timeperiod.container_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		if($this->isApiRequest()){

@@ -42,7 +42,6 @@ class MapsController extends MapModuleAppController {
 		if(!isset($this->Paginator->settings['conditions'])){
 			$this->Paginator->settings['conditions'] = [];
 		}
-		$this->Paginator->settings['limit'] = $this->PAGINATOR_LENGTH;
 		$this->Paginator->settings['order'] = ['Map.name' => 'asc'];
 		$all_maps = $this->Paginator->paginate();
 		$this->set('all_maps', $all_maps);

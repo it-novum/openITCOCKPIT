@@ -99,15 +99,13 @@ class UsersController extends AppController{
 			'group' => [
 				'User.id'
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
-		$query = Hash::merge($this->Paginator->settings, $options);
+		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_users = $this->User->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
 			$all_users = $this->Paginator->paginate();
 		}
 
