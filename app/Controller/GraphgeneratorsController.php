@@ -159,7 +159,7 @@ class GraphgeneratorsController extends AppController{
 			$conditions = Hash::merge($conditions, $_conditions);
 		}
 
-		$this->Paginator->settings = [
+		$query = [
 			'conditions' => $conditions,
 			'limit' => 25,
 			'order' => ['GraphgenTmpl.id' => 'asc'],
@@ -187,6 +187,8 @@ class GraphgeneratorsController extends AppController{
 				],
 			],
 		];
+
+		$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 
 		$all_templates = $this->Paginator->paginate('GraphgenTmpl');
 		$all_templates = $this->GraphgenTmpl->addHostsAndServices($all_templates);
