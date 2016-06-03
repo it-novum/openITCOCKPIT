@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-file-text-o fa-fw "></i> 
-				<?php echo __('Logentries'); ?> 
-			<span>> 
+			<i class="fa fa-file-text-o fa-fw "></i>
+				<?php echo __('Logentries'); ?>
+			<span>>
 				<?php echo __('Overview'); ?>
 			</span>
 		</h1>
@@ -64,7 +64,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
 						?>
 						</div>
@@ -77,19 +77,37 @@
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('logentries', [
 							'class' => 'form-horizontal clear',
-							'action' => 'index' // removes everything out of the URL
+							'url' => 'index' // removes everything out of the URL
 						]);
-						
+
 						?>
-						
+
 							<div class="btn-group">
 								<?php
 									$listoptions = [
+										'5' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 5,
+											'human' => 5,
+											'selector' => '#listoptions_limit'
+										],
+										'10' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 10,
+											'human' => 10,
+											'selector' => '#listoptions_limit'
+										],
+										'25' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 25,
+											'human' => 25,
+											'selector' => '#listoptions_limit'
+										],
 										'50' => [
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 50,
@@ -100,6 +118,12 @@
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 100,
 											'human' => 100,
+											'selector' => '#listoptions_limit'
+										],
+										'150' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 150,
+											'human' => 150,
 											'selector' => '#listoptions_limit'
 										],
 										'500' => [
@@ -115,8 +139,8 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-							
-									$selected = 50;
+
+									$selected = $paginatorLimit;
 									if(isset($ListsettingsUrlParams['Listsettings']['limit'])){
 										$selected = $ListsettingsUrlParams['Listsettings']['limit'];
 									}
@@ -125,7 +149,9 @@
 									<span id="listoptions_limit"><?php echo $selected; ?></span> <i class="fa fa-caret-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right">
-									<?php foreach($listoptions as $listoption): ?>
+									<?php
+
+									foreach($listoptions as $listoption): ?>
 										<li>
 											<a href="javascript:void(0);" class="listoptions_action" selector="<?php echo $listoption['selector']; ?>" submit_target="<?php echo $listoption['submit_target']; ?>" value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
 										</li>
@@ -149,7 +175,7 @@
 										endif;
 										?>
 										<li>
-											<input type="hidden" value="0" name="data[Listsettings][logentry_type][<?php echo $logentry_type; ?>]" /> 
+											<input type="hidden" value="0" name="data[Listsettings][logentry_type][<?php echo $logentry_type; ?>]" />
 											<li style="width: 100%;"><a href="javascript:void(0)" class="listoptions_checkbox text-left"><input type="checkbox" name="data[Listsettings][logentry_type][<?php echo $logentry_type; ?>]" value="<?php echo $logentry_type; ?>" <?php echo $htmlChecked; ?>/> &nbsp; <?php echo $logentry_name; ?></a></li>
 										</li>
 									<?php endforeach; ?>
@@ -159,12 +185,12 @@
 								</ul>
 							</div>
 							<button class="btn btn-xs btn-success toggle"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
 				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-file-text-o"></i> </span>
