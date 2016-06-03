@@ -53,7 +53,8 @@ class DowntimesController extends AppController{
 	];
 
 	public function host(){
-		$requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS);
+		$paginatorLimit = $this->Paginator->settings['limit'];
+		$requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
@@ -73,7 +74,7 @@ class DowntimesController extends AppController{
 		// force the order of joined tables
 		$all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
 
-		$this->set(compact(['all_downtimes']));
+		$this->set(compact(['all_downtimes', 'paginatorLimit']));
 		$this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
 		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
@@ -88,7 +89,8 @@ class DowntimesController extends AppController{
 	}
 
 	public function service(){
-		$requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS);
+		$paginatorLimit = $this->Paginator->settings['limit'];
+		$requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
@@ -104,7 +106,7 @@ class DowntimesController extends AppController{
 		//--force --doit --yes-i-know-what-i-do
 		// force the order of joined tables
 		$all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-		$this->set(compact(['all_downtimes']));
+		$this->set(compact(['all_downtimes', 'paginatorLimit']));
 		$this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
 		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
@@ -122,7 +124,7 @@ class DowntimesController extends AppController{
 		if(isset($this->PERMISSIONS['downtimes']['host'])){
 			$this->redirect(['action' => 'host']);
 		}
-		
+
 		if(isset($this->PERMISSIONS['downtimes']['service'])){
 			$this->redirect(['action' => 'service']);
 		}

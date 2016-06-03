@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-power-off fa-fw "></i> 
-				<?php echo __('Recurring downtimes'); ?> 
-			<span>> 
+			<i class="fa fa-power-off fa-fw "></i>
+				<?php echo __('Recurring downtimes'); ?>
+			<span>>
 				<?php echo __('List'); ?>
 			</span>
 		</h1>
@@ -74,7 +74,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']); 
+							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
 						endif;
 						?>
 						</div>
@@ -90,18 +90,18 @@
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Start time'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('End time'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Delete'); ?></a></li>
-							
+
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					 
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('systemdowntimes', [
 							'class' => 'form-horizontal clear',
-							'action' => 'index' //reset the URL on submit
+							'url' => 'index' //reset the URL on submit
 						]);
-						
+
 						?>
 							<div class="btn-group">
 								<button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
@@ -125,14 +125,26 @@
 									<?php endif;?>
 								</ul>
 							</div>
-							
+
 							<div class="btn-group">
 								<?php
 									$listoptions = [
-										'30' => [
+										'5' => [
 											'submit_target' => '#listoptions_hidden_limit',
-											'value' => 30,
-											'human' => 30,
+											'value' => 5,
+											'human' => 5,
+											'selector' => '#listoptions_limit'
+										],
+										'10' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 10,
+											'human' => 10,
+											'selector' => '#listoptions_limit'
+										],
+										'25' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 25,
+											'human' => 25,
 											'selector' => '#listoptions_limit'
 										],
 										'50' => [
@@ -147,6 +159,12 @@
 											'human' => 100,
 											'selector' => '#listoptions_limit'
 										],
+										'150' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 150,
+											'human' => 150,
+											'selector' => '#listoptions_limit'
+										],
 										'300' => [
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 300,
@@ -154,8 +172,8 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
-									$selected = 30;
+
+									$selected = $paginatorLimit;
 									if(isset($DowntimeListsettings['limit']) && isset($listoptions[$DowntimeListsettings['limit']]['human'])){
 										$selected = $listoptions[$DowntimeListsettings['limit']]['human'];
 									}
@@ -172,14 +190,14 @@
 								</ul>
 								<input type="hidden" value="<?php if(isset($DowntimeListsettings['limit'])): echo $DowntimeListsettings['limit']; endif; ?>" id="listoptions_hidden_limit" name="data[Listsettings][limit]" />
 							</div>
-							
+
 							<button class="btn btn-xs btn-success toggle hidden-mobile"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
  				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
@@ -242,14 +260,14 @@
 													<?php
 													endif;
 													break;
-												
+
 													case OBJECT_SERVICE:
 													if(isset($systemdowntime['Service']['id']) && $systemdowntime['Service']['id'] !== null):
 														$serviceName = $systemdowntime['Service']['name'];
 														if($serviceName === null || $serviceName === ''):
 															$serviceName = $systemdowntime['Servicetemplate']['name'];
 														endif;
-														
+
 														if($this->Acl->hasPermission('browser', 'services')):
 														?>
 															<a href="/services/browser/<?php echo $systemdowntime['Service']['id']; ?>"><?php echo h($serviceName);?></a>
@@ -261,7 +279,7 @@
 													<?php
 													endif;
 													break;
-												
+
 													case OBJECT_HOSTGROUP:
 													if(isset($systemdowntime['Hostgroup']['id']) && $systemdowntime['Hostgroup']['id'] !== null): ?>
 														<?php if($this->Acl->hasPermission('edit', 'hostgroups')):?>
@@ -288,7 +306,7 @@
 												endforeach;
 												echo implode(', ', $_days);
 												?>
-											
+
 											</td>
 											<td>
 												<?php
@@ -307,7 +325,7 @@
 												if($this->Acl->hasPermission('delete', 'systemdowntimes')):
 													echo $this->Utils->deleteButton(null, $systemdowntime['Systemdowntime']['id']);
 												endif;
-												?> 
+												?>
 											</td>
 
 										</tr>
