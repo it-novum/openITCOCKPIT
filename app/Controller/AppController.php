@@ -133,7 +133,6 @@ class AppController extends Controller{
 	public $MY_RIGHTS = [];
 	public $MY_RIGHTS_LEVEL = [];
 	protected $PERMISSIONS = [];
-	public $PAGINATOR_LENGTH = null;
 
 	/**
 	 * Translated strings to be passed to the front end. Can be added via
