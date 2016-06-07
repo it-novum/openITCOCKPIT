@@ -37,8 +37,7 @@ class LoginController extends AppController {
 		$this->redirect('/login/login');
 	}
 
-	public function login($redirectBack = 0){		
-	
+	public function login($redirectBack = 0){
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$displayMethod = false;
 		$authMethods = [
@@ -77,19 +76,27 @@ class LoginController extends AppController {
 
 		// Automatic login if Client SSL Certificate is sent
 		if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && !empty($_SERVER['SSL_DN'])){
-			$emailAddress = '';
+			$CN = '';
 			$parameters = explode('/', $_SERVER['SSL_DN']);
 			foreach ($parameters as $eqVal) {
 				$SSLVar = explode('=', $eqVal);
 				if(empty($SSLVar)) continue;
-				if(isset($SSLVar[0]) && $SSLVar[0] === 'emailAddress' && isset($SSLVar[1])){
-					$emailAddress = trim($SSLVar[1]);
+				if(isset($SSLVar[0]) && $SSLVar[0] === 'CN' && isset($SSLVar[1])){
+					$CN = trim($SSLVar[1]);
 					break;
 				}
 			}
 
-			if($emailAddress !== ''){
-				$user = $this->User->findByEmail($emailAddress);
+			$names = explode(' ', $CN);
+			$firstName = isset($names[0]) ? $names[0] : '';
+			$lastName = isset($names[1]) ? $names[1] : '';
+
+			if($firstName !== '' && $lastName !== ''){
+				$user = $this->User->find('first', [
+					'conditions' => [
+						['firstname' => $firstName, 'lastname' => $lastName]
+					]
+				]);
 				if(!empty($user) && $this->Auth->login($user)){
 					$this->Session->delete('Message.auth');
 					$this->setFlash(__('login.automatically_logged_in'));

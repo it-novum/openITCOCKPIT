@@ -380,12 +380,15 @@ class Servicetemplate extends AppModel{
 		return true;
 	}
 
-	public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE){
+	public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false){
+		$conditions = [
+			'Servicetemplate.container_id' => $container_ids,
+		];
+		if(!$ignoreType){
+			$conditions['Servicetemplate.servicetemplatetype_id'] = $servicetemplate_type;
+		}
 		return $this->find($type, [
-			'conditions' => [
-				'Servicetemplate.container_id' => $container_ids,
-				'Servicetemplate.servicetemplatetype_id' => $servicetemplate_type
-			],
+			'conditions' => $conditions,
 			'order' => [
 				'Servicetemplate.name' => 'ASC'
 			]
