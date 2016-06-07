@@ -92,7 +92,6 @@ class ServicetemplatesController extends AppController{
 			'contain' => [
 				'Container'
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 
 		if($this->isApiRequest()){

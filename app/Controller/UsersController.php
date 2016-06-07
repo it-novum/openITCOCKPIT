@@ -99,7 +99,6 @@ class UsersController extends AppController{
 			'group' => [
 				'User.id'
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 		$query = Hash::merge($this->Paginator->settings, $options);
 
@@ -107,7 +106,7 @@ class UsersController extends AppController{
 			unset($query['limit']);
 			$all_users = $this->User->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$all_users = $this->Paginator->paginate();
 		}
 

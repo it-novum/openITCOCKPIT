@@ -24,7 +24,7 @@
 //	confirmation.
 
 class Systemdowntime extends AppModel{
-	
+
 
 	var $validate = [
 		'downtimetype' => [
@@ -83,7 +83,7 @@ class Systemdowntime extends AppModel{
 			]
 		],
 	];
-	
+
 	public function checkDowntimeSettings(){
 		if(isset($this->data['Systemdowntime']['downtimetype'])){
 			//switch($this->data['Systemdowntime']['downtimetype']){
@@ -92,7 +92,7 @@ class Systemdowntime extends AppModel{
 					if(!is_numeric($this->data['Systemdowntime']['object_id']) || $this->data['Systemdowntime']['object_id'] == '' || $this->data['Systemdowntime']['object_id'] == null){
 						return false;
 					}
-					
+
 					if($this->data['Systemdowntime']['is_recurring'] == 1){
 						return $this->validateRecurring($this->data);
 					}
@@ -100,10 +100,10 @@ class Systemdowntime extends AppModel{
 			//		break;
 			//}
 		}
-		
+
 		return false;
 	}
-	
+
 	public function validateRecurring($request){
 		//Validate days from selectbox
 		if($request['Systemdowntime']['weekdays'] != ''){
@@ -115,7 +115,7 @@ class Systemdowntime extends AppModel{
 				}
 			}
 		}
-		
+
 		if($request['Systemdowntime']['day_of_month'] != ''){
 			$valideDays = [1, 2, 3, 4 , 5 ,6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
 			$_expldoe = explode(',', $request['Systemdowntime']['day_of_month']);
@@ -125,26 +125,26 @@ class Systemdowntime extends AppModel{
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		return true;
 	}
-	
-	public function listSettings($cakeRequest){
+
+	public function listSettings($cakeRequest, $limit = 25){
 		$requestData = $cakeRequest->data;
-		
+
 		if(isset($cakeRequest->params['named']['Listsettings'])){
 			$requestData['Listsettings'] = $cakeRequest->params['named']['Listsettings'];
 		}
 		$requestParams = $cakeRequest->params;
-		
+
 		$return = [
 			'paginator' => [
-				'limit' => 30,
+				'limit' => $limit,
 			],
 			'Listsettings' => [
-				'limit' => 30,
+				'limit' => $limit,
 			],
 			'conditions' => [],
 			'default'=> [
@@ -157,51 +157,51 @@ class Systemdowntime extends AppModel{
 						'alias'	=> 'Host',
 						'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_HOST.' AND Host.id = Systemdowntime.object_id)',
 					],
-			
+
 					[
 						'table' => 'services',
 						'type'	=> 'LEFT',
 						'alias'	=> 'Service',
 						'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_SERVICE.' AND Service.id = Systemdowntime.object_id)',
 					],
-					
+
 					[
 						'table' => 'servicetemplates',
 						'type'	=> 'LEFT OUTER',
 						'alias'	=> 'Servicetemplate',
 						'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
 					],
-					
+
 					[
 						'table' => 'hostgroups',
 						'type'	=> 'LEFT',
 						'alias'	=> 'Hostgroup',
 						'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_HOSTGROUP.' AND Hostgroup.id = Systemdowntime.object_id)',
 					],
-					
+
 					[
 						'table' => 'containers',
 						'type'	=> 'LEFT OUTER',
 						'alias'	=> 'Container',
 						'conditions' => 'Container.id = Hostgroup.container_id',
 					],
-				
+
 				],
 				'findType' => 'all'
 			]
 		];
 
-		
+
 		if(isset($requestParams['named']['sort']) && isset($requestParams['named']['direction'])){
 			$return['paginator']['order'] = [$requestParams['named']['sort'] => $requestParams['named']['direction']];
 		}
-		
+
 
 		if(isset($requestData['Listsettings']['limit']) && is_numeric($requestData['Listsettings']['limit'])){
 			$return['paginator']['limit'] = $requestData['Listsettings']['limit'];
 			$return['Listsettings']['limit'] = $return['paginator']['limit'];
 		}
-		
+
 
 		return $return;
 	}

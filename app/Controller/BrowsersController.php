@@ -44,6 +44,10 @@ class BrowsersController extends AppController{
 		'Browser',
 	];
 
+	public $components = [
+		'paginator'
+	];
+
 	function index(){
 		$top_node = $this->Container->findById(ROOT_CONTAINER);
 		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
@@ -51,7 +55,10 @@ class BrowsersController extends AppController{
 
 		$tenants = $this->__getTenants();
 		$query = $this->Browser->hostsQuery(ROOT_CONTAINER);
-		$hosts = $this->Host->find('all', $query);
+
+		$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+		$hosts = $this->Paginator->paginate('Host');
+//		$hosts = $this->Host->find('all', $query);
 		$query = $this->Browser->serviceQuery(ROOT_CONTAINER);
 		$services = $this->Service->find('all', $query);
 		$state_array_host = $this->Browser->countHoststate($hosts);
@@ -85,7 +92,7 @@ class BrowsersController extends AppController{
 		}else{
 			$containerNest = Hash::nest($this->Container->children($id));
 			$browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_DEVICEGROUP, CT_NODE]);
-			
+
 		}
 		if($this->hasRootPrivileges === false){
 			foreach($browser as $key => $containerRecord){
@@ -98,7 +105,9 @@ class BrowsersController extends AppController{
 		$hosts = $services = [];
 		if(in_array($id, $this->MY_RIGHTS)){
 			$query = $this->Browser->hostsQuery($id);
-			$hosts = $this->Host->find('all', $query);
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+			$hosts = $this->Paginator->paginate('Host');
+			//$hosts = $this->Host->find('all', $query);
 			$query = $this->Browser->serviceQuery($id);
 			$services = $this->Service->find('all', $query);
 		}

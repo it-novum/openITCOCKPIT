@@ -46,7 +46,6 @@ class LocationsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -55,7 +54,7 @@ class LocationsController extends AppController{
 			unset($query['limit']);
 			$all_locations = $this->Location->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_locations = $this->Paginator->paginate();
 		}
 		$this->set(compact(['all_locations']));
