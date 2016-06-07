@@ -31,3 +31,4 @@ app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule
 app/Plugin/MkModule
 app/Plugin/AxiosAssystModule
+app/Plugin/SAPModule
