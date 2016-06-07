@@ -93,7 +93,6 @@ class ServicedependenciesController extends AppController{
 					'fields' => 'name'
 				]
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 		$query = Hash::merge($this->Paginator->settings, $options);
 

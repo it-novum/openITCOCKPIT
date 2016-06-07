@@ -98,7 +98,6 @@ class HostescalationsController extends AppController{
 					],
 				]
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -107,7 +106,7 @@ class HostescalationsController extends AppController{
 			unset($query['limit']);
 			$all_hostescalations = $this->Hostescalation->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hostescalations = $this->Paginator->paginate();
 		}
 

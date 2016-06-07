@@ -52,24 +52,26 @@ class SystemdowntimesController extends AppController{
 		'Uuid',
 	];
 	public $layout = 'Admin.default';
-	
+
 	public function index(){
-		$requestSettings = $this->Systemdowntime->listSettings($this->request);
-		
+		$paginatorLimit = $this->Paginator->settings['limit'];
+		$requestSettings = $this->Systemdowntime->listSettings($this->request, $paginatorLimit);
+
 		if(isset($this->paginate['conditions'])){
 			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		}else{
 			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
 		}
-		
+
 		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 		$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
 		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
-		
+
 		$all_systemdowntimes = $this->Paginator->paginate();
-		
+
 		$this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 		$this->set('all_systemdowntimes', $all_systemdowntimes);
+		$this->set('paginatorLimit', $paginatorLimit);
 
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			$this->set('isFilter', true);
@@ -77,12 +79,12 @@ class SystemdowntimesController extends AppController{
 			$this->set('isFilter', false);
 		}
 	}
-	
+
 	public function addHostdowntime(){
 		$selected = $this->getNamedParameter('host_id', []);
-		
+
 		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-		
+
 		$customFildsToRefill = [
 			'Systemdowntime' => [
 				'from_date',
@@ -96,33 +98,33 @@ class SystemdowntimesController extends AppController{
 
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 		$hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-		
+
 		$this->set(compact(['hosts', 'selected']));
 		$this->set('back_url', $this->referer());
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
-			
+
 			if(isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])){
 				$this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
 			}
-			
+
 			$this->request->data = $this->_rewritePostData();
-			
+
 			//Try validate the data:
 			foreach($this->request->data as $request){
 				$this->Systemdowntime->set($request);
 				if($this->Systemdowntime->validates()){
 					/* The data is valide and we can save it.
 					 * We need to use the foreach, becasue validates() cant handel saveAll() data :(
-					 * 
+					 *
 					 * How ever, at this point we passed the validation, so the data is valid.
 					 * Now we need to check, if this is just a downtime, or an recurring downtime, because
 					 * these guys we want to save in our systemdowntimestable
 					 * Normal downtimes, will be sent to sudo_servers unix socket.
 					 */
 					$this->setFlash(__('Downtime successfully saved'));
-					
-					
+
+
 					if($request['Systemdowntime']['is_recurring'] == 1){
 						$this->Systemdowntime->save($request);
 					}else{
@@ -140,9 +142,9 @@ class SystemdowntimesController extends AppController{
 								'author' => $this->Auth->user('full_name')
 							];
 							$this->GearmanClient->sendBackground('createHostDowntime',$payload);
-						}	
+						}
 					}
-					
+
 				}else{
 					$this->setFlash(__('Downtime could not be saved'), false);
 					$this->CustomValidationErrors->loadModel($this->Systemdowntime);
@@ -154,13 +156,13 @@ class SystemdowntimesController extends AppController{
 			$this->redirect(array('controller' => 'downtimes', 'action' => 'index'));
 		}
 	}
-	
+
 	public function addHostgroupdowntime(){
-		
+
 		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-		
+
 		$selected = $this->getNamedParameter('hostgroup_id', []);
-		
+
 		$customFildsToRefill = [
 			'Systemdowntime' => [
 				'from_date',
@@ -174,18 +176,18 @@ class SystemdowntimesController extends AppController{
 
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 		$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list');
-		
+
 		$this->set(compact(['hostgroups', 'selected']));
 		$this->set('back_url', $this->referer());
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
-			
+
 			if(isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])){
 				$this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
 			}
-			
+
 			$this->request->data = $this->_rewritePostData();
-			
+
 			//Try validate the data:
 			foreach($this->request->data as $request){
 				$this->Systemdowntime->set($request);
@@ -193,7 +195,7 @@ class SystemdowntimesController extends AppController{
 				if($this->Systemdowntime->validates()){
 					/* The data is valide and we can save it.
 					 * We need to use the foreach, becasue validates() cant handel saveAll() data :(
-					 * 
+					 *
 					 * How ever, at this point we passed the validation, so the data is valid.
 					 * Now we need to check, if this is just a downtime, or an recurring downtime, because
 					 * these guys we want to save in our systemdowntimestable
@@ -210,7 +212,7 @@ class SystemdowntimesController extends AppController{
 							$hostgroup = $this->Hostgroup->find('first', [
 								'recursive' => -1,
 								'conditions' => [
-									'Hostgroup.container_id' => $request['Systemdowntime']['object_id'] 
+									'Hostgroup.container_id' => $request['Systemdowntime']['object_id']
 								],
 								'fields' => [
 									'Hostgroup.uuid'
@@ -228,7 +230,7 @@ class SystemdowntimesController extends AppController{
 							$this->GearmanClient->sendBackground('createHostgroupDowntime',$payload);
 						}
 					}
-					
+
 				}else{
 					$this->setFlash(__('Downtime could not be saved'), false);
 					$this->CustomValidationErrors->loadModel($this->Systemdowntime);
@@ -240,11 +242,11 @@ class SystemdowntimesController extends AppController{
 			$this->redirect(array('controller' => 'downtimes', 'action' => 'index'));
 		}
 	}
-	
+
 	public function addServicedowntime(){
 		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 		$selected = $this->getNamedParameter('service_id', []); // FIXME Isn't used (yet?). Remove?
-		
+
 		$customFildsToRefill = [
 			'Systemdowntime' => [
 				'from_date',
@@ -255,36 +257,36 @@ class SystemdowntimesController extends AppController{
 			],
 		];
 		$this->CustomValidationErrors->checkForRefill($customFildsToRefill);
-		
+
 
 		$services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS);
 		$services = Hash::combine($services, '{n}.Service.id', ['%s/%s' , '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name');
-		
+
 		$this->set(compact(['services', 'selected']));
 		$this->set('back_url', $this->referer());
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
-			
+
 			if(isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])){
 				$this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
 			}
-			
+
 			$this->request->data = $this->_rewritePostData();
-			
+
 			//Try validate the data:
 			foreach($this->request->data as $request){
 				$this->Systemdowntime->set($request);
 				if($this->Systemdowntime->validates()){
 					/* The data is valide and we can save it.
 					 * We need to use the foreach, becasue validates() cant handel saveAll() data :(
-					 * 
+					 *
 					 * How ever, at this point we passed the validation, so the data is valid.
 					 * Now we need to check, if this is just a downtime, or an recurring downtime, because
 					 * these guys we want to save in our systemdowntimestable
 					 * Normal downtimes, will be sent to sudo_servers unix socket.
 					 */
 					$this->setFlash(__('Downtime successfully saved'));
-					
+
 					if($request['Systemdowntime']['is_recurring'] == 1){
 						$this->Systemdowntime->save($request);
 					}else{
@@ -303,9 +305,9 @@ class SystemdowntimesController extends AppController{
 							];
 							//debug($payload);
 							$this->GearmanClient->sendBackground('createServiceDowntime',$payload);
-						}	
+						}
 					}
-					
+
 				}else{
 					$this->setFlash(__('Downtime could not be saved'), false);
 					$this->CustomValidationErrors->loadModel($this->Systemdowntime);
@@ -317,31 +319,31 @@ class SystemdowntimesController extends AppController{
 			$this->redirect(array('controller' => 'downtimes', 'action' => 'service'));
 		}
 	}
-	
+
 	public function delete($id = NULL, $cascade = true){
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}
-		
+
 		$this->Systemdowntime->id = $id;
 		if (!$this->Systemdowntime->exists()){
 			throw new NotFoundException(__('Invalide downtime'));
 		}
-		
+
 		$systemdowntime = $this->Systemdowntime->findById($id);
-		
+
 		if ($this->Systemdowntime->delete()) {
 			$this->setFlash(__('Recurring downtime deleted'));
 			$this->redirect(['action' => 'index']);
 		}
 		$this->setFlash(__('Could not delete recurring downtime'));
 		$this->redirect(['action' => 'index']);
-		
+
 	}
-	
+
 	private function _rewritePostData(){
 		/*
-		
+
 		why we need this function? The problem is, may be a user want to save the downtime for more that one hast. the array we get from $this->reuqest->data looks like this:
 			array(
 				'Systemdowntime' => array(
@@ -361,9 +363,9 @@ class SystemdowntimesController extends AppController{
 					'to_time' => '06:09'
 				)
 			)
-		
+
 		the big problem is the object_id, rthis thorws us an "Array to string conversion". So we need to rewirte the post array fo some like this:
-		
+
 		array(
 			(int) 0 => array(
 				'Systemdowntime' => array(
@@ -396,9 +398,9 @@ class SystemdowntimesController extends AppController{
 				)
 			)
 		)
-		
+
 		*/
-		
+
 		$return = [];
 		if(is_array ($this->request->data['Systemdowntime']['object_id'])){
 			foreach($this->request->data['Systemdowntime']['object_id'] as $object_id){
@@ -411,6 +413,6 @@ class SystemdowntimesController extends AppController{
 			$this->setFlash(__('Please selete a host'), false);
 		}
 		return $return;
-		
+
 	}
 }

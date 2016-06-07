@@ -51,7 +51,7 @@ class CalendarsController extends AppController{
 	 */
 	public function index(){
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		$this->Paginator->settings = [
+		$query = [
 			'recursive' => -1,
 			'contain' => [
 				'Container'
@@ -68,8 +68,8 @@ class CalendarsController extends AppController{
 			'order' => [
 				'Calendar.name' => 'ASC'
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
+		$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 		$calendars = $this->Paginator->paginate();
 		$this->set(compact(['calendars']));
 		$this->set('_serialize', ['calendars']);

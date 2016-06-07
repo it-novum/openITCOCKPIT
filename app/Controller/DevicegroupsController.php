@@ -72,7 +72,6 @@ class DevicegroupsController extends AppController{
 				'Location.id',
 				'Location.container_id'
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		]);
 		$containerToLocation = Hash::combine($locationIds,'{n}.Location.container_id','{n}.Location.id');
 
@@ -82,7 +81,7 @@ class DevicegroupsController extends AppController{
 			unset($query['limit']);
 			$all_devicegroups = $this->Devicegroup->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_devicegroups = $this->Paginator->paginate();
 		}
 		$this->set(compact(['all_devicegroups', 'container', 'containerToLocation']));

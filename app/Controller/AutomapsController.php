@@ -35,7 +35,6 @@ class AutomapsController extends AppController{
 			'conditions' => [
 				'Automap.container_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($options, $this->Paginator->settings);
@@ -44,7 +43,7 @@ class AutomapsController extends AppController{
 			unset($query['limit']);
 			$all_automaps = $this->Automap->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_automaps = $this->Paginator->paginate();
 		}
 		$this->set(compact(['all_automaps']));

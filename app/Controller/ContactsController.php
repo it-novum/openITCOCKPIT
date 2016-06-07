@@ -98,7 +98,6 @@ class ContactsController extends AppController{
 			],
 			'order' => ['Contact.name' => 'asc'],
 			'group' => ['Contact.id'],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -106,7 +105,7 @@ class ContactsController extends AppController{
 			unset($query['limit']);
 			$all_contacts = $this->Contact->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_contacts = $this->Paginator->paginate();
 		}
 
