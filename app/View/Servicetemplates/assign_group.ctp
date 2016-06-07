@@ -61,6 +61,7 @@
 			</div>
 			<div id="new-to-holder" style="display:none">
 				<?= $this->Form->input('Container.name', ['type' => 'text', 'style' => 'width: 100%;', 'label' => __('Servicetemplategroup')]); ?>
+				<?= $this->Form->input('Servicetemplategroup.description', ['label' => __('Description')]) ?>
 			</div>
 			<div id="assign-to-holder">
 				<?= $this->Form->input('Servicetemplategroup.id', ['options' => $servicetemplateGroupList, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Servicetemplategroup')]); ?>

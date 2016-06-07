@@ -135,7 +135,7 @@ class ServicetemplategroupsController extends AppController{
 			$this->setFlash(__('Servicetemplategroup could not be saved'), false);
 			if(isset($this->request->data['Container']['parent_id'])){
 				$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-				$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
+				$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', null, true);
 			}
 		}
 
@@ -163,13 +163,13 @@ class ServicetemplategroupsController extends AppController{
 			}
 			if(isset($this->request->data['Container']['parent_id'])){
 				$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-				$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
+				$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', null, true);
 				$selectedServicetemplates = $this->request->data['Servicetemplate'];
 			}
 			$this->setFlash(__('Servicetemplategroup could not be saved'), false);
 		}else{
 			$containerIds = $this->Tree->resolveChildrenOfContainerIds($servicetemplategroup['Container']['parent_id']);
-			$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
+			$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list', null, true);
 			$selectedServicetemplates = Hash::extract($servicetemplategroup['Servicetemplate'], '{n}.id');
 		}
 
@@ -521,7 +521,7 @@ class ServicetemplategroupsController extends AppController{
 		}
 
 		$containerId = $this->Tree->resolveChildrenOfContainerIds($containerId);
-		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list');
+		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list', null, true);
 		$servicetemplates = $this->Servicetemplategroup->makeItJavaScriptAble($servicetemplates);
 
 		$this->set(compact(['servicetemplates']));
