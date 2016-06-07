@@ -87,7 +87,7 @@
 								<?php
 								echo $this->Form->create('Container', [
 									'class' => 'form-horizontal clear',
-									'action' => 'index'
+									'url' => 'index'
 								]);
 								echo $this->Form->input('selected_tenant', [
 									'type' => 'hidden',

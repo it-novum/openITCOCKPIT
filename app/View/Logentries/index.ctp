@@ -139,8 +139,9 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-
+								
 									$selected = $paginatorLimit;
+
 									if(isset($ListsettingsUrlParams['Listsettings']['limit'])){
 										$selected = $ListsettingsUrlParams['Listsettings']['limit'];
 									}

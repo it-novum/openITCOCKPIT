@@ -69,6 +69,9 @@ App.Controllers.InstantreportsIndexController = Frontend.AppController.extend({
 			}
 		);
 		self.changeInputFieldsByEvalutaionMethod($('input:radio:checked').val());
+
+		//remove disabled attr from hidden services field
+		$('#InstantreportService_').removeAttr('disabled').trigger('chosen:updated');
 	},
 	changeInputFieldsByEvalutaionMethod: function(selectedValue){
 		$('.'+selectedValue).removeClass('disabled');

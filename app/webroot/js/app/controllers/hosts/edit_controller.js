@@ -65,8 +65,23 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 			}
 		});
 
+		var $inheritContacts = $('#inheritContacts');
+
+		if($inheritContacts.prop('checked') == true) {
+			$('#hostContactSelects').block({
+				message: null,
+				overlayCSS: {
+					opacity: 0.0,
+					cursor: 'not-allowed'
+				}
+			});
+			//disable contacts and contactgroups here to prevent errors on save
+			$('#HostContact, #HostContactgroup').attr('disabled', 'disabled');
+			$('#HostContact, #HostContactgroup').trigger("chosen:updated");
+		}
+
 		/* Contact inherit stuff */
-		$('#inheritContacts').click(function(){
+		$inheritContacts.click(function(){
 			self.inherit();
 		});
 

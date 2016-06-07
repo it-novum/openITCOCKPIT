@@ -117,9 +117,9 @@ class Serviceescalation extends AppModel {
 
 		],
 		'timeperiod_id' => [
-			'notEmpty' => [
+			'notBlank' => [
 				'allowEmpty' => false,
-				'rule'    => 'notEmpty',
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			]

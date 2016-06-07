@@ -45,8 +45,8 @@ class Widget extends AppModel{
 	];
 	public $validate = [
 		'dashboard_tab_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 			], 'numeric' => [
 				'rule' => 'numeric',

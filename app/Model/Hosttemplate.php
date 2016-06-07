@@ -76,15 +76,15 @@ class Hosttemplate extends AppModel{
 
 	var $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			]
 		],
 		'priority' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -98,20 +98,20 @@ class Hosttemplate extends AppModel{
 			]
 		],
 		'notify_period_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'container_id' => [
-			'rule' => 'notEmpty',
+			'rule' => 'notBlank',
 			'message' => 'This field cannot be left blank.',
 			'required' => true
 		],
 		'max_check_attempts' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -126,7 +126,7 @@ class Hosttemplate extends AppModel{
 		],
 		'notification_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -141,7 +141,7 @@ class Hosttemplate extends AppModel{
 		],
 		'check_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -156,7 +156,7 @@ class Hosttemplate extends AppModel{
 		],
 		'retry_interval' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -171,7 +171,7 @@ class Hosttemplate extends AppModel{
 		],
 		'check_period_id' => [
 			'allowEmpty' => [
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],

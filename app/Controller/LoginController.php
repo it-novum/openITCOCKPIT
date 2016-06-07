@@ -77,19 +77,32 @@ class LoginController extends AppController {
 
 		// Automatic login if Client SSL Certificate is sent
 		if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && !empty($_SERVER['SSL_DN'])){
-			$emailAddress = '';
+			$CN = $OU = '';
 			$parameters = explode('/', $_SERVER['SSL_DN']);
 			foreach ($parameters as $eqVal) {
 				$SSLVar = explode('=', $eqVal);
 				if(empty($SSLVar)) continue;
-				if(isset($SSLVar[0]) && $SSLVar[0] === 'emailAddress' && isset($SSLVar[1])){
-					$emailAddress = trim($SSLVar[1]);
-					break;
+				if(isset($SSLVar[0]) && $SSLVar[0] === 'CN' && isset($SSLVar[1])){
+					$CN = trim($SSLVar[1]);
+				}elseif(isset($SSLVar[0]) && $SSLVar[0] === 'OU' && isset($SSLVar[1]) && $SSLVar[1] !== 'People'){
+					$OU = strtolower(trim($SSLVar[1]));
+				}
+			}
+			$names = explode(' ', $CN);
+			$firstName = isset($names[0]) ? $names[0] : '';
+			$lastName = isset($names[1]) ? $names[1] : '';
+			$conditions = [];
+			if($firstName !== '' && $lastName !== ''){
+				$conditions = [
+					['firstname' => $firstName, 'lastname' => $lastName]
+				];
+				if($OU !== ''){
+					$conditions[0]['email LIKE'] = '%@'.$OU.'.%';
 				}
 			}
 
-			if($emailAddress !== ''){
-				$user = $this->User->findByEmail($emailAddress);
+			if(!empty($conditions)){
+				$user = $this->User->find('first', ['conditions' => $conditions]);
 				if(!empty($user) && $this->Auth->login($user)){
 					$this->Session->delete('Message.auth');
 					$this->setFlash(__('login.automatically_logged_in'));

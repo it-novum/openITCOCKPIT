@@ -70,8 +70,9 @@ endforeach; ?>
 					if(isset($hostData[0], $hostData[1], $hostData[2])):?>
 						<div class="jarviswidget jarviswidget-sortable" role="widget">
 							<header role="heading">
-								<h2 class="txt-color-blueDark"><i class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($hostData['Host']['name']);?>
+								<h2 class="txt-color-blueDark" style="width:97%"><i class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($hostData['Host']['name']);?>
 								</h2>
+
 							</header>
 							<div class="well padding-bottom-10">
 								<div class="row margin-top-10 font-md padding-bottom-20">

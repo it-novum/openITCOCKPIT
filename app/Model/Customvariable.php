@@ -29,8 +29,8 @@ class Customvariable extends AppModel{
 	
 	var $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'Macro name cannot be left blank.',
 				'required' => true,
 				'allowEmpty' => false
@@ -41,8 +41,8 @@ class Customvariable extends AppModel{
 			],
 		],
 		'value' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'Macro value cannot be left blank.',
 				'required' => true,
 				'allowEmpty' => false
