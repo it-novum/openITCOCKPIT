@@ -102,7 +102,7 @@
 									<i class="fa fa-user fa-stack-2x"></i>
 									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
 								</span>
-								<?php echo __('The current status was already acknowledged by');?> <strong><?php echo h($acknowledged[0]['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i> <?php echo $this->Time->format($acknowledged[0]['Acknowledged']['entry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>) <?php echo __('with the comment');?> "<?php echo h($acknowledged[0]['Acknowledged']['comment_data']);?>".
+								<?php echo __('The current status was already acknowledged by');?> <strong><?php echo h($acknowledged[0]['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i> <?php echo $this->Time->format($acknowledged[0]['Acknowledged']['entry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>) <?php echo __('with the comment');?> "<?php echo h($acknowledged[0]['Acknowledged']['comment_data']).'"'.$acknowledged[0]['Acknowledged']['otrs_link'];?>.
 							</p>
 						<?php endif;?>
 
