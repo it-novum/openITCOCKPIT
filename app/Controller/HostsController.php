@@ -1824,7 +1824,7 @@ class HostsController extends AppController{
 				]);
 				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
 				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
-				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : ' <a href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('Go to OTRS Ticket') . '</a>';
+				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
 				unset($explodedAck[sizeof($explodedAck) - 1]);
 				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
 			}
