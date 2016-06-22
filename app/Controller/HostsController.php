@@ -212,7 +212,7 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
 		$this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
-		
+
 		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
@@ -1773,7 +1773,24 @@ class HostsController extends AppController{
 				$allowEdit = true;
 			}
 
-			$services = $this->Service->findAllByHostIdAndDisabled($id, 0);
+			$services = $this->Service->find('all',[
+				'recursive' => -1,
+				'conditions' => [
+					'Service.host_id' => $id,
+				],
+				'fields' => [
+					'Service.id',
+					'Service.uuid',
+					'Service.name',
+					'Servicetemplate.name',
+					'Host.uuid',
+				],
+				'contain' => [
+					'Host',
+					'Servicetemplate'
+				],
+				'order' => 'Service.name'
+			]);
 
 			$commandarguments = [];
 			if(!empty($_host['Hostcommandargumentvalue'])){
