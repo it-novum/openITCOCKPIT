@@ -37,6 +37,7 @@
 </div>
 
 <div id="error_msg"></div>
+
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
 	<a href="#" data-dismiss="alert" class="close">×</a>
 	<h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>

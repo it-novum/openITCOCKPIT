@@ -31,8 +31,8 @@ class Downtimereport extends AppModel{
 
 	public $validate = [
 		'start_date' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'required'	=> true,
 				'message' => 'This field cannot be left blank'
 			],
@@ -48,8 +48,8 @@ class Downtimereport extends AppModel{
 			]
 		],
 		'end_date' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'required'	=> true,
 				'message' => 'This field cannot be left blank'
 			],
@@ -65,7 +65,7 @@ class Downtimereport extends AppModel{
 			]
 		],
 		'timeperiod_id' => [
-			'notEmpty' => [
+			'notBlank' => [
 				'rule'		=> ['notZero', 'timeperiod_id'],
 				'message'	=> 'This field cannot be left blank.',
 				'required'	=> true

@@ -81,44 +81,44 @@ class NagiosExportTask extends AppShell{
 		$this->_systemsettings = $this->Systemsetting->findAsArray();
 		//Loading external tasks
 		$this->__loadExternTasks();
-		
+
 		//Loading distributed Monitoring support, if plugin is loaded
 		$this->dm = false;
 		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
 			return strpos($value, 'Module') !== false;
 		});
-		
+
 		$this->FRESHNESS_THRESHOLD_ADDITION = (int)$this->_systemsettings['MONITORING']['MONITORING.FRESHNESS_THRESHOLD_ADDITION'];
-		
+
 		if(in_array('DistributeModule', $modulePlugins)){
 			$this->dm = true;
 			$this->dmConfig = [];
-			
-			
+
+
 			//Loading external Model
 			$this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
 			$this->Satellites = $this->Satellite->find('all');
-			
+
 			//Create default config folder for sat systems
 			if(!is_dir($this->conf['satellite_path'])){
 				mkdir($this->conf['satellite_path']);
 			}
-			
+
 			//Create rollout folder
 			if(!is_dir($this->conf['rollout'])){
 				mkdir($this->conf['rollout']);
 			}
-			
+
 			foreach($this->Satellites as $satellite){
 				if(!is_dir($this->conf['satellite_path'].$satellite['Satellite']['id'])){
 					mkdir($this->conf['satellite_path'].$satellite['Satellite']['id']);
 				}
-				
+
 				if(!is_dir($this->conf['satellite_path'].$satellite['Satellite']['id'].DS.$this->conf['config'])){
 					mkdir($this->conf['satellite_path'].$satellite['Satellite']['id'].DS.$this->conf['config']);
 				}
 			}
-			
+
 		}
 	}
 
@@ -152,7 +152,7 @@ class NagiosExportTask extends AppShell{
 
 		foreach($commands as $command){
 			if(!empty($command['Command']['command_line'])){
-				
+
 				if($this->conf['minified'] == false){
 					$file = new File($this->conf['path'].$this->conf['commands'].$command['Command']['uuid'].$this->conf['suffix']);
 					$content = $this->fileHeader();
@@ -160,20 +160,20 @@ class NagiosExportTask extends AppShell{
 						$file->create();
 					}
 				}
-				
+
 
 				$content.= $this->addContent('define command{', 0);
 				$content.= $this->addContent('command_name', 1, $command['Command']['uuid']);
 				$content.= $this->addContent('command_line', 1, $command['Command']['command_line']);
 				$content.= $this->addContent('}', 0);
-				
+
 				if($this->conf['minified'] == false){
 					$file->write($content);
 					$file->close();
 				}
 			}
 		}
-		
+
 		if($this->conf['minified'] == true){
 			$file->write($content);
 			$file->close();
@@ -239,7 +239,7 @@ class NagiosExportTask extends AppShell{
 				$file->close();
 			}
 		}
-		
+
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
@@ -275,7 +275,7 @@ class NagiosExportTask extends AppShell{
 			}
 			$content = $this->fileHeader();
 		}
-		
+
 
 		foreach($contactgroups as $contactgroup){
 			if(!empty($contactgroup['Contact'])){
@@ -367,11 +367,11 @@ class NagiosExportTask extends AppShell{
 			}else{
 				$content.= $this->addContent('check_command', 1, $hosttemplate['CheckCommand']['uuid']);
 			}
-			
+
 			if(isset($commandarguments)){
 				unset($commandarguments);
 			}
-			
+
 			$content.= $this->addContent('initial_state', 1, $this->_systemsettings['MONITORING']['MONITORING.HOST.INITSTATE']);
 			$content.= $this->addContent('check_period', 1, $hosttemplate['CheckPeriod']['uuid']);
 			$content.= $this->addContent('check_interval', 1, $hosttemplate['Hosttemplate']['check_interval']);
@@ -391,12 +391,12 @@ class NagiosExportTask extends AppShell{
 			if(!empty($hosttemplate['Contact'])){
 				$content.= $this->addContent('contacts', 1, implode(',', Hash::extract($hosttemplate['Contact'], '{n}.uuid')));
 			}
-			
+
 
 			if(!empty($hosttemplate['Contactgroup'])){
 				$content.= $this->addContent('contact_groups', 1, implode(',', Hash::extract($hosttemplate['Contactgroup'], '{n}.uuid')));
 			}
-			
+
 			$content.= $this->addContent('notification_interval', 1, $hosttemplate['Hosttemplate']['notification_interval']);
 			$content.= $this->addContent('notification_period', 1, $hosttemplate['NotifyPeriod']['uuid']);
 			$content.= $this->addContent('notification_options', 1, $this->hostNotificationString($hosttemplate['Hosttemplate']));
@@ -432,7 +432,7 @@ class NagiosExportTask extends AppShell{
 			}
 
 		}
-		
+
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
@@ -578,7 +578,7 @@ class NagiosExportTask extends AppShell{
 
 			if($host['Host']['satellite_id'] > 0){
 				$content.= $this->addContent('active_checks_enabled', 1, 0);
-				
+
 			}else{
 				if($host['Host']['active_checks_enabled'] !== null && $host['Host']['active_checks_enabled'] !== ''){
 					$content.= $this->addContent('active_checks_enabled', 1, $host['Host']['active_checks_enabled']);
@@ -595,7 +595,7 @@ class NagiosExportTask extends AppShell{
 
 			if(isset($host['Host']['freshness_checks_enabled']) && isset($host['Host']['freshness_threshold'])){
 				if((int)$host['Host']['freshness_checks_enabled'] > 0 || $host['Host']['satellite_id'] > 0){
-				
+
 					if($host['Host']['satellite_id'] > 0){
 							//Services gets checked by a SAT-System
 							$content.= $this->addContent('check_freshness', 1, 1);
@@ -624,7 +624,7 @@ class NagiosExportTask extends AppShell{
 				}
 			}
 
-			
+
 			if($host['Host']['passive_checks_enabled'] !== null && $host['Host']['passive_checks_enabled'] !== '')
 				$content.= $this->addContent('passive_checks_enabled', 1, $host['Host']['passive_checks_enabled']);
 
@@ -700,12 +700,12 @@ class NagiosExportTask extends AppShell{
 				$file->write($content);
 				$file->close();
 			}
-			
-			
+
+
 			if($this->dm === true && $host['Host']['satellite_id'] > 0){
 				//Generate config file for sat nagios
 				$this->exportSatHost($host, $host['Host']['satellite_id'], $commandarguments);
-			
+
 				/*
 				 * May be not all hosts in hostgroup 'foo' are available on SAT system 'bar', so we create an array
 				 * with all hosts from system 'bar' in hostgroup 'foo' for each SAT system
@@ -716,7 +716,7 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 			}
-			
+
 			if(isset($commandarguments)){
 				unset($commandarguments);
 			}
@@ -726,19 +726,19 @@ class NagiosExportTask extends AppShell{
 			$file->write($content);
 			$file->close();
 		}
-		
+
 		if($this->dm === true){
 			$this->exportSatHostgroups();
 		}
-		
+
 		$this->deleteHostPerfdata();
 	}
-	
+
 	public function exportSatHost($host, $satelliteId, $commandarguments){
 		if(!is_dir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['hosts'])){
 			mkdir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['hosts']);
 		}
-		
+
 		if(!$this->conf['minified']){
 			$file = new File($this->conf['satellite_path'].$satelliteId.DS.$this->conf['hosts'].$host['Host']['uuid'].$this->conf['suffix']);
 			$content = $this->fileHeader();
@@ -762,7 +762,7 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('alias', 1, $host['Host']['description']);
 
 		if(!empty($host['Parenthost'])){
-			
+
 			$parenthosts = [];
 			//Only wirte the parent hosts to monitoring config, that exists on this satellite
 			foreach($host['Parenthost'] as $parenthost){
@@ -773,7 +773,7 @@ class NagiosExportTask extends AppShell{
 					}
 				}
 			}
-			
+
 			if(!empty($parenthosts)){
 				$content.= $this->addContent('parents', 1, implode(',', $parenthosts));
 			}
@@ -807,7 +807,7 @@ class NagiosExportTask extends AppShell{
 			if($host['CheckCommand']['uuid'] !== null && $host['CheckCommand']['uuid'] !== '')
 				$content.= $this->addContent('check_command', 1, $host['CheckCommand']['uuid']);
 		}
-		
+
 		if($host['CheckPeriod']['uuid'] !== null && $host['CheckPeriod']['uuid'] !== '')
 			$content.= $this->addContent('check_period', 1, $host['CheckPeriod']['uuid']);
 
@@ -891,7 +891,7 @@ class NagiosExportTask extends AppShell{
 			}
 		}
 		$content.= $this->addContent('}', 0);
-		
+
 		if(!$this->conf['minified']){
 			$file->write($content);
 		}else{
@@ -968,11 +968,11 @@ class NagiosExportTask extends AppShell{
 			}else{
 				$content.= $this->addContent('check_command', 1, $servicetemplates['CheckCommand']['uuid']);
 			}
-			
+
 			if(isset($commandarguments)){
 				unset($commandarguments);
 			}
-			
+
 			$content.= $this->addContent('initial_state', 1, $this->_systemsettings['MONITORING']['MONITORING.SERVICE.INITSTATE']);
 			$content.= $this->addContent('check_period', 1, $servicetemplates['CheckPeriod']['uuid']);
 			$content.= $this->addContent('check_interval', 1, $servicetemplates['Servicetemplate']['check_interval']);
@@ -980,10 +980,10 @@ class NagiosExportTask extends AppShell{
 			$content.= $this->addContent('max_check_attempts', 1, $servicetemplates['Servicetemplate']['max_check_attempts']);
 			$content.= $this->addContent('active_checks_enabled', 1, $servicetemplates['Servicetemplate']['active_checks_enabled']);
 			$content.= $this->addContent('passive_checks_enabled', 1, 1);
-			
+
 			if($servicetemplates['Servicetemplate']['freshness_checks_enabled'] > 0){
 				$content.= $this->addContent('check_freshness', 1, 1);
-				
+
 				if((int)$servicetemplates['Servicetemplate']['freshness_threshold'] > 0){
 					$content.= $this->addContent('freshness_threshold', 1, (int)$servicetemplates['Servicetemplate']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
 				}
@@ -1036,13 +1036,13 @@ class NagiosExportTask extends AppShell{
 					//Select command arguments + command, because we have arguments!
 					$eventarguments = Hash::sort($servicetemplates['Servicetemplateeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 				}
-				
+
 				if(isset($eventarguments) && !empty($eventarguments)){
 					$content.= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 				}else{
 					$content.= $this->addContent('event_handler', 1, $servicetemplates['EventhandlerCommand']['uuid']);
 				}
-				
+
 				if(isset($eventarguments)){
 					unset($eventarguments);
 				}
@@ -1062,12 +1062,12 @@ class NagiosExportTask extends AppShell{
 				$file->close();
 			}
 		}
-		
+
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
 		}
-		
+
 	}
 
 
@@ -1088,7 +1088,7 @@ class NagiosExportTask extends AppShell{
 				]
 			]);
 		}*/
-		
+
 		//On large systems, run multiple queries is faster than one big $this->Service->find('all');
 
 		if(!is_dir($this->conf['path'].$this->conf['services'])){
@@ -1115,7 +1115,7 @@ class NagiosExportTask extends AppShell{
 				'Host.satellite_id'
 			],
 		]);
-		
+
 		foreach($hosts as $host){
 			$services = $this->Service->find('all', [
 				'recursive' => -1,
@@ -1208,7 +1208,7 @@ class NagiosExportTask extends AppShell{
 
 				$content.= $this->nl();
 				$content.= $this->addContent(';Check settings:', 1);
-			
+
 				$eventarguments = [];
 				if($host['Host']['satellite_id'] == 0){
 					if(isset($commandarguments) && !empty($commandarguments)){
@@ -1237,8 +1237,8 @@ class NagiosExportTask extends AppShell{
 						if($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== '')
 							$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
 					}
-				
-				
+
+
 					// Only export event handlers if the services is on the master system. for SAT event handlers see $this->exportSatService()
 					if(isset($service['Serviceeventcommandargumentvalue']) && !empty($service['Serviceeventcommandargumentvalue'])){
 						$content.= $this->addContent(';Event handler:', 1);
@@ -1246,7 +1246,7 @@ class NagiosExportTask extends AppShell{
 							//Select command arguments + command, because we have arguments!
 							$eventarguments = Hash::sort($service['Serviceeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
 						}
-				
+
 						//Lookup command name of event handler (uuid)
 						$serviceHasOwnEventhandler = true;
 						if(!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null){
@@ -1258,11 +1258,11 @@ class NagiosExportTask extends AppShell{
 								$_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
 								$service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
 								unset($_command);
-							
+
 								$serviceHasOwnEventhandler = false;
 							}
 						}
-				
+
 						if(isset($eventarguments) && !empty($eventarguments)){
 							$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 						}else{
@@ -1271,17 +1271,17 @@ class NagiosExportTask extends AppShell{
 								$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
 							}
 						}
-					
+
 						if(isset($serviceHasOwnEventhandler)){
 							unset($serviceHasOwnEventhandler);
 						}
 					}
-				
-				
+
+
 				}else{
 					$content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
 				}
-			
+
 				/*
 				if($service['Host']['satellite_id'] == 0){
 					if(isset($commandarguments) && !empty($commandarguments)){
@@ -1321,18 +1321,18 @@ class NagiosExportTask extends AppShell{
 					if($service['Service']['active_checks_enabled'] !== null && $service['Service']['active_checks_enabled'] !== ''){
 							$content.= $this->addContent('active_checks_enabled', 1, (int)$service['Service']['active_checks_enabled']);
 					}
-				
+
 					if($service['Service']['passive_checks_enabled'] !== null && $service['Service']['passive_checks_enabled'] !== ''){
 						$content.= $this->addContent('passive_checks_enabled', 1, (int)$service['Service']['passive_checks_enabled']);
 					}
 				}
 
 				if((int)$service['Service']['freshness_checks_enabled'] > 0 || $host['Host']['satellite_id'] > 0){
-				
+
 					if($host['Host']['satellite_id'] > 0){
 							//Services gets checked by a SAT-System
 							$content.= $this->addContent('check_freshness', 1, 1);
-						
+
 							$checkInterrval = null;
 							if($service['Service']['check_interval'] !== null && $service['Service']['check_interval'] !== ''){
 								$checkInterrval = $service['Service']['check_interval'];
@@ -1418,12 +1418,12 @@ class NagiosExportTask extends AppShell{
 					$file->write($content);
 					$file->close();
 				}
-			
-			
+
+
 				if($this->dm === true && $host['Host']['satellite_id'] > 0){
-				
+
 					$this->exportSatService($service, $host, $commandarguments, $eventarguments);
-				
+
 					/*
 					 * May be not all services in servicegroup 'foo' are available on SAT system 'bar', so we create an array
 					 * with all services from system 'bar' in servicegroup 'foo' for each SAT system
@@ -1434,35 +1434,35 @@ class NagiosExportTask extends AppShell{
 						}
 					}
 				}
-				
+
 				if(isset($commandarguments)){
 					unset($commandarguments);
 				}
-				
+
 				if(isset($eventarguments)){
 					unset($eventarguments);
 				}
 			}
 		}
-		
+
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
 		}
-		
+
 		if($this->dm === true){
 			$this->exportSatServicegroups();
 		}
-		
+
 		$this->deleteServicePerfdata();
 	}
-	
+
 	public function exportSatService($service, $host, $commandarguments, $eventarguments){
 		$satelliteId = $host['Host']['satellite_id'];
 		if(!is_dir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['services'])){
 			mkdir($this->conf['satellite_path'].$satelliteId.DS.$this->conf['services']);
 		}
-		
+
 		if(!$this->conf['minified']){
 			$file = new File($this->conf['satellite_path'].$satelliteId.DS.$this->conf['services'].$service['Service']['uuid'].$this->conf['suffix']);
 			//debug($service);continue;
@@ -1492,7 +1492,7 @@ class NagiosExportTask extends AppShell{
 
 		$content.= $this->nl();
 		$content.= $this->addContent(';Check settings:', 1);
-		
+
 		if(isset($commandarguments) && !empty($commandarguments)){
 			if($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== ''){
 				//The host has its own check_command and own command args
@@ -1519,7 +1519,7 @@ class NagiosExportTask extends AppShell{
 			if($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== '')
 				$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
 		}
-		
+
 		// Export event handler to SAT-System
 		if(isset($service['Serviceeventcommandargumentvalue']) && !empty($service['Serviceeventcommandargumentvalue'])){
 			$content.= $this->addContent(';Event handler:', 1);
@@ -1535,11 +1535,11 @@ class NagiosExportTask extends AppShell{
 					$_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
 					$service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
 					unset($_command);
-					
+
 					$serviceHasOwnEventhandler = false;
 				}
 			}
-		
+
 			if(isset($eventarguments) && !empty($eventarguments)){
 				$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'].'!'.implode('!', Hash::extract($eventarguments, '{n}.value')).'; '.implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
 			}else{
@@ -1548,12 +1548,12 @@ class NagiosExportTask extends AppShell{
 					$content.= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
 				}
 			}
-			
+
 			if(isset($serviceHasOwnEventhandler)){
 				unset($serviceHasOwnEventhandler);
 			}
 		}
-		
+
 		/*
 		if(isset($commandarguments) && !empty($commandarguments)){
 			$servicecommandUuid = $service['CheckCommand']['uuid'];
@@ -1591,7 +1591,7 @@ class NagiosExportTask extends AppShell{
 
 		if($service['Service']['freshness_checks_enabled'] > 0){
 			$content.= $this->addContent('check_freshness', 1, 1);
-			
+
 			if($service['Service']['freshness_threshold'] !== null && $service['Service']['freshness_threshold'] !== ''){
 				$content.= $this->addContent('freshness_threshold', 1, (int)$service['Service']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
 			}
@@ -1719,7 +1719,7 @@ class NagiosExportTask extends AppShell{
 					$hosts[] = $_host['uuid'];
 				}
 			}
-			
+
 			if(!empty($hosts)){
 				if(!$this->conf['minified']){
 					$file = new File($this->conf['path'].$this->conf['hostgroups'].$hostgroup['Hostgroup']['uuid'].$this->conf['suffix']);
@@ -2103,18 +2103,18 @@ class NagiosExportTask extends AppShell{
 				//Naemon 1.0.0 fix
 				$content.= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
 			}
-			
+
 			foreach($timeperiod['Timerange'] as $timerange){
 				$content.= $this->addContent($weekdays[$timerange['day']], 1, $timerange['start'].'-'.$timerange['end']);
 			}
 			$content.= $this->addContent('}', 0);
-			
+
 			if(!$this->conf['minified']){
 				$file->write($content);
 				$file->close();
 			}
 		}
-		
+
 		if($this->conf['minified']){
 			$file->write($content);
 			$file->close();
@@ -2226,7 +2226,7 @@ class NagiosExportTask extends AppShell{
 			if(!$file->exists()){
 				$file->create();
 			}
-			
+
 			$masterServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].service_id');
 			$masterServices = $this->Service->find('all', [
 				'recursive' => -1,
@@ -2243,7 +2243,7 @@ class NagiosExportTask extends AppShell{
 					'Service.id' => $masterServicesIds,
 				]
 			]);
-				
+
 			$dependentServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].service_id');
 			$dependentServices = $this->Service->find('all', [
 				'recursive' => -1,
@@ -2260,7 +2260,7 @@ class NagiosExportTask extends AppShell{
 					'Service.id' => $dependentServicesIds,
 				]
 			]);
-				
+
 			$masterServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id');
 			$masterServicegroups = $this->Servicegroup->find('all', [
 				'recursive' => -1,
@@ -2274,7 +2274,7 @@ class NagiosExportTask extends AppShell{
 			if(!empty($masterServicegroups)){
 				$masterServicegroups = implode(',', Hash::extract($masterServicegroups, '{n}.Servicegroup.uuid'));
 			}
-			
+
 			$dependentServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id');
 			$dependentServicegroups = $this->Servicegroup->find('all', [
 				'recursive' => -1,
@@ -2288,7 +2288,7 @@ class NagiosExportTask extends AppShell{
 			if(!empty($dependentServicegroups)){
 				$dependentServicegroups = implode(',', Hash::extract($dependentServicegroups, '{n}.Servicegroup.uuid'));
 			}
-			
+
 			$hasMasterServicesAndDependentService = (!empty($masterServices) && !empty($dependentServices));
 			if($hasMasterServicesAndDependentService === true){
 				foreach($masterServices as $masterService){
@@ -2298,15 +2298,15 @@ class NagiosExportTask extends AppShell{
 						$content.= $this->addContent('service_description', 1, $masterService['Service']['uuid']);
 						$content.= $this->addContent('dependent_host_name', 1, $dependentService['Host']['uuid']);
 						$content.= $this->addContent('dependent_service_description', 1, $dependentService['Service']['uuid']);
-						
+
 						if(!empty($masterServicegroups)){
 							$content.= $this->addContent('servicegroup_name', 1, $masterServicegroups);
 						}
-						
+
 						if(!empty($dependentServicegroups)){
 							$content.= $this->addContent('dependent_servicegroup_name', 1, $dependentServicegroups);
 						}
-				
+
 						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
 						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
 						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
@@ -2339,14 +2339,14 @@ class NagiosExportTask extends AppShell{
 		if(!$file->exists()){
 			$file->create();
 		}
-		
+
 		$macros = $this->Macro->find('all', [
 			'fields' => [
 				'name',
 				'value'
 			]
 		]);
-		
+
 		foreach($macros as $macro){
 			$content.= $this->addContent($macro['Macro']['name'].'='.$macro['Macro']['value'], 0);
 		}
@@ -2354,7 +2354,7 @@ class NagiosExportTask extends AppShell{
 		$file->write($content);
 		$file->close();
 	}
-	
+
 	/*
 	 * This function load export tasks from external modules
 	 */
@@ -2369,7 +2369,7 @@ class NagiosExportTask extends AppShell{
 			}
 		}
 	}
-	
+
 	public function exportExternalTasks(){
 		foreach($this->externalTasks as $pluginName => $taskName){
 			$_task = new TaskCollection($this);
@@ -2377,7 +2377,7 @@ class NagiosExportTask extends AppShell{
 			$extTask->export();
 		}
 	}
-	
+
 	public function beforeExportExternalTasks(){
 		foreach($this->externalTasks as $pluginName => $taskName){
 			$_task = new TaskCollection($this);
@@ -2385,13 +2385,13 @@ class NagiosExportTask extends AppShell{
 			$extTask->beforeExport();
 		}
 	}
-	
+
 	public function afterExportExternalTasks(){
 		//Restart oitc CMD to wipe old cached information
 		exec('service oitc_cmd restart');
 		//$this->exportSatHostAndServiceGroups();
-		
-		
+
+
 		foreach($this->externalTasks as $pluginName => $taskName){
 			$_task = new TaskCollection($this);
 			$extTask =  $_task->load($pluginName.'.'.$taskName);
@@ -2409,18 +2409,18 @@ class NagiosExportTask extends AppShell{
 					}
 					foreach($data['Hostgroup'] as $hostgroupUuid => $members){
 						$file = new File($this->conf['satellite_path'].$sat_id.DS.$this->conf['hostgroups'].$hostgroupUuid.$this->conf['suffix']);
-						
+
 						$content = $this->fileHeader();
 						if(!$file->exists()){
 							$file->create();
 						}
-						
+
 						$content.= $this->addContent('define hostgroup{', 0);
 						$content.= $this->addContent('hostgroup_name', 1, $hostgroupUuid);
 						$content.= $this->addContent('alias', 1, $hostgroupUuid);
 						$content.= $this->addContent('members', 1, implode(',', $members));
 						$content.= $this->addContent('}', 0);
-					
+
 						$file->write($content);
 						$file->close();
 					}
@@ -2428,7 +2428,7 @@ class NagiosExportTask extends AppShell{
 			}
 		}
 	}
-	
+
 	public function exportSatServicegroups(){
 		if(!empty($this->dmConfig) && is_array($this->dmConfig)){
 			foreach($this->dmConfig as $sat_id => $data){
@@ -2468,23 +2468,23 @@ class NagiosExportTask extends AppShell{
 					}
 					foreach($data['Hostgroup'] as $hostgroupUuid => $members){
 						$file = new File($this->conf['satellite_path'].$sat_id.DS.$this->conf['hostgroups'].$hostgroupUuid.$this->conf['suffix']);
-						
+
 						$content = $this->fileHeader();
 						if(!$file->exists()){
 							$file->create();
 						}
-						
+
 						$content.= $this->addContent('define hostgroup{', 0);
 						$content.= $this->addContent('hostgroup_name', 1, $hostgroupUuid);
 						$content.= $this->addContent('alias', 1, $hostgroupUuid);
 						$content.= $this->addContent('members', 1, implode(',', $members));
 						$content.= $this->addContent('}', 0);
-					
+
 						$file->write($content);
 						$file->close();
 					}
 				}
-				
+
 				//Create service groups
 				if(isset($data['Servicegroup']) && !empty($data['Servicegroup'])){
 					if(!is_dir($this->conf['satellite_path'].$sat_id.DS.$this->conf['servicegroups'])){
@@ -2592,19 +2592,19 @@ class NagiosExportTask extends AppShell{
 	public function returnVerifyCommand(){
 		return Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' '.Configure::read('nagios.verify').' '.Configure::read('nagios.nagios_cfg');
 	}
-	
+
 	public function returnReloadCommand(){
 		return $this->_systemsettings['MONITORING']['MONITORING.RELOAD'];
 	}
-	
+
 	public function returnAfterExportCommand(){
 		return $this->_systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'];
 	}
-	
+
 	public function restart(){
 		//$this->_systemsettings['MONITORING']['MONITORING.RESTART']
 	}
-	
+
 	public function deleteHostPerfdata(){
 		App::uses('Folder', 'Utility');
 		$deletedHosts = $this->DeletedHost->findAllByDeletedPerfdata(0);
@@ -2614,12 +2614,12 @@ class NagiosExportTask extends AppShell{
 				$folder->delete();
 				unset($folder);
 			}
-			
+
 			$deletedHost['DeletedHost']['deleted_perfdata'] = 1;
 			$this->DeletedHost->save($deletedHost);
 		}
 	}
-	
+
 	public function deleteServicePerfdata(){
 		$deletedServices = $this->DeletedService->findAllByDeletedPerfdata(0);
 		foreach($deletedServices as $deletedService){
@@ -2635,7 +2635,7 @@ class NagiosExportTask extends AppShell{
 			$this->DeletedService->save($deletedService);
 		}
 	}
-	
+
 	public function deleteAllConfigfiles(){
 		App::uses('Folder', 'Utility');
 		$result = scandir($this->conf['path'].DS.'config');

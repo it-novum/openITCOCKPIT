@@ -124,8 +124,8 @@ class Host extends AppModel{
 
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			],
@@ -135,8 +135,8 @@ class Host extends AppModel{
 			],*/
 		],
 		'container_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -151,8 +151,8 @@ class Host extends AppModel{
 			],
 		],
 		'hosttemplate_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			],
@@ -167,8 +167,8 @@ class Host extends AppModel{
 			],
 		],
 		'address' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			]
@@ -204,8 +204,8 @@ class Host extends AppModel{
 			],
 		],
 		'max_check_attempts' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'allowEmpty' => true,
 				'required' => false,
@@ -220,8 +220,8 @@ class Host extends AppModel{
 		],
 		/*
 				'priority' => [
-					'notEmpty' => [
-						'rule'    => 'notEmpty',
+					'notBlank' => [
+						'rule'    => 'notBlank',
 						'message' => 'This field cannot be left blank.',
 						'required' => true
 					],
@@ -925,7 +925,7 @@ class Host extends AppModel{
 		]);
 
 		if($this->__allowDelete($host) || $isAllowed === true){
-			
+
 			if($this->delete()){
 				//Delete was successfully - delete Graphgenerator configurations
 				foreach($graphgenTmplConfs as $graphgenTmplConf){
