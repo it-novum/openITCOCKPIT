@@ -89,7 +89,7 @@
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Contact.name'); echo $this->Paginator->sort('Contact.name', __('Contact name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Contacts.description'); echo $this->Paginator->sort('Contact.description', __('Description')); ?></th>
 										<th class="no-sort"><?php echo __('Email'); ?></th>
-										<th class="no-sort"><?php echo __('Pager');?></th>
+										<th class="no-sort"><?php echo __('Phone');?></th>
 										<th class="no-sort"><?php echo __('Notifications (Host)'); ?></th>
 										<th class="no-sort"><?php echo __('Notifications (Service)'); ?></th>
 										<th class="no-sort"></th>
@@ -164,9 +164,9 @@
 								</tbody>
 							</table>
 						</div>
-						
+
 						<?php echo $this->element('contacts_mass_changes');?>
-						
+
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
