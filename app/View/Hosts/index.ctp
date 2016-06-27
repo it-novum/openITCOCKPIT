@@ -202,6 +202,11 @@
 																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
 															</li>
 														<?php endif; ?>
+														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+															<li>
+																<a href="/nmap_module/nmaps/scanHost/<?php echo $host['Host']['id']; ?>"><i class="fa fa-search"></i> <?php echo __('Nmap Scan'); ?></a>
+															</li>
+														<?php endif; ?>
 
 														<?php
 															if($this->Acl->hasPermission('edit') && $hasEditPermission):
