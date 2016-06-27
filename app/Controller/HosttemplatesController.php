@@ -93,9 +93,8 @@ class HosttemplatesController extends AppController{
 				'Container.id',
 				'Container.parent_id',
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
-		$this->Paginator->settings = Hash::merge($query, $this->Paginator->settings);
+		$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);

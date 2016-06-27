@@ -90,6 +90,24 @@
 							<div class="btn-group">
 								<?php
 									$listoptions = [
+										'5' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 5,
+											'human' => 5,
+											'selector' => '#listoptions_limit'
+										],
+										'10' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 10,
+											'human' => 10,
+											'selector' => '#listoptions_limit'
+										],
+										'25' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 25,
+											'human' => 25,
+											'selector' => '#listoptions_limit'
+										],
 										'50' => [
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 50,
@@ -100,6 +118,12 @@
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 100,
 											'human' => 100,
+											'selector' => '#listoptions_limit'
+										],
+										'150' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 150,
+											'human' => 150,
 											'selector' => '#listoptions_limit'
 										],
 										'500' => [
@@ -116,7 +140,8 @@
 										]
 									];
 
-									$selected = 50;
+									$selected = $paginatorLimit;
+
 									if(isset($ListsettingsUrlParams['Listsettings']['limit'])){
 										$selected = $ListsettingsUrlParams['Listsettings']['limit'];
 									}
@@ -125,7 +150,9 @@
 									<span id="listoptions_limit"><?php echo $selected; ?></span> <i class="fa fa-caret-down"></i>
 								</button>
 								<ul class="dropdown-menu pull-right">
-									<?php foreach($listoptions as $listoption): ?>
+									<?php
+
+									foreach($listoptions as $listoption): ?>
 										<li>
 											<a href="javascript:void(0);" class="listoptions_action" selector="<?php echo $listoption['selector']; ?>" submit_target="<?php echo $listoption['submit_target']; ?>" value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
 										</li>

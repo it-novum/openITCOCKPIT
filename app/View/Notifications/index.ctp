@@ -148,10 +148,22 @@
 							<div class="btn-group">
 								<?php
 									$listoptions = [
-										'30' => [
+										'5' => [
 											'submit_target' => '#listoptions_hidden_limit',
-											'value' => 30,
-											'human' => 30,
+											'value' => 5,
+											'human' => 5,
+											'selector' => '#listoptions_limit'
+										],
+										'10' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 10,
+											'human' => 10,
+											'selector' => '#listoptions_limit'
+										],
+										'25' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 25,
+											'human' => 25,
 											'selector' => '#listoptions_limit'
 										],
 										'50' => [
@@ -166,6 +178,12 @@
 											'human' => 100,
 											'selector' => '#listoptions_limit'
 										],
+										'150' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 150,
+											'human' => 150,
+											'selector' => '#listoptions_limit'
+										],
 										'300' => [
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 300,
@@ -174,7 +192,7 @@
 										]
 									];
 
-									$selected = 30;
+									$selected =$paginatorLimit;
 									if(isset($NotificationListsettings['limit']) && isset($listoptions[$NotificationListsettings['limit']]['human'])){
 										$selected = $listoptions[$NotificationListsettings['limit']]['human'];
 									}

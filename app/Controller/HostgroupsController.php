@@ -73,7 +73,6 @@ class HostgroupsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 		$query = Hash::merge($this->Paginator->settings, $options);
 
@@ -81,7 +80,7 @@ class HostgroupsController extends AppController{
 			unset($query['limit']);
 			$all_hostgroups = $this->Hostgroup->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hostgroups = $this->Paginator->paginate();
 		}
 

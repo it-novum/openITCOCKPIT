@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<div class="row">
+<div class="row padding-top-10">
 	<div class="col-xs-12 col-md-2 text-muted"><center><span id="selectionCount"></span></center></div>
 	<div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
 	<div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
@@ -38,6 +38,22 @@
 		<?php if($this->Acl->hasPermission('delete', 'services')): ?>
 			<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete servicetemplates'); ?></a>
 		<?php endif; ?>
+	</div>
+	<div class="col-xs-12 col-md-2">
+		<div class="btn-group">
+			<a href="javascript:void(0);" class="btn btn-default"><?php echo __('More');?></a>
+			<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+			<ul class="dropdown-menu dropdown-menu-right">
+				<?php if($this->Acl->hasPermission('edit')): ?>
+					<li>
+						<a id="allocate-servicet" href="javascript:void(0);" class="copyAll-too" data-action="assignGroup">
+							<i class="fa fa-lg fa-download fa-rotate-270"></i> <?= __('Allocate to Servicetemplategroup');?>
+						</a>
+					</li>
+
+				<?php endif; ?>
+			</ul>
+		</div>
 	</div>
 	
 	<!-- hidden fields for multi language -->
