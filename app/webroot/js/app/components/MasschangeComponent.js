@@ -211,8 +211,19 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 	createCopyAllHref: function(){
 		if(this.selectedIds.length > 0){
 			$('#copyAll').attr('href', '/'+this.controller+'/copy/'+this.selectedIds.join('/')+this.extendUrl);
+			var mySelectedIds = this.selectedIds;
+			var myController = this.controller;
+			var myExtendUrl = this.extendUrl;
+			$('.copyAll-too').each(function(){
+				var myObj = $(this);
+				myObj.attr('href', '/'+myController+'/'+myObj.attr('data-action')+'/'+mySelectedIds.join('/')+myExtendUrl);
+			});
 		}else{
 			$('#copyAll').attr('href', 'javascript:void(0);');
+			$('.copyAll-too').each(function(){
+				var myObj = $(this);
+				myObj.attr('href', 'javascript:void(0);');
+			});
 		}
 	},
 	

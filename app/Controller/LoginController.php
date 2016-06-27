@@ -37,8 +37,7 @@ class LoginController extends AppController {
 		$this->redirect('/login/login');
 	}
 
-	public function login($redirectBack = 0){		
-	
+	public function login($redirectBack = 0){
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$displayMethod = false;
 		$authMethods = [

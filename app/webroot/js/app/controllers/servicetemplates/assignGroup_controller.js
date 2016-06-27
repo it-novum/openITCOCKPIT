@@ -22,37 +22,30 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.ServicetemplatesIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
-	
-	components: ['Masschange'],
-	
-	_initialize: function(){
-		var self = this;
-		this.Masschange.setup({
-			'controller': 'servicetemplates',
-			'group': 'servicetemplategroups'
-		});
-		$('#allocate-servicet').click(function(e){
-			var containerId = '';
-			$('.massChange').each(function(){
-				if(this.checked) {
-					if (containerId == '') {
-						containerId = $(this).attr('data-container');
-					} else if (containerId != $(this).attr('data-container')) {
-						alert($('#same-contaner-text').val());
-						e.preventDefault();
-						return;
-					}
-				}
-			});
-		});
-		$('#new-stgroup').click(function(){
-			alert('suka');
-		});
-	}
+App.Controllers.ServicetemplatesAssignGroupController = Frontend.AppController.extend({
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
+
+    _initialize: function(){
+        var self = this;
+
+        $('#new-stgroup').change(function(){
+            self.checkCheckBox();
+        });
+
+        self.checkCheckBox();
+    },
+
+    checkCheckBox: function(){
+        if($('#new-stgroup').prop('checked')){
+            $('#new-to-holder').show();
+            $('#assign-to-holder').hide();
+        }else{
+            $('#assign-to-holder').show();
+            $('#new-to-holder').hide();
+        }
+    }
 });
