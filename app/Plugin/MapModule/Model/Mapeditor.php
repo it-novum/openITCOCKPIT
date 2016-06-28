@@ -79,7 +79,7 @@ class Mapeditor extends MapModuleAppModel{
 	 * return an array with obsolete IDs which can be deleted from Database
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Array $oldData the old data to compare with
-	 * @param  Array $newData the new base data 
+	 * @param  Array $newData the new base data
 	 * @return Array          Array with ids to delete
 	 */
 	public function getObsoleteIds($oldData, $newData){
@@ -91,7 +91,7 @@ class Mapeditor extends MapModuleAppModel{
 	}
 
 	/**
-	 * return states of all elements from a specific map 
+	 * return states of all elements from a specific map
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  $id the Id of the map
 	 * @return Array the map elements
@@ -193,7 +193,7 @@ class Mapeditor extends MapModuleAppModel{
 		foreach ($ServicegroupServiceUuids as $key => $serviceuuid) {
 			$statusObjects['servicegroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceuuid]);
 		}
-		
+
 		//get the hostgroup ids
 		$mapHostgroups = Hash::extract($mapElements, '{s}.{n}.{s}[type=/hostgroup$/].object_id');
 
@@ -255,7 +255,7 @@ class Mapeditor extends MapModuleAppModel{
 	 * return the servicestatus for the given array of conditions
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Array $conditions
-	 * @param  Array $fields 
+	 * @param  Array $fields
 	 * @param  Bool  $getServiceInfo set to true if you also want to get the service and servicetemplate data
 	 * @return Array Servicestatus array
 	 */
@@ -463,7 +463,8 @@ class Mapeditor extends MapModuleAppModel{
 
 		foreach ($HostgroupHostUuids as $key => $hostUuid) {
 			$conditions = [
-				'Objects.name1' => $hostUuid
+				'Objects.name1' => $hostUuid,
+				'Objects.is_active' => 1
 			];
 			$hostgroupstatus[0]['Host'][$key]['Hoststatus'] = $this->_hoststatus($conditions, $hostFields);
 
