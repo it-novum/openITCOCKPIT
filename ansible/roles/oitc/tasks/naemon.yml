@@ -33,21 +33,6 @@
     src: phpnsta_config.php.j2
     dest: /etc/dbconfig-common/phpnsta_config.php
 
-- name: ensure that oitc config folder ist present
-  become: yes
-  file:
-    path: /etc/openitcockpit/app/Config/
-    state: directory
-    owner: root
-    group: root
-    mode: 0600
-
-- name: set database config
-  become: yes
-  copy:
-    src: ./../app/Config/database.php
-    dest: /etc/openitcockpit/app/Config/database.php
-
 - name: install naemon and dependancies
   become: yes
   apt:
@@ -60,3 +45,9 @@
     - openitcockpit-naemon
     - openitcockpit-statusengine-naemon
     - openitcockpit-npcd
+
+- name: set database config
+  become: yes
+  copy:
+    src: ./../app/Config/database.php
+    dest: /etc/openitcockpit/app/Config/database.php

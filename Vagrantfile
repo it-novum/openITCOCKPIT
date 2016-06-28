@@ -47,16 +47,4 @@ Vagrant.configure("2") do |config|
         ansible.inventory_path = "ansible/inventories/dev"
         ansible.limit = 'all'
     end
-<<<<<<< Updated upstream
-
-    config.vm.synced_folder "./", "/usr/share/openitcockpit", type: "rsync", rsync__exclude: [".idea/", ".git/", "ansible/"]
-
-    # Configure the window for gatling to coalesce writes.
-    if Vagrant.has_plugin?("vagrant-gatling-rsync")
-        config.gatling.latency = 2.5
-        config.gatling.time_format = "%H:%M:%S"
-        config.gatling.rsync_on_startup = true
-    end
-=======
->>>>>>> Stashed changes
 end
