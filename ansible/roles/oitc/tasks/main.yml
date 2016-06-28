@@ -8,12 +8,10 @@
   when: oitc.production
   register: production_mode
 
-- name: create oitc cli
-  become: yes
-  file:
-    src: /usr/share/openitcockpit/app/Console/cake
-    dest: /usr/bin/oitc
-    state: link
+- name: rsync files
+  synchronize:
+    src: ./../
+    dest: /usr/share/openitcockpit
 
 - name: Make my directory tree readable
   file:

@@ -32,8 +32,5 @@ app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule
 app/Plugin/MkModule
 app/Plugin/AxiosAssystModule
-<<<<<<< Updated upstream
-=======
 node_modules
 ansible/playbook.retry
->>>>>>> Stashed changes

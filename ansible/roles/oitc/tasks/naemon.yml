@@ -44,10 +44,9 @@
 
 - name: set database config
   become: yes
-  file:
-    src: /usr/share/openitcockpit/app/Config/database.php
+  copy:
+    src: ./../app/Config/database.php
     dest: /etc/openitcockpit/app/Config/database.php
-    state: link
 
 - name: install naemon and dependancies
   become: yes
@@ -56,7 +55,8 @@
     state: latest  #present
     update_cache: yes
   with_items:
+    - openitcockpit
+    - openitcockpit-common
     - openitcockpit-naemon
     - openitcockpit-statusengine-naemon
     - openitcockpit-npcd
-  

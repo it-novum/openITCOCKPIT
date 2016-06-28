@@ -33,13 +33,19 @@
     login_password: "{{ mysql.root_password }}"
   register: db_created
 
+- name: copy dump
+  copy:
+    src: ./../openitcockpit.sql
+    dest: /tmp/dump.sql
+  when: (mysql.dump and db_created.changed)
+
 - name: import dump
   mysql_db:
     name: "{{ mysql.database }}"
     state: import
     login_user: root
     login_password: "{{ mysql.root_password }}"
-    target: "{{ nginx.doc_root }}/{{ mysql.dump }}"
+    target: /tmp/dump.sql
   when: (mysql.dump and db_created.changed)
 
 - name: ensure anonymous users are not in the database
