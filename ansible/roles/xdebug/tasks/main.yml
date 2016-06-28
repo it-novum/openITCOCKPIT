@@ -2,3 +2,4 @@
 - name: Install xDebug
   become: yes
   apt: pkg=php5-xdebug state=latest
+  when: oitc.production == false

@@ -9,27 +9,27 @@
   register: production_mode
 
 - name: rsync files
+  become: yes
   synchronize:
     src: ./../
-    dest: /usr/share/openitcockpit
+    dest: "{{ nginx.doc_root }}"
+    rsync_opts:
+      - "--exclude=.git,.vagrant"
 
 - name: Make my directory tree readable
+  become: yes
   file:
     path: "{{ nginx.doc_root }}"
-    owner: www-data
+    owner: vagrant
     group: www-data
-    mode: 0744
+    mode: 0774
     recurse: yes
 
-- name: Ensure that Cache folder ist present
+- name: Ensure that Cache folder ist present and writeable
   file:
     path: "{{ nginx.doc_root }}/app/tmp/"
-    state: directory
-    mode: 0777
-
-- name: Make cache folder writeable
-  file:
-    path: "{{ nginx.doc_root }}/app/tmp/"
+    owner: www-data
+    group: www-data
     mode: 0777
     recurse: yes
 
