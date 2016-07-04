@@ -104,7 +104,6 @@ class ServiceescalationsController extends AppController{
 					],
 				]
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);

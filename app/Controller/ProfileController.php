@@ -148,7 +148,7 @@ class ProfileController extends AppController {
 				}
 			}
 		}
-		$paginatorLength = $this->PAGINATOR_LENGTH;
+		$paginatorLength = $this->Paginator->settings['limit'];
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$user = $this->User->findById($this->Auth->user('id'));
 		$this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));

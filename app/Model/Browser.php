@@ -25,7 +25,7 @@
 
 class Browser extends AppModel{
 	var $useTable = false;
-	
+
 	public function hostsQuery($containerIds = []){
 		return [
 			'recursive' => -1,
@@ -76,7 +76,7 @@ class Browser extends AppModel{
 			]
 		];
 	}
-	
+
 	public function serviceQuery($containerIds = []){
 		return [
 			'recursive' => -1,
@@ -130,7 +130,7 @@ class Browser extends AppModel{
 			]
 		];
 	}
-	
+
 	public function countHoststate($hosts = []){
 		$state_array_host = [
 			0 => 0,
@@ -142,7 +142,7 @@ class Browser extends AppModel{
 		}
 		return $state_array_host;
 	}
-	
+
 	public function countServicestate($services = []){
 		$state_array_service = [
 			0 => 0,
@@ -155,7 +155,7 @@ class Browser extends AppModel{
 		}
 		return $state_array_service;
 	}
-	
+
 	public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes){
 		$containers = [];
 		foreach($browserAsNest as $container){
@@ -163,7 +163,7 @@ class Browser extends AppModel{
 				$containers[] = $container['Container'];
 				continue;
 			}
-			
+
 			foreach($container['children'] as $childContainer){
 				$results = $this->getFirstContainers([$childContainer], $MY_RIGHTS, $containerTypes);
 				foreach($results as $result){

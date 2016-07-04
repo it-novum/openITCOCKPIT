@@ -153,7 +153,7 @@ class ServicesController extends AppController{
 						],
 					]
 				],
-				'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+			/*	'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
 					[
 						'0' => [
 							'name' => 'Hoststatus.up',
@@ -174,7 +174,7 @@ class ServicesController extends AppController{
 							'data' => 'Filter.Hoststatus.current_state',
 						]
 					]
-				],
+				], */
 			],
 		],
 		'notMonitored' => [
@@ -250,7 +250,6 @@ class ServicesController extends AppController{
  			'recursive' => -1,
 			'conditions' => $conditions,
 			'contain' => ['Servicetemplate'],
-			'limit' => $this->PAGINATOR_LENGTH,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -332,7 +331,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];

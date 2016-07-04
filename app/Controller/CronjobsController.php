@@ -25,13 +25,14 @@
 
 class CronjobsController extends AppController{
 	public $layout = 'Admin.default';
-	
+
 	public function index(){
-		$cronjobs = $this->Cronjob->find('all');
+		//$cronjobs = $this->Cronjob->find('all');
+		$cronjobs = $this->Paginator->paginate();
 		$this->set(compact('cronjobs'));
 		$this->set('_serialize', ['cronjobs']);
 	}
-	
+
 	public function add(){
 		if($this->request->is('post') || $this->request->is('put')){
 			if($this->Cronjob->save($this->request->data)){
@@ -40,17 +41,17 @@ class CronjobsController extends AppController{
 			}
 			$this->setFlash(__('Data could not be saved'), false);
 		}
-		
+
 		$plugins = $this->Cronjob->fetchPlugins();
 		$coreTasks = $this->Cronjob->fetchTasks('Core');
 		$this->set(compact('coreTasks', 'plugins'));
 	}
-	
+
 	public function edit($id){
 		if(!$this->Cronjob->exists($id)){
 			throw new NotFoundException(__('Invalid cronjob'));
 		}
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			if($this->Cronjob->save($this->request->data)){
 				$this->setFlash(__('Cronjob modified successfully'));
@@ -58,14 +59,14 @@ class CronjobsController extends AppController{
 			}
 			$this->setFlash(__('Data could not be saved'), false);
 		}
-		
+
 		$cronjob = $this->Cronjob->findById($id);
-		
+
 		$plugins = $this->Cronjob->fetchPlugins();
 		$pluginTasks = $this->Cronjob->fetchTasks($cronjob['Cronjob']['plugin']);
 		$this->set(compact('pluginTasks', 'plugins', 'cronjob'));
 	}
-	
+
 	public function delete($id = null){
 		if(!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
@@ -85,15 +86,15 @@ class CronjobsController extends AppController{
 		$this->setFlash(__('Could not delete cronjob'));
 		$this->redirect(['action' => 'index']);
 	}
-	
+
 	public function loadTasksByPlugin($pluginName){
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
-		
+
 		$tasks = $this->Cronjob->fetchTasks($pluginName);
 		$this->set('tasks', $tasks);
 		$this->set('_serialize', ['tasks']);
 	}
-	
+
 }

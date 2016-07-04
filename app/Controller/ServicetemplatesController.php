@@ -93,7 +93,6 @@ class ServicetemplatesController extends AppController{
 			'contain' => [
 				'Container'
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 
 		if($this->isApiRequest()){
@@ -1015,7 +1014,7 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($checkedContanerId);
-		$allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
+		$allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', null, true);
 		$allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
 			'conditions' => ['Container.parent_id' => $checkedContanerId]
 		]);
@@ -1041,9 +1040,10 @@ class ServicetemplatesController extends AppController{
 						}
 					}
 				}
+				unset($this->request->data['Container']);
 			}
 			unset($this->request->data['service-form']);
-			
+
 			if($this->Servicetemplategroup->saveAll($this->request->data)){
 				$this->setFlash(__('All Servicetemplates were successfully allocated'));
 				$this->redirect(array('action' => 'index'));

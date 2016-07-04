@@ -134,12 +134,11 @@ class ServicegroupsController extends AppController{
 			unset($query['limit']);
 			$all_servicegroups = $this->Servicegroup->find('all', $query);
 		}else{
-			$query['limit'] = 150;
 			$this->Paginator->settings = $query;
 			$all_servicegroups = $this->Paginator->paginate();
 			$all_servicegroups = Hash::merge([], Set::combine($all_servicegroups, '{n}.Servicegroup.id', '{n}.{(Servicegroup|Container)}'), Set::combine($all_servicegroups, '{n}.Service.id', '{n}.{(Service$|Servicetemplate|Host)}', '{n}.Servicegroup.id'));
 		}
-		
+
 		$this->set('all_servicegroups', $all_servicegroups);
 
 		//Aufruf für json oder xml view: /nagios_module/services.json oder /nagios_module/services.xml
@@ -163,7 +162,7 @@ class ServicegroupsController extends AppController{
 			$this->render403();
 			return;
 		}
-		
+
 		$this->set('servicegroup', $servicegroup);
 		$this->set('_serialize', ['servicegroup']);
 	}
