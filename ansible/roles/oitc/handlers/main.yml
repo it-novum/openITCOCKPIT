@@ -1,5 +1,0 @@
----
-
-- name: restart naemon
-  tags: naemon
-  service: name=naemon state=restarted
