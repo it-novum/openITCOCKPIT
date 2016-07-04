@@ -61,6 +61,7 @@ class ContainersController extends AppController{
 			'conditions' => [
 				'containertype_id' => CT_TENANT,
 			],
+			'order' => array('name ASC'),
 			'fields' => ['id', 'containertype_id', 'name', 'parent_id']
 			]);
 		$tenants_select = [];
@@ -164,9 +165,9 @@ class ContainersController extends AppController{
 			'recursive' => -1,
 			'conditions' => [
 				'id' => $id
-			]
+			],
 		]);
-		$nest = Hash::nest($this->Container->children($id));
+		$nest = Hash::nest($this->Container->children($id, false, null, 'name'));
 		$parent[0]['children'] = $nest;
 		$this->set('nest', $parent);
 	}
