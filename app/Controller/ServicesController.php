@@ -153,7 +153,7 @@ class ServicesController extends AppController{
 						],
 					]
 				],
-				'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+			/*	'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
 					[
 						'0' => [
 							'name' => 'Hoststatus.up',
@@ -174,7 +174,7 @@ class ServicesController extends AppController{
 							'data' => 'Filter.Hoststatus.current_state',
 						]
 					]
-				],
+				], */
 			],
 		],
 		'notMonitored' => [

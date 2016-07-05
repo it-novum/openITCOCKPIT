@@ -98,15 +98,15 @@ class UsersController extends AppController{
 			],
 			'group' => [
 				'User.id'
-			],
+			]
 		];
-		$query = Hash::merge($this->Paginator->settings, $options);
+		$query = Hash::merge($options, $this->Paginator->settings);
 
 		if($this->isApiRequest()){
 			unset($query['limit']);
 			$all_users = $this->User->find('all', $query);
 		}else{
-			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+			$this->Paginator->settings = $query;
 			$all_users = $this->Paginator->paginate();
 		}
 
@@ -217,6 +217,8 @@ class UsersController extends AppController{
 
 	public function add($type = 'local'){
 		$usergroups = $this->Usergroup->find('list');
+		// Activate "Show Stats in Menu" by default for New Users
+		$this->request->data['User']['showstatsinmenu'] = 1;
 		if(isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true){
 			$type = 'ldap';
 			$samaccountname = '';

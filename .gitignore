@@ -11,7 +11,8 @@ lib/Cake/Console/Templates/skel/tmp/*
 .afp*
 app/tmp_cli/*
 .nfs*
-.idea/*
+.idea
+.vagrant
 /nbproject/private/*
 app/Plugin/AutoreportModule/webroot/tmp/*
 app/webroot/userimages/*
@@ -31,4 +32,6 @@ app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule
 app/Plugin/MkModule
 app/Plugin/AxiosAssystModule
+node_modules
+ansible/playbook.retry
 app/Plugin/SAPModule

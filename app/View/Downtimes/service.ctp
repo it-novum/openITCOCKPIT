@@ -182,7 +182,7 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
+
 									$selected = $paginatorLimit;
 
 									if(isset($DowntimeListsettings['limit']) && isset($listoptions[$DowntimeListsettings['limit']]['human'])){

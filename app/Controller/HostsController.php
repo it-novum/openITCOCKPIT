@@ -2541,9 +2541,13 @@ class HostsController extends AppController{
 		}
 		//=====
 		$host = $this->Host->findById($host_id);
-		$serviceTemplateGroups = $this->Servicetemplategroup->find('list',[
-				'fields' => ['Servicetemplategroup.description']
-			]);
+		$allServicetemplategroups = $this->Servicetemplategroup->find('all',[
+			'fields' => ['Servicetemplategroup.id','Container.name']
+		]);
+		foreach($allServicetemplategroups as $servicetemplategroup){
+			$serviceTemplateGroups[$servicetemplategroup['Servicetemplategroup']['id']] = $servicetemplategroup['Container']['name'];
+
+		}
 
 		$this->set('back_url', $this->referer());
 		$this->set(compact([
