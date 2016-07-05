@@ -70,7 +70,7 @@
 					<div class="col col-xs-4" style="padding-left:0;">
 						<div class="btn-group pull-left" style="padding-top: 2px;">
 							<?php if($this->Acl->hasPermission('edit', 'hosts') && $allowEdit): ?>
-								<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+								<a href="/hosts/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 							<?php else:?>
 								<a href="javascript:void(0);" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 							<?php endif; ?>
