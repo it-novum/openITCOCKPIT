@@ -76,9 +76,7 @@ class LoginController extends AppController {
 
 		// Automatic login if Client SSL Certificate is sent
 		if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && !empty($_SERVER['SSL_DN'])){
-
 			$CN = $OU = '';
-
 			$parameters = explode('/', $_SERVER['SSL_DN']);
 			foreach ($parameters as $eqVal) {
 				$SSLVar = explode('=', $eqVal);
