@@ -109,12 +109,12 @@ class Container extends AppModel{
 			'foreignKey' => 'container_id',
 			'dependent' => true,
 		],
-/*		'Timeperiod' => [
+		'Timeperiod' => [
 			'className' => 'Timeperiod',
 			'foreignKey' => 'container_id',
 			'dependent' => true,
 		]
-*/
+
 	];
 /*
 	public $hasAndBelongsToMany = [
