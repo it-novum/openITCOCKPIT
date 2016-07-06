@@ -76,7 +76,7 @@
 			<li class="">
 				<a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
 			</li>
-			<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+			<?php if($allowEdit): ?>
 				<li class="">
 					<a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Service commands'); ?> </span></a>
 				</li>
