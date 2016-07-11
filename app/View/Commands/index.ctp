@@ -114,6 +114,11 @@
 																			<a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
 																		</li>
 																	<?php endif;?>
+																	<?php if($this->Acl->hasPermission('usedBy')): ?>
+																		<li>
+																			<a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $command['Command']['id']; ?>"><i class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?></a>
+																		</li>
+																	<?php endif; ?>
 																	<?php if($this->Acl->hasPermission('delete')): ?>
 																		<li class="divider"></li>
 																		<li>
