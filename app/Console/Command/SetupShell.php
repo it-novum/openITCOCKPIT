@@ -262,7 +262,7 @@ class SetupShell extends AppShell{
 
 	public function askMailPort(){
 		$this->out('<blue>I guess you want to enter 25 as port</blue>');
-		$input = $this->in(__d('oitc_console', 'Please enter the port of your mail server'));
+		$input = $this->in(__d('oitc_console', 'Please enter the port of your mail server'), null, 25);
 		$input = trim($input);
 		if(strlen($input) > 0 && is_numeric($input)){
 			return $input;
