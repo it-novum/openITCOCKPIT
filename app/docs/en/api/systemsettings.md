@@ -476,6 +476,17 @@
                 "created": "0000-00-00 00:00:00",
                 "modified": "2015-11-12 08:03:06"
             }
+        ],
+        "TICKET_SYSTEM": [
+            {
+                "id": "67",
+                "key": "TICKET_SYSTEM.URL",
+                "value": "",
+                "info": "Link to the ticket system",
+                "section": "TICKET_SYSTEM",
+                "created": "2016-06-13 00:00:00",
+                "modified": "2016-06-13 00:00:01"
+            }
         ]
     }
 }

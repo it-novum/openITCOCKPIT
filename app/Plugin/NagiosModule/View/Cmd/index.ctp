@@ -57,13 +57,12 @@
 						'class' => 'form-horizontal clear'
 					));
 		
-					$_commands = [];
+					$_commands[0] = '';
 					foreach($commands as $commandName => $parameters):
 						$_commands[$commandName] = $commandName;
 					endforeach;
-		
 					echo $this->Form->input('Command', [
-						'options' => $this->Html->chosenPlaceholder($_commands), 
+						'options' => $_commands,
 						'class' => 'chosen', 
 						'style' => 'width: 100%;', 
 						'label' => ['text' => __('External Command'), 'class' => 'col-xs-2 col-md-2 col-lg-2'],
@@ -82,6 +81,7 @@
 									<dl class="dl-horizontal">
 										<?php foreach($parameters as $paramName => $paramValue): ?>
 											<?php
+											if($paramName === 'internalMethod') continue;
 											if($paramValue === null):
 												echo '<dt class="hintmark_red col col-md-2">'.$paramName.'</dt>';
 												echo '<dd><i>'.__('required').'</i></dd>';
@@ -97,34 +97,40 @@
 							<strong><?php echo __('Example HTTP request using default parameters');?>:</strong>
 							<div class="well">
 									<!-- Stupid HTML added strang withspaces :/ So we do the php -force way -->
-									<?php $html = ''; ?>
+									<?php
+										$html = $html2 = '';
+										$internalMethod = 'submit';
+										$commandKey='command';
+										$commandValue=$commandName;
+									?>
 									<?php
 									foreach($parameters as $paramName => $paramValue):
-										if($paramValue === null):
-											$paramValue = '$required';
-										else:
+										if($paramName === 'internalMethod'){
+											$internalMethod = $paramValue;
 											continue;
+										}
+										if($paramName === 'cmdType'){
+											$commandKey = $paramName;
+											$commandValue = is_null($paramValue) ? '$required' : $paramValue;
+											continue;
+										}
+										if($paramValue === null):
+											$html.='<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">$required</span>/';
 										endif;
-										$html.='<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">'.$paramValue.'</span>/';
-									 endforeach;?>
+										$html2.='<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">'.(is_null($paramValue)?'$required':$paramValue).'</span>/';
+									endforeach;
+									$prehtml = 'https://'.h($_SERVER['SERVER_ADDR']).'/nagios_module/cmd/'.$internalMethod.'/<span class="text-primary">api_key</span>:<span class="txt-color-orange">API_KEY</span>/<span class="text-primary">'.$commandKey.'</span>:<span class="txt-color-magenta">'.$commandValue.'</span>/';
+									?>
 	 								<code>
-	 									<span class="txt-color-blueDark">https://<?php echo h($_SERVER['SERVER_ADDR']);?>/nagios_module/cmd/submit/api_key:</span><span class="txt-color-orange">API_KEY</span><span class="txt-color-blueDark">/command:<?php echo $commandName;?></span>/<?php echo $html;?>
+	 									<span class="txt-color-blueDark"><?= $prehtml.$html ?>
 									</code>
 							</div>
 							<br />
 							<strong><?php echo __('Example HTTP request without default parameters');?>:</strong>
 							<div class="well">
 								<!-- Stupid HTML added strang withspaces :/ So we do the php -force way -->
-								<?php $html = ''; ?>
-								<?php
-								foreach($parameters as $paramName => $paramValue):
-									if($paramValue === null):
-										$paramValue = '$required';
-									endif;
-									$html.='<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">'.$paramValue.'</span>/';
-								 endforeach;?>
  								<code>
-	 									<span class="txt-color-blueDark">https://<?php echo h($_SERVER['SERVER_ADDR']);?>/nagios_module/cmd/submit/api_key:</span><span class="txt-color-orange">API_KEY</span><span class="txt-color-blueDark">/command:<?php echo $commandName;?></span>/<?php echo $html;?>
+									<span class="txt-color-blueDark"><?= $prehtml.$html2 ?></span>
 								</code>
 							</div>
 							<br />

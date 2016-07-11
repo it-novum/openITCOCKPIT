@@ -37,7 +37,7 @@ class Systemsetting extends AppModel{
 		$all_systemsettings['FRONTEND']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=FRONTEND]');
 		$all_systemsettings['CHECK_MK']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=CHECK_MK]');
 		$all_systemsettings['ARCHIVE']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=ARCHIVE]');
-		
+		$all_systemsettings['TICKET_SYSTEM']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=TICKET_SYSTEM]');
 		
 		return $all_systemsettings;
 	}
