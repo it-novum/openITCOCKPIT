@@ -445,7 +445,7 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 </table>
 <table class="footer-wrap">
 <tr>
-	<td</td>
+	<td></td>
 	<td class="container">
 			<div class="content">
 				<table>

@@ -43,11 +43,17 @@
 		<h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?> <?php echo __('tenant'); ?></h2>
 		<div class="widget-toolbar" role="menu">
 			<?php if($this->Acl->hasPermission('delete')): ?>
-				<?php echo $this->Utils->deleteButton(null, $tenant['Tenant']['id']);?>
+				<a href="javascript:void(0);" id="deleteAll" class="btn btn-danger btn-xs" style="text-decoration: none;"> <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+				<?php //echo $this->Utils->deleteButton(null, $tenant['Tenant']['id']);?>
 			<?php endif;?>
 			<?php echo $this->Utils->backButton() ?>
 		</div>
 	</header>
+	<input class="massChange" checked style="display: none;" type="checkbox" name="tenant[<?php echo $tenant['Tenant']['id']; ?>]" tenantname="<?php echo h($tenant['Container']['name']); ?>" value="<?php echo $tenant['Tenant']['id']; ?>" />
+	<input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>" />
+	<input type="hidden" id="delete_message_h2" value="<?php echo __('Do you really want delete the selected tenant? All nodes, contacts, contactgroups, locations, devicegroups, calendars, timeperiods, hosttemplates, hostgroups, hosts, servicetemplates, servicetemplategroups, servicegroups and services from this tenant will be deleted too.'); ?>" />
+	<input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>" />
+	<input type="hidden" id="message_no" value="<?php echo __('No'); ?>" />
 	<div>
 		<div class="widget-body">
 			<?php

@@ -23,73 +23,61 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class LogentriesController extends AppController{
+class LogentriesController extends AppController
+{
 
-	/*
-	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-	 * use this external model to fetch the required data out of the database
-	 */
-	public $uses = [MONITORING_LOGENTRY, 'Host', 'Service'];
+    /*
+     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
+     * use this external model to fetch the required data out of the database
+     */
+    public $uses = [MONITORING_LOGENTRY, 'Host', 'Service'];
 
-	public $components = array('Paginator', 'ListFilter.ListFilter','RequestHandler', 'Uuid');
-	public $helpers = array('ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid');
-	public $layout = 'Admin.default';
+    public $components = array('Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Uuid');
+    public $helpers = array('ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid');
+    public $layout = 'Admin.default';
 
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Logentry.logentry_data' => ['label' => 'Logentry', 'searchType' => 'wildcard']
-			],
-		]
-	];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Logentry.logentry_data' => ['label' => 'Logentry', 'searchType' => 'wildcard']
+            ],
+        ]
+    ];
 
-	public function index(){
-		//Get Parameters out of $_GET
-		if(isset($this->params['named']['Listsettings'])){
-			$this->request->data['Listsettings'] = $this->params['named']['Listsettings'];
-		}
-		$requestSettings = $this->Logentry->listSettings($this->request->data);
+    public function index()
+    {
+        $requestSettings = $this->Logentry->listSettings($this->request->data);
 
-		// Set URL Parameters to index.ctp
-		$ListsettingsUrlParams = [];
-		if(!empty($requestSettings['Listsettings'])){
-			$ListsettingsUrlParams['Listsettings'] = $requestSettings['Listsettings'];
-		}
+        if(!is_array($this->Paginator->settings)){
+            $this->Paginator->settings = [];
+        }
+        if(!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
+        if(!isset($this->Paginator->settings['order'])) {
+            $this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
+        }
+        if(isset($this->paginate['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        }else{
+            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+        }
+        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
+        $paginatorLimit = $this->Paginator->settings['limit'];
 
-		if(!is_array($this->Paginator->settings)){
-			$this->Paginator->settings = [];
-		}
+        $this->Uuid->buildCache();
+        $this->set('uuidCache', $this->Uuid->getCache());
 
-		if(!isset($this->Paginator->settings['conditions'])){
-			$this->Paginator->settings['conditions'] = [];
-		}
+        $all_logentries = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
 
-		$paginatorLimit = $this->Paginator->settings['limit'];
-	/*	if(!isset($this->Paginator->settings['limit']) || $this->Paginator->settings['limit'] < 50){
-			$this->Paginator->settings['limit'] = 50;
-		}*/
+        $this->set(compact(['all_logentries', 'paginatorLimit']));
+        $this->set('LogentiresListsettings', $requestSettings['Listsettings']);
+        $this->set('logentry_types', $this->Logentry->types());
 
-		$this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
-		$this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-
-		if(!isset($this->Paginator->settings['order'])){
-			$this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
-		}
-
-		$this->Paginator->settings['fields'] = ['logentry_time', 'logentry_type', 'logentry_data'];
-
-		$this->Uuid->buildCache();
-		$this->set('uuidCache', $this->Uuid->getCache());
-
-		$all_logentries = $this->Paginator->paginate();
-		$this->set(compact(['all_logentries', 'checked', 'ListsettingsUrlParams', 'paginatorLimit']));
-		$this->set('logentry_types', $this->Logentry->types());
-
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
-
+        if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else{
+            $this->set('isFilter', false);
+        }
+    }
 }

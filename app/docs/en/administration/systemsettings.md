@@ -83,3 +83,6 @@ Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard you
 * **AGE.NOTIFICATIONS** - Time in weeks how long notifications will be stored
 * **AGE.CONTACTNOTIFICATIONS** - Time in weeks how long contact notifications will be stored
 * **AGE.CONTACTNOTIFICATIONMETHODS** - Time in weeks how long contact notification methods will be stored
+
+###### TICKET_SYSTEM
+* **TICKET_SYSTEM.URL** - Link to the ticket system

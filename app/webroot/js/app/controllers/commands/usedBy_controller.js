@@ -22,17 +22,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.TenantsEditController = Frontend.AppController.extend({
+App.Controllers.CommandsUsedByController = Frontend.AppController.extend({
 
 	components: ['Masschange'],
 
 	_initialize: function() {
 		this.Masschange.setup({
-			'controller': 'tenants',
-			'checkboxattr': 'tenantname'
-		});
-		$('#TenantExpires').datepicker({
-			format: 'dd/mm/yyyy'
+			'controller': 'servicetemplates',
+			'checkboxattr': 'servicename'
 		});
 	}
 });
