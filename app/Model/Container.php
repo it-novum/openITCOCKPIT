@@ -105,7 +105,7 @@ class Container extends AppModel{
 			'dependent' => true,
 		],
 		'Host' => [
-			'className' => 'Host ',
+			'className' => 'Host',
 			'foreignKey' => 'container_id',
 			'dependent' => true,
 		],
