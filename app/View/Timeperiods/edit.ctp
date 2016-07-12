@@ -250,6 +250,7 @@
 					echo $this->Form->input('template.'.sizeof($timeperiod['Timerange']).'.start', [
 							'class' => 'no-padding',
 							'placeholder' => '00:00',
+							'value' => '00:00',
 							'maxlength' => 5,
 							'size' => 5,
 							'div' => false,
@@ -267,6 +268,7 @@
 					echo $this->Form->input('template.'.sizeof($timeperiod['Timerange']).'.end', [
 							'class' => 'no-padding',
 							'placeholder' => '24:00',
+							'value' => '24:00',
 							'maxlength' => 5,
 							'size' => 5,
 							'div' => false,
