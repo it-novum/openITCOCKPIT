@@ -74,7 +74,7 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
-										<th class="no-sort"><?php /* echo $this->Utils->getDirection($order, 'Location.description'); */ echo $this->Paginator->sort('container', __('Container')); ?></th>
+										<th class="no-sort"><?php echo __('Container'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
