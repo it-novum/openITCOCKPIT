@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-cloud fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
+			<i class="fa fa-cloud fa-fw "></i>
+				<?php echo __('Monitoring'); ?>
+			<span>>
 				<?php echo __('Devicegroups'); ?>
 			</span>
 		</h1>
@@ -51,7 +51,7 @@
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
 						?>
 						</div>
@@ -71,7 +71,7 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('Container.name', __('Name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Devicegroup.description'); echo $this->Paginator->sort('Devicegroup.description', __('Description')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.path'); echo $this->Paginator->sort('Container.path', __('Container')); ?></th>
+										<th class="no-sort"><?php echo __('Container'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>

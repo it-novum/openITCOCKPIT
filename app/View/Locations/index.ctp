@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-location-arrow fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
+			<i class="fa fa-location-arrow fa-fw "></i>
+				<?php echo __('Monitoring'); ?>
+			<span>>
 				<?php echo __('Locations'); ?>
 			</span>
 		</h1>
@@ -51,11 +51,11 @@
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
 						?>
 						</div>
-						
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-location-arrow"></i> </span>
@@ -74,6 +74,7 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort"><?php echo __('Container'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -83,6 +84,7 @@
 										<tr>
 											<td><?php echo $location['Container']['name']; ?></td>
 											<td><?php echo $location['Location']['description']; ?></td>
+											<td><?php if($location['Container']['parent_id'] == 1): echo __('/root/'); else: ?> <a href="/tenants/edit/<?php echo $location['Container']['parent_id']; ?>"> <?php echo $container[$location['Container']['parent_id']]; ?></a><?php endif; ?></td>
 											<td class="width-160">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
