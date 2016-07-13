@@ -98,7 +98,6 @@
 								endif; ?>
 							</p>
 
-
 							<?php if($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))):?>
 								<p>
 								<span class="fa-stack fa-lg">
