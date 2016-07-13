@@ -2561,7 +2561,6 @@ class HostsController extends AppController{
 		if(!$this->Servicetemplategroup->exists($stg_id)){
 			throw new NotFoundException(__('Invalid Servicetemplategroup'));
 		}
-
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}
