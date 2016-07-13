@@ -125,7 +125,7 @@
 
 			<?php echo $this->Form->formActions(__('Save'), ['cancelButton' => [
 				'title' => __('Cancel'),
-				'url' => '/admin/dashboard'
+				'url' => '/dashboards/'
 			]]); ?>
 		</div>
 	</div>
@@ -169,7 +169,7 @@
 			<?php
 			 echo $this->Form->formActions(__('Upload image'), ['cancelButton' => [
 				'title' => __('Cancel'),
-				'url' => '/admin/dashboard'
+				'url' => '/dashboards/'
 			]]); ?>
 		</div>
 	</div>
@@ -220,7 +220,7 @@
 
 				echo $this->Form->formActions('Change password', ['cancelButton' => [
 					'title' => __('Cancel'),
-					'url' => '/admin/dashboard',
+					'url' => '/dashboards/',
 				]]);
 			endif;
 			?>
