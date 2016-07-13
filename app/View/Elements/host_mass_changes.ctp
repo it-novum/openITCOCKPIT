@@ -60,7 +60,7 @@
 				<li>
 					<a href="<?php echo Router::url(['controller' => 'hosts', 'action' => 'listToPdf/.pdf']); ?>" id="listAsPDF"><i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a>
 				</li>
-				<?php if($this->params['controller'] == 'hosts' && $this->params['action'] == 'index' && $this->Acl->hasPermission('edit')): ?>
+				<?php if($this->params['controller'] == 'hosts' && $this->params['action'] == 'index'): ?>
 					<li class="divider"></li>
 					<li>
 						<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_reschedule"><i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?></a>
