@@ -128,6 +128,12 @@ $config = [
 					'title' => 'Registration',
 					'icon' => 'check-square-o ',
 					'parent_controller' => 'Administrators'
+				],
+				'itc_backup' => [
+					'url' => ['controller' => 'backups', 'action' => 'index'],
+					'title' => 'Backup',
+					'icon' => 'check-square-o ',
+					'parent_controller' => 'Administrators'
 				]
 			]
 		],

@@ -2715,4 +2715,11 @@ class NagiosExportTask extends AppShell{
 		}
 		return $c;
 	}
+
+    public function makeSQLBackup($path) {
+        $pathForBackup = $path."mysql_oitc_bkp_".date("Ymd_His")."/";
+        exec("xtrabackup --backup --target-dir=".$pathForBackup, $output, $return);
+        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
+        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
+    }
 }

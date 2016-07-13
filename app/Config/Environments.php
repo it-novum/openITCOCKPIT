@@ -46,6 +46,8 @@ class Environments {
 	 * @return string
 	 */
 	protected static function _detectHttp(){
+		return self::DEVELOPMENT;
+
 		$host = env('HTTP_HOST');
 
 		if(substr($host, 0, 4) == 'dev.'){

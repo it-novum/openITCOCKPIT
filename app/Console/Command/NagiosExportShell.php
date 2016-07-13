@@ -84,6 +84,8 @@ class NagiosExportShell extends AppShell {
 				
 				$this->NagiosExport->beforeExportExternalTasks();
 				
+				$this->NagiosExport->makeSQLBackup();
+				
 				$this->NagiosExport->deleteAllConfigfiles();
 				
 				$this->DefaultNagiosConfig->execute();

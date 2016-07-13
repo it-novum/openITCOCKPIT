@@ -449,6 +449,9 @@ class GearmanWorkerShell extends AppShell{
 			}
 			$folder1->copy($backupTarget);
 
+            //Hier muss ddie neue Backupfunktion rein
+            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/');
+			
 			$this->Export->saveField('finished', 1);
 			$this->Export->saveField('successfully', 1);
 		}
@@ -485,7 +488,7 @@ class GearmanWorkerShell extends AppShell{
 		$this->Export->saveField('finished', 1);
 		$this->Export->saveField('successfully', 1);
 
-		//Define all tasks, we can do parallel
+        //Define all tasks, we can do parallel
 		$tasks = [
 			'export_create_default_config' => [
 				'text' => __('Create default configuration'),
