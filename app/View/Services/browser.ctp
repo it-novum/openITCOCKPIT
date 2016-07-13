@@ -64,39 +64,39 @@
 <div class="row">
 	<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
 		<div data-widget-custombutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-colorbutton="false" id="wid-id-11" class="jarviswidget jarviswidget-sortable" role="widget">
-			<header role="heading">
-				<h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Service');?>:</strong></h2>
-				<ul class="nav nav-tabs pull-right" id="widget-tab-1">
-					<li class="active">
-						<a href="#tab1" data-toggle="tab"> <i class="fa fa-lg fa-info"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span> </a>
-					</li>
-					<li class="">
-						<a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-hdd-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Check information'); ?> </span></a>
-					</li>
-					<li class="">
-						<a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
-					</li>
-					<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-						<li class="">
-							<a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Service commands'); ?> </span></a>
-						</li>
-					<?php endif;?>
-				</ul>
-				<span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
-			<div role="content">
-				<div class="widget-body no-padding">
-					<div class="tab-content padding-10">
-						<div id="tab1" class="tab-pane fade active in">
-							<?php echo $service['Service']['name']; ?> <strong><?php echo __('Last state change')?>: <?php echo $this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
-							<br /><br/>
-							<p><?php echo __('The last system check occurred at'); ?> <strong><?php echo $this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_check'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
-								<?php
-								if($this->Status->sget($service['Service']['uuid'], 'state_type') == 1):
-									echo '<span class="label text-uppercase '.$this->Status->ServiceStatusBackgroundColor($this->Status->sget($service['Service']['uuid'],'current_state')).'">'.__('hard state').'</span>';
-								else:
-									echo '<span class="label text-uppercase opacity-50 '.$this->Status->ServiceStatusBackgroundColor($this->Status->sget($service['Service']['uuid'],'current_state')).'" >'.__('soft state').'</span>';
-								endif; ?>
-							</p>
+		<header role="heading">
+		<h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Service');?>:</strong></h2>
+		<ul class="nav nav-tabs pull-right" id="widget-tab-1">
+			<li class="active">
+				<a href="#tab1" data-toggle="tab"> <i class="fa fa-lg fa-info"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span> </a>
+			</li>
+			<li class="">
+				<a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-hdd-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Check information'); ?> </span></a>
+			</li>
+			<li class="">
+				<a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
+			</li>
+			<?php if($allowEdit): ?>
+				<li class="">
+					<a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Service commands'); ?> </span></a>
+				</li>
+			<?php endif;?>
+		</ul>
+		<span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+		<div role="content">
+			<div class="widget-body no-padding">
+				<div class="tab-content padding-10">
+					<div id="tab1" class="tab-pane fade active in">
+						<?php echo $service['Service']['name']; ?> <strong><?php echo __('Last state change')?>: <?php echo $this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+						<br /><br/>
+						<p><?php echo __('The last system check occurred at'); ?> <strong><?php echo $this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_check'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+							<?php
+							if($this->Status->sget($service['Service']['uuid'], 'state_type') == 1):
+								echo '<span class="label text-uppercase '.$this->Status->ServiceStatusBackgroundColor($this->Status->sget($service['Service']['uuid'],'current_state')).'">'.__('hard state').'</span>';
+							else:
+								echo '<span class="label text-uppercase opacity-50 '.$this->Status->ServiceStatusBackgroundColor($this->Status->sget($service['Service']['uuid'],'current_state')).'" >'.__('soft state').'</span>';
+							endif; ?>
+						</p>
 
 							<?php if($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))):?>
 								<p>
