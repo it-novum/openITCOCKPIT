@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-map-marker fa-fw "></i> 
+			<i class="fa fa-map-marker fa-fw "></i>
 				<?php echo __('Map'); ?>
-			<span>> 
+			<span>>
 				<?php echo __('Overview'); ?>
 			</span>
 		</h1>
@@ -102,7 +102,7 @@
 												<input class="massChange" type="checkbox" name="map[<?php echo $map['Map']['id']; ?>]" mapname="<?php echo h($map['Map']['name']); ?>" value="<?php echo $map['Map']['id']; ?>"/>
 											<?php endif;?>
 										</td>
-										<td><?php echo $map['Map']['name']; ?></td>
+										<td><a href="/map_module/mapeditors/view/<?php echo $map['Map']['id']; ?>"><?php echo $map['Map']['name']; ?></a></td>
 										<td><?php echo $map['Map']['title']?></td>
 										<td>
 											<div class="btn-group">
@@ -133,7 +133,7 @@
 								<?php endforeach; ?>
 							</tbody>
 						</table>
-	
+
 						<?php echo $this->element('map_mass_changes'); ?>
 
 						<div style="padding: 5px 10px;">
