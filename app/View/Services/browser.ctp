@@ -64,7 +64,6 @@
 <div class="row">
 	<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
 		<div data-widget-custombutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false" data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-colorbutton="false" id="wid-id-11" class="jarviswidget jarviswidget-sortable" role="widget">
-
 		<header role="heading">
 		<h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Service');?>:</strong></h2>
 		<ul class="nav nav-tabs pull-right" id="widget-tab-1">
