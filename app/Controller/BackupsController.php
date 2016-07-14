@@ -28,11 +28,29 @@ class BackupsController extends AppController{
     public $components = ['Http', 'GearmanClient'];
     public $uses = ['Proxy'];
 
-    public function index(){
 
+    public function index(){
+        $backupfiles = array();
+        $files =  scandir("/opt/openitc/nagios/backup/");
+        foreach ($files as $file) {
+            if (strstr($file,"mysql_oitc_bkp_")) {
+                array_push($backupfiles, "/opt/openitc/nagios/backup/" . $file . "/");
+            }
+        }
+        $this->set(compact('backupfiles'));
+        $this->set('_serialize', ['backupfiles']);
     }
 
     public function backup(){
+        $this->makeSQLBackup(Configure::read('nagios.export.backupTarget'));
+    }
 
+    private function makeSQLBackup($path) {
+        $pathForBackup = $path."mysql_oitc_bkp_".date("Ymd_His")."/";
+        debug($pathForBackup);
+        die();
+        //exec("xtrabackup --backup --target-dir=".$pathForBackup, $output, $return);
+        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
+        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
     }
 }

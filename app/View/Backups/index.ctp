@@ -43,9 +43,17 @@
     <div>
         <div class="widget-body">
             <?php
-            //echo $this->Form->create('Register', array(
-            //    'class' => 'form-horizontal clear'
-            //));
+            echo $this->Form->create('Backup', array('url' => 'restore'));
+            foreach($backupfiles as $bkpFile) {
+                echo $bkpFile."<br>";
+            }
+            ?>
+            <?php echo $this->Form->formActions(__('Start Restore')); ?>
+        </div>
+
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Backup', array('url' => 'backup'));
             //echo $this->Form->input('license', ['label' => __('License key'), 'value' => (isset($licence['Register']['license']))?$licence['Register']['license']:'']);
             ?>
             <?php echo $this->Form->formActions(__('Start Backup')); ?>
