@@ -96,7 +96,8 @@ class Hostgroup extends AppModel{
 		$hostgroupsAsList = [];
 
 		foreach($tenantContainerIds as $tenantContainerId){
-			$children = $this->Container->children($tenantContainerId, true);
+			//changed second parameter to false since Hostgroups can be associated with Nodes too and not Tenants only
+			$children = $this->Container->children($tenantContainerId, false);
 			foreach($children as $child){
 				if($child['Container']['containertype_id'] == CT_HOSTGROUP){
 					$hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
