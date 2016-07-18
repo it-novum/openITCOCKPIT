@@ -27,9 +27,10 @@ class RegistersController extends AppController{
 	public $layout = 'Admin.register';
 	public $components = ['Http', 'GearmanClient'];
 	public $uses = ['Register', 'Proxy'];
-	
+
 	public function index(){
 		if($this->request->is('post')){
+			$this->request->data['Register']['id'] = 1;
 			if($this->Register->save($this->request->data)){
 				//$this->setFlash('License added successfully');
 				$this->redirect(array('action' => 'check'));
@@ -37,15 +38,15 @@ class RegistersController extends AppController{
 				$this->setFlash('Could not add license', false);
 			}
 		}
-		
+
 		$license = $this->Register->find('first');
-		
+
 		if(!empty($license)){
 			//$this->redirect(array('action' => 'check'));
 		}
 		$this->set('licence', $license);
 	}
-	
+
 	public function check(){
 		$license = $this->Register->find('first');
 		if(empty($license)){
@@ -62,11 +63,11 @@ class RegistersController extends AppController{
 			$options = [];
 			$http = new HttpComponent('https://packagemanager.it-novum.com/licences/check/'.$license['Register']['license'].'.json', [], $this->Proxy->getSettings());
 		}
-		
+
 		$http->sendRequest();
 		$error = $http->lastError;
 		$response = json_decode($http->data);
-		
+
 		$isValide = false;
 		$licence = null;
 		if(is_object($response)){
