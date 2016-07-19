@@ -225,7 +225,7 @@ class Rrd extends AppModel{
 			'--vertical-label='.$unit,
 			'--imgformat','PNG',
 			'DEF:var0='.$options['path'].$options['host_uuid'].DS.$options['service_uuid'].'.rrd:'.$rrd_structure_datasource['ds'].':AVERAGE',
-			'AREA:var0#5CB85C90:'.$rrd_structure_datasource['label'],
+			'AREA:var0#5CB85C90:'.preg_replace('/[^a-zA-Z^0-9\-\.]/', ' ', $rrd_structure_datasource['label']),
 			'LINE1:var0#5CB85C',
 			'VDEF:ds'.$rrd_structure_datasource['ds'].'avg=var0,AVERAGE',
 			'GPRINT:ds'.$rrd_structure_datasource['ds'].'avg:'.__('Average').'\:%6.2lf %S',
