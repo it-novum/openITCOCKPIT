@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+App::uses('NagiosModuleAppModel', 'NagiosModule.Model');
+App::uses('Acknowledged', 'NagiosModule.Model');
+
 class CmdController extends AppController{
 	
 	public $layout = 'Admin.default';
@@ -61,6 +64,7 @@ class CmdController extends AppController{
 		if($this->request->params['named']['api_key'] != $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']){
 			throw new ForbiddenException(__('API key mismatch!'));
 		}
+
 		
 		//Mergeing given parameters with default parameters
 		$externalCommand = $this->request->params['named']['command'];
@@ -97,13 +101,12 @@ class CmdController extends AppController{
 		}
 		
 		//Set default values if missing
-		$paramsToCheck = ['sticky', 'notify', 'persistent'];
-		foreach($paramsToCheck as $param){
-			if(!isset($this->request->params['named'][$param])){
-				$this->request->params['named'][$param] = 1;
+		foreach ($commands['ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM'] as $commandType => $commandDefault){
+			if(is_null($commandDefault) && !isset($this->request->params['named'][$commandType]) && (!$this->request->params['named']['cmdType'] == '33' || $commandType !== 'serviceUuid')){
+				throw new NotFoundException(__('Missing required parameter') . ': ' . $commandType);
 			}
-			if($this->request->params['named'][$param] != 0 || $this->request->params['named'][$param] != 1){
-				$this->request->params['named'][$param] = 1;
+			if(!isset($this->request->params['named'][$commandType]) && !is_null($commandDefault) && 'internalMethod' !== $commandType){
+				$this->request->params['named'][$commandType] = $commandDefault;
 			}
 		}
 		
@@ -112,33 +115,37 @@ class CmdController extends AppController{
 		if($this->request->params['named']['api_key'] != $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']){
 			throw new ForbiddenException(__('API key mismatch!'));
 		}
-		
+
 		switch($this->request->params['named']['cmdType']){
-			case 33:
+			case Acknowledged::ACKNOWLEDGE_HOST_PROBLEM:
 			//Ack for hosts
+
 			$this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_HOST_PROBLEM', 'parameters' => [
 				'hostUuid' => $this->request->params['named']['hostUuid'],
 				'sticky' => $this->request->params['named']['sticky'],
 				'notify' => $this->request->params['named']['notify'],
 				'persistent' => $this->request->params['named']['persistent'],
 				'author' => $this->request->params['named']['author'],
-				'comment' => $this->request->params['named']['comment']
+				'comment' => $this->request->params['named']['comment'],
+				'com_data' => $this->request->params['named']['com_data'],
 			]]);
 			break;
 			
-			case 34:
+			case Acknowledged::ACKNOWLEDGE_SVC_PROBLEM:
 			//Ack for services
 			if(!isset($this->request->params['named']['serviceUuid'])){
 				throw new NotFoundException(__('serviceUuid missing missing!'));
 			}
-			$this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_SERVICE_PROBLEM', 'parameters' => [
+
+			$this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_SVC_PROBLEM', 'parameters' => [
 				'hostUuid' => $this->request->params['named']['hostUuid'],
 				'serviceUuid' => $this->request->params['named']['serviceUuid'],
 				'sticky' => $this->request->params['named']['sticky'],
 				'notify' => $this->request->params['named']['notify'],
 				'persistent' => $this->request->params['named']['persistent'],
 				'author' => $this->request->params['named']['author'],
-				'comment' => $this->request->params['named']['comment']
+				'comment' => $this->request->params['named']['comment'],
+				'com_data' => $this->request->params['named']['com_data'],
 			]]);
 			break;
 			
@@ -153,6 +160,7 @@ class CmdController extends AppController{
 		return [
 			'ACKNOWLEDGE_HOST_PROBLEM' => ['hostUuid' => null, 'sticky' => 0, 'notify' => 1, 'persistent' => 1, 'author' => null, 'comment' => null],
 			'ACKNOWLEDGE_SVC_PROBLEM' => ['hostUuid' => null, 'serviceUuid' => null, 'sticky' => 0, 'notify' => 1, 'persistent' => 1, 'author' => null, 'comment' => null],
+			'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM' => ['cmdType' => null, 'internalMethod' => 'ack', 'hostUuid' => null, 'serviceUuid' => null, 'sticky' => 0, 'notify' => 1, 'persistent' => 1, 'author' => null, 'comment' => null, 'com_data' => null],
 			'DISABLE_FLAP_DETECTION' => [],
 			'DISABLE_HOST_CHECK' => ['hostUuid' => null],
 			'DISABLE_NOTIFICATIONS' => [],

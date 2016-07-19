@@ -49,12 +49,12 @@ class GraphCollectionsController extends AppController{
 //			'Host.disabled' => 0,
 //			'HostsToContainers.container_id' => $this->MY_RIGHTS,
 		];
-		$this->Paginator->settings = [
+		$query = [
 			'conditions' => $conditions,
-			'limit' => $this->PAGINATOR_LENGTH,
 			'order' => ['GraphCollection.name' => 'asc'],
 		];
 
+		$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 		$all_collections = $this->Paginator->paginate('GraphCollection');
 
 		$this->set(['all_collections' => $all_collections,]);

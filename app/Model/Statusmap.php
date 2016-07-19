@@ -28,22 +28,22 @@ class Statusmap extends AppModel{
 	
 	var $validate = [
 		'task' => [
-			'notEmpty' => [
-				'rule'     => 'notEmpty',
+			'notBlank' => [
+				'rule'     => 'notBlank',
 				'message'  => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'plugin' => [
-			'notEmpty' => [
-				'rule'     => 'notEmpty',
+			'notBlank' => [
+				'rule'     => 'notBlank',
 				'message'  => 'This field cannot be left blank.',
 				'required' => true
 			],
 		],
 		'interval' => [
-			'notEmpty' => [
-				'rule'     => 'notEmpty',
+			'notBlank' => [
+				'rule'     => 'notBlank',
 				'message'  => 'This field cannot be left blank.',
 				'required' => true
 			],

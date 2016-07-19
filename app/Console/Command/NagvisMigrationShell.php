@@ -52,14 +52,14 @@ class NagvisMigrationShell extends AppShell {
 	/* @var string the domain of this host e.g. http://thisIp/ */
 	private $selfHost = null;
 	/* @var array credentials to log on to oitc v3 */
-	private $selfCredentials = null; 
+	private $selfCredentials = null;
 	/* @var array mapping for the iconsets */
 	private $iconsetMap = null;
 	/* @var array iconsets which are obsolete */
 	private $obsoleteIconsets = null;
 	/* @var maps which are existing in the v3 database */
 	private $availableMaps = null;
-	
+
 	public function main(){
 		if(!$this->checkForSSH2Installed()){
 			$msg = 'On Ubuntu you will get the extension by installing the libssh2-php package';
@@ -115,7 +115,7 @@ class NagvisMigrationShell extends AppShell {
 		($this->checkConfigFilesDir($cfgDownloadDir))?:$this->createDownloadDirectory($cfgDownloadDir);
 		//download the files
 		$configFilesReceived = $this->getFiles($session, $cfgPath, $configFileList, $cfgDownloadDir);
-		
+
 		/*
 		  get background images
 		 */
@@ -132,7 +132,7 @@ class NagvisMigrationShell extends AppShell {
 		$this->getFiles($session, $bgPath, $bgImgList, $cfgDownloadDir);
 
 		$destination = $pluginPath.'img'.DS.'backgrounds'.DS;
-		
+
 		if($this->checkDir($destination)){
 			$this->moveToDestination($bgImgList,$cfgDownloadDir, $destination);
 			$this->triggerThumbnailCreation($destination, $bgImgList);
@@ -217,7 +217,7 @@ class NagvisMigrationShell extends AppShell {
 	/**
 	 * connect to the self host
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $loginUrl  
+	 * @param  String $loginUrl
 	 * @param  Array $loginData  Array with username and password for the v3 machine
 	 * @return void
 	 */
@@ -380,7 +380,7 @@ class NagvisMigrationShell extends AppShell {
 			];
 		$this->out('<info>'.$a[rand(0,3)].'</info>');
 		usleep(1000000);
-		
+
 		$this->out('<info>Starting Filetransfer</info>');
 		$count = 1;
 		$fileAmount = sizeof($fileList);
@@ -436,9 +436,9 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * get all available maps from the v3 system 
+	 * get all available maps from the v3 system
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @return Array with all maps 
+	 * @return Array with all maps
 	 */
 	protected function getMapNames(){
 		$mapnames = $this->map->find('all',[
@@ -463,7 +463,7 @@ class NagvisMigrationShell extends AppShell {
 			$request = [
 				'header' => ['Content-Type' => 'application/json'],
 			];
-			
+
 			$response = $this->HttpSocket->post($this->selfHost.'/map_module/maps/edit/'.$mapId.'.json', json_encode($data), $request);
 			if($response->isOk()){
 				$this->out('<success>Data successfully Saved!</success>');
@@ -477,9 +477,9 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * transform the config file content into the new form for v3 
+	 * transform the config file content into the new form for v3
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $mapname name of the Map 
+	 * @param  String $mapname name of the Map
 	 * @param  Array $data    config file array content
 	 * @return the new datastructure for v3
 	 */
@@ -552,7 +552,7 @@ class NagvisMigrationShell extends AppShell {
 						}
 
 						$mapData[$viewType][] = $currentData;
-						
+
 						break;
 					case 'service':
 						$ids = $this->resolveServicename($item['host_name'], $item['service_description']);
@@ -618,7 +618,7 @@ class NagvisMigrationShell extends AppShell {
 						$viewType = $this->getViewType((!isset($item['view_type']))?'icon':$item['view_type']);//icon or line
 						$currentData = [
 							'object_id' => $servicegroupId,
-							'type' => 'servicegroup', 
+							'type' => 'servicegroup',
 							'x' => $item['x'],
 							'y' => $item['y'],
 							'iconset' => $this->getNewIconset(((!isset($item['iconset']))?$data['global'][0]['iconset']:$item['iconset'])),
@@ -635,7 +635,7 @@ class NagvisMigrationShell extends AppShell {
 						];
 						$mapData['Maptext'][] = $currentData;
 						break;
-					case 'line': 
+					case 'line':
 						$x = explode(',', $item['x']);
 						$y = explode(',', $item['y']);
 						$currentData = [
@@ -647,7 +647,7 @@ class NagvisMigrationShell extends AppShell {
 							'type' => 'stateless',
 							'iconset' => 'std_line',
 						];
-						
+
 						$mapData['Mapline'][] = $currentData;
 						break;
 					case 'shape':
@@ -700,7 +700,7 @@ class NagvisMigrationShell extends AppShell {
 
 	/**
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-	 * @param  String $str the gadget url string 
+	 * @param  String $str the gadget url string
 	 * @return the new gadget
 	 */
 	protected function getGadget($str){
@@ -846,32 +846,73 @@ class NagvisMigrationShell extends AppShell {
 			$this->lastError = $errorMsg;
 		}
 
-		//in some cases the host could not be resolved due to the addition of a domain name 
-		//if the first try fails then check again without the domain name
-		if(empty($hostId) && $this->hasDomain($hostname)){
-			$newName = $this->stripDomain($hostname);
-			$this->out('<info>retry with stripped name '.$newName.'</info>');
-			
-			$hostId = $this->host->find('first',[
-				'recursive' => -1,
-				'conditions' => [
-					'Host.name' => $newName
-				],
-				'fields' => [
-					'Host.id'
-				]
-			]);
-			if(!empty($hostId)){
-				$hostId = $hostId['Host']['id'];
-				$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
-				return $hostId;
+		//in some cases the host could not be resolved due to the addition of a domain name or the "__evk_" prefix
+		//if the first try fails then check again without the domain name or the "__evk_" prefix
+		if(empty($hostId)){
+			$newName = '';
+			if($this->hasPrefix($hostname)){
+				//hostname contains prefix
+				$newName = $this->stripPrefix($hostname);
+				$this->out('<info>retry without prefix</info>');
+			}
+
+			if($this->hasDomain($hostname)){
+				//the host has an Domain extension which could be cut off
+				$newName = $this->stripDomain($hostname);
+				$this->out('<info>retry without domain name '.$newName.'</info>');
+			}
+
+			if(!empty($newName)){
+				$hostId = $this->host->find('first',[
+					'recursive' => -1,
+					'conditions' => [
+						'Host.name' => $newName
+					],
+					'fields' => [
+						'Host.id'
+					]
+				]);
+				if(!empty($hostId)){
+					$hostId = $hostId['Host']['id'];
+					$this->out('<success>Host '.$hostname.' resolved! ID -> '.$hostId.'</success>');
+					return $hostId;
+				}
 			}
 		}
+		return false;
+	}
 
+	/**
+	 * Check if the given name contains a prefix like '__evk_'
+	 * @param $name the name to check
+	 * @return bool
+	 */
+	protected function hasPrefix($name){
+		if(preg_match('/__evk_/', $name)){
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * strip the prefix like '__evk_' from the hostname
+	 * @param $name the name to be stripped
+	 *  @return bool|mixed
+	 */
+	protected function stripPrefix($name){
+		$pattern = '/__evk_/';
+		if($result = preg_replace($pattern, '', $name)){
+			return $result;
+		}
 		return false;
 	}
 
 
+	/**
+	 * check if the Host contains a domain suffix
+	 * @param $name
+	 * @return bool
+	 */
 	protected function hasDomain($name){
 		if(preg_match('/([0-9a-z-]{2,}\.[0-9a-z-]{2,3}\.[0-9a-z-]{2,3}|[0-9a-z-]{2,}\.[0-9a-z-]{2,3})$/i', $name)){
 			return true;
@@ -879,6 +920,11 @@ class NagvisMigrationShell extends AppShell {
 		return false;
 	}
 
+	/**
+	 * strip the domain suffix from the name
+	 * @param $name
+	 * @return bool|mixed
+	 */
 	protected function stripDomain($name){
 		$pattern = '/.([0-9a-z-]{2,}\.[0-9a-z-]{2,3}\.[0-9a-z-]{2,3}|[0-9a-z-]{2,}\.[0-9a-z-]{2,3})$/i';
 		if($result = preg_replace($pattern, '', $name)){
@@ -896,6 +942,14 @@ class NagvisMigrationShell extends AppShell {
 	protected function resolveServicename($hostname, $servicename){
 		$hostId = $this->resolveHostname($hostname);
 		if(!empty($hostId)){
+
+			//strip name prefixes like '__evk_' from the name cause we dont have them anymore in v3
+			if($this->hasPrefix($servicename)){
+				//servicename contains prefix
+				$servicename = $this->stripPrefix($servicename);
+				$this->out('<info>stripped prefix from servicename</info>');
+			}
+
 			$serviceId = $this->service->find('first',[
 				'conditions' => [
 					'Service.host_id' => $hostId,
@@ -1029,7 +1083,7 @@ class NagvisMigrationShell extends AppShell {
 	/**
 	 * extract the name of iconset files, create the directory with the name
 	 * and move the files into the directory
-	 * 
+	 *
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  Array $list  the list of iconset files
 	 * @param  String $dir  the Directory where the new folders should be create
@@ -1040,14 +1094,14 @@ class NagvisMigrationShell extends AppShell {
 		foreach ($list as $listItem) {
 			$item = preg_split($pattern, $listItem);
 			if(!empty($item[0])){
-				//remove underscore from the item 
+				//remove underscore from the item
 				$item = preg_replace('/_$/', '', $item[0]);
 				//get the new filename
 				preg_match_all('/[^\_]+$/', $listItem, $newFilename);
 				$newFilename = $newFilename[0][0];
 				$folderName = $item;
 				$to = $dir.DS.$folderName;
-				//check/create iconset folder 
+				//check/create iconset folder
 				if($this->createIconsetDirectories($dir, $folderName)){
 					if(!$this->moveIconFiles($dir, $to, $listItem, $newFilename)){
 						$this->out('<error>error moving '.$listItem.' to '.$to.'</error>');
@@ -1063,12 +1117,12 @@ class NagvisMigrationShell extends AppShell {
 	 * Create image Directories for the Iconsets
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $path  the Path where the directory shall be created
-	 * @param  String $name  the name of the new folder 
-	 * @return Bool          true if the directory has benn created or if its already existing 
+	 * @param  String $name  the name of the new folder
+	 * @return Bool          true if the directory has benn created or if its already existing
 	 *                       false if everything fails
 	 */
 	protected function createIconsetDirectories($path, $name){
-		$folder = $path.DS.$name; 
+		$folder = $path.DS.$name;
 		if(is_dir($folder)){
 			return true;
 		}else{
@@ -1105,7 +1159,7 @@ class NagvisMigrationShell extends AppShell {
 								$this->deleteFile($file);
 							}
 						}
-						
+
 					}
 				}
 			}else{
@@ -1146,7 +1200,7 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * check if the given Directory is existing. If its not then create it 
+	 * check if the given Directory is existing. If its not then create it
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $dir the string to check
 	 * @return return true if the directory is already existing or if its successfully created. false if it cant be created
@@ -1179,7 +1233,7 @@ class NagvisMigrationShell extends AppShell {
 
 	/**
 	 * move the specified file to the given directory
-	 * you can also rename the file 
+	 * you can also rename the file
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $from         The Path where the file is located
 	 * @param  String $to           The Path where the file shall be moved
@@ -1193,10 +1247,10 @@ class NagvisMigrationShell extends AppShell {
 	}
 
 	/**
-	 * convert an image to PNG 
+	 * convert an image to PNG
 	 * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
 	 * @param  String $file  the file
-	 * @param  String $name  path and filename for the created image 
+	 * @param  String $name  path and filename for the created image
 	 * @return Bool          true on success false on error
 	 */
 	protected function convertToPNG($file, $name){
@@ -1229,10 +1283,10 @@ class NagvisMigrationShell extends AppShell {
 	/*
 	Copyright (c) 2010, dealnews.com, Inc.
 	All rights reserved.
-	 
+
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	 
+
 	 * Redistributions of source code must retain the above copyright notice,
 	  this list of conditions and the following disclaimer.
 	 * Redistributions in binary form must reproduce the above copyright
@@ -1241,7 +1295,7 @@ class NagvisMigrationShell extends AppShell {
 	 * Neither the name of dealnews.com, Inc. nor the names of its contributors
 	  may be used to endorse or promote products derived from this software
 	  without specific prior written permission.
-	 
+
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -1253,7 +1307,7 @@ class NagvisMigrationShell extends AppShell {
 	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
-	 
+
 	 */
 
 	/**
@@ -1275,7 +1329,7 @@ class NagvisMigrationShell extends AppShell {
 	 * @return void
 	 *
 	 */
-	 
+
 	public function show_download_status($done, $total, $size=30) {
 
 		static $start_time;

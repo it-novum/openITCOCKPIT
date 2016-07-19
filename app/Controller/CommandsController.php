@@ -72,7 +72,6 @@ class CommandsController extends AppController{
 			unset($query['conditions']['Command.command_type']);
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -98,7 +97,6 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -124,7 +122,6 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = $this->PAGINATOR_LENGTH;
 			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
@@ -150,8 +147,7 @@ class CommandsController extends AppController{
 		if($this->isApiRequest()){
 			$all_commands = $this->Command->find('all', $query);
 		}else{
-			$query['limit'] = $this->PAGINATOR_LENGTH;
-			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_commands = $this->Paginator->paginate();
 		}
 		$this->set('isFilter', false);
@@ -535,5 +531,37 @@ class CommandsController extends AppController{
 	//ALC permission
 	public function terminal(){
 		return null;
+	}
+
+	public function usedBy($id = null){
+		if(!$this->Command->exists($id)){
+			throw new NotFoundException(__('Invalid servicetemplate'));
+		}
+
+		$command = $this->Command->findById($id);
+		$commandName = $command['Command']['name'];
+
+//		if(!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'), false)){
+//			$this->render403();
+//			return;
+//		}
+
+		$this->loadModel('Servicetemplate');
+		$servicestemplates = $this->Servicetemplate->find('all', [
+			'recursive' => -1,
+			'conditions' => [
+				'Servicetemplate.container_id' => $this->MY_RIGHTS,
+				'Servicetemplate.command_id' => $command['Command']['id']
+			],
+			'fields' => [
+				'Servicetemplate.id', 'Servicetemplate.description', 'Servicetemplate.name'
+			],
+			'order'=> [
+				'Servicetemplate.name' => 'asc'
+			],
+		]);
+
+		$this->set(compact(['servicestemplates', 'commandName']));
+		$this->set('back_url', $this->referer());
 	}
 }

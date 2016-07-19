@@ -153,7 +153,7 @@ class ServicesController extends AppController{
 						],
 					]
 				],
-				'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+			/*	'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
 					[
 						'0' => [
 							'name' => 'Hoststatus.up',
@@ -174,7 +174,7 @@ class ServicesController extends AppController{
 							'data' => 'Filter.Hoststatus.current_state',
 						]
 					]
-				],
+				], */
 			],
 		],
 		'notMonitored' => [
@@ -209,6 +209,7 @@ class ServicesController extends AppController{
 			'HostsToContainers.container_id' => $this->MY_RIGHTS
 		];
 		$conditions = $this->ListFilter->buildConditions($this->request->data, $conditions);
+
 		if(isset($this->request->params['named']['BrowserContainerId'])){
 			if(is_array($this->request->params['named']['BrowserContainerId'])){
 				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
@@ -241,13 +242,14 @@ class ServicesController extends AppController{
 				'Host.container_id' => $all_container_ids
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
+			debug($all_container_ids);
 		}
+
 		$all_services = [];
 		$query = [
-// 			'recursive' => -1,
+ 			'recursive' => -1,
 			'conditions' => $conditions,
 			'contain' => ['Servicetemplate'],
-			'limit' => $this->PAGINATOR_LENGTH,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -329,7 +331,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];
@@ -1732,6 +1734,16 @@ class ServicesController extends AppController{
 			$acknowledged = [];
 			if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+			}
+			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
+				$systemTicketLink = $this->Systemsetting->find('first', [
+					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+				]);
+				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
+				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
+				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
+				unset($explodedAck[sizeof($explodedAck) - 1]);
+				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
 			}
 			$username = $this->Auth->user('full_name');
 

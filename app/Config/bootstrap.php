@@ -39,7 +39,6 @@ Configure::load('app');
 Configure::load('countries');
 
 define('ENVIRONMENT', Environments::detect());
-
 switch(ENVIRONMENT) {
 	case Environments::STAGING:
 	case Environments::PRODUCTION:
@@ -53,6 +52,7 @@ define('PROTOCOL', (env('HTTPS') ? 'https' : 'http'));
 if(isset($_GET['cdbg']) || env('HTTP_CKDBG') !== null) {
 	Configure::write('debug', 2);
 }
+
 
 // Localization settings
 Configure::write('Config.language', 'en-us');

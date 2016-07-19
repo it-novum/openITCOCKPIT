@@ -30,7 +30,6 @@ class SystemsettingsController extends AppController{
 	
 	public function index(){
 		$all_systemsettings = $this->Systemsetting->findNice();
-		
 		if($this->request->is('post') || $this->request->is('put')){
 			if($this->Systemsetting->saveAll($this->request->data)){
 				

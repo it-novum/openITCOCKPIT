@@ -37,5 +37,22 @@ App.Controllers.ServicetemplatesIndexController = Frontend.AppController.extend(
 			'controller': 'servicetemplates',
 			'group': 'servicetemplategroups'
 		});
+		$('#allocate-servicet').click(function(e){
+			var containerId = '';
+			$('.massChange').each(function(){
+				if(this.checked) {
+					if (containerId == '') {
+						containerId = $(this).attr('data-container');
+					} else if (containerId != $(this).attr('data-container')) {
+						alert($('#same-contaner-text').val());
+						e.preventDefault();
+						return;
+					}
+				}
+			});
+		});
+		$('#new-stgroup').click(function(){
+			alert('suka');
+		});
 	}
 });

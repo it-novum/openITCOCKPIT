@@ -39,6 +39,12 @@ class LocationsController extends AppController{
 	];
 
 	public function index(){
+
+		if($this->hasRootPrivileges === true){
+			$container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
+		}else{
+			$container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+		}
 		$options = [
 			'order' => [
 				'Container.name' => 'asc'
@@ -46,7 +52,6 @@ class LocationsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -55,10 +60,10 @@ class LocationsController extends AppController{
 			unset($query['limit']);
 			$all_locations = $this->Location->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_locations = $this->Paginator->paginate();
 		}
-		$this->set(compact(['all_locations']));
+		$this->set(compact(['all_locations', 'container']));
 		$this->set('_serialize', ['all_locations']);
 		$this->_isFilter();
 	}

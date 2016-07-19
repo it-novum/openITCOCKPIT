@@ -63,10 +63,11 @@ class NotificationsController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+		$paginatorLimit = $this->Paginator->settings['limit'];
 
 		//--force --doit --yes-i-know-what-i-do
 		$all_notification = $this->Paginator->paginate(null, [], $order);
-		$this->set(compact(['all_notification']));
+		$this->set(compact(['all_notification', 'paginatorLimit']));
 		//Data for json and xml view /notifications.json or .xml
 		$this->set('_serialize', array('all_notification'));
 	}
@@ -107,7 +108,6 @@ class NotificationsController extends AppController{
 			$order = $this->ListsettingsParser('hostNotification', ['hostUuid' => $host['Host']['uuid']]);
 			//--force --doit --yes-i-know-what-i-do
 			$all_notification = $this->Paginator->paginate(null, [], $order);
-			//debug($host);
 
 			$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
 
@@ -194,7 +194,6 @@ class NotificationsController extends AppController{
 
 			//--force --doit --yes-i-know-what-i-do
 			$all_notification = $this->Paginator->paginate(null, [], $order);
-			//debug($host);
 			$this->set(compact(['service', 'servicestatus', 'all_notification', 'allowEdit']));
 
 			if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
@@ -213,7 +212,6 @@ class NotificationsController extends AppController{
 		if(isset($this->request->params['named']['Listsettings'])){
 			$this->request->data['Listsettings'] = $this->request->params['named']['Listsettings'];
 		}
-		//debug($this->request);
 
 		switch($action){
 			case 'serviceNotification':
@@ -256,8 +254,8 @@ class NotificationsController extends AppController{
 		$this->set('NotificationListsettings', $requestSettings['Listsettings']);
 
 		if(!isset($requestSettings['paginator']['limit'])){
-			$requestSettings['paginator']['limit'] = 30;
-			$requestSettings['Listsettings']['limit'] = 30;
+			$requestSettings['paginator']['limit'] = $this->Paginator->settings['limit'];
+			$requestSettings['Listsettings']['limit'] = $this->Paginator->settings['limit'];
 		}
 
 

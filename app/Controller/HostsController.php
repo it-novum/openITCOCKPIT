@@ -281,8 +281,8 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$all_hosts = $this->Host->find('all', $query);
 		}else{
-			$query['limit'] = $this->PAGINATOR_LENGTH;
-			$this->Paginator->settings = $query;
+			//$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hosts = $this->Paginator->paginate();
 		}
 
@@ -399,7 +399,6 @@ class HostsController extends AppController{
 		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
-			'limit' => 150,
 			'fields' => [
 				'Host.id',
 				'Host.uuid',
@@ -1758,7 +1757,6 @@ class HostsController extends AppController{
 			]);
 
 
-
 			$containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
 			$containerIdsToCheck[] = $_host['Host']['container_id'];
 
@@ -1774,7 +1772,24 @@ class HostsController extends AppController{
 				$allowEdit = true;
 			}
 
-			$services = $this->Service->findAllByHostIdAndDisabled($id, 0);
+			$services = $this->Service->find('all',[
+				'recursive' => -1,
+				'conditions' => [
+					'Service.host_id' => $id,
+				],
+				'fields' => [
+					'Service.id',
+					'Service.uuid',
+					'Service.name',
+					'Servicetemplate.name',
+					'Host.uuid',
+				],
+				'contain' => [
+					'Host',
+					'Servicetemplate'
+				],
+				'order' => 'Service.name'
+			]);
 
 			$commandarguments = [];
 			if(!empty($_host['Hostcommandargumentvalue'])){
@@ -1820,7 +1835,16 @@ class HostsController extends AppController{
 			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
 			}
-
+			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
+				$systemTicketLink = $this->Systemsetting->find('first', [
+					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+				]);
+				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
+				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
+				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
+				unset($explodedAck[sizeof($explodedAck) - 1]);
+				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
+			}
 			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
 			$username = $this->Auth->user('full_name');
 			$this->set(compact(['host', 'hoststatus', 'servicestatus', 'services', 'username', 'path', 'commandarguments', 'acknowledged', 'hostDocuExists', 'ContactsInherited', 'parenthosts', 'allowEdit']));
@@ -2525,9 +2549,13 @@ class HostsController extends AppController{
 		}
 		//=====
 		$host = $this->Host->findById($host_id);
-		$serviceTemplateGroups = $this->Servicetemplategroup->find('list',[
-				'fields' => ['Servicetemplategroup.description']
-			]);
+		$allServicetemplategroups = $this->Servicetemplategroup->find('all',[
+			'fields' => ['Servicetemplategroup.id','Container.name']
+		]);
+		foreach($allServicetemplategroups as $servicetemplategroup){
+			$serviceTemplateGroups[$servicetemplategroup['Servicetemplategroup']['id']] = $servicetemplategroup['Container']['name'];
+
+		}
 
 		$this->set('back_url', $this->referer());
 		$this->set(compact([
@@ -2541,7 +2569,6 @@ class HostsController extends AppController{
 		if(!$this->Servicetemplategroup->exists($stg_id)){
 			throw new NotFoundException(__('Invalid Servicetemplategroup'));
 		}
-
 		if(!$this->request->is('ajax')){
 			throw new MethodNotAllowedException();
 		}

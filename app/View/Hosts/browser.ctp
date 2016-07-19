@@ -66,7 +66,7 @@
 			<li class="">
 				<a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
 			</li>
-			<?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
+			<?php if($allowEdit):?>
 				<li class="">
 					<a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
 				</li>
@@ -102,7 +102,7 @@
 									<i class="fa fa-user fa-stack-2x"></i>
 									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
 								</span>
-								<?php echo __('The current status was already acknowledged by');?> <strong><?php echo h($acknowledged[0]['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i> <?php echo $this->Time->format($acknowledged[0]['Acknowledged']['entry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>) <?php echo __('with the comment');?> "<?php echo h($acknowledged[0]['Acknowledged']['comment_data']);?>".
+								<?php echo __('The current status was already acknowledged by');?> <strong><?php echo h($acknowledged[0]['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i> <?php echo $this->Time->format($acknowledged[0]['Acknowledged']['entry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>) <?php echo __('with the comment');?> "<?php echo h($acknowledged[0]['Acknowledged']['comment_data']).'"'.$acknowledged[0]['Acknowledged']['otrs_link'];?>.
 							</p>
 						<?php endif;?>
 

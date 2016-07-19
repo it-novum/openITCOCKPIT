@@ -74,8 +74,8 @@ class Contact extends AppModel{
 			'message' => 'Please select one or more containers'
 		],
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -111,9 +111,9 @@ class Contact extends AppModel{
 		],
 
 		'host_timeperiod_id' => [
-			'notEmpty' => [
+			'notBlank' => [
 				'allowEmpty' => false,
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -125,7 +125,7 @@ class Contact extends AppModel{
 		],
 
 		'HostCommands' => [
-			'notEmpty' => [
+			'notBlank' => [
 				'allowEmpty' => false,
 				'rule' => ['multiple', [
 					'min' => 1
@@ -135,9 +135,9 @@ class Contact extends AppModel{
 			]
 		],
 		'service_timeperiod_id' => [
-			'notEmpty' => [
+			'notBlank' => [
 				'allowEmpty' => false,
-				'rule' => 'notEmpty',
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -149,7 +149,7 @@ class Contact extends AppModel{
 		],
 
 		'ServiceCommands' => [
-			'notEmpty' => [
+			'notBlank' => [
 				//'allowEmpty' => false,
 				'rule' => ['multiple', [
 					'min' => 1

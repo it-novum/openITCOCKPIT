@@ -73,9 +73,6 @@
 												<th ><?php echo $this->Utils->getDirection($order, 'Tenant.name'); echo $this->Paginator->sort('Tenant.name', __('Tenant_name')); ?></th>
 												<th><?php echo $this->Utils->getDirection($order, 'Tenant.description'); echo $this->Paginator->sort('Tenant.description', __('Description')); ?></th>
 												<th><?php echo $this->Utils->getDirection($order, 'Tenant.is_active'); echo $this->Paginator->sort('Tenant.is_active', __('Is active')); ?></th>
-												<th><?php echo __('Number of users'); ?></th>
-												<th><?php echo __('Number of hosts'); ?></th>
-												<th><?php echo __('Number of services'); ?></th>
 												<th>&nbsp;</th>
 											</tr>
 										</thead>
@@ -99,24 +96,6 @@
 																<i class="fa fa-power-off fa-lg txt-color-red"></i>
 															<?php endif;?>
 														</center>
-													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_users'], [
-															'max' => $tenant['Tenant']['max_users'],
-															'unit' => '',
-														]); ?>
-													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_hosts'], [
-															'max' => $tenant['Tenant']['max_hosts'],
-															'unit' => '',
-														]); ?>
-													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_services'], [
-															'max' => $tenant['Tenant']['max_services'],
-															'unit' => '',
-														]); ?>
 													</td>
 													<td class="text-center">
 														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>

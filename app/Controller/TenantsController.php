@@ -63,7 +63,6 @@ class TenantsController extends AppController{
 			'conditions' => [
 				'Container.id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -72,7 +71,7 @@ class TenantsController extends AppController{
 			unset($query['limit']);
 			$all_tenants = $this->Tenant->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
 			$all_tenants = $this->Paginator->paginate();
 		}
 
