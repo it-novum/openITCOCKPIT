@@ -178,6 +178,10 @@ class NagiosNotificationTask extends AppShell {
 	 */
 
 	public function create_graph($output, $start, $title, $parameters, $ds) {
+		$parameters['hostname'] = $this->replaceChars($parameters['hostname']);
+		$parameters['servicedesc'] = $this->replaceChars($parameters['servicedesc']);
+		$ds['label'] = $this->replaceChars($ds['label']);
+		
 		$options = [
 			"--slope-mode",
 			"-l0",
@@ -195,6 +199,10 @@ class NagiosNotificationTask extends AppShell {
 		if(!$ret){
 			echo "<b>Graph error: </b>".rrd_error()."\n";
 		}
+	}
+
+	private function replaceChars($str, $replacement = ' '){
+		return preg_replace($str, '/[^a-zA-Z^0-9\-\.]/', $replacement);
 	}
 
 }
