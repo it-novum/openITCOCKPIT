@@ -80,7 +80,8 @@ class ServicetemplatesController extends AppController{
 			],
 			'conditions' => [
 				//'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
-				'Container.id' => $this->MY_RIGHTS
+				'Container.id' => $this->MY_RIGHTS,
+				'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE
 			],
 			'fields' => [
 				'Servicetemplate.id',
@@ -135,7 +136,7 @@ class ServicetemplatesController extends AppController{
 				'Contact'
 			],
 			'conditions' => [
-				'Servicetemplate.id' => $id
+				'Servicetemplate.id' => $id,
 			]
 		]);
 
