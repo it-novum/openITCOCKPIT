@@ -2,10 +2,18 @@
 
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 use itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader;
+use itnovum\openITCOCKPIT\ApiShell\RootUser;
 
 class ApiShell extends AppShell{
 
     public function main(){
+        $rootUser = new RootUser();
+        if($rootUser->isRootUser() === false){
+            $this->err('This shell only can be used by root user');
+            exit(1);
+        }
+
+
         $optionParser = new OptionParser();
         $optionParser->parse($this->params, $this->args);
         $plugin = $optionParser->getPlugin();
