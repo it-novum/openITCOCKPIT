@@ -16,12 +16,10 @@ class ApiShell extends AppShell{
 
         $optionParser = new OptionParser();
         $optionParser->parse($this->params, $this->args);
-        $plugin = $optionParser->getPlugin();
-        $model = $optionParser->getModel();
 
-        $apiExtensionLoader = new ApiExtensionLoader($this, $model, $plugin);
+        $apiExtensionLoader = new ApiExtensionLoader($this, $optionParser);
         if($apiExtensionLoader->isAvailable() === false){
-            $this->err(sprintf('Model %s is not supported by this shell', $model));
+            $this->err(sprintf('Model %s is not supported by this shell', $optionParser->getModel()));
             exit(1);
         }
 

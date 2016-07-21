@@ -50,10 +50,10 @@ class ApiExtensionLoader
      */
     private $pluginName;
 
-    public function __construct($cake, $modelName, $pluginName)
+    public function __construct($cake, OptionParser $optionParser)
     {
-        $this->modelName = $modelName;
-        $this->pluginName = $pluginName;
+        $this->modelName = $optionParser->getModel();
+        $this->pluginName = $optionParser->getPlugin();
         $this->Cake = $cake;
     }
 

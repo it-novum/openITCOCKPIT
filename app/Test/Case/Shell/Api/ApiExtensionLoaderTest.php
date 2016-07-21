@@ -29,31 +29,41 @@ use itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader;
 class ApiExtensionLoaderTest extends CakeTestCase
 {
     public function testInstance(){
-        $apiExtensionLoader = new ApiExtensionLoader(null, null, null);
+        $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser(''));
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader', $apiExtensionLoader);
     }
 
     public function testIsAvailable1(){
-        $apiExtensionLoader = new ApiExtensionLoader(null, 'Systemsettings', '');
+        $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser('Systemsettings'));
         $this->assertTrue($apiExtensionLoader->isAvailable());
     }
 
     public function testIsAvailable2(){
-        $apiExtensionLoader = new ApiExtensionLoader(null, 'SomeNonExistingApiExtension', '');
+        $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser('SomeNonExistingApiExtension'));
         $this->assertFalse($apiExtensionLoader->isAvailable());
     }
 
     public function testGetApiForSystemsettings(){
-        $apiExtensionLoader = new ApiExtensionLoader($this->getShell(), 'Systemsettings', '');
+        $apiExtensionLoader = new ApiExtensionLoader($this->getShell(), $this->getOptionParser('Systemsettings'), '');
         $api = $apiExtensionLoader->getApi();
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api', $api);
     }
 
-    public function getShell(){
+    private function getShell(){
         $shell = $this->getMockBuilder('Shell')
             ->disableOriginalConstructor()
             ->getMock();
         $shell->expects($this->any())->method('loadModel')->will($this->returnValue(true));
         return $shell;
+    }
+
+    private function getOptionParser($modelName){
+        $check = $this->getMockBuilder('itnovum\openITCOCKPIT\ApiShell\OptionParser')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $check->expects($this->any())->method('getModel')->will($this->returnValue($modelName));
+        $check->expects($this->any())->method('getPlugin')->will($this->returnValue(''));
+
+        return $check;
     }
 }
