@@ -69,6 +69,23 @@ class ApiTest extends CakeTestCase
 
         $this->assertTrue($api->update());
 
+        $record = $api->getRecordByKey('FOOBAR');
+        $fildsToRemove = ['id', 'created', 'modified'];
+        foreach($fildsToRemove as $field){
+            unset($record['Systemsettings'][$field]);
+    }
+
+        $assertedRecord = [
+            'Systemsettings' => [
+                'key' => 'FOOBAR',
+                'value' => 'new value for foobar',
+                'info' => 'new description for foobar',
+                'section' => 'new section of foobar'
+            ]
+        ];
+
+        $this->assertEquals($assertedRecord, $record);
+
         $api->setOptionsFromOptionParser($this->getOptionParser(
             'delete',
             'FOOBAR',

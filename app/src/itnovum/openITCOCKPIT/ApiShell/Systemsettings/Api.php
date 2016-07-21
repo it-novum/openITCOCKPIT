@@ -133,7 +133,7 @@ class Api extends CoreApi implements ApiInterface
         return $key;
     }
 
-    private function getRecordByKey(){
+    public function getRecordByKey(){
         $key = $this->getKeyOfData();
         return $this->Database->find('first', [
             'conditions' => [
