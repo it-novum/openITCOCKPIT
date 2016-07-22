@@ -67,26 +67,10 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
                             $querySelect.html('');
                             $querySelect.attr('data-placeholder', options.dataPlaceholder);
 
-                           // $querySelect.attr('data-placeholder', options.dataPlaceholderEmpty);
-
                             if(Object.keys(response.responseJSON[fieldType]).length > 0){
                                 $querySelect.attr('data-placeholder', options.dataPlaceholder);
                             }
                             self.getFilteredSelectionsForOptionGroup($querySelect, oldValues, response.responseJSON[fieldType], fieldType);
-                            /*
-                            var html = '';
-                            for(key in response.responseJSON[fieldType]){
-                              //  console.log(response.responseJSON[fieldType]);
-                                for(var displayName in response.responseJSON[fieldType][key].value){
-                                    html += '<optgroup label="' + displayName + '">';
-                                    for(var value in response.responseJSON[fieldType][key].value[displayName]){
-                                        html += '<option value="' + value + '">' + response.responseJSON[fieldType][key].value[displayName][value] + '</option>';
-                                    }
-                                    html += '</optgroup>';
-                                }
-                            }
-                            $querySelect.html(html);
-                            */
                             $querySelect.trigger('chosen:updated');
                         }
                     }
