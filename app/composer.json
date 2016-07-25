@@ -1,0 +1,24 @@
+{
+  "name": "it-novum/openITCOCKPIT",
+  "description": "openITCOCKPIT is an open source monitoring framework based on nagios",
+  "version": "3.0.7",
+  "homepage": "http://openitcockpit.org",
+  "license": "Dual licensed GPLv3 and proprietary",
+  "authors": [
+    {
+      "name": "it-novum GmbH",
+      "role": "Developer"
+    }
+  ],
+
+  "autoload": {
+    "psr-4": {
+      "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/"
+    }
+  },
+
+  "config": {
+    "vendor-dir": "Vendor"
+  }
+
+}
