@@ -26,9 +26,9 @@
 class SearchController extends AppController{
 	public $layout = 'Admin.default';
 	public $uses = ['Host', 'Service', 'Customvariable'];
-	
+
 	public function index(){
-		
+
 		if($this->request->is('post') || $this->request->is('put')){
 			//Default search
 			if(isset($this->request->data['SearchDefault'])){
@@ -41,7 +41,7 @@ class SearchController extends AppController{
 							$url['Filter.Hoststatus.current_state['.$state.']'] = 1;
 						}
 					}
-					
+
 					return $this->redirect($url);
 				}elseif(!empty($this->request->data['SearchDefault']['Servicename']) && empty($this->request->data['SearchDefault']['Hostname'])){
 					// The user typed in a service name but not a host name, so we need to search for the service
@@ -68,7 +68,7 @@ class SearchController extends AppController{
 					$this->setFlash(__('Invalid search query'), false);
 				}
 			}
-			
+
 			//Search by keyword
 			if(isset($this->request->data['SearchKeywords'])){
 				if(!empty($this->request->data['SearchKeywords']['Hostkeywords']) && empty($this->request->data['SearchKeywords']['Servicekeywords'])){
@@ -80,7 +80,7 @@ class SearchController extends AppController{
 					}
 					return $this->redirect($url);
 				}
-				
+
 				if(!empty($this->request->data['SearchKeywords']['Servicekeywords'])){
 					//The user search for a service keyword
 					$hostKeywords = explode(',', $this->request->data['SearchKeywords']['Servicekeywords']);
@@ -90,10 +90,10 @@ class SearchController extends AppController{
 					}
 					return $this->redirect($url);
 				}
-				
+
 				$this->setFlash(__('Invalid search query'), false);
 			}
-			
+
 			//Search object by UUID
 			if(isset($this->request->data['SearchUuid']['UUID'])){
 				return $this->redirect([
@@ -104,36 +104,37 @@ class SearchController extends AppController{
 				]);
 				//return $this->redirect('/forward/index/uuid:'.$this->request->data['SearchUuid']['UUID']);
 			}
-			
+
 			//Search for host address
 			if(isset($this->request->data['SearchAddress']['Hostaddress'])){
 				return $this->redirect([
 					'controller' => 'hosts',
 					'action'	 => 'index',
 					'Filter.Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
+					'q' => 1, //the last octett of the ip adress gets cut so we need an additional param
 				]);
 			}
-			
+
 			//Search for macros
 			if(isset($this->request->data['SearchMacros'])){
 				if(!empty($this->request->data['SearchMacros']['Hostmacro']) && empty($this->request->data['SearchMacros']['Servicemacro'])){
 					//User is searching for host macros
 					return $this->redirect(['action' => 'hostMacro', $this->request->data['SearchMacros']['Hostmacro']]);
 				}
-				
+
 				if(empty($this->request->data['SearchMacros']['Hostmacro']) && !empty($this->request->data['SearchMacros']['Servicemacro'])){
 					//User is searching for service macros
 					return $this->redirect(['action' => 'serviceMacro', $this->request->data['SearchMacros']['Servicemacro']]);
 				}
-				
+
 				$this->setFlash(__('Invalid search query'), false);
 			}
 		}
-		
+
 		$backUrl = $this->referer();
 		$this->set(compact(['backUrl']));
 	}
-	
+
 	public function hostMacro($macroname = ''){
 		$result = $this->Customvariable->find('all', [
 			'conditions' => [
@@ -142,17 +143,17 @@ class SearchController extends AppController{
 			]
 		]);
 		$hostIds = Hash::extract($result, '{n}.Customvariable.object_id');
-		
+
 		$all_hosts = $this->Host->find('all', [
 			'conditions' => [
 				'Host.id' => $hostIds
 			]
 		]);
-				
+
 		$this->set(compact('all_hosts'));
-		
+
 	}
-	
+
 	public function serviceMacro($macroname = ''){
 		$result = $this->Customvariable->find('all', [
 			'conditions' => [
@@ -168,6 +169,6 @@ class SearchController extends AppController{
 			'order' => ['Host.name' => 'asc'],
 		]);
 		$this->set(compact('all_services'));
-		
+
 	}
 }
