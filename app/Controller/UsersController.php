@@ -218,7 +218,7 @@ class UsersController extends AppController{
 	public function add($type = 'local'){
 		$usergroups = $this->Usergroup->find('list');
 		// Activate "Show Stats in Menu" by default for New Users
-		$this->request->data['User']['showstatsinmenu'] = 1;
+		$this->request->data['User']['showstatsinmenu'] = 0;
 		if(isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true){
 			$type = 'ldap';
 			$samaccountname = '';
