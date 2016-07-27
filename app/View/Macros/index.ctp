@@ -43,7 +43,7 @@
 			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false" >
 				<header>
 					<div class="widget-toolbar" role="menu">
-						<button type="button" class="btn btn-xs btn-success addMacro"><i class="fa fa-plus"></i> <?php echo __('New'); ?></button>
+						<button type="button" class="btn btn-xs btn-success addMacro" id="addNewMacro"><i class="fa fa-plus"></i> <?php echo __('New'); ?></button>
 					</div>
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
@@ -90,17 +90,22 @@
 														<input class="form-control" type="hidden" value="<?php echo $macro['Macro']['id']; ?>" name="data[<?php echo $i; ?>][Macro][id]">
 													<?php endif;?>
 													<input class="form-control" type="hidden" macro="name" uuid="<?php echo $uuid; ?>" value="<?php echo $macro['Macro']['name']; ?>" name="data[<?php echo $i; ?>][Macro][name]">
-													<input class="form-control systemsetting-input"  type="text" maxlength="255" value="<?php echo $macro['Macro']['value']; ?>" name="data[<?php echo $i; ?>][Macro][value]">
+													<input class="form-control systemsetting-input <?php echo ($macro['Macro']['password'])?'macroPassword':''; ?>"  type="text" maxlength="255" value="<?php echo $macro['Macro']['value']; ?>" name="data[<?php echo $i; ?>][Macro][value]">
 												</div>
 											</td>
 											<td>
 												<?php if(isset($macro['Macro']['id'])): ?>
 													<input class="form-control systemsetting-input" type="text" maxlength="255" value="<?php echo $macro['Macro']['description']; ?>" name="data[<?php echo $i; ?>][Macro][description]">
+													<input class="form-control"  type="hidden" value="<?php echo (int)$macro['Macro']['password'];?>" name="data[<?php echo $i; ?>][Macro][password]">
 												<?php else:?>
 													<input class="form-control systemsetting-input" type="text" maxlength="255" value="" name="data[<?php echo $i; ?>][Macro][description]">
+													<input class="form-control" type="hidden" value="0" name="data[<?php echo $i; ?>][Macro][password]">
 												<?php endif;?>
 											</td>
-											<td><a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red deleteMacro" href="javascript:void(0);"><i class="fa fa-trash-o fa-lg"></i></a></td>
+											<td>
+												<a style="padding: 6px;" class="isPassword <?php echo (!$macro['Macro']['password'])?'txt-color-red':'txt-color-blue'; ?>" href="javascript:void(0);"><i class="fa <?php echo (!$macro['Macro']['password'])?'fa-eye-slash':'fa-eye'; ?> fa-lg"></i></a>
+												<a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red deleteMacro" href="javascript:void(0);"><i class="fa fa-trash-o fa-lg"></i></a>
+											</td>
 										</tr>
 										<?php $i++; ?>
 									<?php endforeach; ?>
