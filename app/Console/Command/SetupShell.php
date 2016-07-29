@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use \itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
+use \itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
+use \itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
+
 class SetupShell extends AppShell{
     public $uses = ['Systemsetting', 'User', 'Cronjob', 'ContainerUserMembership'];
 
@@ -83,7 +87,14 @@ class SetupShell extends AppShell{
                             if($this->Systemsetting->save($this->Systemdata)){
                                 //Return mail address saved successfully
                                 $file = fopen(APP . 'Config' . DS . 'email.php', 'w+');
-                                fwrite($file, $this->mailTemplate($this->Mail));
+                                $mailHost = new MailConfigValue($this->Mail['host']);
+                                $mailPort = new MailConfigValueInt((int)$this->Mail['port']);
+                                $mailUsername = new MailConfigValue($this->Mail['username']);
+                                $mailPassword = new MailConfigValue($this->Mail['password']);
+                                $mailConfigurator = new MailConfigurator(
+                                    $mailHost, $mailPort, $mailUsername, $mailPassword
+                                );
+                                fwrite($file, $mailConfigurator->getConfig());
                                 fclose($file);
                                 $this->out('<green>Mail configuration saved successfully</green>');
 
@@ -275,13 +286,13 @@ class SetupShell extends AppShell{
         $this->out('<red>domain\jdoe</red> or <red>john.doe@example.org</red>');
         $input = $this->in(__d('oitc_console', 'Please enter your username, or leave it blank if you don\'t need a user'));
         $input = trim($input);
-        return (empty($input))?null:$input;
+        return $input;
     }
 
     public function askMailPassword(){
         $input = $this->in(__d('oitc_console', 'Please enter your password, or leave it blank if you don\'t need a password'));
         $input = trim($input);
-        return (empty($input))?null:$input;
+        return $input;
     }
 
     public function createMysqlPartitions(){
@@ -299,48 +310,7 @@ class SetupShell extends AppShell{
         return false;
     }
 
-    public function mailTemplate($options){
-        return '<?php
-class EmailConfig {
-    public $default = array(
-        "transport" => "Smtp",
-        "host" => "' . $options['host'] . '",
-        "port" => ' . $options['port'] . ',
-        "username" => "' . $options['username'] . '",
-        "password" => "' . $options['password'] . '",
-    );
 
-    public $fast = array(
-        "from" => "you@localhost",
-        "sender" => null,
-        "to" => null,
-        "cc" => null,
-        "bcc" => null,
-        "replyTo" => null,
-        "readReceipt" => null,
-        "returnPath" => null,
-        "messageId" => true,
-        "subject" => null,
-        "message" => null,
-        "headers" => null,
-        "viewRender" => null,
-        "template" => false,
-        "layout" => false,
-        "viewVars" => null,
-        "attachments" => null,
-        "emailFormat" => null,
-        "transport" => "Smtp",
-        "host" => "localhost",
-        "port" => 25,
-        "timeout" => 30,
-        "username" => "user",
-        "password" => "secret",
-        "client" => null,
-        "log" => true
-    );
-
-}';
-    }
 
     public function createCronjobs(){
         $this->out('<blue>Checking for missing cronjobs</blue>');
