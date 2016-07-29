@@ -4,8 +4,8 @@ class EmailConfig {
 		"transport" => "Smtp",
 		"host" => "127.0.0.1", 
 		"port" => 25,
-		"username" => "",
-		"password" => "",
+		"username" => null,
+		"password" => null,
 	);
 
 	public $fast = array(
