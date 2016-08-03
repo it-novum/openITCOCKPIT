@@ -237,8 +237,13 @@ class AppController extends Controller{
 			}
 		}
 
+
 		if(!empty($this->Auth->user('paginatorlength'))){
 			$this->Paginator->settings['limit'] = $this->Auth->user('paginatorlength');
+			if($this->Auth->user('paginatorlength') > 100){
+				//paginator maxLimit must be also set now
+				$this->Paginator->settings['maxLimit'] = $this->Auth->user('paginatorlength');
+			}
 		}else{
 			$this->Paginator->settings['limit'] = 25;
 		}
