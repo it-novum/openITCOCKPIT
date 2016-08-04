@@ -35,7 +35,7 @@ class Hostgroup extends AppModel{
 		'Container' => [
 			'foreignKey' => 'container_id',
 			'className' => 'Container',
-	]);
+		]);
 
 	public $hasAndBelongsToMany = array(
 		'Host' => [
@@ -47,22 +47,22 @@ class Hostgroup extends AppModel{
 	);
 
 	public $validate = [
-			'hostgroup_url' => [
-				'rule' => 'url',
-				'allowEmpty' => true,
-				'required' => false,
-				'message' => 'Not a valid URL format'
+		'hostgroup_url' => [
+			'rule' => 'url',
+			'allowEmpty' => true,
+			'required' => false,
+			'message' => 'Not a valid URL format'
+		],
+		'Host' => [
+			'rule' => ['multiple',
+				[
+					'min' => 1,
+				]
 			],
-			'Host' => [
-				'rule' => ['multiple',
-					[
-						'min' => 1,
-					]
-				],
-				'message' => 'Please select at least 1 host',
-				'required' => true
-			]
-		];
+			'message' => 'Please select at least 1 host',
+			'required' => true
+		]
+	];
 
 	public function __construct($id = false, $table = null, $ds = null){
 		parent::__construct($id, $table, $ds);
@@ -73,7 +73,6 @@ class Hostgroup extends AppModel{
 		if(!is_array($container_ids)){
 			$container_ids = [$container_ids];
 		}
-
 		//Lookup for the tenant container of $container_id
 		$this->Container = ClassRegistry::init('Container');
 
@@ -85,6 +84,12 @@ class Hostgroup extends AppModel{
 				// Get contaier id of the tenant container
 				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
 				$path = $this->Container->getPath($container_id);
+
+				foreach($path as $containers){
+					if($containers["Container"]["containertype_id"] == CT_HOSTGROUP){
+						$tenantContainerIds[] = $containers["Container"]['parent_id'];
+					}
+				}
 				$tenantContainerIds[] = $path[1]['Container']['id'];
 			}else{
 				$tenantContainerIds[] = ROOT_CONTAINER;
@@ -92,12 +97,10 @@ class Hostgroup extends AppModel{
 		}
 		$tenantContainerIds = array_unique($tenantContainerIds);
 
-
 		$hostgroupsAsList = [];
 
 		foreach($tenantContainerIds as $tenantContainerId){
-			//changed second parameter to false since Hostgroups can be associated with Nodes too and not Tenants only
-			$children = $this->Container->children($tenantContainerId, false);
+			$children = $this->Container->children($tenantContainerId, true);
 			foreach($children as $child){
 				if($child['Container']['containertype_id'] == CT_HOSTGROUP){
 					$hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
