@@ -73,7 +73,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']); 
+							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
 						endif;
 						?>
 						</div>
@@ -88,26 +88,26 @@
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					 
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('hostchecks', [
 							'class' => 'form-horizontal clear',
-							'action' => 'index/'.$host['Host']['id'] //reset the URL on submit
+							'url' => 'index/'.$host['Host']['id'] //reset the URL on submit
 						]);
-						
+
  						?>
-						
+
 						<div class="widget-toolbar pull-left" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('From:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 78%;" type="text" maxlength="255" value="<?php echo $StatehistoryListsettings['from']; ?>" name="data[Listsettings][from]">
 						</div>
-						
+
 						<div class="widget-toolbar pull-left" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('To:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 85%;" type="text" maxlength="255" value="<?php echo $StatehistoryListsettings['to']; ?>" name="data[Listsettings][to]">
 						</div>
-							
+
 							<div class="btn-group">
 								<?php
 									$listoptions = [
@@ -136,7 +136,7 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
+
 									$selected = 30;
 									if(isset($StatehistoryListsettings['limit']) && isset($listoptions[$StatehistoryListsettings['limit']]['human'])){
 										$selected = $listoptions[$StatehistoryListsettings['limit']]['human'];
@@ -163,7 +163,7 @@
 								'unreachable' => __('Unreachable')
 							];
 							?>
-							
+
 							<div class="btn-group">
 								<button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
 									<?php echo __('State types'); ?> <i class="fa fa-caret-down"></i>
@@ -177,20 +177,20 @@
 										endif;
 										?>
 										<li>
-											<input type="hidden" value="0" name="data[Listsettings][state_types][<?php echo $state_type; ?>]" /> 
+											<input type="hidden" value="0" name="data[Listsettings][state_types][<?php echo $state_type; ?>]" />
 											<li style="width: 100%;"><a href="javascript:void(0)" class="listoptions_checkbox text-left"><input type="checkbox" name="data[Listsettings][state_types][<?php echo $state_type; ?>]" value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a></li>
 										</li>
 									<?php endforeach?>
 								</ul>
 							</div>
-							
+
 							<button class="btn btn-xs btn-success toggle"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
  				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon"> <i class="fa fa-check-square-o"></i> </span>
@@ -204,7 +204,7 @@
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 						<?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
-						
+
 						<table id="hostchecks_list" class="table table-striped table-bordered smart-form" style="">
 							<thead>
 								<tr>
