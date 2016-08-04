@@ -76,7 +76,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']); 
+							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
 						endif;
 						?>
 						</div>
@@ -92,26 +92,26 @@
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					 
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('notifications', [
 							'class' => 'form-horizontal clear',
-							'action' => 'hostNotification/'.$host['Host']['id'] //reset the URL on submit
+							'url' => 'hostNotification/'.$host['Host']['id'] //reset the URL on submit
 						]);
-						
+
  						?>
-						
+
 						<div class="widget-toolbar pull-left" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('From:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 78%;" type="text" maxlength="255" value="<?php if(isset($NotificationListsettings['from'])): echo $NotificationListsettings['from']; else: echo date('d.m.Y H:i', strtotime('3 days ago')); endif;?>" name="data[Listsettings][from]">
 						</div>
-						
+
 						<div class="widget-toolbar pull-left" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('To:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 85%;" type="text" maxlength="255" value="<?php if(isset($NotificationListsettings['to'])): echo $NotificationListsettings['to']; else: echo date('d.m.Y H:i', time()); endif;?>" name="data[Listsettings][to]">
 						</div>
-							
+
 							<div class="btn-group">
 								<?php
 									$listoptions = [
@@ -140,7 +140,7 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
+
 									$selected = 30;
 									if(isset($NotificationListsettings['limit']) && isset($listoptions[$NotificationListsettings['limit']]['human'])){
 										$selected = $listoptions[$NotificationListsettings['limit']]['human'];
@@ -158,14 +158,14 @@
 								</ul>
 								<input type="hidden" value="<?php if(isset($NotificationListsettings['limit'])): echo $NotificationListsettings['limit']; endif; ?>" id="listoptions_hidden_limit" name="data[Listsettings][limit]" />
 							</div>
-							
+
 							<button class="btn btn-xs btn-success toggle"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
  				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon"> <i class="fa fa-envelope"></i> </span>
@@ -179,7 +179,7 @@
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 						<?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
-						
+
 						<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 							<thead>
 								<tr>
@@ -198,7 +198,7 @@
 									<tr>
 										<td><center><?php echo $this->Monitoring->NotificationStatusIcon($notification['Notification']['state'], $notification['Notification']['notification_type']);?></center></td>
 										<td>
-											<?php if(isset($notification['Host']['name']) && $notification['Host']['name'] != null):?> 
+											<?php if(isset($notification['Host']['name']) && $notification['Host']['name'] != null):?>
 												<a href="/hosts/browser/<?php echo $notification['Host']['id']; ?>">
 													<?php echo h($notification['Host']['name']); ?>
 												</a>
