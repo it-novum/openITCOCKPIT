@@ -80,7 +80,8 @@ class ServicetemplatesController extends AppController{
 			],
 			'conditions' => [
 				//'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE,
-				'Container.id' => $this->MY_RIGHTS
+				'Container.id' => $this->MY_RIGHTS,
+				'Servicetemplate.servicetemplatetype_id' => GENERIC_SERVICE
 			],
 			'fields' => [
 				'Servicetemplate.id',
@@ -135,7 +136,7 @@ class ServicetemplatesController extends AppController{
 				'Contact'
 			],
 			'conditions' => [
-				'Servicetemplate.id' => $id
+				'Servicetemplate.id' => $id,
 			]
 		]);
 
@@ -959,7 +960,6 @@ class ServicetemplatesController extends AppController{
 	}
 
 	public function assignGroup($id = null){
-
 		$servicetmpl = $this->Servicetemplate->find('all',[
 			'conditions' => [
 				'Servicetemplate.id' => func_get_args()
@@ -1014,7 +1014,7 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($checkedContanerId);
-		$allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', null, true);
+		$allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
 		$allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
 			'conditions' => ['Container.parent_id' => $checkedContanerId]
 		]);
