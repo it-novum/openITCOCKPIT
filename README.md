@@ -1,3 +1,4 @@
+<img src="https://mgmt.it-novum.com/oitc2.svg" alt="openITCOCKPIT logo" width="auto" height="100" >
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like [Nagios](https://www.nagios.org/) or [Naemon](http://www.naemon.org/).
 
@@ -32,8 +33,8 @@ openITCOCKPIT uses Nginx as webserver and will generate the configuration for ph
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt-get update
-apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
+apt update
+apt install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
@@ -41,8 +42,8 @@ apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt-get update
-apt-get install openitcockpit{,-nagios,-ndoutils,-npcd}
+apt update
+apt install openitcockpit{,-nagios,-ndoutils,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
@@ -66,7 +67,7 @@ apt-get install openitcockpit{,-nagios,-ndoutils,-npcd}
 If you like to try openITCOCKPIT you can install our Vagrant box
 * Install [Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on your system
 ````
-apt-get install vagrant virtualbox
+apt install vagrant virtualbox
 ````
 * Download the [Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3/Vagrantfile)
 ````
