@@ -2716,10 +2716,30 @@ class NagiosExportTask extends AppShell{
 		return $c;
 	}
 
+
     public function makeSQLBackup($path) {
-        $pathForBackup = $path."mysql_oitc_bkp_".date("Ymd_His")."/";
-        exec("xtrabackup --backup --target-dir=".$pathForBackup, $output, $return);
-        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
-        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
+        $pathForBackup = $path."mysql_oitc_bkp_".date("Y-m-d_His").".sql";
+
+        $connection = ConnectionManager::sourceList();
+        $connectionList = ConnectionManager::enumConnectionObjects();
+        $usedConnectionDetails = $connectionList[$connection[0]];
+        $dbc_dbname = $usedConnectionDetails["database"];
+
+        exec("mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --flush-privileges --single-transaction --triggers --routines --events --hex-blob --ignore-table=$dbc_dbname.nagios_acknowledgements --ignore-table=$dbc_dbname.nagios_commands --ignore-table=$dbc_dbname.nagios_commenthistory --ignore-table=$dbc_dbname.nagios_configfiles --ignore-table=$dbc_dbname.nagios_configfilevariables --ignore-table=$dbc_dbname.nagios_conninfo --ignore-table=$dbc_dbname.nagios_contact_addresses --ignore-table=$dbc_dbname.nagios_contact_notificationcommands --ignore-table=$dbc_dbname.nagios_contactgroup_members --ignore-table=$dbc_dbname.nagios_contactgroups --ignore-table=$dbc_dbname.nagios_contactnotificationmethods --ignore-table=$dbc_dbname.nagios_contactnotifications --ignore-table=$dbc_dbname.nagios_contacts --ignore-table=$dbc_dbname.nagios_contactstatus --ignore-table=$dbc_dbname.nagios_customvariables --ignore-table=$dbc_dbname.nagios_customvariablestatus --ignore-table=$dbc_dbname.nagios_dbversion --ignore-table=$dbc_dbname.nagios_downtimehistory --ignore-table=$dbc_dbname.nagios_eventhandlers --ignore-table=$dbc_dbname.nagios_externalcommands --ignore-table=$dbc_dbname.nagios_flappinghistory --ignore-table=$dbc_dbname.nagios_host_contactgroups --ignore-table=$dbc_dbname.nagios_host_contacts --ignore-table=$dbc_dbname.nagios_host_parenthosts --ignore-table=$dbc_dbname.nagios_hostchecks --ignore-table=$dbc_dbname.nagios_hostdependencies --ignore-table=$dbc_dbname.nagios_hostescalation_contactgroups --ignore-table=$dbc_dbname.nagios_hostescalation_contacts --ignore-table=$dbc_dbname.nagios_hostescalations --ignore-table=$dbc_dbname.nagios_hostgroup_members --ignore-table=$dbc_dbname.nagios_hostgroups --ignore-table=$dbc_dbname.nagios_hosts --ignore-table=$dbc_dbname.nagios_hoststatus --ignore-table=$dbc_dbname.nagios_instances --ignore-table=$dbc_dbname.nagios_logentries --ignore-table=$dbc_dbname.nagios_notifications --ignore-table=$dbc_dbname.nagios_processevents --ignore-table=$dbc_dbname.nagios_programstatus --ignore-table=$dbc_dbname.nagios_runtimevariables --ignore-table=$dbc_dbname.nagios_scheduleddowntime --ignore-table=$dbc_dbname.nagios_service_contactgroups --ignore-table=$dbc_dbname.nagios_service_contacts --ignore-table=$dbc_dbname.nagios_service_parentservices --ignore-table=$dbc_dbname.nagios_servicechecks --ignore-table=$dbc_dbname.nagios_servicedependencies --ignore-table=$dbc_dbname.nagios_serviceescalation_contactgroups --ignore-table=$dbc_dbname.nagios_serviceescalation_contacts --ignore-table=$dbc_dbname.nagios_serviceescalations --ignore-table=$dbc_dbname.nagios_servicegroup_members --ignore-table=$dbc_dbname.nagios_servicegroups --ignore-table=$dbc_dbname.nagios_services --ignore-table=$dbc_dbname.nagios_servicestatus --ignore-table=$dbc_dbname.nagios_statehistory --ignore-table=$dbc_dbname.nagios_systemcommands --ignore-table=$dbc_dbname.nagios_timedeventqueue --ignore-table=$dbc_dbname.nagios_timedevents --ignore-table=$dbc_dbname.nagios_timeperiod_timeranges --ignore-table=$dbc_dbname.nagios_timeperiods > ".$pathForBackup);
     }
+
+    public function restoreSQLBackup($dumpFile) {
+
+        $connection = ConnectionManager::sourceList();
+        $connectionList = ConnectionManager::enumConnectionObjects();
+        $usedConnectionDetails = $connectionList[$connection[0]];
+        $dbc_dbname = $usedConnectionDetails["database"];
+        $host = $usedConnectionDetails["host"];
+        $pwd = $usedConnectionDetails["password"];
+        $user = $usedConnectionDetails["login"];
+
+        exec("mysql --host=$host --user=$user --password=$pwd -v $dbc_dbname < $dumpFile");
+    }
+
+
 }

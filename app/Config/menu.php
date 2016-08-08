@@ -131,8 +131,8 @@ $config = [
 				],
 				'itc_backup' => [
 					'url' => ['controller' => 'backups', 'action' => 'index'],
-					'title' => 'Backup',
-					'icon' => 'check-square-o ',
+					'title' => 'Backup / Restore',
+					'icon' => 'database ',
 					'parent_controller' => 'Administrators'
 				]
 			]
