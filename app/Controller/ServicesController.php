@@ -1992,11 +1992,19 @@ class ServicesController extends AppController{
 			'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
 			'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
 		]);
+
 		$service = $this->Service->findById($id);
+		$hostContainerId = $service['Host']['container_id'];
+
+		$allowEdit = false;
+		if($this->allowedByContainerId($hostContainerId)){
+			$allowEdit = true;
+		}
+
 		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
 		$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
 
-		$this->set(compact(['service', 'servicestatus', 'acknowledged']));
+		$this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit']));
 	}
 
 	public function grapherTemplate($id){
