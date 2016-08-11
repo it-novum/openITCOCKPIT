@@ -97,6 +97,16 @@
 					<?php echo ($is_gearmand_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
 					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
+				<dt><?php echo __('Gearman Worker');?>:</dt>
+				<dd>
+					<?php echo ($is_gearman_worker_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo __('Gearman Worker'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
+				<dt><?php echo __('OITC Cmd');?>:</dt>
+				<dd>
+					<?php echo ($is_oitccmd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo __('OITC Cmd'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+				</dd>
 				<?php /*?><dt><?php echo __('Database server');?>:</dt>
 				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
 				<dt><?php echo __('phpNSTA');?>:</dt>

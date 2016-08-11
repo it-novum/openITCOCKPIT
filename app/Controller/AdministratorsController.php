@@ -143,6 +143,8 @@ class AdministratorsController extends AppController{
 		$is_statusengine_perfdata = false;
 		$is_gearmand_running = false;
 		$gearmanStatus = [];
+		$is_gearman_worker_running = false;
+		$is_oitccmd_running = false;
 
 		Configure::load('nagios');
 		exec(Configure::read('nagios.nagios_status'), $output, $returncode);
@@ -203,6 +205,21 @@ class AdministratorsController extends AppController{
 			}
 		}
 
+		$output = null;
+		exec('ps -eaf |grep gearman_worker | grep -v grep', $output, $returncode);
+		if(sizeof($output) > 0){
+			$is_gearman_worker_running = true;
+			$output = null;
+		}
+
+		$output = null;
+		exec('ps -eaf |grep Cmd | grep -v grep', $output, $returncode);
+		if(sizeof($output) > 0){
+			$is_oitccmd_running = true;
+			$output = null;
+		}
+
+
 		/*exec(Configure::read('nagios.mysql_status'), $output, $returncode);
 		if($returncode == 0){
 			$is_mysql_running = true;
@@ -228,7 +245,7 @@ class AdministratorsController extends AppController{
 		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-		
+
 		$this->set(compact([
 			'disks',
 			'memory',
@@ -245,7 +262,9 @@ class AdministratorsController extends AppController{
 			'mailConfig',
 			'is_gearmand_running',
 			'gearmanStatus',
-			'recipientAddress'
+			'recipientAddress',
+			'is_gearman_worker_running',
+			'is_oitccmd_running',
 		]));
 	}
 
