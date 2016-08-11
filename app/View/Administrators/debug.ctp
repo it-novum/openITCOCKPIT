@@ -80,32 +80,34 @@
 				<dt><?php echo __('Monitoring engine');?>:</dt>
 				<dd>
 					<?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo h($monitoring_engine); echo ($is_nagios_running == true)?__(''):__(' service nagios start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Database connector');?>:</dt>
 				<dd>
+					<?php $str = ''; ($is_statusengine)? $str = ' service statusengine start': $str = ' service ndo start';?>
 					<?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo ($is_statusengine)?__('Statusengine'):__('NDOUtils'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo ($is_statusengine)?__('Statusengine'):__('NDOUtils'); echo ($is_db_running === true)?__(''):__($str); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Perf. data processor');?>:</dt>
 				<dd>
+					<?php $str = ''; ($is_statusengine_perfdata)? $str = ' service statusengine start': $str = ' service npcd start'; ?>
 					<?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); echo ($is_npcd_running === true)?__(''):__($str);?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Queuing engine');?>:</dt>
 				<dd>
 					<?php echo ($is_gearmand_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); echo ($is_gearmand_running === true)?__(''):  __(' service gearman-job-server start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Gearman Worker');?>:</dt>
 				<dd>
 					<?php echo ($is_gearman_worker_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo __('Gearman Worker'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo __('Gearman Worker'); echo ($is_gearman_worker_running === true)?__(''):  __(' service gearman_worker start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('OITC Cmd');?>:</dt>
 				<dd>
 					<?php echo ($is_oitccmd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo __('OITC Cmd'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<a data-original-title="<?php echo __('OITC Cmd'); echo ($is_oitccmd_running === true)?__(''):  __(' service oitc_cmd start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<?php /*?><dt><?php echo __('Database server');?>:</dt>
 				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
