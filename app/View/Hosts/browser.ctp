@@ -378,7 +378,7 @@
 													if($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
 														echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
 													else:
-														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'])['html_icon'];
+														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'], 'color: transparent;')['html_icon'];
 													endif;
 													?>
 												</td>
