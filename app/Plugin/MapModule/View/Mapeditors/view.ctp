@@ -123,7 +123,7 @@
 						<?php
 							if($item['Mapitem']['type'] !== 'servicegroup'):
 						?>
-						<a href="/<?php echo Inflector::pluralize($item['Mapitem']['type']); ?>/<?php echo ($item['Mapitem']['type'] === 'hostgroup')?'extended':'browser';?>/<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>">
+						<a target="_parent" href="/<?php echo Inflector::pluralize($item['Mapitem']['type']); ?>/<?php echo ($item['Mapitem']['type'] === 'hostgroup')?'extended':'browser';?>/<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>">
 							<?php
 							endif;
 							?>
@@ -253,7 +253,7 @@
 						?>
 						<!-- add gadget data field -->
 						<div id="<?php echo $uuid; ?>" data-uuid="<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['uuid']; ?>" class="gadgetContainer">
-						<a href="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>">
+						<a target="_parent" href="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>">
 						<?php
 							if($gadget['Mapgadget']['type'] == 'host' || $gadget['Mapgadget']['type'] == 'service'):
 						?>

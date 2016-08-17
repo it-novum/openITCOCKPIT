@@ -112,7 +112,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 				self.Gadget['draw'+mapGadgets[i]['gadget']]('svgContainer_'+mapGadgets[i]['id'], options);
 
 				//wrap browser link around the gadget
-				$('#svgContainer_'+mapGadgets[i]['id']).children().wrap('<a href="'+currentElementData['currentLink']+'"></a>');
+				$('#svgContainer_'+mapGadgets[i]['id']).children().wrap('<a target="_parent" href="'+currentElementData['currentLink']+'"></a>');
 			};
 		}
 
