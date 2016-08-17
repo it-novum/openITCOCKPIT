@@ -49,11 +49,11 @@
 			if(isset($this->params['named']['rotate'])){
 				$backLink = '/map_module/rotations';
 			}
-			echo $this->Utils->backButton(null,$backLink);?>
+			echo $this->Utils->backButton(null,$backLink, ['target'=>"_parent"]);?>
 			<?php if(!$isFullscreen): ?>
-				<a href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen');?></a>
+				<a target="_parent" href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen');?></a>
 			<?php else: ?>
-				<a href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-small"></i> <?php echo __('Leave fullscreen');?></a>
+				<a target="_parent" href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-small"></i> <?php echo __('Leave fullscreen');?></a>
 			<?php endif; ?>
 		</div>
 	</header>
