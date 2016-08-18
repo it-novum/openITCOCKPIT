@@ -316,6 +316,7 @@ class Mapeditor extends MapModuleAppModel{
 			'conditions' => $conditions,
 			'fields' => $fields,
 			'joins' => $joins,
+			'order' => 'Servicestatus.current_state desc'
 		]);
 		return $servicestatus;
 	}

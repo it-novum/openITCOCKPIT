@@ -138,15 +138,15 @@ class MapeditorsController extends MapModuleAppController {
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
 		$this->set(compact([
-			'map', 
-			'maps', 
-			'mapList', 
-			'servicegroup', 
-			'hostgroup', 
-			'hosts', 
+			'map',
+			'maps',
+			'mapList',
+			'servicegroup',
+			'hostgroup',
+			'hosts',
 			'services',
-			'backgroundThumbs', 
-			'iconSets', 
+			'backgroundThumbs',
+			'iconSets',
 			'icons'
 		]));
 	}
@@ -216,7 +216,7 @@ class MapeditorsController extends MapModuleAppController {
 				}
 			}
 		}
-		
+
 		if(!empty($map['Mapgadget'])){
 			$mapgadgetObjectIds = Hash::combine($map['Mapgadget'], '{n}.object_id', '{n}.object_id', '{n}.type');
 			if(!empty($mapgadgetObjectIds)){
@@ -359,15 +359,16 @@ class MapeditorsController extends MapModuleAppController {
 				'Servicestatus.is_flapping',
 				'Servicestatus.perfdata',
 				'Servicestatus.output',
-				'Service.name', // may obsolete .. just mapstatushelper is using that 
-				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+				'Service.name', // may obsolete .. just mapstatushelper is using that
+				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
 				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
 				'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
 			];
 			$hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
 			$hoststatus = $this->Mapeditor->getHoststatusByUuid($hostUuids, $hoststatusFields);
 			foreach ($hoststatus as $key => $value) {
-				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($hostUuids[$key], $servicestatusFields);
+				$currentHostUuid = $hoststatus[$key]['Objects']['name1'];
+				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($currentHostUuid, $servicestatusFields);
 			}
 		}
 
@@ -396,8 +397,8 @@ class MapeditorsController extends MapModuleAppController {
 		if(!empty($uuidsByItemType['service'])){
 			$fields = [
 				'Objects.name2',
-				'Service.name', // may obsolete .. just mapstatushelper is using that 
-				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+				'Service.name', // may obsolete .. just mapstatushelper is using that
+				'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
 				'Servicestatus.problem_has_been_acknowledged',
 				'Servicestatus.scheduled_downtime_depth',
 				'Servicestatus.is_flapping',
@@ -510,8 +511,8 @@ class MapeditorsController extends MapModuleAppController {
 			'Servicestatus.is_flapping',
 			'Servicestatus.perfdata',
 			'Servicestatus.output',
-			'Service.name', // may obsolete .. just mapstatushelper is using that 
-			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+			'Service.name', // may obsolete .. just mapstatushelper is using that
+			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
 			'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
 			'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
 		];
@@ -544,8 +545,8 @@ class MapeditorsController extends MapModuleAppController {
 		$fields = [
 			'Host.name',
 			'Objects.name2',
-			'Service.name', // may obsolete .. just mapstatushelper is using that 
-			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that 
+			'Service.name', // may obsolete .. just mapstatushelper is using that
+			'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
 			'Servicestatus.problem_has_been_acknowledged',
 			'Servicestatus.scheduled_downtime_depth',
 			'Servicestatus.is_flapping',
