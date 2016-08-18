@@ -102,7 +102,7 @@
 														<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 															<li class="divider"></li>
 															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'locations', 'action' => 'delete', $location['Location']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																<a href="#" data-toggle="modal" data-target="#delete_location_<?php echo $location['Location']['id']; ?>" class="txt-color-red"><i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?> </a>
 															</li>
 														<?php endif; ?>
 													</ul>
@@ -140,3 +140,34 @@
 			</div>
 	</div>
 </section>
+
+<?php foreach($all_locations as $location): ?>
+	<div class="modal fade" id="delete_location_<?php echo $location['Location']['id'];?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						&times;
+					</button>
+					<h4 class="modal-title" id="myModalLabel"><?php echo __('Do you really want to delete this location and all related objects');?></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						Make sure that you really do not use this location</br>
+						and any related objects like: </br>
+						<ul>
+							<li>Hosts</li>
+							<li>Services</li>
+						</ul>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<?php echo $this->Form->postLink(__('Delete'), ['controller' => 'locations', 'action' => 'delete', $location['Location']['id']], ['class' => 'btn btn-danger', 'data-dismiss' => "modal"]); ?>
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<?php echo __('Cancel'); ?>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endforeach; ?>
