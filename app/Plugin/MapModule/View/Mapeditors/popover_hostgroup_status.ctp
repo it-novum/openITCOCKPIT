@@ -24,12 +24,12 @@
 //	confirmation.
 
 /*
- *         _                    _               
+ *         _                    _
  *   __ _ (_) __ ___  __ __   _(_) _____      __
  *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V / 
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
- *      |__/                                    
+ * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
+ *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
+ *      |__/
 */
 $hostgroupStatus = $this->Mapstatus->hostgroupstatus($hostgroups[0]['Hostgroup']['uuid']);
 $hostAmount = count($hostgroups[0]['Host']);
@@ -40,15 +40,15 @@ foreach ($hostgroups[0]['Host'] as $counter => $host) {
 	if(!empty($host['Servicestatus'])){
 		foreach ($host['Servicestatus'] as $key => $value) {
 			//fill the current state into the array
-			$serviceStateArr[$counter][$key] = $value['Servicestatus']['current_state'];
+			//$serviceStateArr[$counter][$key] = $value['Servicestatus']['current_state'];
+			$serviceStateArr[$host['uuid']][$key] = $value['Servicestatus']['current_state'];
 		}
 	}else{
 		//set a null value into the array
-		$serviceStateArr[$counter] = null;
+		$serviceStateArr[$host['uuid']] = null;
 	}
-	
-}
 
+}
 $serviceAmountperHost = [];
 foreach ($serviceStateArr as $k => $v) {
 	//check if there is an empty array
@@ -98,6 +98,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
 	</tr>
 	<?php
 		foreach ($hostgroups[0]['Host'] as $key => $host) : ?>
+			<?php $key = $host['uuid']; ?>
 		<tr>
 			<!-- Hostname -->
 			<td title="<?php echo $host['name']; ?>">
