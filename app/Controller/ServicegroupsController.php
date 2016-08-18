@@ -372,11 +372,7 @@ class ServicegroupsController extends AppController{
 	public function loadServices($containerId = null){
 		$this->allowOnlyAjaxRequests();
 
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds(
-			$containerId, false,
-			$this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
-		);
-		$services = $this->Host->servicesByContainerIds($containerIds, 'list', [
+		$services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
 			'forOptiongroup' => true,
 		]);
 		$services = $this->Service->makeItJavaScriptAble($services);
