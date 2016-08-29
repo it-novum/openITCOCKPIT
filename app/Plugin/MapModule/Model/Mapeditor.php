@@ -333,7 +333,8 @@ class Mapeditor extends MapModuleAppModel{
 		}
 		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
 		$conditions = [
-			'Host.uuid' => $uuid
+			'Host.uuid' => $uuid,
+			'Objects.is_active' => 1
 		];
 		return $this->_hoststatus($conditions, $fields);
 	}
@@ -351,7 +352,8 @@ class Mapeditor extends MapModuleAppModel{
 		}
 		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
 		$conditions = [
-			'Objects.name1' => $uuid
+			'Objects.name1' => $uuid,
+			'Objects.is_active' => 1
 		];
 		return $this->_servicestatus($conditions, $fields, true);
 	}
@@ -369,7 +371,8 @@ class Mapeditor extends MapModuleAppModel{
 		}
 		$this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
 		$conditions = [
-			'Objects.name2' => $uuid
+			'Objects.name2' => $uuid,
+			'Objects.is_active' => 1
 		];
 		return $this->_servicestatus($conditions, $fields, true);
 	}
