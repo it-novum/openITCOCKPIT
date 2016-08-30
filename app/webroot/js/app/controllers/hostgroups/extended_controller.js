@@ -23,6 +23,9 @@
 //	confirmation.
 
 App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
+
+	data: null,
+
 	$table: null,
 	/**
 	 * @constructor
@@ -122,6 +125,8 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 			self.filter($this.attr('search_id'), $this.val(), $this.attr('needle'));
 		});
 
+		this.loadHosts();
+
 	},
 	showHide: function(showHideElement){
 		if(showHideElement.hasClass('fa-plus-square-o')){
@@ -132,7 +137,45 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 			$('.'+showHideElement.attr('showhide_uuid')).addClass('hidden');
 		}
 	},
-	
+
+	loadHosts: function(){
+		return;
+		this.Ajaxloader.show();
+
+		ret = $.ajax({
+			url: "/hostgroups/loadHostsByHostgroup/"+this.getVar('hostgroupId')+".json",
+			type: "POST",
+			error: function(){},
+			success: function(response){
+
+
+
+				this.renderTable(response);
+				this.Ajaxloader.hide();
+			}.bind(this),
+			complete: function(response) {
+			}
+		});
+	},
+
+	renderTable: function(data){
+		$('#pageStatus').text(this.getVar('renderTableMessage'));
+
+
+		var $table = $('#hostgroup_list');
+
+		for(var f in data.hosts){
+			$table.append(sprintf(
+				'<tr>' +
+					'<td>%s</td>' +
+					'<td>%s</td>' +
+				'</tr>',
+				data.hosts[f].Host.name
+			));
+		}
+		$('#pageStatus').parent().remove();
+	},
+
 	validateDowntimeInput: function(){
 		this.Ajaxloader.show();
 		var fromData = $('#CommitHostgroupDowntimeFromDate').val();

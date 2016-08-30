@@ -166,7 +166,7 @@ $config = [
 			],
 			'Hostgroups' => [
 				'index' => ['listToPdf', 'view'],
-				'extended' => ['listToPdf'],
+				'extended' => ['listToPdf', 'loadServicesByHostId'],
 				'add' => ['loadHosts', 'mass_add'],
 				'edit' => ['loadHosts'],
 				'delete' => ['mass_delete']
