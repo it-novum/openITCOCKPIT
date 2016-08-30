@@ -24,16 +24,26 @@
 //	confirmation.
 
 /*
- *         _                    _               
+ *         _                    _
  *   __ _ (_) __ ___  __ __   _(_) _____      __
  *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V / 
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
- *      |__/                                    
+ * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
+ *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
+ *      |__/
 */
 
 $_servicestatus = $this->Mapstatus->servicestatus($uuid);
 $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
+if(empty($servicestatus)){
+	$hostName = $serviceinfo[0]['Host']['name'];
+	$serviceName = $serviceinfo[0][0]['ServiceName'];
+	$serviceDescr = $serviceinfo[0][0]['ServiceDescription'];
+}else{
+	$hostName = $servicestatus[0]['Host']['name'];
+	$serviceName = $servicestatus[0][0]['ServiceName'];
+	$serviceDescr = $servicestatus[0][0]['ServiceDescription'];
+}
+
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
 	<tr>
@@ -41,15 +51,15 @@ $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0]['Host']['name']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $hostName; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('Service Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0][0]['ServiceName']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $serviceName; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatus[0][0]['ServiceDescription']; ?></td>
+		<td class="col-md-9 col-xs-9"><?php echo $serviceDescr; ?></td>
 	</tr>
 	<tr>
 		<td class="col-md-3 col-xs-3"><?php echo __('State'); ?></td>
