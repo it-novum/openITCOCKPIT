@@ -26,43 +26,24 @@ App.Controllers.HostgroupsEditController = Frontend.AppController.extend({
 	$table: null,
 	$hosts: null,
 
-	components: ['Ajaxloader'],
+	components: ['Ajaxloader', 'ContainerSelectbox'],
 
 	_initialize: function() {
-		this.Ajaxloader.setup();
-		this.$hosts = $('#HostgroupHost');
+
 		var self = this;
-		$('#ContainerParentId').change(function(){
-			$this = $(this);
-			self.loadHosts($this.val());
+
+		this.Ajaxloader.setup();
+		this.ContainerSelectbox.setup(this.Ajaxloader);
+		// Bind change event for Container Selectbox
+		this.ContainerSelectbox.addContainerEventListener({
+			selectBoxSelector: '#ContainerParentId',
+			ajaxUrl: '/hostgroups/loadHosts/:selectBoxValue:' + '.json',
+			fieldTypes: {
+				hosts: '#HostgroupHost',
+			},
+			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+			dataPlaceholder: self.getVar('data_placeholder')
 		});
 	},
-
-	loadHosts: function(container_id){
-		this.Ajaxloader.show();
-		$.ajax({
-			url: "/hostgroups/loadHosts/"+encodeURIComponent(container_id)+'.json',
-			type: "POST",
-			dataType: "json",
-			error: function(){},
-			success: function(){},
-			complete: function(response){
-				//empty the selectbox for the new results
-				this.$hosts.html('');
-				this.$hosts.attr('data-placeholder', this.getVar('data_placeholder_empty'));
-
-
-				if(Object.keys(response.responseJSON.hosts).length > 0){
-					this.$hosts.attr('data-placeholder', this.getVar('data_placeholder'));
-					for(var key in response.responseJSON.hosts){
-						this.$hosts.append('<option value="'+response.responseJSON.hosts[key].key+'">'+response.responseJSON.hosts[key].value+'</option>');
-					}
-				}
-
-				//Rerender the chosen selectbox
-				this.$hosts.trigger("chosen:updated");
-				this.Ajaxloader.hide();
-			}.bind(this)
-		});
-	}
 });
+

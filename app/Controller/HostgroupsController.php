@@ -415,11 +415,8 @@ class HostgroupsController extends AppController{
 
 	public function loadHosts($containerId = null){
 		$this->allowOnlyAjaxRequests();
-
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, 'list');
-		$hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+		$hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER ,$containerId], 'list');
 		$hosts = $this->Host->makeItJavaScriptAble($hosts);
-
 		$this->set(compact(['hosts']));
 		$this->set('_serialize', ['hosts']);
 	}
