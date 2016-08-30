@@ -1145,8 +1145,8 @@ class ServicesController extends AppController{
 			}
 
 			$this->Service->set($this->request->data);
-			$this->request->data['Contact']['Contact'] = $this->request->data['Service']['Contact'];
-			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Service']['Contactgroup'];
+			$this->request->data['Contact']['Contact'] = $this->request->data('Service.Contact');
+			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Service.Contactgroup');
 			$this->request->data['Servicegroup']['Servicegroup'] = (is_array($this->request->data['Service']['Servicegroup'])) ? $this->request->data['Service']['Servicegroup'] : [];
 
 			$servicetemplate = [];
