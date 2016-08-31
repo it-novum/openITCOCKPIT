@@ -77,7 +77,7 @@
 											<?php endif ?>
 											<li class="divider"></li>
 											<li>
-												<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'dashboards', 'url' => 'deleteTab', $_tab['DashboardTab']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+												<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'dashboards', 'action' => 'deleteTab', $_tab['DashboardTab']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
 											</li>
 										</ul>
 									</li>
