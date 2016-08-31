@@ -367,7 +367,8 @@ class MapeditorsController extends MapModuleAppController {
 			$hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
 			$hoststatus = $this->Mapeditor->getHoststatusByUuid($hostUuids, $hoststatusFields);
 			foreach ($hoststatus as $key => $value) {
-				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($hostUuids[$key], $servicestatusFields);
+				$currentHostUuid = $hoststatus[$key]['Objects']['name1'];
+				$hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($currentHostUuid, $servicestatusFields);
 			}
 		}
 
