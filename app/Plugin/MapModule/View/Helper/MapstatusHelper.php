@@ -197,7 +197,7 @@ class MapstatusHelper extends AppHelper{
 				],
 				1 => [
 					'human_state' => __('Warning'),
-					'image' => 'down.png',
+					'image' => 'warning.png',
 				],
 				2 => [
 					'human_state' => __('Critical'),
