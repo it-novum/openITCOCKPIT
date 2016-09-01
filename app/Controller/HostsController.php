@@ -446,7 +446,7 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$all_hosts = $this->Host->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hosts = $this->Paginator->paginate();
 		}
 
@@ -1432,7 +1432,7 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$disabledHosts = $this->Host->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$disabledHosts = $this->Paginator->paginate();
 		}
 

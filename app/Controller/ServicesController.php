@@ -437,7 +437,6 @@ class ServicesController extends AppController{
 		$query = [
 //			'recursive' => -1,
 			'contain' => ['Servicetemplate'],
-			'limit' => 150,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -482,8 +481,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$query['limit'] = 150;
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];
@@ -626,8 +624,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$query['limit'] = 150;
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];
