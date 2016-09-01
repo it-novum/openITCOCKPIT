@@ -487,9 +487,8 @@ class Host extends AppModel{
 			$requestData['Host']['Contactgroup'] = [];
 		}
 		if(empty($requestData['Host']['Contact'])){
-			$requestData['Host']['Contactgroup'] = [];
+			$requestData['Host']['Contact'] = [];
 		}
-
 		$diff_array = Hash::merge($diff_array, [
 			'Host' => [
 				'hosttemplate_id' => $hostTemplateId,
@@ -654,7 +653,7 @@ class Host extends AppModel{
 			'Contactgroup' => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
 			'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
 			'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
-			'Hostcommandargumentvalue' => (!empty($host['Hostcommandargumentvalue'])) ? $host['Hostcommandargumentvalue'] : $host['Hosttemplate']['Hosttemplatecommandargumentvalue'],
+			'Hostcommandargumentvalue' => (!empty($host['Hostcommandargumentvalue'])) ? $host['Hostcommandargumentvalue'] : (($host['Host']['command_id'] === $host['Hosttemplate']['command_id'])?$host['Hosttemplate']['Hosttemplatecommandargumentvalue']:[]),
 			'Hosttemplate' => $host['Hosttemplate'],
 			'Hostgroup' => Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id'),
 			'CheckCommand' => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],

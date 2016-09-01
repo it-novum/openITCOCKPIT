@@ -65,9 +65,9 @@
 							]
 						);
 						echo $this->Form->input('host_container_id', [
-								'options' => $containersPrimary,
+								'options' => $containers,
 								'multiple' => false,
-								'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+								'selected' => $host['Host']['container_id'],
 								'class' => 'chosen',
 								'style' => 'width: 100%',
 								'label' => __('Primary container'),
