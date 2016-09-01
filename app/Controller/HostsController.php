@@ -505,12 +505,8 @@ class HostsController extends AppController{
 			$this->render403();
 			return;
 		}
-
 		$host = $this->Host->prepareForView($id);
-
-
 		$host_for_changelog = $host;
-
 		$this->set('back_url', $this->referer());
 		$this->Frontend->setJson('lang_minutes', __('minutes'));
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
@@ -676,8 +672,12 @@ class HostsController extends AppController{
 		]));
 		if($this->request->is('post') || $this->request->is('put')){
 			$ext_data_for_changelog = [
-				'Contact' => [],
-				'Contactgroup' => [],
+				'Contact' => [
+				    'Contact' => []
+                ],
+				'Contactgroup' => [
+				    'Contactgroup'=> []
+                ],
 				'Hostgroup' => [],
 				'Parenthost' => []
 			];
@@ -825,26 +825,15 @@ class HostsController extends AppController{
 			}
 
 			$this->Host->id = $id;
-			$this->request->data['Contact']['Contact'] = $this->request->data['Host']['Contact'];
-			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Host']['Contactgroup'];
+			$this->request->data['Contact']['Contact'] = $this->request->data('Host.Contact');
+			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Host.Contactgroup');
 			$this->request->data['Parenthost']['Parenthost'] = $this->request->data['Host']['Parenthost'];
 			$this->request->data['Hostgroup']['Hostgroup'] = (is_array($this->request->data['Host']['Hostgroup'])) ? $this->request->data['Host']['Hostgroup'] : [];
 			$hosttemplate = [];
 			if(isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])){
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
-			$data_to_save = Hash::merge(
-				$this->_diffWithTemplate($this->request->data, $hosttemplate),
-				[
-					'Host' => [
-						'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
-						'container_id' => $this->request->data['Host']['container_id']
-					],
-					'Container' => [
-						'container_id' => $this->request->data['Host']['container_id']
-					]
-				]
-			);
+
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
 
@@ -857,20 +846,20 @@ class HostsController extends AppController{
 			if(isset($this->request->data['Hostcommandargumentvalue'])){
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hostcommandargumentvalue'], '{n}.commandargument_id');
 			}
+
 			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
 			foreach($commandargumentIdsOfDatabase as $commandargumentId){
 				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
 					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-
-					$this->Hostcommandargumentvalue->delete(
-						$this->Hostcommandargumentvalue->find('first', [
-							'conditions' => [
-								'host_id' => $id,
-								'commandargument_id' => $commandargumentId
-							]
-						])
-						['Hostcommandargumentvalue']
-					);
+					$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
+                        'conditions' => [
+                            'host_id' => $id,
+                            'commandargument_id' => $commandargumentId
+                        ]
+                    ]);
+                    if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
+                        $this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
+                    }
 				}
 			}
 
@@ -930,6 +919,7 @@ class HostsController extends AppController{
 			return;
 		}
 		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+
 		$sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container']['Container'][] = $this->request->data['Host']['container_id'];
@@ -2333,8 +2323,8 @@ class HostsController extends AppController{
 				return [
 					'inherit' => false,
 					'source' => 'Host',
-					'Contact' => $this->request->data['Host']['Contact'],
-					'Contactgroup' => $this->request->data['Host']['Contactgroup']
+					'Contact' => $this->request->data('Host.Contact'),
+					'Contactgroup' => $this->request->data('Host.Contactgroup')
 				];
 
 			}
