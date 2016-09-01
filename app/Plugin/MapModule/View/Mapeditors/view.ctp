@@ -113,7 +113,13 @@
 						class="elementHover iconContainer"
 						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
 						data-uuid="<?php echo $item['SubMap']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
-						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
+							<?php
+							if(array_key_exists('fullscreen', $this->params['named'])){
+								echo '<a target="_parent" href="/map_module/mapeditors/view/'. $item['Mapitem']['object_id'] .'/fullscreen:1">';
+							}else{
+								echo '<a target="_parent" href="/map_module/mapeditors/view/'. $item['Mapitem']['object_id'] .'">';
+							}
+							?>
 					<?php else:?>
 						<div id="<?php echo $uuid; ?>"
 							class="elementHover iconContainer"
