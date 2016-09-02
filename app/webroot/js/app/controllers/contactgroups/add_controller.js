@@ -26,43 +26,22 @@ App.Controllers.ContactgroupsAddController = Frontend.AppController.extend({
 	$table: null,
 	$contacts: null,
 
-	components: ['Ajaxloader'],
+	components: ['Ajaxloader', 'ContainerSelectbox'],
 
 	_initialize: function() {
-		this.Ajaxloader.setup();
-		this.$contacts = $('#ContactgroupContact');
 		var self = this;
-		$('#ContainerParentId').change(function(){
-			$this = $(this);
-			self.loadContacts($this.val());
+
+		this.Ajaxloader.setup();
+		this.ContainerSelectbox.setup(this.Ajaxloader);
+		// Bind change event for Container Selectbox
+		this.ContainerSelectbox.addContainerEventListener({
+			selectBoxSelector: '#ContainerParentId',
+			ajaxUrl: '/contactgroups/loadContacts/:selectBoxValue:' + '.json',
+			fieldTypes: {
+				contacts: '#ContactgroupContact',
+			},
+			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+			dataPlaceholder: self.getVar('data_placeholder')
 		});
 	},
-
-	loadContacts: function(container_id){
-		if(container_id > 0){
-			this.Ajaxloader.show();
-			$.ajax({
-				url: "/contactgroups/loadContacts/"+encodeURIComponent(container_id)+'.json',
-				type: "POST",
-				dataType: "json",
-				error: function(){},
-				success: function(){},
-				complete: function(response){
-					//empty the selectbox for the new results
-					this.$contacts.html('');
-					this.$contacts.attr('data-placeholder', this.getVar('data_placeholder_empty'));
-					
-					if(Object.keys(response.responseJSON.contacts).length > 0){
-						this.$contacts.attr('data-placeholder', this.getVar('data_placeholder'));
-						for(var key in response.responseJSON.contacts){
-							this.$contacts.append('<option value="'+response.responseJSON.contacts[key].key+'">'+response.responseJSON.contacts[key].value+'</option>');
-						}
-					}
-
-					this.$contacts.trigger("chosen:updated");
-					this.Ajaxloader.hide();
-				}.bind(this)
-			});
-		}
-	}
 });

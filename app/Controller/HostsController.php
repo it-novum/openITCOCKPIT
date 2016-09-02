@@ -446,7 +446,7 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$all_hosts = $this->Host->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hosts = $this->Paginator->paginate();
 		}
 
@@ -505,12 +505,8 @@ class HostsController extends AppController{
 			$this->render403();
 			return;
 		}
-
 		$host = $this->Host->prepareForView($id);
-
-
 		$host_for_changelog = $host;
-
 		$this->set('back_url', $this->referer());
 		$this->Frontend->setJson('lang_minutes', __('minutes'));
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
@@ -676,8 +672,12 @@ class HostsController extends AppController{
 		]));
 		if($this->request->is('post') || $this->request->is('put')){
 			$ext_data_for_changelog = [
-				'Contact' => [],
-				'Contactgroup' => [],
+				'Contact' => [
+				    'Contact' => []
+                ],
+				'Contactgroup' => [
+				    'Contactgroup'=> []
+                ],
 				'Hostgroup' => [],
 				'Parenthost' => []
 			];
@@ -825,26 +825,15 @@ class HostsController extends AppController{
 			}
 
 			$this->Host->id = $id;
-			$this->request->data['Contact']['Contact'] = $this->request->data['Host']['Contact'];
-			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Host']['Contactgroup'];
+			$this->request->data['Contact']['Contact'] = $this->request->data('Host.Contact');
+			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Host.Contactgroup');
 			$this->request->data['Parenthost']['Parenthost'] = $this->request->data['Host']['Parenthost'];
 			$this->request->data['Hostgroup']['Hostgroup'] = (is_array($this->request->data['Host']['Hostgroup'])) ? $this->request->data['Host']['Hostgroup'] : [];
 			$hosttemplate = [];
 			if(isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])){
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
-			$data_to_save = Hash::merge(
-				$this->_diffWithTemplate($this->request->data, $hosttemplate),
-				[
-					'Host' => [
-						'hosttemplate_id' => $this->request->data['Host']['hosttemplate_id'],
-						'container_id' => $this->request->data['Host']['container_id']
-					],
-					'Container' => [
-						'container_id' => $this->request->data['Host']['container_id']
-					]
-				]
-			);
+
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
 
@@ -857,20 +846,20 @@ class HostsController extends AppController{
 			if(isset($this->request->data['Hostcommandargumentvalue'])){
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hostcommandargumentvalue'], '{n}.commandargument_id');
 			}
+
 			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
 			foreach($commandargumentIdsOfDatabase as $commandargumentId){
 				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
 					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-
-					$this->Hostcommandargumentvalue->delete(
-						$this->Hostcommandargumentvalue->find('first', [
-							'conditions' => [
-								'host_id' => $id,
-								'commandargument_id' => $commandargumentId
-							]
-						])
-						['Hostcommandargumentvalue']
-					);
+					$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
+                        'conditions' => [
+                            'host_id' => $id,
+                            'commandargument_id' => $commandargumentId
+                        ]
+                    ]);
+                    if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
+                        $this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
+                    }
 				}
 			}
 
@@ -930,6 +919,7 @@ class HostsController extends AppController{
 			return;
 		}
 		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+
 		$sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container']['Container'][] = $this->request->data['Host']['container_id'];
@@ -1432,7 +1422,7 @@ class HostsController extends AppController{
 		if($this->isApiRequest()){
 			$disabledHosts = $this->Host->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$disabledHosts = $this->Paginator->paginate();
 		}
 
@@ -1835,19 +1825,28 @@ class HostsController extends AppController{
 			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
 			}
-			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
-				$systemTicketLink = $this->Systemsetting->find('first', [
-					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-				]);
-				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
-				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
-				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
-				unset($explodedAck[sizeof($explodedAck) - 1]);
-				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
-			}
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+            ]);
+
 			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
 			$username = $this->Auth->user('full_name');
-			$this->set(compact(['host', 'hoststatus', 'servicestatus', 'services', 'username', 'path', 'commandarguments', 'acknowledged', 'hostDocuExists', 'ContactsInherited', 'parenthosts', 'allowEdit']));
+			$this->set(compact([
+                    'host',
+                    'hoststatus',
+                    'servicestatus',
+                    'services',
+                    'username',
+                    'path',
+                    'commandarguments',
+                    'acknowledged',
+                    'hostDocuExists',
+                    'ContactsInherited',
+                    'parenthosts',
+                    'allowEdit',
+                    'ticketSystem'
+                ])
+            );
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 			$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 			$this->loadModel('Systemsetting');
@@ -2333,8 +2332,8 @@ class HostsController extends AppController{
 				return [
 					'inherit' => false,
 					'source' => 'Host',
-					'Contact' => $this->request->data['Host']['Contact'],
-					'Contactgroup' => $this->request->data['Host']['Contactgroup']
+					'Contact' => $this->request->data('Host.Contact'),
+					'Contactgroup' => $this->request->data('Host.Contactgroup')
 				];
 
 			}

@@ -78,12 +78,13 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             $('#hostContactSelects').block({
                 message: null,
                 overlayCSS: {
-                    opacity: 0.0,
-                    cursor: 'not-allowed'
+                    opacity: 0.5,
+                    cursor: 'not-allowed',
+                    'background-color': 'rgb(255, 255, 255)'
                 }
             });
             //disable contacts and contactgroups here to prevent errors on save
-            $('#HostContact, #HostContactgroup').attr('disabled', 'disabled');
+            $('#HostContact, #HostContactgroup').attr('readonly', true);
             $('#HostContact, #HostContactgroup').trigger("chosen:updated");
         }
 
@@ -96,8 +97,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             $('#hostContactSelects').block({
                 message: null,
                 overlayCSS: {
-                    opacity: 0.0,
-                    cursor: 'not-allowed'
+                    opacity: 0.5,
+                    cursor: 'not-allowed',
+                    'background-color': 'rgb(255, 255, 255)'
                 }
             });
         }
@@ -1009,8 +1011,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             $('#hostContactSelects').block({
                 message: null,
                 overlayCSS: {
-                    opacity: 0.0,
-                    cursor: 'not-allowed'
+                    opacity: 0.5,
+                    cursor: 'not-allowed',
+                    'background-color': 'rgb(255, 255, 255)'
                 }
             });
 
@@ -1036,12 +1039,12 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             }
 
 
-            $('#HostContact').prop('disabled', true);
-            $('#HostContactgroup').prop('disabled', true);
+            $('#HostContact').prop('readonly', true);
+            $('#HostContactgroup').prop('readonly', true);
         }else{
             $('#hostContactSelects').unblock();
-            $('#HostContact').prop('disabled', false);
-            $('#HostContactgroup').prop('disabled', false);
+            $('#HostContact').prop('readonly', false);
+            $('#HostContactgroup').prop('readonly', false);
 
             //Remove selection of the select boxes
             document.getElementById('HostContact').selectedIndex = -1;

@@ -1,7 +1,10 @@
+<img src="https://mgmt.it-novum.com/oitc2.svg" alt="openITCOCKPIT logo" width="auto" height="100">
 # What is openITCOCKPIT?
 openITCOCKPIT is an Open Source system monitoring tool built for different monitoring engines like [Nagios](https://www.nagios.org/) or [Naemon](http://www.naemon.org/).
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
+
+![openITCOCKPIT](https://mgmt.it-novum.com/oitc.png "openITCOCKPIT")
 
 # System requirements
 * Ubuntu 14.04 LTS x64
@@ -32,8 +35,8 @@ openITCOCKPIT uses Nginx as webserver and will generate the configuration for ph
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt-get update
-apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
+apt update
+apt install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
@@ -41,8 +44,8 @@ apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt-get update
-apt-get install openitcockpit{,-nagios,-ndoutils,-npcd}
+apt update
+apt install openitcockpit{,-nagios,-ndoutils,-npcd}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
@@ -66,7 +69,7 @@ apt-get install openitcockpit{,-nagios,-ndoutils,-npcd}
 If you like to try openITCOCKPIT you can install our Vagrant box
 * Install [Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on your system
 ````
-apt-get install vagrant virtualbox
+apt install vagrant virtualbox
 ````
 * Download the [Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3/Vagrantfile)
 ````
@@ -95,9 +98,7 @@ Copyright (C) <2015>  <it-novum GmbH>
 
 openITCOCKPIT is dual licensed
 
-
 1)
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, version 3 of the License.
@@ -112,11 +113,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-
 2)
 If you purchased an openITCOCKPIT Enterprise Edition you can use this file
 under the terms of the openITCOCKPIT Enterprise Edition licence agreement.
 Licence agreement and licence key will be shipped with the order
 confirmation.
-

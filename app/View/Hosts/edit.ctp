@@ -116,7 +116,7 @@
 										);
 									elseif(!$hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
 										echo $this->Form->input('container_id', [
-												'options' => $containersPrimary,
+												'options' => $containers,
 												'multiple' => false,
 												'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'class' => 'chosen',
@@ -341,12 +341,12 @@
 									<?php
 										$contactOptions = [
 											'selected' => array_keys($ContactsInherited['Contact']),
-											//'disabled' => true,
+											'readonly' => true,
 										];
 
 										$contactGroupOptions = [
 											'selected' => array_keys($ContactsInherited['Contactgroup']),
-											//'disabled' => true,
+											'readonly' => true,
 										];
 								endif;
 								?>

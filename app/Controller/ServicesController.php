@@ -437,7 +437,6 @@ class ServicesController extends AppController{
 		$query = [
 //			'recursive' => -1,
 			'contain' => ['Servicetemplate'],
-			'limit' => 150,
 			'fields' => [
 				'Service.id',
 				'Service.uuid',
@@ -482,8 +481,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$query['limit'] = 150;
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];
@@ -626,8 +624,7 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$query['limit'] = 150;
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_services = $this->Paginator->paginate();
 		}
 		$hostContainers = [];
@@ -1145,8 +1142,8 @@ class ServicesController extends AppController{
 			}
 
 			$this->Service->set($this->request->data);
-			$this->request->data['Contact']['Contact'] = $this->request->data['Service']['Contact'];
-			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Service']['Contactgroup'];
+			$this->request->data['Contact']['Contact'] = $this->request->data('Service.Contact');
+			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Service.Contactgroup');
 			$this->request->data['Servicegroup']['Servicegroup'] = (is_array($this->request->data['Service']['Servicegroup'])) ? $this->request->data['Service']['Servicegroup'] : [];
 
 			$servicetemplate = [];
@@ -1734,20 +1731,27 @@ class ServicesController extends AppController{
 			$acknowledged = [];
 			if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+                if(!empty($acknowledged[0])){
+                    $acknowledged = $acknowledged[0];
+                }
 			}
-			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
-				$systemTicketLink = $this->Systemsetting->find('first', [
-					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-				]);
-				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
-				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
-				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
-				unset($explodedAck[sizeof($explodedAck) - 1]);
-				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
-			}
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+            ]);
 			$username = $this->Auth->user('full_name');
 
-			$this->set(compact(['service', 'servicestatus', 'username', 'acknowledged', 'commandarguments', 'ContactsInherited', 'hoststatus', 'allowEdit']));
+			$this->set(compact([
+			    'service',
+                'servicestatus',
+                'username',
+                'acknowledged',
+                'commandarguments',
+                'ContactsInherited',
+                'hoststatus',
+                'allowEdit',
+                'ticketSystem'
+                ])
+            );
 			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 			$this->loadModel('Systemsetting');
@@ -1992,11 +1996,19 @@ class ServicesController extends AppController{
 			'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
 			'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
 		]);
+
 		$service = $this->Service->findById($id);
+		$hostContainerId = $service['Host']['container_id'];
+
+		$allowEdit = false;
+		if($this->allowedByContainerId($hostContainerId)){
+			$allowEdit = true;
+		}
+
 		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
 		$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
 
-		$this->set(compact(['service', 'servicestatus', 'acknowledged']));
+		$this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit']));
 	}
 
 	public function grapherTemplate($id){
