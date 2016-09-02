@@ -296,7 +296,6 @@ class AppController extends Controller{
 			$this->Frontend->setJson('localeStrings', $this->_localeStrings);
 		}
 		ClassRegistry::addObject('AuthComponent', $this->Auth);
-		//debug($this->systemname);
 
 		$this->set('loggedIn', $this->Auth->loggedIn());
 		$this->set('systemname', $this->systemname);
@@ -315,13 +314,14 @@ class AppController extends Controller{
 			$hoststatusCountResult = $this->Host->find('all', [
 				'conditions' => [
 					'Host.disabled' => 0,
+                    'HostObject.is_active' => 1,
 					'HostsToContainers.container_id' => $this->MY_RIGHTS,
 					'Hoststatus.current_state >' => 0
 				],
 				'contain' => [],
 				'fields' => [
 					'Hoststatus.current_state',
-					'COUNT(*) AS count'
+					'COUNT(DISTINCT Hoststatus.host_object_id) AS count'
 				],
 				'group' => [
 					'Hoststatus.current_state'
@@ -337,7 +337,7 @@ class AppController extends Controller{
 
 					[
 						'table' => 'nagios_hoststatus',
-						'type' => 'LEFT OUTER',
+						'type' => 'INNER',
 						'alias' => 'Hoststatus',
 						'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
 					],
@@ -345,7 +345,7 @@ class AppController extends Controller{
 					[
 						'table' => 'hosts_to_containers',
 						'alias' => 'HostsToContainers',
-						'type' => 'LEFT',
+						'type' => 'INNER',
 						'conditions' => [
 							'HostsToContainers.host_id = Host.id',
 						]
@@ -362,63 +362,46 @@ class AppController extends Controller{
 				'2' => 0,
 				'3' => 0,
 			];
-			$servicestatusCountResult = $this->Service->find('all', [
+			$servicestatusCountResult = $this->Host->find('all', [
 				'conditions' => [
 					'Service.disabled' => 0,
+                    'Servicestatus.current_state >' => 0,
+                    'ServiceObject.is_active' => 1,
 					'HostsToContainers.container_id' => $this->MY_RIGHTS,
-					'Servicestatus.current_state >' => 0
+
 				],
 				'contain' => [],
 				'fields' => [
 					'Servicestatus.current_state',
-					'COUNT(*) AS count'
+					'COUNT(DISTINCT Servicestatus.service_object_id) AS count'
 				],
 				'group' => [
 					'Servicestatus.current_state'
 				],
 				'joins' => [
 					[
-						'table' => 'hosts',
+						'table' => 'hosts_to_containers',
 						'type' => 'INNER',
-						'alias' => 'Host',
+						'alias' => 'HostsToContainers',
+						'conditions' => 'HostsToContainers.host_id = Host.id'
+					],
+					[
+						'table' => 'services',
+						'type' => 'INNER',
+						'alias' => 'Service',
 						'conditions' => 'Service.host_id = Host.id'
 					],
-
-					[
-						'table' => 'nagios_objects',
-						'type' => 'INNER',
-						'alias' => 'HostObject',
-						'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1'
-					],
-
-					[
-						'table' => 'nagios_hoststatus',
-						'type' => 'INNER',
-						'alias' => 'Hoststatus',
-						'conditions' => 'Hoststatus.host_object_id = HostObject.object_id'
-					],
-
 					[
 						'table' => 'nagios_objects',
 						'type' => 'INNER',
 						'alias' => 'ServiceObject',
-						'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
+						'conditions' => 'ServiceObject.name2 = Service.uuid'
 					],
-
 					[
 						'table' => 'nagios_servicestatus',
-						'type' => 'LEFT OUTER',
+						'type' => 'INNER',
 						'alias' => 'Servicestatus',
 						'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
-					],
-
-					[
-						'table' => 'hosts_to_containers',
-						'alias' => 'HostsToContainers',
-						'type' => 'LEFT',
-						'conditions' => [
-							'HostsToContainers.host_id = Host.id',
-						]
 					]
 				]
 			]);
