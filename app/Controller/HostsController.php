@@ -1825,19 +1825,28 @@ class HostsController extends AppController{
 			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
 			}
-			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
-				$systemTicketLink = $this->Systemsetting->find('first', [
-					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-				]);
-				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
-				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
-				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
-				unset($explodedAck[sizeof($explodedAck) - 1]);
-				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
-			}
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+            ]);
+
 			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
 			$username = $this->Auth->user('full_name');
-			$this->set(compact(['host', 'hoststatus', 'servicestatus', 'services', 'username', 'path', 'commandarguments', 'acknowledged', 'hostDocuExists', 'ContactsInherited', 'parenthosts', 'allowEdit']));
+			$this->set(compact([
+                    'host',
+                    'hoststatus',
+                    'servicestatus',
+                    'services',
+                    'username',
+                    'path',
+                    'commandarguments',
+                    'acknowledged',
+                    'hostDocuExists',
+                    'ContactsInherited',
+                    'parenthosts',
+                    'allowEdit',
+                    'ticketSystem'
+                ])
+            );
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 			$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 			$this->loadModel('Systemsetting');

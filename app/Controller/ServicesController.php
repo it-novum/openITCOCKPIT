@@ -1731,20 +1731,27 @@ class ServicesController extends AppController{
 			$acknowledged = [];
 			if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+                if(!empty($acknowledged[0])){
+                    $acknowledged = $acknowledged[0];
+                }
 			}
-			if(isset($acknowledged[0]['Acknowledged']['comment_data'])) {
-				$systemTicketLink = $this->Systemsetting->find('first', [
-					'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-				]);
-				$ticketSysLink = isset($systemTicketLink['Systemsetting']['value']) ? $systemTicketLink['Systemsetting']['value'] : null;
-				$explodedAck = explode(';', $acknowledged[0]['Acknowledged']['comment_data']);
-				$acknowledged[0]['Acknowledged']['otrs_link'] = is_null($ticketSysLink) ? __('No url was set in systemsettings') : (' <a target="_blank" href="' . $ticketSysLink . $explodedAck[sizeof($explodedAck) - 1] . '">' . __('OTRS Ticket') . ': ' . $explodedAck[sizeof($explodedAck) - 1] . '</a>');
-				unset($explodedAck[sizeof($explodedAck) - 1]);
-				$acknowledged[0]['Acknowledged']['comment_data'] = implode(';', $explodedAck);
-			}
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+            ]);
 			$username = $this->Auth->user('full_name');
 
-			$this->set(compact(['service', 'servicestatus', 'username', 'acknowledged', 'commandarguments', 'ContactsInherited', 'hoststatus', 'allowEdit']));
+			$this->set(compact([
+			    'service',
+                'servicestatus',
+                'username',
+                'acknowledged',
+                'commandarguments',
+                'ContactsInherited',
+                'hoststatus',
+                'allowEdit',
+                'ticketSystem'
+                ])
+            );
 			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 			$this->loadModel('Systemsetting');

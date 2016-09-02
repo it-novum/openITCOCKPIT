@@ -69,7 +69,7 @@ class Acknowledged extends NagiosModuleAppModel{
 	public function byHostUuid($uuid = null){
 		$return = [];
 		if($uuid !== null){
-			$acknowledged = $this->find('all', [
+			$acknowledged = $this->find('first', [
 				'conditions' => [
 					'Objects.name1' => $uuid,
 					'Objects.objecttype_id' => 1
