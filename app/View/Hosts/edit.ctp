@@ -123,8 +123,13 @@
 												'style' => 'width: 100%',
 												'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-												'disabled' => true
+												'disabled' => True
 											]
+										);
+										echo $this->Form->input('container_id', array(
+												'value' => $host['Host']['container_id'],
+												'type' => 'hidden'
+											)
 										);
 									else:
 										?>
