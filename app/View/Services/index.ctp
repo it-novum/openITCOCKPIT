@@ -194,6 +194,11 @@
 																	<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $service['Service']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
 																</li>
 															<?php endif; ?>
+															<?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
+															   <li>
+																  <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']); ?>
+															   </li>
+															<?php endif; ?>
 															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 																<li class="divider"></li>
 																<li>
