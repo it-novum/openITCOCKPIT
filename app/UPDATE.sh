@@ -100,3 +100,6 @@ service oitc_cmd start
 
 service gearman_worker stop
 service gearman_worker start
+
+service php5-fpm stop
+service php5-fpm start
