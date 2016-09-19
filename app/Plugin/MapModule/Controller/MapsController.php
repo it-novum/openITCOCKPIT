@@ -63,6 +63,17 @@ class MapsController extends MapModuleAppController {
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
+
+			if(empty($this->request->data['Map']['refresh_interval'])){
+				$this->request->data['Map']['refresh_interval'] = 90000;
+			}else{
+				if($this->request->data['Map']['refresh_interval'] < 10){
+					$this->request->data['Map']['refresh_interval'] = 10;
+				}
+
+				$this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval']*1000);
+			}
+
 			if($this->Map->saveAll($this->request->data)){
 
 				if($this->request->ext === 'json'){
@@ -114,6 +125,17 @@ class MapsController extends MapModuleAppController {
 
 		if($this->request->is('post') || $this->request->is('put')){
 			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
+
+			if(empty($this->request->data['Map']['refresh_interval'])){
+				$this->request->data['Map']['refresh_interval'] = 90000;
+			}else{
+				if($this->request->data['Map']['refresh_interval'] < 10){
+					$this->request->data['Map']['refresh_interval'] = 10;
+				}
+
+				$this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval']*1000);
+			}
+
 			if($this->Map->saveAll($this->request->data)){
 				if($this->isJsonRequest()){
 					$this->serializeId();
