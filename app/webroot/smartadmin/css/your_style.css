@@ -1425,3 +1425,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
 	-ms-filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
 }
+
+.datepicker{
+	z-index: 1051 !important;
+}

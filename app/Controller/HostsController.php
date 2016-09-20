@@ -1847,6 +1847,8 @@ class HostsController extends AppController{
                     'ticketSystem'
                 ])
             );
+
+			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 			$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 			$this->loadModel('Systemsetting');
