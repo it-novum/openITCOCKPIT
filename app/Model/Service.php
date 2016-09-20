@@ -818,7 +818,7 @@ class Service extends AppModel{
 
 		$compare_array = [
 			'Service' => [
-					['Service.{('.implode('|', array_values(Hash::merge($fields,['disabled']))).')}', false],
+					['Service.{('.implode('|', array_values(Hash::merge($fields,['disabled', 'service_type']))).')}', false],
 					['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
 					['Servicecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
 					['Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],

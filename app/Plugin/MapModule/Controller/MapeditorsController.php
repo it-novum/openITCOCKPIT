@@ -152,6 +152,7 @@ class MapeditorsController extends MapModuleAppController {
 	}
 
 	public function view($id = null){
+		$map = $this->Map->findById($id);
 		$rotate = null;
 		if(isset($this->request->params['named']['rotate'])){
 			$isFirst = true;
@@ -173,6 +174,7 @@ class MapeditorsController extends MapModuleAppController {
 		}else{
 			$this->Frontend->setJson('interval', 0);
 		}
+		$this->Frontend->setJson('refresh_interval', $map['Map']['refresh_interval']);
 
 		if(!$this->Map->exists($id)){
 			throw new NotFoundException(__('Invalid map'));
@@ -185,7 +187,7 @@ class MapeditorsController extends MapModuleAppController {
 			$this->Frontend->setJson('is_fullscren', true);
 		}
 
-		$map = $this->Map->findById($id);
+
 		$uuidsByItemType = [
 			'host' => [],
 			'service' => [],
