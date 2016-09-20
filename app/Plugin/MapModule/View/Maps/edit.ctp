@@ -28,7 +28,7 @@
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-map-marker fa-fw "></i>
 				<?php echo __('Maps'); ?>
-			<span>> 
+			<span>>
 			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
 			</span>
 		</h1>
@@ -40,14 +40,14 @@
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
 		<h2><?php echo __('Edit map');?></h2>
 		<div class="widget-toolbar" role="menu">
-		
+
 			<?php echo $this->Utils->deleteButton(null, $map['Map']['id']);?>
 			<?php echo $this->Utils->backButton();?>
 		</div>
 	</header>
 	<div>
 		<div class="widget-body">
-			<?php 
+			<?php
 				echo $this->Form->create('Map', array(
 					'class' => 'form-horizontal clear'
 				));
@@ -55,6 +55,7 @@
 				echo $this->Form->input('container_id', ['options' => $container, 'selected' => Hash::extract($map, 'Container.{n}.id'), 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Container')]);
 				echo $this->Form->input('Map.name', ['label' => __('Map Name'), 'value' => $map['Map']['name']]);
 				echo $this->Form->input('Map.title', ['label' => __('Map Title'), 'value' => $map['Map']['title']]);
+				echo $this->Form->input('Map.refresh_interval', ['label' => __('Refresh interval'), 'type' => 'number', 'min' => 10, 'max' => 180, 'step' => 5, 'value' => ((int)$map['Map']['refresh_interval']/1000)]);
 			?>
 			<br>
 			<br>

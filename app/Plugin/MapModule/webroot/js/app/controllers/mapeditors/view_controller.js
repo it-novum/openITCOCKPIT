@@ -56,7 +56,15 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 		//reload the page in a 90sec interval
 		//Do not refresh inside of a rotation
 		if(self.getVar('interval') == 0){
-			setTimeout(self.refreshPage,90000);
+			if(self.getVar('refresh_interval')){
+				if(self.getVar('refresh_interval') < 10000){
+					setTimeout(self.refreshPage,90000);
+				}else{
+					setTimeout(self.refreshPage,self.getVar('refresh_interval'));
+				}
+			}else{
+				setTimeout(self.refreshPage,90000);
+			}
 		}else{
 			//fire up rotation timer
 			setTimeout(function(){
