@@ -118,8 +118,8 @@ $config = [
 					'parent_controller' => 'Administrators'
 				],
 				'itc_cronjobs' => [
-					'url' => ['controller' => 'Cron Jobs', 'action' => 'index'],
-					'title' => 'Cronjobs',
+					'url' => ['controller' => 'Cronjobs', 'action' => 'index'],
+					'title' => 'Cron Jobs',
 					'icon' => 'clock-o',
 					'parent_controller' => 'Administrators'
 				],
