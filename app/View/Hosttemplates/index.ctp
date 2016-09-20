@@ -30,7 +30,7 @@
 			<i class="fa fa-pencil-square-o fa-fw "></i>
 				<?php echo __('Monitoring'); ?>
 			<span>>
-				<?php echo __('Hosttemplates'); ?>
+				<?php echo __('Host Templates'); ?>
 			</span>
 		</h1>
 	</div>
@@ -120,7 +120,7 @@
 						<?php if(empty($all_hosttemplates)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -130,7 +130,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

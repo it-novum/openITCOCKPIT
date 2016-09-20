@@ -140,7 +140,7 @@
 							*/ ?>
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

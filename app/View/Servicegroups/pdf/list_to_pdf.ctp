@@ -158,7 +158,7 @@ foreach($css as $cssFile): ?>
 						<?php endforeach; ?>
 						<?php else: ?>
 							<tr>
-								<td class="text-center font-xs" colspan="8"><?php echo __('search.noVal'); ?></td>
+								<td class="text-center font-xs" colspan="8"><?php echo __('No entries match the selection'); ?></td>
 							</tr>
 					<?php endif;?>
 				</tbody>
