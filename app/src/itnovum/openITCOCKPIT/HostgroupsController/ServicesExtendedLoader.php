@@ -134,7 +134,8 @@ class ServicesExtendedLoader
                 'Servicestatus.last_check',
                 'Servicestatus.next_check',
                 'Servicestatus.active_checks_enabled',
-                'Servicestatus.last_hard_state_change'
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.process_performance_data'
             ]
         ];
 

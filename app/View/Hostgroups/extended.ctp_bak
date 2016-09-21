@@ -444,7 +444,6 @@
 											</tr>
 										<?php
 												foreach($host_data['Service'] as $service_key => $service_data):
-													continue;
 													$service_status_exists = (!empty($service_data['Servicestatus']))?true:false;
 												?>
 												<tr class="hidden <?php echo $hostgroup['Hostgroup']['uuid'].$host_data['uuid'];?> <?php echo $host_data['uuid'].'_service';?> state_<?php echo (isset($service_data['Servicestatus']['current_state']))?$service_data['Servicestatus']['current_state']:'-1';?>">

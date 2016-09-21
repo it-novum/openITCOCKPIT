@@ -249,7 +249,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 								<?php
 								$hoststatus = new Hoststatus($host['Hoststatus']); ?>
 
-								<tr class="state_0">
+								<tr class="<?php echo $host['Hostgroup']['uuid']; ?> state_<?php echo $hoststatus->currentState(); ?>" id="append_<?php echo $hostgroup['Hostgroup']['uuid'].$host['Host']['uuid'];?>" content="false" host-id="<?php echo $host['Host']['id']; ?>">
 									<td class="width-15">
 										<i class="showhide fa fa-plus-square-o pointer font-md" showhide_uuid="<?php echo $host['Hostgroup']['uuid'].$host['Host']['uuid'];?>"></i>
 									</td>
@@ -348,71 +348,6 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 										?>
 									</td>
 								</tr>
-
-								<?php /*
-								<tr class="hidden <?php echo $hostgroup['Hostgroup']['uuid'].$host['Host']['uuid'];?>">
-									<td colspan="10" class="no-padding text-right">
-
-										<div class="col-md-12 pull-right">
-											<div class="col-md-4">
-												<div class="padding-5">
-													<strong>
-														<?php echo __('Service status total').': '.sizeof($service_status_objects);?>
-													</strong>
-													<?php
-													echo (($diff = sizeof($host_data['Service'])-sizeof($service_status_objects)) === 0)?'':'<em>'.__(' (%s not found in monitoring)', $diff).'</em>';
-													?>
-												</div>
-											</div>
-											<div class="col-md-2 btn-success">
-												<div class="padding-5">
-													<label for="<?php echo $host['Host']['uuid'].'[0]'; ?>" class="no-padding pointer">
-														<input type="checkbox" name="<?php echo $host['Host']['uuid'].'[0]'; ?>" id="<?php echo $host['Host']['uuid'].'[0]'; ?>"class="no-padding pointer state_filter" state="0" checked="checked" uuid="<?php echo $host['Host']['uuid'].'_service'; ?>"/>
-														<strong>
-															<?php
-															echo __(' %s ok', (isset($state_values[0])?$state_values[0]:0)); ?>
-														</strong>
-													</label>
-												</div>
-											</div>
-											<div class="col-md-2 btn-warning">
-												<div class="padding-5">
-													<label for="<?php echo $host_data['uuid'].'[1]'; ?>" class="no-padding pointer">
-														<input type="checkbox" name="<?php echo $host['Host']['uuid'].'[1]'; ?>" id="<?php echo $host['Host']['uuid'].'[1]'; ?>"class="no-padding pointer state_filter" state="1" checked="checked" uuid="<?php echo $host['Host']['uuid'].'_service'; ?>"/>
-														<strong>
-															<?php
-															echo __(' %s warning', (isset($state_values[1])?$state_values[1]:0)); ?>
-														</strong>
-													</label>
-												</div>
-											</div>
-											<div class="col-md-2 btn-danger">
-												<div class="padding-5">
-													<label for="<?php echo $host_data['uuid'].'[2]'; ?>" class="no-padding pointer">
-														<input type="checkbox" name="<?php echo $host['Host']['uuid'].'[2]'; ?>" id="<?php echo $host['Host']['uuid'].'[2]'; ?>"class="no-padding pointer state_filter" state="2" checked="checked" uuid="<?php echo $host['Host']['uuid'].'_service'; ?>"/>
-														<strong>
-															<?php
-															echo __(' %s critical', (isset($state_values[2])?$state_values[2]:0)); ?>
-														</strong>
-													</label>
-												</div>
-											</div>
-											<div class="col-md-2 bg-color-blueLight txt-color-white">
-												<div class="padding-5">
-													<label for="<?php echo $host_data['uuid'].'[3]'; ?>" class="no-padding pointer">
-														<input type="checkbox" name="<?php echo $host_data['uuid'].'[3]'; ?>" id="<?php echo $host_data['uuid'].'[3]'; ?>"class="no-padding pointer state_filter" state="3" checked="checked" uuid="<?php echo $host_data['uuid'].'_service'; ?>"/>
-														<strong>
-															<?php
-															echo __(' %s unknown', (isset($state_values[3])?$state_values[3]:0)); ?>
-														</strong>
-													</label>
-												</div>
-											</div>
-										</div>
-									</td>
-								</tr> */ ?>
-
-
 
 							<?php endforeach; ?>
 						</table>

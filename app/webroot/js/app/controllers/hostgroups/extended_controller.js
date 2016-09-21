@@ -113,19 +113,18 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 		$('.showhide').click(function(){
 			self.showHide($(this));
 		});
-		$('.state_filter').change(function(){
+
+		$(document).on('change', ".state_filter", function(){
 			self.filterState($(this).is(':checked'), $(this).attr('uuid'), $(this).attr('state'));
 		});
 		/*$('.hostname_filter').keyup(function(){
 			self.filterHostname($(this).attr('id'), $(this).val());
 		});*/
 
-		$('[filter="true"]').keyup(function(){
+		$(document).on('keyup', "[filter='true']", function(){
 			var $this = $(this);
 			self.filter($this.attr('search_id'), $this.val(), $this.attr('needle'));
 		});
-
-		this.loadHosts();
 
 	},
 	showHide: function(showHideElement){
@@ -136,45 +135,41 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 			showHideElement.removeClass('fa-minus-square-o').addClass('fa-plus-square-o');
 			$('.'+showHideElement.attr('showhide_uuid')).addClass('hidden');
 		}
+
+		this.loadServices(showHideElement.attr('showhide_uuid'));
 	},
 
-	loadHosts: function(){
-		return;
-		this.Ajaxloader.show();
+	loadServices: function(uuidCombination){
+		var $servicesTableHeader = $('#append_'+uuidCombination);
 
-		ret = $.ajax({
-			url: "/hostgroups/loadHostsByHostgroup/"+this.getVar('hostgroupId')+".json",
-			type: "POST",
-			error: function(){},
-			success: function(response){
+		//Services already loaded?
+		if($servicesTableHeader.attr('content') == 'false'){
+			//load services
 
+			$servicesTableHeader.after('<tr class="services_loader text-center"><td colspan="10"><h1><i class="fa fa-refresh fa-spin"></i></h1></td></tr>');
 
+			this.Ajaxloader.show();
+			var hostId = $servicesTableHeader.attr('host-id')
+			ret = $.ajax({
+				url: "/hostgroups/loadServicesByHostId/"+hostId+"/"+this.getVar('hostgroupId'),
+				type: "GET",
+				error: function(){},
+				success: function(response){
+					$('.services_loader').remove();
+					$servicesTableHeader.after(response);
+					$servicesTableHeader.attr('content', 'true');
 
-				this.renderTable(response);
-				this.Ajaxloader.hide();
-			}.bind(this),
-			complete: function(response) {
-			}
-		});
-	},
+					//Start flapping, if required
+					//this.Utils.flapping();
 
-	renderTable: function(data){
-		$('#pageStatus').text(this.getVar('renderTableMessage'));
-
-
-		var $table = $('#hostgroup_list');
-
-		for(var f in data.hosts){
-			$table.append(sprintf(
-				'<tr>' +
-					'<td>%s</td>' +
-					'<td>%s</td>' +
-				'</tr>',
-				data.hosts[f].Host.name
-			));
+					this.Ajaxloader.hide();
+				}.bind(this),
+				complete: function(response) {
+				}
+			});
 		}
-		$('#pageStatus').parent().remove();
 	},
+
 
 	validateDowntimeInput: function(){
 		this.Ajaxloader.show();

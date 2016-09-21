@@ -174,7 +174,7 @@ class HostgroupsController extends AppController{
 
 	}
 
-    public function loadServicesByHostId($hostId = null){
+    public function loadServicesByHostId($hostId = null, $hostgroupId){
         if(!is_numeric($hostId) || $hostId < 1){
             throw new NotFoundException('Invalide host id');
         }
@@ -192,6 +192,8 @@ class HostgroupsController extends AppController{
             ],
             'fields' => [
                 'Host.id',
+                'Host.uuid',
+                'Host.name',
                 'Host.container_id',
                 'Container.*'
             ]
@@ -206,7 +208,19 @@ class HostgroupsController extends AppController{
 
         $ServicesExtendedLoader = new ServicesExtendedLoader($this->Hostgroup, [], null);
         $ServicesExtendedLoader->setServiceModel($this->Service);
-        debug($ServicesExtendedLoader->loadServicesWithStatusByHostId($hostId));
+        $services = $ServicesExtendedLoader->loadServicesWithStatusByHostId($hostId);
+
+        $hostgroup = $this->Hostgroup->find('first', [
+            'conditions' => [
+                'Hostgroup.id' => $hostgroupId
+            ],
+            'contain' => [],
+            'fields' => [
+                'Hostgroup.id',
+                'Hostgroup.uuid',
+            ]
+        ]);
+        $this->set(compact(['host', ['hostgroup', 'services']]));
 
 
     }
