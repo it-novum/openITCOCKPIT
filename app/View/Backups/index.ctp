@@ -26,11 +26,8 @@
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-check-square-o fa-fw "></i>
-            <?php echo __('Administration'); ?>
-            <span>>
-                <?php echo __('Backupmanagement'); ?>
-			</span>
+            <i class="fa fa-database fa-fw "></i>
+            <?php echo __('Backup / Restore'); ?>
         </h1>
     </div>
 </div>
@@ -38,25 +35,53 @@
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <h2><?php echo __('Start Backup manual'); ?></h2>
+        <h2><?php echo __('Backupmanagement'); ?></h2>
     </header>
     <div>
         <div class="widget-body">
             <?php
             echo $this->Form->create('Backup', array('url' => 'restore'));
-            foreach($backupfiles as $bkpFile) {
-                echo $bkpFile."<br>";
-            }
-            ?>
-            <?php echo $this->Form->formActions(__('Start Restore')); ?>
-        </div>
 
-        <div class="widget-body">
-            <?php
-            echo $this->Form->create('Backup', array('url' => 'backup'));
-            //echo $this->Form->input('license', ['label' => __('License key'), 'value' => (isset($licence['Register']['license']))?$licence['Register']['license']:'']);
+            echo $this->Form->input('backupfile', [
+                    'options' => $backupfiles,
+                    'multiple' => false,
+                    'class' => 'chosen',
+                    'style' => 'width: 80%',
+                    'label' => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+                    'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
+                ]
+            );
+
             ?>
-            <?php echo $this->Form->formActions(__('Start Backup')); ?>
+            <br><br>
+            <div class="row">
+                <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
+                <?php
+                $options_restore = array(
+                    'class' => 'btn btn-primary',
+                    'style' => 'submit'
+                );
+                echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
+                echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
+                echo $this->Form->button('Start Restore', $options_restore);
+                echo "</div>";
+                ?>
+            </div>
         </div>
     </div>
+    <hr>
+    <div class="widget-body">
+        <label class="col col-xs-2 col-md-2 col-lg-2" for="CreateBackup">Create new Backup</label>
+        <?php
+        $options_backup = array(
+            'class' => 'btn btn-primary',
+            'formaction' => Router::url(array('controller' => 'backups', 'action' => 'backup'))
+        );
+        echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
+        echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
+            echo $this->Form->button('Start Backup', $options_backup);
+        echo "</div>";
+        ?>
+    </div>
+</div>
 </div>

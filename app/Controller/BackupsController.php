@@ -27,30 +27,34 @@ class BackupsController extends AppController{
     public $layout = 'Admin.default';
     public $components = ['Http', 'GearmanClient'];
     public $uses = ['Proxy'];
-
-
-    public function index(){
+    
+    public function index()
+    {
         $backupfiles = array();
-        $files =  scandir("/opt/openitc/nagios/backup/");
+        $files = scandir("/opt/openitc/nagios/backup/");
         foreach ($files as $file) {
-            if (strstr($file,"mysql_oitc_bkp_")) {
-                array_push($backupfiles, "/opt/openitc/nagios/backup/" . $file . "/");
+            if (strstr($file, "mysql_oitc_bkp_")) {
+                $backupfiles["/opt/openitc/nagios/backup/".$file] = $file;
             }
         }
         $this->set(compact('backupfiles'));
         $this->set('_serialize', ['backupfiles']);
     }
 
-    public function backup(){
-        $this->makeSQLBackup(Configure::read('nagios.export.backupTarget'));
+    public function backup()
+    {
+        $this->Config = Configure::read('gearman');
+        $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
+        $this->setFlash(__('Backup successfully created'));
+        return $this->redirect(['action' => 'index']);
     }
 
-    private function makeSQLBackup($path) {
-        $pathForBackup = $path."mysql_oitc_bkp_".date("Ymd_His")."/";
-        debug($pathForBackup);
-        die();
-        //exec("xtrabackup --backup --target-dir=".$pathForBackup, $output, $return);
-        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
-        //exec("xtrabackup --prepare --target-dir=".$pathForBackup);
+    public function restore()
+    {
+        $pathForRestore = $this->request->data['Backup']['backupfile'];
+        $this->Config = Configure::read('gearman');
+        $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
+        $this->setFlash(__('Backup successfully restored'));
+        return $this->redirect(['action' => 'index']);
     }
 }
