@@ -44,8 +44,14 @@ class BackupsController extends AppController{
     public function backup()
     {
         $this->Config = Configure::read('gearman');
-        $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
-        $this->setFlash(__('Backup successfully created'));
+        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
+        $result = unserialize($result);
+        if ($result['returncode'] === 0) {
+            $this->setFlash(__('Backup successfully created'));
+        } else {
+            $this->setFlash(__(var_dump($result['output'])), false);
+        }
+
         return $this->redirect(['action' => 'index']);
     }
 
@@ -53,8 +59,14 @@ class BackupsController extends AppController{
     {
         $pathForRestore = $this->request->data['Backup']['backupfile'];
         $this->Config = Configure::read('gearman');
-        $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
-        $this->setFlash(__('Backup successfully restored'));
+        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
+        $result = unserialize($result);
+        if ($result['returncode'] === 0) {
+            $this->setFlash(__('Backup successfully restored'));
+        } else {
+            $this->setFlash(__(var_dump($result['output'])), false);
+        }
+
         return $this->redirect(['action' => 'index']);
     }
 }
