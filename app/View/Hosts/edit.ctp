@@ -156,6 +156,12 @@
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10'
 											]
 										);
+									}else{
+										echo $this->Form->input('shared_container', array(
+												'value' => serialize($sharedContainers),
+												'type' => 'hidden'
+											)
+										);
 									}
 
 									echo $this->Form->input('hosttemplate_id', [

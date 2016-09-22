@@ -105,7 +105,6 @@
 									echo $this->Form->input('shared_container', [
 											'options' => $this->Html->chosenPlaceholder($sharingContainers),
 											'multiple' => true,
-											//'selected' => $this->Html->getParameter('Container.Container', Hash::extract($host['Container'], '{n}.id')),
 											'class' => 'chosen',
 											'style' => 'width: 100%',
 											'label' => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
