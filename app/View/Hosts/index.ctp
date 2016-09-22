@@ -115,7 +115,7 @@
 
 					<div class="widget-body no-padding">
 						<?php //debug($filters);
-						 echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+						 echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
 						<div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>
@@ -195,12 +195,12 @@
 														<?php endif;?>
 														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
 															<li>
-																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
 															</li>
 														<?php endif; ?>
 														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
 															<li>
-																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
+																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
 															</li>
 														<?php endif; ?>
 
@@ -283,7 +283,7 @@
 						<?php if(empty($all_hosts)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -293,7 +293,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">
