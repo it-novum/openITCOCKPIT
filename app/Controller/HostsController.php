@@ -1323,6 +1323,7 @@ class HostsController extends AppController{
 				$this->request->data,
 				'add'
 			);
+
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
 					$this->params['action'],
@@ -1369,8 +1370,18 @@ class HostsController extends AppController{
 				$this->setFlash(__('Data could not be saved'), false);
 			}
 		}
+		$sharingContainers = [];
 		//Refil ajax stuff if set or not
-		$this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands','containers', 'masterInstance', 'Customvariable']));
+		$this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands','containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
+	}
+
+	public function getSharingContainers($containerId = null){
+		$this->autoRender = false;
+
+		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+		$sharingContainers = array_diff_key($containers, [$containerId => $containerId]);
+
+		echo json_encode($sharingContainers);
 	}
 
 	public function disabled(){
