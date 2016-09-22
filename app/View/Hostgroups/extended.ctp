@@ -135,12 +135,6 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 				</header>
 				<div>
 					<div class="widget-body no-padding">
-						<h1 class="text-center padding-top-10">
-							<i class="fa fa-cog fa-spin"></i>
-							<span id="pageStatus">
-								<?php echo __('Loading data'); ?>
-							</span>
-						</h1>
 						<table id="hostgroup_list" class="table table-striped table-bordered smart-form" style="">
 							<tr>
 								<td colspan="10" class="no-padding text-right txt-color-white">
