@@ -2512,8 +2512,6 @@ class HostsController extends AppController{
 
 		//Form got submitted
 		if(!empty($this->request->data)){
-			debug($this->request->data('Servicetemplategroup.id'));
-			debug($host_id);
 
 			if(!$this->Servicetemplategroup->exists($this->request->data('Servicetemplategroup.id'))) {
 				throw new NotFoundException(__('Invalid servicetemplategroup'));
@@ -2575,7 +2573,6 @@ class HostsController extends AppController{
 				}
 			}
 		}
-		//=====
 		$host = $this->Host->findById($host_id);
 		$allServicetemplategroups = $this->Servicetemplategroup->find('all',[
 			'fields' => ['Servicetemplategroup.id','Container.name']

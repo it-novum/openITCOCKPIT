@@ -77,7 +77,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         var html = '<select>';
                         for(var key in res){
                             var selected = '';
-                            if(Array.isArray(prevSelectedContainer) && prevSelectedContainer.includes(key)){
+                            if(Array.isArray(prevSelectedContainer) && _.contains(prevSelectedContainer, key)){
                                 selected = 'selected';
                             }
                             html += '<option value="'+key+'" '+selected+'>'+res[key]+'</option>';
