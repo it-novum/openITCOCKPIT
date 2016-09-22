@@ -239,4 +239,18 @@ foreach($services as $service):
     <?php
     endforeach;
 
+if(empty($services)):
+    $class = sprintf(
+    '%s%s %s_service',
+    $hostgroup['Hostgroup']['uuid'],
+    $host['Host']['uuid'],
 
+    $host['Host']['uuid']
+    );
+    ?>
+
+    <tr class="<?php echo $class; ?>">
+        <td colspan="10" class="txt-color-red italic text-center"><?php echo __('No services associated with this host!'); ?></td>
+    </tr>
+<?php
+endif;

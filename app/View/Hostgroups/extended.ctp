@@ -274,13 +274,16 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 									</td>
 
 									<td class="text-center width-15">
-										<i class="fa fa-gears
-											<?php
-										echo $this->Status->ServiceStatusTextColor(
-											$ServicestatusCollection->getByHostIdEvenIfNotExists($host['Host']['id'])
-										);
-										?>
-										"></i>
+										<?php $accumulatedServiceState = $ServicestatusCollection->getByHostIdEvenIfNotExists($host['Host']['id']); ?>
+										<?php if($accumulatedServiceState >= 0): ?>
+											<i class="fa fa-gears
+												<?php
+												echo $this->Status->ServiceStatusTextColor(
+													$accumulatedServiceState
+												);
+												?>
+											"></i>
+										<?php endif; ?>
 									</td>
 
 									<td class="text-center width-15">
