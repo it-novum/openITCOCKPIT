@@ -94,7 +94,7 @@ class ConstantsComponent extends Component{
 			'CT_GLOBAL' => 1,
 			'CT_TENANT' => 2,
 			'CT_LOCATION' => 3,
-			'CT_DEVICEGROUP' => 4,
+			//'CT_DEVICEGROUP' => 4,
 			'CT_NODE' => 5,
 			'CT_CONTACTGROUP' => 6,
 			'CT_HOSTGROUP' => 7,
@@ -114,13 +114,13 @@ class ConstantsComponent extends Component{
 				'container_type' => CT_TENANT
 			],
 			"LOCATION_CONTAINER" => [
-				'properties' => OBJECT_DEVICEGROUP ^ OBJECT_SATELLITE,
+				'properties' => OBJECT_NODE ^ OBJECT_SATELLITE,
 				'container_type' => CT_LOCATION
 			],
-			"DEVICEGROUP_CONTAINER" => [
+			/*"DEVICEGROUP_CONTAINER" => [
 				'properties' => OBJECT_HOST,
 				'container_type' => CT_DEVICEGROUP
-			],
+			],*/
 			/*"NODE_CONTAINER" 	=> [
 				'properties' => OBJECT_USER^OBJECT_NODE^OBJECT_LOCATION^OBJECT_CONTACT^OBJECT_CONTACTGROUP^OBJECT_TIMEPERIOD^OBJECT_HOST^OBJECT_HOSTTEMPLATE^OBJECT_HOSTGROUP^OBJECT_SERVICE^OBJECT_SERVICETEMPLATE^OBJECT_SERVICEGROUP,
 				'container_type' => CT_NODE
@@ -256,7 +256,7 @@ class ConstantsComponent extends Component{
 			'User' => OBJECT_USER,
 			'Container' => OBJECT_NODE,
 			'Location' => OBJECT_LOCATION,
-			'Devicegroup' => OBJECT_DEVICEGROUP,
+			//'Devicegroup' => OBJECT_DEVICEGROUP,
 			'Contact' => OBJECT_CONTACT,
 			'Contactgroup' => OBJECT_CONTACTGROUP,
 			'Timeperiod' => OBJECT_TIMEPERIOD,
@@ -292,7 +292,7 @@ class ConstantsComponent extends Component{
 			'Servicegroup' => CT_SERVICEGROUP,
 			'Hostgroup' => CT_HOSTGROUP,
 			'Contactgroup' => CT_CONTACTGROUP,
-			'Devicegroup' => CT_DEVICEGROUP,
+			//'Devicegroup' => CT_DEVICEGROUP,
 			'Location' => CT_LOCATION,
 			'Tenant' => CT_TENANT,
 			'Container' => CT_GLOBAL

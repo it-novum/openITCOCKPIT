@@ -32,7 +32,8 @@ class ApiExtensionLoader
      * @var array
      */
     private $availableModels = [
-        'Systemsettings'
+        'Systemsettings',
+        'Containers'
     ];
 
     /**
