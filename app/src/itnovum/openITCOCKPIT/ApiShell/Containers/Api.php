@@ -61,7 +61,7 @@ class Api extends CoreApi implements ApiInterface
     public function update_container_type(){
         $records = $this->getRecordsByTypeId();
         foreach ($records as $record){
-            $record['Containers']['containertype_id'] = OBJECT_NODE;
+            $record['Containers']['containertype_id'] = 5;
             if(!$this->Database->save($record)){
                 throw new \Exception('Could not save data');
             }
@@ -72,7 +72,7 @@ class Api extends CoreApi implements ApiInterface
     public function getRecordsByTypeId(){
         return $this->Database->find('all', [
             'conditions' => [
-                'containertype_id' => OBJECT_DEVICEGROUP
+                'containertype_id' => 4
             ]
         ]);
     }
