@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ContainerRepository;
+
 class AutomapsController extends AppController{
 	public $layout = 'Admin.default';
 	public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, 'Systemsetting', MONITORING_ACKNOWLEDGED];
@@ -119,6 +121,19 @@ class AutomapsController extends AppController{
 			return;
 		}
 
+		$ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
+		if((bool)$automap['Automap']['recursive'] == true) {
+			$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer());
+			$ContainerRepository->addContainer($childContainers);
+
+			//Remove root container, if the parent container of the Automap is not root
+			if($automap['Automap']['container_id'] != ROOT_CONTAINER){
+				$ContainerRepository->removeContainerId(ROOT_CONTAINER);
+			}
+		}
+
+
+
 		$fontSizes = [
 			1 => 'xx-small',
 			2 => 'x-small',
@@ -171,7 +186,7 @@ class AutomapsController extends AppController{
 				]
 			],
 			'conditions' => [
-				'HostsToContainers.container_id' => $automap['Automap']['container_id'],
+				'HostsToContainers.container_id' => $ContainerRepository->getContainer(),
 				'Host.disabled' => 0,
 				'Host.name REGEXP' => $automap['Automap']['host_regex']
 			]

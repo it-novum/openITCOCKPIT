@@ -60,6 +60,18 @@
 							'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 						]);
+						?>
+						<div class="form-group padding-left-20">
+							<?php echo $this->Form->fancyCheckbox('recursive', [
+								'caption' => __('Recursive container lookup'),
+								'wrapGridClass' => 'col col-xs-2',
+								'captionGridClass' => 'col col-xs-2 no-padding',
+								'captionClass' => 'control-label text-left no-padding',
+								'icon' => '<i class="fa fa-sitemap"></i> ',
+								'checked' => (boolean)$this->Html->getParameter('Automap.recursive', false)
+							]); ?>
+						</div>
+						<?php
 						echo $this->Form->input('name', [
 							'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 							'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
