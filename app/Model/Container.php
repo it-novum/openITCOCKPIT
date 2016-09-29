@@ -74,11 +74,11 @@ class Container extends AppModel{
 			'foreignKey' => 'container_id',
 			'dependent' => true
 		],
-		'Devicegroup' => [
+		/*'Devicegroup' => [
 			'className' => 'Devicegroup',
 			'foreignKey' => 'container_id',
 			'dependent' => true
-		],
+		],*/
 		'Hosttemplate' => [
 			'className' => 'Hosttemplate',
 			'foreignKey' => 'container_id',

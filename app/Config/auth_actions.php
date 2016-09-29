@@ -99,9 +99,9 @@ $config = [
 		'locations' => [
 			'*' => '*'
 		],
-		'devicegroups' => [
+		/*'devicegroups' => [
 			'*' => '*'
-		],
+		],*/
 		'hostgroups' => [
 			'*' => '*'
 		],
