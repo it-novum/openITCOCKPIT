@@ -40,10 +40,10 @@ class Changelog extends AppModel{
 				'Command' => '{(command_type|name|description|command_line)}',
 				'Commandargument' => '{n}.{(id|name|human_name)}'
 			],
-			'devicegroup' => [
+			/*'devicegroup' => [
 				'Devicegroup' => '{(description)}',
 				'Container' => '{(name)}',
-			],
+			],*/
 			'timeperiod' => [
 				'Timeperiod' => '{(name|description)}',
 				'Timerange' => '{n}.{(id|day|start|end)}'

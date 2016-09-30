@@ -214,7 +214,6 @@ containertype_id:
 - 1 Root container (global objects)
 - 2 Tenant
 - 3 Location
-- 4 Devicegroup
 - 5 Node
 - 6 Contactgroup
 - 7 Hostgroup

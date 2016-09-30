@@ -113,7 +113,7 @@ $config = [
 				'view' => ['loadServiceDetails']
 			],
 			'Browsers' => [
-				'index' => ['tenantBrowser', 'locationBrowser', 'devicegroupBrowser', 'nodeBrowser']
+				'index' => ['tenantBrowser', 'locationBrowser', 'nodeBrowser']
 			],
 			'Calendars' => [
 				'add' => ['loadHolidays'],
@@ -252,9 +252,9 @@ $config = [
 			'Locations' => [
 				'index' => ['view'],
 			],
-			'Devicegroups' => [
+			/*'Devicegroups' => [
 				'index' => ['view'],
-			],
+			],*/
 			'Usergroups' => [
 				'index' => ['view'],
 			],

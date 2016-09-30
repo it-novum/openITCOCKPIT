@@ -33,7 +33,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><i class="fa fa-globe"></i> ROOT</td>
 			<td style="text-align:center"><i class="fa fa-home"></i> TENANT</td>
 			<td style="text-align:center"><i class="fa fa-location-arrow"></i> LOCATION</td>
-			<td style="text-align:center"><i class="fa fa-cloud"></i> DEVICEGROUP</td>
 			<td style="text-align:center"><i class="fa fa-link"></i> NODE</td>
 			<td style="text-align:center"><i class="fa fa-users"></i> CONTACTGROUP</td>
 			<td style="text-align:center"><i class="fa fa-sitemap"></i> HOSTGROUP</td>
@@ -57,18 +56,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-		</tr>
-		<tr>
-			<td>Devicegroup</td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>

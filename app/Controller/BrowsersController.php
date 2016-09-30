@@ -51,7 +51,7 @@ class BrowsersController extends AppController{
 	function index(){
 		$top_node = $this->Container->findById(ROOT_CONTAINER);
 		$parents = $this->Container->getPath($top_node['Container']['parent_id']);
-		$browser = Hash::extract($this->Container->children($top_node['Container']['id'], true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
+		$browser = Hash::extract($this->Container->children($top_node['Container']['id'], true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_NODE.')$/]');
 
 		$tenants = $this->__getTenants();
 		$query = $this->Browser->hostsQuery(ROOT_CONTAINER);
@@ -88,10 +88,10 @@ class BrowsersController extends AppController{
 		}
 
 		if($this->hasRootPrivileges === true){
-			$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_DEVICEGROUP.'|'.CT_NODE.')$/]');
+			$browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_NODE.')$/]');
 		}else{
 			$containerNest = Hash::nest($this->Container->children($id));
-			$browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_DEVICEGROUP, CT_NODE]);
+			$browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
 
 		}
 		if($this->hasRootPrivileges === false){

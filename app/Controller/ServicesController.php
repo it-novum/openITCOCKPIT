@@ -231,7 +231,7 @@ class ServicesController extends AppController{
 				$browserContainerIds, // array
 				Hash::extract(
 					$childrenContainer,
-					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_DEVICEGROUP . ')$/].id'
+					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' .')$/].id'
 				)
 			);
 
@@ -422,7 +422,7 @@ class ServicesController extends AppController{
 						false,
 						['id', 'containertype_id']
 					),
-					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_DEVICEGROUP . ')$/].id'
+					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . ')$/].id'
 				)
 			);
 
@@ -548,7 +548,7 @@ class ServicesController extends AppController{
 						false,
 						['id', 'containertype_id']
 					),
-					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_DEVICEGROUP . ')$/].id'
+					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . ')$/].id'
 				)
 			);
 

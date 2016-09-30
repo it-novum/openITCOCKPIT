@@ -62,7 +62,7 @@ class BrowserMiscHelper extends AppHelper{
 			case 1:	break;
 			case 2:	$link = 'tenantBrowser'; break;
 			case 3:	$link = 'locationBrowser'; break;
-			case 4:	$link = 'devicegroupBrowser'; break;
+			//case 4:	$link = 'devicegroupBrowser'; break;
 			case 5:	$link = 'nodeBrowser'; break;
 			case 7:	$link = 'hostgroupBrowser'; break;
 			case 8:	$link = 'servicegroupBrowser'; break;
