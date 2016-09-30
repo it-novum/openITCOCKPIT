@@ -160,7 +160,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'createTab'
+						'url' => 'createTab'
 					]);
 					echo $this->Form->input('name');
 					?>
@@ -181,7 +181,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'createTabFromSharing'
+						'url' => 'createTabFromSharing'
 					]);
 					echo $this->Form->input('source_tab', [
 						'options' => $sharedTabs,
@@ -227,7 +227,7 @@
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'form-horizontal clear',
-						'action' => 'renameTab'
+						'url' => 'renameTab'
 					]);
 					echo $this->Form->input('name', [
 						'value' => $tab['DashboardTab']['name']
@@ -272,7 +272,7 @@
 				<?php
 				echo $this->Form->create('dashboard', [
 					'class' => 'form-horizontal clear',
-					'action' => 'updateSharedTab'
+					'url' => 'updateSharedTab'
 				]);
 				echo $this->Form->input('ask_again', [
 					'type' => 'checkbox',

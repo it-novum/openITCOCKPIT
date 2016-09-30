@@ -73,9 +73,6 @@
 												<th ><?php echo $this->Utils->getDirection($order, 'Tenant.name'); echo $this->Paginator->sort('Tenant.name', __('Tenant_name')); ?></th>
 												<th><?php echo $this->Utils->getDirection($order, 'Tenant.description'); echo $this->Paginator->sort('Tenant.description', __('Description')); ?></th>
 												<th><?php echo $this->Utils->getDirection($order, 'Tenant.is_active'); echo $this->Paginator->sort('Tenant.is_active', __('Is active')); ?></th>
-												<th><?php echo __('Number of users'); ?></th>
-												<th><?php echo __('Number of hosts'); ?></th>
-												<th><?php echo __('Number of services'); ?></th>
 												<th>&nbsp;</th>
 											</tr>
 										</thead>
@@ -100,24 +97,6 @@
 															<?php endif;?>
 														</center>
 													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_users'], [
-															'max' => $tenant['Tenant']['max_users'],
-															'unit' => '',
-														]); ?>
-													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_hosts'], [
-															'max' => $tenant['Tenant']['max_hosts'],
-															'unit' => '',
-														]); ?>
-													</td>
-													<td>
-														<?php echo $this->Html->progressbar($tenant['Tenant']['number_services'], [
-															'max' => $tenant['Tenant']['max_services'],
-															'unit' => '',
-														]); ?>
-													</td>
 													<td class="text-center">
 														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $tenant['Tenant']['id']; ?>" data-original-title="<?php echo __('edit'); ?>" data-placement="left" rel="tooltip" data-container="body"><i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a>
@@ -131,7 +110,7 @@
 									<?php if(empty($all_tenants)):?>
 										<div class="noMatch">
 											<center>
-												<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+												<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 											</center>
 										</div>
 									<?php endif;?>
@@ -143,7 +122,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

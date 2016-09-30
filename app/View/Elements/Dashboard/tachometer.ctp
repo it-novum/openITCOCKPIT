@@ -70,7 +70,7 @@ endif;
 								<?php
 								echo $this->Form->create('dashboard', [
 									'class' => 'clear',
-									'action' => 'saveTachoConfig',
+									'url' => 'saveTachoConfig',
 									'id' => 'TachoForm-'.$widget['Widget']['id']
 								]); ?>
 								<select class="chosen tachoSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" name="data[dashboard][serviceId]" style="width:100%;">

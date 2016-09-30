@@ -25,6 +25,9 @@
 
 class Acknowledged extends NagiosModuleAppModel{
 	//public $useDbConfig = 'nagios';
+	const ACKNOWLEDGE_HOST_PROBLEM = 33;
+	const ACKNOWLEDGE_SVC_PROBLEM = 34;
+
 	public $useTable = 'acknowledgements';
 	public $primaryKey = 'acknowledgement_id';
 	public $tablePrefix = 'nagios_';
@@ -66,7 +69,7 @@ class Acknowledged extends NagiosModuleAppModel{
 	public function byHostUuid($uuid = null){
 		$return = [];
 		if($uuid !== null){
-			$acknowledged = $this->find('all', [
+			$acknowledged = $this->find('first', [
 				'conditions' => [
 					'Objects.name1' => $uuid,
 					'Objects.objecttype_id' => 1
@@ -75,7 +78,7 @@ class Acknowledged extends NagiosModuleAppModel{
 					'Acknowledged.entry_time' => 'DESC'
 				]
 			]);
-			
+
 			return $acknowledged;
 			
 		}

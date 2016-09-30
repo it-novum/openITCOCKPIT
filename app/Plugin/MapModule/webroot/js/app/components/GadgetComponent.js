@@ -660,7 +660,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 					//set new height to container div
 					$('#'+svgContainerId).css({'width':sizeX, 'height':sizeY});
 					//set new height to svg tag
-					$('#'+svgContainerId).children().attr({'width':sizeX, 'height':sizeY});
+					$('#'+svgContainerId).find('svg').attr({'width':sizeX, 'height':sizeY});
 					//set new height to svg elements
 					$('#mapRRDGraph_'+id).children().each(function(){
 						$(this).attr({'width':sizeX,'height':sizeY});

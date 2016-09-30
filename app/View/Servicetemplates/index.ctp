@@ -56,7 +56,7 @@
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
 					<h2 class="hidden-mobile"><?php echo __('Servicestemplates'); ?> </h2>
-
+					<?= $this->Form->hidden('same-contaner-text', ['value' => __('Servicetemplates must belong to the same container')]) ?>
 				</header>
 				<div>
 					<div class="jarviswidget-editbox">
@@ -69,8 +69,9 @@
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort text-center" style="width:5%"><i class="fa fa-check-square-o fa-lg"></i></th>
-										<th class="no-sort" style="width:30%"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
-										<th class="no-sort" style="width:55%"><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort" style="width:25%"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
+										<th class="no-sort" style="width:45%"><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort" style="width:15%"><?php echo __('Container'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -80,11 +81,12 @@
 										<tr>
 											<td class="text-center width-5">
 												<?php if($allowEdit): ?>
-													<input type="checkbox" class="massChange" hostname="<?= h($servicetemplate['Servicetemplate']['name']); ?>" value="<?= $servicetemplate['Servicetemplate']['id']; ?>" uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
+													<input data-container="<?= $servicetemplate['Container']['id'] ?>" type="checkbox" class="massChange" hostname="<?= h($servicetemplate['Servicetemplate']['name']); ?>" value="<?= $servicetemplate['Servicetemplate']['id']; ?>" uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
 												<?php endif;?>
 											</td>
 											<td><?php echo $servicetemplate['Servicetemplate']['name']; ?></td>
 											<td><?php echo $servicetemplate['Servicetemplate']['description']; ?></td>
+											<td><?php echo isset($resolvedContainerNames[$servicetemplate['Container']['id']]) ? $resolvedContainerNames[$servicetemplate['Container']['id']] : $servicetemplate['Container']['name']; ?></td>
 											<td class="width-160 text-center">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
@@ -126,17 +128,17 @@
 						<?php if(empty($all_servicetemplates)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
 
 						<?= $this->element('servicetemplate_mass_changes'); ?>
 
-						<div style="padding: 5px 10px;">
+						<div style="padding: 10px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

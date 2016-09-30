@@ -85,12 +85,14 @@
 
 			<?php
 				echo $this->Form->input('paginatorlength', [
+					'options' => [5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100', 150 => '150'],
+					'empty' => __('Please Choose'),
 					'label' => __('Listelement Length'),
 					'value' => $paginatorLength,
-					'help' => __('This field defines the length of every list in the openITCOCKPIT System for your Profile')
+					'help' => __('This field defines the length of every list in the openITCOCKPIT System for your Profile'),
+					'class' => 'chosen',
 				]);
 			?>
-			<br />
 			<hr />
 			<?php
 			$options = [];
@@ -123,7 +125,7 @@
 
 			<?php echo $this->Form->formActions(__('Save'), ['cancelButton' => [
 				'title' => __('Cancel'),
-				'url' => '/admin/dashboard'
+				'url' => '/dashboards/'
 			]]); ?>
 		</div>
 	</div>
@@ -167,7 +169,7 @@
 			<?php
 			 echo $this->Form->formActions(__('Upload image'), ['cancelButton' => [
 				'title' => __('Cancel'),
-				'url' => '/admin/dashboard'
+				'url' => '/dashboards/'
 			]]); ?>
 		</div>
 	</div>
@@ -218,7 +220,7 @@
 
 				echo $this->Form->formActions('Change password', ['cancelButton' => [
 					'title' => __('Cancel'),
-					'url' => '/admin/dashboard',
+					'url' => '/dashboards/',
 				]]);
 			endif;
 			?>

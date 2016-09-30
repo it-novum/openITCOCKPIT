@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
+use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
+use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
+
 /**
  * @property Hostgroup $Hostgroup
  * @property Container $Container
@@ -35,6 +39,7 @@ class HostgroupsController extends AppController{
 		'Hostgroup',
 		'Container',
 		'Host',
+        'Service',
 		'User',
 		MONITORING_HOSTSTATUS,
 		MONITORING_SERVICESTATUS,
@@ -73,7 +78,6 @@ class HostgroupsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH
 		];
 		$query = Hash::merge($this->Paginator->settings, $options);
 
@@ -81,7 +85,7 @@ class HostgroupsController extends AppController{
 			unset($query['limit']);
 			$all_hostgroups = $this->Hostgroup->find('all', $query);
 		}else{
-			$this->Paginator->settings = $query;
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
 			$all_hostgroups = $this->Paginator->paginate();
 		}
 
@@ -114,7 +118,7 @@ class HostgroupsController extends AppController{
 		$this->set('_serialize', ['hostgroup']);
 	}
 
-	public function extended($hostgroup_id = null){
+	public function extended($hostgroupId = null){
 		if(!isset($this->Paginator->settings['conditions'])){
 			$this->Paginator->settings['conditions'] = array();
 		}
@@ -127,129 +131,99 @@ class HostgroupsController extends AppController{
 		$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
 		$this->set('hostgroups', $hostgroups);
 		$hostgroup = [];
-		if($hostgroup_id === null){
+		if($hostgroupId === null){
 			//Select first hostgroup out of find result
-			$hostgroup_id = key($hostgroups);
+			$hostgroupId = key($hostgroups);
 		}
-		if($hostgroup_id !== null){
-			if(!$this->Hostgroup->exists($hostgroup_id)){
+		if($hostgroupId !== null){
+			if(!$this->Hostgroup->exists($hostgroupId)){
 				throw new NotFoundException(__('Invalid hostgroup'));
 			}
 
-			$settings = [];
-			$settings['recursive'] = -1;
-			$settings['contain'] = [
-				'Container' => [
-					'fields' => [
-						'Container.id',
-						'Container.parent_id',
-						'Container.name'
-					]
-				],
-				'Host' => [
-					'fields' => [
-						'Host.id', 'Host.uuid', 'Host.name'
-					],
-					'order' => [
-						'Host.name'		=> 'asc'
-					],
-					'Service' => [
-						'fields' => [
-							'Service.id', 'Service.uuid', 'Service.name'
-						],
-						'Servicetemplate' => [
-							'fields' => [
-								'Servicetemplate.name'
-							],
-						]
-					]
-				],
-			];
+           $hostgroup = $this->Hostgroup->find('first', [
+               'contain' => [
+                   'Container'
+               ],
+               'conditions' => [
+                   'Hostgroup.id' => $hostgroupId
+               ]
+           ]);
 
-			$settings['order'] = [
-				'Container.name'=> 'asc'
-			];
-			$settings['conditions'] = [
-				'Container.id' => $containerIds
-			];
-			if($hostgroup_id !== null){
-				$settings['conditions'] = [
-					'Hostgroup.id' => $hostgroup_id
-				];
-			}
-
-			//$this->Paginator->settings['contain'] =['Host' => 'Service'];
-			$hostgroup = $this->Hostgroup->find('first', $settings);
-			if(!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))){
-				$this->render403();
-				return;
-			}
-
-			$hoststatus = $this->Hoststatus->find('all', [
-				'fields' => [
-					'Objects.name1',
-					'Hoststatus.current_state',
-					'Hoststatus.status_update_time',
-					'Hoststatus.last_check',
-					'Hoststatus.next_check',
-					'Hoststatus.is_flapping',
-					'Hoststatus.active_checks_enabled',
-					'Hoststatus.problem_has_been_acknowledged',
-					'Hoststatus.scheduled_downtime_depth',
-					'Hoststatus.last_hard_state_change'
-				],
-				'conditions' => [
-					'Objects.name1' => Hash::extract($hostgroup, 'Host.{n}.uuid')
-				]
-			]);
-
-			$servicestatus = $this->Servicestatus->find('all', [
-				'fields' => [
-					'Objects.name2',
-					'Servicestatus.current_state',
-					'Servicestatus.status_update_time',
-					'Servicestatus.last_check',
-					'Servicestatus.next_check',
-					'Servicestatus.is_flapping',
-					'Servicestatus.active_checks_enabled',
-					'Servicestatus.process_performance_data',
-					'Servicestatus.problem_has_been_acknowledged',
-					'Servicestatus.scheduled_downtime_depth',
-					'Servicestatus.last_hard_state_change'
-				],
-				'conditions' => [
-					'Objects.name2' => Hash::extract($hostgroup, 'Host.{n}.Service.{n}.uuid')
-				]
-			]);
 
 			$this->Frontend->setJson('hostgroupUuid', $hostgroup['Hostgroup']['uuid']);
+            $this->Frontend->setJson('hostgroupId', $hostgroup['Hostgroup']['id']);
+            $this->Frontend->setJson('renderTableMessage', __('Render data in browser'));
 
-			$hoststatus_by_uuid = Hash::combine($hoststatus, '{n}.Objects.name1', '{n}.Hoststatus');
-			$servicestatus_by_uuid = Hash::combine($servicestatus, '{n}.Objects.name2', '{n}.Servicestatus');
+            $HostsExtendedLoader = new HostsExtendedLoader($this->Hostgroup, $containerIds, $hostgroup['Hostgroup']['id']);
+            $hosts = $HostsExtendedLoader->loadHostsWithStatus();
 
-			//add host- and service status to host/service object
-			foreach($hostgroup['Host'] as $host_key => $host_data){
-				$hostgroup['Host'][$host_key]['Hoststatus'] = [];
-				if(array_key_exists($host_data['uuid'], $hoststatus_by_uuid)){
-					$hostgroup['Host'][$host_key]['Hoststatus']= $hoststatus_by_uuid[$host_data['uuid']];
-				}
-				foreach($host_data['Service'] as $service_key => $service_data){
-					$hostgroup['Host'][$host_key]['Service'][$service_key]['Servicestatus'] = [];
-					if(array_key_exists($service_data['uuid'], $servicestatus_by_uuid)){
-						$hostgroup['Host'][$host_key]['Service'][$service_key]['Servicestatus']= $servicestatus_by_uuid[$service_data['uuid']];
-					}
-				}
-			}
+            $ServicesExtendedLoader = new ServicesExtendedLoader($this->Hostgroup, $containerIds, $hostgroup['Hostgroup']['id']);
+            $ServicestatusCollection = new CumulatedServicestatusCollection(
+                $ServicesExtendedLoader->loadServicesCumulated()
+            );
 
-			$username = $this->Auth->user('full_name');
+            $this->set('hosts', $hosts);
+            $this->set('ServicestatusCollection', $ServicestatusCollection);
 
-			$this->set(compact(['hostgroup', 'username', 'hostgroup_id']));
+            $username = $this->Auth->user('full_name');
+			$this->set(compact(['hostgroup', 'username', 'hostgroupId']));
 			//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 			$this->set('_serialize', array('hostgroup'));
 
 		}
 
 	}
+
+    public function loadServicesByHostId($hostId = null, $hostgroupId){
+        if(!is_numeric($hostId) || $hostId < 1){
+            throw new NotFoundException('Invalide host id');
+        }
+
+        if(!$this->Host->exists($hostId)){
+            throw new NotFoundException('Host not found!');
+        }
+
+        $host = $this->Host->find('first', [
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'contain' => [
+                'Container'
+            ],
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.container_id',
+                'Container.*'
+            ]
+        ]);
+
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if(!$this->allowedByContainerId($containerIdsToCheck)){
+            $this->render403();
+            return;
+        }
+
+        $ServicesExtendedLoader = new ServicesExtendedLoader($this->Hostgroup, [], null);
+        $ServicesExtendedLoader->setServiceModel($this->Service);
+        $services = $ServicesExtendedLoader->loadServicesWithStatusByHostId($hostId);
+
+        $hostgroup = $this->Hostgroup->find('first', [
+            'conditions' => [
+                'Hostgroup.id' => $hostgroupId
+            ],
+            'contain' => [],
+            'fields' => [
+                'Hostgroup.id',
+                'Hostgroup.uuid',
+            ]
+        ]);
+        $this->set(compact(['host', ['hostgroup', 'services']]));
+
+
+    }
 
 	public function edit($id = null){
 		if(!$this->Hostgroup->exists($id)){
@@ -416,11 +390,8 @@ class HostgroupsController extends AppController{
 
 	public function loadHosts($containerId = null){
 		$this->allowOnlyAjaxRequests();
-
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, 'list');
-		$hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+		$hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER ,$containerId], 'list');
 		$hosts = $this->Host->makeItJavaScriptAble($hosts);
-
 		$this->set(compact(['hosts']));
 		$this->set('_serialize', ['hosts']);
 	}

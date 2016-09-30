@@ -163,6 +163,7 @@
 							echo $this->Form->input('template.1.start', [
 									'class' => 'col-xs-8 no-padding',
 									'placeholder' => '00:00',
+									'value' => '00:00',
 									'maxlength' => 5,
 									'size' => 5,
 									'div' => false,
@@ -178,6 +179,7 @@
 								echo $this->Form->input('template.1.end', [
 									'class' => 'col-xs-8 no-padding',
 									'placeholder' => '24:00',
+									'value' => '24:00',
 									'maxlength' => 5,
 									'size' => 5,
 									'div' => false,

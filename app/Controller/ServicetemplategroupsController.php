@@ -63,7 +63,6 @@ class ServicetemplategroupsController extends AppController{
 			'conditions' => [
 				'Container.parent_id' => $this->MY_RIGHTS
 			],
-			'limit' => $this->PAGINATOR_LENGTH,
 		];
 
 		$query = Hash::merge($this->Paginator->settings, $options);
@@ -119,6 +118,7 @@ class ServicetemplategroupsController extends AppController{
 			$this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
 			$this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
 			$this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
+
 			if($this->Servicetemplategroup->saveAll($this->request->data)){
 				if($this->request->ext == 'json'){
 					$this->serializeId();

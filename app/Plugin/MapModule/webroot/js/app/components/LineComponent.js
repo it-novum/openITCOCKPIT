@@ -47,13 +47,13 @@ App.Components.LineComponent = Frontend.Component.extend({
 		var svgContainerWidth = boxes.containerWidth+4;
 		//$('#'+svgContainer).css({'top':svgContainerTop+'px', 'left':svgContainerLeft+'px','height':svgContainerHeight+'px', 'width':svgContainerWidth+'px','position':'absolute'}).svg();
 		$('#'+svgContainer).css({'top':svgContainerTop+'px', 'left':svgContainerLeft+'px', 'width':svgContainerWidth+'px','position':'absolute'}).svg();
-		
+
 		var svg = $('#'+svgContainer).svg('get');
 		var lineGroup = svg.group('line_'+id);
 		svg.line(boxes.newLineStartX, boxes.newLineStartY, boxes.newLineEndX, boxes.newLineEndY,{
 			stroke: lineStatusColor, strokeWidth: 5, class: 'itemElement_line', id:id+'_line'
 		});
-		
+
 		//check if the rect should be drawn -> this is not neccessary on stateless lines for example
 		if(drawRect){
 			//style for the inner rect div
@@ -111,7 +111,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 			if(link){
 				if(objData['currentLink'] != null){
 					//link to the browser
-					$('<a>').attr({id:id+'_link',href:objData['currentLink']})
+					$('<a>').attr({id:id+'_link',href:objData['currentLink'], target:'_parent'})
 					.css({'height':opt.rectHeight+'px', 'width':opt.rectWidth+'px'})
 					.appendTo($('#'+id+'_rect'));
 
@@ -123,7 +123,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 				$('#'+id+'_rect').append(el2append);
 			}
 		}
-		//workaround for centering horizontal lines 
+		//workaround for centering horizontal lines
 		$('#'+svgContainer).children('svg').attr({'height':svgContainerHeight+7+'px'});
 	},
 
@@ -138,7 +138,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 
 			var centerX = ((containerWidth/2)-obj.rectWidth/2);
 			var newLineStartX = containerWidth;
-			//2px more otherwise the corners of line get cut off 
+			//2px more otherwise the corners of line get cut off
 			var newLineEndX = 2;
 		}else{
 			//X-Axis from left to right
@@ -146,7 +146,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 			var containerLeft = obj.start['x'];
 
 			var centerX = ((containerWidth/2)-obj.rectWidth/2);
-			//2px more otherwise the corners of line get cut off 
+			//2px more otherwise the corners of line get cut off
 			var newLineStartX = 2;
 			var newLineEndX = containerWidth;
 		}
@@ -158,7 +158,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 
 			var centerY = ((containerHeight/2)-obj.rectHeight/2);
 			var newLineStartY = containerHeight;
-			//2px more otherwise the corners of line get cut off 
+			//2px more otherwise the corners of line get cut off
 			var newLineEndY = 2;
 		}else{
 			//Y-Axis from top to bottom
@@ -166,7 +166,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 			var containerTop = obj.start['y'];
 
 			var centerY = ((containerHeight/2)-obj.rectHeight/2);
-			//2px more otherwise the corners of line get cut off 
+			//2px more otherwise the corners of line get cut off
 			var newLineStartY = 2;
 			var newLineEndY = containerHeight;
 		}
@@ -193,7 +193,7 @@ App.Components.LineComponent = Frontend.Component.extend({
 	},
 
 	deleteLine:function(svgContainer){
-		//deletes the line including its SVG tag and the 2 div rectangles 
+		//deletes the line including its SVG tag and the 2 div rectangles
 		$('#'+svgContainer).children().remove();
 		$('#'+svgContainer).removeClass('hasSVG');
 	},

@@ -24,25 +24,25 @@
 //	confirmation.
 
 class Automap extends AppModel{
-	
+
 	/*public $belongsTo = [
 		'Container' => [
 			'className' => 'Container',
 			'foreignKey' => 'container_id',
 		]
 	];*/
-	
+
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			]
 		],
 		'container_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -57,8 +57,8 @@ class Automap extends AppModel{
 			],
 		],
 		'host_regex' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -69,8 +69,8 @@ class Automap extends AppModel{
 			]
 		],
 		'service_regex' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -98,7 +98,7 @@ class Automap extends AppModel{
 		}
 		return false;
 	}
-	
+
 	public function checkStateOptions($data){
 		$needles = ['show_acknowledged', 'show_downtime', 'show_unknown', 'show_critical', 'show_warning', 'show_ok'];
 		foreach($needles as $needle){
@@ -108,5 +108,5 @@ class Automap extends AppModel{
 		}
 		return false;
 	}
-	
+
 }

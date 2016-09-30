@@ -33,13 +33,15 @@ App.Controllers.HostsAllocateServiceTemplateGroupController = Frontend.AppContro
 		/*
 		 * Bind change event on servicetemplategroup selectbox
 		 */
+		var url = window.location.href;
+		var hostid = url.substring(url.lastIndexOf('/') + 1);
 		$('#ServicetemplategroupId').change(function(){
 
 			self.Ajaxloader.show();
 			$.ajax({
 				url: "/hosts/getServiceTemplatesfromGroup/"+encodeURIComponent($(this).val())+".json",
 				type: "POST",
-				data: ({host_id:7}),
+				data: ({host_id:hostid}),
 				error: function(){},
 				success: function(){},
 				complete: function(response){

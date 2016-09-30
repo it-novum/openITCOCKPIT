@@ -34,8 +34,8 @@ class Container extends AppModel{
 
 	var $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -47,7 +47,7 @@ class Container extends AppModel{
 			]
 		],
 		'parent_id' => [
-			'rule'    => 'notEmpty',
+			'rule'    => 'notBlank',
 			'message' => 'This field cannot be left blank.',
 			'required' => true
 		]
@@ -104,12 +104,17 @@ class Container extends AppModel{
 			'foreignKey' => 'container_id',
 			'dependent' => true,
 		],
-/*		'Timeperiod' => [
+		'Host' => [
+			'className' => 'Host',
+			'foreignKey' => 'container_id',
+			'dependent' => true,
+		],
+		'Timeperiod' => [
 			'className' => 'Timeperiod',
 			'foreignKey' => 'container_id',
 			'dependent' => true,
 		]
-*/
+
 	];
 /*
 	public $hasAndBelongsToMany = [

@@ -45,7 +45,6 @@ class RotationsController extends MapModuleAppController {
 
 
 	public function index(){
-		$this->Paginator->settings['limit'] = $this->PAGINATOR_LENGTH;
 		$all_rotations = $this->Paginator->paginate();
 
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){

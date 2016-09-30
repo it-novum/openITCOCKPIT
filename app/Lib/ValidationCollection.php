@@ -25,9 +25,9 @@
 
 
 class ValidationCollection{
-	public static $notEmpty = [
-		'notEmpty' => [
-			'rule' => 'notEmpty',
+	public static $notBlank = [
+		'notBlank' => [
+			'rule' => 'notBlank',
 			'message' => 'This field cannot be left blank.',
 			'required' => true,
 		],
@@ -50,7 +50,7 @@ class ValidationCollection{
 
 	public static function getIdRule(){
 		return array_merge(
-			self::$notEmpty,
+			self::$notBlank,
 			self::$numeric,
 			self::$notZero
 		);

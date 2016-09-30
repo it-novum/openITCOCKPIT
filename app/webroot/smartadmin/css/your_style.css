@@ -1415,3 +1415,17 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 #FilterIndexForm label:after{
 	content:'';
 }
+
+.macroPassword{
+	filter: blur(2px);
+	-webkit-filter: blur(2px);
+	-moz-filter: blur(2px);
+	-o-filter: blur(2px);
+	-ms-filter: blur(2px);
+	filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+	-ms-filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='2');
+}
+
+.datepicker{
+	z-index: 1051 !important;
+}

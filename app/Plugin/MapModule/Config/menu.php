@@ -25,13 +25,14 @@
 
 $config = array(
 	'menu' => [
-		'maps' => [
+		'mapmodule' => [
 			// Das aber irgendwie gepfusche?!
 			//'url' => ['plugin' => 'proxy', 'controller' => 'index'],
 			'url' => ['controller' => 'maps', 'action' => 'index', 'plugin' => 'map_module'],
 			'title' => 'Maps',
 			'icon' => 'map-marker',
 			'order' => 2,
+			'parent' => 'maps',
 			'children' => [
 				'map' => [
 					'url' => ['controller' => 'maps', 'action' => 'index', 'plugin' => 'map_module'],

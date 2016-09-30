@@ -56,7 +56,7 @@
 					<div class="widget-body">
 						<?php foreach($browser as $b): ?>
 							<div class="ellipsis searchContainer">
-								<?php 
+								<?php
 								$faClass = $this->BrowserMisc->containertypeIcon($b['containertype_id']);
 								?>
 								<i class="fa <?php echo $faClass; ?>"></i>
@@ -241,7 +241,7 @@
 																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
 															</li>
 														<?php endif; ?>
-													
+
 														<?php
 															if($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):
 																echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
@@ -277,10 +277,25 @@
 						<?php else: ?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
+
+						<div style="padding: 5px 10px;">
+							<div class="row">
+								<div class="col-sm-6">
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+								</div>
+								<div class="col-sm-6 text-right">
+									<div class="dataTables_paginate paging_bootstrap">
+										<?php echo $this->Paginator->pagination(array(
+											'ul' => 'pagination'
+										)); ?>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

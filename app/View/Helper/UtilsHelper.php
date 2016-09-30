@@ -699,7 +699,7 @@ class UtilsHelper extends AppHelper {
 	/**
 	 * Formats a given value in seconds to a human short readable string with time units
 	 * Example 58536006 will return:
-	 * 1y 10m 8d 12h 0m 6s
+	 * 1Y 10M 8D 12h 0m 6s
 	 *
 	 *
 	 * @param integer $seconds to format
@@ -709,24 +709,24 @@ class UtilsHelper extends AppHelper {
 	 *
 	 */
 	public function secondsInHumanShort($duration){
-		
+
 		if($duration == ''){
 			$duration = 0;
 		}
-		
+
 		$zero = new DateTime("@0");
 		$seconds = new DateTime("@$duration");
 		$closure = function($duration){
-			//Check how mutch "time" we need
+			//Check how much "time" we need
 			if($duration >= 31536000){
 				// 1 year or more
-				return '%y'.__('y').' %m'.__('m').' %d'.__('d').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+				return '%y'.__('Y').' %m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
 			}elseif($duration >= 2678400){
 				// 1 month or more
-				return '%m'.__('m').' %d'.__('d').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+				return '%m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
 			}elseif($duration >= 86400){
 				// 1 day or more
-				return '%a'.__('d').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+				return '%a'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
 			}elseif($duration >= 3600){
 				// 1 hour or more
 				return '%h'.__('h').' %i'.__('m').' %s'.__('s');

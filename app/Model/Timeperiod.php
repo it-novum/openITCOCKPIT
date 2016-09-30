@@ -45,8 +45,8 @@ class Timeperiod extends AppModel{
 			'message' => 'Please select at least 1 container you attend'),
 		),
 		'name' => array(
-			'notEmpty' => array(
-				'rule'    => 'notEmpty',
+			'notBlank' => array(
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			),

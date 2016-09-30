@@ -602,6 +602,7 @@ class AppSchema extends CakeSchema {
 		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 10, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+        'password' => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1],
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
@@ -945,6 +946,7 @@ class AppSchema extends CakeSchema {
 		'samaccountname' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'showstatsinmenu' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'dashboard_tab_rotation' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10),
+		'paginatorlength' => array('type' => 'integer', 'null' => false, 'default' => '25', 'length' => 4),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(

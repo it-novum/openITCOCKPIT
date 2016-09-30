@@ -124,8 +124,8 @@ class Host extends AppModel{
 
 	public $validate = [
 		'name' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			],
@@ -135,8 +135,8 @@ class Host extends AppModel{
 			],*/
 		],
 		'container_id' => [
-			'notEmpty' => [
-				'rule'    => 'notEmpty',
+			'notBlank' => [
+				'rule'    => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true
 			],
@@ -151,8 +151,8 @@ class Host extends AppModel{
 			],
 		],
 		'hosttemplate_id' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			],
@@ -167,8 +167,8 @@ class Host extends AppModel{
 			],
 		],
 		'address' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'required' => true,
 			]
@@ -204,8 +204,8 @@ class Host extends AppModel{
 			],
 		],
 		'max_check_attempts' => [
-			'notEmpty' => [
-				'rule' => 'notEmpty',
+			'notBlank' => [
+				'rule' => 'notBlank',
 				'message' => 'This field cannot be left blank.',
 				'allowEmpty' => true,
 				'required' => false,
@@ -220,8 +220,8 @@ class Host extends AppModel{
 		],
 		/*
 				'priority' => [
-					'notEmpty' => [
-						'rule'    => 'notEmpty',
+					'notBlank' => [
+						'rule'    => 'notBlank',
 						'message' => 'This field cannot be left blank.',
 						'required' => true
 					],
@@ -487,9 +487,8 @@ class Host extends AppModel{
 			$requestData['Host']['Contactgroup'] = [];
 		}
 		if(empty($requestData['Host']['Contact'])){
-			$requestData['Host']['Contactgroup'] = [];
+			$requestData['Host']['Contact'] = [];
 		}
-
 		$diff_array = Hash::merge($diff_array, [
 			'Host' => [
 				'hosttemplate_id' => $hostTemplateId,
@@ -654,7 +653,7 @@ class Host extends AppModel{
 			'Contactgroup' => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
 			'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
 			'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
-			'Hostcommandargumentvalue' => (!empty($host['Hostcommandargumentvalue'])) ? $host['Hostcommandargumentvalue'] : $host['Hosttemplate']['Hosttemplatecommandargumentvalue'],
+			'Hostcommandargumentvalue' => (!empty($host['Hostcommandargumentvalue'])) ? $host['Hostcommandargumentvalue'] : (($host['Host']['command_id'] === $host['Hosttemplate']['command_id'])?$host['Hosttemplate']['Hosttemplatecommandargumentvalue']:[]),
 			'Hosttemplate' => $host['Hosttemplate'],
 			'Hostgroup' => Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id'),
 			'CheckCommand' => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
@@ -925,7 +924,7 @@ class Host extends AppModel{
 		]);
 
 		if($this->__allowDelete($host) || $isAllowed === true){
-			
+
 			if($this->delete()){
 				//Delete was successfully - delete Graphgenerator configurations
 				foreach($graphgenTmplConfs as $graphgenTmplConf){

@@ -48,13 +48,13 @@ $config = [
 			'children' => [
 				'statusmap' => [
 					'url' => ['controller' => 'statusmaps', 'action' => 'index'],
-					'title' => 'Statusmap',
+					'title' => 'Status Map',
 					'icon' => 'globe',
 					'parent_controller' => 'itc'
 				],
 				'automap' => [
 					'url' => ['controller' => 'automaps', 'action' => 'index'],
-					'title' => 'Automap',
+					'title' => 'Auto Map',
 					'icon' => 'magic',
 					'parent_controller' => 'itc'
 				],
@@ -71,19 +71,19 @@ $config = [
 			'children' => [
 				'changelog' => [
 					'url' => ['controller' => 'changelogs', 'action' => 'index'],
-					'title' => 'Changelog',
+					'title' => 'Change Log',
 					'icon' => 'code-fork',
 					'parent_controller' => 'Administrators'
 				],
 				'proxy' => [
 					'url' => ['controller' => 'proxy', 'action' => 'index'],
-					'title' => 'Proxy settings',
+					'title' => 'Proxy Settings',
 					'icon' => 'bolt',
 					'parent_controller' => 'Administrators'
 				],
 				'packetmanager' => [
 					'url' => ['controller' => 'packetmanager', 'action' => 'index'],
-					'title' => 'Package manager',
+					'title' => 'Package Manager',
 					'icon' => 'cloud-download',
 					'parent_controller' => 'Administrators'
 				],
@@ -107,19 +107,19 @@ $config = [
 				],
 				'itc_systemfailures' => [
 					'url' => ['controller' => 'systemfailures', 'action' => 'index'],
-					'title' => 'Systemfailures',
+					'title' => 'System Failures',
 					'icon' => 'medkit',
 					'parent_controller' => 'Administrators'
 				],
 				'itc_systemsettings' => [
 					'url' => ['controller' => 'systemsettings', 'action' => 'index'],
-					'title' => 'Systemsettings',
+					'title' => 'System Settings',
 					'icon' => 'wrench',
 					'parent_controller' => 'Administrators'
 				],
 				'itc_cronjobs' => [
 					'url' => ['controller' => 'cronjobs', 'action' => 'index'],
-					'title' => 'Cronjobs',
+					'title' => 'Cron Jobs',
 					'icon' => 'clock-o',
 					'parent_controller' => 'Administrators'
 				],
@@ -127,6 +127,12 @@ $config = [
 					'url' => ['controller' => 'registers', 'action' => 'index'],
 					'title' => 'Registration',
 					'icon' => 'check-square-o ',
+					'parent_controller' => 'Administrators'
+				],
+				'itc_backup' => [
+					'url' => ['controller' => 'backups', 'action' => 'index'],
+					'title' => 'Backup / Restore',
+					'icon' => 'database ',
 					'parent_controller' => 'Administrators'
 				]
 			]
@@ -160,31 +166,31 @@ $config = [
 				],
 				'itc_hosttemplates' => [
 					'url' => ['controller' => 'hosttemplates', 'action' => 'index'],
-					'title' => 'Hosttemplates',
+					'title' => 'Host Templates',
 					'icon' => 'pencil-square-o',
 					'parent_controller' => 'itc'
 				],
 				'itc_servicetemplates' => [
 					'url' => ['controller' => 'servicetemplates', 'action' => 'index'],
-					'title' => 'Servicetemplates',
+					'title' => 'Service Templates',
 					'icon' => 'pencil-square-o',
 					'parent_controller' => 'itc'
 				],
 				'itc_servicetemplategroup' => [
 					'url' => ['controller' => 'servicetemplategroups', 'action' => 'index'],
-					'title' => 'Servicetemplategroups',
+					'title' => 'Service Template Groups',
 					'icon' => 'pencil-square-o',
 					'parent_controller' => 'itc'
 				],
 				'itc_hostgroups' => [
 					'url' => ['controller' => 'hostgroups', 'action' => 'index'],
-					'title' => 'Hostgroups',
+					'title' => 'Host Groups',
 					'icon' => 'sitemap',
 					'parent_controller' => 'itc'
 				],
 				'itc_servicegroups' => [
 					'url' => ['controller' => 'servicegroups', 'action' => 'index'],
-					'title' => 'Servicegroups',
+					'title' => 'Service Groups',
 					'icon' => 'cogs',
 					'parent_controller' => 'itc'
 				],
@@ -196,7 +202,7 @@ $config = [
 				],
 				'itc_contactgroups' => [
 					'url' => ['controller' => 'contactgroups', 'action' => 'index'],
-					'title' => 'Contactgroups',
+					'title' => 'Contact Groups',
 					'icon' => 'users',
 					'parent_controller' => 'itc'
 				],
@@ -208,7 +214,7 @@ $config = [
 				],
 				'itc_timeperiods' => [
 					'url' => ['controller' => 'timeperiods', 'action' => 'index'],
-					'title' => 'Timeperiods',
+					'title' => 'Time Periods',
 					'icon' => 'clock-o',
 					'parent_controller' => 'itc'
 				],
@@ -238,13 +244,13 @@ $config = [
 				],
 				'itc_devicegroups' => [
 					'url' => ['controller' => 'devicegroups', 'action' => 'index'],
-					'title' => 'Devicegroups',
+					'title' => 'Device Groups',
 					'icon' => 'cloud',
 					'parent_controller' => 'itc'
 				],
 				'itc_graphgenerator' => [
 					'url' => ['controller' => 'graphgenerators', 'action' => 'index'],
-					'title' => 'Graphgenerator',
+					'title' => 'Graph Generator',
 					'icon' => 'area-chart',
 					'parent_controller' => 'itc'
 				],
@@ -263,7 +269,7 @@ $config = [
 				],
 				'itc_logentries' => [
 					'url' => ['controller' => 'logentries', 'action' => 'index'],
-					'title' => 'Logentries',
+					'title' => 'Log Entries',
 					'icon' => 'file-text-o',
 					'parent_controller' => 'itc'
 				],
@@ -275,7 +281,7 @@ $config = [
 				],
 				'itc_nagiostats' => [
 					'url' => ['controller' => 'nagiostats', 'action' => 'index'],
-					'title' => 'Performance info',
+					'title' => 'Performance Info',
 					'icon' => 'fighter-jet',
 					'parent_controller' => 'itc'
 				],
@@ -297,25 +303,25 @@ $config = [
 				],
 				'itc_hostescalation' => [
 					'url' => ['controller' => 'hostescalations', 'action' => 'index'],
-					'title' => 'Hostescalations',
+					'title' => 'Host Escalations',
 					'icon' => 'bomb',
 					'parent_controller' => 'itc'
 				],
 				'itc_serviceescalation' => [
 					'url' => ['controller' => 'serviceescalations', 'action' => 'index'],
-					'title' => 'Serviceescalations',
+					'title' => 'Service Escalations',
 					'icon' => 'bomb',
 					'parent_controller' => 'itc'
 				],
 				'itc_hostdependency' => [
 					'url' => ['controller' => 'hostdependencies', 'action' => 'index'],
-					'title' => 'Hostdependencies',
+					'title' => 'Host Dependencies',
 					'icon' => 'sitemap',
 					'parent_controller' => 'itc'
 				],
 				'itc_servicedependency' => [
 					'url' => ['controller' => 'servicedependencies', 'action' => 'index'],
-					'title' => 'Servicedependencies',
+					'title' => 'Service Dependencies',
 					'icon' => 'sitemap',
 					'parent_controller' => 'itc'
 				],

@@ -49,11 +49,11 @@
 			if(isset($this->params['named']['rotate'])){
 				$backLink = '/map_module/rotations';
 			}
-			echo $this->Utils->backButton(null,$backLink);?>
+			echo $this->Utils->backButton(null,$backLink, ['target'=>"_parent"]);?>
 			<?php if(!$isFullscreen): ?>
-				<a href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen');?></a>
+				<a target="_parent" href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen');?></a>
 			<?php else: ?>
-				<a href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-small"></i> <?php echo __('Leave fullscreen');?></a>
+				<a target="_parent" href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', $map['Map']['id']]); ?>" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-resize-small"></i> <?php echo __('Leave fullscreen');?></a>
 			<?php endif; ?>
 		</div>
 	</header>
@@ -113,7 +113,13 @@
 						class="elementHover iconContainer"
 						data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
 						data-uuid="<?php echo $item['SubMap']['id']; ?>" style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
-						<a href="/<?php echo 'map_module/mapeditors/view/'. $item['Mapitem']['object_id']; ?>">
+							<?php
+							if(array_key_exists('fullscreen', $this->params['named'])){
+								echo '<a target="_parent" href="/map_module/mapeditors/view/'. $item['Mapitem']['object_id'] .'/fullscreen:1">';
+							}else{
+								echo '<a target="_parent" href="/map_module/mapeditors/view/'. $item['Mapitem']['object_id'] .'">';
+							}
+							?>
 					<?php else:?>
 						<div id="<?php echo $uuid; ?>"
 							class="elementHover iconContainer"
@@ -123,7 +129,7 @@
 						<?php
 							if($item['Mapitem']['type'] !== 'servicegroup'):
 						?>
-						<a href="/<?php echo Inflector::pluralize($item['Mapitem']['type']); ?>/<?php echo ($item['Mapitem']['type'] === 'hostgroup')?'extended':'browser';?>/<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>">
+						<a target="_parent" href="/<?php echo Inflector::pluralize($item['Mapitem']['type']); ?>/<?php echo ($item['Mapitem']['type'] === 'hostgroup')?'extended':'browser';?>/<?php echo $item[ucfirst($item['Mapitem']['type'])]['id']; ?>">
 							<?php
 							endif;
 							?>
@@ -253,7 +259,7 @@
 						?>
 						<!-- add gadget data field -->
 						<div id="<?php echo $uuid; ?>" data-uuid="<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['uuid']; ?>" class="gadgetContainer">
-						<a href="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>">
+						<a target="_parent" href="/<?php echo Inflector::pluralize($gadget['Mapgadget']['type']); ?>/browser/<?php echo $gadget[ucfirst($gadget['Mapgadget']['type'])]['id']; ?>">
 						<?php
 							if($gadget['Mapgadget']['type'] == 'host' || $gadget['Mapgadget']['type'] == 'service'):
 						?>

@@ -24,7 +24,13 @@
 
 App.Controllers.TenantsEditController = Frontend.AppController.extend({
 
+	components: ['Masschange'],
+
 	_initialize: function() {
+		this.Masschange.setup({
+			'controller': 'tenants',
+			'checkboxattr': 'tenantname'
+		});
 		$('#TenantExpires').datepicker({
 			format: 'dd/mm/yyyy'
 		});

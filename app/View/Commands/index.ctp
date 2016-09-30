@@ -114,6 +114,11 @@
 																			<a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
 																		</li>
 																	<?php endif;?>
+																	<?php if($this->Acl->hasPermission('usedBy')): ?>
+																		<li>
+																			<a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $command['Command']['id']; ?>"><i class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?></a>
+																		</li>
+																	<?php endif; ?>
 																	<?php if($this->Acl->hasPermission('delete')): ?>
 																		<li class="divider"></li>
 																		<li>
@@ -131,7 +136,7 @@
 									<?php if(empty($all_commands)):?>
 										<div class="noMatch">
 											<center>
-												<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+												<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 											</center>
 										</div>
 									<?php endif;?>
@@ -142,7 +147,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

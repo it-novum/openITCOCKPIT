@@ -50,7 +50,6 @@ class SystemfailuresController extends AppController{
 	];
 
 	public function index(){
-		$this->Paginator->settings['limit'] = $this->PAGINATOR_LENGTH;
 		$all_systemfailures = $this->Paginator->paginate();
 
 		$this->set(compact(['all_systemfailures']));

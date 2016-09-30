@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-location-arrow fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
+			<i class="fa fa-location-arrow fa-fw "></i>
+				<?php echo __('Monitoring'); ?>
+			<span>>
 				<?php echo __('Locations'); ?>
 			</span>
 		</h1>
@@ -51,11 +51,11 @@
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
 						?>
 						</div>
-						
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-location-arrow"></i> </span>
@@ -74,6 +74,7 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort"><?php echo __('Container'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -83,6 +84,7 @@
 										<tr>
 											<td><?php echo $location['Container']['name']; ?></td>
 											<td><?php echo $location['Location']['description']; ?></td>
+											<td><?php if($location['Container']['parent_id'] == 1): echo __('/root/'); else: ?> <a href="/tenants/edit/<?php echo $location['Container']['parent_id']; ?>"> <?php echo $container[$location['Container']['parent_id']]; ?></a><?php endif; ?></td>
 											<td class="width-160">
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
@@ -100,7 +102,7 @@
 														<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 															<li class="divider"></li>
 															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'locations', 'action' => 'delete', $location['Location']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																<a href="#" data-toggle="modal" data-target="#delete_location_<?php echo $location['Location']['id']; ?>" class="txt-color-red"><i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?> </a>
 															</li>
 														<?php endif; ?>
 													</ul>
@@ -114,7 +116,7 @@
 						<?php if(empty($all_locations)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -122,7 +124,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">
@@ -138,3 +140,34 @@
 			</div>
 	</div>
 </section>
+
+<?php foreach($all_locations as $location): ?>
+	<div class="modal fade" id="delete_location_<?php echo $location['Location']['id'];?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						&times;
+					</button>
+					<h4 class="modal-title" id="myModalLabel"><?php echo __('Do you really want to delete this location and all related objects');?></h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						Make sure that you really do not use this location</br>
+						and any related objects like: </br>
+						<ul>
+							<li>Hosts</li>
+							<li>Services</li>
+						</ul>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<?php echo $this->Form->postLink(__('Delete'), ['controller' => 'locations', 'action' => 'delete', $location['Location']['id']], ['class' => 'btn btn-danger', 'data-dismiss' => "modal"]); ?>
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<?php echo __('Cancel'); ?>
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php endforeach; ?>

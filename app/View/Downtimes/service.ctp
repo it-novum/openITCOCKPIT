@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-power-off fa-fw "></i> 
-				<?php echo __('Downtimes'); ?> 
-			<span>> 
+			<i class="fa fa-power-off fa-fw "></i>
+				<?php echo __('Downtimes'); ?>
+			<span>>
 				<?php echo __('Services'); ?>
 			</span>
 		</h1>
@@ -74,7 +74,7 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']); 
+							echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
 						endif;
 						?>
 						</div>
@@ -93,21 +93,21 @@
 						</ul>
 						<div class="clearfix"></div>
 					</div>
-					 
+
 					<div id="switch-1" class="widget-toolbar" role="menu">
 						<?php
 						echo $this->Form->create('downtimes', [
 							'class' => 'form-horizontal clear',
-							'action' => 'service' //reset the URL on submit
+							'url' => 'service' //reset the URL on submit
 						]);
-						
+
 						?>
-						
+
 						<div class="widget-toolbar pull-left hidden-mobile" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('From:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 78%;" type="text" maxlength="255" value="<?php echo $DowntimeListsettings['from']; ?>" name="data[Listsettings][from]">
 						</div>
-						
+
 						<div class="widget-toolbar pull-left hidden-mobile" role="menu">
 								<span style="line-height: 32px;" class="pull-left"><?php echo __('To:');?></span>
 								<input class="form-control text-center pull-left margin-left-10" style="width: 85%;" type="text" maxlength="255" value="<?php echo $DowntimeListsettings['to']; ?>" name="data[Listsettings][to]">
@@ -135,14 +135,26 @@
 									<?php endif;?>
 								</ul>
 							</div>
-							
+
 							<div class="btn-group hidden-mobile">
 								<?php
 									$listoptions = [
-										'30' => [
+										'5' => [
 											'submit_target' => '#listoptions_hidden_limit',
-											'value' => 30,
-											'human' => 30,
+											'value' => 5,
+											'human' => 5,
+											'selector' => '#listoptions_limit'
+										],
+										'10' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 10,
+											'human' => 10,
+											'selector' => '#listoptions_limit'
+										],
+										'25' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 25,
+											'human' => 25,
 											'selector' => '#listoptions_limit'
 										],
 										'50' => [
@@ -157,6 +169,12 @@
 											'human' => 100,
 											'selector' => '#listoptions_limit'
 										],
+										'150' => [
+											'submit_target' => '#listoptions_hidden_limit',
+											'value' => 150,
+											'human' => 150,
+											'selector' => '#listoptions_limit'
+										],
 										'300' => [
 											'submit_target' => '#listoptions_hidden_limit',
 											'value' => 300,
@@ -164,8 +182,9 @@
 											'selector' => '#listoptions_limit'
 										]
 									];
-								
-									$selected = 30;
+
+									$selected = $paginatorLimit;
+
 									if(isset($DowntimeListsettings['limit']) && isset($listoptions[$DowntimeListsettings['limit']]['human'])){
 										$selected = $listoptions[$DowntimeListsettings['limit']]['human'];
 									}
@@ -196,19 +215,19 @@
 								</button>
 								<ul class="dropdown-menu pull-right">
 									<li>
-										<input type="hidden" value="0" name="data[Listsettings][hide_expired]" /> 
+										<input type="hidden" value="0" name="data[Listsettings][hide_expired]" />
 										<li style="width: 100%;"><a href="javascript:void(0)" class="listoptions_checkbox text-left"><input type="checkbox" name="data[Listsettings][hide_expired]" value="1" <?php echo $checked; ?>/> &nbsp; <?php echo __('Hide expired'); ?></a></li>
 									</li>
 								</ul>
 							</div>
-							
+
 							<button class="btn btn-xs btn-success toggle hidden-mobile"><i class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-					
+
 						<?php
 						 echo $this->Form->end();
 						 ?>
  				 	</div>
-					 
+
 					<div class="jarviswidget-ctrls" role="menu">
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
@@ -298,7 +317,7 @@
 						<?php if(empty($all_downtimes)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -306,7 +325,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

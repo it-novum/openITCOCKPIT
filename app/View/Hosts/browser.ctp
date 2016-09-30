@@ -66,7 +66,7 @@
 			<li class="">
 				<a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
 			</li>
-			<?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
+			<?php if($allowEdit):?>
 				<li class="">
 					<a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
 				</li>
@@ -96,13 +96,37 @@
 							endif; ?>
 						</p>
 
-						<?php if($this->Monitoring->checkForAck($this->Status->get($host['Host']['uuid'], 'problem_has_been_acknowledged'))):?>
+						<?php if($this->Monitoring->checkForAck($this->Status->get($host['Host']['uuid'], 'problem_has_been_acknowledged')) && !empty($acknowledged)):?>
 							<p>
 								<span class="fa-stack fa-lg">
 									<i class="fa fa-user fa-stack-2x"></i>
 									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
 								</span>
-								<?php echo __('The current status was already acknowledged by');?> <strong><?php echo h($acknowledged[0]['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i> <?php echo $this->Time->format($acknowledged[0]['Acknowledged']['entry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>) <?php echo __('with the comment');?> "<?php echo h($acknowledged[0]['Acknowledged']['comment_data']);?>".
+								<?php
+									echo __('The current status was already acknowledged by');?> <strong>
+									<?php echo h($acknowledged['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i>
+									<?php
+										echo $this->Time->format($acknowledged['Acknowledged']['entry_time'],
+											$this->Auth->user('dateformat'),
+											false,
+											$this->Auth->user('timezone')
+									);
+									?>)
+									<?php echo __('with the comment ');?>
+									"<?php
+										$ticketDetails = [];
+										if(!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $acknowledged['Acknowledged']['comment_data'], $ticketDetails)):
+											echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2]))?
+												$this->Html->link(
+													$ticketDetails[1].' '.$ticketDetails[2],
+													$ticketSystem['Systemsetting']['value'].$ticketDetails[3],
+													['target' => '_blank']):
+												$acknowledged['Acknowledged']['comment_data'];
+										else:
+											echo h($acknowledged['Acknowledged']['comment_data']);
+										endif;
+										?>".
+
 							</p>
 						<?php endif;?>
 
@@ -378,7 +402,7 @@
 													if($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
 														echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
 													else:
-														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'])['html_icon'];
+														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'], 'color: transparent;')['html_icon'];
 													endif;
 													?>
 												</td>

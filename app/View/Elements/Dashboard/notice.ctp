@@ -52,7 +52,7 @@ endif;
 					<?php
 					echo $this->Form->create('dashboard', [
 						'class' => 'clear',
-						'action' => 'saveNotice',
+						'url' => 'saveNotice',
 						'id' => 'Notice-'.$widget['Widget']['id']
 					]); ?>
 					<?php
