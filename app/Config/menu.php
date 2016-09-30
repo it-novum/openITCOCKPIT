@@ -242,12 +242,12 @@ $config = [
 					'icon' => 'location-arrow',
 					'parent_controller' => 'itc'
 				],
-				'itc_devicegroups' => [
+				/*'itc_devicegroups' => [
 					'url' => ['controller' => 'devicegroups', 'action' => 'index'],
 					'title' => 'Device Groups',
 					'icon' => 'cloud',
 					'parent_controller' => 'itc'
-				],
+				],*/
 				'itc_graphgenerator' => [
 					'url' => ['controller' => 'graphgenerators', 'action' => 'index'],
 					'title' => 'Graph Generator',

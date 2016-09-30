@@ -46,7 +46,7 @@ class Location extends AppModel{
 	];
 	
 	public function __delete($location, $userId){
-		if(is_numeric($location)){
+		/*if(is_numeric($location)){
 			$locationId = $location;
 			$location = $this->findById($location);
 		}else{
@@ -54,7 +54,7 @@ class Location extends AppModel{
 		}
 		
 		$Container = ClassRegistry::init('Container');
-		$Devicegroup = ClassRegistry::init('Devicegroup');
+		//$Devicegroup = ClassRegistry::init('Devicegroup');
 		$Host = ClassRegistry::init('Host');
 		//CakePHP will delete the device groups for us but we need to cleanup the hosts
 		$devicegroups = $Devicegroup->find('all', [
@@ -84,7 +84,7 @@ class Location extends AppModel{
 			}
 			return false;
 		}
-		return false;
+		return false;*/
 	}
 
 	public function __allowDelete($hostIds){
