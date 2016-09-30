@@ -145,6 +145,24 @@
 										);
 									endif;
 
+									if($this->Acl->hasPermission('sharing')) {
+										echo $this->Form->input('shared_container', [
+												'options' => $this->Html->chosenPlaceholder($sharingContainers),
+												'multiple' => true,
+												'selected' => $sharedContainers,
+												'class' => 'chosen',
+												'style' => 'width: 100%',
+												'label' => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10'
+											]
+										);
+									}else{
+										echo $this->Form->input('shared_container', array(
+												'value' => serialize($sharedContainers),
+												'type' => 'hidden'
+											)
+										);
+									}
 
 									echo $this->Form->input('hosttemplate_id', [
 											'label' => [

@@ -74,6 +74,34 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 			$('.chosen-container').css('width', '100%');
 		});
 
+		//get the containers for sharing
+		if($('#HostSharedContainer').length) {
+			$('#HostContainerId').change(function () {
+				var containerId = $(this).val()
+				$.ajax({
+					url: '/Hosts/getSharingContainers/' + containerId + '.json',
+					type: 'post',
+					dataType: 'json',
+					complete: function (response) {
+						$hostSharingContainer = $('#HostSharedContainer')
+						var prevSelectedContainer = $hostSharingContainer.val();
+						var res = response.responseJSON;
+						var html = '<select>';
+						for (var key in res) {
+							var selected = '';
+							if (Array.isArray(prevSelectedContainer) &&  _.contains(prevSelectedContainer, key)) {
+								selected = 'selected';
+							}
+							html += '<option value="' + key + '" ' + selected + '>' + res[key] + '</option>';
+						}
+						html += '</select>';
+						$hostSharingContainer.html(html);
+						$hostSharingContainer.trigger('chosen:updated');
+					}
+				});
+			});
+		}
+
 		this.$contacts = $('#HostContact');
 		this.$contactgroups = $('#HostContactgroup');
 
