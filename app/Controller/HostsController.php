@@ -175,37 +175,6 @@ class HostsController extends AppController{
 				'Host.disabled' => 0,
 				'HostsToContainers.container_id' => $this->request->params['named']['BrowserContainerId']
 			]);
-			/*if(is_array($this->request->params['named']['BrowserContainerId'])){
-				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
-				foreach($browserContainerIds as $id){
-					$childrenContainer[] = $this->Container->children($id, false, ['id', 'containertype_id']);
-				}
-				$childrenContainer = Hash::extract($childrenContainer, '{n}.{n}');
-			}else{
-				$browserContainerIds = [$this->request->params['named']['BrowserContainerId']];
-				$childrenContainer = $this->Container->children(
-					$this->request->params['named']['BrowserContainerId'],
-					false,
-					['id', 'containertype_id']
-				);
-			}
-			//The user set a container id in the URL, may be over browser
-			$all_container_ids = Hash::merge(
-				$browserContainerIds, // array
-				Hash::extract(
-					$childrenContainer,
-					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_DEVICEGROUP . ')$/].id'
-				)
-			);
-
-			$all_container_ids = array_unique($all_container_ids);
-
-			$_conditions = [
-				'Host.disabled' => 0,
-				'Host.container_id' => $all_container_ids
-			];
-			$conditions = Hash::merge($conditions, $_conditions);
-				*/
 		}
 
 		$this->Host->virtualFields['hoststatus'] = 'Hoststatus.current_state';
@@ -224,7 +193,6 @@ class HostsController extends AppController{
 				'Host.active_checks_enabled',
 				'Host.address',
 				'Host.satellite_id',
-
 				'Hoststatus.current_state',
 				'Hoststatus.last_check',
 				'Hoststatus.next_check',
@@ -235,15 +203,11 @@ class HostsController extends AppController{
 				'Hoststatus.state_type',
 				'Hoststatus.problem_has_been_acknowledged',
 				'Hoststatus.is_flapping',
-
-
 				'Hosttemplate.id',
 				'Hosttemplate.uuid',
 				'Hosttemplate.name',
 				'Hosttemplate.description',
 				'Hosttemplate.active_checks_enabled',
-
-
 				'Hoststatus.current_state',
 			],
 			'order' => ['Host.name' => 'asc'],
@@ -286,19 +250,6 @@ class HostsController extends AppController{
 			$all_hosts = $this->Paginator->paginate();
 		}
 
-		/*$hostCount = $this->Host->find('count', [
-			'conditions' => ['Host.disabled' => 0]
-		]);
-
-		$disabledHostCount = $this->Host->find('count', [
-			'conditions' => ['Host.disabled' => 1]
-		]);
-
-		$deletedHostCount = $this->DeletedHost->find('count');*/
-
-		//$all_uuids = Hash::extract($all_hosts, '{n}.Host.uuid');
-		//$hoststatus = $this->Hoststatus->byUuid($all_uuids);
-
 		//distributed monitoring stuff
 		$masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 		$SatelliteModel = false;
@@ -320,9 +271,7 @@ class HostsController extends AppController{
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			if(isset($this->request->data['Filter']['HostStatus']['current_state'])){
-				//$this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
-			}else{
+			if(!isset($this->request->data['Filter']['HostStatus']['current_state'])) {
 				$this->set('HostStatus.current_state', []);
 			}
 			$this->set('isFilter', true);
