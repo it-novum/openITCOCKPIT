@@ -486,7 +486,7 @@ class Host extends AppModel{
 		if(isset($requestData['Host']['shared_container'])){
 			//may its serialized
 			$sharedContainer = $requestData['Host']['shared_container'];
-			if($result = unserialize($sharedContainer)){
+			if(is_string($sharedContainer) && $result = unserialize($sharedContainer)){
 				$sharedContainer = $result;
 			}
 			$containerIds = array_merge([$containerId], $sharedContainer);
