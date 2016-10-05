@@ -1940,8 +1940,11 @@ class ServicesController extends AppController{
 			unset($query['limit']);
 			$all_services = $this->Service->find('all', $query);
 		}else{
-			$query['limit'] = 150;
-			$this->Paginator->settings = $query;
+			$activeServices = ['conditions' => [
+				'Host.id' => $host_id,
+				'Service.disabled' => 0,
+			]];
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query, $activeServices);
 			$all_services = $this->Paginator->paginate();
 		}
 
@@ -1952,8 +1955,8 @@ class ServicesController extends AppController{
 		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
-		$this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'deletedServices', 'username', 'allowEdit']));
+//debug($all_services);
+		$this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
 		$this->set('_serialize', ['all_services']);
 	}
 
