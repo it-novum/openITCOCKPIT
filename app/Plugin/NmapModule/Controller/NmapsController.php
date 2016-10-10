@@ -39,7 +39,7 @@ class NmapsController extends AppController {
     public function index(){
         //Define the target and options
         //$target = array('172.16.14.167');
-        $target = array('172.16.92.100-110');
+        $target = array('172.16.92.100-105');
 
 
         try {
@@ -67,26 +67,8 @@ class NmapsController extends AppController {
 
             //Parse XML Output to retrieve Hosts Object
             $hosts = $this->Nmap->parseXMLOutput();
+            $this->set('hosts', $hosts);
 
-            //Print results
-            foreach ($hosts as $key => $host) {
-                echo '<br>';
-                echo '<b>Hostname: ' . $host->getHostname() . "</b><br>\n";
-                echo 'Address: ' . $host->getAddress() . "<br>\n";
-                echo 'OS: ' . $host->getOS() . "<br>\n";
-                echo 'Status: ' . $host->getStatus() . "<br>\n";
-                $services = $host->getServices();
-                echo 'Number of discovered services: ' . count($services) . "<br>\n";
-                foreach ($services as $key => $service) {
-                    echo "<br>";
-                    echo 'Service Name: ' . $service->name . "<br>\n";
-                    echo 'Port: ' . $service->port . "<br>\n";
-                    echo 'Protocol: ' . $service->protocol . "<br>\n";
-                    echo 'Product information: ' . $service->product . "<br>\n";
-                    echo 'Product version: ' . $service->version . "<br>\n";
-                    echo 'Product additional info: ' . $service->extrainfo . "<br>\n";
-                }
-            }
         } catch (NmapException $ne) {
             echo $ne->getMessage();
         }
@@ -94,6 +76,7 @@ class NmapsController extends AppController {
 
     public function scanHost($hostId) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
+
         $userId = $this->Auth->user('id');
 
         if(!$this->Host->exists($hostId)){
@@ -127,21 +110,21 @@ class NmapsController extends AppController {
                 'fast_scan' => true,
                 'service_info' => true,
                 'all_options' => true,
-                'port_ranges' => '25,80', // Only specified ports
+                'port_ranges' => '80', // Only specified ports
             );
             $this->Nmap->enableOptions($nmap_options);
 
             // Scan
-
-            $res = $this->Nmap->scan([$_host["Host"]["address"]]);
-
+            $target = array('127.0.0.1');
+            $res = $this->Nmap->scan($target);
+            //exit;
             // Get failed hosts
-            $failed_to_resolve = $this->Nmap->getFailedToResolveHosts();
+            /**$failed_to_resolve = $this->Nmap->getFailedToResolveHosts();
             if (count($failed_to_resolve) > 0) {
                 echo 'Failed to resolve given hostname/IP: ' .
                     implode (', ', $failed_to_resolve) .
                     "\n";
-            }
+            }**/
 
             //Parse XML Output to retrieve Hosts Object
             $hosts = $this->Nmap->parseXMLOutput();

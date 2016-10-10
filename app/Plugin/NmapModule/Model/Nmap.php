@@ -156,7 +156,8 @@ class Nmap extends NmapModuleAppModel{
     {
         $sudo = $with_sudo
             ? 'sudo ' : '';
-
+        var_dump($sudo . $this->createCommandLine($targets), $out, $ret_var);
+        exit;
         exec($sudo . $this->createCommandLine($targets), $out, $ret_var);
 
         if ($ret_var > 0) {

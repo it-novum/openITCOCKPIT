@@ -31,12 +31,12 @@ $config = array(
             'icon' => 'search',
             'order' => 2,
             'children' => [
-                /*'map' => [
-                    'url' => ['controller' => 'maps', 'action' => 'index', 'plugin' => 'map_module'],
-                    'title' => 'Maps',
+                'map' => [
+                    'url' => ['controller' => 'nmaps', 'action' => 'index', 'plugin' => 'nmap_module'],
+                    'title' => 'Discovery',
                     'icon' => 'bolt',
-                    'parent_controller' => 'maps'
-                ],*/
+                    'parent_controller' => 'itc'
+                ],
             ]
         ],
     ]
