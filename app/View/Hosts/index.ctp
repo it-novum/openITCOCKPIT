@@ -72,6 +72,7 @@
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('In downtime'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Graph'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Shared'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Passive'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hostname'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('IP-Address'); ?></a></li>
@@ -127,6 +128,7 @@
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
+										<th class="no-sort text-center" ><i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Hostname'); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'address'); echo $this->Paginator->sort('address', __('IP address')); ?></th>
@@ -243,6 +245,11 @@
 												<?php endif;?>
 											</td>
 											<td class="text-center">
+												<?php if(count($host['Containers']) > 1): ?>
+													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
+												<?php endif; ?>
+											</td>
+											<td class="text-center">
 												<?php
 												if($host['Host']['active_checks_enabled'] !== null && $host['Host']['active_checks_enabled'] !== '' || $host['Host']['satellite_id'] > 0):
 													if($host['Host']['active_checks_enabled'] == 0 || $host['Host']['satellite_id'] > 0): ?>
@@ -251,7 +258,6 @@
 													elseif($host['Hosttemplate']['active_checks_enabled'] == 0): ?>
 													<strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
 												<?php endif; ?>
-
 											</td>
 											<td>
 												<?php if($this->Acl->hasPermission('browser')):?>
