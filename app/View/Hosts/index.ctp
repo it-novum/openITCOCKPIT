@@ -246,7 +246,7 @@
 											</td>
 											<td class="text-center">
 												<?php if(count($host['Containers']) > 1): ?>
-													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="<?php echo  '/hosts/edit/'.$host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
+													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
 												<?php endif; ?>
 											</td>
 											<td class="text-center">
