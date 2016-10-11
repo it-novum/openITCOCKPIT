@@ -210,12 +210,10 @@ class Host extends AppModel{
 				'allowEmpty' => true,
 				'required' => false,
 			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs to be numeric.',
-				'allowEmpty' => true,
-				'required' => false,
-			],
+			'positiveInt' => [
+				'rule' => ['positiveInt', 'max_check_attempts'],
+				'message' => 'This field can only have a positive numeric value.',
+			]
 
 		],
 		/*
@@ -548,6 +546,9 @@ class Host extends AppModel{
 	*/
 	public function atLeastOne($data){
 		return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
+	}
+	public function positiveInt($data){
+		return is_int($data['max_check_attempts']) && $data['max_check_attempts'] >= 0;
 	}
 
 	public function prepareForView($id = null){

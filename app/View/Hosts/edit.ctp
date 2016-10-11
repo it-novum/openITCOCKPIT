@@ -465,6 +465,7 @@
 										'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 										'value' => ($host['Host']['max_check_attempts'] === null)?$host['Hosttemplate']['max_check_attempts']:$host['Host']['max_check_attempts'],
 										'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+										'min' => 0
 									]
 								); ?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
