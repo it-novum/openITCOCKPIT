@@ -212,7 +212,7 @@ class Host extends AppModel{
 			],
 			'positiveInt' => [
 				'rule' => ['positiveInt', 'max_check_attempts'],
-				'message' => 'This field can only have a positive numeric value.',
+				'message' => 'This value need to be at least 1.',
 			]
 
 		],
@@ -548,7 +548,7 @@ class Host extends AppModel{
 		return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
 	}
 	public function positiveInt($data){
-		return is_int($data['max_check_attempts']) && $data['max_check_attempts'] >= 0;
+		return intval($data['max_check_attempts'])==$data['max_check_attempts'] && $data['max_check_attempts'] > 0;
 	}
 
 	public function prepareForView($id = null){
