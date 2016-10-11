@@ -28,7 +28,9 @@
  * @property Systemsetting Systemsetting
  */
 class AdministratorsController extends AppController{
-	public $layout = 'Admin.default';
+    public $components = ['Http', 'GearmanClient'];
+    public $uses = ['Proxy'];
+    public $layout = 'Admin.default';
 
 	function index(){
 	}
@@ -225,8 +227,9 @@ class AdministratorsController extends AppController{
 			$is_mysql_running = true;
 		}*/
 
-		exec(Configure::read('nagios.phpnsta_status'), $output, $returncode);
-		if($returncode == 0){
+        $this->Config = Configure::read('gearman');
+        $result = unserialize($this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'phpnsta_status']), $this->Config['password'])));
+        if ($result['returncode'] === 0){
 			$is_phpNSTA_running = true;
 		}
 
