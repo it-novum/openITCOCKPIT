@@ -36,7 +36,7 @@ class Host extends AppModel{
 			'joinTable' => 'hosts_to_containers',
 			'foreignKey' => 'host_id',
 			'associationForeignKey' => 'container_id',
-		],	
+		],
 		'Container' => [
 			'className' => 'Container',
 			'joinTable' => 'hosts_to_containers',
@@ -481,6 +481,22 @@ class Host extends AppModel{
 			$containerId = $requestData['Host']['container_id'];
 		}
 
+		if(isset($requestData['Host']['shared_container'])){
+			//may its serialized
+			$sharedContainer = $requestData['Host']['shared_container'];
+
+			if(empty($sharedContainer)){
+				$sharedContainer = [];
+			}
+			if(is_string($sharedContainer) && strlen($sharedContainer)>0 && $result = unserialize($sharedContainer)){
+				$sharedContainer = $result;
+			}
+
+			$containerIds = array_merge([$containerId], $sharedContainer);
+		}else{
+			$containerIds = $containerId;
+		}
+
 		if(empty($requestData['Host']['Contactgroup'])){
 			$requestData['Host']['Contactgroup'] = [];
 		}
@@ -498,7 +514,7 @@ class Host extends AppModel{
 				'Hostgroup' => $requestData['Hostgroup']['Hostgroup']
 			],
 			'Container' => [
-				'container_id' => $containerId,
+				'Container' => $containerIds,
 			],
 			'Parenthost' => [
 				'Parenthost' => $requestData['Parenthost']['Parenthost']

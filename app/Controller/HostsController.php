@@ -602,6 +602,15 @@ class HostsController extends AppController{
 		$this->Frontend->setJson('ContactsInherited', $ContactsInherited);
 
 		$this->set('back_url', $this->referer());
+
+		//get sharing containers
+		$sharingContainers = $this->getSharingContainers($host['Host']['container_id'], false);
+		//get the already shared containers
+		if(is_array($host['Containers']) && !empty($host['Containers'])){
+			$sharedContainers = array_diff($host['Containers'],[$host['Host']['container_id']]);
+		}else{
+			$sharedContainers = [];
+		}
 		$this->set(compact([
 			'host',
 			'containers',
@@ -618,6 +627,8 @@ class HostsController extends AppController{
 			'commandarguments',
 			'masterInstance',
 			'ContactsInherited',
+			'sharedContainers',
+			'sharingContainers'
 		]));
 		if($this->request->is('post') || $this->request->is('put')){
 			$ext_data_for_changelog = [
@@ -1272,6 +1283,7 @@ class HostsController extends AppController{
 				$this->request->data,
 				'add'
 			);
+
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
 					$this->params['action'],
@@ -1318,8 +1330,24 @@ class HostsController extends AppController{
 				$this->setFlash(__('Data could not be saved'), false);
 			}
 		}
+		$sharingContainers = [];
 		//Refil ajax stuff if set or not
-		$this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands','containers', 'masterInstance', 'Customvariable']));
+		$this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands','containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
+	}
+
+	public function getSharingContainers($containerId = null, $jsonOutput = true){
+		if($jsonOutput){
+			$this->autoRender = false;
+		}
+		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+		$sharingContainers = array_diff_key($containers, [$containerId => $containerId]);
+
+		if($jsonOutput){
+			echo json_encode($sharingContainers);
+		}else{
+			return $sharingContainers;
+		}
+
 	}
 
 	public function disabled(){
@@ -2221,7 +2249,6 @@ class HostsController extends AppController{
 				'Host.name ASC'
 			]
 		]);
-//debug($hoststatus);
 		$hostCount = count($hoststatus);
 
 		$this->set(compact('hoststatus', 'hostCount'));
@@ -2434,8 +2461,6 @@ class HostsController extends AppController{
 
 		//Form got submitted
 		if(!empty($this->request->data)){
-			debug($this->request->data('Servicetemplategroup.id'));
-			debug($host_id);
 
 			if(!$this->Servicetemplategroup->exists($this->request->data('Servicetemplategroup.id'))) {
 				throw new NotFoundException(__('Invalid servicetemplategroup'));
@@ -2497,7 +2522,6 @@ class HostsController extends AppController{
 				}
 			}
 		}
-		//=====
 		$host = $this->Host->findById($host_id);
 		$allServicetemplategroups = $this->Servicetemplategroup->find('all',[
 			'fields' => ['Servicetemplategroup.id','Container.name']
