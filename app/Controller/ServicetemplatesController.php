@@ -44,6 +44,7 @@ class ServicetemplatesController extends AppController{
 		'ListFilter.ListFilter',
 		'CustomValidationErrors',
 		'AdditionalLinks',
+		'Flash'
 	];
 	public $helpers = [
 		'ListFilter.ListFilter',
@@ -433,8 +434,14 @@ class ServicetemplatesController extends AppController{
 					return;
 				}
 
-				$this->setFlash(__('<a href="/servicetemplates/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
-				$this->redirect(array('action' => 'index'));
+				$flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+				$flashHref[] = $id;
+				$flashHref[] = $servicetemplatetype_id;
+
+				$this->setFlash(__('<a href="'.Router::url($flashHref).'">Servicetemplate</a> successfully saved.'));
+
+				$redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
+				$this->redirect($redirect);
 			}else{
 				if($isJson){
 					$this->serializeErrorMessage();
@@ -499,7 +506,6 @@ class ServicetemplatesController extends AppController{
 		$_timeperiods = [];
 		$_contacts = [];
 		$_contactgroups = [];
-
 		$userId = $this->Auth->user('id');
 		// Checking if the user hit submit and a validation error happents, to refill input fields
 		$Customvariable = [];
@@ -705,7 +711,12 @@ class ServicetemplatesController extends AppController{
 				if($isJson){
 					$this->serializeId();
 				}else{
-					$this->setFlash(__('<a href="/servicetemplates/edit/%s">Servicetemplate</a> successfully saved.', $this->Servicetemplate->id));
+					$flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+					$flashHref[] = $this->Servicetemplate->id;
+					$flashHref[] = $servicetemplatetype_id;
+
+					$this->setFlash(__('<a href="'.Router::url($flashHref).'">Servicetemplate</a> successfully saved.'));
+
 					$redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
 					$this->redirect($redirect);
 				}
