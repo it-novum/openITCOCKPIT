@@ -422,6 +422,15 @@ class GearmanWorkerShell extends AppShell
             case 'restore_sql_backup':
                 $return = $this->NagiosExport->restoreSQLBackup($payload['path']);
                 break;
+
+            case 'phpnsta_status':
+                $command = Configure::read('nagios.phpnsta_status');
+                exec($command, $output, $returncode);
+                $return = [
+                    'output' => $output,
+                    'returncode' => $returncode
+                ];
+                break;
         }
 
         return serialize($return);
