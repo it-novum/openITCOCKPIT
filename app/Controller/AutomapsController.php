@@ -123,7 +123,11 @@ class AutomapsController extends AppController{
 
 		$ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
 		if((bool)$automap['Automap']['recursive'] == true) {
-			$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer());
+			if($automap['Automap']['container_id'] == ROOT_CONTAINER){
+				$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
+			}else{
+				$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), false);
+			}
 			$ContainerRepository->addContainer($childContainers);
 
 			//Remove root container, if the parent container of the Automap is not root
