@@ -414,7 +414,7 @@ class Servicetemplate extends AppModel{
 	*
 	*/
 	public function beforeSave($options = []) {
-		if(isset($this->data['Customvariable'])){
+		if(isset($this->data['Customvariable']) && !empty($this->data['Servicetemplate']['id'])){
 			$customvariablesToDelete = $this->Customvariable->find('all', [
 				'conditions' => [
 					'Customvariable.object_id' =>$this->data['Servicetemplate']['id'],

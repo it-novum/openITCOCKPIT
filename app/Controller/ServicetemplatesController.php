@@ -775,7 +775,6 @@ class ServicetemplatesController extends AppController{
 		}
 
 		$this->Servicetemplate->id = $id;
-		debug($this->Servicetemplate->__allowDelete($id));
 		if($this->Servicetemplate->__allowDelete($id)){
 			if($this->Servicetemplate->delete()){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -916,14 +915,27 @@ class ServicetemplatesController extends AppController{
 					'fields' => [
 						'Contactgroup.id'
 					]
-				]
+				],
+				'Servicetemplatecommandargumentvalue' => [
+					'fields' => [
+						'commandargument_id', 'value'
+					]
+				],
+				'Servicetemplateeventcommandargumentvalue' => [
+					'fields' => [
+						'commandargument_id', 'value'
+					]
+				],
+				'Customvariable' => [
+					'fields' => [
+						'name', 'value'
+					]
+				],
 			]
 		]);
-
 		$servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');
 
 		if($this->request->is('post') || $this->request->is('put')){
-
 			foreach ($servicetemplates as $key => $servicetemplate) {
 				unset($servicetemplates[$key]['Servicetemplate']['created']);
 				unset($servicetemplates[$key]['Servicetemplate']['modified']);
@@ -933,22 +945,44 @@ class ServicetemplatesController extends AppController{
 
 			$datasource = $this->Servicetemplate->getDataSource();
 			try{
-			    $datasource->begin();
+				$datasource->begin();
 				foreach ($this->request->data['Servicetemplate'] as $newServicetemplate) {
 					$contactIds = Hash::extract($servicetemplates[$newServicetemplate['source']],'Contact.{n}.id');
 					$contactgroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']],'Contactgroup.{n}.id');
+
 					$newServicetemplateData = [
 						'Servicetemplate' => [
 							'uuid' => $this->Servicetemplate->createUUID(),
 							'name' => $newServicetemplate['name'],
 							'description' => $newServicetemplate['description']
-						]					];
+						],
+						'Customvariable' => Hash::insert(
+							Hash::remove(
+								$servicetemplates[$newServicetemplate['source']]['Customvariable'], '{n}.object_id'
+							),
+							'{n}.objecttype_id',
+							OBJECT_SERVICETEMPLATE
+						),
+						'Servicetemplatecommandargumentvalue' => Hash::remove(
+							$servicetemplates[$newServicetemplate['source']]['Servicetemplatecommandargumentvalue'],
+							'{n}.servicetemplate_id'
+						),
+						'Servicetemplateeventcommandargumentvalue' => Hash::remove(
+							$servicetemplates[$newServicetemplate['source']]['Servicetemplateeventcommandargumentvalue'],
+							'{n}.servicetemplate_id'
+						),
+						'Contact' => [
+							'Contact' => $contactIds
+						],
+						'Contactgroup' => [
+							'Contactgroup' =>[
+								$contactgroupIds
+							]
+						]
+					];
 
-					$dataToSave = [];
-					$dataToSave['Servicetemplate'] = Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], $newServicetemplateData['Servicetemplate']);
-					$dataToSave['Contact']['Contact'] = $contactIds;
-					$dataToSave['Contactgroup']['Contactgroup'] = $contactIds;
-					if(!$this->Servicetemplate->saveAll($dataToSave)){
+					$newServicetemplateData['Servicetemplate'] = Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], $newServicetemplateData['Servicetemplate']);
+					if(!$this->Servicetemplate->saveAll($newServicetemplateData)){
 						throw new Exception('Some of the Servicetemplates could not be copied');
 					}
 				}
