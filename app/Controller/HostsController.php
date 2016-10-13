@@ -1366,7 +1366,7 @@ class HostsController extends AppController{
 			],
 			'contain' => [
 				'Hosttemplate',
-				//'Container'
+				'Container'
 			],
 			//'contain' => [],
 			'fields' => [
