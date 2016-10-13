@@ -223,13 +223,13 @@
 
 											<td class="text-center">
 												<?php if($host['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
-													<i class="fa fa-user fa-lg "></i>
+													<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledged'); ?>"></i>
 												<?php endif;?>
 											</td>
 
 											<td class="text-center">
 												<?php if($host['Hoststatus']['scheduled_downtime_depth'] > 0):?>
-													<i class="fa fa-power-off fa-lg "></i>
+													<i class="fa fa-power-off fa-lg " title="<?php echo __('in Downtime'); ?>"></i>
 												<?php endif; ?>
 											</td>
 
@@ -241,7 +241,7 @@
 														$graphHref = '/services/serviceList/'.$host['Host']['id'];
 													endif;
 													?>
-													<a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i class="fa fa-area-chart fa-lg "></i></a>
+													<a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i class="fa fa-area-chart fa-lg " title="<?php echo __('Grapher'); ?>"></i></a>
 												<?php endif;?>
 											</td>
 											<td class="text-center">
