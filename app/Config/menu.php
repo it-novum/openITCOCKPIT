@@ -178,7 +178,7 @@ $config = [
 				],
 				'itc_servicetemplategroup' => [
 					'url' => ['controller' => 'servicetemplategroups', 'action' => 'index'],
-					'title' => 'Service Template Groups',
+					'title' => 'Service Template Grps.',
 					'icon' => 'pencil-square-o',
 					'parent_controller' => 'itc'
 				],

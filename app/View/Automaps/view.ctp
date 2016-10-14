@@ -52,13 +52,21 @@
 	<div>
 		<div class="widget-body">
 			<div class="row">
-				<div class="col-xs-12 col-md-6">
+				<div class="col-xs-12 col-md-5">
 					<strong><?php echo __('Regular expression for hosts')?>:</strong>
 					<?php echo h($automap['Automap']['host_regex']); ?>
 				</div>
-				<div class="col-xs-12 col-md-6">
+				<div class="col-xs-12 col-md-5">
 					<strong><?php echo __('Regular expression for services')?>:</strong>
 					<?php echo h($automap['Automap']['service_regex']); ?>
+				</div>
+				<div class="col-xs-12 col-md-2">
+					<strong><?php echo __('Recursive')?>:</strong>
+					<?php if((bool)$automap['Automap']['recursive'] == true): ?>
+						<i class="fa fa-check txt-color-greenDark"></i>
+					<?php else: ?>
+						<i class="fa fa-times txt-color-red"></i>
+					<?php endif; ?>
 				</div>
 				<div class="col-xs-12 col-md-12">&nbsp;</div>
 				

@@ -48,7 +48,9 @@ class Environments {
 	protected static function _detectHttp(){
 		$host = env('HTTP_HOST');
 
-		if(substr($host, 0, 4) == 'dev.'){
+		if(substr($host, 0, 4) == 'dev.') {
+			$environment = self::DEVELOPMENT;
+		}elseif(substr($host, 0, 4) == 'dev-') {
 			$environment = self::DEVELOPMENT;
 		}elseif(substr($host, 0, 8) == 'staging.'){
 			$environment = self::STAGING;

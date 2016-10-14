@@ -1467,6 +1467,7 @@ class AppSchema extends CakeSchema {
 		'show_downtime' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
 		'show_label' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'font_size' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'recursive' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(

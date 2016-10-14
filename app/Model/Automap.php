@@ -87,6 +87,13 @@ class Automap extends AppModel{
 				'required' => false
 			]
 		],
+		'recursive' => [
+			'numeric' => [
+				'rule' => 'numeric',
+				'message' => 'This field needs to be numeric.',
+				'allowEmpty' => true
+			],
+		],
 
 	];
 

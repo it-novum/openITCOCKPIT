@@ -196,4 +196,20 @@ class TreeComponent extends Component {
 		}
 		return array_unique($result);
 	}
+
+	/**
+	 * Remove the ROOT_CONTAINER from a given array with container ids as value
+	 * @param array $containerIds
+	 * @return array
+	 */
+	public function removeRootContainer($containerIds){
+		$result = array();
+		foreach($containerIds as $containerId){
+			$containerId = (int)$containerId;
+			if($containerId !== ROOT_CONTAINER){
+				$result[] = $containerId;
+			}
+		}
+		return $result;
+	}
 }
