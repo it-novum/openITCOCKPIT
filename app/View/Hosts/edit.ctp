@@ -123,8 +123,13 @@
 												'style' => 'width: 100%',
 												'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-												'disabled' => true
+												'disabled' => True
 											]
+										);
+										echo $this->Form->input('container_id', array(
+												'value' => $host['Host']['container_id'],
+												'type' => 'hidden'
+											)
 										);
 									else:
 										?>
@@ -140,6 +145,24 @@
 										);
 									endif;
 
+									if($this->Acl->hasPermission('sharing')) {
+										echo $this->Form->input('shared_container', [
+												'options' => $this->Html->chosenPlaceholder($sharingContainers),
+												'multiple' => true,
+												'selected' => $sharedContainers,
+												'class' => 'chosen',
+												'style' => 'width: 100%',
+												'label' => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10'
+											]
+										);
+									}else{
+										echo $this->Form->input('shared_container', array(
+												'value' => serialize($sharedContainers),
+												'type' => 'hidden'
+											)
+										);
+									}
 
 									echo $this->Form->input('hosttemplate_id', [
 											'label' => [
@@ -460,6 +483,7 @@
 										'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 										'value' => ($host['Host']['max_check_attempts'] === null)?$host['Hosttemplate']['max_check_attempts']:$host['Host']['max_check_attempts'],
 										'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+										'min' => 0
 									]
 								); ?>
 							<div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">

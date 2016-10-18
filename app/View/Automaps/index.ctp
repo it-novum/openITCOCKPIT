@@ -52,14 +52,6 @@
 						?>
 						</div>
 						<div class="widget-toolbar" role="menu">
-						<a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i class="fa fa-lg fa-table"></i></a>
-						<ul class="dropdown-menu arrow-box-up-right pull-right">
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="0"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Name'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Description'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Host RegEx'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Service RegEx'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Options'); ?></a></li>
-						</ul>
 						<div class="clearfix"></div>
 					</div>
 					<div class="jarviswidget-ctrls" role="menu">
@@ -73,7 +65,7 @@
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 						<div class="mobile_table">
-							<table id="automaps_list" class="table table-striped table-bordered smart-form" style="">
+							<table id="automaps_list" class="table table-striped table-bordered" style="">
 								<thead>
 									<tr>
 										<th class="no-sort"><?php echo __('Name'); ?></th>
@@ -81,6 +73,7 @@
 										<th class="no-sort"><?php echo __('Host RegEx'); ?></th>
 										<th class="no-sort"><?php echo __('Service RegEx'); ?></th>
 										<th class="no-sort"><?php echo __('Options'); ?></th>
+										<th class="no-sort"><?php echo __('Recursive'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -92,6 +85,13 @@
 											<td><?php echo h($automap['Automap']['host_regex']);?></td>
 											<td><?php echo h($automap['Automap']['service_regex']);?></td>
 											<td><?php echo __viewAutomapOptions($automap); ?></td>
+											<td>
+												<?php if($automap['Automap']['recursive'] == 1): ?>
+													<span class="label label-success"><?php echo __('Yes'); ?></span>
+												<?php else: ?>
+													<span class="label label-danger"><?php echo __('No'); ?></span>
+												<?php endif; ?>
+											</td>
 											<td class="text-center"><a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $automap['Automap']['id']; ?>" data-original-title="<?php echo __('Edit'); ?>" data-placement="left" rel="tooltip" data-container="body"><i id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a></td>
 											
 										</tr>
@@ -102,7 +102,7 @@
 						<?php if(empty($all_automaps)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -110,7 +110,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

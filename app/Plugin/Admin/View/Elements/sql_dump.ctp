@@ -63,10 +63,16 @@ if ($noLogs || isset($_forced_from_dbo_)):
 				}
 				$i['query'] .= " , params[ " . rtrim($bindParam, ', ') . " ]";
 			}
+
+			if(strlen($i['query']) > 250){
+				$query = SqlFormatter::format($i['query']);
+			}else{
+				$query = SqlFormatter::highlight($i['query']);
+			}
+
 			printf('<tr><td>%d</td><td>%s</td><td>%s</td><td style="text-align: right">%d</td><td style="text-align: right">%d</td><td style="text-align: right">%d</td></tr>%s',
 				$k + 1,
-				SqlFormatter::highlight($i['query']),
-				//SqlFormatter::format($i['query']),
+				$query,
 				$i['error'],
 				$i['affected'],
 				$i['numRows'],

@@ -168,6 +168,39 @@ class AppModel extends Model{
 		return $redirect;
 	}
 
+	/**
+	 * Create an array for Router::redirect() if you want to redirect to a different page
+	 * @param array $params  _controller and _action
+	 * @param array $override params
+	 * @return array
+	 */
+	public function flashRedirect($params = [], $override = []){
+		$redirect = [
+			'controller' => $params['controller'],
+			'action' => $params['action'],
+			'plugin' => $params['plugin']
+		];
+
+		if(isset($params['named']['_controller'])){
+			$redirect['_controller'] = $params['named']['_controller'];
+		}
+
+		if(isset($params['named']['_action'])){
+			$redirect['_action'] = $params['named']['_action'];
+		}
+
+		if(isset($params['named']['_plugin'])){
+			$redirect['_plugin'] = $params['named']['_plugin'];
+		}
+
+
+		if(!empty($override)){
+			$redirect = Hash::merge($redirect, $override);
+		}
+
+		return $redirect;
+	}
+
 
 	public function afterSave($created, $options = array()){
 		if($created){

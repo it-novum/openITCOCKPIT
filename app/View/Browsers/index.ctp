@@ -108,7 +108,7 @@
 			<div class="jarviswidget jarviswidget-sortable" id="wid-id-12" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
 			<header>
 					<span class="widget-icon"> <i class="fa fa-pie-chart"></i></i></span>
-					<h2><?php echo __('Servicestatus overview'); ?></h2>
+					<h2><?php echo __('Service Status Overview'); ?></h2>
 				</header>
 				<!-- widget div-->
 				<div>
@@ -178,12 +178,12 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
-										<th class="select_datatable no-sort"><?php echo __('Hoststatus'); ?></th>
+										<th class="select_datatable no-sort"><?php echo __('Host Status'); ?></th>
 										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
-										<th class="no-sort"><?php echo __('Hostname'); ?></th>
-										<th class="no-sort"><?php echo __('IP address'); ?></th>
-										<th class="no-sort"><?php echo  __('State since'); ?></th>
-										<th class="no-sort"><?php echo __('Last check'); ?></th>
+										<th class="no-sort"><?php echo __('Host Name'); ?></th>
+										<th class="no-sort"><?php echo __('IP Address'); ?></th>
+										<th class="no-sort"><?php echo  __('State Since'); ?></th>
+										<th class="no-sort"><?php echo __('Last Check'); ?></th>
 										<th class="no-sort"><?php echo __('Output'); ?></th>
 									</tr>
 								</thead>
@@ -230,7 +230,7 @@
 														<?php endif;?>
 														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
 															<li>
-																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
 															</li>
 														<?php endif; ?>
 
@@ -269,7 +269,7 @@
 						<?php else: ?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -277,7 +277,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

@@ -86,7 +86,7 @@ class AppController extends Controller{
 		'Servicetemplate',
 		'Hosttemplate',
 		'Servicegroup',
-		'Devicegroup',
+		//'Devicegroup',
 		'Servicetemplategroup',
 		'Map',
 		'Eventcorrelation'
@@ -658,7 +658,6 @@ class AppController extends Controller{
 				break;
 			case 'Tenant':
 			case 'Location':
-			case 'Devicegroup':
 				$this->set('container_id', $this->Container->id);
 				$serializeVariableNames[] = 'container_id';
 				break;

@@ -727,12 +727,12 @@ class DocumentationsController extends AppController{
 						'file' => 'locations',
 						'icon' => 'fa fa-location-arrow',
 					],
-					'devicegroups' => [
+					/*'devicegroups' => [
 						'name' => __('Devicegroups'),
 						'description' => 'How to query device group objects using the REST API',
 						'file' => 'devicegroups',
 						'icon' => 'fa fa-cloud',
-					],
+					],*/
 					'hostescalations' => [
 						'name' => __('Hostescalations'),
 						'description' => 'How to query host escalations objects using the REST API',

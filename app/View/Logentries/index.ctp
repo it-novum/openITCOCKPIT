@@ -260,7 +260,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <?php if(empty($all_logentries)):?>
                         <div class="noMatch">
                             <center>
-                                <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                             </center>
                         </div>
                         <?php endif;?>
@@ -269,7 +269,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info">
-                                        <?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?>
+                                        <?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 text-right">

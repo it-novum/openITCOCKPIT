@@ -81,6 +81,8 @@ for PLUGIN in $(ls -1 "${APPDIR}/Plugin"); do
 	fi
 done
 
+#Update Containertype from Devicegroup to Node
+oitc api --model Containers --action update_container_type --data ""
 
 #Compress and minify javascript files
 oitc compress
@@ -100,3 +102,6 @@ service oitc_cmd start
 
 service gearman_worker stop
 service gearman_worker start
+
+service php5-fpm stop
+service php5-fpm start

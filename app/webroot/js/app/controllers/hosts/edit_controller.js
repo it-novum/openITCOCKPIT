@@ -62,6 +62,35 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             }
         });
 
+        //get the containers for sharing
+        if($('#HostSharedContainer').length){
+            $('#HostContainerId').change(function(){
+                var containerId = $(this).val()
+                $.ajax({
+                    url: '/Hosts/getSharingContainers/'+containerId+'.json',
+                    type: 'post',
+                    dataType: 'json',
+                    complete: function(response){
+                        $hostSharingContainer = $('#HostSharedContainer')
+                        var prevSelectedContainer = $hostSharingContainer.val();
+                        var res = response.responseJSON;
+                        var html = '<select>';
+                        for(var key in res){
+                            var selected = '';
+                            if(Array.isArray(prevSelectedContainer) && _.contains(prevSelectedContainer, key)){
+                                selected = 'selected';
+                            }
+                            html += '<option value="'+key+'" '+selected+'>'+res[key]+'</option>';
+                        }
+                        html += '</select>';
+                        $hostSharingContainer.html(html);
+                        $hostSharingContainer.trigger('chosen:updated');
+                    }
+                });
+            });
+        }
+
+
   /*      var currentHosttemplateId = $('#HostHosttemplateId').val();
         var currentContainerId = $('#HostContainerId').val();
 

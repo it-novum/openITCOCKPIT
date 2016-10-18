@@ -1,11 +1,88 @@
 <?php
+
+use itnovum\openITCOCKPIT\InitialDatabase;
+
 class AppSchema extends CakeSchema {
 
 	public function before($event = array()) {
+		$db = ConnectionManager::getDataSource($this->connection);
+		$db->cacheSources = false;
 		return true;
 	}
 
 	public function after($event = array()) {
+		if(isset($event['update'])){
+			switch($event['update']){
+				case 'commands':
+					$CommandsImporter = new InitialDatabase\Commands(ClassRegistry::init('Command'));
+					$CommandsImporter->import();
+					break;
+
+				case 'containers':
+					$ContainerImporter = new InitialDatabase\Container(ClassRegistry::init('Container'));
+					$ContainerImporter->import();
+					break;
+
+				case 'timeperiods':
+					$TimperiodsImporter = new InitialDatabase\Timeperiod(ClassRegistry::init('Timeperiod'));
+					$TimperiodsImporter->import();
+					break;
+
+				case 'macros':
+					$MacrosImporter = new InitialDatabase\Macro(ClassRegistry::init('Macro'));
+					$MacrosImporter->import();
+					break;
+
+				case 'cronjobs':
+					$CronjobsImporter = new InitialDatabase\Cronjob(ClassRegistry::init('Cronjob'));
+					$CronjobsImporter->import();
+					break;
+
+				case 'systemsettings':
+					$SystemsettingsImporter = new InitialDatabase\Systemsetting(ClassRegistry::init('Systemsetting'));
+					$SystemsettingsImporter->import();
+					break;
+
+				case 'contacts':
+					$ContactsImporter = new InitialDatabase\Contact(ClassRegistry::init('Contact'));
+					$ContactsImporter->import();
+					break;
+
+				case 'hosttemplates':
+					$HosttemplatesImporter = new InitialDatabase\Hosttemplate(ClassRegistry::init('Hosttemplate'));
+					$HosttemplatesImporter->import();
+					break;
+
+				case 'hosts':
+					$HostsImporter = new InitialDatabase\Host(ClassRegistry::init('Host'));
+					$HostsImporter->import();
+					break;
+
+				case 'servicetemplates':
+					$ServicetemplatesImporter = new InitialDatabase\Servicetemplate(ClassRegistry::init('Servicetemplate'));
+					$ServicetemplatesImporter->import();
+					break;
+
+				case 'services':
+					$ServicesImporter = new InitialDatabase\Service(ClassRegistry::init('Service'));
+					$ServicesImporter->import();
+					break;
+
+				case 'acos':
+					$AcosImporter = new InitialDatabase\Aco(ClassRegistry::init('Aco'));
+					$AcosImporter->import();
+					break;
+
+				case 'aros':
+					$ArosImporter = new InitialDatabase\Aro(ClassRegistry::init('Aro'));
+					$ArosImporter->import();
+					break;
+
+				case 'usergroups':
+					$UsergroupsImporter = new InitialDatabase\Usergroup(ClassRegistry::init('Usergroup'));
+					$UsergroupsImporter->import();
+			}
+		}
 	}
 
 	public $changelogs = array(
@@ -145,35 +222,6 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'contactgroup_id' => array('column' => 'contactgroup_id', 'unique' => 0),
 			'servicetemplate_id' => array('column' => 'servicetemplate_id', 'unique' => 0)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $contacts = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'email' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'phone' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'host_timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'service_timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'host_notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'service_notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_critical' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_service_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_host_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_host_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_host_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_host_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_host_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -410,63 +458,6 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-	public $hosts = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'hosttemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'address' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'eventhandler_command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'timeperiod_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'check_interval' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 5),
-		'retry_interval' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 5),
-		'max_check_attempts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 3),
-		'first_notification_delay' => array('type' => 'float', 'null' => true, 'default' => null),
-		'notification_interval' => array('type' => 'float', 'null' => true, 'default' => null),
-		'notify_on_down' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_unreachable' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_recovery' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_flapping' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_downtime' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_up' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_down' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_unreachable' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'low_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
-		'high_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
-		'process_performance_data' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'freshness_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 8),
-		'passive_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'event_handler_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'active_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'retain_status_information' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'retain_nonstatus_information' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'notifications_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'notes' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
-		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'own_contacts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'own_contactgroups' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'own_customvariables' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'host_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'satellite_id' => array('type' => 'integer', 'default' => 0),
-		'host_type' => array('type' => 'integer', 'null' => false, 'default' => 1),
-		'disabled' => array('type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
 	public $hosts_to_containers = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'host_id' => array('type' => 'integer', 'null' => false, 'default' => null),
@@ -512,70 +503,6 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'host_id' => array('column' => 'host_id', 'unique' => 0),
 			'parenthost_id' => array('column' => 'parenthost_id', 'unique' => 0)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $hosttemplatecommandargumentvalues = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'hosttemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $hosttemplates = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'hosttemplatetype_id' => array('type' => 'integer', 'null' => false, 'default' => 1),
-		'command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'eventhandler_command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'check_interval' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5),
-		'retry_interval' => array('type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5),
-		'max_check_attempts' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3),
-		'first_notification_delay' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'notification_interval' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'notify_on_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_up' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'low_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'high_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'process_performance_data' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'freshness_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 8),
-		'passive_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'event_handler_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'active_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'retain_status_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'retain_nonstatus_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'notes' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'priority' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 2),
-		'check_period_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'notify_period_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'tags' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'host_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -695,64 +622,6 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-	public $services = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'host_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'name' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'eventhandler_command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'check_interval' => array('type' => 'float', 'null' => true, 'default' => null),
-		'retry_interval' => array('type' => 'float', 'null' => true, 'default' => null),
-		'max_check_attempts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'first_notification_delay' => array('type' => 'float', 'null' => true, 'default' => null),
-		'notification_interval' => array('type' => 'float', 'null' => true, 'default' => null),
-		'notify_on_warning' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_unknown' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_critical' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_recovery' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_flapping' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'notify_on_downtime' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'is_volatile' => array('type' => 'integer', 'null' => true, 'length' => 1),
-		'flap_detection_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_ok' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_warning' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_unknown' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'flap_detection_on_critical' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'low_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
-		'high_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
-		'process_performance_data' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'freshness_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 8),
-		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'passive_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'event_handler_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'active_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'notifications_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
-		'notes' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
-		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'own_contacts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'own_contactgroups' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'own_customvariables' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
-		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'service_type' => array('type' => 'integer', 'null' => false, 'default' => 1),
-		'disabled' => array('type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1),
-			'export' => array('column' => array('uuid', 'host_id', 'disabled'), 'unique' => 0),
-			'host_id' => array('column' => array('host_id', 'disabled'), 'unique' => 0)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
 	public $services_to_serviceescalations = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'service_id' => array('type' => 'integer', 'null' => false, 'default' => null),
@@ -774,89 +643,6 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'service_id' => array('column' => 'service_id', 'unique' => 0),
 			'servicegroup_id' => array('column' => 'servicegroup_id', 'unique' => 0)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $servicetemplatecommandargumentvalues = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $servicetemplateeventcommandargumentvalues = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $servicetemplates = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'container_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'servicetemplatetype_id' => array('type' => 'integer', 'null' => false, 'default' => 1),
-		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'checkcommand_info' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'eventhandler_command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
-		'timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'check_interval' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5),
-		'retry_interval' => array('type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5),
-		'max_check_attempts' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3),
-		'first_notification_delay' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'notification_interval' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'notify_on_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_critical' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_recovery' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'notify_on_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'notify_on_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_ok' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'flap_detection_on_critical' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'low_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'high_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
-		'process_performance_data' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'freshness_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 8),
-		'passive_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'event_handler_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'active_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
-		'retain_status_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'retain_nonstatus_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
-		'notes' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
-		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'is_volatile' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'check_freshness' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -923,6 +709,323 @@ class AppSchema extends CakeSchema {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $contacts = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'email' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'phone' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'host_timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'service_timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'host_notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'service_notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_critical' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_service_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_host_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_host_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_host_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_host_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_host_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $hosttemplatecommandargumentvalues = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'hosttemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $hosttemplates = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'hosttemplatetype_id' => array('type' => 'integer', 'null' => false, 'default' => 1),
+		'command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'eventhandler_command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'check_interval' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5),
+		'retry_interval' => array('type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5),
+		'max_check_attempts' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3),
+		'first_notification_delay' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'notification_interval' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'notify_on_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_recovery' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_up' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_down' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_unreachable' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'low_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'high_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'process_performance_data' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'freshness_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 8),
+		'passive_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'event_handler_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'active_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'retain_status_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'retain_nonstatus_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'notes' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'priority' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 2),
+		'check_period_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'notify_period_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'tags' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'host_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $hosts = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'hosttemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'address' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'eventhandler_command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'timeperiod_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'check_interval' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 5),
+		'retry_interval' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 5),
+		'max_check_attempts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 3),
+		'first_notification_delay' => array('type' => 'float', 'null' => true, 'default' => null),
+		'notification_interval' => array('type' => 'float', 'null' => true, 'default' => null),
+		'notify_on_down' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_unreachable' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_recovery' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_flapping' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_downtime' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_up' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_down' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_unreachable' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'low_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
+		'high_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
+		'process_performance_data' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'freshness_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 8),
+		'passive_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'event_handler_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'active_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'retain_status_information' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'retain_nonstatus_information' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'notifications_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'notes' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
+		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'own_contacts' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'own_contactgroups' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'own_customvariables' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'host_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'satellite_id' => array('type' => 'integer', 'default' => 0),
+		'host_type' => array('type' => 'integer', 'null' => false, 'default' => 1),
+		'disabled' => array('type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $servicetemplatecommandargumentvalues = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $servicetemplateeventcommandargumentvalues = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'commandargument_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $servicetemplategroups = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $servicetemplates_to_servicetemplategroups = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'servicetemplategroup_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'servicetemplategroup_id' => array('column' => 'servicetemplategroup_id', 'unique' => 0),
+			'servicetemplate_id' => array('column' => 'servicetemplate_id', 'unique' => 0)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $servicetemplates = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'container_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'servicetemplatetype_id' => array('type' => 'integer', 'null' => false, 'default' => 1),
+		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'checkcommand_info' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'eventhandler_command_id' => array('type' => 'integer', 'null' => false, 'default' => '0'),
+		'timeperiod_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'check_interval' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5),
+		'retry_interval' => array('type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5),
+		'max_check_attempts' => array('type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3),
+		'first_notification_delay' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'notification_interval' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'notify_on_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_critical' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_recovery' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'notify_on_flapping' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'notify_on_downtime' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_ok' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_warning' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_unknown' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'flap_detection_on_critical' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'low_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'high_flap_threshold' => array('type' => 'float', 'null' => false, 'default' => '0'),
+		'process_performance_data' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'freshness_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => '0', 'length' => 8),
+		'passive_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'event_handler_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'active_checks_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1),
+		'retain_status_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'retain_nonstatus_information' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'notifications_enabled' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6),
+		'notes' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
+		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'is_volatile' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'check_freshness' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $services = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'host_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'name' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'check_command_args' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'eventhandler_command_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'notify_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'check_period_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'check_interval' => array('type' => 'float', 'null' => true, 'default' => null),
+		'retry_interval' => array('type' => 'float', 'null' => true, 'default' => null),
+		'max_check_attempts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'first_notification_delay' => array('type' => 'float', 'null' => true, 'default' => null),
+		'notification_interval' => array('type' => 'float', 'null' => true, 'default' => null),
+		'notify_on_warning' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_unknown' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_critical' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_recovery' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_flapping' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'notify_on_downtime' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'is_volatile' => array('type' => 'integer', 'null' => true, 'length' => 1),
+		'flap_detection_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_ok' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_warning' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_unknown' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'flap_detection_on_critical' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'low_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
+		'high_flap_threshold' => array('type' => 'float', 'null' => true, 'default' => null),
+		'process_performance_data' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'freshness_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 8),
+		'freshness_threshold' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'passive_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'event_handler_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'active_checks_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'notifications_enabled' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 6),
+		'notes' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'priority' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 2),
+		'tags' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'own_contacts' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'own_contactgroups' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'own_customvariables' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 1),
+		'service_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'service_type' => array('type' => 'integer', 'null' => false, 'default' => 1),
+		'disabled' => array('type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'uuid' => array('column' => 'uuid', 'unique' => 1),
+			'export' => array('column' => array('uuid', 'host_id', 'disabled'), 'unique' => 0),
+			'host_id' => array('column' => array('host_id', 'disabled'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -1090,24 +1193,24 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-	public $cronjobs = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'task' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'plugin' => array('type' => 'string', 'null' => false, 'default' => 'Core', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'interval' => array('type' => 'integer', 'default' => null),
-		//'enabled' => array('type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
 	public $cronschedules = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'cronjob_id' => array('type' => 'integer', 'default' => null),
 		'is_running' => array('type' => 'integer', 'default' => null),
 		'start_time' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'end_time' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $cronjobs = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'task' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'plugin' => array('type' => 'string', 'null' => false, 'default' => 'Core', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'interval' => array('type' => 'integer', 'default' => null),
+		//'enabled' => array('type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
@@ -1170,32 +1273,6 @@ class AppSchema extends CakeSchema {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'uuid' => array('column' => 'uuid', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $servicetemplategroups = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'description' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'uuid' => array('column' => 'uuid', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $servicetemplates_to_servicetemplategroups = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'servicetemplate_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'servicetemplategroup_id' => array('type' => 'integer', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'servicetemplategroup_id' => array('column' => 'servicetemplategroup_id', 'unique' => 0),
-			'servicetemplate_id' => array('column' => 'servicetemplate_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
@@ -1390,18 +1467,7 @@ class AppSchema extends CakeSchema {
 		'show_downtime' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
 		'show_label' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'font_size' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $usergroups = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
-		'name' => array('type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'),
-		'description' => array('type' => 'string', 'default' => null, 'length' => 255, 'charset' => 'utf8'),
+		'recursive' => array('type' => 'integer', 'null' => false, 'default' => '0'),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
@@ -1411,20 +1477,6 @@ class AppSchema extends CakeSchema {
 	);
 
 	public $acos = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
-		'parent_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'model' => array('type' => 'string', 'null' => true),
-		'foreign_key' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'alias' => array('type' => 'string', 'null' => true),
-		'lft' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'rght' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-	public $aros = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
 		'parent_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
 		'model' => array('type' => 'string', 'null' => true),
@@ -1453,7 +1505,33 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-	public $devicegroups = array(
+	public $aros = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
+		'parent_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'model' => array('type' => 'string', 'null' => true),
+		'foreign_key' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'alias' => array('type' => 'string', 'null' => true),
+		'lft' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'rght' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $usergroups = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'name' => array('type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'),
+		'description' => array('type' => 'string', 'default' => null, 'length' => 255, 'charset' => 'utf8'),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	/*public $devicegroups = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
 		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
@@ -1463,6 +1541,6 @@ class AppSchema extends CakeSchema {
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
+	);*/
 
 }

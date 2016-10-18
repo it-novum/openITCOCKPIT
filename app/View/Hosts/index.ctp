@@ -72,6 +72,7 @@
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('In downtime'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Graph'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Shared'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Passive'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hostname'); ?></a></li>
 							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('IP-Address'); ?></a></li>
@@ -115,7 +116,7 @@
 
 					<div class="widget-body no-padding">
 						<?php //debug($filters);
-						 echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+						 echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
 						<div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>
@@ -127,6 +128,7 @@
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
+										<th class="no-sort text-center" ><i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Hostname'); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'address'); echo $this->Paginator->sort('address', __('IP address')); ?></th>
@@ -195,12 +197,12 @@
 														<?php endif;?>
 														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
 															<li>
-																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
 															</li>
 														<?php endif; ?>
 														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
 															<li>
-																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
+																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
 															</li>
 														<?php endif; ?>
 
@@ -221,13 +223,13 @@
 
 											<td class="text-center">
 												<?php if($host['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
-													<i class="fa fa-user fa-lg "></i>
+													<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledged'); ?>"></i>
 												<?php endif;?>
 											</td>
 
 											<td class="text-center">
 												<?php if($host['Hoststatus']['scheduled_downtime_depth'] > 0):?>
-													<i class="fa fa-power-off fa-lg "></i>
+													<i class="fa fa-power-off fa-lg " title="<?php echo __('in Downtime'); ?>"></i>
 												<?php endif; ?>
 											</td>
 
@@ -239,8 +241,13 @@
 														$graphHref = '/services/serviceList/'.$host['Host']['id'];
 													endif;
 													?>
-													<a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i class="fa fa-area-chart fa-lg "></i></a>
+													<a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i class="fa fa-area-chart fa-lg " title="<?php echo __('Grapher'); ?>"></i></a>
 												<?php endif;?>
+											</td>
+											<td class="text-center">
+												<?php if(count($host['Containers']) > 1): ?>
+													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
+												<?php endif; ?>
 											</td>
 											<td class="text-center">
 												<?php
@@ -251,7 +258,6 @@
 													elseif($host['Hosttemplate']['active_checks_enabled'] == 0): ?>
 													<strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
 												<?php endif; ?>
-
 											</td>
 											<td>
 												<?php if($this->Acl->hasPermission('browser')):?>
@@ -283,7 +289,7 @@
 						<?php if(empty($all_hosts)):?>
 							<div class="noMatch">
 								<center>
-									<span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+									<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
 								</center>
 							</div>
 						<?php endif;?>
@@ -293,7 +299,7 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">

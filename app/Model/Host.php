@@ -36,7 +36,7 @@ class Host extends AppModel{
 			'joinTable' => 'hosts_to_containers',
 			'foreignKey' => 'host_id',
 			'associationForeignKey' => 'container_id',
-		],	
+		],
 		'Container' => [
 			'className' => 'Container',
 			'joinTable' => 'hosts_to_containers',
@@ -210,12 +210,10 @@ class Host extends AppModel{
 				'allowEmpty' => true,
 				'required' => false,
 			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs to be numeric.',
-				'allowEmpty' => true,
-				'required' => false,
-			],
+			'positiveInt' => [
+				'rule' => ['positiveInt', 'max_check_attempts'],
+				'message' => 'This value need to be at least 1.',
+			]
 
 		],
 		/*
@@ -483,6 +481,22 @@ class Host extends AppModel{
 			$containerId = $requestData['Host']['container_id'];
 		}
 
+		if(isset($requestData['Host']['shared_container'])){
+			//may its serialized
+			$sharedContainer = $requestData['Host']['shared_container'];
+
+			if(empty($sharedContainer)){
+				$sharedContainer = [];
+			}
+			if(is_string($sharedContainer) && strlen($sharedContainer)>0 && $result = unserialize($sharedContainer)){
+				$sharedContainer = $result;
+			}
+
+			$containerIds = array_merge([$containerId], $sharedContainer);
+		}else{
+			$containerIds = $containerId;
+		}
+
 		if(empty($requestData['Host']['Contactgroup'])){
 			$requestData['Host']['Contactgroup'] = [];
 		}
@@ -500,7 +514,7 @@ class Host extends AppModel{
 				'Hostgroup' => $requestData['Hostgroup']['Hostgroup']
 			],
 			'Container' => [
-				'container_id' => $containerId,
+				'Container' => $containerIds,
 			],
 			'Parenthost' => [
 				'Parenthost' => $requestData['Parenthost']['Parenthost']
@@ -548,6 +562,9 @@ class Host extends AppModel{
 	*/
 	public function atLeastOne($data){
 		return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
+	}
+	public function positiveInt($data){
+		return intval($data['max_check_attempts'])==$data['max_check_attempts'] && $data['max_check_attempts'] > 0;
 	}
 
 	public function prepareForView($id = null){

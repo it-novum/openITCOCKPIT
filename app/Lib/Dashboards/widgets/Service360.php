@@ -56,5 +56,4 @@ class Service360 extends Widget{
 		];
 		return $restorConfig;
 	}
-	
 }

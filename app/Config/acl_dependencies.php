@@ -113,7 +113,7 @@ $config = [
 				'view' => ['loadServiceDetails']
 			],
 			'Browsers' => [
-				'index' => ['tenantBrowser', 'locationBrowser', 'devicegroupBrowser', 'nodeBrowser']
+				'index' => ['tenantBrowser', 'locationBrowser', 'nodeBrowser']
 			],
 			'Calendars' => [
 				'add' => ['loadHolidays'],
@@ -166,7 +166,7 @@ $config = [
 			],
 			'Hostgroups' => [
 				'index' => ['listToPdf', 'view'],
-				'extended' => ['listToPdf'],
+				'extended' => ['listToPdf', 'loadServicesByHostId'],
 				'add' => ['loadHosts', 'mass_add'],
 				'edit' => ['loadHosts'],
 				'delete' => ['mass_delete']
@@ -252,9 +252,9 @@ $config = [
 			'Locations' => [
 				'index' => ['view'],
 			],
-			'Devicegroups' => [
+			/*'Devicegroups' => [
 				'index' => ['view'],
-			],
+			],*/
 			'Usergroups' => [
 				'index' => ['view'],
 			],

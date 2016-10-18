@@ -22,6 +22,14 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+/**
+ * @property \itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection   $ServicestatusCollection
+ */
+
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\HumanTime;
+
 ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -34,7 +42,7 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-sitemap fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
+			<?php echo __('Monitoring'); ?>
 			<span>>
 				<?php echo __('Hostgroups'); ?>
 			</span>
@@ -51,57 +59,57 @@
 				'class' => 'form-horizontal clear'
 			]);
 			?>
-				<div class="row">
-					<div class="col col-xs-8">
-						<?php
-						echo $this->Form->input('host_id', [
-							'options' => $hostgroups,
-							'selected' => $hostgroup_id,
-							'data-placeholder' => __('Please select...'),
-							'class' => 'chosen',
-							'label' => false,
-							'wrapInput' => 'col col-xs-12',
-							'style' => 'width: 100%',
-						]);
-						?>
-					</div>
-					<div class="col col-xs-4" style="padding-left:0;">
-						<div class="btn-group pull-left" style="padding-top: 2px;">
+			<div class="row">
+				<div class="col col-xs-8">
+					<?php
+					echo $this->Form->input('host_id', [
+						'options' => $hostgroups,
+						'selected' => $hostgroup['Hostgroup']['id'],
+						'data-placeholder' => __('Please select...'),
+						'class' => 'chosen',
+						'label' => false,
+						'wrapInput' => 'col col-xs-12',
+						'style' => 'width: 100%',
+					]);
+					?>
+				</div>
+				<div class="col col-xs-4" style="padding-left:0;">
+					<div class="btn-group pull-left" style="padding-top: 2px;">
+						<?php if($this->Acl->hasPermission('edit')): ?>
+							<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostgroup['Hostgroup']['id']; ?>" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+						<?php else: ?>
+							<a href="javascript:void(0);" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+						<?php endif; ?>
+						<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle"><span class="caret"></span></a>
+						<ul class="dropdown-menu">
 							<?php if($this->Acl->hasPermission('edit')): ?>
-								<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostgroup['Hostgroup']['id']; ?>" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-							<?php else: ?>
-								<a href="javascript:void(0);" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+								<li>
+									<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostgroup['Hostgroup']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+								</li>
 							<?php endif; ?>
-							<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default btn-xs dropdown-toggle"><span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<?php if($this->Acl->hasPermission('edit')): ?>
-									<li>
-										<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostgroup['Hostgroup']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-									</li>
-								<?php endif; ?>
-								<?php if($this->Acl->hasPermission('edit', 'hosts')): ?>
-									<li class="divider"></li>
-									<li>
-										<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_reschedule"><i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?></a>
-									</li>
-									<li>
-										<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_schedule_downtime"><i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?></a>
-									</li>
-									<li>
-										<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_ack_state"><i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?></a>
-									</li>
-									<li>
-										<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_disable_notifications"><i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?></a>
-									</li>
-									<li>
-										<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_enable_notifications"><i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?></a>
-									</li>
-								<?php endif; ?>
-								<?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $hostgroup['Hostgroup']['id']); ?>
-							</ul>
-						</div>
+							<?php if($this->Acl->hasPermission('edit', 'hosts')): ?>
+								<li class="divider"></li>
+								<li>
+									<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_reschedule"><i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?></a>
+								</li>
+								<li>
+									<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_schedule_downtime"><i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?></a>
+								</li>
+								<li>
+									<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_ack_state"><i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?></a>
+								</li>
+								<li>
+									<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_disable_notifications"><i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?></a>
+								</li>
+								<li>
+									<a href="javascript:void(0);" data-toggle="modal" data-target="#nag_command_enable_notifications"><i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?></a>
+								</li>
+							<?php endif; ?>
+							<?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $hostgroup['Hostgroup']['id']); ?>
+						</ul>
 					</div>
 				</div>
+			</div>
 			<?php echo $this->Form->end(); ?>
 
 			<!-- Widget ID (each widget will need unique ID)-->
@@ -127,423 +135,223 @@
 				</header>
 				<div>
 					<div class="widget-body no-padding">
-						<div class="mobile_table">
-							<table id="hostgroup_list" class="table table-striped table-bordered smart-form" style="">
-								<thead>
-								</thead>
-								<tbody>
-										<tr>
-											<td colspan="10" class="no-padding text-right txt-color-white">
+						<table id="hostgroup_list" class="table table-striped table-bordered smart-form" style="">
+							<tr>
+								<td colspan="10" class="no-padding text-right txt-color-white">
+									<?php
+									$host_status_objects = Hash::extract($hosts, '{n}.Hoststatus.current_state');
+									$state_values = array_count_values($host_status_objects);
+									?>
+									<div class="col-md-12 pull-right">
+										<div class="col-md-6 txt-color-blueDark">
+											<div class="padding-5">
+												<strong>
+													<?php echo __('Host status total').': '.sizeof($hosts);?>
+												</strong>
 												<?php
-												$host_status_objects = Hash::extract($hostgroup['Host'], '{n}.Hoststatus.current_state');
-												$state_values = array_count_values($host_status_objects);
 												?>
-												<div class="col-md-12 pull-right">
-													<div class="col-md-6 txt-color-blueDark">
-														<div class="padding-5">
-																<strong>
-																<?php echo __('Host status total').': '.sizeof($host_status_objects);?>
-																</strong>
-																<?php
-																echo (($diff = sizeof($hostgroup['Host'])-sizeof($host_status_objects)) === 0)?'':'<em>'.__(' (%s not found in monitoring)', $diff).'</em>';
-																?>
-														</div>
-													</div>
-													<div class="col-md-2 btn-success">
-														<div class="padding-5">
-															<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>" class="no-padding pointer">
-																<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>"class="no-padding pointer state_filter" state="0" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
-																<strong>
-																<?php
-																	echo __(' %s up', (isset($state_values[0])?$state_values[0]:0)); ?>
-																</strong>
-															</label>
-														</div>
-													</div>
-													<div class="col-md-2 btn-danger">
-														<div class="padding-5">
-															<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>" class="no-padding pointer">
-																<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>"class="no-padding pointer state_filter" state="1" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
-																<strong>
-																<?php
-																	echo __(' %s down', (isset($state_values[1])?$state_values[1]:0)); ?>
-																</strong>
-															</label>
-														</div>
-													</div>
-													<div class="col-md-2 bg-color-blueLight">
-														<div class="padding-5">
-															<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>" class="no-padding pointer">
-																<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>"class="no-padding pointer state_filter" state="2" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
-																<strong>
-																<?php
-																	echo __(' %s unreachable', (isset($state_values[2])?$state_values[2]:0)); ?>
-																</strong>
-															</label>
-														</div>
-													</div>
-												</div>
-											</td>
-										</tr>
-										<tr>
-											<td colspan="6"></td>
-											<td>
-												<?php
-												echo $this->Form->input('hostname',[
-													'label' => false,
-													'placeholder' => __('Host'),
-													'class' => 'padding-5',
-													'search_id' => $hostgroup['Hostgroup']['uuid'],
-													'filter' => 'true',
-													'needle' => 'hostname'
-												]);
-												?>
-											</td>
-											<td>
-												<?php
-												echo $this->Form->input('status_since',[
-													'label' => false,
-													'placeholder' => __('Status since'),
-													'class' => 'padding-5',
-													'search_id' => $hostgroup['Hostgroup']['uuid'],
-													'filter' => 'true',
-													'needle' => 'status_since'
-												]);
-												?>
-											</td>
-											<td>
-												<?php
-												echo $this->Form->input('last_check',[
-													'label' => false,
-													'placeholder' => __('Last check'),
-													'class' => 'padding-5',
-													'search_id' => $hostgroup['Hostgroup']['uuid'],
-													'filter' => 'true',
-													'needle' => 'last_check'
-												]);
-												?>
-											</td>
-											<td>
-												<?php
-												echo $this->Form->input('next_check',[
-													'label' => false,
-													'placeholder' => __('Next check'),
-													'class' => 'padding-5',
-													'search_id' => $hostgroup['Hostgroup']['uuid'],
-													'filter' => 'true',
-													'needle' => 'next_check'
-												]);
-												?>
-											</td>
-										</tr>
-										<?php
-											foreach($hostgroup['Host'] as $host_key => $host_data):?>
-												<?php
-												$service_status_objects = Hash::extract($host_data['Service'], '{n}.Servicestatus.current_state');
-												$state_values = array_count_values($service_status_objects);
-												?>
-											<tr class="<?php echo $hostgroup['Hostgroup']['uuid']; ?> state_<?php echo (isset($host_data['Hoststatus']['current_state']))?$host_data['Hoststatus']['current_state']:'-1';?> ">
-												<td class="width-15">
-													<i class="showhide fa fa-plus-square-o pointer font-md" showhide_uuid="<?php echo $hostgroup['Hostgroup']['uuid'].$host_data['uuid'];?>"></i>
-												</td>
-												<td class="text-center width-40">
-													<?php
-														$host_status_exists = (!empty($host_data['Hoststatus']))?true:false;
-														
-														$hostHref = 'javascript:void(0);';
-														if($this->Acl->hasPermission('browser', 'hosts')):
-															$hostHref = '/hosts/browser/'.$host_data['id'];
-														endif;
-														
-														
-														if(isset($host_data['Hoststatus']) && !empty($host_data['Hoststatus'])):
-															if($host_data['Hoststatus']['is_flapping'] == 1):
-																echo $this->Monitoring->hostFlappingIconColored($host_data['Hoststatus']['is_flapping'], '', $host_data['Hoststatus']['current_state']);
-															else:
-																echo $this->Status->humanHostStatus($host_data['uuid'], $hostHref, [$host_data['uuid'] => ['Hoststatus' => ['current_state' => $host_data['Hoststatus']['current_state']]]])['html_icon'];
-															endif;
-														else:
-															echo $this->Status->humanHostStatus($host_data['uuid'], $hostHref, [$host_data['uuid'] => ['Hoststatus' => ['current_state' => null]]])['html_icon'];
-														endif;
-													?>
-												</td>
-												<td class="text-center width-15">
-													<i class="fa fa-gears
-														<?php
-															echo $this->Status->ServiceStatusTextColor(
-																(empty($state_values))?-1:max(array_keys($state_values))
-															);
-														?>
-													"></i>
-												</td>
-												<td class="text-center width-15">
-													<?php
-													if(isset($host_data['Hoststatus']['current_state']) && $host_data['Hoststatus']['current_state']>0):
-													?>
-														<i class="fa fa-user <?php echo ($host_data['Hoststatus']['problem_has_been_acknowledged'])?'txt-color-blue':''; ?>"></i>
-													<?php
-													endif;
-													?>
-												</td>
-												<td class="text-center width-15">
-													<?php
-													if(isset($host_data['Hoststatus']['scheduled_downtime_depth']) && $host_data['Hoststatus']['scheduled_downtime_depth']>0):?>
-														<i class="fa fa-power-off"></i>
-													<?php
-													endif;
-													?>
-												</td>
-												<td class="text-center width-15">
-													<?php if($this->Acl->hasPermission('view', 'documentations')): ?>
-														<a href="/documentations/view/<?php echo $host_data['uuid']; ?>" data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"><i class="fa fa-book txt-color-blueDark"></i></a>
-													<?php endif; ?>
-												</td>
-												<td class="<?php echo h($host_data['name'])?>" search="hostname">
+											</div>
+										</div>
+										<div class="col-md-2 btn-success">
+											<div class="padding-5">
+												<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>" class="no-padding pointer">
+													<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[0]'; ?>"class="no-padding pointer state_filter" state="0" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
 													<strong>
-														<?php if($this->Acl->hasPermission('browser', 'hosts')): ?>
-															<a href="/hosts/browser/<?php echo $host_data['id']; ?>"><?php echo h($host_data['name']); ?></a>
-														<?php else: ?>
-															<?php echo h($host_data['name']); ?>
-														<?php endif; ?>
+														<?php
+														echo __(' %s up', (isset($state_values[0])?$state_values[0]:0)); ?>
 													</strong>
-												</td>
-												<td search="status_since">
-													<?php
-													if($host_status_exists):
-														echo h($this->Utils->secondsInHumanShort(time() - strtotime($host_data['Hoststatus']['last_hard_state_change'])));
-													else:
-														echo __('N/A');
-													endif;
+												</label>
+											</div>
+										</div>
+										<div class="col-md-2 btn-danger">
+											<div class="padding-5">
+												<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>" class="no-padding pointer">
+													<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[1]'; ?>"class="no-padding pointer state_filter" state="1" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
+													<strong>
+														<?php
+														echo __(' %s down', (isset($state_values[1])?$state_values[1]:0)); ?>
+													</strong>
+												</label>
+											</div>
+										</div>
+										<div class="col-md-2 bg-color-blueLight">
+											<div class="padding-5">
+												<label for="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>" class="no-padding pointer">
+													<input type="checkbox" name="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>" id="<?php echo $hostgroup['Hostgroup']['uuid'].'[2]'; ?>"class="no-padding pointer state_filter" state="2" checked="checked" uuid="<?php echo $hostgroup['Hostgroup']['uuid']; ?>"/>
+													<strong>
+														<?php
+														echo __(' %s unreachable', (isset($state_values[2])?$state_values[2]:0)); ?>
+													</strong>
+												</label>
+											</div>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="6"></td>
+								<td>
+									<?php
+									echo $this->Form->input('hostname',[
+										'label' => false,
+										'placeholder' => __('Host'),
+										'class' => 'padding-5',
+										'search_id' => $hostgroup['Hostgroup']['uuid'],
+										'filter' => 'true',
+										'needle' => 'hostname'
+									]);
+									?>
+								</td>
+								<td>
+									<?php
+									echo $this->Form->input('status_since',[
+										'label' => false,
+										'placeholder' => __('Status since'),
+										'class' => 'padding-5',
+										'search_id' => $hostgroup['Hostgroup']['uuid'],
+										'filter' => 'true',
+										'needle' => 'status_since'
+									]);
+									?>
+								</td>
+								<td>
+									<?php
+									echo $this->Form->input('last_check',[
+										'label' => false,
+										'placeholder' => __('Last check'),
+										'class' => 'padding-5',
+										'search_id' => $hostgroup['Hostgroup']['uuid'],
+										'filter' => 'true',
+										'needle' => 'last_check'
+									]);
+									?>
+								</td>
+								<td>
+									<?php
+									echo $this->Form->input('next_check',[
+										'label' => false,
+										'placeholder' => __('Next check'),
+										'class' => 'padding-5',
+										'search_id' => $hostgroup['Hostgroup']['uuid'],
+										'filter' => 'true',
+										'needle' => 'next_check'
+									]);
+									?>
+								</td>
+							</tr>
+							<?php foreach($hosts as $host): ?>
+								<?php
+								$hoststatus = new Hoststatus($host['Hoststatus']); ?>
 
-													?>
-												</td>
-												<td search="last_check">
-													<?php
-													echo ($host_status_exists)?$this->Time->format($host_data['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')):__('N/A')
-													?>
-												</td>
-												<td search="next_check">
-													<?php
-													echo ($host_status_exists && $host_data['Hoststatus']['active_checks_enabled'])?$this->Time->format($host_data['Hoststatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')):__('N/A')
-													?>
-												</td>
-											</tr>
-											<tr class="hidden <?php echo $hostgroup['Hostgroup']['uuid'].$host_data['uuid'];?>">
-												<td colspan="10" class="no-padding text-right">
-
-													<div class="col-md-12 pull-right">
-														<div class="col-md-4">
-															<div class="padding-5">
-																<strong>
-																<?php echo __('Service status total').': '.sizeof($service_status_objects);?>
-																</strong>
-																<?php
-																echo (($diff = sizeof($host_data['Service'])-sizeof($service_status_objects)) === 0)?'':'<em>'.__(' (%s not found in monitoring)', $diff).'</em>';
-																?>
-														</div>
-														</div>
-														<div class="col-md-2 btn-success">
-															<div class="padding-5">
-																<label for="<?php echo $host_data['uuid'].'[0]'; ?>" class="no-padding pointer">
-																	<input type="checkbox" name="<?php echo $host_data['uuid'].'[0]'; ?>" id="<?php echo $host_data['uuid'].'[0]'; ?>"class="no-padding pointer state_filter" state="0" checked="checked" uuid="<?php echo $host_data['uuid'].'_service'; ?>"/>
-																	<strong>
-																	<?php
-																		echo __(' %s ok', (isset($state_values[0])?$state_values[0]:0)); ?>
-																	</strong>
-																</label>
-															</div>
-														</div>
-														<div class="col-md-2 btn-warning">
-															<div class="padding-5">
-																<label for="<?php echo $host_data['uuid'].'[1]'; ?>" class="no-padding pointer">
-																	<input type="checkbox" name="<?php echo $host_data['uuid'].'[1]'; ?>" id="<?php echo $host_data['uuid'].'[1]'; ?>"class="no-padding pointer state_filter" state="1" checked="checked" uuid="<?php echo $host_data['uuid'].'_service'; ?>"/>
-																	<strong>
-																	<?php
-																		echo __(' %s warning', (isset($state_values[1])?$state_values[1]:0)); ?>
-																	</strong>
-																</label>
-															</div>
-														</div>
-														<div class="col-md-2 btn-danger">
-															<div class="padding-5">
-																<label for="<?php echo $host_data['uuid'].'[2]'; ?>" class="no-padding pointer">
-																	<input type="checkbox" name="<?php echo $host_data['uuid'].'[2]'; ?>" id="<?php echo $host_data['uuid'].'[2]'; ?>"class="no-padding pointer state_filter" state="2" checked="checked" uuid="<?php echo $host_data['uuid'].'_service'; ?>"/>
-																	<strong>
-																	<?php
-																		echo __(' %s critical', (isset($state_values[2])?$state_values[2]:0)); ?>
-																	</strong>
-																</label>
-															</div>
-														</div>
-														<div class="col-md-2 bg-color-blueLight txt-color-white">
-															<div class="padding-5">
-																<label for="<?php echo $host_data['uuid'].'[3]'; ?>" class="no-padding pointer">
-																	<input type="checkbox" name="<?php echo $host_data['uuid'].'[3]'; ?>" id="<?php echo $host_data['uuid'].'[3]'; ?>"class="no-padding pointer state_filter" state="3" checked="checked" uuid="<?php echo $host_data['uuid'].'_service'; ?>"/>
-																	<strong>
-																	<?php
-																		echo __(' %s unknown', (isset($state_values[3])?$state_values[3]:0)); ?>
-																	</strong>
-																</label>
-															</div>
-														</div>
-													</div>
-												</td>
-											</tr>
-											<tr class="hidden <?php echo $hostgroup['Hostgroup']['uuid'].$host_data['uuid'];?>">
-												<td colspan="6"></td>
-												<td>
-													<?php
-													echo $this->Form->input('servicename',[
-														'label' => false,
-														'placeholder' => __('Service'),
-														'class' => 'padding-5',
-														'search_id' => $hostgroup['Hostgroup']['uuid'].$host_data['uuid'],
-														'filter' => 'true',
-														'needle' => 'servicename'
-													]);
-													?>
-												</td>
-												<td>
-													<?php
-													echo $this->Form->input('status_since',[
-														'label' => false,
-														'placeholder' => __('Status since'),
-														'class' => 'padding-5',
-														'search_id' => $hostgroup['Hostgroup']['uuid'].$host_data['uuid'],
-														'filter' => 'true',
-														'needle' => 'status_since'
-													]);
-													?>
-												</td>
-												<td>
-													<?php
-													echo $this->Form->input('last_check',[
-														'label' => false,
-														'placeholder' => __('Last check'),
-														'class' => 'padding-5',
-														'search_id' => $hostgroup['Hostgroup']['uuid'].$host_data['uuid'],
-														'filter' => 'true',
-														'needle' => 'last_check'
-													]);
-													?>
-												</td>
-												<td>
-													<?php
-													echo $this->Form->input('next_check',[
-														'label' => false,
-														'placeholder' => __('Next check'),
-														'class' => 'padding-5',
-														'search_id' => $hostgroup['Hostgroup']['uuid'].$host_data['uuid'],
-														'filter' => 'true',
-														'needle' => 'next_check'
-													]);
-													?>
-												</td>
-											</tr>
+								<tr class="<?php echo $host['Hostgroup']['uuid']; ?> state_<?php echo $hoststatus->currentState(); ?>" id="append_<?php echo $hostgroup['Hostgroup']['uuid'].$host['Host']['uuid'];?>" content="false" host-id="<?php echo $host['Host']['id']; ?>">
+									<td class="width-15">
+										<i class="showhide fa fa-plus-square-o pointer font-md" showhide_uuid="<?php echo $host['Hostgroup']['uuid'].$host['Host']['uuid'];?>"></i>
+									</td>
+									<td class="text-center width-40">
 										<?php
-												foreach($host_data['Service'] as $service_key => $service_data):
-													$service_status_exists = (!empty($service_data['Servicestatus']))?true:false;
-												?>
-												<tr class="hidden <?php echo $hostgroup['Hostgroup']['uuid'].$host_data['uuid'];?> <?php echo $host_data['uuid'].'_service';?> state_<?php echo (isset($service_data['Servicestatus']['current_state']))?$service_data['Servicestatus']['current_state']:'-1';?>">
-													<td></td>
-													<td class="text-center">
-														<?php
-														if(isset($service_data['Servicestatus']) && !empty($service_data['Servicestatus'])):
-															$serviceHref = 'javascript:void(0);';
-															if($this->Acl->hasPermission('browser', 'services')):
-																$serviceHref = '/services/browser/'.$service_data['id'];
-															endif;
-															
-															if($service_data['Servicestatus']['is_flapping'] == 1):
-																echo $this->Monitoring->serviceFlappingIconColored($service_data['Servicestatus']['is_flapping'], '', $service_data['Servicestatus']['current_state']);
-															else:
-																echo $this->Status->humanServiceStatus($service_data['uuid'], $serviceHref, [$service_data['uuid'] => ['Servicestatus' => ['current_state' => $service_data['Servicestatus']['current_state']]]])['html_icon'];
-															endif;
-														else:
-															echo $this->Status->humanServiceStatus($service_data['uuid'], $serviceHref, [$service_data['uuid'] => ['Servicestatus' => ['current_state' => null]]])['html_icon'];
-														endif;
-													?>
-													</td>
-													<td>
-														<?php
-														if(isset($service_data['Servicestatus']['active_checks_enabled']) && !$service_data['Servicestatus']['active_checks_enabled']):?>
-															<strong title="<?php echo __("Passively transferred service"); ?>">P</strong>
-														<?php
-														endif;
-														?>
-													</td>
-													<td>
-														<?php
-														if(isset($service_data['Servicestatus']['current_state']) && $service_data['Servicestatus']['current_state']>0):
-														?>
-															<i class="fa fa-user <?php echo ($service_data['Servicestatus']['problem_has_been_acknowledged'])?'txt-color-blue':''; ?>"></i>
-														<?php
-														endif;
-														?>
-													</td>
-													<td>
-														<?php
-														if(isset($service_data['Servicestatus']['scheduled_downtime_depth']) && $service_data['Servicestatus']['scheduled_downtime_depth']>0):?>
-															<i class="fa fa-power-off"></i>
-														<?php
-														endif;
-														?>
-													</td>
-													<td>
-														<?php
-														if(isset($service_data['Servicestatus']['process_performance_data']) && $service_data['Servicestatus']['process_performance_data']):?>
-															<?php if($this->Monitoring->checkForServiceGraph($host_data['uuid'], $service_data['uuid'])): ?>
-																<?php if($this->Acl->hasPermission('browser', 'services')): ?>
-																	<a class="txt-color-blueDark" href="/services/grapherSwitch/<?php echo $service_data['id']; ?>"><i class="fa fa-area-chart fa-lg popupGraph" host-uuid="<?php echo $host_data['uuid']; ?>" service-uuid="<?php echo $service_data['uuid']; ?>"></i></a>
-																<?php else: ?>
-																	<i class="fa fa-area-chart fa-lg popupGraph" host-uuid="<?php echo $host_data['uuid']; ?>" service-uuid="<?php echo $service_data['uuid']; ?>"></i>
-																<?php endif; ?>
-															<?php endif;?>
-														<?php
-														endif;
-														?>
-													</td>
-													<td search="servicename">
-														<?php
-														$serviceName = $service_data['name'];
-														if($serviceName === null || $serviceName === ''):
-															$serviceName = $service_data['Servicetemplate']['name'];
-														endif;
-														if($this->Acl->hasPermission('browser', 'services')): ?>
-															<a href="<?php echo Router::url(['controller' => 'services', 'action' => 'browser', $service_data['id']]); ?>"><?php echo h($serviceName);?></a>
-														<?php else:
-															echo h($serviceName);
-														endif; ?>
-													</td>
-													<td search="status_since">
-														<?php
-														echo ($service_status_exists)?$this->Utils->secondsInHumanShort(time()- $this->Time->toUnix($service_data['Servicestatus']['last_hard_state_change'])):__('N/A')
-														?>
-													</td>
-													<td search="last_check">
-														<?php
-														echo ($service_status_exists)?$this->Time->format($service_data['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')):__('N/A');
-														?>
-													</td>
-													<td search="next_check">
-														<?php
-														echo ($service_status_exists && $service_data['Servicestatus']['active_checks_enabled'])?$this->Time->format($service_data['Servicestatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')):__('N/A')
-														?>
-													</td>
-												</tr>
+										$hasHoststatus = !empty($host['Hoststatus']);
+										$hostHref = 'javascript:void(0);';
+										if($this->Acl->hasPermission('browser', 'hosts')):
+											$hostHref = '/hosts/browser/'.$host['Host']['id'];
+										endif;
 
-										<?php
-												endforeach;
-											endforeach;
+										if($hasHoststatus):
+											if($hoststatus->isFlapping() === true):
+												echo $hoststatus->getHostFlappingIconColored();
+											else:
+												echo $hoststatus->getHumanHoststatus($hostHref)['html_icon'];
+											endif;
+										else:
+											echo $hoststatus->getHumanHoststatus($hostHref)['html_icon'];
+										endif;
 										?>
-								</tbody>
-							</table>
-						</div>
-						<div style="padding: 5px 10px;">
-						</div>
+									</td>
+
+									<td class="text-center width-15">
+										<?php $accumulatedServiceState = $ServicestatusCollection->getByHostIdEvenIfNotExists($host['Host']['id']); ?>
+										<?php if($accumulatedServiceState >= 0): ?>
+											<i class="fa fa-gears
+												<?php
+												echo $this->Status->ServiceStatusTextColor(
+													$accumulatedServiceState
+												);
+												?>
+											"></i>
+										<?php endif; ?>
+									</td>
+
+									<td class="text-center width-15">
+										<?php
+										if($hoststatus->currentState() > 0):
+											if($hoststatus->isAacknowledged()): ?>
+												<i class="fa fa-user txt-color-blue"></i>
+											<?php endif;
+										endif;
+										?>
+									</td>
+
+									<td class="text-center width-15">
+										<?php
+										if($hoststatus->isInDowntime()):?>
+											<i class="fa fa-power-off"></i>
+											<?php
+										endif;
+										?>
+									</td>
+
+									<td class="text-center width-15">
+										<?php if($this->Acl->hasPermission('view', 'documentations')): ?>
+											<a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>" data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"><i class="fa fa-book txt-color-blueDark"></i></a>
+										<?php endif; ?>
+									</td>
+
+									<td class="<?php echo h($host['Host']['name'])?>" search="hostname">
+										<strong>
+											<?php if($this->Acl->hasPermission('browser', 'hosts')): ?>
+												<a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+											<?php else: ?>
+												<?php echo h($host['Host']['name']); ?>
+											<?php endif; ?>
+										</strong>
+									</td>
+
+									<td search="status_since">
+										<?php
+										if($hoststatus->getLastHardStateChange()):
+											echo h(HumanTime::secondsInHumanShort(time() - strtotime($hoststatus->getLastHardStateChange())));
+										else:
+											echo __('N/A');
+										endif;
+										?>
+									</td>
+
+									<td search="last_check">
+										<?php
+										if($hoststatus->getLastCheck()):
+											echo h($this->Time->format($hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
+										else:
+											echo __('N/A');
+										endif;
+										?>
+									</td>
+
+									<td search="next_check">
+										<?php
+										if($hoststatus->isActiveChecksEnabled()):
+											echo h($this->Time->format($hoststatus->getNextCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
+										else:
+											echo __('N/A');
+										endif;
+										?>
+									</td>
+								</tr>
+
+							<?php endforeach; ?>
+						</table>
 					</div>
 				</div>
 			</div>
+		</article>
 	</div>
 </section>
 
