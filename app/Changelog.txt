@@ -53,7 +53,7 @@
 <span class="label bg-color-green">New</span> Warning while deleting a node/container
 <span class="label bg-color-green">New</span> Add refresh interval to maps
 <span class="label bg-color-green">New</span> choose shared container in Host add action
-<span class="label bg-color-yellow">Refactored</span> Devicegroups durch Nodes ersetzen
+<span class="label bg-color-yellow">Refactored</span> Devicegroups removed and replaced with Nodes
 
 3.0.8
 <span class="label bg-color-red">Bugfix</span> Fixed a problem with the E-Mail Notifications Command
