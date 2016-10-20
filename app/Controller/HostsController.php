@@ -149,7 +149,6 @@ class HostsController extends AppController{
 
 	public function index(){
 		$this->__unbindAssociations('Service');
-
 		$conditions = [];
 		if(!isset($this->request->params['named']['BrowserContainerId'])){
 			$conditions = [
@@ -837,7 +836,7 @@ class HostsController extends AppController{
 				$this->loadModel('Tenant');
 				//$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
 				$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-				$this->redirect($redirect);
+                $this->redirect($redirect);
 			}else{
 				$this->setFlash(__('Data could not be saved'), false);
 			}
