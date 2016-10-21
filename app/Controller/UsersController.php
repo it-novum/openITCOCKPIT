@@ -455,7 +455,13 @@ class UsersController extends AppController{
 
 		$user['User']['new_password'] = $newPassword;
 		$user['User']['confirm_new_password'] = $newPassword;
-		if($this->User->save($user)){
+		unset($user['User']['password']);
+		unset($user['Usergroup']);
+		foreach($user['ContainerUserMembership'] as $key => $container) {
+			$user['User']['Container'][] = $container['container_id'];
+		}
+		unset($user['ContainerUserMembership']);
+		if($this->User->saveAll($user)){
 			$Email->send();
 			$this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>'.$user['User']['email'].'</b>'));
 			$this->redirect(['action' => 'index']);
