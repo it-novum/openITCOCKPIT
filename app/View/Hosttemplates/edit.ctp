@@ -140,7 +140,8 @@
 								]);
 								echo $this->Form->input('host_url', [
 									'label' => ['text' => __('Host URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10', 
+									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+									'help' => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'),
 									'value' => $this->request->data['Hosttemplate']['host_url']
 								]);
 							?>
