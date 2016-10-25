@@ -242,7 +242,6 @@ class ServicesController extends AppController{
 				'Host.container_id' => $all_container_ids
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
-			debug($all_container_ids);
 		}
 
 		$all_services = [];
