@@ -128,6 +128,7 @@ echo $this->Form->create('Service', [
 	echo $this->Form->input('Service.service_url', [
 		'label' => ['text' => __('Service URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+		'help' => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced')
 	]);
 	?>
 	<div class="form-group <?php echo (isset($validationErrors['priority'])) ? 'has-error' : '' ?>">

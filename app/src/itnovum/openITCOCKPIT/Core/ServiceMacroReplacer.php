@@ -25,54 +25,52 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class HostMacroReplacer
+class ServiceMacroReplacer
 {
 
 	/**
 	 * @var array
 	 */
-	private $host;
+	private $service;
 
 	/**
 	 * @var array
 	 */
-	private $hoststatus;
+	private $servicestatus;
 
 	/**
 	 * @var array
 	 */
 	private $mapping = [
 		'basic' => [
-			'$HOSTID$' => 'id', //Not a real macro
-			'$HOSTNAME$' => 'uuid',
-			'$HOSTDISPLAYNAME$' => 'name',
-			'$HOSTADDRESS$' => 'address',
+			'$SERVICEID$' => 'id', //Not a real macro
+			'$SERVICEDESC$' => 'uuid',
+			'$SERVICEDISPLAYNAME$' => 'name',
 		],
 		'status' => [
-			'$HOSTSTATEID$' => 'current_state',
-			'$LASTHOSTSTATEID$' => 'last_hard_state',
-			'$HOSTOUTPUT$' => 'output',
+			'$SERVICESTATEID$' => 'current_state',
+			'$LASTSERVICESTATEID$' => 'last_hard_state',
+			'$SERVICEOUTPUT$' => 'output',
 		]
 	];
 
 	/**
 	 * HostMacroReplacer constructor.
-	 * @param array $host result of CakePHPs find()
-	 * @param array $hoststatus result of CakePHPs find()
+	 * @param array $service result of CakePHPs find()
+	 * @param array $servicestatus result of CakePHPs find()
 	 */
 
-	public function __construct($host, $hoststatus = [])
+	public function __construct($service, $servicestatus = [])
 	{
-		$this->host = $host;
-		$this->hoststatus = $hoststatus;
+		$this->service = $service;
+		$this->servicestatus = $servicestatus;
 	}
 
 	/**
 	 * Replace the folowing Macros:
-	 * - $HOSTID$ => Host.id
-	 * - $HOSTNAME$ => Host.uuid
-	 * - $HOSTDISPLAYNAME$ => Host.name
-	 * - $HOSTADDRESS$ => Host.address
+	 * - $SERVICEID$ => Service.id //Not a real macro
+	 * - $SERVICEDESC$ => Service.uuid
+	 * - $SERVICEDISPLAYNAME$ => Service.name
 	 *
 	 * @param string $string
 	 */
@@ -83,9 +81,9 @@ class HostMacroReplacer
 
 	/**
 	 * Replace the folowing Macros:
-	 * - $HOSTSTATEID$ => Hoststatus.current_state,
-	 * - $LASTHOSTSTATEID$ => Hoststatus.last_hard_state
-	 * - $HOSTOUTPUT$ => Hoststatus.output
+	 * - $SERVICESTATEID$ => Servicestatus.current_state,
+	 * - $LASTSERVICESTATEID$ => Servicestatus.last_hard_state
+	 * - $SERVICEOUTPUT$ => Servicestatus.output
 	 *
 	 * @param string $string
 	 */
@@ -117,20 +115,37 @@ class HostMacroReplacer
 		foreach($recordsToMap as $macroName => $databaseField){
 			$mapping['search'][] = $macroName;
 			$findReplacement = false;
-			if(isset($this->host['Host'][$databaseField])){
-				$mapping['replace'][] = $this->host['Host'][$databaseField];
-				$findReplacement = true;
-			}
 
-			//Check if this is a status field
-			if(isset($this->hoststatus['Hoststatus'][$databaseField])){
-				$mapping['replace'][] = $this->hoststatus['Hoststatus'][$databaseField];
-				$findReplacement = true;
-			}
+			if($macroName === '$SERVICEDISPLAYNAME$'){
+				$servicename = null;
+				if(isset($this->service['Service']['name'])){
+					$servicename = $this->service['Service']['name'];
+				}
+				if($servicename === '' || $servicename === null){
+					if(isset($this->service['Servicetemplate']['name'])) {
+						$servicename = $this->service['Servicetemplate']['name'];
+					}
+				}
+				if($servicename === null){
+					$servicename = '$SERVICEDISPLAYNAME$';
+				}
+				$mapping['replace'][] = $servicename;
+			}else{
+				if(isset($this->service['Service'][$databaseField])){
+					$mapping['replace'][] = $this->service['Service'][$databaseField];
+					$findReplacement = true;
+				}
 
-			if($findReplacement === false){
-				//Field not set in given __construct data
-				$mapping['replace'][] = $macroName;
+				//Check if this is a status field
+				if(isset($this->servicestatus['Servicestatus'][$databaseField])){
+					$mapping['replace'][] = $this->servicestatus['Servicestatus'][$databaseField];
+					$findReplacement = true;
+				}
+
+				if($findReplacement === false){
+					//Field not set in given __construct data
+					$mapping['replace'][] = $macroName;
+				}
 			}
 		}
 		return $mapping;
