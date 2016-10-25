@@ -28,7 +28,7 @@ namespace itnovum\openITCOCKPIT\Core;
 class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
 {
 
-	//run test: oitc test app Core/HostMacroReplacer
+	//run test: oitc test app Core/ServiceMacroReplacer
 
 	public function testInstance(){
 		$serviceMacroReplacer = new ServiceMacroReplacer([]);
