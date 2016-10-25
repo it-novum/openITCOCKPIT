@@ -285,13 +285,19 @@
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">
-									<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+									<?php if(!empty($hosts)): ?>
+										<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+									<?php endif; ?>
 								</div>
 								<div class="col-sm-6 text-right">
 									<div class="dataTables_paginate paging_bootstrap">
-										<?php echo $this->Paginator->pagination(array(
-											'ul' => 'pagination'
-										)); ?>
+										<?php
+										if(!empty($hosts)):
+											echo $this->Paginator->pagination(array(
+												'ul' => 'pagination'
+											));
+										endif;
+										?>
 									</div>
 								</div>
 							</div>

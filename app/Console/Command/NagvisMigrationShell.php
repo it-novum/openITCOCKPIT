@@ -1254,7 +1254,10 @@ class NagvisMigrationShell extends AppShell {
 	 * @return Bool          true on success false on error
 	 */
 	protected function convertToPNG($file, $name){
-		return imagepng(imagecreatefromstring(file_get_contents($file)), $name);
+		$im = imagecreatefromstring(file_get_contents($file));
+		$white = imagecolorallocate($im, 255, 255, 255);
+		imagecolortransparent($im, $white);
+		return imagepng($im, $name);
 	}
 
 	// shall cleanup the ssh2 connection and delete the downloaded config files

@@ -32,6 +32,7 @@ app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule
 app/Plugin/MkModule
 app/Plugin/AxiosAssystModule
+app/Plugin/ArchiveMigration
 node_modules
 ansible/playbook.retry
 app/Plugin/SAPModule

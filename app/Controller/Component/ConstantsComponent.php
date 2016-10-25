@@ -55,6 +55,8 @@ class ConstantsComponent extends Component{
 			'MONITORING_CONTACTNOTIFICATION' => $monitoring . 'Module.Contactnotification',
 			'MONITORING_CONTACTNOTIFICATIONMETHOD' => $monitoring . 'Module.Contactnotificationmethod',
 			'MONITORING_PARENTHOST' => $monitoring . 'Module.Parenthost',
+			'MONITORING_COMMENTHISTORY' => $monitoring . 'Module.Commenthistory',
+			'MONITORING_FLAPPINGHISTORY' => $monitoring . 'Module.Flappinghistory',
 
 			'MONITORING_CORECONFIG_MODEL' => $monitoring . 'Module.Coreconfig',
 
