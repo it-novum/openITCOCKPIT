@@ -211,35 +211,15 @@ class ServicesController extends AppController{
 		$conditions = $this->ListFilter->buildConditions($this->request->data, $conditions);
 
 		if(isset($this->request->params['named']['BrowserContainerId'])){
-			if(is_array($this->request->params['named']['BrowserContainerId'])){
-				$browserContainerIds = Hash::extract($this->request->params['named']['BrowserContainerId'], '{n}');
-				$childrenContainer = [];
-				foreach($browserContainerIds as $id){
-					$childrenContainer[] = $this->Container->children($id, false, ['id', 'containertype_id']);
-				}
-				$childrenContainer = Hash::extract($childrenContainer, '{n}.{n}');
-			}else{
-				$browserContainerIds = [$this->request->params['named']['BrowserContainerId']];
-				$childrenContainer = $this->Container->children(
-					$this->request->params['named']['BrowserContainerId'],
-					false,
-					['id', 'containertype_id']
-				);
+			$containerId = $this->request->params['named']['BrowserContainerId'];
+			if(!in_array($containerId, $this->MY_RIGHTS)){
+				$this->render403();
 			}
-			//The user set a container id in the URL, may be over browser
-			$all_container_ids = Hash::merge(
-				$browserContainerIds, // array
-				Hash::extract(
-					$childrenContainer,
-					'{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' .')$/].id'
-				)
-			);
-
-			$all_container_ids = array_unique($all_container_ids);
 
 			$_conditions = [
 				'Host.disabled' => 0,
-				'Host.container_id' => $all_container_ids
+				//'Host.container_id' => $all_container_ids
+				'HostsToContainers.container_id' => $containerId
 			];
 			$conditions = Hash::merge($conditions, $_conditions);
 		}
