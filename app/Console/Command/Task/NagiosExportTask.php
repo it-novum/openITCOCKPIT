@@ -439,7 +439,11 @@ class NagiosExportTask extends AppShell{
 		}
 	}
 
-	public function exportHosts($uuid = null){
+	/**
+	 * @param null|string $uuid
+	 * @param array $options with 'start' and 'end' as keys and numeric values
+	 */
+	public function exportHosts($uuid = null, $options = []){
 		if($uuid !== null){
 			$hosts = [];
 			$hosts[] = $this->Host->find('first', [
@@ -449,32 +453,65 @@ class NagiosExportTask extends AppShell{
 				]
 			]);
 		}else{
-			$hosts = $this->Host->find('all', [
-				'recursive' => -1,
-				'conditions' => [
-					'Host.disabled' => 0
-				],
-				'contain' => [
-					'Hosttemplate' => [
-						'fields' => [
-							'Hosttemplate.id',
-							'Hosttemplate.uuid',
-							'Hosttemplate.check_interval'
-						]
+			if(isset($options['limit']) && isset($options['offset'])){
+				//Export an set of hosts to speed up thins
+				$hosts = $this->Host->find('all', [
+					'recursive' => -1,
+					'conditions' => [
+						'Host.disabled' => 0
 					],
-					'Hostcommandargumentvalue' => [
-						'Commandargument'
+					'contain' => [
+						'Hosttemplate' => [
+							'fields' => [
+								'Hosttemplate.id',
+								'Hosttemplate.uuid',
+								'Hosttemplate.check_interval'
+							]
+						],
+						'Hostcommandargumentvalue' => [
+							'Commandargument'
+						],
+						'Customvariable',
+						'Contactgroup',
+						'Contact',
+						'Parenthost',
+						'Hostgroup',
+						'CheckPeriod',
+						'NotifyPeriod',
+						'CheckCommand'
 					],
-					'Customvariable',
-					'Contactgroup',
-					'Contact',
-					'Parenthost',
-					'Hostgroup',
-					'CheckPeriod',
-					'NotifyPeriod',
-					'CheckCommand'
-				]
-			]);
+					'limit' => $options['limit'],
+					'offset' => $options['offset']
+				]);
+			}else{
+				//Export all hosts
+				$hosts = $this->Host->find('all', [
+					'recursive' => -1,
+					'conditions' => [
+						'Host.disabled' => 0
+					],
+					'contain' => [
+						'Hosttemplate' => [
+							'fields' => [
+								'Hosttemplate.id',
+								'Hosttemplate.uuid',
+								'Hosttemplate.check_interval'
+							]
+						],
+						'Hostcommandargumentvalue' => [
+							'Commandargument'
+						],
+						'Customvariable',
+						'Contactgroup',
+						'Contact',
+						'Parenthost',
+						'Hostgroup',
+						'CheckPeriod',
+						'NotifyPeriod',
+						'CheckCommand'
+					]
+				]);
+			}
 		}
 
 		if(!is_dir($this->conf['path'].$this->conf['hosts'])){
@@ -482,12 +519,17 @@ class NagiosExportTask extends AppShell{
 		}
 
 		if($this->conf['minified']){
-			$file = new File($this->conf['path'].$this->conf['hosts'].'hosts_minified'.$this->conf['suffix']);
+			$fileName = $this->conf['path'].$this->conf['hosts'].'hosts_minified'.$this->conf['suffix'];
+			if(isset($options['limit']) && isset($options['offset'])){
+				$fileName = $this->conf['path'].$this->conf['hosts'].'hosts_minified_'.$options['limit'].'_'.$options['offset'].$this->conf['suffix'];
+			}
+			$file = new File($fileName);
 			if(!$file->exists()){
 				$file->create();
 			}
 			$content = $this->fileHeader();
 		}
+
 
 		foreach($hosts as $host){
 			if(!$this->conf['minified']){
@@ -1071,32 +1113,31 @@ class NagiosExportTask extends AppShell{
 	}
 
 
-	public function exportServices($uuid = null){
-		/*
-		if($uuid !== null){
-			$services = [];
-			$services[] = $this->Service->find('first', [
-				'conditions' => [
-					'Service.disabled' => 0,
-					'Service.uuid' => $uuid
-				]
-			]);
-		}else{
-			$services = $this->Service->find('all', [
-				'conditions' => [
-					'Service.disabled' => 0
-				]
-			]);
-		}*/
-
-		//On large systems, run multiple queries is faster than one big $this->Service->find('all');
+	/**
+	 * @param null $uuid
+	 * @param array $options with keys limit and offset
+	 */
+	public function exportServices($uuid = null, $options = []){
+		//if($uuid !== null){
+		//	$services = [];
+		//	$services[] = $this->Service->find('first', [
+		//		'conditions' => [
+		//			'Service.disabled' => 0,
+		//			'Service.uuid' => $uuid
+		//		]
+		//	]);
+		//}
 
 		if(!is_dir($this->conf['path'].$this->conf['services'])){
 			mkdir($this->conf['path'].$this->conf['services']);
 		}
 
 		if($this->conf['minified']){
-			$file = new File($this->conf['path'].$this->conf['services'].'services_minified'.$this->conf['suffix']);
+			$fileName = $this->conf['path'].$this->conf['services'].'services_minified'.$this->conf['suffix'];
+			if(isset($options['limit']) && isset($options['offset'])){
+				$fileName = $this->conf['path'].$this->conf['services'].'services_minified_'.$options['limit'].'_'.$options['offset'].$this->conf['suffix'];
+			}
+			$file = new File($fileName);
 			if(!$file->exists()){
 				$file->create();
 			}
@@ -1114,6 +1155,8 @@ class NagiosExportTask extends AppShell{
 				'Host.uuid',
 				'Host.satellite_id'
 			],
+			'limit' => $options['limit'],
+			'offset' => $options['offset']
 		]);
 
 		foreach($hosts as $host){
