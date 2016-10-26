@@ -239,6 +239,7 @@
 											'label' => ['text' => __('Host URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 											'value' => $host['Host']['host_url'],
 											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+											'help' => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'),
 										]
 									);
 								?>

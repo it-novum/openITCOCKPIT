@@ -36,8 +36,15 @@
 <?php if($this->Acl->hasPermission('service', 'acknowledgements')): ?>
 	<a href="/acknowledgements/service/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
 <?php endif; ?>
-<?php if($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null): ?>
-	<a href="<?php echo $service['Service']['service_url']; ?>" data-original-title="<?php echo _('External link'); ?>" data-placement="bottom" rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+<?php if($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null):
+	$serviceUrl = $service['Service']['service_url'];
+
+	$ServiceUrlHostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
+	$serviceUrl = $ServiceUrlHostMacroReplacer->replaceBasicMacros($serviceUrl);
+	$ServiceUrlMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
+	$serviceUrl = $ServiceUrlMacroReplacer->replaceBasicMacros($serviceUrl);
+	?>
+	<a href="<?php echo $serviceUrl; ?>" data-original-title="<?php echo _('External link'); ?>" data-placement="bottom" rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
 <?php endif; ?>
 <?php if($allowEdit):?>
 	<?php if($this->Acl->hasPermission('edit', 'hosts')): ?>

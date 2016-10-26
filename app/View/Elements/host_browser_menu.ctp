@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 ?>
 <a href="<?php if(isset($ListsettingsUrlParams)): echo Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)); else: echo $this->here; endif;?>" data-original-title="<?php echo __('Refresh'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
 <?php if($this->Acl->hasPermission('view', 'documentations')):?>
@@ -44,8 +45,11 @@
 <?php if($this->Acl->hasPermission('host', 'acknowledgements')):?>
 <a href="/acknowledgements/host/<?php echo $host['Host']['id']; ?>" data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
 <?php endif; ?>
-<?php if($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null): ?>
-	<a href="<?php echo $host['Host']['host_url']; ?>" data-original-title="<?php echo __('External link');?>" data-placement="bottom" rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+<?php if($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null):
+	$HostMacroReplacerMenu = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
+	$hostUrl = $HostMacroReplacerMenu->replaceBasicMacros($host['Host']['host_url']);
+	?>
+	<a href="<?php echo $hostUrl; ?>" data-original-title="<?php echo __('External link');?>" data-placement="bottom" rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
 <?php endif; ?>
 <?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
 <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>" data-original-title="<?php echo __('Edit host');?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
