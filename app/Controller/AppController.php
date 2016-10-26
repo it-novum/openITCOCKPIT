@@ -63,6 +63,8 @@ class AppController extends Controller{
 		'Systemsetting',
 		'Container',
 		'Usergroup',
+		'Register',
+		'Proxy'
 	];
 
 	private $restEnabledController = [
@@ -109,6 +111,7 @@ class AppController extends Controller{
 		'Constants',
 		'Tree',
 		'AdditionalLinks',
+		'Http'
 		//'DebugKit.Toolbar'
 	);
 
@@ -425,6 +428,8 @@ class AppController extends Controller{
 				}
 			}
 		}
+
+		$this->checkForUpdates();
 
 		// @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
 		// which has the effect that passing data to the frontend from Controller::beforeRender
@@ -795,5 +800,46 @@ class AppController extends Controller{
 
 	protected function isXmlRequest(){
 		return $this->request->ext === 'xml';
+	}
+
+	public function checkForUpdates(){
+
+		$version = Cache::read('openitcockpitVersion', '5 days');
+
+		if(!$version){
+			$license = $this->Register->find('first');
+			if(ENVIRONMENT === Environments::DEVELOPMENT){
+				if(!empty($license)){
+					$url = 'http://172.16.2.87/modules/fetch/'.$license['Register']['license'].'.json';
+				}else{
+					$url = 'http://172.16.2.87/modules/fetch/.json';
+				}
+
+				$options = [
+					'CURLOPT_SSL_VERIFYPEER' => false,
+					'CURLOPT_SSL_VERIFYHOST' => false,
+				];
+				// $http = new HttpComponent('https://127.0.0.1/packetmanager/getPackets', $options, $this->Proxy->getSettings());
+				$http = new HttpComponent($url, $options, $this->Proxy->getSettings());
+
+			}else{
+				if(!empty($license)){
+					$url = 'https://packagemanager.it-novum.com/modules/fetch/'.$license['Register']['license'].'.json';
+				}else{
+					$url = 'https://packagemanager.it-novum.com/modules/fetch/.json';
+				}
+
+				$options = [];
+				$http = new HttpComponent($url, [], $this->Proxy->getSettings());
+			}
+
+			if(!$http->error) {
+				$http->sendRequest();
+				$data = json_decode($http->data);
+				$version = $data->version;
+			}
+		}
+
+		$this->set(compact('version'));
 	}
 }
