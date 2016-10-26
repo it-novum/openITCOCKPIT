@@ -15,6 +15,7 @@ $config = array(
 			'vendor/select2/select2-bootstrap',
 			'vendor/bootstrap-datepicker.css',
 			'vendor/bootstrap-datetimepicker.min.css',
+			'vendor/gauge/css/gauge.css',
 			'/smartadmin/css/font-awesome.min.css',
 			'/smartadmin/css/smartadmin-production.min.css',
 			'/smartadmin/css/smartadmin-production-plugins.min.css',
