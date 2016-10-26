@@ -23,7 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<?php
+
+$this->Paginator->options(array('url' => $this->params['named']));
+$filter = "/";
+foreach($this->params->named as $key => $value){
+    $filter.= $key.":".$value."/";
+}
+
+?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
@@ -61,20 +69,20 @@
 					<ul class="nav nav-tabs pull-right" id="widget-tab-1">
 						<?php if($this->Acl->hasPermission('index')):?>
 							<li class="">
-								<a href="/hosts/index"><i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
+								<a href="/hosts/index<?php echo $filter; ?>"><i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
 							</li>
 						<?php endif;?>
 						<?php if($this->Acl->hasPermission('notMonitored')):?>
 							<li class="">
-								<a href="/hosts/notMonitored"><i class="fa fa-user-md"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
+								<a href="/hosts/notMonitored<?php echo $filter; ?>"><i class="fa fa-user-md"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
 							</li>
 						<?php endif;?>
 						<li class="active">
-							<a href="/hosts/disabled"><i class="fa fa-power-off"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
+							<a href="/hosts/disabled<?php echo $filter; ?>"><i class="fa fa-power-off"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
 						</li>
 						<?php if($this->Acl->hasPermission('index', 'DeletedHosts')):?>
 							<li>
-								<a href="/deleted_hosts/index"><i class="fa fa-trash-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
+								<a href="/deleted_hosts/index<?php echo $filter; ?>"><i class="fa fa-trash-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
 							</li>
 						<?php endif;?>
 					</ul>
