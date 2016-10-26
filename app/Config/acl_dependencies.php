@@ -103,6 +103,10 @@ $config = [
 				'saveTrafficLightService',
 				'getTachoPerfdata',
 				'saveTachoConfig',
+				'saveMapId',
+				'saveGraphId',
+				'saveNotice',
+				'saveMap'
 			],
 			'Hosts' => [
 				'view'
