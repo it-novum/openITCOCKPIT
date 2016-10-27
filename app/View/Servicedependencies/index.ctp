@@ -297,11 +297,11 @@ function __viewDependencyOptions($servicedependency = [], $options_mode){
 			'class' => 'fa fa-square'
 		],
 		$options_mode.'_fail_on_warning' => [
-			'color' => 'txt-color-redLight',
+			'color' => 'txt-color-orange',
 			'class' => 'fa fa-square'
 		],
 		$options_mode.'_fail_on_critical' => [
-			'color' => 'txt-color-orange',
+			'color' => 'txt-color-redLight',
 			'class' => 'fa fa-square'
 		],
 		$options_mode.'_fail_on_unknown' => [
