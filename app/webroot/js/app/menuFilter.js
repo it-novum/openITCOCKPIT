@@ -72,7 +72,7 @@ $(document).ready(function(){
 		if($selected.length){
 			window.location = $selected.find('a').attr('href');
 		}else{
-			window.location = '/hosts/index/Filter.Host.name:' + encodeURIComponent($mainMenuFilter.val());
+			window.location = '/hosts/index/Filter.Host.name:' + encodeURIComponent($mainMenuFilter.val()) + '/q:1';
 		}
 	});
 

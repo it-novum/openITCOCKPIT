@@ -41,7 +41,7 @@ class SearchController extends AppController{
 							$url['Filter.Hoststatus.current_state['.$state.']'] = 1;
 						}
 					}
-
+					$url['q'] = 1; //Fix for .exe .png and so on
 					return $this->redirect($url);
 				}elseif(!empty($this->request->data['SearchDefault']['Servicename']) && empty($this->request->data['SearchDefault']['Hostname'])){
 					// The user typed in a service name but not a host name, so we need to search for the service
@@ -52,6 +52,7 @@ class SearchController extends AppController{
 							$url['Filter.Servicestatus.current_state['.$state.']'] = 1;
 						}
 					}
+					$url['q'] = 1; //Fix for .exe .png and so on
 					return $this->redirect(Hash::merge(['controller' => 'services', 'action' => 'index'], $url));
 				}elseif(!empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])){
 					// The user entered a service and a host name, so we need to search for host and service
@@ -63,6 +64,7 @@ class SearchController extends AppController{
 							$url['Filter.Servicestatus.current_state['.$state.']'] = 1;
 						}
 					}
+					$url['q'] = 1; //Fix for .exe .png and so on
 					return $this->redirect($url);
 				}else{
 					$this->setFlash(__('Invalid search query'), false);
@@ -78,6 +80,7 @@ class SearchController extends AppController{
 					foreach($hostKeywords as $key => $keyword){
 						$url['Filter.Host.tags['.$key.']'] = $keyword;
 					}
+					$url['q'] = 1; //Fix for .exe .png and so on
 					return $this->redirect($url);
 				}
 
@@ -88,6 +91,7 @@ class SearchController extends AppController{
 					foreach($hostKeywords as $key => $keyword){
 						$url['Filter.Service.tags['.$key.']'] = $keyword;
 					}
+					$url['q'] = 1; //Fix for .exe .png and so on
 					return $this->redirect($url);
 				}
 
@@ -100,7 +104,8 @@ class SearchController extends AppController{
 					'controller' => 'forward',
 					'action' => 'index',
 					'uuid' => $this->request->data['SearchUuid']['UUID'],
-					'exception' => 'false'
+					'exception' => 'false',
+					'q' => 1,
 				]);
 				//return $this->redirect('/forward/index/uuid:'.$this->request->data['SearchUuid']['UUID']);
 			}
@@ -119,12 +124,12 @@ class SearchController extends AppController{
 			if(isset($this->request->data['SearchMacros'])){
 				if(!empty($this->request->data['SearchMacros']['Hostmacro']) && empty($this->request->data['SearchMacros']['Servicemacro'])){
 					//User is searching for host macros
-					return $this->redirect(['action' => 'hostMacro', $this->request->data['SearchMacros']['Hostmacro']]);
+					return $this->redirect(['action' => 'hostMacro', 'q' => 1, $this->request->data['SearchMacros']['Hostmacro']]);
 				}
 
 				if(empty($this->request->data['SearchMacros']['Hostmacro']) && !empty($this->request->data['SearchMacros']['Servicemacro'])){
 					//User is searching for service macros
-					return $this->redirect(['action' => 'serviceMacro', $this->request->data['SearchMacros']['Servicemacro']]);
+					return $this->redirect(['action' => 'serviceMacro', 'q' => 1, $this->request->data['SearchMacros']['Servicemacro']]);
 				}
 
 				$this->setFlash(__('Invalid search query'), false);
