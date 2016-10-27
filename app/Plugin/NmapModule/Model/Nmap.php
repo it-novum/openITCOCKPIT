@@ -128,7 +128,7 @@ class Nmap extends NmapModuleAppModel{
             $this->_delete_output_file = false;
         }
 
-        $cmd  = escapeshellarg($this->_nmap_binary);
+        $cmd  = $this->_nmap_binary;
         $cmd .= ' ' . implode(' ', $this->_nmap_options);
         $cmd .= ' -oX ' . escapeshellarg($this->_output_file) . ' ';
         foreach ($targets as $target) {
@@ -138,6 +138,7 @@ class Nmap extends NmapModuleAppModel{
         if (OS_WINDOWS) {
             $cmd = '"' . $cmd . '"';
         }
+
         return $cmd;
     }
 
@@ -156,8 +157,7 @@ class Nmap extends NmapModuleAppModel{
     {
         $sudo = $with_sudo
             ? 'sudo ' : '';
-        var_dump($sudo . $this->createCommandLine($targets), $out, $ret_var);
-        exit;
+        
         exec($sudo . $this->createCommandLine($targets), $out, $ret_var);
 
         if ($ret_var > 0) {
@@ -249,11 +249,16 @@ class Nmap extends NmapModuleAppModel{
      */
     public function enableOptions($nmap_options)
     {
+        $host_timeout = array_key_exists('host-timeout', $nmap_options);
         $enable_os_detection = array_key_exists('os_detection', $nmap_options);
         $enable_service_info = array_key_exists('service_info', $nmap_options);
         $enable_fast_scan = array_key_exists('fast_scan', $nmap_options);
         $enable_port_ranges  = array_key_exists('port_ranges', $nmap_options);
         $enable_all_options  = array_key_exists('all_options', $nmap_options);
+
+        if($host_timeout){
+            $this->_nmap_options[] = '--host-timeout '.$nmap_options['host-timeout'];
+        }
 
         if ($enable_os_detection && $nmap_options['os_detection']) {
             $this->_nmap_options[] = '-O';
@@ -263,8 +268,7 @@ class Nmap extends NmapModuleAppModel{
         }
         if ($enable_fast_scan && $nmap_options['fast_scan']) {
             $this->_nmap_options[] = '-F';
-        }
-        elseif ($enable_port_ranges) {
+        }elseif ($enable_port_ranges) {
             $port_ranges    = $nmap_options['port_ranges'];
             $allowed_format = '([U,T]\:)*[0-9]+(-[0-9]+)*';
 

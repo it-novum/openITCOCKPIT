@@ -1453,6 +1453,34 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
+	public $nmap_templates = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
+		'port_number' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'key' => 'index'),
+		'protocol' => array('type' => 'string', 'length' => 10, 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'service' => array('type' => 'string', 'length' => 64, 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'servicetemplate_id' => array('type' => 'integer', 'length' => 11, 'null' => false, 'key' => 'index'),
+		'container_id' => array('type' => 'integer', 'length' => 11, 'null' => false, 'key' => 'index'),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'MyISAM')
+	);
+
+	public $nmap_scans = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 10, 'key' => 'primary'),
+		'host' => array('type' => 'string', 'length' => 10, 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'ip_address' => array('type' => 'string', 'length' => 20, 'null' => false, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'port_number' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'key' => 'index'),
+		'status' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11),
+		'service_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11, 'key' => 'index'),
+		'group' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 11),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'MyISAM')
+	);
+
 	/*public $devicegroups = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

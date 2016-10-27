@@ -24,6 +24,7 @@
 
 App.Components.MasschangeComponent = Frontend.Component.extend({
 	massCount: 0,
+	module: '',
 	controller: '',
 	group: '',
 	checkboxattr: 'hostname',
@@ -38,9 +39,11 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 	
 	setup: function(conf){
 		conf = conf || {};
+		conf.module = conf.module || '';
 		conf.controller = conf.controller || '';
 		conf.group = conf.group || '';
 		this.useDeleteMessage = conf.useDeleteMessage || this.useDeleteMessage;
+		this.module = conf.module;
 		this.controller = conf.controller;
 		this.group = conf.group;
 		this.checkboxattr = conf.checkboxattr || this.checkboxattr;
@@ -143,6 +146,7 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 		this.createDisableAllHref();
 		this.createAppendGroupAllHref();
 		this.createListAsPDFAllHref();
+		this.createMonitorAllHref();
 	},
 	
 	createDeleteAllHref: function(){
@@ -224,6 +228,14 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 				var myObj = $(this);
 				myObj.attr('href', 'javascript:void(0);');
 			});
+		}
+	},
+
+	createMonitorAllHref: function(){
+		if(this.selectedIds.length > 0){
+			$('#monitorAll').attr('href', '/'+this.module+'/'+this.controller+'/monitor/'+$('#host-id-for-nmap').val()+'/'+this.selectedIds.join('/')+this.extendUrl);
+		}else{
+			$('#monitorAll').attr('href', 'javascript:void(0);');
 		}
 	},
 	

@@ -1,4 +1,3 @@
-<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,27 +22,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = array(
-    'menu' => [
-        'nmaps' => [
-            'url' => ['controller' => 'nmaps', 'action' => 'index', 'plugin' => 'nmap_module'],
-            'title' => 'Nmap Discovery',
-            'icon' => 'search',
-            'order' => 2,
-            'children' => [
-                'map' => [
-                    'url' => ['controller' => 'nmaps', 'action' => 'nmapsList', 'plugin' => 'nmap_module'],
-                    'title' => 'Discovery',
-                    'icon' => 'bolt',
-                    'parent_controller' => 'itc'
-                ],
-                'nmapsList' => [
-                    'url' => ['controller' => 'nmaps', 'action' => 'index', 'plugin' => 'nmap_module'],
-                    'title' => 'Nmaps List',
-                    'icon' => 'bolt',
-                    'parent_controller' => 'itc'
-                ],
-            ]
-        ],
-    ]
-);
+App.Controllers.NmapsScanHostController = Frontend.AppController.extend({
+    components: ['Masschange'],
+    _initialize: function() {
+        var self = this;
+        this.Masschange.setup({
+            'controller': 'nmaps',
+            'module': 'nmap_module'
+        });
+
+    },
+
+
+
+});

@@ -55,7 +55,6 @@
                     <div class="jarviswidget-editbox">
                     </div>
                     <div class="widget-body no-padding">
-                        <input type="hidden" id="host-id-for-nmap" value="<?php echo $hostId; ?>">
                         <table id="nmaps_list" class="table table-striped table-bordered smart-form" style="margin-bottom: 20px;">
                             <thead>
                             <tr>
@@ -64,14 +63,14 @@
                                 <th class="select_datatable no-sort"><?php echo __('Name'); ?></th>
                                 <th class="select_datatable no-sort"><?php echo __('Port'); ?></th>
                                 <th class="select_datatable no-sort"><?php echo __('Protocol'); ?></th>
+                                <th class="no-sort"><?php echo __('Information'); ?></th>
+                                <th class="select_datatable no-sort"><?php echo __('Version'); ?></th>
+                                <th class="select_datatable no-sort"><?php echo __('Additional Info'); ?></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php $notEmpty = false; ?>
                             <?php if(!empty($result)): ?>
                                 <?php foreach($result[0]->getServices() as $res): ?>
-                                    <?php if(is_null($res->name)){ continue; } ?>
-                                    <?php $notEmpty = true; ?>
                                     <tr>
                                         <td class="text-center width-5">
                                             <input type="checkbox" class="massChange" hostname="<?php echo $res->protocol; ?>" value="<?php echo $res->port; ?>" >
@@ -79,10 +78,12 @@
                                         <td><?php echo $res->name;?></td>
                                         <td><?php echo $res->port;?></td>
                                         <td><?php echo $res->protocol;?></td>
+                                        <td><?php echo $res->product;?></td>
+                                        <td><?php echo $res->version;?></td>
+                                        <td><?php echo $res->extrainfo;?></td>
                                     </tr>
                                 <?php endforeach; ?>
-                            <?php endif; ?>
-                            <?php if(!$notEmpty): ?>
+                            <?php else: ?>
                                 <tr>
                                     <td></td>
                                     <td colspan="6"><?php echo __('Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn');?></td>
