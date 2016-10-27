@@ -29,7 +29,9 @@ class GearmanWorkerShell extends AppShell
     public $uses = [
         'Systemsetting',
         MONITORING_EXTERNALCOMMAND,
-        'Export'
+        'Export',
+		'Host',
+		'Service'
     ];
     public $tasks = [
         'NagiosExport',
@@ -338,7 +340,8 @@ class GearmanWorkerShell extends AppShell
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_hosts':
-                $this->NagiosExport->exportHosts();
+			case (bool)strstr($payload['task'], 'export_hosts_', false):
+                $this->NagiosExport->exportHosts(null, $payload['options']);
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_commands':
@@ -372,7 +375,8 @@ class GearmanWorkerShell extends AppShell
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_services':
-                $this->NagiosExport->exportServices();
+			case (bool)strstr($payload['task'], 'export_services_', false):
+                $this->NagiosExport->exportServices(null, $payload['options']);
                 $return = ['task' => $payload['task']];
                 break;
             case 'export_serviceescalations':
@@ -522,9 +526,9 @@ class GearmanWorkerShell extends AppShell
             'export_hosttemplates' => [
                 'text' => __('Create hosttemplate configuration'),
             ],
-            'export_hosts' => [
-                'text' => __('Create host configuration'),
-            ],
+            //'export_hosts' => [
+			//    'text' => __('Create host configuration'),
+			//],
             'export_commands' => [
                 'text' => __('Create command configuration'),
             ],
@@ -546,9 +550,9 @@ class GearmanWorkerShell extends AppShell
             'export_servicetemplates' => [
                 'text' => __('Create servicetemplate configuration'),
             ],
-            'export_services' => [
-                'text' => __('Create service configuration'),
-            ],
+            //'export_services' => [
+            //    'text' => __('Create service configuration'),
+            //],
             'export_serviceescalations' => [
                 'text' => __('Create service escalation configuration'),
             ],
@@ -566,8 +570,43 @@ class GearmanWorkerShell extends AppShell
             ],
         ];
 
+		//Split host and services to different worker processes to speed up the configuration generation
+		$hostCount = $this->Host->find('count');
+		//$serviceCount = $this->Service->find('count');
+		$chunk = 200;
+		$hostWorker = ceil($hostCount/$chunk);
+		$serviceWorker = $hostWorker;
+		//$serviceWorker = ceil($serviceCount/$chunk);
+
+		for($i=0; $i<$hostWorker; $i++){
+			$tasks['export_hosts_'.$i] = [
+			    'text' => __('Create host configuration - Worker: %s', ($i +1)),
+				'options' => [
+					'limit' => $chunk,
+					'offset' => $chunk*$i,
+				]
+			];
+		}
+
+		for($i=0; $i<$serviceWorker; $i++){
+			$tasks['export_services_'.$i] = [
+				'text' => __('Create service configuration - Worker: %s', ($i +1)),
+				'options' => [
+					'limit' => $chunk,
+					'offset' => $chunk*$i,
+				]
+			];
+		}
+
+
         foreach ($tasks as $taskName => $task) {
-            $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+        	if(isset($task['options'])){
+        		//Task with secial options
+				$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
+			}else{
+				//Normal task
+				$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+			}
             $this->Export->create();
             $data = [
                 'Export' => [

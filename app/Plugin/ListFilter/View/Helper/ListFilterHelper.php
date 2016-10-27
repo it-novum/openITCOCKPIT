@@ -249,7 +249,18 @@ class ListFilterHelper extends AppHelper {
 			$options = $this->_options['formActionParams'];
 		}else{
 			$here = $this->here;
+            //This is for avoiding cut off IP-Addresses
+            if (isset($this->_options['avoid_cut']) && $this->_options['avoid_cut']) {
+                //Avoiding duplicate appearance of /q:1
+                if(!strpos($here,"/q:1")) {
+                    $here = $here . '/q:1';
+                }
+            }
+
+            //CakePHP remove index action from url by default
+            //This cause some strange behavior...
 			if($this->request->params['action'] == 'index' || $this->request->params['action'] == ''){
+<<<<<<< HEAD
 				//CakePHP remove index action from url by default
 				//This cause some strange behavior...
 
@@ -262,9 +273,16 @@ class ListFilterHelper extends AppHelper {
 			//Fix file extensionse like .exe
 			if(strpos($here, '/q:1') === false){
 				$here = $here . '/q:1';
+=======
+                //Avoiding duplicate appearance of /index
+                if(!strpos($here,"/index")) {
+                    $here = $here . '/index';
+                }
+>>>>>>> 2068ef6de644f7d2e0095f444265ca9df91949e4
 			}
 			$options = Set::merge(array('url' => $here), $this->_options['formActionParams']);
 		}
+       // var_dump($options);exit;
 
 		$ret.= $this->Form->create('Filter', $options);
 		return $ret;

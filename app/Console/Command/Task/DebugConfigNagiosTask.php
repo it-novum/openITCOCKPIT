@@ -36,6 +36,7 @@ class DebugConfigNagiosTask extends AppShell {
 		$this->conf = $conf;
 		$this->monitoringLog = Configure::read('nagios.logfilepath').Configure::read('nagios.logfilename');
 		App::uses('UUID', 'Lib');
+		App::uses('Folder', 'Utility');
 		//Loading components
 		App::uses('Component', 'Controller');
 		App::uses('ConstantsComponent', 'Controller/Component');
@@ -340,86 +341,97 @@ class DebugConfigNagiosTask extends AppShell {
 				$this->out(__d('oitc_console', '<error>File not found! ('.$this->conf['path'].$this->conf[$confName].$uuid.$this->conf['suffix'].')</error>'));
 			}
 		}else{
+			$configFolder = new Folder($this->conf['path'].$this->conf[$confName]);
+			$configFiles = $configFolder->find();
+
 			// User want the file of an object, that is inside of an minified file, so we need to parse the minified config
-			if(file_exists($this->conf['path'].$this->conf[$confName].$confName.'_minified'.$this->conf['suffix'])){
-				$fileAsArray = file($this->conf['path'].$this->conf[$confName].$confName.'_minified'.$this->conf['suffix']);
+			if(!empty($configFiles)){
+				foreach($configFiles as $configFile){
+					$fileAsArray = file($configFolder->pwd().$configFile);
 
-				$content = [];
-				$startParsing = false;
+					$content = [];
+					$startParsing = false;
 
-				$modelToNagios = [
-					'Command' => 'command_name',
-					//'Contactgroup' => ,
-					'Contact' => 'contact_name',
-					//'Hostgroup' => '',
-					'Host' => 'host_name',
-					'Hosttemplate' => 'host_name',
-					'Service' => 'service_description',
-					'Servicetemplate' => 'service_description',
-					'Timeperiod' => 'timeperiod_name'
-				];
+					$modelToNagios = [
+						'Command' => 'command_name',
+						//'Contactgroup' => ,
+						'Contact' => 'contact_name',
+						//'Hostgroup' => '',
+						'Host' => 'host_name',
+						'Hosttemplate' => 'host_name',
+						'Service' => 'service_description',
+						'Servicetemplate' => 'service_description',
+						'Timeperiod' => 'timeperiod_name'
+					];
 
-				$needel = $modelToNagios[$ModelName];
+					$needel = $modelToNagios[$ModelName];
 
-				$searchForEnd = false;
+					$searchForEnd = false;
 
-				$configContent = [];
-				$breakForeach = false;
-				$state = 'SEARCH_FOR_DEFINITION';
-				foreach($fileAsArray as $line){
-					$configContent[] = $line;
-					switch($state){
-						case 'SEARCH_FOR_DEFINITION':
-							if(preg_match('/^define .*\{[\s\t]*$/', $line)){
-								$state = 'SEARCH_FOR_OBJECT_NAME';
-							}
-							break;
-
-						case 'SEARCH_FOR_OBJECT_NAME': //host_name, command_name, contacnt_name, etc
-							if(preg_match('/'.$needel.'/', $line)){
-								$check = explode($needel, $line);
-								if(sizeof($check) == 2){
-									if(trim($check[1]) == $uuid){
-										//this is the object we search for!
-										$state = 'SEARCH_FOR_END_OF_DEFENITION';
-										break;
-									}
+					$configContent = [];
+					$breakForeach = false;
+					$state = 'SEARCH_FOR_DEFINITION';
+					foreach($fileAsArray as $line){
+						$configContent[] = $line;
+						switch($state){
+							case 'SEARCH_FOR_DEFINITION':
+								if(preg_match('/^define .*\{[\s\t]*$/', $line)){
+									$state = 'SEARCH_FOR_OBJECT_NAME';
 								}
-								//This is not the object we are searching for!
-								$state = 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE';
-							}
-							break;
-
-						case 'SEARCH_FOR_END_OF_DEFENITION':
-							if(trim($line) == '}'){
-								// We have the complet object now, so we can break out of switch and foreach
-								$breakForeach = true;
 								break;
-							}
-							break;
 
-						case 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE':
-							// this was the wrong object, so throw everyting away and continue with next definition
-							if(trim($line) == '}'){
-								$configContent = [];
-								$state = 'SEARCH_FOR_DEFINITION';
-							}
+							case 'SEARCH_FOR_OBJECT_NAME': //host_name, command_name, contacnt_name, etc
+								if(preg_match('/'.$needel.'/', $line)){
+									$check = explode($needel, $line);
+									if(sizeof($check) == 2){
+										if(trim($check[1]) == $uuid){
+											//this is the object we search for!
+											$state = 'SEARCH_FOR_END_OF_DEFENITION';
+											break;
+										}
+									}
+									//This is not the object we are searching for!
+									$state = 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE';
+								}
+								break;
+
+							case 'SEARCH_FOR_END_OF_DEFENITION':
+								if(trim($line) == '}'){
+									// We have the complet object now, so we can break out of switch and foreach
+									$breakForeach = true;
+									break;
+								}
+								break;
+
+							case 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE':
+								// this was the wrong object, so throw everyting away and continue with next definition
+								if(trim($line) == '}'){
+									$configContent = [];
+									$state = 'SEARCH_FOR_DEFINITION';
+								}
+								break;
+						}
+
+						if($breakForeach === true){
 							break;
+						}
 					}
 
-					if($breakForeach === true){
+					if(!empty($configContent)){
+						$this->hr();
+						$this->out(__('<warning>File: %s</warning>', $configFolder->pwd().$configFile));
+						$this->out('<info>'.__d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.').'</info>');
+						$this->hr();
+						foreach($configContent as $line){
+							$this->out($this->searchUuids($line), false);
+						}
+						//break config files foreach.
 						break;
 					}
-				}
 
-				$this->hr();
-				$this->out('<info>'.__d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.').'</info>');
-				$this->hr();
-				foreach($configContent as $line){
-					$this->out($this->searchUuids($line), false);
 				}
 			}else{
-				$this->out(__d('oitc_console', '<error>File not found! ('.$this->conf['path'].$this->conf[$confName].$confName.'_minified'.$this->conf['suffix'].')</error>'));
+				$this->out(__d('oitc_console', '<error>Folder %s is empty!</error>', $configFolder->pwd()));
 			}
 
 		}

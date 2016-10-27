@@ -83,13 +83,13 @@
 							<?php
 								echo $this->Form->input('container_id', [
 									'options' => $this->Html->chosenPlaceholder($containers),
-									'data-placeholder' => __('Please select...'), 
-									'class' => 'chosen col col-xs-12', 
+									'data-placeholder' => __('Please select...'),
+									'class' => 'chosen col col-xs-12',
 									'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 								]);
 								echo $this->Form->input('name', [
-									'label' => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+									'label' => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 									'help' => __('This is the default name for the service if you create it out of the template'),
 									'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 								]);
@@ -123,11 +123,11 @@
 							</div>
 							<!-- notification settings -->
 							<span class="note"><?php echo __('Notification settings'); ?>:</span>
-							<?php 
+							<?php
 							echo $this->Form->input('Servicetemplate.notify_period_id', [
 								'options' => $this->Html->chosenPlaceholder($_timeperiods),
-								'data-placeholder' => __('Please select...'), 
-								'label' => ['text' => __('Notification period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'data-placeholder' => __('Please select...'),
+								'label' => ['text' => __('Notification period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 								'class' => 'chosen col col-xs-12',
 								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]); ?>
@@ -211,10 +211,10 @@
 							<!-- check settings -->
 							<span class="note pull-left"><?php echo __('Check settings'); ?>:</span>
 							<br class="clearfix" />
-							<?php 
+							<?php
 							echo $this->Form->input('Servicetemplate.command_id', [
-								'options' => $this->Html->chosenPlaceholder($commands), 
-								'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'options' => $this->Html->chosenPlaceholder($commands),
+								'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 								'class' => 'chosen col col-xs-12',
 								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]);
@@ -222,18 +222,18 @@
 							<div id="CheckCommandArgs">
 								<!-- Contacnt gets loaded by AJAX -->
 							</div>
-							<?php 
+							<?php
 							echo $this->Form->input('Servicetemplate.check_period_id', [
 								'options' => $this->Html->chosenPlaceholder($_timeperiods),
-								'data-placeholder' => __('Please select...'), 
-								'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'], 
+								'data-placeholder' => __('Please select...'),
+								'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 								'class' => 'chosen col col-xs-12',
 								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]);
 							?>
-							<?php 
+							<?php
 							echo $this->Form->input('Servicetemplate.max_check_attempts', [
-								'label' => ['text' => __('Max. numer of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+								'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]);
 							?>
@@ -279,7 +279,7 @@
 							<!-- key words -->
 							<?php echo $this->Form->input('tags', [
 								'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-								'class' => 'form-control tagsinput', 
+								'class' => 'form-control tagsinput',
 								'data-role' => 'tagsinput',
 								'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
 							]);
@@ -344,7 +344,7 @@
 									<?php
 									echo $this->Form->input('freshness_threshold', [
 										'label' => ['text' => __('<i class="fa fa-clock-o"></i> Freshness threshold (seconds)'),'class' => 'col col-md-2 control-label text-left'],
-										'class' => 'col col-md-12', 
+										'class' => 'col col-md-12',
 										'wrapInput' => 'col col-xs-8'
 									]);
 									?>

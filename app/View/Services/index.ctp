@@ -23,7 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<?php
+$this->Paginator->options(array('url' => $this->params['named']));
+$filter = "/";
+foreach($this->params->named as $key => $value){
+	$filter.= $key.":".$value."/";
+}
+?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
@@ -67,18 +73,18 @@
 					<h2 class="hidden-mobile"><?php echo __('Services'); ?> </h2>
 					<ul class="nav nav-tabs pull-right" id="widget-tab-1">
 						<li class="active">
-							<a href="/services/index"> <i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span> </a>
+							<a href="/services/index<?php echo $filter; ?>"> <i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span> </a>
 						</li>
 						<?php if($this->Acl->hasPermission('notMonitored')): ?>
 							<li class="">
-								<a href="/services/notMonitored">
+								<a href="/services/notMonitored<?php echo $filter; ?>">
 									<i class="fa fa-user-md"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
 								</a>
 							</li>
 						<?php endif; ?>
 						<?php if($this->Acl->hasPermission('disabled')): ?>
 							<li class="">
-								<a href="/services/disabled">
+								<a href="/services/disabled<?php echo $filter; ?>">
 									<i class="fa fa-plug"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
 								</a>
 							</li>
