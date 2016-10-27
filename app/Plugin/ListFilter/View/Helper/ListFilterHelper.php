@@ -260,25 +260,10 @@ class ListFilterHelper extends AppHelper {
             //CakePHP remove index action from url by default
             //This cause some strange behavior...
 			if($this->request->params['action'] == 'index' || $this->request->params['action'] == ''){
-<<<<<<< HEAD
-				//CakePHP remove index action from url by default
-				//This cause some strange behavior...
-
-				//Check if there is already an /index in the url
-				if(strpos($here, '/'.$this->request->params['controller'].'/index') === false){
-					$here = $here . '/index';
-				}
-			}
-
-			//Fix file extensionse like .exe
-			if(strpos($here, '/q:1') === false){
-				$here = $here . '/q:1';
-=======
                 //Avoiding duplicate appearance of /index
                 if(!strpos($here,"/index")) {
                     $here = $here . '/index';
                 }
->>>>>>> 2068ef6de644f7d2e0095f444265ca9df91949e4
 			}
 			$options = Set::merge(array('url' => $here), $this->_options['formActionParams']);
 		}
