@@ -429,7 +429,15 @@ class GearmanWorkerShell extends AppShell
 
             case 'phpnsta_status':
                 $command = Configure::read('nagios.phpnsta_status');
-                exec($command, $output, $returncode);
+                $handle = popen($command." 2>&1", 'r');
+                $output = fread($handle, 2096);
+                pclose($handle);
+                if (strpos($output,"not") > 0 OR strpos($output, "unrecognized") > 0) {
+                    $returncode = 1;
+                } else {
+                    $returncode = 0;
+                }
+
                 $return = [
                     'output' => $output,
                     'returncode' => $returncode
