@@ -52,6 +52,7 @@ App.Controllers.ServicesShowCheckMKLogfileController = Frontend.AppController.ex
             $.ajax({
                 url: "/services/modifyCheckMkLogfile/.json",
                 type: "POST",
+                cache: false,
                 data: ({
                     host_uuid:$('#hostUuid').val(),
                     service_name:$('#serviceName').val(),

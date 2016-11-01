@@ -43,6 +43,7 @@ App.Controllers.ContactsAddContactgroupController = Frontend.AppController.exten
 		$.ajax({
 			url: "/contactgroups/loadContacts/"+encodeURIComponent(container_id)+'.json',
 			type: "POST",
+			cache: false,
 			dataType: "json",
 			error: function(){},
 			success: function(){},

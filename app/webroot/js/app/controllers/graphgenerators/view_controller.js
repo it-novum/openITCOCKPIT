@@ -288,6 +288,7 @@ App.Controllers.GraphgeneratorsViewController = Frontend.AppController.extend({
 			defaults = {
 				url: url,
 				type: 'post',
+				cache: false,
 				data: data,
 				dataType: 'json',
 				error: function(){},

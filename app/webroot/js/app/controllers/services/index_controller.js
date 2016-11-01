@@ -51,6 +51,7 @@ App.Controllers.ServicesIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/Services/loadServices/"+encodeURIComponent(hostId)+".json",
 				type: "POST",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){
@@ -167,6 +168,7 @@ App.Controllers.ServicesIndexController = Frontend.AppController.extend({
 		ret = $.ajax({
 			url: "/downtimes/validateDowntimeInputFromBrowser",
 			type: "POST",
+			cache: false,
 			data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
 			error: function(){},
 			success: function(response){
@@ -191,6 +193,7 @@ App.Controllers.ServicesIndexController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Services/loadServices/"+encodeURIComponent(hostId)+".json",
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){

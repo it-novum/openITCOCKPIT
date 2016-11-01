@@ -160,6 +160,7 @@ App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.exten
 		$.ajax({
 			url: '/graph_collections/loadCollectionGraphData/' + collection_id + '.json',
 			type: 'post',
+			cache: false,
 			dataType: 'json',
 			error: function(){},
 			success: function(){},

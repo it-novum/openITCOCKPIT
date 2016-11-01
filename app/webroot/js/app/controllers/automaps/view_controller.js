@@ -111,6 +111,7 @@ App.Controllers.AutomapsViewController = Frontend.AppController.extend({
 		$.ajax({
 				url: "/Automaps/loadServiceDetails/"+encodeURIComponent(serviceID)+".json",
 				type: "GET",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){
@@ -224,7 +225,8 @@ App.Controllers.AutomapsViewController = Frontend.AppController.extend({
 		ret = $.ajax({
 			url: "/downtimes/validateDowntimeInputFromBrowser",
 			type: "POST",
-			data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
+			cache: false,
+            data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
 			error: function(){},
 			success: function(response){
 				if(response == 1){
