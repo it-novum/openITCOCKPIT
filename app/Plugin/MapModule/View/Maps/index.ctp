@@ -96,9 +96,15 @@
 							</thead>
 							<tbody>
 								<?php foreach($all_maps as $map): ?>
+									<?php
+									$myContainers = [];
+									foreach($map['Container'] as $mContainer){
+										$myContainers[] = $mContainer['id'];
+									}
+									$allowEdit = $this->Acl->isWritableContainer($myContainers); ?>
 									<tr>
 										<td class="text-center">
-											<?php if($this->Acl->hasPermission('edit')):?>
+											<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 												<input class="massChange" type="checkbox" name="map[<?php echo $map['Map']['id']; ?>]" mapname="<?php echo h($map['Map']['name']); ?>" value="<?php echo $map['Map']['id']; ?>"/>
 											<?php endif;?>
 										</td>
@@ -106,26 +112,34 @@
 										<td><?php echo $map['Map']['title']?></td>
 										<td>
 											<div class="btn-group">
-												<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+													<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<?php else: ?>
+													<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<?php endif;?>
 												<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
 												<ul class="dropdown-menu">
-													<li>
-														<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-													</li>
-													<li>
-														<a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-edit"></i> <?php echo __('Edit in Map editor'); ?></a>
-													</li>
-													<li class="divider"></li>
+													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+														<li>
+															<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+														</li>
+														<li>
+															<a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-edit"></i> <?php echo __('Edit in Map editor'); ?></a>
+														</li>
+														<li class="divider"></li>
+													<?php endif;?>
 													<li>
 														<a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/view/<?php echo $map['Map']['id']; ?>"><i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
 													</li>
 													<li>
 														<a href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>"><i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?></a>
 													</li>
-													<li class="divider"></li>
-													<li>
-														<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'maps', 'action' => 'delete', $map['Map']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-													</li>
+													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+														<li class="divider"></li>
+														<li>
+															<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'maps', 'action' => 'delete', $map['Map']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+														</li>
+													<?php endif;?>
 												</ul>
 											</div>
 										</td>

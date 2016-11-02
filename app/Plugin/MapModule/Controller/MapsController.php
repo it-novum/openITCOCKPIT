@@ -39,11 +39,44 @@ class MapsController extends MapModuleAppController {
 	]];
 
 	public function index(){
+		$query = [
+			'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
+			'fields' => [
+				'Map.*',
+			],
+			'joins' => [
+				[
+					'table' => 'maps_to_containers',
+					'type' => 'INNER',
+					'alias' => 'MapsToContainers',
+					'conditions' => 'MapsToContainers.map_id = Map.id'
+				]
+			],
+			'order' => [
+				'Map.name' => 'asc'
+			],
+			'contain' => [
+				'Container' => [
+					'fields' => [
+						'Container.id'
+					]
+				]
+			],
+			'group' => 'Map.id'
+		];
+
 		if(!isset($this->Paginator->settings['conditions'])){
 			$this->Paginator->settings['conditions'] = [];
 		}
-		$this->Paginator->settings['order'] = ['Map.name' => 'asc'];
-		$all_maps = $this->Paginator->paginate();
+		
+		if($this->isApiRequest()){
+			unset($query['limit']);
+			$all_maps = $this->Map->find('all', $query);
+		}else{
+			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+			$all_maps = $this->Paginator->paginate();
+		}
+
 		$this->set('all_maps', $all_maps);
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_maps']);
@@ -108,6 +141,14 @@ class MapsController extends MapModuleAppController {
 		]);
 
 		$map = $this->Map->findById($id);
+
+		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+
+		if(!$this->allowedByContainerId($containerIdsToCheck)){
+			$this->render403();
+			return;
+		}
+
 		//'Tenant.description' <-> Container.name
 		$tenants = Set::combine($this->Tenant->find('all',[
 
@@ -159,6 +200,13 @@ class MapsController extends MapModuleAppController {
 			throw new NotFoundException(__('Invalid Map'));
 		}
 
+		$map = $this->Map->findById($id);
+		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+		if(!$this->allowedByContainerId($containerIdsToCheck)){
+			$this->render403();
+			return;
+		}
+
 		if(!$this->request->is('post')){
 			throw new MethodNotAllowedException();
 		}
@@ -195,6 +243,13 @@ class MapsController extends MapModuleAppController {
 					]
 				],
 			]);
+
+			$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+			if(!$this->allowedByContainerId($containerIdsToCheck)){
+				$this->render403();
+				return;
+			}
+
 			if($this->Map->delete($map['Map']['id'], true)){
 			/*	$changelog_data = $this->Changelog->parseDataForChangelog(
 					$this->params['action'],
