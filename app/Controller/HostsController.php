@@ -156,7 +156,6 @@ class HostsController extends AppController{
 				'HostsToContainers.container_id' => $this->MY_RIGHTS,
 			];
 		}
-
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
 
 		$childrenContainer = [];
@@ -181,7 +180,6 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
 
-		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
 			'fields' => [
@@ -192,6 +190,7 @@ class HostsController extends AppController{
 				'Host.active_checks_enabled',
 				'Host.address',
 				'Host.satellite_id',
+				'Host.container_id',
 				'Hoststatus.current_state',
 				'Hoststatus.last_check',
 				'Hoststatus.next_check',
@@ -249,6 +248,16 @@ class HostsController extends AppController{
 			$all_hosts = $this->Paginator->paginate();
 		}
 
+		foreach($all_hosts as $key => $hostData){
+			//shared hosts without primary container
+			$all_hosts[$key]['restrictedViewSharing'] = !empty(
+				array_diff(
+					Hash::extract($hostData, 'Container.{n}[id!='.$hostData['Host']['container_id'].'].id'),
+					$this->MY_RIGHTS
+				)
+			);
+			$all_hosts[$key]['restrictedViewSharing'] = false;
+		}
 		//distributed monitoring stuff
 		$masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 		$SatelliteModel = false;
@@ -605,8 +614,8 @@ class HostsController extends AppController{
 		//get sharing containers
 		$sharingContainers = $this->getSharingContainers($host['Host']['container_id'], false);
 		//get the already shared containers
-		if(is_array($host['Containers']) && !empty($host['Containers'])){
-			$sharedContainers = array_diff($host['Containers'],[$host['Host']['container_id']]);
+		if(is_array($host['Container']) && !empty($host['Container'])){
+			$sharedContainers = array_diff($host['Container'],[$host['Host']['container_id']]);
 		}else{
 			$sharedContainers = [];
 		}

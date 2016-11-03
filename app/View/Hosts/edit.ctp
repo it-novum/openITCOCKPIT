@@ -144,8 +144,7 @@
 											)
 										);
 									endif;
-
-									if($this->Acl->hasPermission('sharing')) {
+									if($this->Acl->hasPermission('sharing') && empty(array_diff($sharedContainers, array_keys($sharingContainers)))) {
 										echo $this->Form->input('shared_container', [
 												'options' => $this->Html->chosenPlaceholder($sharingContainers),
 												'multiple' => true,
