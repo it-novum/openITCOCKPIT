@@ -98,7 +98,7 @@ class MapeditorsController extends MapModuleAppController {
 			$elementIdsToDelete = $this->Mapeditor->getObsoleteIds($map,$request);
 
 			foreach ($elementIdsToDelete as $mapElementType => $ids) {
-				if(!empty($ids)){
+				if(!empty($ids) && $mapElementType !== 'Container'){
 					$this->{$mapElementType}->deleteAll([
 						$mapElementType.'.map_id' => $map['Map']['id'],
 						$mapElementType.'.id' => $ids
