@@ -157,6 +157,7 @@ class HostsController extends AppController{
 			];
 		}
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
+		$userRights = $this->MY_RIGHTS;
 
 		$childrenContainer = [];
 		if(isset($this->request->params['named']['BrowserContainerId'])){
@@ -248,16 +249,6 @@ class HostsController extends AppController{
 			$all_hosts = $this->Paginator->paginate();
 		}
 
-		foreach($all_hosts as $key => $hostData){
-			//shared hosts without primary container
-			$all_hosts[$key]['restrictedViewSharing'] = !empty(
-				array_diff(
-					Hash::extract($hostData, 'Container.{n}[id!='.$hostData['Host']['container_id'].'].id'),
-					$this->MY_RIGHTS
-				)
-			);
-			$all_hosts[$key]['restrictedViewSharing'] = false;
-		}
 		//distributed monitoring stuff
 		$masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 		$SatelliteModel = false;
@@ -275,7 +266,7 @@ class HostsController extends AppController{
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username']));
+		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
