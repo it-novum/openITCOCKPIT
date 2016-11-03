@@ -50,10 +50,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 	_initialize: function() {
 		var self = this;
-		$('.background').click(function(){
-			self.changeBackground({el:this});
-		});
 
+		this.Ajaxloader.setup();
+
+		$(document).on('click', '.background', function(){
+			self.changeBackground({el:this});
+		})
 
 		$('#autohide_menu').change(function(){
 			if($(this).prop('checked')){
@@ -370,10 +372,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			acceptedFiles: 'image/*', //mimetypes
 			paramName: "file",
 			success: function(obj){
-				console.log(obj);
-				//@TODO resfresh thumbnails after Uploaded succeeded
-				console.log(self);
-				//self.MapEdit.refreshThumbnails();
+				self.refreshBackgroundThumbnails();
 			},
 			error:function(error,errorMessage,xhr){
 				console.log(error);
@@ -385,6 +384,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		//prevent Dropzone from throwing unnecessary errors (more than one instance...)
 		Dropzone.autoDiscover = false;
 		$('.background-dropzone').dropzone(dropzoneOptObj);
+
+
 
 
 		/*
@@ -701,7 +702,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			type = 'service';
 			$('#addGadget_'+type).show();
 			self.currentGadget['type'] = type;
-			
+
 			if(self.currentGadget['gadget'] == "RRDGraph"){
 				var $form = $('#addGadget_'+type).find('form');
 				$form.find('.rrdBackground').removeClass('hidden');
@@ -1813,7 +1814,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				$('#GadgetWizardModal').modal('show');
 				$('.chosen-container').css('width', '100%');
 
-				
+
 
 				this.currentGadget = [];
 				this.currentGadget = drop;
@@ -2107,4 +2108,32 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 	capitaliseFirstLetter:function(string){
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	},
+
+
+	refreshBackgroundThumbnails:function(){
+		var self = this;
+		//get new background list by ajax
+		$.ajax({
+			url: "/map_module/mapeditors/getBackgroundImages",
+			type: "POST",
+			dataType: "json",
+			error: function(){},
+			success: function(response){
+				var list = self.buildNewBackgroundThumbs(response);
+				console.log(list);
+				$('#background-panel').empty().html(list);
+			}.bind(self)
+		});
+	},
+
+
+	buildNewBackgroundThumbs:function(bgs){
+		var backgrounds = bgs.backgrounds;
+		var html = '';
+		for(var bg in backgrounds.files){
+			var path  = backgrounds.thumbPath+'/thumb_'+backgrounds.files[bg];
+			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
+		}
+		return html;
+	}
 });

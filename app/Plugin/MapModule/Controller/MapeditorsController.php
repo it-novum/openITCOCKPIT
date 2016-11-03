@@ -137,6 +137,9 @@ class MapeditorsController extends MapModuleAppController {
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
+
+		$this->Frontend->setJson('backgroundThumbs', $backgroundThumbs);
+
 		$this->set(compact([
 			'map',
 			'maps',
@@ -149,6 +152,12 @@ class MapeditorsController extends MapModuleAppController {
 			'iconSets',
 			'icons'
 		]));
+	}
+
+	public function getBackgroundImages(){
+		$this->autoRender = false;
+		$bgs = $this->Background->findBackgrounds();
+		echo json_encode($bgs);
 	}
 
 	public function view($id = null){
