@@ -612,6 +612,7 @@ class HostsController extends AppController{
 		}
 		$this->set(compact([
 			'host',
+			'_host',
 			'containers',
 			'timeperiods',
 			'commands',

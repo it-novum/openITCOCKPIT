@@ -37,7 +37,7 @@ $notification_settings = [
 	'notify_on_flapping' => 'fa-random',
 	'notify_on_downtime' => 'fa-clock-o'
 ];
-$hostSharingPermissions =  new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $host['Container'], $MY_RIGHTS);
+$hostSharingPermissions =  new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $_host['Container'], $MY_RIGHTS);
 $allowSharing = $hostSharingPermissions->allowSharing();
 ?>
 <div class="row">
