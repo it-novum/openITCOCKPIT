@@ -321,12 +321,11 @@
 						<?php $uuid = UUID::v4(); ?>
 						<!-- Maptext -->
 						<div id="<?php echo $uuid; ?>" class="textContainer dragElement" style="position:absolute;top:<?php echo $text['y']; ?>px; left: <?php echo $text['x']; ?>px;">
-							<span id="spanText_<?php echo $uuid; ?>" class="textElement" style="position:absolute;font-size:<?php echo $text['font_size']; ?>px;"><?php echo $text['text'];?></span>
+							<div id="spanText_<?php echo $uuid; ?>" class="textElement" style="position:absolute;font-size:11px;"><?php echo $text['text'];?></div>
 							<input type="hidden" data-key="id" name="data[Maptext][<?php echo $uuid; ?>][id]" value="<?php echo $text['id']; ?>" />
 							<input type="hidden" data-key="x" name="data[Maptext][<?php echo $uuid; ?>][x]" value="<?php echo $text['x']; ?>" />
 							<input type="hidden" data-key="y" name="data[Maptext][<?php echo $uuid; ?>][y]" value="<?php echo $text['y']; ?>" />
 							<input type="hidden" data-key="text" name="data[Maptext][<?php echo $uuid; ?>][text]" value="<?php echo $text['text']; ?>" />
-							<input type="hidden" data-key="font_size" name="data[Maptext][<?php echo $uuid; ?>][font_size]" value="<?php echo $text['font_size']; ?>" />
 						</div>
 					<?php endforeach; ?>
 				</div>
@@ -1011,22 +1010,138 @@
 						</div>
 						<div class="modal-body">
 							<div id="textWizardModalContent">
-								<div class="row">
+								<div id="insert-link-area" class="row">
+									<?php
+									echo $this->Form->input('insert-link-type', [
+										'options' => [__('Other map'), __('External link')],
+										'data-placeholder' => __('Please select...'),
+										'label' => ['text' => __('Link type')],
+										'class' => 'chosen col',
+										'selected' => 0,
+										'multiple' => false,
+									]);
+									?>
+									<div class="col-lg-12 margin-top-5 no-padding" id="link-map-area">
+										<?php
+										echo $this->Form->input('insert-link-map', [
+												'options' => $this->Html->chosenPlaceholder($mapList),
+												'data-placeholder' => __('Please select...'),
+												'multiple' => false,
+												'class' => 'chosen col margin-top-5',
+												'style' => 'width: 100%',
+												'label' => __('Map'),
+												'element-property' => 'chosen',
+											]
+										);
+										?>
+									</div>
+									<div class="col-lg-12 margin-top-5 no-padding" id="link-url-area" style="display:none;">
+										<?php echo $this->Form->input('insert-link-url', ['label' => __('URL:'), 'placeholder' => 'http://www.openitcockpit.org', 'style="width: 100%;"', 'class' => 'margin-top-5']); ?>
+									</div>
+									<?php echo $this->Form->input('insert-link-description', ['label' => __('Description:'), 'placeholder' => __('Official page for openITCOCKPIT'), 'style="width: 100%;"', 'class' => 'margin-top-5']); ?>
+									<div class="col-lg-12 margin-top-5 no-padding">
+										<?php echo $this->Form->fancyCheckbox('insert-link-tab', [
+											'caption' => __('Open in a new tab'),
+											'wrapGridClass' => 'col col-md-1',
+											'captionGridClass' => 'col col-md-2',
+											'captionClass' => 'control-label text-left',
+											'checked' => 1,
+										]); ?>
+									</div>
+									<div class="col-lg-12 text-right margin-top-5">
+										<button id="cancel-insert-link" type="button" class="btn btn-default"><?php echo __('Cancel');?></button>
+										<button id="perform-insert-link" type="button" class="btn btn-primary"><?php echo __('Insert'); ?></button>
+									</div>
+								</div>
+								<div id="insert-text-area"  class="row">
 									<div class="col-xs-12" id="editText">
 										<div class="padding-top-20"></div>
 										<?php
 										echo $this->Form->create('editText', [
 											'class' => 'form-horizontal clear'
 										]);
-										echo $this->Form->input('text', ['label' => __('Text'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'text', 'content' => 'text', 'placeholder' => __('Please Enter your Text')]);
-										echo $this->Form->input('font_size', ['value' => 12, 'label' => __('Font Size'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'font_size', 'content' => 'font_size']);
+										?>
+										<div class="jarviswidget" >
+											<header>
+												<div class="widget-toolbar pull-left" role="menu">
+													<div class="btn-group">
+														<a href="javascript:void(0);" class="btn btn-xs btn-default"><i class="fa fa-font"></i> <?php echo __('Font size'); ?></a>
+														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-xs btn-default dropdown-toggle"><span class="caret"></span></a>
+														<ul class="dropdown-menu">
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="xx-small" ><?php echo __('Smallest'); ?></a>
+															</li>
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="x-small" ><?php echo __('Smaller'); ?></a>
+															</li>
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="small" ><?php echo __('Small'); ?></a>
+															</li>
+															<li class="divider"></li>
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="large" ><?php echo __('Big'); ?></a>
+															</li>
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="x-large" ><?php echo __('Bigger'); ?></a>
+															</li>
+															<li>
+																<a href="javascript:void(0);" select-fsize="true" fsize="xx-large" ><?php echo __('Biggest'); ?></a>
+															</li>
+														</ul>
+													</div>
+													<div class="widget-toolbar pull-left" style="border:0px;" role="menu">
+														<a href="javascript:void(0);" class="dropdown-toggle color-box selector bg-color-darken" id="currentColor" color="#404040" current-color="bg-color-darken" data-toggle="dropdown"></a>
+														<ul class="dropdown-menu arrow-box-up-right pull-right color-select">
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Green Grass'); ?>" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-green" select-color="true" color="#356E35" class="bg-color-green"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Dark Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenDark" select-color="true" color="#496949" class="bg-color-greenDark"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Light Green'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenLight" select-color="true" color="#71843F" class="bg-color-greenLight"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Purple'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-purple" select-color="true" color="#6E587A" class="bg-color-purple"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Magenta'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-magenta" select-color="true" color="#6E3671" class="bg-color-magenta"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Pink'); ?>" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-pink" select-color="true" color="#AC5287" class="bg-color-pink"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Fade Pink'); ?>" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-pinkDark" select-color="true" color="#A8829F" class="bg-color-pinkDark"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Light Blue'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blueLight" select-color="true" color="#92A2A8" class="bg-color-blueLight"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Teal'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-teal" select-color="true" color="#568A89" class="bg-color-teal"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Ocean Blue'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blue" select-color="true" color="#57889C" class="bg-color-blue"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Night Sky'); ?>" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blueDark" select-color="true" color="#4C4F53" class="bg-color-blueDark"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Night'); ?>" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-darken" select-color="true" color="#404040" class="bg-color-darken"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Day Light'); ?>" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-yellow" select-color="true" color="#B09B5B" class="bg-color-yellow"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Orange'); ?>" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-orange" select-color="true" color="#C79121" class="bg-color-orange"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Dark Orange'); ?>" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-orangeDark" select-color="true" color="#A57225" class="bg-color-orangeDark"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Red Rose'); ?>" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-red" select-color="true" color="#A90329" class="bg-color-red"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Light Red'); ?>" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-redLight" select-color="true" color="#A65858" class="bg-color-redLight"></span></li>
+															<li style="display: inline-block; margin:0; float: none;"><span data-original-title="<?php echo __('Purity'); ?>" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-white" select-color="true" color="#FFFFFF" class="bg-color-white"></span></li>
+														</ul>
+													</div>
+													<span class="padding-left-10"></span>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="bold"><i class="fa fa-bold"></i></a>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="italic"><i class="fa fa-italic"></i></a>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="underline"><i class="fa fa-underline"></i></a>
+													<span class="padding-left-10"></span>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="left"><i class="fa fa-align-left"></i></a>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="center"><i class="fa fa-align-center"></i></a>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="right"><i class="fa fa-align-right"></i></a>
+													<a href="javascript:void(0);" class="btn btn-default" wysiwyg="true" task="justify"><i class="fa fa-align-justify"></i></a>
+													<span class="padding-left-10"></span>
+													<a href="javascript:void(0);" class="btn btn-default" id="insert-link"><i class="fa fa-link"></i></a>
+												</div>
+												<div class="widget-toolbar pull-right" role="menu"></div>
+											</header>
+											<div>
+												<div class="widget-body">
+													<textarea class="form-control" style="width: 100%; height: 200px;" id="docuText"></textarea>
+												</div>
+											</div>
+										</div>
+										<?php
+//										echo $this->Form->input('text', ['label' => __('Text'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'text', 'content' => 'text', 'placeholder' => __('Please Enter your Text')]);
+//										echo $this->Form->input('font_size', ['value' => 12, 'label' => __('Font Size'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'font_size', 'content' => 'font_size']);
 										echo $this->Form->end();
 										?>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="modal-footer textWizardFooter">
+						<div id="insert-modal-footer" class="modal-footer textWizardFooter">
 							<button id="deleteTextPropertiesBtn" type="button" class="btn btn-danger" style="display:none;"><?php echo __('Delete'); ?></button>
 							<button id="dismissTextProperties" type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close');?></button>
 							<button id="saveTextPropertiesBtn" type="button" class="btn btn-primary"><?php echo __('Save Text'); ?></button>
