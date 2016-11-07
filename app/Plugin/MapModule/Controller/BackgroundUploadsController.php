@@ -47,7 +47,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 			$backgroundFolder = new Folder($backgroundImgDirectory);
 
-			//this name should be also stored in the Database 
+			//this name should be also stored in the Database
 			//-> displayed name when you choose the background
 			// must be unique
 			//$_FILES['file']['name'];
@@ -68,7 +68,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 			}else{
 				return false;
 			}
-			
+
 		}else{
 			echo 'there is no file to store';
 		}
@@ -95,7 +95,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 		switch($imgtype){
 			// 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-			case 1: 
+			case 1:
 				$srcImg = imagecreatefromgif($file);
 				break;
 			case 2:
@@ -111,7 +111,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 		//calculate the new height or width and keep the aspect ration
 		if($aspectRatio == 1){
-			//source image X = Y 
+			//source image X = Y
 			$newWidth = $thumbnailWidth;
 			$newHeight = $thumbnailHeight;
 		}elseif($aspectRatio > 1) {
@@ -126,17 +126,17 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 		$destImg = imagecreatetruecolor($newWidth, $newHeight);
 		$transparent = imagecolorallocatealpha( $destImg, 0, 0, 0, 127 );
-		imagefill( $destImg, 0, 0, $transparent); 
+		imagefill( $destImg, 0, 0, $transparent);
 		imageCopyResized($destImg, $srcImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-		imagealphablending($destImg, false); 
-		imagesavealpha($destImg,true); 
+		imagealphablending($destImg, false);
+		imagesavealpha($destImg,true);
 
 		if(!$isShell){
 			header('Content-Type: image/'.$obj['fileExtension']);
 		}
 		switch($imgtype){
 			// 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-			case 1: 
+			case 1:
 				imagegif($destImg, $folderInstance->path.DS. 'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
 				break;
 			case 2:
@@ -152,8 +152,41 @@ class BackgroundUploadsController extends MapModuleAppController {
 		imagedestroy($destImg);
 	}
 
-	public function delete(){
+	/**
+	 * delete Background image
+	 * base64 encoded due to a encoding issue
+	 * @param $filename the uuid filename with file extension
+	 */
+	public function delete($filename){
+		//delete a background including its thumbnail
+		try{
+			$filename = base64_decode($filename);
+			//define background image directory
+			$backgroundImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
 
+			//check if bg image exists
+			if(!file_exists($backgroundImgDirectory. DS .$filename)){
+				throw new Exception($backgroundImgDirectory. DS .$filename. ' cannot be found');
+			}
+
+			//check if thumbnail exists
+			if(!file_exists($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename)){
+				throw new Exception($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename. ' cannot be found');
+			}
+
+			if(!unlink($backgroundImgDirectory. DS .$filename)){
+				//background image could not be deleted
+				throw new Exception('Background image could not be deleted');
+			}
+
+			if(!unlink($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename)){
+				//thumbnail image could not be deleted
+				throw new Exception('Thumbnail image could not be deleted');
+			}
+			echo 'Background successfully deleted!';
+		}catch(Exception $e){
+			echo $e->getMessage();
+		}
 	}
 
 }

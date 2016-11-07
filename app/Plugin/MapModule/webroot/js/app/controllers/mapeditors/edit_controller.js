@@ -55,7 +55,32 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 		$(document).on('click', '.background', function(){
 			self.changeBackground({el:this});
-		})
+		});
+
+		//on hover on background class show delete button
+		$(document).on('mouseenter','.thumbnail',function(){
+			//append remove background button
+			$(this).append('<div class="deleteBackgroundBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
+		});
+
+		$(document).on('click','.deleteBackgroundBtn',function() {
+			var filename = $(this).parent().find('img').attr('filename');
+			//write filename to modal dialog
+			$('#backgoundFilename').val(filename);
+			$('#deleteBackgroundModal').modal('show');
+
+		});
+
+		$('#confirmDeleteBackgroundBtn').click(function(){
+			var filename = $('#backgoundFilename').val();
+			self.deleteBackground(filename);
+			$('#deleteBackgroundModal').modal('hide');
+		});
+
+		$(document).on('mouseleave','.thumbnail',function(){
+			//delete remove background button
+			$(this).children('.deleteBackgroundBtn').remove();
+		});
 
 		$('#autohide_menu').change(function(){
 			if($(this).prop('checked')){
@@ -2120,7 +2145,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			error: function(){},
 			success: function(response){
 				var list = self.buildNewBackgroundThumbs(response);
-				console.log(list);
 				$('#background-panel').empty().html(list);
 			}.bind(self)
 		});
@@ -2135,5 +2159,22 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
 		}
 		return html;
+	},
+
+
+	deleteBackground:function(filename){
+		var self = this;
+		//ajax call to delete background
+		$.ajax({
+			url: "/map_module/BackgroundUploads/delete/"+encodeURIComponent(btoa(filename)),
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(response){
+				self.refreshBackgroundThumbnails();
+			}.bind(self)
+		});
+		//also remove the background from the editor
+		self.changeBackground({remove:true});
 	}
 });

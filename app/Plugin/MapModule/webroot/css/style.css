@@ -134,9 +134,9 @@
 	height: 80px!important;
 	width:80px!important;
     white-space: nowrap!important;
-    
-    text-align: center; 
-    margin: 1em 0!important;*/
+
+    text-align: center;
+    margin: 1em 0!important;
 }
 
 .valignHelper{
@@ -158,4 +158,13 @@
 	width:80px;
 	border:1px solid blue;
 	display: inline-block;
+}
+
+.deleteBackgroundBtn{
+	height: 20px;
+	width: 20px;
+	position: absolute;
+	top: 0px;
+	right: 20px;
+	color: grey;
 }

@@ -1035,6 +1035,35 @@
 				</div>
 			</div>
 			<!-- Text wizard Modal end -->
+			<!-- Delete Background Modal Dialog -->
+			<div class="modal fade" id="deleteBackgroundModal" tabindex="-1" role="dialog" aria-labelledby="deleteBackgroundLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"><?php echo __('Close'); ?></span></button>
+							<h4 class="modal-title" id="deleteBackgroundLabel"><?php echo __('Delete Background image'); ?></h4>
+						</div>
+						<input type="hidden" id="backgoundFilename" value=""/>
+						<div class="modal-body">
+							<div id="deleteBackgroundModalContent">
+								<div class="row">
+									<div class="col-xs-12" id="editText">
+										<div class="padding-top-20"></div>
+										<?php
+											echo __('Do you really want to delete this Background image? It could be used in multiple maps so please check if can be deleted');
+										?>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer deleteBackgroundFooter">
+							<button id="confirmDeleteBackgroundBtn" type="button" class="btn btn-danger" ><?php echo __('Delete'); ?></button>
+							<button id="dismissDeleteBackground" type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Cancel');?></button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Delete Background Modal end -->
 		</div>
 	</div>
 </div>
