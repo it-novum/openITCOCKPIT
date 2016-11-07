@@ -109,6 +109,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 									if($hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
 										echo $this->Form->input('container_id', [
 												'options' => $containers,
+												'oldValue' =>  $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'multiple' => false,
 												'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'class' => 'chosen',
@@ -126,7 +127,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 												'style' => 'width: 100%',
 												'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-												'disabled' => True
+												'disabled' => true
 											]
 										);
 										echo $this->Form->input('container_id', array(
@@ -138,10 +139,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 										?>
 										<div class="form-group required">
 											<label class="col col-md-1 control-label" >
-												<i class="fa fa-info-circle text-info" title="<?php echo __("Objects in /root can't be moved to other containers");?>"></i>
 												<?php echo __('Container'); ?>
 											</label>
-											<div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly></div>
+											<div class="col col-xs-10 required">
+												<input type="text" value="/root" class="form-control" readonly>
+												<span class="help-block"><?php echo __("Objects in /root can't be moved to other containers"); ?></span>
+											</div>
 										</div>
 										<?php
 										echo $this->Form->input('container_id', array(
@@ -171,7 +174,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 
 									echo $this->Form->input('hosttemplate_id', [
 											'label' => [
-												'text' => '<a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '"><i class="fa fa-cog text-info"></i> </a>' . __('Hosttemplate'),
+												'text' => '<a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Hosttemplate'),
 												'class' => 'col-xs-1 col-md-1 col-lg-1'],
 											'options' => $this->Html->chosenPlaceholder($_hosttemplates),
 											'data-placeholder' => __('Please select...'),
