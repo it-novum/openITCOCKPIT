@@ -24,23 +24,23 @@
 
 App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 
-	
+
 	components: ['Ajaxloader'],
-	
+
 	_initialize: function() {
 		this.Ajaxloader.setup();
 		var self = this;
-		
+
 		/*
 		 * Bind click event for resetZoom
 		 */
-		
+
 		$('.resetZoom').click(function(){
 			var $this = $(this);
 			self.resetZoom($this.attr('start'), $this.attr('end'), $this.attr('ds'), $this.attr('service_id'), $this);
 			$this.parent().hide();
 		});
-		
+
 		/*
 		 * Bind load event on image to hide aja loader
 		 */
@@ -48,7 +48,7 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 			var $img = $(this);
 			$img.parent().parent().find('.grapherLoader').hide();
 		});
-		
+
 		/*
 		 * Bind right click for zoom out on graph
 		 */
@@ -58,31 +58,31 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 				var $img = $(this);
 				var start = parseInt($img.attr('start'));
 				var end = parseInt($img.attr('end'));
-				
+
 				var newGraphStart = start - (end - start) * 0.5;
 				var newGraphEnd = end + (end - start) * 0.5;
-				
+
 				if(newGraphStart < 0){
 					newGraphStart = 0;
 				}
-				
+
 				if(newGraphEnd < 0){
 					newGraphEnd = 0;
 				}
-				
+
 				$img.parent().parent().parent().parent().parent().find('.graphTime').html(date('d.m.Y H:i', newGraphStart) + ' - ' + date('d.m.Y H:i', newGraphEnd));
 				$img.parent().parent().parent().parent().parent().find('.widget-toolbar').show();
-				
+
 				$img.attr('start', newGraphStart);
 				$img.attr('end', newGraphEnd);
 				$img.parent().parent().find('.grapherLoader').show();
 				$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + parseInt(newGraphStart) + '/' + parseInt(newGraphEnd));
-				
-				return false; 
+
+				return false;
 			}
-			return true; 
-		}); 
-		
+			return true;
+		});
+
 		/*
 		 * Create imgAreaSelect ongraph images
 		 */
@@ -104,50 +104,51 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 			}.bind(self));
 		}.bind(self));
 	},
-	
+
 	startZoom: function(img, selection){
+
 		var $img = $(img);
 		//links muss man  67px abziehen wegen dem rand links einheit + skala
 		//rechts muss man 27px abziehen
-		
+
 		var minX = Math.min(selection.x1, selection.x2);
 		var maxX = Math.max(selection.x1, selection.x2);
-		
+
 		if(minX < 0){
 			minX = 0;
 		}
-		
+
 		if(maxX > ($img.innerWidth() -67 - 27)){
 			maxX = ($img.innerWidth() -67 - 27);
 		}
-		
 		var start = parseInt($img.attr('start'));
 		var end = parseInt($img.attr('end'));
-		var onePixel = (end - start) / ($img.innerWidth() -67 - 27); //Represents n if seconds for 1 pixel ion graph
-		
+
+		var onePixel = ((end - start) / ($img.innerWidth() -67 - 27)); //Represents n if seconds for 1 pixel ion graph
+
 		var newGraphStart = Math.round(start + ((minX-67) * onePixel));
-		var newGraphEnd = Math.round(end - (($img.innerWidth() - 67 - 27) - (maxX-67)) * onePixel);
-		
+
+		if(maxX >= $img.innerWidth()-67-27){
+			var newGraphEnd = Math.round(end);
+		}else{
+			var newGraphEnd = Math.round(end - (($img.innerWidth() - 67 - 27) - maxX) * onePixel);
+		}
+
 		//Refresh time of graph for humans
-		$img.parent().parent().parent().parent().parent().find('.graphTime').html(date('d.m.Y H:i', newGraphStart) + ' - ' + date('d.m.Y H:i', newGraphEnd));
-		$img.parent().parent().parent().parent().parent().find('.widget-toolbar').show();
-		
+		$img.parents('.jarviswidget').find('.graphTime').html(date('d.m.Y H:i', newGraphStart) + ' - ' + date('d.m.Y H:i', newGraphEnd));
+		$img.parents('.jarviswidget').find('.widget-toolbar').show();
+
 		//Load new image
 		$img.attr('start', newGraphStart);
 		$img.attr('end', newGraphEnd);
 		$img.parent().parent().find('.grapherLoader').show();
 		$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + newGraphStart + '/' + newGraphEnd);
-		
-		
-		//console.log(date('d.m.Y H:i', newGraphStart));
-		//console.log(date('d.m.Y H:i', newGraphEnd));
-		
 	},
-	
+
 	resetZoom: function(start, end, ds, service_id, objectThis){
 		objectThis.parent().parent().find('.graphTime').html(date('d.m.Y H:i', start) + ' - ' + date('d.m.Y H:i', end));
 		objectThis.parent().parent().parent().find('.grapherLoader').show();
-		
+
 		var $img = objectThis.parent().parent().parent().find('.zoomSelection');
 		$img.attr('start', start);
 		$img.attr('end', end);
