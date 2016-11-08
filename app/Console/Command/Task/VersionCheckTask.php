@@ -23,6 +23,8 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
+use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class VersionCheckTask extends AppShell{
 
@@ -47,29 +49,13 @@ class VersionCheckTask extends AppShell{
 		$this->loadModel('Register');
 		$this->loadModel('Proxy');
 
-		$license = $this->Register->find('first');
-		if(ENVIRONMENT === Environments::DEVELOPMENT){
-			if(!empty($license)){
-				$url = 'http://172.16.2.87/modules/fetch/'.$license['Register']['license'].'.json';
-			}else{
-				$url = 'http://172.16.2.87/modules/fetch/.json';
-			}
-
-			$options = [
-				'CURLOPT_SSL_VERIFYPEER' => false,
-				'CURLOPT_SSL_VERIFYHOST' => false,
-			];
-			$http = new Http($url, $options, $this->Proxy->getSettings());
-
-		}else{
-			if(!empty($license)){
-				$url = 'https://packagemanager.it-novum.com/modules/fetch/'.$license['Register']['license'].'.json';
-			}else{
-				$url = 'https://packagemanager.it-novum.com/modules/fetch/.json';
-			}
-
-			$http = new Http($url, [], $this->Proxy->getSettings());
-		}
+		$License = new License($this->Register->find('first'));
+		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+		$http = new Http(
+			$packagemanagerRequestBuilder->getUrl(),
+			$packagemanagerRequestBuilder->getOptions(),
+			$this->Proxy->getSettings()
+		);
 
 		//Send https request
 		$http->sendRequest();
