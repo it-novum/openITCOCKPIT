@@ -75,6 +75,9 @@ class HostSharingPermissions{
 			if($this->isSharedToNotPermittedContainers()){
 				return false;
 			}
+			if($this->hostPrimaryContaineIsNotPermitted()===true){
+				return false;
+			}
 		}
 		return true;
 	}
@@ -97,6 +100,13 @@ class HostSharingPermissions{
 			if(in_array($hostSharedContainerId, $this->userContainerIds) === false){
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public function hostPrimaryContaineIsNotPermitted(){
+		if(!in_array($this->hostContainerId, $this->userContainerIds)){
+			return true;
 		}
 		return false;
 	}

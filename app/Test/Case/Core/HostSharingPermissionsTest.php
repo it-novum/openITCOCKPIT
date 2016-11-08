@@ -95,6 +95,12 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
 		$this->assertFalse($hostSharingPermissions->allowSharing());
 	}
 
+	public function testAllowSharingIfPrimaryContainerHostNotPermittedForRestrictedUsert(){
+		$nonRootHost = $this->getHostNotInRootButSharedToRoot();
+                $hostSharingPermissions = new HostSharingPermissions($nonRootHost['Host']['container_id'],  false, $nonRootHost['Container'], [14, 20]);
+                $this->assertFalse($hostSharingPermissions->allowSharing());
+        }
+
 	private function getHostNotRootContainerSharedToNonRootContainer(){
 		$data = [
 			'Host' => [
