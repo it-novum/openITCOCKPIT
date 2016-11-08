@@ -31,12 +31,6 @@ App::uses('ValidationCollection', 'Lib');
  */
 class Host extends AppModel{
 	public $hasAndBelongsToMany = [
-		'Containers' => [
-			'className' => 'Container',
-			'joinTable' => 'hosts_to_containers',
-			'foreignKey' => 'host_id',
-			'associationForeignKey' => 'container_id',
-		],
 		'Container' => [
 			'className' => 'Container',
 			'joinTable' => 'hosts_to_containers',
@@ -576,6 +570,7 @@ class Host extends AppModel{
 				'Host.id' => $id
 			],
 			'contain' => [
+				'Container',
 				'CheckPeriod',
 				'NotifyPeriod',
 				'CheckCommand',
@@ -615,11 +610,6 @@ class Host extends AppModel{
 						'id', 'name'
 					]
 				],
-				'Containers' => [
-					'fields' => [
-						'id'					]
-				],
-
 				'Contactgroup' => [
 					'fields' => ['id'],
 					'Container' => [
@@ -666,7 +656,7 @@ class Host extends AppModel{
 		$host = [
 			'Host' => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), Set::classicExtract($host['Hosttemplate'], '{(' . implode('|', array_keys(Hash::diff($host['Host'], Hash::filter($host['Host'], ['Host', 'filterNullValues'])))) . ')}')),
 			'Contact' => Hash::extract((($host['Host']['own_contacts']) ? $host['Contact'] : $host['Hosttemplate']['Contact']), '{n}.id'),
-			'Containers' => Hash::extract($host['Containers'], '{n}.id'),
+			'Container' => Hash::extract($host['Container'], '{n}.id'),
 			'Contactgroup' => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
 			'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
 			'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],

@@ -22,20 +22,23 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
-	$flapDetection_settings = [
-		'flap_detection_on_up' => 'fa-square txt-color-greenLight',
-		'flap_detection_on_down' => 'fa-square txt-color-redLight',
-		'flap_detection_on_unreachable' => 'fa-square txt-color-blueDark',
-	];
-	$notification_settings = [
-		'notify_on_recovery' => 'fa-square txt-color-greenLight',
-		'notify_on_down' => 'fa-square txt-color-redLight',
-		'notify_on_unreachable' => 'fa-square txt-color-blueDark',
-		'notify_on_flapping' => 'fa-random',
-		'notify_on_downtime' => 'fa-clock-o'
-	];
+
+use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
+
+$flapDetection_settings = [
+	'flap_detection_on_up' => 'fa-square txt-color-greenLight',
+	'flap_detection_on_down' => 'fa-square txt-color-redLight',
+	'flap_detection_on_unreachable' => 'fa-square txt-color-blueDark',
+];
+$notification_settings = [
+	'notify_on_recovery' => 'fa-square txt-color-greenLight',
+	'notify_on_down' => 'fa-square txt-color-redLight',
+	'notify_on_unreachable' => 'fa-square txt-color-blueDark',
+	'notify_on_flapping' => 'fa-random',
+	'notify_on_downtime' => 'fa-clock-o'
+];
+$hostSharingPermissions =  new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $_host['Container'], $MY_RIGHTS);
+$allowSharing = $hostSharingPermissions->allowSharing();
 ?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -103,9 +106,10 @@
 										]
 									);
 
-									if($hasRootPrivileges):
+									if($hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
 										echo $this->Form->input('container_id', [
 												'options' => $containers,
+												'oldValue' =>  $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'multiple' => false,
 												'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
 												'class' => 'chosen',
@@ -123,7 +127,7 @@
 												'style' => 'width: 100%',
 												'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 												'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-												'disabled' => True
+												'disabled' => true
 											]
 										);
 										echo $this->Form->input('container_id', array(
@@ -134,8 +138,13 @@
 									else:
 										?>
 										<div class="form-group required">
-											<label class="col col-md-1 control-label" ><?php echo __('Container'); ?></label>
-											<div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly></div>
+											<label class="col col-md-1 control-label" >
+												<?php echo __('Container'); ?>
+											</label>
+											<div class="col col-xs-10 required">
+												<input type="text" value="/root" class="form-control" readonly>
+												<span class="help-block"><?php echo __("Objects in /root can't be moved to other containers"); ?></span>
+											</div>
 										</div>
 										<?php
 										echo $this->Form->input('container_id', array(
@@ -144,8 +153,7 @@
 											)
 										);
 									endif;
-
-									if($this->Acl->hasPermission('sharing')) {
+									if($this->Acl->hasPermission('sharing') && $allowSharing) {
 										echo $this->Form->input('shared_container', [
 												'options' => $this->Html->chosenPlaceholder($sharingContainers),
 												'multiple' => true,

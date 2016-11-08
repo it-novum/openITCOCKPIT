@@ -22,8 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
+use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
+
     $this->Paginator->options(array('url' => $this->params['named']));
     $filter = "/";
     foreach($this->params->named as $key => $value){
@@ -151,6 +152,8 @@
 										<?php
 										//Better performance, than run all the Hash::extracts if not necessary
 										$hasEditPermission = false;
+										$hostSharingPermissions =  new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $host['Container'], $userRights);
+										$allowSharing = $hostSharingPermissions->allowSharing();
 										if($hasRootPrivileges === true):
 											$hasEditPermission = true;
 										else:
@@ -193,7 +196,7 @@
 																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
 															</li>
 														<?php endif;?>
-														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission):?>
+														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission && 	$allowSharing):?>
 															<li>
 																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
 															</li>
@@ -253,9 +256,16 @@
 												<?php endif;?>
 											</td>
 											<td class="text-center">
-												<?php if(count($host['Containers']) > 1): ?>
-													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
-												<?php endif; ?>
+												<?php
+												if(count($host['Container']) > 1):
+													if($allowSharing):?>
+														<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-lg "></i></a>
+													<?php
+													else:?>
+														<i class="fa fa-low-vision fa-lg txt-color-blueLight" title="<?php echo __('Restricted view');?>"></i>
+													<?php
+													endif;
+												endif; ?>
 											</td>
 											<td class="text-center">
 												<?php
