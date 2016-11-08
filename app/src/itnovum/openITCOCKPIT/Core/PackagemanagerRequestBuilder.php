@@ -58,6 +58,11 @@ class PackagemanagerRequestBuilder
 	/**
 	 * @var string
 	 */
+	private $checkLicenseUrl = '%s/licences/check/%s.json';
+
+	/**
+	 * @var string
+	 */
 	private $ENVIRONMENT;
 
 	/**
@@ -85,6 +90,17 @@ class PackagemanagerRequestBuilder
 		}
 
 		return sprintf($this->baseUrl, $this->externalAddress, $this->license);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUrlForLicenseCheck(){
+		if($this->ENVIRONMENT === \Environments::DEVELOPMENT){
+			return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
+		}
+
+		return sprintf($this->checkLicenseUrl, $this->externalAddress, $this->license);
 	}
 
 	/**
