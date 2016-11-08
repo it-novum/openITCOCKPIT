@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController{
 	public $layout = 'Admin.default';
-	public $components = ['Http', 'Session'];
+	public $components = ['Session'];
 	public $uses = ['Proxy', 'Register'];
 	//public $controllers = array('Proxy');
 	

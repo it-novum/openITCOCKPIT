@@ -28,7 +28,6 @@ App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
 App::import('Controller', 'Proxy');
-App::import('Component', 'Http');
 
 use itnovum\openITCOCKPIT\Core\Http;
 

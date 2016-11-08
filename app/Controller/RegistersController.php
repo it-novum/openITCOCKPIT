@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class RegistersController extends AppController{
 	public $layout = 'Admin.register';
-	public $components = ['Http', 'GearmanClient'];
+	public $components = ['GearmanClient'];
 	public $uses = ['Register', 'Proxy'];
 
 	public function index(){
