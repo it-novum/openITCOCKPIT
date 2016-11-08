@@ -29,6 +29,7 @@ class VersionCheckTask extends AppShell{
 	public function execute($quiet = false){
 		$this->params['quiet'] = $quiet;
 		$this->stdout->styles('green', ['text' => 'green']);
+		$this->stdout->styles('red',   ['text' => 'red']);
 		$this->out('Checking for new openITCOCKPIT Version', false);
 
 
@@ -58,7 +59,6 @@ class VersionCheckTask extends AppShell{
 				'CURLOPT_SSL_VERIFYPEER' => false,
 				'CURLOPT_SSL_VERIFYHOST' => false,
 			];
-			// $http = new HttpComponent('https://127.0.0.1/packetmanager/getPackets', $options, $this->Proxy->getSettings());
 			$http = new Http($url, $options, $this->Proxy->getSettings());
 
 		}else{
@@ -81,6 +81,10 @@ class VersionCheckTask extends AppShell{
 			if(property_exists($data, 'version')){
 				$availableVersion = $data->version;
 			}
+		}else{
+			//Force new line
+			$this->out();
+			$this->out('<red>'.$http->getLastError()['error'].'</red>');
 		}
 		return $availableVersion;
 	}

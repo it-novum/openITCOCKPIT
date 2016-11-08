@@ -69,7 +69,7 @@ class Http
 		$this->error = false;
 		$this->lastError = false;
 		$this->data = curl_exec($this->ch);
-		$this->lastError = $this->lastError();
+		$this->lastError = $this->setLastError();
 		if($this->lastError){
 			$this->error = true;
 		}
@@ -98,7 +98,7 @@ class Http
 		curl_close($this->ch);
 	}
 
-	public function lastError(){
+	public function setLastError(){
 		if(!is_resource($this->ch)){
 			return false;
 		}
@@ -114,5 +114,12 @@ class Http
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return array|bool
+	 */
+	public function getLastError(){
+		return $this->lastError;
 	}
 }
