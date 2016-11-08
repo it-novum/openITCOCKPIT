@@ -156,8 +156,8 @@ class HostsController extends AppController{
 				'HostsToContainers.container_id' => $this->MY_RIGHTS,
 			];
 		}
-
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
+		$userRights = $this->MY_RIGHTS;
 
 		$childrenContainer = [];
 		if(isset($this->request->params['named']['BrowserContainerId'])){
@@ -181,7 +181,6 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
 
-		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
 			'fields' => [
@@ -192,6 +191,7 @@ class HostsController extends AppController{
 				'Host.active_checks_enabled',
 				'Host.address',
 				'Host.satellite_id',
+				'Host.container_id',
 				'Hoststatus.current_state',
 				'Hoststatus.last_check',
 				'Hoststatus.next_check',
@@ -266,7 +266,7 @@ class HostsController extends AppController{
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username']));
+		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
@@ -605,13 +605,14 @@ class HostsController extends AppController{
 		//get sharing containers
 		$sharingContainers = $this->getSharingContainers($host['Host']['container_id'], false);
 		//get the already shared containers
-		if(is_array($host['Containers']) && !empty($host['Containers'])){
-			$sharedContainers = array_diff($host['Containers'],[$host['Host']['container_id']]);
+		if(is_array($host['Container']) && !empty($host['Container'])){
+			$sharedContainers = array_diff($host['Container'],[$host['Host']['container_id']]);
 		}else{
 			$sharedContainers = [];
 		}
 		$this->set(compact([
 			'host',
+			'_host',
 			'containers',
 			'timeperiods',
 			'commands',
