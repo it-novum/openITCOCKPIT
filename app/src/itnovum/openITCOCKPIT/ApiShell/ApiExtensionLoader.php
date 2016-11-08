@@ -33,7 +33,8 @@ class ApiExtensionLoader
      */
     private $availableModels = [
         'Systemsettings',
-        'Containers'
+        'Containers',
+        'Cronjob'
     ];
 
     /**

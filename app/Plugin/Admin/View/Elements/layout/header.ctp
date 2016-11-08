@@ -93,9 +93,9 @@
 				<span><a href="javascript:void(0);" id="localClienttime" user-timezone="<?php echo h($this->Auth->user('timezone')); ?>" timezone-offset="<?php echo h(Timezone::getUserSystemOffset($this->Auth->user('timezone'))); ?>" data-original-title="<?php echo __('Your local time'); ?>" data-placement="left" rel="tooltip" data-container="body"></a></span>
 			</div>
 			<?php
-			if(!empty(Configure::read('version')) && (version_compare($version, Configure::read('version')) > 0) && ($hasRootPrivileges === true)): ?>
+			if(version_compare($availableVersion, $installedVersion) > 0 && $hasRootPrivileges === true): ?>
 				<div class="btn-header pull-right hidden-mobile hidden-tablet">
-					<span> <a href="/packetmanager/index" data-original-title="<?php echo __('New Version!'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="txt-color-blue fa fa-fire"></i></a> </span>
+					<span> <a href="/packetmanager/index" data-original-title="<?php echo __('New version available!'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="txt-color-blue fa fa-fire"></i></a> </span>
 				</div>
 			<?php endif; ?>
 	<?php endif;?>
