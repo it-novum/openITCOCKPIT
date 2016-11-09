@@ -1625,9 +1625,23 @@ class ServicesController extends AppController{
 		}
 
 		if($this->Servicetemplate->exists($servicetemplate_id)){
-			$servicetemplate = $this->Servicetemplate->findById($servicetemplate_id);
-			// Remove ids of custom variables that if the user change them we dont overwrite the orginal custom variables form host template in the database
-			$servicetemplate['Customvariable'] = Hash::remove($servicetemplate['Customvariable'], '{n}.id');
+			$servicetemplate = $this->Servicetemplate->find('first', [
+				'conditions' => [
+					'Servicetemplate.id' => $servicetemplate_id
+				],
+				'recursive' => -1,
+				'contain' => [
+					'Customvariable' => [
+						'fields' => [
+							'Customvariable.name',
+							'Customvariable.value',
+						]
+					]
+				],
+				'fields' => [
+					'Servicetemplate.id',
+				]
+			]);
 		}
 		$this->set('servicetemplate', $servicetemplate);
 	}

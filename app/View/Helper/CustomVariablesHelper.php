@@ -192,7 +192,7 @@ class CustomVariablesHelper extends AppHelper {
             $customvariables = $_customvariables;
         }
         if(!empty($customvariables)){
-            $i = Hash::apply($customvariables, '{n}.id', 'max')+1;
+            $i = max(array_keys($customvariables)) + 1;
             foreach($customvariables as $macro){
                 if(!isset($macro['id'])){
                     $macro['id'] = null;
@@ -200,7 +200,7 @@ class CustomVariablesHelper extends AppHelper {
                 $html.=$this->html($i, [
                     'name' => $macro['name'],
                     'value' => $macro['value'],
-                    'id' => $macro['id'],
+                    //'id' => $macro['id'],
                     'objecttype_id' => $this->objecttype_id
                 ]);
                 $i++;

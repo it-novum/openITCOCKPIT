@@ -39,6 +39,11 @@ class CustomMacroReplacer
 	private $servicestatus;
 
 	/**
+	 * @var int
+	 */
+	private $objecttype_id;
+
+	/**
 	 * @var array
 	 */
 	private $mapping = [
@@ -47,18 +52,23 @@ class CustomMacroReplacer
 	];
 
 
-	public function __construct($customvariables)
+	/**
+	 * CustomMacroReplacer constructor.
+	 * @param $customvariables
+	 * @param $objecttype_id
+	 */
+	public function __construct($customvariables, $objecttype_id)
 	{
 		$this->customvariables = $customvariables;
+		$this->objecttype_id = $objecttype_id;
 		$this->buildMapping();
 	}
 
 	/**
-	 * @param int $objecttype_id
 	 * @return string
 	 */
-	public function getMacroPrefix($objecttype_id){
-		switch($objecttype_id){
+	public function getMacroPrefix(){
+		switch($this->objecttype_id){
 			case OBJECT_HOSTTEMPLATE:
 			case OBJECT_HOST:
 				return '$_HOST';
@@ -94,7 +104,7 @@ class CustomMacroReplacer
 		];
 
 		foreach($this->customvariables as $customvariable){
-			$name = sprintf('%s%s$', $this->getMacroPrefix($customvariable['objecttype_id']), $customvariable['name']);
+			$name = sprintf('%s%s$', $this->getMacroPrefix(), $customvariable['name']);
 			$mapping['search'][] = $name;
 			$mapping['replace'][] = $customvariable['value'];
 		}

@@ -481,7 +481,6 @@ class Service extends AppModel{
 			$diff_array = Hash::merge($diff_array, ['Service' => ['own_customvariables' => '1']]);
 			$diff_array = Hash::merge($diff_array, ['Customvariable' => Set::classicExtract($request_data, 'Customvariable.{n}')]);
 		}
-
 		if((!is_array($contactGroupData) || !$diff_array['Service']['own_contactgroups'])){
 			$contactGroup = [];
 		}{
@@ -557,7 +556,6 @@ class Service extends AppModel{
 				$diff_array = Hash::merge($diff_array, ['Service' => ['own_contactgroups' => '0']]);
 			}
 		}
-
 		return $diff_array;
 	}
 
@@ -588,7 +586,7 @@ class Service extends AppModel{
 					'NotifyPeriod',
 					'Customvariable' => [
 						'fields' => [
-							'id', 'name', 'value', 'objecttype_id'
+							'id', 'name', 'value'
 						]
 					],
 					'Servicetemplatecommandargumentvalue' => [
@@ -668,7 +666,7 @@ class Service extends AppModel{
 				],
 				'Customvariable' => [
 					'fields' => [
-						'id', 'name', 'value', 'objecttype_id'
+						'id', 'name', 'value'
 					]
 				],
 				'Servicecommandargumentvalue' => [

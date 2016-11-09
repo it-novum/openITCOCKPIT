@@ -219,7 +219,7 @@
 													$ServiceMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
 													$ServiceCommandLine = $ServiceMacroReplacerCommandLine->replaceBasicMacros($service['CheckCommand']['command_line']);
 
-													$ServiceCustomMacroReplacer = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($service['Customvariable']);
+													$ServiceCustomMacroReplacer = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($service['Customvariable'], OBJECT_SERVICE);
 													$ServiceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($ServiceCommandLine);
 
 													$ServiceMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
@@ -229,7 +229,7 @@
 													$ServiceMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
 													$ServiceCommandLine = $ServiceMacroReplacerCommandLine->replaceBasicMacros($service['Servicetemplate']['CheckCommand']['command_line']);
 
-													$ServiceCustomMacroReplacer = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($service['Customvariable']);
+													$ServiceCustomMacroReplacer = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($service['Customvariable'], OBJECT_SERVICE);
 													$ServiceCommandLine = $ServiceCustomMacroReplacer->replaceAllMacros($ServiceCommandLine);
 
 													$ServiceMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
