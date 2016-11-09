@@ -42,7 +42,10 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$baseTestsPath = APP . 'Test' . DS . 'Case' . DS;
 
 		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($baseTestsPath, RecursiveDirectoryIterator::SKIP_DOTS),
+			new RecursiveDirectoryIterator(
+				$baseTestsPath,
+				RecursiveDirectoryIterator::SKIP_DOTS
+			),
 			RecursiveIteratorIterator::SELF_FIRST,
 			RecursiveIteratorIterator::CATCH_GET_CHILD
 		);
