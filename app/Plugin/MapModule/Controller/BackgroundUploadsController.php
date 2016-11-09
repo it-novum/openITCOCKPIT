@@ -94,6 +94,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
 		$fileExtension = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
 		$filename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'],PATHINFO_BASENAME));
+		$filename = preg_replace("/[^a-zA-Z0-9]+/", "", $filename);
 
 		$zipTempFolder = new Folder($tempZipsDirectory);
 		$fullZipTempPath = $zipTempFolder->path.DS.$filename.'.zip';
