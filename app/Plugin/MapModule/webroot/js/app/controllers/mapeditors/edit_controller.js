@@ -58,7 +58,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 
 		//on hover on background class show delete button
-		$(document).on('mouseenter','.thumbnail',function(){
+		$(document).on('mouseenter','.background-thumbnail',function(){
 			//append remove background button
 			$(this).append('<div class="deleteBackgroundBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
 		});
@@ -77,9 +77,32 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			$('#deleteBackgroundModal').modal('hide');
 		});
 
-		$(document).on('mouseleave','.thumbnail',function(){
+		$(document).on('mouseleave','.background-thumbnail',function(){
 			//delete remove background button
 			$(this).children('.deleteBackgroundBtn').remove();
+		});
+
+		$(document).on('mouseenter','.iconset-thumbnail',function(){
+			//append remove background button
+			$(this).append('<div class="deleteIconsetBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
+		});
+
+		$(document).on('click','.deleteIconsetBtn',function() {
+			var filename = $(this).parent().find('img').attr('iconset');
+			//write filename to modal dialog
+			$('#IconsetFilename').val(filename);
+			$('#deleteIconsetModal').modal('show');
+
+		});
+
+		$('#confirmDeleteIconsetBtn').click(function(){
+			var filename = $('#IconsetFilename').val();
+			self.deleteIconsSet(filename);
+			$('#deleteIconsetModal').modal('hide');
+		});
+
+		$(document).on('mouseleave','.iconset-thumbnail',function(){
+			$(this).children('.deleteIconsetBtn').remove();
 		});
 
 		$('#autohide_menu').change(function(){
@@ -406,12 +429,42 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			},
 		};
 
+		var dropzoneIconsOptObj = {
+			method: 'post',
+			maxFilesize: 55, //MB
+			acceptedFiles: '.zip', //mimetypes
+			paramName: "file",
+			success: function(obj){
+				$('#icons-upload-success').show().append(obj.name+': Successfully uploaded<br />');
+				self.refreshItemsThumbnails();
+				self.refreshItemsDropdown();
+			},
+			error:function(error,errorMessage,xhr){
+                if(typeof errorMessage === 'string'){
+					$('#icons-upload-error').show().append(error.name+': '+errorMessage+'<br />');
+				}else {
+					$('#icons-upload-error').show().append(errorMessage.data.message+'<br />');
+				}
+			},
+		};
+
 		//prevent Dropzone from throwing unnecessary errors (more than one instance...)
 		Dropzone.autoDiscover = false;
 		$('.background-dropzone').dropzone(dropzoneOptObj);
 
 
+		//prevent Dropzone from throwing unnecessary errors (more than one instance...)
+		$('.icons-dropzone').dropzone(dropzoneIconsOptObj);
 
+		$('#background-upload-btn').click(function(){
+			Dropzone.forElement(".background-dropzone").removeAllFiles(true);
+		});
+
+		$('#icons-upload-btn').click(function(){
+			$('#icons-upload-success').hide().html('');
+			$('#icons-upload-error').hide().html('');
+			Dropzone.forElement(".icons-dropzone").removeAllFiles(true);
+		});
 
 		/*
 		 * Build up the Gadgets menu in the Panel
@@ -487,67 +540,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 
 		/*
-		 * Draggable icons
-		 */
-		this.$mapContainer.droppable({
-			accept: '.drag-element',
-			drop: function(e, ui){
-				if(ui.draggable.hasClass('gadget')){
-					//is gadget
-					var offset = $('#MapContainer').offset();
-					var options = {
-						type:'gadget',
-						x:e.pageX - offset.left,
-						y:e.pageY - offset.top,
-						data:ui.draggable.data('gadget'),
-					}
-					self.dropOptions(options);
-				}else if(ui.draggable.hasClass('statelessIcon')){
-					//is icon
-					var offset = $('#MapContainer').offset();
-					var options = {
-						type:'icon',
-						x:e.pageX - offset.left,
-						y:e.pageY - offset.top,
-						icon:ui.draggable.find('img').attr('icon')
-					}
-					self.dropOptions(options);
-
-					self.saveStatelessIcon();
-				}else{
-					//is item
-					var drop = [];
-					var offset = $('#MapContainer').offset();
-					var options = {
-						type:'item',
-						x:e.pageX - offset.left,
-						y:e.pageY - offset.top,
-						iconset:$(ui.draggable).find('img').attr('iconset')
-					}
-					self.dropOptions(options);
-				}
-			},
-		});
-
-		$('.drag-element').draggable({
-			helper: 'clone',
-			revert: 'invalid',
-			appendTo: 'body',
-			cursorAt: {
-				top:5,
-				left:5
-			},
-			start: function(e, ui){
-				if(ui.helper.children('img').hasClass('iconset')){
-					ui.helper.removeClass('thumbnail');
-				}
-				ui.helper.removeClass('col-xs-6 col-sm-6 col-md-6');
-				ui.helper.children().removeClass('thumbnail');
-			}
-		});
-
-
-		/*
 		 * Change event for object selector in modal ELEMENT
 		 */
 		$('#ElementWizardChoseType').change(function(){
@@ -568,6 +560,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 					$('#addElement_service').hide();
 					$('#addElement_hostgroup').hide();
 					$('#addElement_servicegroup').hide();
+					$('#addElement_map').hide();
 					break;
 				case 'service':
 					$('#addServiceX').val(self.current['x']);
@@ -588,6 +581,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 					$('#addElement_host').hide();
 					$('#addElement_hostgroup').hide();
 					$('#addElement_servicegroup').hide();
+					$('#addElement_map').hide();
 					break;
 				case 'servicegroup':
 					$('#addServicegroupX').val(self.current['x']);
@@ -601,6 +595,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 					$('#addElement_host').hide();
 					$('#addElement_service').hide();
 					$('#addElement_hostgroup').hide();
+					$('#addElement_map').hide();
 					break;
 				case 'hostgroup':
 					$('#addHostgroupX').val(self.current['x']);
@@ -614,6 +609,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 					$('#addElement_host').hide();
 					$('#addElement_service').hide();
 					$('#addElement_servicegroup').hide();
+					$('#addElement_map').hide();
 					break;
 				case 'map':
 					$('#addMapX').val(self.current['x']);
@@ -624,8 +620,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 					//Selected iconset in chosen selectbox
 					$('#addMapIconset').val(self.current['iconset']).trigger("chosen:updated");
 					//hide other forms
+					$('#addElement_host').hide();
 					$('#addElement_service').hide();
-					$('#addElement_Mapgroup').hide();
+					$('#addElement_hostgroup').hide();
 					$('#addElement_servicegroup').hide();
 					break;
 				}
@@ -776,7 +773,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 						}
 					}
 				});
-				console.log(self.current);
 			}else{
 				//create new element
 				//Set icon to map
@@ -1160,7 +1156,72 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		/*
 		 * make the elements draggable at editor init
 		 */
+		self.activateItemsDraggable();
 		self.makeDraggable();
+	},
+
+
+	activateItemsDraggable:function(){
+		var self = this;
+		/*
+		 * Draggable icons
+		 */
+		$(self.mapEditorContainer).droppable({
+			accept: '.drag-element',
+			drop: function(e, ui){
+				if(ui.draggable.hasClass('gadget')){
+					//is gadget
+					var offset = $('#MapContainer').offset();
+					var options = {
+						type:'gadget',
+						x:e.pageX - offset.left,
+						y:e.pageY - offset.top,
+						data:ui.draggable.data('gadget'),
+					}
+					self.dropOptions(options);
+				}else if(ui.draggable.hasClass('statelessIcon')){
+					//is icon
+					var offset = $('#MapContainer').offset();
+					var options = {
+						type:'icon',
+						x:e.pageX - offset.left,
+						y:e.pageY - offset.top,
+						icon:ui.draggable.find('img').attr('icon')
+					}
+					self.dropOptions(options);
+
+					self.saveStatelessIcon();
+				}else{
+					//is item
+					var drop = [];
+					var offset = $('#MapContainer').offset();
+					var options = {
+						type:'item',
+						x:e.pageX - offset.left,
+						y:e.pageY - offset.top,
+						iconset:$(ui.draggable).find('img').attr('iconset')
+					}
+					self.dropOptions(options);
+				}
+			},
+		});
+
+		$('.drag-element').draggable({
+			helper: 'clone',
+			revert: 'invalid',
+			appendTo: 'body',
+			cursorAt: {
+				top:5,
+				left:5
+			},
+			start: function(e, ui){
+				if(ui.helper.children('img').hasClass('iconset')){
+					ui.helper.removeClass('thumbnail');
+				}
+				ui.helper.removeClass('col-xs-6 col-sm-6 col-md-6');
+				ui.helper.children().removeClass('thumbnail');
+			}
+		});
 	},
 
 
@@ -1702,7 +1763,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 			//show modal edit dialog
 			$('#ElementWizardModal').modal('show');
-
 			$(currentElement).children().filter(':input').each(function(){
 				var elementKey = $(this).data('key');
 				var elementValue = $(this).val();
@@ -1717,6 +1777,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				$('#ElementWizardChoseType').trigger("chosen:updated");
 				$('#ElementWizardChoseType').trigger("change");
 			}
+
 		}
 	},
 
@@ -2150,13 +2211,43 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 	},
 
+	refreshItemsThumbnails:function(){
+		var self = this;
+		$.ajax({
+			url: "/map_module/mapeditors/getIconImages",
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(response){
+				$('#item-panel').empty().html(response);
+				self.activateItemsDraggable();
+			}.bind(self)
+		});
+	},
+
+	refreshItemsDropdown:function(){
+		var self = this;
+		$.ajax({
+			url: "/map_module/mapeditors/getIconsetsList",
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(response){
+				$('#addHostIconset').empty().html(response);
+				$('#addServiceIconset').empty().html(response);
+				$('#addServicegroupIconset').empty().html(response);
+				$('#addHostgroupIconset').empty().html(response);
+				$('#addMapIconset').empty().html(response);
+			}.bind(self)
+		});
+	},
 
 	buildNewBackgroundThumbs:function(bgs){
 		var backgrounds = bgs.backgrounds;
 		var html = '';
 		for(var bg in backgrounds.files){
 			var path  = backgrounds.thumbPath+'/thumb_'+backgrounds.files[bg];
-			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
+			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle background-thumbnail"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
 		}
 		return html;
 	},
@@ -2176,5 +2267,20 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 		//also remove the background from the editor
 		self.changeBackground({remove:true});
+	},
+
+	deleteIconsSet:function(filename){
+		var self = this;
+		//ajax call to delete background
+		$.ajax({
+			url: "/map_module/BackgroundUploads/deleteIconsSet/"+encodeURIComponent(btoa(filename)),
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(response){
+				self.refreshItemsThumbnails();
+				self.refreshItemsDropdown();
+			}.bind(self)
+		});
 	}
 });
