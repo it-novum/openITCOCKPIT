@@ -44,7 +44,7 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$iterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator($baseTestsPath, RecursiveDirectoryIterator::SKIP_DOTS),
 			RecursiveIteratorIterator::SELF_FIRST,
-			RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+			RecursiveIteratorIterator::CATCH_GET_CHILD
 		);
 
 		$directories = [];
