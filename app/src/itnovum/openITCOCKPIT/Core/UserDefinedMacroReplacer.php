@@ -51,11 +51,11 @@ class UserDefinedMacroReplacer
 
 	/**
 	 * Try to replace al $USERx$ macros in given string
-	 * @param string $string
+	 * @param string $msg
 	 * @return string
 	 */
-	public function replaceMacros($string){
-		return str_replace(array_keys($this->mapping), array_values($this->mapping), $string);
+	public function replaceMacros($msg){
+		return str_replace(array_keys($this->mapping), array_values($this->mapping), $msg);
 	}
 
 	private function buildMapping(){

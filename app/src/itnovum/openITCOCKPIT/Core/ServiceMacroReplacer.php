@@ -72,11 +72,11 @@ class ServiceMacroReplacer
 	 * - $SERVICEDESC$ => Service.uuid
 	 * - $SERVICEDISPLAYNAME$ => Service.name
 	 *
-	 * @param string $string
+	 * @param string $msg
 	 */
-	public function replaceBasicMacros($string){
+	public function replaceBasicMacros($msg){
 		$mapping = $this->buildMapping('basic');
-		return str_replace($mapping['search'], $mapping['replace'], $string);
+		return str_replace($mapping['search'], $mapping['replace'], $msg);
 	}
 
 	/**
@@ -85,22 +85,22 @@ class ServiceMacroReplacer
 	 * - $LASTSERVICESTATEID$ => Servicestatus.last_hard_state
 	 * - $SERVICEOUTPUT$ => Servicestatus.output
 	 *
-	 * @param string $string
+	 * @param string $msg
 	 */
-	public function replaceStatusMacros($string){
+	public function replaceStatusMacros($msg){
 		$mapping = $this->buildMapping('status');
-		return str_replace($mapping['search'], $mapping['replace'], $string);
+		return str_replace($mapping['search'], $mapping['replace'], $msg);
 	}
 
 	/**
 	 * Try to replace all known macros
-	 * @param $string
+	 * @param $msg
 	 * @return string mixed
 	 */
-	public function replaceAllMacros($string){
-		$string = $this->replaceBasicMacros($string);
-		$string = $this->replaceStatusMacros($string);
-		return $string;
+	public function replaceAllMacros($msg){
+		$msg = $this->replaceBasicMacros($msg);
+		$msg = $this->replaceStatusMacros($msg);
+		return $msg;
 	}
 
 	/**
