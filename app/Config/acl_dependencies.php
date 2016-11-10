@@ -25,7 +25,7 @@
 
 $config = [
 	'acl_dependencies' => [
-		'AppController' => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403'],
+		'AppController' => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
 		'always_allowed' => [
 			'Commands' => [
 				'sortByCommandType'
