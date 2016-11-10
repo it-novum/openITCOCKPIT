@@ -27,7 +27,9 @@
 $this->Paginator->options(array('url' => $this->params['named']));
 $filter = "/";
 foreach($this->params->named as $key => $value){
-	$filter.= $key.":".$value."/";
+	if(!is_array($value)) {
+		$filter.= $key.":".$value."/";
+	}
 }
 ?>
 <div class="row">
