@@ -73,19 +73,40 @@ App.Components.CustomVariablesComponent = Frontend.Component.extend({
 		this.$button.prop('disabled', true);
 		this.$ajaxloader.show();
 		ret = $.ajax({
-			url: this.ajaxUrl+"/"+this.customVariablesCounter,
+			url: this.ajaxUrl+"/"+this.getNextId(),
 			type: "GET",
 			error: function(){},
 			success: function(){},
 			complete: function(response){
+
+
 				$customVariablesContainer.append(response.responseText);
-				this.customVariablesCounter++;
 
 				this.$ajaxloader.fadeOut('slow');
 				this.$button.prop('disabled', null);
 				onSuccess();
 			}.bind(this)
 		});
+	},
+
+	getNextId: function(){
+		var currentHighestValue = 1;
+		var $custmVariableInputs = $('#customVariablesContainer').find('.macroName');
+
+		$custmVariableInputs.each(function(key, currentInputField){
+			var $currentInputField = $(currentInputField);
+
+			var counterAttr = $currentInputField.attr('counter');
+			if (typeof counterAttr !== typeof undefined && counterAttr !== false) {
+				var currentValue = parseInt(counterAttr, 10);
+				if(currentValue > currentHighestValue){
+					currentHighestValue = currentValue;
+				}
+			}
+		});
+
+		console.log(currentHighestValue+1);
+		return currentHighestValue + 1;
 	},
 
 	loadMacroFromTemplate: function(template_id, onComplete){

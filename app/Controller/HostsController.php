@@ -633,11 +633,11 @@ class HostsController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			$ext_data_for_changelog = [
 				'Contact' => [
-				    'Contact' => []
-                ],
+					'Contact' => []
+				],
 				'Contactgroup' => [
-				    'Contactgroup'=> []
-                ],
+					'Contactgroup'=> []
+				],
 				'Hostgroup' => [],
 				'Parenthost' => []
 			];
@@ -794,6 +794,9 @@ class HostsController extends AppController{
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
 
+			debug($this->request->data);
+
+
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
 
@@ -812,14 +815,14 @@ class HostsController extends AppController{
 				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
 					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
 					$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
-                        'conditions' => [
-                            'host_id' => $id,
-                            'commandargument_id' => $commandargumentId
-                        ]
-                    ]);
-                    if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
-                        $this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
-                    }
+						'conditions' => [
+							'host_id' => $id,
+							'commandargument_id' => $commandargumentId
+						]
+					]);
+					if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
+						$this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
+					}
 				}
 			}
 
@@ -828,6 +831,8 @@ class HostsController extends AppController{
 					['Hostcommandargumentvalue.host_id' => $id]
 				);
 			}
+
+			debug($data_to_save);die();
 
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -848,7 +853,7 @@ class HostsController extends AppController{
 				$this->loadModel('Tenant');
 				//$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
 				$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-                $this->redirect($redirect);
+				$this->redirect($redirect);
 			}else{
 				$this->setFlash(__('Data could not be saved'), false);
 			}
@@ -1802,28 +1807,28 @@ class HostsController extends AppController{
 			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
 			}
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-            ]);
+			$ticketSystem = $this->Systemsetting->find('first', [
+				'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+			]);
 
 			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
 			$username = $this->Auth->user('full_name');
 			$this->set(compact([
-                    'host',
-                    'hoststatus',
-                    'servicestatus',
-                    'services',
-                    'username',
-                    'path',
-                    'commandarguments',
-                    'acknowledged',
-                    'hostDocuExists',
-                    'ContactsInherited',
-                    'parenthosts',
-                    'allowEdit',
-                    'ticketSystem'
-                ])
-            );
+					'host',
+					'hoststatus',
+					'servicestatus',
+					'services',
+					'username',
+					'path',
+					'commandarguments',
+					'acknowledged',
+					'hostDocuExists',
+					'ContactsInherited',
+					'parenthosts',
+					'allowEdit',
+					'ticketSystem'
+				])
+			);
 
 			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
@@ -1947,9 +1952,23 @@ class HostsController extends AppController{
 		}
 
 		if($this->Hosttemplate->exists($hosttemplate_id)){
-			$hosttemplate = $this->Hosttemplate->findById($hosttemplate_id);
-			// Remove ids of custom variables that if the user change them we dont overwrite the orginal custom variables form host template in the database
-			$hosttemplate['Customvariable'] = Hash::remove($hosttemplate['Customvariable'], '{n}.id');
+			$hosttemplate = $this->Hosttemplate->find('first', [
+				'conditions' => [
+					'Hosttemplate.id' => $hosttemplate_id
+				],
+				'recursive' => -1,
+				'contain' => [
+					'Customvariable' => [
+						'fields' => [
+							'Customvariable.name',
+							'Customvariable.value',
+						]
+					]
+				],
+				'fields' => [
+					'Hosttemplate.id',
+				]
+			]);
 		}
 		$this->set('hosttemplate', $hosttemplate);
 	}
@@ -2106,6 +2125,8 @@ class HostsController extends AppController{
 	*/
 
 	private function _diffWithTemplate($host, $hosttemplate){
+debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
+debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
 		$diff_array = [];
 		//Host-/Hosttemplate fields
 		$fields = [

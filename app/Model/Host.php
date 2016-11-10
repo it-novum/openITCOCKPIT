@@ -356,6 +356,8 @@ class Host extends AppModel{
 	}
 
 	public function prepareForSave($diff_array = [], $requestData = [], $save_mode = 'add'){
+debug($diff_array);
+debug($requestData);
 		//Check differences for notification settings
 		if(!empty(Set::classicExtract($diff_array, 'Host.{(notify_on_).*}'))){
 			//Overwrite all notification settings if at least one option has been changed
@@ -737,7 +739,7 @@ class Host extends AppModel{
 	 * @return    true
 	 */
 	public function beforeSave($options = []){
-		if(isset($this->data['Customvariable']) && isset($this->data['Host']['id'])){
+		/*if((isset($this->data['Customvariable']) && isset($this->data['Host']['id']))){
 			$customvariablesToDelete = $this->Customvariable->find('all', [
 				'conditions' => [
 					'Customvariable.object_id' => $this->data['Host']['id'],
@@ -751,7 +753,7 @@ class Host extends AppModel{
 			foreach($customvariablesToDelete as $customvariableToDelete){
 				$this->Customvariable->delete($customvariableToDelete['Customvariable']['id']);
 			}
-		}
+		}*/
 		return true;
 	}
 

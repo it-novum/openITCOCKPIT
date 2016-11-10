@@ -129,7 +129,7 @@ class CustomVariablesHelper extends AppHelper {
             </div>
             <div class="col-md-4 col-xs-5">
                 <label class="control-label">'.__('Name').'</label>
-                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable]['.$counter.'][name]" value="'.$options['name'].'" />
+                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable]['.$counter.'][name]" value="'.$options['name'].'" counter="'.$counter.'" />
             </div>
             <div class="col-md-4 col-xs-4">
                 <label class="control-label">'.__('Value').'</label>
