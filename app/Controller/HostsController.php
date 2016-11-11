@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+
 /**
  * @property Host                              $Host
  * @property Documentation                     $Documentation
@@ -495,9 +497,6 @@ class HostsController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$this->loadModel('Timeperiod');
@@ -794,9 +793,6 @@ class HostsController extends AppController{
 				$hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
 			}
 
-			debug($this->request->data);
-
-
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
 
@@ -810,29 +806,47 @@ class HostsController extends AppController{
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hostcommandargumentvalue'], '{n}.commandargument_id');
 			}
 
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
-						'conditions' => [
-							'host_id' => $id,
-							'commandargument_id' => $commandargumentId
-						]
-					]);
-					if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
-						$this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
-					}
+			$data_to_save['Host']['own_customvariables'] = 0;
+			//Add Customvariables data to $data_to_save
+			$data_to_save['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($data_to_save)){
+					$data_to_save['Host']['own_customvariables'] = 1;
 				}
 			}
 
-			if(!isset($data_to_save['Hostcommandargumentvalue']) || empty($data_to_save['Hostcommandargumentvalue'])){
-				$this->Hostcommandargumentvalue->deleteAll(
-					['Hostcommandargumentvalue.host_id' => $id]
-				);
-			}
+			$this->Host->set($data_to_save);
+			if($this->Host->validates()){
+				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+				foreach($commandargumentIdsOfDatabase as $commandargumentId){
+					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
+						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
+						$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
+							'conditions' => [
+								'host_id' => $id,
+								'commandargument_id' => $commandargumentId
+							]
+						]);
+						if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
+							$this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
+						}
+					}
+				}
+				if(!isset($data_to_save['Hostcommandargumentvalue']) || empty($data_to_save['Hostcommandargumentvalue'])){
+					$this->Hostcommandargumentvalue->deleteAll(
+						['Hostcommandargumentvalue.host_id' => $id]
+					);
+				}
 
-			debug($data_to_save);die();
+				$this->Customvariable->deleteAll([
+					'object_id' => $host['Host']['id'],
+					'objecttype_id' => OBJECT_HOST
+				], false);
+
+			}
 
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -1077,9 +1091,6 @@ class HostsController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$this->loadModel('Timeperiod');
@@ -1288,6 +1299,18 @@ class HostsController extends AppController{
 				$this->request->data,
 				'add'
 			);
+
+			$data_to_save['Host']['own_customvariables'] = 0;
+			//Add Customvariables data to $data_to_save
+			$data_to_save['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($data_to_save)){
+					$data_to_save['Host']['own_customvariables'] = 1;
+				}
+			}
 
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -2125,8 +2148,6 @@ class HostsController extends AppController{
 	*/
 
 	private function _diffWithTemplate($host, $hosttemplate){
-debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
-debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
 		$diff_array = [];
 		//Host-/Hosttemplate fields
 		$fields = [
@@ -2157,13 +2178,11 @@ debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	
 				['Host.{(' . implode('|', array_values(Hash::merge($fields, ['name', 'description', 'address', 'host_url', 'satellite_id', 'host_type']))) . ')}', false],
 				['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
 				['Hostcommandargumentvalue.{n}.{(commandargument_id|value|id)}', false],
-				['Customvariable.{n}.{(name|value)}', false]
 			],
 			'Hosttemplate' => [
 				['Hosttemplate.{(' . implode('|', array_values($fields)) . ')}', false],
 				['{(Contact|Contactgroup)}.{n}.id', true],
 				['Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
-				['Customvariable.{n}.{(name|value)}', false]
 			]
 		];
 		$diff_array = [];

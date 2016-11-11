@@ -356,8 +356,6 @@ class Host extends AppModel{
 	}
 
 	public function prepareForSave($diff_array = [], $requestData = [], $save_mode = 'add'){
-debug($diff_array);
-debug($requestData);
 		//Check differences for notification settings
 		if(!empty(Set::classicExtract($diff_array, 'Host.{(notify_on_).*}'))){
 			//Overwrite all notification settings if at least one option has been changed
@@ -460,11 +458,6 @@ debug($requestData);
 		}
 		if($save_mode === 'edit'){
 			$diff_array = Hash::merge($diff_array, ['Host' => array_fill_keys(array_keys($tmp_keys), null)]);
-		}
-		//Check differences for custom variables
-		if(!empty(Set::classicExtract($diff_array, 'Customvariable.{n}'))){
-			$diff_array = Hash::merge($diff_array, ['Host' => ['own_customvariables' => '1']]);
-			$diff_array = Hash::merge($diff_array, ['Customvariable' => Set::classicExtract($requestData, 'Customvariable.{n}')]);
 		}
 
 		$hostTemplateId = 0;
@@ -726,35 +719,6 @@ debug($requestData);
 		}
 
 		return $redirect;
-	}
-
-	/**
-	 * Delete old records (custom variables) from database
-	 *
-	 * ### Options
-	 *
-	 * - See cake-api beforeSave function
-	 *
-	 * @param    array $options with the options
-	 * @return    true
-	 */
-	public function beforeSave($options = []){
-		/*if((isset($this->data['Customvariable']) && isset($this->data['Host']['id']))){
-			$customvariablesToDelete = $this->Customvariable->find('all', [
-				'conditions' => [
-					'Customvariable.object_id' => $this->data['Host']['id'],
-					'Customvariable.objecttype_id' => OBJECT_HOST,
-					'NOT' => [
-						'Customvariable.id' => Hash::extract($this->data['Customvariable'], '{n}.id')
-					]
-				]
-			]);
-			//Delete all custom variables that are remove by the user:
-			foreach($customvariablesToDelete as $customvariableToDelete){
-				$this->Customvariable->delete($customvariableToDelete['Customvariable']['id']);
-			}
-		}*/
-		return true;
 	}
 
 

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 
 /**
  * @property Container                                $Container
@@ -687,9 +688,6 @@ class ServicesController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$this->loadModel('Customvariable');
@@ -746,13 +744,44 @@ class ServicesController extends AppController{
 			if(isset($this->request->data['Service']['servicetemplate_id']) &&
 				$this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])
 			){
-				$servicetemplate = $this->Servicetemplate->findById($this->request->data['Service']['servicetemplate_id']);
+				$servicetemplate = $this->Servicetemplate->find('first', [
+					'contain' => [
+						'Container',
+						'CheckPeriod',
+						'NotifyPeriod',
+						'CheckCommand',
+						'EventhandlerCommand',
+						'Customvariable',
+						'Servicetemplatecommandargumentvalue',
+						'Servicetemplateeventcommandargumentvalue',
+						'Contactgroup',
+						'Contact',
+						'Servicetemplategroup'
+					],
+					'recursive' => -1,
+					'conditions' => [
+						'Servicetemplate.id' => $this->request->data['Service']['servicetemplate_id']
+					]
+				]);
 			}
 
 			$dataToSave = $this->Service->prepareForSave(
 				$this->Service->diffWithTemplate($this->request->data, $servicetemplate),
 				$this->request->data,
-				'add');
+				'add'
+			);
+
+			$dataToSave['Service']['own_customvariables'] = 0;
+			//Add Customvariables data to $dataToSave
+			$dataToSave['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $servicetemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$dataToSave['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($dataToSave)){
+					$dataToSave['Service']['own_customvariables'] = 1;
+				}
+			}
 
 			$isJsonRequest = $this->request->ext === 'json';
 			if($this->Service->saveAll($dataToSave)){
@@ -846,9 +875,6 @@ class ServicesController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$userContainerId = $this->Auth->user('container_id');
@@ -1126,8 +1152,28 @@ class ServicesController extends AppController{
 			$this->request->data['Servicegroup']['Servicegroup'] = (is_array($this->request->data['Service']['Servicegroup'])) ? $this->request->data['Service']['Servicegroup'] : [];
 
 			$servicetemplate = [];
-			if(isset($this->request->data['Service']['servicetemplate_id']) && $this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])){
-				$servicetemplate = $this->Servicetemplate->findById($this->request->data['Service']['servicetemplate_id']);
+			if(isset($this->request->data['Service']['servicetemplate_id']) &&
+				$this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])
+			){
+				$servicetemplate = $this->Servicetemplate->find('first', [
+					'contain' => [
+						'Container',
+						'CheckPeriod',
+						'NotifyPeriod',
+						'CheckCommand',
+						'EventhandlerCommand',
+						'Customvariable',
+						'Servicetemplatecommandargumentvalue',
+						'Servicetemplateeventcommandargumentvalue',
+						'Contactgroup',
+						'Contact',
+						'Servicetemplategroup'
+					],
+					'recursive' => -1,
+					'conditions' => [
+						'Servicetemplate.id' => $this->request->data['Service']['servicetemplate_id']
+					]
+				]);
 			}
 			$data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($this->request->data, $servicetemplate), $this->request->data, 'edit');
 
@@ -1171,21 +1217,7 @@ class ServicesController extends AppController{
 			if(isset($this->request->data['Serviceeventcommandargumentvalue'])){
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Serviceeventcommandargumentvalue'], '{n}.commandargument_id');
 			}
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$entry = $this->Serviceeventcommandargumentvalue->find('first', [
-						'conditions' => [
-							'service_id' => $id,
-							'commandargument_id' => $commandargumentId
-						]
-					]);
-					if(isset($entry['Serviceeventcommandargumentvalue'])){
-						$this->Serviceeventcommandargumentvalue->delete($entry['Serviceeventcommandargumentvalue']);
-					}
-				}
-			}
+
 			if(!isset($data_to_save['Serviceeventcommandargumentvalue']) || empty($data_to_save['Serviceeventcommandargumentvalue'])){
 				$this->Serviceeventcommandargumentvalue->deleteAll(
 					['Serviceeventcommandargumentvalue.service_id' => $id]
@@ -1195,9 +1227,40 @@ class ServicesController extends AppController{
 				$data_to_save['Serviceeventcommandargumentvalue'] = $this->request->data['Serviceeventcommandargumentvalue'];
 			}
 
-			//Checks if the user deletes a customvariable/macro over the trash icon
-			if(!isset($this->request->data['Customvariable'])){
-				$data_to_save['Customvariable'] = [];
+			$data_to_save['Service']['own_customvariables'] = 0;
+			//Add Customvariables data to $data_to_save
+			$data_to_save['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $servicetemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($data_to_save)){
+					$data_to_save['Service']['own_customvariables'] = 1;
+				}
+			}
+
+			$this->Service->set($data_to_save);
+			if($this->Service->validates()){
+				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+				foreach($commandargumentIdsOfDatabase as $commandargumentId){
+					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
+						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
+						$entry = $this->Serviceeventcommandargumentvalue->find('first', [
+							'conditions' => [
+								'service_id' => $id,
+								'commandargument_id' => $commandargumentId
+							]
+						]);
+						if(isset($entry['Serviceeventcommandargumentvalue'])){
+							$this->Serviceeventcommandargumentvalue->delete($entry['Serviceeventcommandargumentvalue']);
+						}
+					}
+				}
+
+				$this->Customvariable->deleteAll([
+					'object_id' => $service['Service']['id'],
+					'objecttype_id' => OBJECT_SERVICE
+				], false);
 			}
 
 			if($this->Service->saveAll($data_to_save)){

@@ -23,7 +23,6 @@
 //	confirmation.
 
 App.Components.CustomVariablesComponent = Frontend.Component.extend({
-	customVariablesCounter: 0,
 	$customVariablesContainer: null,
 	$ajaxloader:null,
 
@@ -34,7 +33,6 @@ App.Components.CustomVariablesComponent = Frontend.Component.extend({
 		this.macrotype = conf.macrotype || 'HOST';
 		this.macroPrefix = conf.macroPrefix || '$_';
 		this.macroSuffix = conf.macroSuffix || '$';
-		this.customVariablesCounter = conf.customVariablesCounter || 0;
 		this.illegalCharacters = conf.illegalCharacters || /[^\d\w\_]/g;
 		this.onClick = conf.onClick || function(){};
 		this.ajaxUrl = '/' + this.controller + '/addCustomMacro';
@@ -124,7 +122,6 @@ App.Components.CustomVariablesComponent = Frontend.Component.extend({
 				//if(response.responseJSON.count > 0){ // what for???
 				// }
 				$customVariablesContainer.html(response.responseJSON.html);
-				this.customVariablesCounter = response.responseJSON.count + 1; //( +1 just for security)
 				onComplete.call($customVariablesContainer, response);
 				this.$ajaxloader.fadeOut('slow');
 				this.$button.prop('disabled', null);

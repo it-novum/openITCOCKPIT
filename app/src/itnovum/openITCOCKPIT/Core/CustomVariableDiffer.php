@@ -41,11 +41,6 @@ class CustomVariableDiffer
 	private $hosttemplateCustomVariablesRepository;
 
 	/**
-	 * @var bool
-	 */
-	private $ownCustomVariables;
-
-	/**
 	 * CustomVariableDiffer constructor.
 	 * @param array $hostCustomVariables from CakePHP's find
 	 * @param array $hosttemplateCustomVariables from CakePHP's find
@@ -54,7 +49,6 @@ class CustomVariableDiffer
 	{
 		$this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
 		$this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
-		$this->ownCustomVariables = false;
 	}
 
 	/**

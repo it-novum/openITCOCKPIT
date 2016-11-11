@@ -212,7 +212,7 @@ class ServicetemplatesController extends AppController{
 
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
-			$serviceTemplate['Customvariable'] = Hash::merge($serviceTemplate['Customvariable'], $this->request->data['Customvariable']);
+			$serviceTemplate['Customvariable'] = $this->request->data['Customvariable'];
 		}
 		$this->Frontend->set('data_placeholder', __('Please choose a contact'));
 		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -220,16 +220,6 @@ class ServicetemplatesController extends AppController{
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
 		$this->Frontend->setJson('lang_and', __('and'));
 		$this->Frontend->setJson('servicetemplate_id', $serviceTemplate['Servicetemplate']['id']);
-
-		/*if(!empty($hosttemplate['Customvariable'])){
-			$this->Frontend->setJson('customVariablesCount', Set::apply('{n}.id', $hosttemplate['Customvariable'], 'max'));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
-			// <-- required for working javascript with customvariables component!
-		}*/
-
-		$this->Frontend->setJson('customVariablesCount', sizeof($serviceTemplate['Customvariable']));
-		// <-- required for working javascript with customvariables component!
 
 		$this->set('back_url', $this->referer());
 
@@ -380,22 +370,6 @@ class ServicetemplatesController extends AppController{
 			if(isset($this->request->data['Servicetemplateeventcommandargumentvalue'])){
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
 			}
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			$this->loadModel('Servicetemplateeventcommandargumentvalue');
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$this->Servicetemplateeventcommandargumentvalue->delete(
-						$this->Servicetemplateeventcommandargumentvalue->find('first', [
-							'conditions' => [
-								'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-								'commandargument_id' => $commandargumentId
-							]
-						])
-						['Servicetemplateeventcommandargumentvalue']
-					);
-				}
-			}
 
 			if($servicetemplatetype_id !== null && is_numeric($servicetemplatetype_id)){
 				$this->request->data['Servicetemplate']['servicetemplatetype_id'] = $servicetemplatetype_id;
@@ -410,6 +384,32 @@ class ServicetemplatesController extends AppController{
 			}
 			$this->request->data['Contact']['Contact'] = $this->request->data('Servicetemplate.Contact');
 			$this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
+
+
+			$this->Servicetemplate->set($this->request->data);
+			if($this->Servicetemplate->validates()){
+				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+				$this->loadModel('Servicetemplateeventcommandargumentvalue');
+				foreach($commandargumentIdsOfDatabase as $commandargumentId){
+					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
+						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
+						$this->Servicetemplateeventcommandargumentvalue->delete(
+							$this->Servicetemplateeventcommandargumentvalue->find('first', [
+								'conditions' => [
+									'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+									'commandargument_id' => $commandargumentId
+								]
+							])
+							['Servicetemplateeventcommandargumentvalue']
+						);
+					}
+				}
+
+				$this->Customvariable->deleteAll([
+					'object_id' => $serviceTemplate['Servicetemplate']['id'],
+					'objecttype_id' => OBJECT_SERVICETEMPLATE
+				], false);
+			}
 
 			// Save everything including custom variables
 			if($this->Servicetemplate->saveAll($this->request->data)){
@@ -537,9 +537,6 @@ class ServicetemplatesController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$userContainerId = $this->Auth->user('container_id');

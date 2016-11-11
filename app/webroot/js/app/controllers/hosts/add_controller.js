@@ -55,7 +55,6 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 			controller: 'Hosts',
 			ajaxUrl: 'addCustomMacro',
 			macrotype: 'HOST',
-			customVariablesCounter: this.getVar('customVariablesCount') + 1,
 			onClick: function(){
 				self.hosttemplateManager._onChangeMacro();
 				self.hosttemplateManager._activateOrUpdateMacroRestore();
