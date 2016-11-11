@@ -132,7 +132,7 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort text-center" ><i class="fa fa-check-square-o fa-lg"></i></th>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Host.current_state'); echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
@@ -140,8 +140,8 @@
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Hostname'); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'address'); echo $this->Paginator->sort('address', __('IP address')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'last_hard_state_change'); echo $this->Paginator->sort('Host.last_hard_state_change', __('State since')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'last_check'); echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_hard_state_change'); echo $this->Paginator->sort('Host.last_hard_state_change', __('State since')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_check'); echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output'); echo $this->Paginator->sort('Host.output', __('Output')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'satellite_id'); echo $this->Paginator->sort('Host.satellite_id', __('Instance')); ?></th>
 									</tr>

@@ -96,15 +96,15 @@ foreach($this->params->named as $key => $value){
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo __('Servicename'); ?></th>
-										<th class="no-sort"><?php echo __('Status since'); ?></th>
-										<th class="no-sort"><?php echo __('Last check'); ?></th>
-										<th class="no-sort"><?php echo __('Next check'); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo __('Status since'); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo __('Last check'); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo __('Next check'); ?></th>
 										<th class="no-sort"><?php echo __('Service output'); ?></th>
 									</tr>
 								</thead>
@@ -122,7 +122,7 @@ foreach($this->params->named as $key => $value){
 												endif;
 											endif;
 										endif;
-										
+
 										if($tmp_host_name != $service['Host']['name']):
 											$tmp_host_name = $service['Host']['name'];
 										?>
@@ -200,7 +200,7 @@ foreach($this->params->named as $key => $value){
 													if($serviceName === null || $serviceName === ''):
 														$serviceName = $service['Servicetemplate']['name'];
 													endif;
-													
+
 													if($this->Acl->hasPermission('browser')):?>
 														<a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
 													<?php else: ?>

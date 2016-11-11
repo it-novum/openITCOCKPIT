@@ -101,15 +101,15 @@ foreach($this->params->named as $key => $value){
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th colspan="2" class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicename'); echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change'); echo $this->Paginator->sort('Service.last_hard_state_change', __('Status since')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_check'); echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.next_check'); echo $this->Paginator->sort('Service.next_check', __('Next check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change'); echo $this->Paginator->sort('Service.last_hard_state_change', __('Status since')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.last_check'); echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.next_check'); echo $this->Paginator->sort('Service.next_check', __('Next check')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.output'); echo $this->Paginator->sort('Service.output', __('Service output')); ?></th>
 									</tr>
 								</thead>
@@ -127,8 +127,8 @@ foreach($this->params->named as $key => $value){
 												endif;
 											endif;
 										endif;
-										
-										
+
+
 										if($tmp_host_name != $service['Host']['name']):
 											$tmp_host_name = $service['Host']['name'];
 										?>
@@ -154,7 +154,7 @@ foreach($this->params->named as $key => $value){
 
 										<?php endif; ?>
 											<tr>
-												
+
 												<?php
 												if($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
 													$serviceName = $service['Service']['name'];
@@ -162,7 +162,7 @@ foreach($this->params->named as $key => $value){
 													$serviceName = $service['Servicetemplate']['name'];
 												endif;
 												?>
-												
+
 												<td class="text-center width-5">
 													<?php if($allowEdit):?>
 														<input type="checkbox" class="massChange" servicename="<?php echo h($serviceName); ?>" value="<?php echo $service['Service']['id']; ?>" uuid="<?php echo $service['Service']['uuid']; ?>" host-uuid="<?php echo $service['Host']['uuid']; ?>">
@@ -293,7 +293,7 @@ foreach($this->params->named as $key => $value){
 							<div class="col-xs-12 col-md-2">
 								<?php if($this->Acl->hasPermission('delete')):?>
 									<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
-								<?php endif; ?> 
+								<?php endif; ?>
 							</div>
 							<div class="col-xs-12 col-md-2">
 								<div class="btn-group">

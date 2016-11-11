@@ -68,11 +68,11 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
-										<th class="no-sort text-center" style="width:5%"><i class="fa fa-check-square-o fa-lg"></i></th>
-										<th class="no-sort" style="width:25%"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
-										<th class="no-sort" style="width:45%"><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
-										<th class="no-sort" style="width:15%"><?php echo __('Container'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
+										<th class="no-sort col-xs-3 col-sm-3 col-md-3 col-lg-4"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
+										<th class="no-sort col-xs-5 col-sm-5 col-md-5 col-lg-5"><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
+										<th class="no-sort col-xs-1 col-sm-1 col-md-1 col-lg-2"><?php echo __('Container'); ?></th>
+										<th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>

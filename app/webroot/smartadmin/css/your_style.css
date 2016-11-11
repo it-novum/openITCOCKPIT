@@ -1429,3 +1429,11 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .datepicker{
 	z-index: 1051 !important;
 }
+
+.editItemWidth{
+	min-width:52px;
+	max-width:52px;
+}
+.tableStatewidth{
+	min-width:155px;
+}

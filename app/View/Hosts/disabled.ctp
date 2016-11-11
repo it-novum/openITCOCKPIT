@@ -55,9 +55,9 @@ foreach($this->params->named as $key => $value){
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
-						echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); 
+						echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop);
 						?>
 					</div>
 
@@ -99,7 +99,7 @@ foreach($this->params->named as $key => $value){
 										<th><?php echo $this->Utils->getDirection($order, 'Hosttemplate.name'); echo $this->Paginator->sort('Hosttemplate.name', 'Hosttemplate'); ?></th>
 										<th><?php echo $this->Utils->getDirection($order, 'Host.address'); echo $this->Paginator->sort('Host.address', __('Address')); ?></th>
 										<th><?php echo $this->Utils->getDirection($order, 'Host.uuid'); echo $this->Paginator->sort('Host.uuid', __('UUID')); ?></th>
-										<th><?php echo __('Options'); ?></th>
+										<th class="editItemWidth"><?php echo __('Options'); ?></th>
 									</tr>
 								</thead>
 								<tbody>
