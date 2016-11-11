@@ -613,6 +613,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 								<br />
 							</div>
 
+							<?php if($mergedCustomVariables->getSize() > 0): ?>
+								<div class="col-xs-12 text-info">
+									<i class="fa fa-info-circle"></i> <?php echo __('Macros with green color are inherited from template. You can override the value but not delete the macro itself'); ?>
+								</div>
+							<?php endif; ?>
+
 						</div>
 
 					</div> <!-- close tab-content -->
