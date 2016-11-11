@@ -74,6 +74,20 @@ class CustomVariablesRepository
 	}
 
 	/**
+	 * @param string $name
+	 * @return void
+	 */
+	public function deleteByVariableName($name){
+		$customvariables = [];
+		foreach($this->customvariables as $customvariable){
+			if($customvariable->getName() != $name){
+				$customvariables[] = $customvariable;
+			}
+		}
+		$this->customvariables = $customvariables;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getSize(){

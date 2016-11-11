@@ -118,12 +118,15 @@ class CustomVariablesHelper extends AppHelper {
             'value' => '',
             'macrotype' => $this->macrotype,
             'id' => null,
-            'objecttype_id' => $this->objecttype_id
+            'objecttype_id' => $this->objecttype_id,
+            'macro_objecttype_id' => null
         ];
+
+
 
         $options = Hash::merge($_options, $options);
         $html = '<div class="col-xs-12">
-            <div class="col-md-3 hidden-mobile text-primary">
+            <div class="col-md-3 hidden-mobile '.$this->getColor($options['macro_objecttype_id'], $options).'">
                 <div style="padding-top: 29px; width: 100%;"><!-- spacer for nice layout --></div>
                 <span>'.$this->macroPrefix.$options['macrotype'].$options['name'].$this->macroSuffix.'</span>
             </div>
@@ -152,6 +155,20 @@ class CustomVariablesHelper extends AppHelper {
 
         return $html;
     }
+
+	public function getColor($objecttype_id, $options){
+		if($objecttype_id === null){
+			$objecttype_id = $options['objecttype_id'];
+		}
+
+		$colors = [
+			OBJECT_HOSTTEMPLATE => 'text-success',
+			OBJECT_HOST => 'text-primary',
+			OBJECT_SERVICETEMPLATE => 'text-success',
+			OBJECT_SERVICE => 'text-primary',
+		];
+		return $colors[$objecttype_id];
+	}
 
     /**
      * Returns a `<div>`HTML Object for wrappig the customvariables
@@ -201,7 +218,8 @@ class CustomVariablesHelper extends AppHelper {
                     'name' => $macro['name'],
                     'value' => $macro['value'],
                     //'id' => $macro['id'],
-                    'objecttype_id' => $this->objecttype_id
+                    'objecttype_id' => $this->objecttype_id,
+                    'macro_objecttype_id' => $macro['objecttype_id']
                 ]);
                 $i++;
             }

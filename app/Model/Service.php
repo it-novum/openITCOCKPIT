@@ -582,7 +582,7 @@ class Service extends AppModel{
 					'NotifyPeriod',
 					'Customvariable' => [
 						'fields' => [
-							'id', 'name', 'value'
+							'id', 'name', 'value', 'objecttype_id'
 						]
 					],
 					'Servicetemplatecommandargumentvalue' => [
@@ -662,7 +662,7 @@ class Service extends AppModel{
 				],
 				'Customvariable' => [
 					'fields' => [
-						'id', 'name', 'value'
+						'id', 'name', 'value', 'objecttype_id'
 					]
 				],
 				'Servicecommandargumentvalue' => [

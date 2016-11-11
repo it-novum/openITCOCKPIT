@@ -114,6 +114,24 @@ class CustomVariableRepositoryTest extends \CakeTestCase
 		];
 
 		$this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariablesAsArray());
+	}
 
+	public function testDeleteVariableByBVarName(){
+		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+
+		$CustomVariableRepository = new CustomVariablesRepository();
+		$CustomVariableRepository->addCustomVariable($CustomVariable1);
+		$CustomVariableRepository->addCustomVariable($CustomVariable2);
+		$CustomVariableRepository->addCustomVariable($CustomVariable3);
+
+		$assert = [
+			$CustomVariable1,
+			$CustomVariable3
+		];
+
+		$CustomVariableRepository->deleteByVariableName($CustomVariable2->getName());
+		$this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariables());
 	}
 }

@@ -601,7 +601,14 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 								<?php if(isset($customVariableValidationErrorValue)): ?>
 									<div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
 								<?php endif; ?>
-								<?php $this->CustomVariables->setup('HOST', OBJECT_HOST, $host['Customvariable']); ?>
+								<?php
+								$customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+									$host['Customvariable'],
+									$host['Hosttemplate']['Customvariable']
+								);
+								$mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+								?>
+								<?php $this->CustomVariables->setup('HOST', OBJECT_HOST, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
 								<?php echo $this->CustomVariables->prepare(); ?>
 								<br />
 							</div>

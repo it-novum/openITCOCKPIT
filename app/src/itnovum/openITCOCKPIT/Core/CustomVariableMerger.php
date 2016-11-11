@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableDiffer extends CustomVariableHelper
+class CustomVariableMerger extends CustomVariableHelper
 {
 
 	/**
@@ -54,28 +54,17 @@ class CustomVariableDiffer extends CustomVariableHelper
 	/**
 	 * @return CustomVariablesRepository
 	 */
-	public function getCustomVariablesToSaveAsRepository(){
-		$variablesToSaveAsRepository = new CustomVariablesRepository();
-
-		foreach($this->hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
-			//Check if a custom variable with this name exists in host template
-			$hostTemplateCustomVariable = $this->hosttemplateCustomVariablesRepository->getByVariableName($hostCustomVariable->getName());
-			if($hostTemplateCustomVariable !== false){
-				//We found a custom variable in the host template with the same name
-
-				//Check if the values are the same or not
-				if ($hostCustomVariable->getValue() != $hostTemplateCustomVariable->getValue()) {
-					$variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
-				}
-			}
-
-			if($hostTemplateCustomVariable === false){
-				//This custom variable does not exists on the hosttemplate
-				$variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
-			}
+	public function getCustomVariablesMergedAsRepository(){
+		$hostCustomVariablesRepository = $this->hostCustomVariablesRepository;
+		foreach($hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable){
+			//Delete variables with the same name of the host template
+			$this->hosttemplateCustomVariablesRepository->deleteByVariableName($hostCustomVariable->getName());
 		}
 
-		return $variablesToSaveAsRepository;
+		foreach($this->hosttemplateCustomVariablesRepository->getAllCustomVariables() as $hosttemplateCustomVariable){
+			$hostCustomVariablesRepository->addCustomVariable($hosttemplateCustomVariable);
+		}
+		return $hostCustomVariablesRepository;
 	}
 
 }

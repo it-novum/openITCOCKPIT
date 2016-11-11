@@ -1985,6 +1985,7 @@ class HostsController extends AppController{
 						'fields' => [
 							'Customvariable.name',
 							'Customvariable.value',
+							'Customvariable.objecttype_id'
 						]
 					]
 				],

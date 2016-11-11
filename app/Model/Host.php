@@ -588,7 +588,7 @@ class Host extends AppModel{
 					'NotifyPeriod',
 					'Customvariable' => [
 						'fields' => [
-							'id', 'name', 'value'
+							'id', 'name', 'value', 'objecttype_id'
 						]
 					],
 					'Hosttemplatecommandargumentvalue' => [
@@ -615,7 +615,7 @@ class Host extends AppModel{
 				],
 				'Customvariable' => [
 					'fields' => [
-						'id', 'name', 'value'
+						'id', 'name', 'value', 'objecttype_id'
 					]
 				],
 				'Hostcommandargumentvalue' => [

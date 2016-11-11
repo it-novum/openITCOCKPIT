@@ -1698,6 +1698,7 @@ class ServicesController extends AppController{
 						'fields' => [
 							'Customvariable.name',
 							'Customvariable.value',
+							'Customvariable.objecttype_id'
 						]
 					]
 				],
