@@ -484,33 +484,47 @@ class NagiosExportTask extends AppShell{
 					'offset' => $options['offset']
 				]);
 			}else{
+				//Multiple queries are faster than one big query
+				$hostCount = $this->Host->find('count');
+				$chunk = 200;
+				$queryCount = ceil($hostCount/$chunk);
+
 				//Export all hosts
-				$hosts = $this->Host->find('all', [
-					'recursive' => -1,
-					'conditions' => [
-						'Host.disabled' => 0
-					],
-					'contain' => [
-						'Hosttemplate' => [
-							'fields' => [
-								'Hosttemplate.id',
-								'Hosttemplate.uuid',
-								'Hosttemplate.check_interval'
-							]
+				$hosts = [];
+				for($i=0; $i<$queryCount; $i++){
+					$_hosts = $this->Host->find('all', [
+						'recursive' => -1,
+						'conditions' => [
+							'Host.disabled' => 0
 						],
-						'Hostcommandargumentvalue' => [
-							'Commandargument'
+						'contain' => [
+							'Hosttemplate' => [
+								'fields' => [
+									'Hosttemplate.id',
+									'Hosttemplate.uuid',
+									'Hosttemplate.check_interval'
+								]
+							],
+							'Hostcommandargumentvalue' => [
+								'Commandargument'
+							],
+							'Customvariable',
+							'Contactgroup',
+							'Contact',
+							'Parenthost',
+							'Hostgroup',
+							'CheckPeriod',
+							'NotifyPeriod',
+							'CheckCommand'
 						],
-						'Customvariable',
-						'Contactgroup',
-						'Contact',
-						'Parenthost',
-						'Hostgroup',
-						'CheckPeriod',
-						'NotifyPeriod',
-						'CheckCommand'
-					]
-				]);
+						'limit' => $chunk,
+						'offset' => $chunk*$i,
+					]);
+					foreach($_hosts as $_host){
+						$hosts[] = $_host;
+					}
+					unset($_hosts);
+				}
 			}
 		}
 
@@ -1155,8 +1169,8 @@ class NagiosExportTask extends AppShell{
 				'Host.uuid',
 				'Host.satellite_id'
 			],
-			'limit' => $options['limit'],
-			'offset' => $options['offset']
+			//'limit' => $options['limit'], /* @FIXME */
+			//'offset' => $options['offset'] /* @FIXME */
 		]);
 
 		foreach($hosts as $host){
