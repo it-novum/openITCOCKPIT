@@ -601,10 +601,23 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 								<?php if(isset($customVariableValidationErrorValue)): ?>
 									<div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
 								<?php endif; ?>
-								<?php $this->CustomVariables->setup('HOST', OBJECT_HOST, $host['Customvariable']); ?>
+								<?php
+								$customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+									$host['Customvariable'],
+									$host['Hosttemplate']['Customvariable']
+								);
+								$mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+								?>
+								<?php $this->CustomVariables->setup('HOST', OBJECT_HOST, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
 								<?php echo $this->CustomVariables->prepare(); ?>
 								<br />
 							</div>
+
+							<?php if($mergedCustomVariables->getSize() > 0): ?>
+								<div class="col-xs-12 text-info">
+									<i class="fa fa-info-circle"></i> <?php echo __('Macros with green color are inherited from template. You can override the value but not delete the macro itself'); ?>
+								</div>
+							<?php endif; ?>
 
 						</div>
 

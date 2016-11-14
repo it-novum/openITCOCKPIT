@@ -609,11 +609,25 @@ echo $this->Form->input('Service.freshness_threshold', [
 	<?php endif; ?>
 	<?php if(isset($customVariableValidationErrorValue)): ?>
 		<div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
-	<?php endif; ?>
-	<?php $this->CustomVariables->setup('SERVICE', OBJECT_SERVICE, $service['Customvariable']); ?>
+	<?php endif;
+	$customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+		$service['Customvariable'],
+		$service['Servicetemplate']['Customvariable']
+	);
+	$mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+	?>
+
+	<?php $this->CustomVariables->setup('SERVICE', OBJECT_SERVICE, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
 	<?php echo $this->CustomVariables->prepare('SERVICE'); ?>
 	<br/>
 </div>
+
+	<?php if($mergedCustomVariables->getSize() > 0): ?>
+		<div class="col-xs-12 text-info">
+			<i class="fa fa-info-circle"></i> <?php echo __('Macros with green color are inherited from template. You can override the value but not delete the macro itself'); ?>
+		</div>
+	<?php endif; ?>
+
 </div>
 
 </div>

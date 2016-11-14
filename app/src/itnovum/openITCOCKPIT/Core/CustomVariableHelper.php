@@ -24,44 +24,32 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class UserDefinedMacroReplacer
+class CustomVariableHelper
 {
 
-	/**
-	 * @var array
-	 */
-	private $macros;
+	public function convertCustomVariablesToRepository($customVariables){
+		$repository = new CustomVariablesRepository();
+		foreach($customVariables as $customVariable){
+			$key = $customVariable['name'];
+			$value = $customVariable['value'];
 
-	/**
-	 * @var array
-	 */
-	private $mapping;
+			$id = 0;
+			if(isset($customVariable['id'])){
+				$id = $customVariable['id'];
+			}
 
-	/**
-	 * UserDefinedMacroReplacer constructor.
-	 * @param array $macros result of CakePHPs find()
-	 */
+			$objecttype_id = 0;
+			if(isset($customVariable['objecttype_id'])){
+				$objecttype_id = $customVariable['objecttype_id'];
+			}
 
-	public function __construct($macros)
-	{
-		$this->macros = $macros;
-		$this->buildMapping();
-	}
-
-	/**
-	 * Try to replace al $USERx$ macros in given string
-	 * @param string $msg
-	 * @return string
-	 */
-	public function replaceMacros($msg){
-		return str_replace(array_keys($this->mapping), array_values($this->mapping), $msg);
-	}
-
-	private function buildMapping(){
-		$this->mapping = [];
-		foreach($this->macros as $macro){
-			$this->mapping[$macro['Macro']['name']] = $macro['Macro']['value'];
+			$repository->addCustomVariable(
+				new CustomVariable($key, $value, $id, $objecttype_id)
+			);
 		}
+		return $repository;
 	}
+
 }

@@ -118,18 +118,21 @@ class CustomVariablesHelper extends AppHelper {
             'value' => '',
             'macrotype' => $this->macrotype,
             'id' => null,
-            'objecttype_id' => $this->objecttype_id
+            'objecttype_id' => $this->objecttype_id,
+            'macro_objecttype_id' => null
         ];
+
+
 
         $options = Hash::merge($_options, $options);
         $html = '<div class="col-xs-12">
-            <div class="col-md-3 hidden-mobile text-primary">
+            <div class="col-md-3 hidden-mobile '.$this->getColor($options['macro_objecttype_id'], $options).'">
                 <div style="padding-top: 29px; width: 100%;"><!-- spacer for nice layout --></div>
                 <span>'.$this->macroPrefix.$options['macrotype'].$options['name'].$this->macroSuffix.'</span>
             </div>
             <div class="col-md-4 col-xs-5">
                 <label class="control-label">'.__('Name').'</label>
-                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable]['.$counter.'][name]" value="'.$options['name'].'" />
+                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable]['.$counter.'][name]" value="'.$options['name'].'" counter="'.$counter.'" />
             </div>
             <div class="col-md-4 col-xs-4">
                 <label class="control-label">'.__('Value').'</label>
@@ -152,6 +155,20 @@ class CustomVariablesHelper extends AppHelper {
 
         return $html;
     }
+
+	public function getColor($objecttype_id, $options){
+		if($objecttype_id === null){
+			$objecttype_id = $options['objecttype_id'];
+		}
+
+		$colors = [
+			OBJECT_HOSTTEMPLATE => 'text-success',
+			OBJECT_HOST => 'text-primary',
+			OBJECT_SERVICETEMPLATE => 'text-success',
+			OBJECT_SERVICE => 'text-primary',
+		];
+		return $colors[$objecttype_id];
+	}
 
     /**
      * Returns a `<div>`HTML Object for wrappig the customvariables
@@ -192,7 +209,7 @@ class CustomVariablesHelper extends AppHelper {
             $customvariables = $_customvariables;
         }
         if(!empty($customvariables)){
-            $i = Hash::apply($customvariables, '{n}.id', 'max')+1;
+            $i = max(array_keys($customvariables)) + 1;
             foreach($customvariables as $macro){
                 if(!isset($macro['id'])){
                     $macro['id'] = null;
@@ -200,8 +217,9 @@ class CustomVariablesHelper extends AppHelper {
                 $html.=$this->html($i, [
                     'name' => $macro['name'],
                     'value' => $macro['value'],
-                    'id' => $macro['id'],
-                    'objecttype_id' => $this->objecttype_id
+                    //'id' => $macro['id'],
+                    'objecttype_id' => $this->objecttype_id,
+                    'macro_objecttype_id' => $macro['objecttype_id']
                 ]);
                 $i++;
             }
