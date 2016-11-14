@@ -119,7 +119,7 @@ foreach($this->params->named as $key => $value){
 											<td><?php echo $host['Hosttemplate']['name']; ?></td>
 											<td><?php echo $host['Host']['address']; ?></td>
 											<td><?php echo $host['Host']['uuid']; ?></td>
-											<td class="width-160">
+											<td>
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
 														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -127,7 +127,7 @@ foreach($this->params->named as $key => $value){
 														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 													<?php endif;?>
 													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
+													<ul class="dropdown-menu pull-right">
 														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
 															<li>
 																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>

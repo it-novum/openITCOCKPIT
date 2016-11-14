@@ -90,7 +90,6 @@ foreach($this->params->named as $key => $value){
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
@@ -100,6 +99,7 @@ foreach($this->params->named as $key => $value){
 										<th class="no-sort tableStatewidth"><?php echo __('Last check'); ?></th>
 										<th class="no-sort tableStatewidth"><?php echo __('Next check'); ?></th>
 										<th class="no-sort"><?php echo __('Service output'); ?></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -143,34 +143,7 @@ foreach($this->params->named as $key => $value){
 													echo $this->Status->humanServiceStatus($service['Service']['uuid'], $href)['html_icon'];
 													?>
 												</td>
-												<td class="width-50">
-													<div class="btn-group">
-														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php else: ?>
-															<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php endif;?>
-														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-														<ul class="dropdown-menu">
-															<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-																<li>
-																	<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-																</li>
-															<?php endif; ?>
-															<?php if($this->Acl->hasPermission('enable') && $allowEdit): ?>
-																<li>
-																	<a href="/<?php echo $this->params['controller']; ?>/enable/<?php echo $service['Service']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Enable'); ?></a>
-																</li>
-															<?php endif;?>
-															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
-																<li class="divider"></li>
-																<li>
-																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
-																</li>
-															<?php endif; ?>
-														</ul>
-													</div>
-												</td>
+
 												<td class="text-center"> </td>
 												<td class="text-center"> </td>
 												<td class="text-center">
@@ -205,6 +178,34 @@ foreach($this->params->named as $key => $value){
 													<?php echo __('n/a'); ?>
 												</td>
 												<td><?php echo __('n/a'); ?></td>
+												<td class="width-50">
+													<div class="btn-group">
+														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+														<?php else: ?>
+															<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+														<?php endif;?>
+														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+														<ul class="dropdown-menu pull-right">
+															<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+																</li>
+															<?php endif; ?>
+															<?php if($this->Acl->hasPermission('enable') && $allowEdit): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/enable/<?php echo $service['Service']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Enable'); ?></a>
+																</li>
+															<?php endif;?>
+															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
+																<li class="divider"></li>
+																<li>
+																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																</li>
+															<?php endif; ?>
+														</ul>
+													</div>
+												</td>
 											</tr>
 									<?php endforeach; ?>
 								</tbody>

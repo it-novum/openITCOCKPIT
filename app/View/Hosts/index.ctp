@@ -132,7 +132,6 @@
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort text-center" ><i class="fa fa-check-square-o fa-lg"></i></th>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Host.current_state'); echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus'); ?></th>
-										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
@@ -144,6 +143,7 @@
 										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_check'); echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output'); echo $this->Paginator->sort('Host.output', __('Output')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'satellite_id'); echo $this->Paginator->sort('Host.satellite_id', __('Instance')); ?></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -178,55 +178,6 @@
 												endif;
 												?>
 												<?php //echo $this->Status->humanHostStatus($host['Host']['uuid'], '/hosts/browser/'.$host['Host']['id'])['html_icon']; ?>
-											</td>
-											<td class="width-50">
-												<div class="btn-group">
-													<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
-														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-													<?php else: ?>
-														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-													<?php endif; ?>
-													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
-														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('deactivate') && $hasEditPermission):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $host['Host']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
-															<li>
-																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
-															</li>
-														<?php endif; ?>
-														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
-															<li>
-																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
-															</li>
-														<?php endif; ?>
-
-														<?php
-															if($this->Acl->hasPermission('edit') && $hasEditPermission):
-																echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
-															endif;
-														?>
-														<?php if($this->Acl->hasPermission('delete') && $hasEditPermission):?>
-															<li class="divider"></li>
-															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
-															</li>
-														<?php endif;?>
-													</ul>
-												</div>
 											</td>
 
 											<td class="text-center">
@@ -288,6 +239,55 @@
 													echo $SatelliteNames[$host['Host']['satellite_id']];
 												endif;
 												?>
+											</td>
+											<td class="width-50">
+												<div class="btn-group">
+													<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
+														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php else: ?>
+														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php endif; ?>
+													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+													<ul class="dropdown-menu pull-right">
+														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('deactivate') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $host['Host']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
+															<li>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
+															</li>
+														<?php endif; ?>
+														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
+															<li>
+																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
+															</li>
+														<?php endif; ?>
+
+														<?php
+														if($this->Acl->hasPermission('edit') && $hasEditPermission):
+															echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+														endif;
+														?>
+														<?php if($this->Acl->hasPermission('delete') && $hasEditPermission):?>
+															<li class="divider"></li>
+															<li>
+																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+															</li>
+														<?php endif;?>
+													</ul>
+												</div>
 											</td>
 										</tr>
 									<?php endforeach; ?>

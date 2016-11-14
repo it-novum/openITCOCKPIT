@@ -71,7 +71,7 @@
 										echo $this->Paginator->sort('GraphCollection.description', __('Description'));
 										?>
 									</th>
-									<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+									<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 								</tr>
 								</thead>
 
@@ -99,7 +99,7 @@
 										<td>
 											<?php echo h($collection['GraphCollection']['description']); ?>
 										</td>
-										<td class="width-160">
+										<td>
 											<div class="btn-group">
 												<?php if($this->Acl->hasPermission('edit', 'graphcollections')): ?>
 													<a href="<?php echo Router::url(['action' => 'edit', $collection['GraphCollection']['id']]); ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>

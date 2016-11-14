@@ -75,7 +75,7 @@
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name'); echo $this->Paginator->sort('name', __('Name')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Location.description'); echo $this->Paginator->sort('description', __('Description')); ?></th>
 										<th class="no-sort"><?php echo __('Container'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+										<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -85,7 +85,7 @@
 											<td><?php echo $location['Container']['name']; ?></td>
 											<td><?php echo $location['Location']['description']; ?></td>
 											<td><?php if($location['Container']['parent_id'] == 1): echo __('/root/'); else: ?> <a href="/tenants/edit/<?php echo $location['Container']['parent_id']; ?>"> <?php echo $container[$location['Container']['parent_id']]; ?></a><?php endif; ?></td>
-											<td class="width-160">
+											<td>
 												<div class="btn-group">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 														<a href="<?php echo Router::url(['action' => 'edit', $location['Location']['id']]); ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -93,7 +93,7 @@
 														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 													<?php endif;?>
 													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
+													<ul class="dropdown-menu pull-right">
 														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 															<li>
 																<a href="<?php echo Router::url(['action' => 'edit', $location['Location']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
