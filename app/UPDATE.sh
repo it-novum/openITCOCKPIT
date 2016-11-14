@@ -84,6 +84,9 @@ done
 #Update Containertype from Devicegroup to Node
 oitc api --model Containers --action update_container_type --data ""
 
+#Check and create missing cronjobs
+oitc api --model Cronjob --action create_missing_cronjobs --data ""
+
 #Compress and minify javascript files
 oitc compress
 

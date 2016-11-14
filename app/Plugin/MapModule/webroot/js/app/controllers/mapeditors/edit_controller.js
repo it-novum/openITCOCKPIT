@@ -50,10 +50,37 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 	_initialize: function() {
 		var self = this;
-		$('.background').click(function(){
+
+		this.Ajaxloader.setup();
+
+		$(document).on('click', '.background', function(){
 			self.changeBackground({el:this});
 		});
 
+		//on hover on background class show delete button
+		$(document).on('mouseenter','.thumbnail',function(){
+			//append remove background button
+			$(this).append('<div class="deleteBackgroundBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
+		});
+
+		$(document).on('click','.deleteBackgroundBtn',function() {
+			var filename = $(this).parent().find('img').attr('filename');
+			//write filename to modal dialog
+			$('#backgoundFilename').val(filename);
+			$('#deleteBackgroundModal').modal('show');
+
+		});
+
+		$('#confirmDeleteBackgroundBtn').click(function(){
+			var filename = $('#backgoundFilename').val();
+			self.deleteBackground(filename);
+			$('#deleteBackgroundModal').modal('hide');
+		});
+
+		$(document).on('mouseleave','.thumbnail',function(){
+			//delete remove background button
+			$(this).children('.deleteBackgroundBtn').remove();
+		});
 
 		$('#autohide_menu').change(function(){
 			if($(this).prop('checked')){
@@ -124,7 +151,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 		//create new text
 		$('#createText').click(function(){
-
+			$('#insert-link-area').hide();
+			$('#docuText').val('');
 			$('#deleteTextPropertiesBtn').hide();
 			var textPosition = {};
 			//bind click handler to the map after the create text btn was clicked
@@ -196,11 +224,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			console.log(test);
 
 			//console.log($('#editText *'));
-			$('#editText *').filter(':input').each(function(){
-				if($(this).hasClass('textInput')){
-					self.currentText[$(this).attr('content')] = $(this).val();
-				}
-			});
+			// $('#editText *').filter(':input').each(function(){
+			// 	if($(this).hasClass('textInput')){
+			// 		self.currentText[$(this).attr('content')] = $(this).val();
+			// 	}
+			// });
+			self.currentText['text'] = $('#docuText').val();
 
 			self.saveText(self.currentText);
 		});
@@ -216,13 +245,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			self.deleteText(elUuid);
 		});
 
-		$('.textElement').each(function(){
-			var fontSize = $(this).css('font-size');
-
-			$(this).basify({fontSize:fontSize});
-			//lineHeight wont be set with the basify plugin in this call
-			$(this).css({'line-height':fontSize});
-		});
+		// $('.textElement').each(function(){
+		// 	var fontSize = $(this).css('font-size');
+        //
+		// 	$(this).basify({fontSize:fontSize});
+		// 	//lineHeight wont be set with the basify plugin in this call
+		// 	$(this).css({'line-height':fontSize});
+		// });
 
 		$('#dismissTextProperties').click(function(){
 			//clear form fields
@@ -370,10 +399,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			acceptedFiles: 'image/*', //mimetypes
 			paramName: "file",
 			success: function(obj){
-				console.log(obj);
-				//@TODO resfresh thumbnails after Uploaded succeeded
-				console.log(self);
-				//self.MapEdit.refreshThumbnails();
+				self.refreshBackgroundThumbnails();
 			},
 			error:function(error,errorMessage,xhr){
 				console.log(error);
@@ -385,6 +411,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		//prevent Dropzone from throwing unnecessary errors (more than one instance...)
 		Dropzone.autoDiscover = false;
 		$('.background-dropzone').dropzone(dropzoneOptObj);
+
+
 
 
 		/*
@@ -701,7 +729,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			type = 'service';
 			$('#addGadget_'+type).show();
 			self.currentGadget['type'] = type;
-			
+
 			if(self.currentGadget['gadget'] == "RRDGraph"){
 				var $form = $('#addGadget_'+type).find('form');
 				$form.find('.rrdBackground').removeClass('hidden');
@@ -1135,8 +1163,134 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		 * make the elements draggable at editor init
 		 */
 		self.makeDraggable();
+
+
+		this.$currentColor = $('#currentColor');
+		this.$textarea = $('#docuText');
+
+		// Bind click event for color selector
+		$("[select-color='true']").click(function(){
+			var color = $(this).attr('color');
+			self.$textarea.surroundSelectedText("[color='"+color+"']", '[/color]');
+		});
+
+		// Bind click event for font size selector
+		$("[select-fsize='true']").click(function(){
+			var fontSize = $(this).attr('fsize');
+			self.$textarea.surroundSelectedText("[text='"+fontSize+"']", "[/text]");
+		});
+
+
+		// Bind click event to insert hyperlinks
+		$('#perform-insert-link').click(function(){
+			var url;
+			if($('#insert-link-type').val() == '0'){
+				url = $('#insert-link-map').val();
+			}else{
+				url = $('#insert-link-url').val();
+			}
+			var description = $('#insert-link-description').val();
+			var sel = self.$textarea.getSelection();
+			var newTab = $('#insert-link-tab').is(':checked') ? " tab" : "";
+			self.$textarea.insertText("[url='"+url+"'"+newTab+"]"+description+'[/url]', sel.start, "collapseToEnd");
+			$('#insert-link-area').hide();
+			$('#insert-text-area').show();
+			$('#insert-modal-footer').show();
+		});
+
+		$('#insert-link-type').change(function(){
+			if($(this).val() == '0'){
+				$('#link-map-area').show();
+				$('#link-url-area').hide();
+			}else{
+				$('#link-map-area').hide();
+				$('#link-url-area').show();
+			}
+		});
+
+		// Bind other buttons
+		$("[wysiwyg='true']").click(function(){
+			var task = $(this).attr('task');
+			switch(task){
+				case 'bold':
+					self.$textarea.surroundSelectedText('[b]', '[/b]');
+					break;
+
+				case 'italic':
+					self.$textarea.surroundSelectedText('[i]', '[/i]');
+					break;
+
+				case 'underline':
+					self.$textarea.surroundSelectedText('[u]', '[/u]');
+					break;
+
+				case 'left':
+					self.$textarea.surroundSelectedText('[left]', '[/left]');
+					break;
+
+				case 'center':
+					self.$textarea.surroundSelectedText('[center]', '[/center]');
+					break;
+
+				case 'right':
+					self.$textarea.surroundSelectedText('[right]', '[/right]');
+					break;
+
+				case 'justify':
+					self.$textarea.surroundSelectedText('[justify]', '[/justify]');
+					break;
+			}
+		});
+
+		$('#insert-link').click(function(){
+			$('#insert-link-url').val('');
+			$('#insert-link-description').val('');
+			$('#insert-link-area').show();
+			$('#insert-text-area').hide();
+			$('#insert-modal-footer').hide();
+		});
+
+		$('#cancel-insert-link').click(function(){
+			$('#insert-link-area').hide();
+			$('#insert-text-area').show();
+			$('#insert-modal-footer').show();
+		});
+
+		$('.textElement').each(function(){
+			$(this).html(self.convertBb2Html($(this).html()));
+		});
 	},
 
+	convertBb2Html:function(bbCode){
+		var resString = bbCode;
+		resString = resString.replace(/(?:\r\n|\r|\n)/g, '<br />');
+		resString = resString.replace(/\[b\]/gi, '<strong>');
+		resString = resString.replace(/\[\/b\]/gi, '</strong>');
+		resString = resString.replace(/\[i\]/gi, '<i>');
+		resString = resString.replace(/\[\/i\]/gi, '</i>');
+		resString = resString.replace(/\[u\]/gi, '<u>');
+		resString = resString.replace(/\[\/u\]/gi, '</u>');
+
+		resString = resString.replace(/\[left\]/gi, '<div class="text-left">');
+		resString = resString.replace(/\[\/left\]/gi, '</div>');
+		resString = resString.replace(/\[right\]/gi, '<div class="text-right">');
+		resString = resString.replace(/\[\/right\]/gi, '</div>');
+		resString = resString.replace(/\[center\]/gi, '<div class="text-center">');
+		resString = resString.replace(/\[\/center\]/gi, '</div>');
+		resString = resString.replace(/\[justify\]/gi, '<div class="text-justify">');
+		resString = resString.replace(/\[\/justify\]/gi, '</div>');
+
+		resString = resString.replace(/\[color ?= ?'(#[\w]{6})' ?\]/gi, '<span style="color:$1">');
+		resString = resString.replace(/\[\/color\]/gi, '</span>');
+
+		resString = resString.replace(/\[text ?= ?'([\w\-]+)' ?\]/gi, '<span style="font-size:$1">');
+		resString = resString.replace(/\[\/text\]/gi, '</span>');
+
+		resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\. ]+)' ?tab ?\]/gi, '<a href="$1" target="_blank">');
+		resString = resString.replace(/\[url ?= ?'([\w\-:\/\[\]\. ]+)' ?\]/gi, '<a href="$1">');
+		resString = resString.replace(/\[\/url\]/gi, '</a>');
+		return resString;
+	},
 
 	/**
 	 * Draw a line to the map
@@ -1813,7 +1967,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 				$('#GadgetWizardModal').modal('show');
 				$('.chosen-container').css('width', '100%');
 
-				
+
 
 				this.currentGadget = [];
 				this.currentGadget = drop;
@@ -1989,23 +2143,22 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 	saveText:function(textObj){
 		var self = this;
 		//check if the Text div already has its hidden fields
-		console.log(textObj);
 		if($('#'+textObj.elementUuid+' *').filter(':input').length <=0){
 			//Fields not exist -> Add mode
 			//text field
-			$('<span>',{
+			$('<div>',{
 				id:'spanText_'+textObj.elementUuid
 			})
-			.text(textObj.text)
-			.css({'font-size':textObj.font_size+'px'})
+			.html(self.convertBb2Html(textObj.text))
+			.css({'font-size':'11px'})
 			.addClass('textElement')
 			.appendTo($('#'+textObj.elementUuid));
 			//arrange text
-			$('#spanText_'+textObj.elementUuid).basify({font_size:textObj.font_size});
+			//$('#spanText_'+textObj.elementUuid).basify({font_size:textObj.font_size});
 			//append eventlistener
 			//add eventlistener on newly created items
 			var el = document.getElementById('spanText_'+self.currentText['elementUuid']);
-			el.addEventListener('dblclick', function(){self.editText(el);});
+			el.addEventListener('dblclick', function(){$('#tempTextUUID').val($(this).parent().attr('id'));self.editText(el);});
 			//$('#spanText_'+textObj.id).bind('dblclick', self.editText);
 
 			//text value field
@@ -2017,12 +2170,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			.appendTo($('#'+textObj.elementUuid));
 
 			//font size field
-			$('<input>',{
-				type:'hidden',
-				value:textObj.font_size,
-				name:'data[Maptext]['+textObj.elementUuid+'][font_size]',
-			}).data({'key':'font_size'})
-			.appendTo($('#'+textObj.elementUuid));
+			// $('<input>',{
+			// 	type:'hidden',
+			// 	value:textObj.font_size,
+			// 	name:'data[Maptext]['+textObj.elementUuid+'][font_size]',
+			// }).data({'key':'font_size'})
+			// .appendTo($('#'+textObj.elementUuid));
 
 			//x field
 			$('<input>',{
@@ -2045,9 +2198,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		}else{
 			//Fields exist -> Edit mode
 			//change text and font size
-			$('#spanText_'+textObj.elementUuid).text(textObj.text).css({'font-size':textObj.font_size+'px'});
+			$('#spanText_'+textObj.elementUuid).html(self.convertBb2Html(textObj.text));//.css({'font-size':textObj.font_size+'px'});
 			//rearrange the text
-			$('#spanText_'+textObj.elementUuid).basify({fontSize:textObj.font_size});
+			//$('#spanText_'+textObj.elementUuid).basify({fontSize:textObj.font_size});
 			//update form fields
 			$('#'+textObj.elementUuid).children().filter(':input').each(function(){
 				$(this).val(textObj[$(this).data('key')]);
@@ -2082,10 +2235,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			self.currentText[$(this).data('key')] = $(this).val()
 		});
 		//fill form fields
-		$('#editTextText').val(self.currentText.text);
-		$('#editTextFontSize').val(self.currentText.font_size);
+		self.currentText.text = self.currentText.text.replace(/<br\s*[\/]?>/gi, "\n");
+		$('#docuText').val(self.currentText.text);
+		//$('#editTextFontSize').val(self.currentText.font_size);
 
 		$('#deleteTextPropertiesBtn').show();
+		$('#insert-link-area').hide();
+		$('#insert-text-area').show();
+		$('#insert-modal-footer').show();
 		//show dialog
 		$('#textWizardModal').modal('show');
 
@@ -2107,4 +2264,48 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 	capitaliseFirstLetter:function(string){
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	},
+
+
+	refreshBackgroundThumbnails:function(){
+		var self = this;
+		//get new background list by ajax
+		$.ajax({
+			url: "/map_module/mapeditors/getBackgroundImages",
+			type: "POST",
+			dataType: "json",
+			error: function(){},
+			success: function(response){
+				var list = self.buildNewBackgroundThumbs(response);
+				$('#background-panel').empty().html(list);
+			}.bind(self)
+		});
+	},
+
+
+	buildNewBackgroundThumbs:function(bgs){
+		var backgrounds = bgs.backgrounds;
+		var html = '';
+		for(var bg in backgrounds.files){
+			var path  = backgrounds.thumbPath+'/thumb_'+backgrounds.files[bg];
+			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
+		}
+		return html;
+	},
+
+
+	deleteBackground:function(filename){
+		var self = this;
+		//ajax call to delete background
+		$.ajax({
+			url: "/map_module/BackgroundUploads/delete/"+encodeURIComponent(btoa(filename)),
+			type: "POST",
+			dataType: "html",
+			error: function(){},
+			success: function(response){
+				self.refreshBackgroundThumbnails();
+			}.bind(self)
+		});
+		//also remove the background from the editor
+		self.changeBackground({remove:true});
+	}
 });

@@ -63,6 +63,8 @@ class AppController extends Controller{
 		'Systemsetting',
 		'Container',
 		'Usergroup',
+		'Register',
+		'Proxy'
 	];
 
 	private $restEnabledController = [
@@ -425,6 +427,8 @@ class AppController extends Controller{
 				}
 			}
 		}
+
+		$this->checkForUpdates();
 
 		// @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
 		// which has the effect that passing data to the frontend from Controller::beforeRender
@@ -795,5 +799,21 @@ class AppController extends Controller{
 
 	protected function isXmlRequest(){
 		return $this->request->ext === 'xml';
+	}
+
+	public function checkForUpdates(){
+		$path = APP . 'Lib' . DS . 'AvailableVersion.php';
+		$availableVersion = '???';
+		if(file_exists($path)){
+			require_once $path;
+			$availableVersion = openITCOCKPIT_AvailableVersion::get();
+		}
+
+		Configure::load('version');
+
+		$this->set([
+			'availableVersion' => $availableVersion,
+			'installedVersion' => Configure::read('version')
+		]);
 	}
 }

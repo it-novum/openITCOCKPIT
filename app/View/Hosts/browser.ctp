@@ -207,7 +207,14 @@
 								<?php if($this->Acl->hasPermission('checkcommand')):?>
 									<tr>
 										<td><strong><?php echo __('Command line'); ?>:</strong></td>
-										<td><code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo $this->Monitoring->replaceCommandArguments($commandarguments, $host['CheckCommand']['command_line']); ?></code></td>
+										<?php
+										$HostMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
+										$hostCommandLine = $HostMacroReplacerCommandLine->replaceBasicMacros($host['CheckCommand']['command_line']);
+
+										$HostCustomMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($host['Customvariable'], OBJECT_HOST);
+										$hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
+										?>
+										<td><code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo $this->Monitoring->replaceCommandArguments($commandarguments, $hostCommandLine); ?></code></td>
 									</tr>
 								<?php endif; ?>
 								<tr>
@@ -402,7 +409,11 @@
 													if($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
 														echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
 													else:
-														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'], 'color: transparent;')['html_icon'];
+														$currentState = -1;
+														if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'])){
+															$currentState = $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'];
+														}
+														echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $currentState, 'color: transparent;')['html_icon'];
 													endif;
 													?>
 												</td>

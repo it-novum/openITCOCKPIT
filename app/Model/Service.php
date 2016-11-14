@@ -476,11 +476,6 @@ class Service extends AppModel{
 		if($save_mode === 'edit'){
 			$diff_array = Hash::merge($diff_array, ['Service' => array_fill_keys(array_keys($tmp_keys), null)]);
 		}
-		//Check differences for custom variables
-		if(!empty(Set::classicExtract($diff_array, 'Customvariable.{n}'))){
-			$diff_array = Hash::merge($diff_array, ['Service' => ['own_customvariables' => '1']]);
-			$diff_array = Hash::merge($diff_array, ['Customvariable' => Set::classicExtract($request_data, 'Customvariable.{n}')]);
-		}
 
 		if((!is_array($contactGroupData) || !$diff_array['Service']['own_contactgroups'])){
 			$contactGroup = [];
@@ -557,7 +552,6 @@ class Service extends AppModel{
 				$diff_array = Hash::merge($diff_array, ['Service' => ['own_contactgroups' => '0']]);
 			}
 		}
-
 		return $diff_array;
 	}
 
@@ -588,7 +582,7 @@ class Service extends AppModel{
 					'NotifyPeriod',
 					'Customvariable' => [
 						'fields' => [
-							'id', 'name', 'value'
+							'id', 'name', 'value', 'objecttype_id'
 						]
 					],
 					'Servicetemplatecommandargumentvalue' => [
@@ -668,7 +662,7 @@ class Service extends AppModel{
 				],
 				'Customvariable' => [
 					'fields' => [
-						'id', 'name', 'value'
+						'id', 'name', 'value', 'objecttype_id'
 					]
 				],
 				'Servicecommandargumentvalue' => [
@@ -822,14 +816,12 @@ class Service extends AppModel{
 					['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
 					['Servicecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
 					['Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
-					['Customvariable.{n}.{(name|value)}', false]
 			],
 			'Servicetemplate' => [
 				['Servicetemplate.{('.implode('|', array_values($fields)).')}', false],
 				['{(Contact|Contactgroup)}.{n}.id', true],
 				['Servicetemplatecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
 				['Servicetemplateeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
-				['Customvariable.{n}.{(name|value)}', false]
 			]
 		];
 		$diff_array = [];

@@ -25,7 +25,7 @@
 
 class BackupsController extends AppController{
     public $layout = 'Admin.default';
-    public $components = ['Http', 'GearmanClient'];
+    public $components = ['GearmanClient'];
     public $uses = ['Proxy'];
     
     public function index()

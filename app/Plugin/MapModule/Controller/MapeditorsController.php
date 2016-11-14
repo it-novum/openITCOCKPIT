@@ -89,7 +89,34 @@ class MapeditorsController extends MapModuleAppController {
 				'Maptext'
 			]
 		]);
-		$maps = $this->Map->find('all');
+
+		$query = [
+			'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
+			'fields' => [
+				'Map.*',
+			],
+			'joins' => [
+				[
+					'table' => 'maps_to_containers',
+					'type' => 'INNER',
+					'alias' => 'MapsToContainers',
+					'conditions' => 'MapsToContainers.map_id = Map.id'
+				]
+			],
+			'order' => [
+				'Map.name' => 'asc'
+			],
+			'contain' => [
+				'Container' => [
+					'fields' => [
+						'Container.id'
+					]
+				]
+			],
+			'group' => 'Map.id'
+		];
+		$maps = $this->Map->find('all', $query);
+
 		$maps = Hash::remove($maps, '{n}.Container');
 
 		$mapList = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
@@ -107,6 +134,7 @@ class MapeditorsController extends MapModuleAppController {
 					]);
 				}
 			}
+			
 
 			if($this->Map->saveAll($request)){
 				if($this->request->ext === 'json'){
@@ -137,6 +165,9 @@ class MapeditorsController extends MapModuleAppController {
 		$backgroundThumbs = $this->Background->findBackgrounds();
 		$iconSets = $this->Background->findIconsets();
 		$icons = $this->Background->findIcons();
+
+		$this->Frontend->setJson('backgroundThumbs', $backgroundThumbs);
+
 		$this->set(compact([
 			'map',
 			'maps',
@@ -149,6 +180,12 @@ class MapeditorsController extends MapModuleAppController {
 			'iconSets',
 			'icons'
 		]));
+	}
+
+	public function getBackgroundImages(){
+		$this->autoRender = false;
+		$bgs = $this->Background->findBackgrounds();
+		echo json_encode($bgs);
 	}
 
 	public function view($id = null){

@@ -35,8 +35,7 @@ App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 		this.CustomVariables.setup({
 			controller: 'Servicetemplates',
 			ajaxUrl: 'addCustomMacro',
-			macrotype: 'SERVICE',
-			customVariablesCounter: this.getVar('customVariablesCount') + 1
+			macrotype: 'SERVICE'
 		});
 		this.ContainerSelectbox.setup(this.Ajaxloader);
 		this.ContainerSelectbox.addContainerEventListener({

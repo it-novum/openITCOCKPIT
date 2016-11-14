@@ -35,8 +35,7 @@ App.Controllers.HosttemplatesAddController = Frontend.AppController.extend({
 		this.CustomVariables.setup({
 			controller: 'Hosttemplates',
 			ajaxUrl: 'addCustomMacro',
-			macrotype: 'HOST',
-			customVariablesCounter: this.getVar('customVariablesCount') + 1
+			macrotype: 'HOST'
 		});
 
 		this.$contacts = $('#ContactContact');

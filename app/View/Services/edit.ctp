@@ -176,6 +176,7 @@ echo $this->Form->create('Service', [
 		'label' => ['text' => __('Service URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
 		'value' => $service['Service']['service_url'],
 		'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+		'help' => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$, $HOSTADDRESS$, $SERVICEDESC$, $SERVICEDISPLAYNAME$ will be replaced')
 	]);
 	?>
 	<div class="form-group <?php echo isset($validationErrors['priority']) ? 'has-error' : '' ?>">
@@ -608,11 +609,25 @@ echo $this->Form->input('Service.freshness_threshold', [
 	<?php endif; ?>
 	<?php if(isset($customVariableValidationErrorValue)): ?>
 		<div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
-	<?php endif; ?>
-	<?php $this->CustomVariables->setup('SERVICE', OBJECT_SERVICE, $service['Customvariable']); ?>
+	<?php endif;
+	$customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+		$service['Customvariable'],
+		$service['Servicetemplate']['Customvariable']
+	);
+	$mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+	?>
+
+	<?php $this->CustomVariables->setup('SERVICE', OBJECT_SERVICE, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
 	<?php echo $this->CustomVariables->prepare('SERVICE'); ?>
 	<br/>
 </div>
+
+	<?php if($mergedCustomVariables->getSize() > 0): ?>
+		<div class="col-xs-12 text-info">
+			<i class="fa fa-info-circle"></i> <?php echo __('Macros with green color are inherited from template. You can override the value but not delete the macro itself'); ?>
+		</div>
+	<?php endif; ?>
+
 </div>
 
 </div>

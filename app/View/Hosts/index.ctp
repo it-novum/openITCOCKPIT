@@ -22,8 +22,17 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
+
+    $this->Paginator->options(array('url' => $this->params['named']));
+    $filter = "/";
+    foreach($this->params->named as $key => $value){
+        if (!is_array($value)) {
+			$filter.= $key.":".$value."/";
+		}
+    }
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
@@ -91,21 +100,21 @@
 					<h2 class="hidden-mobile"><?php echo __('Hosts'); ?></h2>
 					<ul class="nav nav-tabs pull-right" id="widget-tab-1">
 						<li class="active">
-							<a href="/hosts/index"><i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
+							<a href="/hosts/index<?php echo $filter; ?>"><i class="fa fa-stethoscope"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
 						</li>
 						<?php if($this->Acl->hasPermission('notMonitored')):?>
 							<li class="">
-								<a href="/hosts/notMonitored"><i class="fa fa-user-md"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
+								<a href="/hosts/notMonitored<?php echo $filter; ?>"><i class="fa fa-user-md"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
 							</li>
 						<?php endif; ?>
 						<?php if($this->Acl->hasPermission('disabled')):?>
 							<li>
-								<a href="/hosts/disabled"><i class="fa fa-power-off"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
+								<a href="/hosts/disabled<?php echo $filter; ?>"><i class="fa fa-power-off"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
 							</li>
 						<?php endif;?>
 						<?php if($this->Acl->hasPermission('index', 'DeletedHosts')):?>
 							<li>
-								<a href="/deleted_hosts/index"><i class="fa fa-trash-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
+								<a href="/deleted_hosts/index<?php echo $filter; ?>"><i class="fa fa-trash-o"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
 							</li>
 						<?php endif; ?>
 					</ul>
@@ -115,9 +124,11 @@
 
 
 					<div class="widget-body no-padding">
-						<?php //debug($filters);
-						 echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
-						<div class="mobile_table">
+						<?php
+						$options = [ 'avoid_cut' => true];
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('Search'), false, false);
+                        ?>
+                        <div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>
 									<tr>
@@ -143,6 +154,8 @@
 										<?php
 										//Better performance, than run all the Hash::extracts if not necessary
 										$hasEditPermission = false;
+										$hostSharingPermissions =  new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $host['Container'], $userRights);
+										$allowSharing = $hostSharingPermissions->allowSharing();
 										if($hasRootPrivileges === true):
 											$hasEditPermission = true;
 										else:
@@ -185,7 +198,7 @@
 																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
 															</li>
 														<?php endif;?>
-														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission):?>
+														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission && 	$allowSharing):?>
 															<li>
 																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
 															</li>
@@ -245,9 +258,16 @@
 												<?php endif;?>
 											</td>
 											<td class="text-center">
-												<?php if(count($host['Containers']) > 1): ?>
-													<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa fa-sitemap fa-lg "></i></a>
-												<?php endif; ?>
+												<?php
+												if(count($host['Container']) > 1):
+													if($allowSharing):?>
+														<a class="txt-color-blueDark" title="<?php echo __('Shared');?>" href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-lg "></i></a>
+													<?php
+													else:?>
+														<i class="fa fa-low-vision fa-lg txt-color-blueLight" title="<?php echo __('Restricted view');?>"></i>
+													<?php
+													endif;
+												endif; ?>
 											</td>
 											<td class="text-center">
 												<?php

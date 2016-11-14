@@ -62,7 +62,7 @@ class ListFilterHelper extends AppHelper {
 		if(empty($options)) {
 			$options = $this->filters['field'];
 		}
-		if(!$options['showFormField']) continue;
+		//if(!$options['showFormField']) continue;
 
 		$ret = '';
 		if(isset($options['hidden'])){
@@ -249,13 +249,25 @@ class ListFilterHelper extends AppHelper {
 			$options = $this->_options['formActionParams'];
 		}else{
 			$here = $this->here;
+            //This is for avoiding cut off IP-Addresses
+            if (isset($this->_options['avoid_cut']) && $this->_options['avoid_cut']) {
+                //Avoiding duplicate appearance of /q:1
+                if(!strpos($here,"/q:1")) {
+                    $here = $here . '/q:1';
+                }
+            }
+
+            //CakePHP remove index action from url by default
+            //This cause some strange behavior...
 			if($this->request->params['action'] == 'index' || $this->request->params['action'] == ''){
-				//CakePHP remove index action from url by default
-				//This cause some strange behavior...
-				$here = $here . '/index';
+                //Avoiding duplicate appearance of /index
+                if(!strpos($here,"/index")) {
+                    $here = $here . '/index';
+                }
 			}
 			$options = Set::merge(array('url' => $here), $this->_options['formActionParams']);
 		}
+       // var_dump($options);exit;
 
 		$ret.= $this->Form->create('Filter', $options);
 		return $ret;

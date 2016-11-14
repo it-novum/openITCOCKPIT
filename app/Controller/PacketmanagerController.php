@@ -23,10 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
+use itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController{
 	public $layout = 'Admin.default';
-	public $components = ['Http', 'Session'];
+	public $components = ['Session'];
 	public $uses = ['Proxy', 'Register'];
 	//public $controllers = array('Proxy');
 	
@@ -51,47 +54,24 @@ class PacketmanagerController extends AppController{
 			return basename($file);
 		}, $installedModules);
 		$this->set('installedModules', $installedModules);
-		
-		$license = $this->Register->find('first');
 
-		
-		if(ENVIRONMENT === Environments::DEVELOPMENT){
-			
-			if(!empty($license)){
-				$url = 'http://172.16.2.87/modules/fetch/'.$license['Register']['license'].'.json';
-			}else{
-				$url = 'http://172.16.2.87/modules/fetch/.json';
-			}
-			
-			$options = [
-				'CURLOPT_SSL_VERIFYPEER' => false,
-				'CURLOPT_SSL_VERIFYHOST' => false,
-			];
-			// $http = new HttpComponent('https://127.0.0.1/packetmanager/getPackets', $options, $this->Proxy->getSettings());
-			$http = new HttpComponent($url, $options, $this->Proxy->getSettings());
-			
-		}else{
-			
-			if(!empty($license)){
-				$url = 'https://packagemanager.it-novum.com/modules/fetch/'.$license['Register']['license'].'.json';
-			}else{
-				$url = 'https://packagemanager.it-novum.com/modules/fetch/.json';
-			}
-			
-			$options = [];
-			$http = new HttpComponent($url, [], $this->Proxy->getSettings());
-		}
+		$License = new License($this->Register->find('first'));
+		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+		$http = new Http(
+			$packagemanagerRequestBuilder->getUrl(),
+			$packagemanagerRequestBuilder->getOptions(),
+			$this->Proxy->getSettings()
+		);
 
+		$http->sendRequest();
 		if(!$http->error){
-			$http->sendRequest();
-
 			if(strlen($http->data) > 0){
 				//Es wurden Daten empfangen. Hoffen wir das es unser Array ist
 				$data = json_decode($http->data);
 				$this->set('data', $data);
 			}
 		}else{
-			$this->setFlash('Error: ' . $http->data, false);
+			$this->setFlash('Error: ' . $http->getLastError()['error'], false);
 		}
 	}
 
