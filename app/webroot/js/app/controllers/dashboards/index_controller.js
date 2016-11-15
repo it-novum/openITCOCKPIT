@@ -91,6 +91,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/dashboards/updateTabPosition",
 					type: "POST",
+					cache: false,
 					data: {tabIdsOrdered: tabIdsOrdered},
 					error: function(){},
 					success: function(response){
@@ -113,6 +114,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/dashboards/disableUpdate",
 					type: "POST",
+					cache: false,
 					data: {tabId: self.tabId},
 					error: function(){},
 					success: function(response){
@@ -134,6 +136,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/dashboards/add",
 				type: "POST",
+				cache: false,
 				data: {typeId: $object.data('type-id'), tabId: self.tabId},
 				error: function(){},
 				success: function(response){
@@ -192,6 +195,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 						$.ajax({
 							url: "/dashboards/updateTitle",
 							type: "POST",
+							cache: false,
 							data: {title: value, widgetId: widgetId},
 							error: function(){},
 							success: function(response){
@@ -225,6 +229,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/dashboards/updateColor",
 				type: "POST",
+				cache: false,
 				data: {color: newColor, widgetId: widgetId},
 				error: function(){},
 				success: function(response){
@@ -244,6 +249,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/dashboards/deleteWidget",
 				type: "POST",
+				cache: false,
 				data: {widgetId: widgetId},
 				error: function(){},
 				success: function(response){
@@ -301,6 +307,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/dashboards/saveTabRotationInterval",
 				type: "POST",
+				cache: false,
 				data: {value: parseInt(ev.value, 10)},
 				error: function(){},
 				success: function(response){
@@ -375,6 +382,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/dashboards/updatePosition",
 			type: "POST",
+			cache: false,
 			data: {data: data, tabId: this.tabId},
 			error: function(){},
 			success: function(response){

@@ -48,6 +48,7 @@ App.Controllers.CommandsEditController = Frontend.AppController.extend({
 			$.ajax({
 					url: "/Commands/loadMacros/",
 					type: "POST",
+					cache: false,
 					data: this.argumentNames,
 					error: function(){},
 					success: function(){},
@@ -113,6 +114,7 @@ App.Controllers.CommandsEditController = Frontend.AppController.extend({
 		$.ajax({
 				url: "/Commands/addCommandArg/"+encodeURIComponent(this.getVar('command_id')),
 				type: "POST",
+				cache: false,
 				data: this.argumentNames,
 				error: function(){},
 				success: function(){},

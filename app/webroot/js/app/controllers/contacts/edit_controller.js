@@ -52,6 +52,7 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
 				$.ajax({
 					url: '/Contacts/loadTimeperiods/.json',
 					type: 'post',
+					cache: false,
 					data: {
 						container_ids: containerIds
 					},

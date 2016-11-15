@@ -91,6 +91,7 @@ DEBUGKIT.clearCache = function () {
 				event.preventDefault();
 				var request = $.ajax({
 					url: this.href,
+                    cache: false,
 					success : function (response) {
 						cacheOutput.html(response);
 					},

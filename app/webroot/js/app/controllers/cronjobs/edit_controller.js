@@ -43,6 +43,7 @@ App.Controllers.CronjobsEditController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/cronjobs/loadTasksByPlugin/"+encodeURIComponent($this.val())+'.json',
 				type: "GET",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){

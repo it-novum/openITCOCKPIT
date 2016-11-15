@@ -161,6 +161,7 @@ App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Servicetemplates/loadArgumentsAdd/" + encodeURIComponent(command_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -175,6 +176,7 @@ App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Servicetemplates/loadNagArgumentsAdd/" + encodeURIComponent(command_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){

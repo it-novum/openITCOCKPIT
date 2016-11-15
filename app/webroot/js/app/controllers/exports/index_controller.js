@@ -34,6 +34,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 			var self = this;
 			$.ajax({
 				url: '/exports/broadcast.json',
+				cache: false,
 				type: "GET",
 				success: function(response){
 					//console.log(response);
@@ -117,6 +118,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 			}
 			$.ajax({
 				url: '/exports/launchExport/'+createBackup+'.json',
+				cache: false,
 				type: "GET",
 				success: function(response){
 					if(response.export.exportRunning == true){
@@ -139,6 +141,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
 		$('#verifyError').show();
 		$.ajax({
 			url: '/exports/verifyConfig.json',
+			cache: false,
 			type: "GET",
 			success: function(response){
 				for(var key in response.result.output){

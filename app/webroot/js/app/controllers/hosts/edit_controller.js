@@ -71,6 +71,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 				$.ajax({
 					url: '/Hosts/getSharingContainers/'+containerId+'.json',
 					type: 'post',
+					cache: false,
 					dataType: 'json',
 					complete: function(response){
 						$hostSharingContainer = $('#HostSharedContainer')
@@ -93,16 +94,16 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 		}
 
 
-  /*      var currentHosttemplateId = $('#HostHosttemplateId').val();
-		var currentContainerId = $('#HostContainerId').val();
+		/*      var currentHosttemplateId = $('#HostHosttemplateId').val();
+		 var currentContainerId = $('#HostContainerId').val();
 
-		$('#HostContainerId').change(function(){
-			var newContainerId = $(this).val();
-			console.log(newContainerId);
-			console.log('changed');
-			self.getContainerElements(newContainerId, currentHosttemplateId);
-		});
-*/
+		 $('#HostContainerId').change(function(){
+		 var newContainerId = $(this).val();
+		 console.log(newContainerId);
+		 console.log('changed');
+		 self.getContainerElements(newContainerId, currentHosttemplateId);
+		 });
+		 */
 		var $inheritContacts = $('#inheritContacts');
 
 		if($inheritContacts.prop('checked') == true) {
@@ -245,6 +246,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 					ret = $.ajax({
 						url: "/Hosts/gethostbyname",
 						type: "POST",
+						cache: false,
 						data: "hostname="+encodeURIComponent($hostname.val()),
 						error: function(){},
 						success: function(){},
@@ -277,6 +279,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 					ret = $.ajax({
 						url: "/Hosts/gethostbyaddr",
 						type: "POST",
+						cache: false,
 						data: "address="+encodeURIComponent($hostaddress.val()),
 						error: function(){},
 						success: callback,
@@ -873,6 +876,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/Hosts/loadHosttemplate/" + encodeURIComponent(hosttemplateId) + '.json',
 						type: "POST",
+						cache: false,
 						dataType: "json",
 						error: function(){},
 						success: function(){},
@@ -1000,6 +1004,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Hosts/loadParametersByCommandId/"+encodeURIComponent(command_id)+"/"+encodeURIComponent(hosttemplate_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -1014,6 +1019,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Hosts/loadArgumentsAdd/"+encodeURIComponent(command_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -1027,6 +1033,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Hosts/loadHosttemplatesArguments/"+encodeURIComponent(hosttemplate_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -1090,6 +1097,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: '/Hosts/loadElementsByContainerId/' +containerId+ '/' + encodeURIComponent(this.getVar('hostId')) + '.json',
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){

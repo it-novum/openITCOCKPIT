@@ -39,6 +39,7 @@ App.Controllers.ServicetemplategroupsAllocateToHostgroupController = Frontend.Ap
 			$.ajax({
 				url: "/servicetemplategroups/getHostsByHostgroupByAjax/"+encodeURIComponent($(this).val())+"/"+self.getVar('servicetemplategroup_id')+".json",
 				type: "POST",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){

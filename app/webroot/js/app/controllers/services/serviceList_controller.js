@@ -131,6 +131,7 @@ App.Controllers.ServicesServiceListController = Frontend.AppController.extend({
 		ret = $.ajax({
 			url: "/downtimes/validateDowntimeInputFromBrowser",
 			type: "POST",
+			cache: false,
 			data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
 			error: function(){},
 			success: function(response){
