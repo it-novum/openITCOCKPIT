@@ -182,12 +182,36 @@ class MapeditorsController extends MapModuleAppController {
 		]));
 	}
 
+	public function getIconImages(){
+		$this->autoRender = false;
+		$iconSets = $this->Background->findIconsets();
+		foreach($iconSets['items']['iconsets'] as $key => $iconset){
+			$path = $iconSets['items']['webPath'].'/'.$iconset.'/'.'ok.png';
+			echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer">
+				<div class="drag-element thumbnail thumbnailFix iconset-thumbnail">';
+					if($iconSets['items']['fileDimensions'][$key] < 80){
+						echo '<span class="valignHelper"></span>';
+					}
+					echo '<img class="iconset" src="'.$path.'" iconset="'.h($iconset).'">
+				</div>
+			</div>';
+		}
+	}
+
+	public function getIconsetsList(){
+		$this->autoRender = false;
+		$iconSets = $this->Background->findIconsets();
+		foreach($iconSets['items']['iconsets'] as $name){
+			echo "<option value='$name'>$name</option>";
+		}
+	}
+
 	public function getBackgroundImages(){
 		$this->autoRender = false;
 		$bgs = $this->Background->findBackgrounds();
 		echo json_encode($bgs);
 	}
-
+	
 	public function view($id = null){
 		$map = $this->Map->findById($id);
 		$rotate = null;
