@@ -248,8 +248,11 @@ class CommandsController extends AppController{
 					foreach($argumentsToDelete as $argumentToDelete){
 						$this->Commandargument->delete($argumentToDelete);
 					}
+				}elseif(empty($this->request->data('Commandargument'))){
+					$this->Commandargument->deleteAll([
+						'Commandargument.command_id' => $id
+					]);
 				}
-
 				if($this->Command->saveAll($this->request->data)){
 					$changelog_data = $this->Changelog->parseDataForChangelog(
 						$this->params['action'],

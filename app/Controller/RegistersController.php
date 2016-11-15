@@ -23,9 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
+use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+
 class RegistersController extends AppController{
 	public $layout = 'Admin.register';
-	public $components = ['Http', 'GearmanClient'];
+	public $components = ['GearmanClient'];
 	public $uses = ['Register', 'Proxy'];
 
 	public function index(){
@@ -53,27 +57,26 @@ class RegistersController extends AppController{
 			$this->setFlash('Please enter a license key', false);
 			$this->redirect(array('action' => 'index'));
 		}
-		if(ENVIRONMENT === Environments::DEVELOPMENT){
-			$options = [
-				'CURLOPT_SSL_VERIFYPEER' => false,
-				'CURLOPT_SSL_VERIFYHOST' => false,
-			];
-			$http = new HttpComponent('http://172.16.2.87/licences/check/'.$license['Register']['license'].'.json', $options, $this->Proxy->getSettings());
-		}else{
-			$options = [];
-			$http = new HttpComponent('https://packagemanager.it-novum.com/licences/check/'.$license['Register']['license'].'.json', [], $this->Proxy->getSettings());
-		}
+
+		$License = new License($this->Register->find('first'));
+		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+		$http = new Http(
+			$packagemanagerRequestBuilder->getUrlForLicenseCheck(),
+			$packagemanagerRequestBuilder->getOptions(),
+			$this->Proxy->getSettings()
+		);
 
 		$http->sendRequest();
-		$error = $http->lastError;
+		$error = $http->getLastError();
 		$response = json_decode($http->data);
 
 		$isValide = false;
 		$licence = null;
+
 		if(is_object($response)){
-			if(!is_array($response->licence) && property_exists($response, 'licence')){
+			if(property_exists($response, 'licence')){
 				if(property_exists($response, 'licence')){
-					if(property_exists($response->licence, 'Licence')){
+					if(!empty($response->licence) && property_exists($response->licence, 'Licence')){
 						if(strtotime($response->licence->Licence->expire) > time()){
 							$isValide = true;
 							$licence = $response->licence->Licence;

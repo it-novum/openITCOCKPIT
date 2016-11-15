@@ -37,7 +37,6 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 			controller: 'Services',
 			ajaxUrl: 'addCustomMacro',
 			macrotype: 'SERVICE',
-			customVariablesCounter: this.getVar('customVariablesCount') + 1,
 			onClick: function(){
 				self.hosttemplateManager._onChangeMacro();
 				self.hosttemplateManager._activateOrUpdateMacroRestore();

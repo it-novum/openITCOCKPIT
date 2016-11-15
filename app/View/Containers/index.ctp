@@ -51,7 +51,8 @@
 			echo $this->Form->input('tenats', [
 				'options' => $tenants,
 				'class' => 'select2 select_tenant',
-				'selected' => $selected_tenant
+				'selected' => $selected_tenant,
+				'label' => 'Tenants'
 			]); ?>
 			<br />
 			<div>

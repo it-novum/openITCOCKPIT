@@ -218,7 +218,7 @@ class HosttemplatesController extends AppController{
 
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
-			$hosttemplate['Customvariable'] = Hash::merge($hosttemplate['Customvariable'],$this->request->data['Customvariable']);
+			$hosttemplate['Customvariable'] = $this->request->data['Customvariable'];
 		}
 		$this->Frontend->set('data_placeholder', __('Please choose a contact'));
 		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -226,16 +226,6 @@ class HosttemplatesController extends AppController{
 		$this->Frontend->setJson('lang_seconds', __('seconds'));
 		$this->Frontend->setJson('lang_and', __('and'));
 		$this->Frontend->setJson('hosttemplate_id', $hosttemplate['Hosttemplate']['id']);
-
-		/*if(!empty($hosttemplate['Customvariable'])){
-			$this->Frontend->setJson('customVariablesCount', Set::apply('{n}.id', $hosttemplate['Customvariable'], 'max'));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
-			// <-- required for working javascript with customvariables component!
-		}*/
-
-			$this->Frontend->setJson('customVariablesCount', sizeof($hosttemplate['Customvariable']));
-			// <-- required for working javascript with customvariables component!
 
 		$this->set('back_url', $this->referer());
 		$this->set(compact(['hosttemplate', 'containers', 'commands', 'commandarguments']));
@@ -336,10 +326,6 @@ class HosttemplatesController extends AppController{
 
 			$this->request->data['Contact'] = $this->request->data['Hosttemplate']['Contact'];
 			$this->request->data['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
-			//Checks if the user deletes a customvariable/macro over the trash icon
-			if(!isset($this->request->data['Customvariable'])){
-				$this->request->data['Customvariable'] = [];
-			}
 
 			//Delete Command argument values
 			//Fetching all commandargument_id of the command arguments out of database:
@@ -351,28 +337,36 @@ class HosttemplatesController extends AppController{
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hosttemplatecommandargumentvalue'], '{n}.commandargument_id');
 			}
 
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$this->Hosttemplatecommandargumentvalue->delete(
-						$this->Hosttemplatecommandargumentvalue->find('first', [
-							'conditions' => [
-								'hosttemplate_id' => $hosttemplate['Hosttemplate']['id'],
-								'commandargument_id' => $commandargumentId
-							]
-						])
-						['Hosttemplatecommandargumentvalue']
-					);
-				}
-			}
-
 			if(!isset($this->request->data['Hosttemplatecommandargumentvalue'])){
 				$this->request->data['Hosttemplatecommandargumentvalue'] = [];
 			}
 
 			if($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)){
 				$this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
+			}
+
+			$this->Hosttemplate->set($this->request->data);
+			if($this->Hosttemplate->validates()){
+				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+				foreach($commandargumentIdsOfDatabase as $commandargumentId){
+					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
+						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
+						$this->Hosttemplatecommandargumentvalue->delete(
+							$this->Hosttemplatecommandargumentvalue->find('first', [
+								'conditions' => [
+									'hosttemplate_id' => $hosttemplate['Hosttemplate']['id'],
+									'commandargument_id' => $commandargumentId
+								]
+							])
+							['Hosttemplatecommandargumentvalue']
+						);
+					}
+				}
+
+				$this->Customvariable->deleteAll([
+					'object_id' => $hosttemplate['Hosttemplate']['id'],
+					'objecttype_id' => OBJECT_HOSTTEMPLATE
+				], false);
 			}
 
 			//Save everything including custom variables
@@ -471,9 +465,6 @@ class HosttemplatesController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 		$commands = $this->Command->hostCommands('list');
 

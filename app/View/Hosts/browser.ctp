@@ -210,6 +210,9 @@
 										<?php
 										$HostMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
 										$hostCommandLine = $HostMacroReplacerCommandLine->replaceBasicMacros($host['CheckCommand']['command_line']);
+
+										$HostCustomMacroReplacerCommandLine = new \itnovum\openITCOCKPIT\Core\CustomMacroReplacer($host['Customvariable'], OBJECT_HOST);
+										$hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
 										?>
 										<td><code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo $this->Monitoring->replaceCommandArguments($commandarguments, $hostCommandLine); ?></code></td>
 									</tr>

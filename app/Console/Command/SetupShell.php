@@ -319,5 +319,12 @@ class SetupShell extends AppShell{
             //Cron does not exists, so we create it
             $this->Cronjob->add('CpuLoad', 'Core', 15);
         }
+
+        //Check if version check cronjob exists
+        if(!$this->Cronjob->checkForCronjob('VersionCheck', 'Core')){
+            //Cron does not exists, so we create it
+            $this->Cronjob->add('VersionCheck', 'Core', 1440);
+        }
+
     }
 }

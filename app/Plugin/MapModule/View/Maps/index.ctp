@@ -106,14 +106,14 @@
 										<td><?php echo $map['Map']['title']?></td>
 										<td>
 											<div class="btn-group">
-												<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+												<a href="/<?php echo $this->params['plugin'] ?>/mapeditors/edit/<?php echo $map['Map']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 												<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
 												<ul class="dropdown-menu pull-right">
 													<li>
-														<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+														<a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?></a>
 													</li>
 													<li>
-														<a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-edit"></i> <?php echo __('Edit in Map editor'); ?></a>
+														<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-pencil-square"></i> <?php echo __('Edit'); ?></a>
 													</li>
 													<li class="divider"></li>
 													<li>

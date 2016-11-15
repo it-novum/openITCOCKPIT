@@ -89,7 +89,34 @@ class MapeditorsController extends MapModuleAppController {
 				'Maptext'
 			]
 		]);
-		$maps = $this->Map->find('all');
+
+		$query = [
+			'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
+			'fields' => [
+				'Map.*',
+			],
+			'joins' => [
+				[
+					'table' => 'maps_to_containers',
+					'type' => 'INNER',
+					'alias' => 'MapsToContainers',
+					'conditions' => 'MapsToContainers.map_id = Map.id'
+				]
+			],
+			'order' => [
+				'Map.name' => 'asc'
+			],
+			'contain' => [
+				'Container' => [
+					'fields' => [
+						'Container.id'
+					]
+				]
+			],
+			'group' => 'Map.id'
+		];
+		$maps = $this->Map->find('all', $query);
+
 		$maps = Hash::remove($maps, '{n}.Container');
 
 		$mapList = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
@@ -107,6 +134,7 @@ class MapeditorsController extends MapModuleAppController {
 					]);
 				}
 			}
+			
 
 			if($this->Map->saveAll($request)){
 				if($this->request->ext === 'json'){

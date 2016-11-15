@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+
 /**
  * @property Host                              $Host
  * @property Documentation                     $Documentation
@@ -156,8 +158,8 @@ class HostsController extends AppController{
 				'HostsToContainers.container_id' => $this->MY_RIGHTS,
 			];
 		}
-
 		$conditions = $this->ListFilter->buildConditions([], $conditions);
+		$userRights = $this->MY_RIGHTS;
 
 		$childrenContainer = [];
 		if(isset($this->request->params['named']['BrowserContainerId'])){
@@ -181,7 +183,6 @@ class HostsController extends AppController{
 		$this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
 		$this->Host->virtualFields['output'] = 'Hoststatus.output';
 
-		$all_services = [];
 		$query = [
 			'conditions' => $conditions,
 			'fields' => [
@@ -192,6 +193,7 @@ class HostsController extends AppController{
 				'Host.active_checks_enabled',
 				'Host.address',
 				'Host.satellite_id',
+				'Host.container_id',
 				'Hoststatus.current_state',
 				'Hoststatus.last_check',
 				'Hoststatus.next_check',
@@ -266,7 +268,7 @@ class HostsController extends AppController{
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username']));
+		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
@@ -495,9 +497,6 @@ class HostsController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$this->loadModel('Timeperiod');
@@ -605,13 +604,14 @@ class HostsController extends AppController{
 		//get sharing containers
 		$sharingContainers = $this->getSharingContainers($host['Host']['container_id'], false);
 		//get the already shared containers
-		if(is_array($host['Containers']) && !empty($host['Containers'])){
-			$sharedContainers = array_diff($host['Containers'],[$host['Host']['container_id']]);
+		if(is_array($host['Container']) && !empty($host['Container'])){
+			$sharedContainers = array_diff($host['Container'],[$host['Host']['container_id']]);
 		}else{
 			$sharedContainers = [];
 		}
 		$this->set(compact([
 			'host',
+			'_host',
 			'containers',
 			'timeperiods',
 			'commands',
@@ -632,11 +632,11 @@ class HostsController extends AppController{
 		if($this->request->is('post') || $this->request->is('put')){
 			$ext_data_for_changelog = [
 				'Contact' => [
-				    'Contact' => []
-                ],
+					'Contact' => []
+				],
 				'Contactgroup' => [
-				    'Contactgroup'=> []
-                ],
+					'Contactgroup'=> []
+				],
 				'Hostgroup' => [],
 				'Parenthost' => []
 			];
@@ -806,26 +806,46 @@ class HostsController extends AppController{
 				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hostcommandargumentvalue'], '{n}.commandargument_id');
 			}
 
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
-                        'conditions' => [
-                            'host_id' => $id,
-                            'commandargument_id' => $commandargumentId
-                        ]
-                    ]);
-                    if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
-                        $this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
-                    }
+			$data_to_save['Host']['own_customvariables'] = 0;
+			//Add Customvariables data to $data_to_save
+			$data_to_save['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($data_to_save)){
+					$data_to_save['Host']['own_customvariables'] = 1;
 				}
 			}
 
-			if(!isset($data_to_save['Hostcommandargumentvalue']) || empty($data_to_save['Hostcommandargumentvalue'])){
-				$this->Hostcommandargumentvalue->deleteAll(
-					['Hostcommandargumentvalue.host_id' => $id]
-				);
+			$this->Host->set($data_to_save);
+			if($this->Host->validates()){
+				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+				foreach($commandargumentIdsOfDatabase as $commandargumentId){
+					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
+						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
+						$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
+							'conditions' => [
+								'host_id' => $id,
+								'commandargument_id' => $commandargumentId
+							]
+						]);
+						if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
+							$this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
+						}
+					}
+				}
+				if(!isset($data_to_save['Hostcommandargumentvalue']) || empty($data_to_save['Hostcommandargumentvalue'])){
+					$this->Hostcommandargumentvalue->deleteAll(
+						['Hostcommandargumentvalue.host_id' => $id]
+					);
+				}
+
+				$this->Customvariable->deleteAll([
+					'object_id' => $host['Host']['id'],
+					'objecttype_id' => OBJECT_HOST
+				], false);
+
 			}
 
 			if($this->Host->saveAll($data_to_save)){
@@ -847,7 +867,7 @@ class HostsController extends AppController{
 				$this->loadModel('Tenant');
 				//$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
 				$redirect = $this->Host->redirect($this->request->params, ['action' => 'index']);
-                $this->redirect($redirect);
+				$this->redirect($redirect);
 			}else{
 				$this->setFlash(__('Data could not be saved'), false);
 			}
@@ -1071,9 +1091,6 @@ class HostsController extends AppController{
 		//Fix that we dont lose any unsaved host macros, because of vaildation error
 		if(isset($this->request->data['Customvariable'])){
 			$Customvariable = $this->request->data['Customvariable'];
-			$this->Frontend->setJson('customVariablesCount', sizeof($Customvariable));
-		}else{
-			$this->Frontend->setJson('customVariablesCount', 0);
 		}
 
 		$this->loadModel('Timeperiod');
@@ -1282,6 +1299,18 @@ class HostsController extends AppController{
 				$this->request->data,
 				'add'
 			);
+
+			$data_to_save['Host']['own_customvariables'] = 0;
+			//Add Customvariables data to $data_to_save
+			$data_to_save['Customvariable'] = [];
+			if(isset($this->request->data['Customvariable'])){
+				$customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
+				$customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+				$data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+				if(!empty($data_to_save)){
+					$data_to_save['Host']['own_customvariables'] = 1;
+				}
+			}
 
 			if($this->Host->saveAll($data_to_save)){
 				$changelog_data = $this->Changelog->parseDataForChangelog(
@@ -1801,28 +1830,28 @@ class HostsController extends AppController{
 			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
 				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
 			}
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-            ]);
+			$ticketSystem = $this->Systemsetting->find('first', [
+				'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+			]);
 
 			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
 			$username = $this->Auth->user('full_name');
 			$this->set(compact([
-                    'host',
-                    'hoststatus',
-                    'servicestatus',
-                    'services',
-                    'username',
-                    'path',
-                    'commandarguments',
-                    'acknowledged',
-                    'hostDocuExists',
-                    'ContactsInherited',
-                    'parenthosts',
-                    'allowEdit',
-                    'ticketSystem'
-                ])
-            );
+					'host',
+					'hoststatus',
+					'servicestatus',
+					'services',
+					'username',
+					'path',
+					'commandarguments',
+					'acknowledged',
+					'hostDocuExists',
+					'ContactsInherited',
+					'parenthosts',
+					'allowEdit',
+					'ticketSystem'
+				])
+			);
 
 			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
@@ -1946,9 +1975,24 @@ class HostsController extends AppController{
 		}
 
 		if($this->Hosttemplate->exists($hosttemplate_id)){
-			$hosttemplate = $this->Hosttemplate->findById($hosttemplate_id);
-			// Remove ids of custom variables that if the user change them we dont overwrite the orginal custom variables form host template in the database
-			$hosttemplate['Customvariable'] = Hash::remove($hosttemplate['Customvariable'], '{n}.id');
+			$hosttemplate = $this->Hosttemplate->find('first', [
+				'conditions' => [
+					'Hosttemplate.id' => $hosttemplate_id
+				],
+				'recursive' => -1,
+				'contain' => [
+					'Customvariable' => [
+						'fields' => [
+							'Customvariable.name',
+							'Customvariable.value',
+							'Customvariable.objecttype_id'
+						]
+					]
+				],
+				'fields' => [
+					'Hosttemplate.id',
+				]
+			]);
 		}
 		$this->set('hosttemplate', $hosttemplate);
 	}
@@ -2135,13 +2179,11 @@ class HostsController extends AppController{
 				['Host.{(' . implode('|', array_values(Hash::merge($fields, ['name', 'description', 'address', 'host_url', 'satellite_id', 'host_type']))) . ')}', false],
 				['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
 				['Hostcommandargumentvalue.{n}.{(commandargument_id|value|id)}', false],
-				['Customvariable.{n}.{(name|value)}', false]
 			],
 			'Hosttemplate' => [
 				['Hosttemplate.{(' . implode('|', array_values($fields)) . ')}', false],
 				['{(Contact|Contactgroup)}.{n}.id', true],
 				['Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
-				['Customvariable.{n}.{(name|value)}', false]
 			]
 		];
 		$diff_array = [];

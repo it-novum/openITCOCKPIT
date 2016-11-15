@@ -28,7 +28,7 @@
  * @property Systemsetting Systemsetting
  */
 class AdministratorsController extends AppController{
-    public $components = ['Http', 'GearmanClient'];
+    public $components = ['GearmanClient'];
     public $uses = ['Proxy'];
     public $layout = 'Admin.default';
 

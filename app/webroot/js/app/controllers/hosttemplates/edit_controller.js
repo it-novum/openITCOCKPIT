@@ -35,8 +35,7 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
 		this.CustomVariables.setup({
 			controller: 'Hosttemplates',
 			ajaxUrl: 'addCustomMacro',
-			macrotype: 'HOST',
-			customVariablesCounter: parseInt(this.getVar('customVariablesCount')) + 1
+			macrotype: 'HOST'
 		});
 		this.ContainerSelectbox.setup(this.Ajaxloader);
 		this.ContainerSelectbox.addContainerEventListener({

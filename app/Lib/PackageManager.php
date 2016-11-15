@@ -28,7 +28,8 @@ App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
 App::import('Controller', 'Proxy');
-App::import('Component', 'Http');
+
+use itnovum\openITCOCKPIT\Core\Http;
 
 /**
  * @author Patrick Nawracay <patrick.nawracay@it-novum.com>
@@ -180,7 +181,7 @@ class PackageManager{
 	/**
 	 * Fetches a file by the given URL.
 	 *
-	 * The file will be stored in a temporary folder. Uses HttpComponent internally.
+	 * The file will be stored in a temporary folder. Uses itnovum\openITCOCKPIT\Core\Http internally.
 	 *
 	 * @param $url string URL of a file which should get fetched.
 	 * @param $target string Path to store the file.
@@ -202,7 +203,7 @@ class PackageManager{
 			];
 		}
 		$proxy = new ProxyController();
-		$httpComponent = new HttpComponent($url, $curlSettings, $proxy->getSettings());
+		$httpComponent = new Http($url, $curlSettings, $proxy->getSettings());
 		$httpComponent->sendRequest();
 
 		if(empty($httpComponent->data)){

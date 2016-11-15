@@ -89,7 +89,10 @@ foreach($this->params->named as $key => $value){
 
 				<div>
 					<div class="widget-body no-padding">
-						<?php echo $this->ListFilter->renderFilterbox($filters, array(), '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+						<?php
+						$options = [ 'avoid_cut' => true];
+						echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('search'), false, false);
+						?>
 						<div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>

@@ -36,3 +36,5 @@ app/Plugin/ArchiveMigration
 node_modules
 ansible/playbook.retry
 app/Plugin/SAPModule
+app/Lib/AvailableVersion.php
+

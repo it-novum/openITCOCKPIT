@@ -111,7 +111,6 @@ class AppController extends Controller{
 		'Constants',
 		'Tree',
 		'AdditionalLinks',
-		'Http'
 		//'DebugKit.Toolbar'
 	);
 
@@ -803,43 +802,18 @@ class AppController extends Controller{
 	}
 
 	public function checkForUpdates(){
-
-		$version = Cache::read('openitcockpitVersion', '5 days');
-
-		if(!$version){
-			$license = $this->Register->find('first');
-			if(ENVIRONMENT === Environments::DEVELOPMENT){
-				if(!empty($license)){
-					$url = 'http://172.16.2.87/modules/fetch/'.$license['Register']['license'].'.json';
-				}else{
-					$url = 'http://172.16.2.87/modules/fetch/.json';
-				}
-
-				$options = [
-					'CURLOPT_SSL_VERIFYPEER' => false,
-					'CURLOPT_SSL_VERIFYHOST' => false,
-				];
-				// $http = new HttpComponent('https://127.0.0.1/packetmanager/getPackets', $options, $this->Proxy->getSettings());
-				$http = new HttpComponent($url, $options, $this->Proxy->getSettings());
-
-			}else{
-				if(!empty($license)){
-					$url = 'https://packagemanager.it-novum.com/modules/fetch/'.$license['Register']['license'].'.json';
-				}else{
-					$url = 'https://packagemanager.it-novum.com/modules/fetch/.json';
-				}
-
-				$options = [];
-				$http = new HttpComponent($url, [], $this->Proxy->getSettings());
-			}
-
-			if(!$http->error) {
-				$http->sendRequest();
-				$data = json_decode($http->data);
-				$version = $data->version;
-			}
+		$path = APP . 'Lib' . DS . 'AvailableVersion.php';
+		$availableVersion = '???';
+		if(file_exists($path)){
+			require_once $path;
+			$availableVersion = openITCOCKPIT_AvailableVersion::get();
 		}
 
-		$this->set(compact('version'));
+		Configure::load('version');
+
+		$this->set([
+			'availableVersion' => $availableVersion,
+			'installedVersion' => Configure::read('version')
+		]);
 	}
 }
