@@ -396,6 +396,7 @@
 											<th class="text-center"><i class="fa fa-power-off"></i></th>
 											<th class="text-center"><i class="fa fa fa-area-chart fa-lg"></i></th>
 											<th class="text-center"><strong>P</strong></th>
+											<th class="text-center" title="<?php echo __('Disabled Service'); ?>"><i class="fa fa fa-plug"></i></th>
 											<th><?php echo __('Name'); ?></th>
 											<th><?php echo __('Laste state change'); ?></th>
 											<th><?php echo __('Service output'); ?></th>
@@ -436,6 +437,11 @@
 													<?php if(($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0):?>
 														<strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
 													<?php endif;?>
+												</td>
+												<td class="text-center">
+													<?php if($service['Service']['disabled'] == 1): ?>
+														<i class="fa fa fa-plug fa-lg"></i>
+													<?php endif; ?>
 												</td>
 												<td>
 													<?php
