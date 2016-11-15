@@ -745,6 +745,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/Services/loadTemplateData/" + encodeURIComponent(templateId) + ".json",
 						type: "POST",
+						cache: false,
 						error: function(){},
 						success: function(){},
 						complete: ajaxCompleteCallback
@@ -875,6 +876,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: '/Services/loadParametersByCommandId/' + encodeURIComponent(command_id) + '/' + encodeURIComponent(servicetemplate_id),
 			type: 'POST',
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -893,6 +895,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: '/Services/loadNagParametersByCommandId/' + encodeURIComponent(command_id) + '/' + encodeURIComponent(servicetemplate_id),
 			type: 'POST',
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -911,6 +914,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Services/loadArgumentsAdd/" + encodeURIComponent(command_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
@@ -924,6 +928,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Services/loadServicetemplatesArguments/"+encodeURIComponent(servicetemplate_id),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){

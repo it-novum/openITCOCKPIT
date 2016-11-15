@@ -224,6 +224,7 @@ App.Controllers.StatusmapsIndexController = Frontend.AppController.extend({
 							$.ajax({
 								url: "/statusmaps/clickHostStatus/" + encodeURIComponent(clicknode.uuid),
 								type: "POST",
+								cache: false,
 								dataType: "html",
 								//dataType: "json",
 								error: function(){},

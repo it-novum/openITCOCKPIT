@@ -126,6 +126,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 			$.ajax({
 					url: "/Hosts/longOutputByUuid/"+encodeURIComponent(this.hostUuid),
 					type: "GET",
+					cache: false,
 					error: function(){},
 					success: function(){},
 					complete: function(response){
@@ -189,6 +190,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 		ret = $.ajax({
 			url: "/downtimes/validateDowntimeInputFromBrowser",
 			type: "POST",
+			cache: false,
 			data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
 			error: function(){},
 			success: function(response){
@@ -219,6 +221,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/hosts/ping/address:"+encodeURIComponent(address)+'.json',
 			type: "GET",
+			cache: false,
 			error: function(){
 				this.$jqconsole.Write("\033[31mError: Could not connect server");
 			}.bind(this),

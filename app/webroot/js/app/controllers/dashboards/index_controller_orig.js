@@ -103,6 +103,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/admin/dashboard/saveTabOrder/.json",
 						type: "POST",
+						cache: false,
 						dataType: "json",
 						data: {data: tabs},
 						error: function(){},
@@ -156,6 +157,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 							$.ajax({
 								url: "/admin/dashboard/deleteAllWidgetsFromTab/"+self.tabId+".json",
 								type: "POST",
+								cache: false,
 								dataType: "json",
 								data: {data:  $('#neverAsk').prop('checked')},
 								error: function(){},
@@ -186,6 +188,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 								$.ajax({
 									url: "/admin/dashboard/setTabRefresh/"+self.tabId+".json",
 									type: "POST",
+									cache: false,
 									dataType: "json",
 									error: function(){},
 									success: function(){},
@@ -204,6 +207,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/deleteAllWidgetsFromTab/"+self.tabId+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(){},
@@ -221,6 +225,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/deleteAllWidgetsFromTab/"+self.tabId+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(){},
@@ -285,6 +290,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/admin/dashboard/addTab/"+result+"/"+newPos+".json",
 						type: "POST",
+						cache: false,
 						dataType: "json",
 						error: function(){},
 						success: function(){},
@@ -313,6 +319,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/addSharedTab/"+name+"/"+newPos+"/"+sourceTabId+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(){},
@@ -363,6 +370,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/admin/dashboard/renameTab/"+id+"/"+result+".json",
 						type: "POST",
+						cache: false,
 						dataType: "json",
 						error: function(){},
 						success: function(){},
@@ -449,6 +457,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/admin/dashboard/shareTab/"+id+"/"+name+"/"+share+".json",
 						type: "POST",
+						cache: false,
 						dataType: "json",
 						error: function(){},
 						success: function(){},
@@ -487,6 +496,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/admin/dashboard/deleteTab/"+activeTabId+".json",
 					type: "POST",
+					cache: false,
 					dataType: "json",
 					error: function(){},
 					success: function(){},
@@ -542,6 +552,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/saveTabRotationTime/"+$(this).val()+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(){},
@@ -642,6 +653,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/admin/dashboard/deleteWidget/"+$widget.attr('widget-id')+".json",
 					type: "POST",
+					cache: false,
 					dataType: "json",
 					error: function(){},
 					success: function(){},
@@ -676,6 +688,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/admin/dashboard/addWidget/"+type+"/"+self.tabId,
 					type: "POST",
+					cache: false,
 					dataType: "json",
 					error: function(){},
 					success: function(){},
@@ -705,6 +718,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 				$.ajax({
 					url: "/admin/dashboard/deleteAllWidgetsFromTab/"+self.tabId,
 					type: "POST",
+					cache: false,
 					dataType: "json",
 					error: function(){},
 					success: function(){},
@@ -730,6 +744,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/saveWidget.json",
 				type: "POST",
+				cache: false,
 				data: {data: postData},
 				dataType: "json",
 				error: function(){},
@@ -744,6 +759,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/loadWidgetConfiguration/"+id+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(data){
@@ -759,6 +775,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/fetchGraphData/"+id+".json",
 				type: "POST",
+				cache: false,
 				dataType: "json",
 				error: function(){},
 				success: function(){},
@@ -876,6 +893,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/admin/dashboard/saveWidgetPositionsAndSizes.json",
 			type: "POST",
+			cache: false,
 			data: {data: postData},
 			dataType: "json",
 			error: function(){},
@@ -924,6 +942,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 					$.ajax({
 						url: "/admin/dashboard/saveWidget.json",
 						type: "POST",
+						cache: false,
 						data: {data: widget},
 						dataType: "json",
 						error: function(){},
@@ -949,6 +968,7 @@ App.Controllers.DashboardZZZZZZIndexController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/admin/dashboard/saveWidget.json",
 				type: "POST",
+				cache: false,
 				data: {data: widget},
 				dataType: "json",
 				error: function(){},

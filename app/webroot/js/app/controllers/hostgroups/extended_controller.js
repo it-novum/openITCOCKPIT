@@ -153,6 +153,7 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 			ret = $.ajax({
 				url: "/hostgroups/loadServicesByHostId/"+hostId+"/"+this.getVar('hostgroupId'),
 				type: "GET",
+				cache: false,
 				error: function(){},
 				success: function(response){
 					$('.services_loader').remove();
@@ -181,6 +182,7 @@ App.Controllers.HostgroupsExtendedController = Frontend.AppController.extend({
 		ret = $.ajax({
 			url: "/downtimes/validateDowntimeInputFromBrowser",
 			type: "POST",
+			cache: false,
 			data: {from: fromData+' '+fromTime, to: toData+' '+toTime},
 			error: function(){},
 			success: function(response){

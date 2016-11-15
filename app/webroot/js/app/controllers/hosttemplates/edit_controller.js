@@ -136,6 +136,7 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/Hosttemplates/loadArguments/"+encodeURIComponent(command_id)+"/"+this.getVar('hosttemplate_id'),
 			type: "POST",
+			cache: false,
 			error: function(){},
 			success: function(){},
 			complete: function(response){
