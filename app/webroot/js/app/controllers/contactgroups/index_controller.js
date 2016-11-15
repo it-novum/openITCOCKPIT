@@ -47,6 +47,7 @@ App.Controllers.ContactgroupsIndexController = Frontend.AppController.extend({
 			"bFilter": false,
 			"bInfo": false,
 			"bStateSave": true,
+			"autoWidth": false,
 			"aoColumnDefs" : [ {
 			    "bSortable" : false,
 			    "aTargets" : [ "no-sort" ]

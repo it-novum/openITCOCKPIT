@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-retweet fa-fw "></i> 
-				<?php echo __('Map'); ?> 
-			<span>> 
+			<i class="fa fa-retweet fa-fw "></i>
+				<?php echo __('Map'); ?>
+			<span>>
 				<?php echo __('Rotations'); ?>
 			</span>
 		</h1>
@@ -47,9 +47,9 @@
 						<?php echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search')); ?>
 						<?php
 						if($isFilter):
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'), true); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'), true);
 						endif;
-						?> 
+						?>
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-retweet"></i> </span>
 					<h2 class="hidden-mobile"><?php echo __('Map rotations'); ?></h2>
@@ -74,7 +74,9 @@
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
-										<th colspan="3"><?php echo $this->Utils->getDirection($order, 'Rotation.name'); echo $this->Paginator->sort('Rotation.name', __('Name')); ?></th>
+										<th><?php echo $this->Utils->getDirection($order, 'Rotation.name'); echo $this->Paginator->sort('Rotation.name', __('Name')); ?></th>
+										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Rotation.interval'); echo $this->Paginator->sort('Rotation.interval', __('Interval')); ?></th>
+										<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -83,11 +85,11 @@
 										<tr>
 											<td><?php echo h($rotation['Rotation']['name']);?></td>
 											<td><?php echo h($rotation['Rotation']['interval']); ?></td>
-											<td class="width-160">
+											<td>
 												<div class="btn-group">
 													<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
+													<ul class="dropdown-menu pull-right">
 														<li>
 															<a href="/<?php echo $this->params['plugin']; ?>/<?php echo $this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
 														</li>

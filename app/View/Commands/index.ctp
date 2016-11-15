@@ -89,7 +89,7 @@
 													<?php $order = $this->Paginator->param('order'); ?>
 													<th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
 													<th><?php echo $this->Utils->getDirection($order, 'Command.name'); echo $this->Paginator->sort('Command.name', 'Command name'); ?></th>
-													<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+													<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -100,7 +100,7 @@
 															<input type="checkbox" class="massChange" commandname="<?php echo h($command['Command']['name']); ?>" value="<?php echo $command['Command']['id']; ?>">
 														</td>
 														<td><?php echo h($command['Command']['name']); ?></td>
-														<td class="width-160">
+														<td>
 															<div class="btn-group">
 																<?php if($this->Acl->hasPermission('edit')): ?>
 																	<a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -108,7 +108,7 @@
 																	<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 																<?php endif;?>
 																<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-																<ul class="dropdown-menu">
+																<ul class="dropdown-menu pull-right">
 																	<?php if($this->Acl->hasPermission('edit')): ?>
 																		<li>
 																			<a href="<?php echo Router::url(['action' => 'edit', $command['Command']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
