@@ -81,6 +81,10 @@ class AppSchema extends CakeSchema {
 				case 'usergroups':
 					$UsergroupsImporter = new InitialDatabase\Usergroup(ClassRegistry::init('Usergroup'));
 					$UsergroupsImporter->import();
+
+				case 'map_uploads':
+					$MapUpload = new InitialDatabase\MapUpload(ClassRegistry::init('MapUpload'));
+					$MapUpload->import();
 			}
 		}
 	}
@@ -1525,6 +1529,20 @@ class AppSchema extends CakeSchema {
 		'description' => array('type' => 'string', 'default' => null, 'length' => 255, 'charset' => 'utf8'),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
+	);
+
+	public $map_uploads = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'upload_type' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'upload_name' => array('type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'),
+		'saved_name' => array('type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'),
+		'user_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'container_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 10),
+		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 		),
