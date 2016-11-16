@@ -77,45 +77,17 @@ class MapeditorsController extends MapModuleAppController {
 			throw new NotFoundException(__('Invalid map'));
 		}
 
-		$map = $this->Map->find('first', [
-			'conditions' => [
-				'Map.id' => $id,
-			],
-			'contain' => [
-				'Mapitem',
-				'Mapline',
-				'Mapgadget',
-				'Mapicon',
-				'Maptext'
-			]
-		]);
+		$map = $this->Map->findById($id);
 
-		$query = [
-			'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
-			'fields' => [
-				'Map.*',
-			],
-			'joins' => [
-				[
-					'table' => 'maps_to_containers',
-					'type' => 'INNER',
-					'alias' => 'MapsToContainers',
-					'conditions' => 'MapsToContainers.map_id = Map.id'
-				]
-			],
-			'order' => [
-				'Map.name' => 'asc'
-			],
-			'contain' => [
-				'Container' => [
-					'fields' => [
-						'Container.id'
-					]
-				]
-			],
-			'group' => 'Map.id'
-		];
-		$maps = $this->Map->find('all', $query);
+		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+
+		if(!$this->allowedByContainerId($containerIdsToCheck)){
+			$this->render403();
+			return;
+		}
+
+
+		$maps = $this->Map->find('all');
 
 		$maps = Hash::remove($maps, '{n}.Container');
 
@@ -127,7 +99,7 @@ class MapeditorsController extends MapModuleAppController {
 			$elementIdsToDelete = $this->Mapeditor->getObsoleteIds($map,$request);
 
 			foreach ($elementIdsToDelete as $mapElementType => $ids) {
-				if(!empty($ids)){
+				if(!empty($ids) && $mapElementType !== 'Container'){
 					$this->{$mapElementType}->deleteAll([
 						$mapElementType.'.map_id' => $map['Map']['id'],
 						$mapElementType.'.id' => $ids
@@ -182,14 +154,39 @@ class MapeditorsController extends MapModuleAppController {
 		]));
 	}
 
+	public function getIconImages(){
+		$this->autoRender = false;
+		$iconSets = $this->Background->findIconsets();
+		foreach($iconSets['items']['iconsets'] as $key => $iconset){
+			$path = $iconSets['items']['webPath'].'/'.$iconset.'/'.'ok.png';
+			echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer">
+				<div class="drag-element thumbnail thumbnailFix iconset-thumbnail">';
+					if($iconSets['items']['fileDimensions'][$key] < 80){
+						echo '<span class="valignHelper"></span>';
+					}
+					echo '<img class="iconset" src="'.$path.'" iconset="'.h($iconset).'">
+				</div>
+			</div>';
+		}
+	}
+
+	public function getIconsetsList(){
+		$this->autoRender = false;
+		$iconSets = $this->Background->findIconsets();
+		foreach($iconSets['items']['iconsets'] as $name){
+			echo "<option value='$name'>$name</option>";
+		}
+	}
+
 	public function getBackgroundImages(){
 		$this->autoRender = false;
 		$bgs = $this->Background->findBackgrounds();
 		echo json_encode($bgs);
 	}
-
+	
 	public function view($id = null){
 		$map = $this->Map->findById($id);
+
 		$rotate = null;
 		if(isset($this->request->params['named']['rotate'])){
 			$isFirst = true;
@@ -215,6 +212,12 @@ class MapeditorsController extends MapModuleAppController {
 
 		if(!$this->Map->exists($id)){
 			throw new NotFoundException(__('Invalid map'));
+		}
+
+		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
+			$this->render403();
+			return;
 		}
 
 		$isFullscreen = false;
