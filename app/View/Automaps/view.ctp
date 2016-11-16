@@ -69,48 +69,87 @@
 					<?php endif; ?>
 				</div>
 				<div class="col-xs-12 col-md-12">&nbsp;</div>
-				
-				<?php if($automap['Automap']['show_label']):?>
-					<?php $prevHost = null; ?>
-					<?php foreach($services as $service):?>
-						<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): ?>
-							<div class="col-lg-12">&nbsp;</div>
-							<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
-						<?php endif; ?>
-						<div class="col-xs-12 col-md-4 col-lg-3 ellipsis" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>">
-							<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
-								<?php echo $this->Status->automapIcon($service, false); ?>
+
+				<?php if($automap['Automap']['group_by_host']):?>
+
+					<?php if($automap['Automap']['show_label']):?>
+						<?php $prevHost = null; ?>
+						<?php foreach($services as $service):?>
+							<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): ?>
+								<div class="col-lg-12">&nbsp;</div>
+								<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
+							<?php endif; ?>
+							<div class="col-xs-12 col-md-4 col-lg-3 ellipsis" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>">
+								<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
+									<?php echo $this->Status->automapIcon($service, false); ?>
+									<?php
+									$serviceName = $service['Service']['name'];
+									if($serviceName == null || $serviceName == ''):
+										$serviceName = $service['Servicetemplate']['name'];
+									endif;
+									echo h($serviceName);
+									$prevHost = $service['Service']['host_id'];
+									?>
+								</span>
+							</div>
+						<?php endforeach;?>
+					<?php else:?>
+						<?php $prevHost = null;  $innerCounter = 3; ?>
+						<?php foreach($services as $service): ?>
+							<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): $counter = 2;?>
+								<?php if($innerCounter<3){ echo '</div>'; } ?>
+								<div class="col-lg-12">&nbsp;</div>
+								<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
+							<?php endif; ?>
+							<?php if(++$counter % 3 == 0): $innerCounter = 0; ?>
+								<div class="col-xs-6 col-md-4 col-lg-2 text-left" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>;">
+							<?php endif; ?>
+								<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
+									<?php
+									echo $this->Status->automapIcon($service);
+									$prevHost = $service['Service']['host_id'];
+									?>
+								</span>
+							<?php if(++$innerCounter % 3 == 0){ $counter = 2; echo '</div>'; } ?>
+						<?php endforeach; ?>
+					<?php endif;?>
+
+				<?php else: ?>
+					<?php if($automap['Automap']['show_label']):?>
+						<?php foreach($services as $service):?>
+							<div class="col-xs-12 col-md-4 col-lg-3 ellipsis" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>">
+  							<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
+  								<?php echo $this->Status->automapIcon($service, false); ?>
 								<?php
 								$serviceName = $service['Service']['name'];
 								if($serviceName == null || $serviceName == ''):
 									$serviceName = $service['Servicetemplate']['name'];
 								endif;
+								echo h($hosts[$service['Service']['host_id']]).'/'.h($serviceName);
 								echo h($serviceName);
 								$prevHost = $service['Service']['host_id'];
 								?>
-							</span>
-						</div>
-					<?php endforeach;?>
-				<?php else:?>
-					<?php $prevHost = null;  $innerCounter = 3; ?>
-					<?php foreach($services as $service): ?>
-						<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): $counter = 2;?>
-							<?php if($innerCounter<3){ echo '</div>'; } ?>
-							<div class="col-lg-12">&nbsp;</div>
-							<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
-						<?php endif; ?>
-						<?php if(++$counter % 3 == 0): $innerCounter = 0; ?>
-							<div class="col-xs-6 col-md-4 col-lg-2 text-left" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>;">
-						<?php endif; ?>
-							<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
-								<?php
-								echo $this->Status->automapIcon($service);
-								$prevHost = $service['Service']['host_id'];
-								?>
-							</span>
-						<?php if(++$innerCounter % 3 == 0){ $counter = 2; echo '</div>'; } ?>
-					<?php endforeach; ?>
+  							</span>
+							</div>
+						<?php endforeach;?>
+					<?php else:?>
+						<?php foreach(array_chunk($services, 3) as $servicesPair): ?>
+							<div class="col-xs-6 col-md-4 col-lg-1">
+								<table class="text-left" style="width: 100%; font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>;">
+									<tr>
+										<?php foreach($servicesPair as $service): ?>
+											<td style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
+												<?php echo $this->Status->automapIcon($service); ?>
+											</td>
+										<?php endforeach; ?>
+									</tr>
+								</table>
+							</div>
+						<?php endforeach; ?>
+					<?php endif;?>
 				<?php endif;?>
+
+
 			</div>
 		</div>
 	</div>
