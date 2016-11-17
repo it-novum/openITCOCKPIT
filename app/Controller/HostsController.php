@@ -1777,6 +1777,7 @@ class HostsController extends AppController{
 					'Service.uuid',
 					'Service.name',
 					'Servicetemplate.name',
+					'Service.disabled',
 					'Host.uuid',
 				],
 				'contain' => [
