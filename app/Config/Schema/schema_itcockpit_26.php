@@ -1531,6 +1531,7 @@ class AppSchema extends CakeSchema {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
+
 	/*public $devicegroups = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

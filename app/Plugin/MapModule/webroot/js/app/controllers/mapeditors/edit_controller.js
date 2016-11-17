@@ -64,7 +64,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 
 		$(document).on('click','.deleteBackgroundBtn',function() {
-			var filename = $(this).parent().find('img').attr('filename');
+			var filename = $(this).parent().find('img').attr('filename-id');
 			//write filename to modal dialog
 			$('#backgoundFilename').val(filename);
 			$('#deleteBackgroundModal').modal('show');
@@ -88,16 +88,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 
 		$(document).on('click','.deleteIconsetBtn',function() {
-			var filename = $(this).parent().find('img').attr('iconset');
+			var iconSetID = $(this).parent().find('img').attr('iconset-id');
 			//write filename to modal dialog
-			$('#IconsetFilename').val(filename);
+			$('#IconsetId').val(iconSetID);
 			$('#deleteIconsetModal').modal('show');
 
 		});
 
 		$('#confirmDeleteIconsetBtn').click(function(){
-			var filename = $('#IconsetFilename').val();
-			self.deleteIconsSet(filename);
+			var iconSetId = $('#IconsetId').val();
+			self.deleteIconsSet(iconSetId);
 			$('#deleteIconsetModal').modal('hide');
 		});
 
@@ -2333,11 +2333,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		$.ajax({
 			url: "/map_module/mapeditors/getBackgroundImages",
 			type: "POST",
-			dataType: "json",
-			error: function(){},
+			dataType: "html",
 			success: function(response){
-				var list = self.buildNewBackgroundThumbs(response);
-				$('#background-panel').empty().html(list);
+				console.log(response);
+				$('#background-panel').empty().html(response);
 			}.bind(self)
 		});
 	},
@@ -2348,7 +2347,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 			url: "/map_module/mapeditors/getIconImages",
 			type: "POST",
 			dataType: "html",
-			error: function(){},
 			success: function(response){
 				$('#item-panel').empty().html(response);
 				self.activateItemsDraggable();
@@ -2373,22 +2371,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		});
 	},
 
-	buildNewBackgroundThumbs:function(bgs){
-		var backgrounds = bgs.backgrounds;
-		var html = '';
-		for(var bg in backgrounds.files){
-			var path  = backgrounds.thumbPath+'/thumb_'+backgrounds.files[bg];
-			html += '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"><div class="thumbnail backgroundThumbnailStyle background-thumbnail"><img class="background" src="'+path+'" original="'+backgrounds.webPath+'/'+backgrounds.files[bg]+'" filename="'+backgrounds.files[bg]+'"></div></div>';
-		}
-		return html;
-	},
-
-
-	deleteBackground:function(filename){
+	deleteBackground:function(filenameId){
 		var self = this;
 		//ajax call to delete background
 		$.ajax({
-			url: "/map_module/BackgroundUploads/delete/"+encodeURIComponent(btoa(filename)),
+			url: "/map_module/BackgroundUploads/delete/"+filenameId,
 			type: "POST",
 			dataType: "html",
 			error: function(){},
@@ -2400,11 +2387,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 		self.changeBackground({remove:true});
 	},
 
-	deleteIconsSet:function(filename){
+	deleteIconsSet:function(iconSetId){
 		var self = this;
 		//ajax call to delete background
 		$.ajax({
-			url: "/map_module/BackgroundUploads/deleteIconsSet/"+encodeURIComponent(btoa(filename)),
+			url: "/map_module/BackgroundUploads/deleteIconsSet/"+iconSetId,
 			type: "POST",
 			dataType: "html",
 			error: function(){},

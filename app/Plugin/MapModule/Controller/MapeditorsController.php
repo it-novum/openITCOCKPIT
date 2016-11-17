@@ -157,14 +157,14 @@ class MapeditorsController extends MapModuleAppController {
 	public function getIconImages(){
 		$this->autoRender = false;
 		$iconSets = $this->Background->findIconsets();
-		foreach($iconSets['items']['iconsets'] as $key => $iconset){
-			$path = $iconSets['items']['webPath'].'/'.$iconset.'/'.'ok.png';
-			echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer">
+		foreach($iconSets['items']['iconsets'] as $iconset){
+			$path = $iconSets['items']['webPath'].'/'.$iconset['savedName'].'/'.'ok.png';
+			echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer" title="'.$iconset['displayName'].'">
 				<div class="drag-element thumbnail thumbnailFix iconset-thumbnail">';
-					if($iconSets['items']['fileDimensions'][$key] < 80){
+					if($iconset['dimension'] < 80){
 						echo '<span class="valignHelper"></span>';
 					}
-					echo '<img class="iconset" src="'.$path.'" iconset="'.h($iconset).'">
+					echo '<img class="iconset" src="'.$path.'" iconset-id="'.$iconset['id'].'" iconset="'.$iconset['savedName'].'">
 				</div>
 			</div>';
 		}
@@ -174,14 +174,22 @@ class MapeditorsController extends MapModuleAppController {
 		$this->autoRender = false;
 		$iconSets = $this->Background->findIconsets();
 		foreach($iconSets['items']['iconsets'] as $name){
-			echo "<option value='$name'>$name</option>";
+			echo "<option value='{$name['savedName']}'>{$name['displayName']}</option>";
 		}
 	}
 
 	public function getBackgroundImages(){
 		$this->autoRender = false;
 		$bgs = $this->Background->findBackgrounds();
-		echo json_encode($bgs);
+		foreach($bgs['files'] as $background){
+			$path = $bgs['thumbPath'].'/thumb_'.$background['savedName'];
+			$original = $bgs['webPath'].'/'.$background['savedName'];
+			echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize" title="'.$background['displayName'].'">
+					<div class="thumbnail backgroundThumbnailStyle background-thumbnail">
+						<img class="background" src="'.$path.'" original="'.$original.'" filename="'.$background['savedName'].'" filename-id="'.$background['id'].'">
+					</div>
+				</div>';
+		}
 	}
 	
 	public function view($id = null){
