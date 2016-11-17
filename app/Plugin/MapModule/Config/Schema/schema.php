@@ -1,7 +1,5 @@
 <?php
 
-use itnovum\openITCOCKPIT\InitialDatabase;
-
 class MapModuleSchema extends CakeSchema {
 
 	public function before($event = array()) {
@@ -413,6 +411,7 @@ class MapModuleSchema extends CakeSchema {
 
 			}
 		}
+
 	}
 
 
