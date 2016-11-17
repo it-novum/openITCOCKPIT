@@ -68,15 +68,16 @@
 						<i class="fa fa-times txt-color-red"></i>
 					<?php endif; ?>
 				</div>
-				<div class="col-xs-12 col-md-12">&nbsp;</div>
 
 				<?php if($automap['Automap']['group_by_host']):?>
 
 					<?php if($automap['Automap']['show_label']):?>
 						<?php $prevHost = null; ?>
 						<?php foreach($services as $service):?>
-							<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): ?>
-								<div class="col-lg-12">&nbsp;</div>
+							<?php if($prevHost !== $service['Service']['host_id']): ?>
+								<?php if(!is_null($prevHost)): ?>
+									<div class="col-lg-12">&nbsp;</div>
+								<?php endif; ?>
 								<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
 							<?php endif; ?>
 							<div class="col-xs-12 col-md-4 col-lg-3 ellipsis" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>">
@@ -96,13 +97,15 @@
 					<?php else:?>
 						<?php $prevHost = null;  $innerCounter = 3; ?>
 						<?php foreach($services as $service): ?>
-							<?php if(is_null($prevHost) || $prevHost !== $service['Service']['host_id']): $counter = 2;?>
+							<?php if($prevHost !== $service['Service']['host_id']): $counter = 2;?>
 								<?php if($innerCounter<3){ echo '</div>'; } ?>
-								<div class="col-lg-12">&nbsp;</div>
+								<?php if(!is_null($prevHost)): ?>
+									<div class="col-lg-12">&nbsp;</div>
+								<?php endif; ?>
 								<div class="col-lg-12"><h3 class="margin-bottom-5"><strong><?= h($hosts[$service['Service']['host_id']]); ?></strong></h3></div>
 							<?php endif; ?>
 							<?php if(++$counter % 3 == 0): $innerCounter = 0; ?>
-								<div class="col-xs-6 col-md-4 col-lg-2 text-left" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>;">
+								<div class="col-xs-4 col-sm-3 col-md-2 col-lg-1 text-left" style="font-size:<?php echo $fontSizes[$automap['Automap']['font_size']]; ?>;">
 							<?php endif; ?>
 								<span style="cursor:pointer;" class="triggerModal" service-id="<?php echo h($service['Service']['id']); ?>">
 									<?php
