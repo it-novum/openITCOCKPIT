@@ -86,47 +86,89 @@ class Background extends MapModuleAppModel{
 	
 	public function findBackgrounds(){
 		App::uses('Folder', 'Utility');
+		App::uses('MapUpload', 'MapModule.Model');
+		App::uses('TreeComponent', 'Controller');
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
-		$backgroundFolder = new Folder($basePath);
-		$imageDir = DS .'map_module'. DS .'img';
 
-		$relativeItemsPath = $imageDir . DS .'items';
+		$imageDir = DS .'map_module'. DS .'img';
 		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
 		$relativeBackgroundThumbPath = $imageDir. DS .'backgrounds'. DS .'thumb';
-		$files = [
-			'backgrounds'=>[
-				'path' => $basePath,
-				'webPath'=>$relativeBackgroundPath,
-				'thumbPath'=>$relativeBackgroundThumbPath,
-				'files'=>$backgroundFolder->find(),
-			]
+
+		$myTreeComponent = new TreeComponent();
+		$containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$myMapUpload = new MapUpload();
+		$allBackgrounds = $myMapUpload->find('all', [
+			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds]
+		]);
+		if(empty($allBackgrounds)) {
+			$itemsFolder = scandir($basePath);
+			$backgroundCounter = 0;
+			foreach ($itemsFolder as $name) {
+				if (!in_array($name, ['.', '..']) && file_exists($basePath . DS . 'thumb' . DS . 'thumb_' . $name)) {
+					$backgroundCounter++;
+					$newUpload = new MapUpload();
+					$newUpload->set([
+						'upload_type' => MapUpload::TYPE_BACKGROUND,
+						'upload_name' => 'background_' . $backgroundCounter,
+						'saved_name' => $name,
+						'container_id' => 1
+					]);
+					$newUpload->save();
+				}
+			}
+			$allBackgrounds = $myMapUpload->find('all', [
+				'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds]
+			]);
+		}
+
+		$backgroundSets = [];
+		foreach($allBackgrounds as $backgroundItem){
+			if(file_exists($basePath.DS.$backgroundItem['MapUpload']['saved_name']) && file_exists($basePath.DS.'thumb'.DS.'thumb_'.$backgroundItem['MapUpload']['saved_name'])){
+				$backgroundSets[] = [
+					'id' => $backgroundItem['MapUpload']['id'],
+					'displayName' => $backgroundItem['MapUpload']['upload_name'],
+					'savedName' => $backgroundItem['MapUpload']['saved_name']
+				];
+			}
+		}
+
+		return [
+			'path' => $basePath,
+			'webPath'=>$relativeBackgroundPath,
+			'thumbPath'=>$relativeBackgroundThumbPath,
+			'files'=>$backgroundSets
 		];
-		
-		return $files;
 	}
 	
 	public function findIconsets(){
+		App::uses('MapUpload', 'MapModule.Model');
+		App::uses('TreeComponent', 'Controller');
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items';
-		$itemsFolder = scandir($basePath);
+		$myTreeComponent = new TreeComponent();
+		$containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$myMapUpload = new MapUpload();
+		$allMapsIcons = $myMapUpload->find('all', [
+			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds]
+		]);
 		$iconSets = [];
-		$fileDimesions = [];
-		foreach($itemsFolder as $name){
-			if(!in_array($name, ['.', '..']) && is_dir($basePath.'/'.$name)){
-				//check if there is an ok.png icon 
-				if(file_exists($basePath.'/'.$name.'/ok.png')){
-					$iconSets[] = $name;
-					//determine the image size for one image
-					$fileDimensions[] = getimagesize($basePath.'/'.$name.'/ok.png');
-				}
+		foreach($allMapsIcons as $mapUploadItem){
+			//check if there is an ok.png icon
+			if(file_exists($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png')){
+				$dimensionArr = getimagesize($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png');
+				$iconSets[] = [
+					'id' => $mapUploadItem['MapUpload']['id'],
+					'displayName' => $mapUploadItem['MapUpload']['upload_name'],
+					'savedName' => $mapUploadItem['MapUpload']['saved_name'],
+					'dimension' => $dimensionArr[0]
+				];
 			}
 		}
-		$fileDimensions = Hash::extract($fileDimensions, '{n}.0');
+
 		return [
 			'items' => [
 				'path' => $basePath,
 				'webPath' => '/map_module/img/items',
-				'iconsets' => $iconSets,
-				'fileDimensions' => $fileDimensions
+				'iconsets' => $iconSets
 			]
 		];
 	}

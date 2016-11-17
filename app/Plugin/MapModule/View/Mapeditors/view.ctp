@@ -61,10 +61,10 @@
 		<?php
 			$css = '';
 			if($map['Map']['background'] != null && $map['Map']['background'] != ''):
-				$filePath = $backgroundThumbs['backgrounds']['path'].'/'.$map['Map']['background'];
+				$filePath = $backgroundThumbs['path'].'/'.$map['Map']['background'];
 				if(file_exists($filePath)):
-					$size = getimagesize($backgroundThumbs['backgrounds']['path'].DS.$map['Map']['background']);
-					$css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['backgrounds']['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
+					$size = getimagesize($backgroundThumbs['path'].DS.$map['Map']['background']);
+					$css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
 				else:
 					echo '<div class="alert alert-danger fade in">
 							<button class="close" data-dismiss="alert">×</button>
