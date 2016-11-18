@@ -116,7 +116,7 @@ class AutomapsController extends AppController{
 
 		$automap = $this->Automap->findById($id);
 
-		if(!$this->allowedByContainerId($automap['Automap']['container_id'])){
+		if(!$this->allowedByContainerId($automap['Automap']['container_id'], false)){
 			$this->render403();
 			return;
 		}

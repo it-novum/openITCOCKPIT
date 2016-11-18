@@ -1979,7 +1979,11 @@ class NagiosExportTask extends AppShell{
 					$content.= $this->addContent('last_notification', 1, $hostescalation['Hostescalation']['last_notification']);
 					$content.= $this->addContent('notification_interval', 1, (int)$hostescalation['Hostescalation']['notification_interval'] * 60);
 					$content.= $this->addContent('escalation_period', 1, $hostescalation['Timeperiod']['uuid']);
-					$content.= $this->addContent('escalation_options', 1, $this->hostEscalationString($hostescalation['Hostescalation']));
+					$hostEscalationString =$this->hostEscalationString($hostescalation['Hostescalation']);
+					if(!empty($hostEscalationString)){
+						$content.= $this->addContent('escalation_options', 1, $hostEscalationString);
+					}
+
 
 					$content.= $this->addContent('}', 0);
 					$file->write($content);
@@ -2099,7 +2103,10 @@ class NagiosExportTask extends AppShell{
 					$content.= $this->addContent('last_notification', 1, $serviceescalation['Serviceescalation']['last_notification']);
 					$content.= $this->addContent('notification_interval', 1, (int)$serviceescalation['Serviceescalation']['notification_interval'] * 60);
 					$content.= $this->addContent('escalation_period', 1, $serviceescalation['Timeperiod']['uuid']);
-					$content.= $this->addContent('escalation_options', 1, $this->serviceEscalationString($serviceescalation['Serviceescalation']));
+					$serviceEscalationString = $this->serviceEscalationString($serviceescalation['Serviceescalation']);
+					if(!empty($serviceEscalationString)){
+						$content.= $this->addContent('escalation_options', 1, $serviceEscalationString);
+					}
 
 					$content.= $this->addContent('}', 0);
 					$file->write($content);
@@ -2243,8 +2250,18 @@ class NagiosExportTask extends AppShell{
 			}
 
 			$content.= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
-			$content.= $this->addContent('execution_failure_criteria', 1, $this->hostDependencyExecutionString($hostdependency['Hostdependency']));
-			$content.= $this->addContent('notification_failure_criteria', 1, $this->hostDependencyNotificationString($hostdependency['Hostdependency']));
+
+
+			$hostDependencyExecutionString = $this->hostDependencyExecutionString($hostdependency['Hostdependency']);
+			if(!empty($hostDependencyExecutionString)){
+				$content.= $this->addContent('execution_failure_criteria', 1, $hostDependencyExecutionString);
+			}
+
+			$hostDependencyNotificationString = $this->hostDependencyNotificationString($hostdependency['Hostdependency']);
+			if(!empty($hostDependencyNotificationString)){
+				$content.= $this->addContent('notification_failure_criteria', 1, $hostDependencyNotificationString);
+			}
+
 			if($hostdependency['Timeperiod']['uuid'] !== null && $hostdependency['Timeperiod']['uuid'] !== ''){
 				$content.= $this->addContent('dependency_period', 1, $hostdependency['Timeperiod']['uuid']);
 			}
@@ -2365,8 +2382,14 @@ class NagiosExportTask extends AppShell{
 						}
 
 						$content.= $this->addContent('inherits_parent', 1, $servicedependency['Servicedependency']['inherits_parent']);
-						$content.= $this->addContent('execution_failure_criteria', 1, $this->serviceDependencyExecutionString($servicedependency['Servicedependency']));
-						$content.= $this->addContent('notification_failure_criteria', 1, $this->serviceDependencyNotificationString($servicedependency['Servicedependency']));
+						$serviceDependencyExecutionString = $this->serviceDependencyExecutionString($servicedependency['Servicedependency']);
+						if(!empty($serviceDependencyExecutionString)){
+							$content.= $this->addContent('execution_failure_criteria', 1, $serviceDependencyExecutionString);
+						}
+						$serviceDependencyNotificationString = $this->serviceDependencyNotificationString($servicedependency['Servicedependency']);
+						if(!empty($serviceDependencyNotificationString)){
+							$content.= $this->addContent('notification_failure_criteria', 1, $serviceDependencyNotificationString);
+						}
 						if($servicedependency['Timeperiod']['uuid'] !== null && $servicedependency['Timeperiod']['uuid'] !== ''){
 							$content.= $this->addContent('dependency_period', 1, $servicedependency['Timeperiod']['uuid']);
 						}
