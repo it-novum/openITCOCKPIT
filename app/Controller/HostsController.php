@@ -271,6 +271,7 @@ class HostsController extends AppController{
 		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
+		$this->set('myNamedFilters', $this->request->data);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			if(!isset($this->request->data['Filter']['HostStatus']['current_state'])) {
 				$this->set('HostStatus.current_state', []);
