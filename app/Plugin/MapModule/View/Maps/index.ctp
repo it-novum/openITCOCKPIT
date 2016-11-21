@@ -88,7 +88,7 @@
 							<thead>
 								<tr>
 									<?php $order = $this->Paginator->param('order'); ?>
-									<th class="no-sort"></th>
+									<th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
 									<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Map.name'); echo $this->Paginator->sort('Map.name', 'Map name'); ?></th>
 									<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Map.title'); echo $this->Paginator->sort('Map.title', 'Map title'); ?></th>
 									<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
