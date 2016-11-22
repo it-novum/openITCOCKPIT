@@ -99,7 +99,7 @@ class MapeditorsController extends MapModuleAppController {
 			$elementIdsToDelete = $this->Mapeditor->getObsoleteIds($map,$request);
 
 			foreach ($elementIdsToDelete as $mapElementType => $ids) {
-				if(!empty($ids) && $mapElementType !== 'Container'){
+				if(!empty($ids) && !in_array($mapElementType, ['Container','Rotation'])){
 					$this->{$mapElementType}->deleteAll([
 						$mapElementType.'.map_id' => $map['Map']['id'],
 						$mapElementType.'.id' => $ids
@@ -193,8 +193,6 @@ class MapeditorsController extends MapModuleAppController {
 	}
 	
 	public function view($id = null){
-		$map = $this->Map->findById($id);
-
 		$rotate = null;
 		if(isset($this->request->params['named']['rotate'])){
 			$isFirst = true;
@@ -216,6 +214,9 @@ class MapeditorsController extends MapModuleAppController {
 		}else{
 			$this->Frontend->setJson('interval', 0);
 		}
+
+		$map = $this->Map->findById($id);
+
 		$this->Frontend->setJson('refresh_interval', $map['Map']['refresh_interval']);
 
 		if(!$this->Map->exists($id)){
