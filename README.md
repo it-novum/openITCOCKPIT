@@ -35,8 +35,8 @@ openITCOCKPIT uses Nginx as webserver and will generate the configuration for ph
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt update
-apt install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
+apt-get update
+apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
@@ -44,8 +44,8 @@ apt install openitcockpit{,-naemon,-statusengine-naemon,-npcd}
 ````
 echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
-apt update
-apt install openitcockpit{,-nagios,-ndoutils,-npcd}
+apt-get update
+apt-get install openitcockpit{,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
@@ -69,7 +69,7 @@ apt install openitcockpit{,-nagios,-ndoutils,-npcd}
 If you like to try openITCOCKPIT you can install our Vagrant box
 * Install [Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on your system
 ````
-apt install vagrant virtualbox
+apt-get install vagrant virtualbox
 ````
 * Download the [Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3/Vagrantfile)
 ````
