@@ -148,8 +148,8 @@ class ServicesController extends AppController{
 					[
 						'0' => [
 							'name' => 'Passive',
-							'value' => 0,
-							'label' => ' passive',
+							'value' => 1,
+							'label' => 'Passive',
 							'data' => 'Filter.Servicestatus.active_checks_enabled',
 						],
 					]
