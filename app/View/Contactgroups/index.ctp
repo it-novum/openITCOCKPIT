@@ -101,7 +101,7 @@
 													foreach(Set::combine(Set::sort($contactgroup['Contact'], '{n}.name', 'asc'), '{n}.id', '{n}.name') as $contactId => $contactName):
 														echo '<li>';
 														if($this->Acl->hasPermission('edit', 'contacts')): ?>
-														<a href="<?php Router::url(['controller' => 'contacts', 'action' => 'edit', $contactId]); ?>"><?php echo h($contactName);?></a>
+														<a href="/contacts/edit/<?= $contactId ?>"><?php echo h($contactName);?></a>
 														<?php
 														else:
 															echo h($contactName);
