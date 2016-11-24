@@ -2661,7 +2661,7 @@ class ServicesController extends AppController{
 		}
 		return $changelogData;
 	}
-	
+
 	//Acl
 	public function checkcommand(){
 		return null;
