@@ -1711,114 +1711,121 @@ class ServicesController extends AppController{
 	}
 
 	function browser($id = null){
-		if($this->Service->exists($id)){
-			$service = $this->Service->prepareForView($id);
-			//$_service = $this->Service->findById($id);
+		$browseByUUID = false;
+		$conditionsToFind = ['Service.id' => $id];
+		if(preg_match('/\-/', $id)){
+			$browseByUUID = true;
+			$conditionsToFind = ['Service.uuid' => $id];
+		}
 
-
-			$_service = $this->Service->find('first', [
-				'conditions' => [
-					'Service.id' => $id
+		$_service = $this->Service->find('first', [
+			'conditions' => $conditionsToFind,
+			'contain' => [
+				'Contact' => [
+					'fields' => [
+						'Contact.id',
+						'Contact.name'
+					]
 				],
-				'contain' => [
-					'Contact' => [
+				'Contactgroup' => [
+					'Container' => [
 						'fields' => [
-							'Contact.id',
-							'Contact.name'
+							'Container.name',
 						]
 					],
-					'Contactgroup' => [
-						'Container' => [
-							'fields' => [
-								'Container.name',
-							]
-						],
-						'fields' => [
-							'Contactgroup.id',
-						]
-					],
-					'Servicecommandargumentvalue',
-					'Host' => [
-						'Container'
-					],
-					'NotifyPeriod',
-					'CheckPeriod',
-
+					'fields' => [
+						'Contactgroup.id',
+					]
 				],
-			]);
+				'Servicecommandargumentvalue',
+				'Host' => [
+					'Container'
+				],
+				'NotifyPeriod',
+				'CheckPeriod',
 
-			if(!$this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'), false)){
-				$this->render403();
-				return;
-			}
+			],
+		]);
 
-			$allowEdit = false;
-			if($this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'))){
-				$allowEdit = true;
-			}
-
-			//Select command arguments, that we can replace them in in view
-			$commandarguments = [];
-			if($_service['Servicecommandargumentvalue']){
-				//The service has own command argument values
-				$_commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($_service['Service']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicecommandargumentvalue']['value'];
-				}
-			}else{
-				//The service command arguments are from the template
-				$_commandarguments = $this->Servicetemplatecommandargumentvalue->findAllByServicetemplateId($service['Servicetemplate']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicetemplatecommandargumentvalue']['value'];
-				}
-			}
-
-			$ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
-//			debug($service);
-			$service['Host'] = $_service['Host'];
-			$service['NotifyPeriod'] = $_service['NotifyPeriod'];
-			$service['CheckPeriod'] = $_service['CheckPeriod'];
-			unset($_service);
-
-			$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-			$hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
-
-			$acknowledged = [];
-			if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
-				$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-                if(!empty($acknowledged[0])){
-                    $acknowledged = $acknowledged[0];
-                }
-			}
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-            ]);
-			$username = $this->Auth->user('full_name');
-
-			$this->set(compact([
-			    'service',
-                'servicestatus',
-                'username',
-                'acknowledged',
-                'commandarguments',
-                'ContactsInherited',
-                'hoststatus',
-                'allowEdit',
-                'ticketSystem'
-                ])
-            );
-			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-			$this->loadModel('Systemsetting');
-			$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-			$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-			$this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
-			$this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
-		}else{
+		if(empty($_service)){
 			throw new NotFoundException(__('Service not found'));
 		}
+		if($browseByUUID){
+			$id = $_service['Service']['id'];
+		}
+
+		$service = $this->Service->prepareForView($id);
+		//$_service = $this->Service->findById($id);
+
+		if(!$this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'), false)){
+			$this->render403();
+			return;
+		}
+
+		$allowEdit = false;
+		if($this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+			$allowEdit = true;
+		}
+
+		//Select command arguments, that we can replace them in in view
+		$commandarguments = [];
+		if($_service['Servicecommandargumentvalue']){
+			//The service has own command argument values
+			$_commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($_service['Service']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicecommandargumentvalue']['value'];
+			}
+		}else{
+			//The service command arguments are from the template
+			$_commandarguments = $this->Servicetemplatecommandargumentvalue->findAllByServicetemplateId($service['Servicetemplate']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicetemplatecommandargumentvalue']['value'];
+			}
+		}
+
+		$ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
+//			debug($service);
+		$service['Host'] = $_service['Host'];
+		$service['NotifyPeriod'] = $_service['NotifyPeriod'];
+		$service['CheckPeriod'] = $_service['CheckPeriod'];
+		unset($_service);
+
+		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+		$hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
+
+		$acknowledged = [];
+		if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
+			$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+			if(!empty($acknowledged[0])){
+				$acknowledged = $acknowledged[0];
+			}
+		}
+		$ticketSystem = $this->Systemsetting->find('first', [
+			'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+		]);
+		$username = $this->Auth->user('full_name');
+
+		$this->set(compact([
+			'service',
+			'servicestatus',
+			'username',
+			'acknowledged',
+			'commandarguments',
+			'ContactsInherited',
+			'hoststatus',
+			'allowEdit',
+			'ticketSystem'
+			])
+		);
+		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
+		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+		$this->loadModel('Systemsetting');
+		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+		$this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
+		$this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
 	}
 
 	/*
