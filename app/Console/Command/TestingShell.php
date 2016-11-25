@@ -47,14 +47,17 @@ class TestingShell extends AppShell{
 		'Macro',
 		'Hostescalation',
 		'Hostcommandargumentvalue',
-		'Servicecommandargumentvalue'
+		'Servicecommandargumentvalue',
+		'Aro',
+		'Aco'
 	];
-	
+
 	public function main(){
-		
+		//debug($this->Aro->find('all'));
+		//debug($this->Aco->find('all', ['recursive' => -1]));
 		/*
-		 * Lof of space for your experimental code :)
-		 */
+         * Lof of space for your experimental code :)
+         */
 	}
 	
 	public function getOptionParser(){
