@@ -71,7 +71,7 @@ $config = [
 			'children' => [
 				'changelog' => [
 					'url' => ['controller' => 'changelogs', 'action' => 'index'],
-					'title' => 'Change Log',
+					'title' => 'Changelog',
 					'icon' => 'code-fork',
 					'parent_controller' => 'Administrators'
 				],
@@ -119,7 +119,7 @@ $config = [
 				],
 				'itc_cronjobs' => [
 					'url' => ['controller' => 'cronjobs', 'action' => 'index'],
-					'title' => 'Cron Jobs',
+					'title' => 'Cronjobs',
 					'icon' => 'clock-o',
 					'parent_controller' => 'Administrators'
 				],
