@@ -28,9 +28,9 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-cogs fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('Servicegroups'); ?>
+				<?php echo __('Service Groups'); ?>
 			</span>
 		</h1>
 	</div>
@@ -133,9 +133,9 @@
 								</tbody>
 							</table>
 						</div>
-						
+
 						<?php echo $this->element('servicegroup_mass_changes'); ?>
-						
+
 						<div style="padding: 5px 10px;">
 							<div class="row">
 								<div class="col-sm-6">

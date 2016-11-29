@@ -28,9 +28,9 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-pencil-square-o fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('Servicetemplategroups'); ?>
+				<?php echo __('Service Template Groups'); ?>
 			</span>
 		</h1>
 	</div>

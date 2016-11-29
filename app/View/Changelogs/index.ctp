@@ -28,13 +28,14 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-code-fork fa-fw "></i>
-				<?php echo __('System'); ?>
+				<?php echo __('Administration'); ?>
 			<span>>
 				<?php echo __('Changelog'); ?>
 			</span>
 		</h1>
 	</div>
 </div>
+?>
 <!-- widget grid -->
 <section id="widget-grid" class="">
 	<!-- row -->

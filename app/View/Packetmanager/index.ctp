@@ -28,11 +28,19 @@
 $plugin_version = '1.5';
 ?>
 
+<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark"><i class="fa fa-cloud-download fa-fw "></i> <?php echo __('Package manager'); ?></h1>
+		<h1 class="page-title txt-color-blueDark">
+			<i class="fa fa-fw fa-cloud-download"></i>
+				<?php echo __('Administration'); ?>
+			<span>>
+				<?php echo __('Package Manager'); ?>
+			</span>
+		</h1>
 	</div>
 </div>
+
 
 <div id="error_msg"></div>
 <?php if(isset($data) && version_compare($data->version, $openITCVersion) > 0): ?>
@@ -51,7 +59,7 @@ $plugin_version = '1.5';
 	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 		<input type="text" class="margin-bottom-10 padding-left-5" style="width: 100%; height: 35px;" placeholder="<?php echo __('Search for tags');?>" id="tagSearch" />
 	</div>
-	
+
 	<?php if(isset($data)): ?>
 		<?php foreach($data->modules as $module): ?>
 			<article class="col-xs-12 col-sm-12 col-md-12 col-lg-6">
@@ -59,7 +67,7 @@ $plugin_version = '1.5';
 					<header>
 						<h2><strong><?php echo $module->Module->name; ?></strong></h2>
 						<?php if($module->Module->enterprise):?>
-							<div class="widget-toolbar" role="menu"> 
+							<div class="widget-toolbar" role="menu">
 								<div class="label label-danger">
 									<i class="fa fa-star"></i> <?php echo __('Enterprise'); ?>
 								</div>
@@ -67,7 +75,7 @@ $plugin_version = '1.5';
 						<?php endif;?>
 						<?php if($module->Module->check_for_update):?>
 							<?php if (version_compare($module->Module->version, $plugin_version) > 0): ?>
-								<div class="widget-toolbar" role="menu"> 
+								<div class="widget-toolbar" role="menu">
 									<div class="label label-primary">
 										<i class="fa fa-fire"></i> <?php echo __('Update available'); ?>
 									</div>
@@ -111,12 +119,12 @@ $plugin_version = '1.5';
 											data-package-apt-name="<?php echo h(base64_encode(str_replace('openitcockpit-module-', '', $module->Module->apt_name))); ?>">
 										<i class="fa fa-trash-o"></i> <?php echo __('Uninstall');?>
 									</button>
-								<?php else: 
+								<?php else:
 									/*if(version_compare($module->Module->requires, $openITCVersion) > 0): ?>
 										<!-- Die installierte openITCOCKPIT Version ist zu alt -->
 										<button class="btn btn-sm btn-default" disabled="disabled" type="button">
 											<i class="fa fa-fire"></i> <?php echo __('Requires an'); ?> <?php echo $systemname; ?> <?php echo __('update'); ?>
-										</button> 
+										</button>
 									<?php else: ?> */ ?>
 										<!-- Die installierte openITCOCKPIT Version ist ok -->
 										<button class="install btn btn-sm btn-success"

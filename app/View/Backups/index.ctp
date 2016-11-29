@@ -23,14 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-database fa-fw "></i>
-            <?php echo __('Backup / Restore'); ?>
-        </h1>
-    </div>
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+                <h1 class="page-title txt-color-blueDark">
+                        <i class="fa fa-database fa-fw"></i>
+                                <?php echo __('Administration'); ?>
+                        <span>>
+                                <?php echo __('Backup / Restore'); ?>
+                        </span>
+                </h1>
+        </div>
 </div>
+
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">

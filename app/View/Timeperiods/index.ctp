@@ -28,9 +28,9 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-clock-o fa-fw "></i>
-				<?php echo __('System'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('Timeperiods'); ?>
+				<?php echo __('Time Periods'); ?>
 			</span>
 		</h1>
 	</div>

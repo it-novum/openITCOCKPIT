@@ -26,9 +26,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-check-square-o fa-fw "></i> 
-				<?php echo __('System'); ?> 
-			<span>> 
+			<i class="fa fa-check-square-o fa-fw "></i>
+				<?php echo __('Administration'); ?> 
+			<span>>
 				<?php echo __('Registration'); ?>
 			</span>
 		</h1>
@@ -52,13 +52,13 @@
 				));
 				?>
 
-				
+
 				<?php echo $this->Form->input('license', ['label' => __('License key'), 'value' => (isset($licence['Register']['license']))?$licence['Register']['license']:'']); ?>
 				<div class="form-group text-muted">
 					<span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
 					<div class="col col-xs-10"><?php echo __('No license key?'); ?><a class="txt-color-blueDark" href="http://www.it-novum.com/en/support-openitcockpit-en.html"> <?php echo __('Please visit our homepage to get in contact.'); ?></a></div>
 				</div>
-				
+
 			<?php echo $this->Form->formActions(__('Register')); ?>
 		</div>
 	</div>

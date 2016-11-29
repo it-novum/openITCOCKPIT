@@ -28,7 +28,7 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-terminal fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
 				<?php echo __('Commands'); ?>
 			</span>

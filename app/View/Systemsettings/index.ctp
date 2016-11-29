@@ -23,21 +23,26 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-wrench fa-fw "></i>
-				<?php echo __('Systemsettings'); ?>
-		</h1>
-	</div>
-	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-		<div class="alert alert-danger fade in">
-			<button data-dismiss="alert" class="close">×</button>
-			<i class="fa fa-exclamation "></i>
-			<strong><?php echo __('Attention!'); ?></strong> <?php echo __("Do not change values, where you don't know what you are doing!"); ?>
-		</div>
-	</div>
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+                <h1 class="page-title txt-color-blueDark">
+                        <i class="fa fa-wrench fa-fw"></i>
+                                <?php echo __('Administration'); ?>
+                        <span>>
+                                <?php echo __('System Settings'); ?>
+                        </span>
+                </h1>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="alert alert-danger fade in">
+                        <button data-dismiss="alert" class="close">×</button>
+                        <i class="fa fa-exclamation "></i>
+                        <strong><?php echo __('Attention!'); ?></strong> <?php echo __("Do not change values, where you don't know what you are doing!"); ?>
+              </div>
+      </div>
 </div>
+
 
 <section id="widget-grid" class="">
 
@@ -90,7 +95,7 @@
 																	];
 																	echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
 																	break;
-																	
+
 																case 'MONITORING.SERVICE.INITSTATE':
 																	$options = [
 																		'o' => 'Ok',
@@ -100,8 +105,8 @@
 																	];
 																	echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
 																	break;
-																
-																
+
+
 																case 'FRONTEND.AUTH_METHOD':
 																	$options = [
 																		'session' => 'PHP session',
@@ -110,13 +115,13 @@
 																	];
 																	echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
 																	break;
-																
-																
+
+
 																case 'FRONTEND.LDAP.PASSWORD':
 																	?><input type="password" id="SystemsettingValue" value="<?php echo h($value['value']); ?>" class="form-control systemsetting-input" name="data[<?php echo $i; ?>][Systemsetting][value]"><?php
 																	break;
-																	
-																	
+
+
 																case 'FRONTEND.LDAP.USE_TLS':
 																	$options = [
 																		0 => 'False',
@@ -124,7 +129,7 @@
 																	];
 																	echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
 																	break;
-																	
+
 																case 'ARCHIVE.AGE.SERVICECHECKS':
 																case 'ARCHIVE.AGE.HOSTCHECKS':
 																case 'ARCHIVE.AGE.STATEHISTORIES':
@@ -138,8 +143,8 @@
 																	}
 																	echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
 																	break;
-																	
-																	
+
+
 																default:
 																	?><input type="text" id="SystemsettingValue" value="<?php echo h($value['value']); ?>" class="form-control systemsetting-input" name="data[<?php echo $i; ?>][Systemsetting][value]"><?php
 																	break;
