@@ -694,7 +694,8 @@ class ServicesController extends AppController{
 
 		$userContainerId = $this->Auth->user('container_id');
 		$hosts = $this->Host->find('list');
-		$servicetemplates = $this->Servicetemplate->find('list');
+		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
 		$timeperiods = $this->Timeperiod->find('list');
 		//container_id = 1 => ROOT
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -879,7 +880,8 @@ class ServicesController extends AppController{
 
 		$userContainerId = $this->Auth->user('container_id');
 		$hosts = $this->Host->find('list');
-		$servicetemplates = $this->Servicetemplate->find('list');
+		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
 		$timeperiods = $this->Timeperiod->find('list');
 		//container_id = 1 => ROOT
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -919,10 +921,12 @@ class ServicesController extends AppController{
 		}
 		$servicegroups_for_changelog = [];
 		foreach(Hash::extract($service['Servicegroup'], '{n}.id', '{n}.id') as $servicegroup_id){
-			$servicegroups_for_changelog[] = [
-				'id' => $servicegroup_id,
-				'name' => $servicegroups[$servicegroup_id]
-			];
+			if(isset($servicegroups[$servicegroup_id])){
+				$servicegroups_for_changelog[] = [
+					'id' => $servicegroup_id,
+					'name' => $servicegroups[$servicegroup_id]
+				];
+			}
 		}
 		$service_for_changelog['Contact'] = $contacts_for_changelog;
 		$service_for_changelog['Contactgroup'] = $contactgroups_for_changelog;
