@@ -22,6 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+$bodyClass = '';
+if($sideMenuClosed){
+	$bodyClass = 'minified';
+}
+
 ?>
 <!DOCTYPE html><html lang="en">
 <head>
@@ -39,7 +45,7 @@
 		echo $this->element('assets');
 	?>
 </head>
-<body class="">
+<body class="<?= $bodyClass ?>">
 
 	<?php echo $this->element('Admin.layout/header') ?>
 	<?php echo $this->element('Admin.layout/sidebar') ?>
