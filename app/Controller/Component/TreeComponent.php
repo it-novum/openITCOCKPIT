@@ -186,7 +186,7 @@ class TreeComponent extends Component {
 			}
             $tmpResult = Cache::remember('TreeComponentResolveChildrenOfContainerIds:'.$containerId, function() use ($containerId) {
                 return $this->Container->children($containerId, false, ['id', 'containertype_id']);
-            });
+            }, 'migration');
 			if(!empty($includeContainerTypes)){
 				$tmpResult = Hash::extract($tmpResult, '{n}.Container[containertype_id=/^('.implode('|', $includeContainerTypes).')$/].id');
 			}else{

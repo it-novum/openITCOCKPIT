@@ -350,6 +350,15 @@ if(php_sapi_name() != 'cli'){
 		'serialize' => ($engine === 'File'),
 		'duration' => $duration
 	));
+
+//    Cache::config('migration', [
+//        'engine' => 'Redis',
+//        'serialize' => true,
+//        'prefix' => 'oitc_',
+//        'duration' => '+30 minute',
+//        'server' => '127.0.0.1',
+//        'port' => '6379'
+//    ]);
 }
 
 if(php_sapi_name() == 'cli'){
