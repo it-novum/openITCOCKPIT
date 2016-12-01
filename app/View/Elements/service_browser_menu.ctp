@@ -75,7 +75,7 @@
 				if(!empty($additionalLinksList)):
 					echo '<li class="divider"></li>';
 				endif;// @TODO extend additional links mit service object
-				echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']);
+				echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
 			endif; ?>
 		</ul>
 	</div>

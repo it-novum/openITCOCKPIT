@@ -289,7 +289,6 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
 														<?php
 														if($this->Acl->hasPermission('edit') && $hasEditPermission):
-															debug($additionalLinksList);
 															echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
 														endif;
 														?>

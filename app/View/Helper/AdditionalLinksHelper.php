@@ -42,8 +42,8 @@ class AdditionalLinksHelper extends AppHelper{
 	 * @param int $currentIndex The current index or ID of the current item
 	 * @return string The list items (<li>) with the corresponding links (<a>)
 	 */
-	public function renderAsListItems($additionalLinks, $currentIndex = -1){
-		$links = $this->renderLinks($additionalLinks, $currentIndex);
+	public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = []){
+		$links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam);
 		$links = array_map(function($element){
 			return '<li>' . $element . '</li>';
 		}, $links);
@@ -72,10 +72,12 @@ class AdditionalLinksHelper extends AppHelper{
 	 * @param int $currentIndex The current index or ID of the current item.
 	 * @return string[] The rendered <a> tags. Each element accords to one link.
 	 */
-	protected function renderLinks($additionalLinks, $currentIndex = -1){
+	protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = []){
 		$result = [];
-
 		foreach($additionalLinks as $link){
+			if(isset($link['callback']) && isset($addArrParam['Service']['name']) && !$link['callback']($addArrParam['Service']['name']))
+				continue;
+
 			$title = $link['title'];
 			$url = $link['url'];
 			if($currentIndex !== -1){ // replace 'autoIndex' within a string
