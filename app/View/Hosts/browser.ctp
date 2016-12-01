@@ -392,10 +392,10 @@
 										<tr>
 											<?php $order = $this->Paginator->param('order'); ?>
 											<th><?php echo __('Servicestatus'); ?></th>
-											<th class="text-center"><i class="fa fa-user"></i></th>
-											<th class="text-center"><i class="fa fa-power-off"></i></th>
-											<th class="text-center"><i class="fa fa fa-area-chart fa-lg"></i></th>
-											<th class="text-center"><strong>P</strong></th>
+											<th class="text-center"><i class="fa fa-user" title="<?php echo __('Acknowledgedment'); ?>"></i></th>
+											<th class="text-center"><i class="fa fa-power-off" title="<?php echo __('in Downtime'); ?>"></i></th>
+											<th class="text-center"><i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i></th>
+											<th class="text-center"><strong title="<?php echo __('Passively transferred service'); ?>">P</strong></th>
 											<th class="text-center" title="<?php echo __('Disabled Service'); ?>"><i class="fa fa fa-plug"></i></th>
 											<th><?php echo __('Name'); ?></th>
 											<th><?php echo __('Laste state change'); ?></th>
@@ -420,7 +420,11 @@
 												</td>
 												<td class="text-center">
 													<?php if($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))):?>
-														<i class="fa fa-user">
+														<?php if($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1):?>
+															<i class="fa fa-user" title="<?php echo __('Acknowledgedment'); ?>"></i>
+														<?php else:?>
+															<i class="fa fa-user-o" title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+														<?php endif;?>
 													<?php endif;?>
 												</td>
 												<td class="text-center">
