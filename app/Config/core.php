@@ -351,14 +351,14 @@ if(php_sapi_name() != 'cli'){
 		'duration' => $duration
 	));
 
-//    Cache::config('migration', [
-//        'engine' => 'Redis',
-//        'serialize' => true,
-//        'prefix' => 'oitc_',
-//        'duration' => '+30 minute',
-//        'server' => '127.0.0.1',
-//        'port' => '6379'
-//    ]);
+//	Cache::config('migration', [
+//		'engine' => 'Redis',
+//		'serialize' => true,
+//		'prefix' => 'oitc_',
+//		'duration' => '+30 minute',
+//		'server' => '127.0.0.1',
+//		'port' => '6379'
+//	]);
 }
 
 if(php_sapi_name() == 'cli'){
