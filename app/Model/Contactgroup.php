@@ -105,9 +105,11 @@ class Contactgroup extends AppModel{
 		foreach($container_ids as $container_id){
 			if($container_id != ROOT_CONTAINER){
 
-				// Get contaier id of the tenant container
+				// Get container id of the tenant container
 				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-				$path = $this->Container->getPath($container_id);
+				$path = Cache::remember('ContactGroupContactsByContainerId:'. $container_id, function() use ($container_id) {
+					return $this->Container->getPath($container_id);
+				}, 'migration');
 				$tenantContainerIds[] = $path[1]['Container']['id'];
 			}else{
 				$tenantContainerIds[] = ROOT_CONTAINER;

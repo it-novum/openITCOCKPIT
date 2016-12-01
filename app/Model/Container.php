@@ -129,7 +129,7 @@ class Container extends AppModel{
 	var $name = 'Container';
 
 	/**
-	 * Raturns the name and id of the tenant that is the owner of the given container_id
+	 * Returns the name and id of the tenant that is the owner of the given container_id
 	 *
 	 * Example:
 	 * $id = 5
@@ -141,19 +141,26 @@ class Container extends AppModel{
 	 *
 	 */
 	public function getTenantByContainer($containerId){
-		if(!$this->exists($containerId)){
+		$exists = Cache::remember('ContainerExists:'. $containerId, function() use ($containerId) {
+			return $this->exists($containerId);
+		}, 'migration');
+		if(!$exists){
 			return null;
 		}
-		$container = $this->find('first', [
-			'recursive' => -1,
-			'conditions' => [
-				'id' => $containerId
-			]
-		]);
+		$container = Cache::remember('ContainerGetTenantByContainer:'. $containerId, function() use ($containerId) {
+			return $this->find('first', [
+				'recursive' => -1,
+				'conditions' => [
+					'id' => $containerId
+				]
+			], 'migration');
+		});
 
 		$possibleContainerTypes = [CT_GLOBAL, CT_TENANT];
 		while(!in_array($container['Container']['containertype_id'], $possibleContainerTypes)){
-			$container = $this->getParentNode($container['Container']['id']);
+			$container = Cache::remember('ContainerGetTenantByContainerParentNode:'. md5(json_encode($container)), function() use ($container) {
+				return $this->getParentNode($container['Container']['id']);
+			}, 'migration');
 		}
 
 		return [$container['Container']['id'] => $container['Container']['name']];
