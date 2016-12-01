@@ -95,9 +95,21 @@ $(document).ready(function() {
 				.removeClass('fa-plus-square-o')
 				.addClass('fa-minus-square-o');
 
+	if($('body').hasClass('minified')){
+		$('#menuSearchResult').parent().hide();
+		if($('#userRootIcon').length){
+			$('#userRootIcon').hide();
+		}
+	}
+
 	// COLLAPSE LEFT NAV
 	$('.minifyme').click(function(e) {
 		$('body').toggleClass("minified");
+		if($('body').hasClass('minified')){
+			$.cookie('sideMenuClosed', true, {path:'/'});
+		}else{
+			$.cookie('sideMenuClosed', false, {path:'/'});
+		}
 		var classMinifiedStr = new RegExp(/\sminified/);
 		if(classMinifiedStr.test($('body').attr('class'))){
 			$('#menuSearchResult').parent().hide();
