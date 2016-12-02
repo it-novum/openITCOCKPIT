@@ -295,7 +295,7 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 														<?php if($this->Acl->hasPermission('delete') && $hasEditPermission):?>
 															<li class="divider"></li>
 															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this host?'));?>
 															</li>
 														<?php endif;?>
 													</ul>

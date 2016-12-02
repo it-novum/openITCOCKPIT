@@ -122,7 +122,7 @@
 																	<?php if($this->Acl->hasPermission('delete')): ?>
 																		<li class="divider"></li>
 																		<li>
-																			<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'commands', 'action' => 'delete', $command['Command']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																			<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'commands', 'action' => 'delete', $command['Command']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this command?'));?>
 																		</li>
 																	<?php endif; ?>
 																</ul>
