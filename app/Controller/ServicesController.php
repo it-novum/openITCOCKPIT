@@ -246,6 +246,7 @@ class ServicesController extends AppController{
 				'Servicestatus.active_checks_enabled',
 				'Servicestatus.state_type',
 				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.acknowledgement_type',
 				'Servicestatus.is_flapping',
 
 				'Servicetemplate.id',
@@ -1954,6 +1955,7 @@ class ServicesController extends AppController{
 				'Servicestatus.active_checks_enabled',
 				'Servicestatus.state_type',
 				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.acknowledgement_type',
 				'Servicestatus.is_flapping',
 
 				'Servicetemplate.id',

@@ -203,6 +203,7 @@ class HostsController extends AppController{
 				'Hoststatus.active_checks_enabled',
 				'Hoststatus.state_type',
 				'Hoststatus.problem_has_been_acknowledged',
+				'Hoststatus.acknowledgement_type',
 				'Hoststatus.is_flapping',
 				'Hosttemplate.id',
 				'Hosttemplate.uuid',
