@@ -110,7 +110,7 @@
 														<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 															<li class="divider"></li>
 															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'servicetemplates', 'action' => 'delete', $servicetemplate['Servicetemplate']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'servicetemplates', 'action' => 'delete', $servicetemplate['Servicetemplate']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete? All attached services will be deleted too.'));?>
 															</li>
 														<?php endif; ?>
 													</ul>

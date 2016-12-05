@@ -271,7 +271,7 @@ foreach($this->params->named as $key => $value){
 															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
 																<li class="divider"></li>
 																<li>
-																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
+																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this service?'));?>
 																</li>
 															<?php endif; ?>
 														</ul>

@@ -59,7 +59,7 @@ $notification_settings = [
 		<h2><?php echo __('Edit Servicetemplate'); ?></h2>
 		<div class="widget-toolbar" role="menu">
 			<?php if($this->Acl->hasPermission('delete')): ?>
-				<?php echo $this->Utils->deleteButton(null, $servicetemplate['Servicetemplate']['id']);?>
+				<?php echo $this->Utils->deleteButton(null, $servicetemplate['Servicetemplate']['id'], [], true, __('All attached services will be deleted too.'));?>
 			<?php endif; ?>
 			<?php echo $this->Utils->backButton(__('Back'), $back_url);?>
 		</div>
