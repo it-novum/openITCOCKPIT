@@ -53,9 +53,6 @@
 	<?php if($this->Acl->hasPermission('edit', 'services')): ?>
 		<a href="/services/edit/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
 	<?php endif; ?>
-	<?php if($service['Servicetemplate']['name'] === "CHECK_MK_LOGWATCH"): ?>
-		<a href="/services/showCheckMKLogfile/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Check_MK Logfile'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-list fa-lg"></i></a>
-	<?php endif; ?>
 <?php endif;?>
 
 	<div class="btn-group">
@@ -74,7 +71,12 @@
 					</li>
 			<?php endif; ?>
 			<?php endif;?>
-			<?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']); ?>
+			<?php if($this->Acl->hasPermission('edit', 'services')):
+				if(!empty($additionalLinksList)):
+					echo '<li class="divider"></li>';
+				endif;// @TODO extend additional links mit service object
+				echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
+			endif; ?>
 		</ul>
 	</div>
 
