@@ -30,8 +30,8 @@ class GearmanWorkerShell extends AppShell
         'Systemsetting',
         MONITORING_EXTERNALCOMMAND,
         'Export',
-		'Host',
-		'Service'
+        'Host',
+        'Service'
     ];
     public $tasks = [
         'NagiosExport',
@@ -429,21 +429,58 @@ class GearmanWorkerShell extends AppShell
                 $return = $this->NagiosExport->restoreSQLBackup($payload['path']);
                 break;
 
-            case 'phpnsta_status':
-                $command = Configure::read('nagios.phpnsta_status');
-                $handle = popen($command." 2>&1", 'r');
-                $output = fread($handle, 2096);
-                pclose($handle);
-                if (strpos($output,"not") > 0 OR strpos($output, "unrecognized") > 0) {
-                    $returncode = 1;
-                } else {
-                    $returncode = 0;
+            case 'check_background_processes':
+                $systemsetting = $this->Systemsetting->findAsArray();
+                $errorRedirect = ' 2> /dev/null';
+
+                $state = [
+                    'isNagiosRunning' => false,
+                    'isNdoRunning' => false,
+                    'isStatusengineRunning' => false,
+                    'isNpcdRunning' => false,
+                    'isOitcCmdRunning' => false,
+                    'isSudoServerRunning' => false,
+                    'isPhpNstaRunning' => false,
+
+                    'isGearmanWorkerRunning' => true
+                ];
+
+                exec($systemsetting['MONITORING']['MONITORING.STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isNagiosRunning'] = true;
                 }
 
-                $return = [
-                    'output' => $output,
-                    'returncode' => $returncode
-                ];
+                exec($systemsetting['INIT']['INIT.NDO_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isNdoRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isStatusengineRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.NPCD_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isNpcdRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isOitcCmdRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isSudoServerRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'].$errorRedirect, $output, $returncode);
+                if($returncode == 0){
+                    $state['isPhpNstaRunning'] = true;
+                }
+
+                $return = $state;
                 break;
         }
 
@@ -537,7 +574,7 @@ class GearmanWorkerShell extends AppShell
                 'text' => __('Create hosttemplate configuration'),
             ],
 
-			/* @FIXME */
+            /* @FIXME */
             'export_hosts' => [
                 'text' => __('Create host configuration'),
             ],
@@ -565,7 +602,7 @@ class GearmanWorkerShell extends AppShell
                 'text' => __('Create servicetemplate configuration'),
             ],
 
-			/* @FIXME */
+            /* @FIXME */
             'export_services' => [
                 'text' => __('Create service configuration'),
             ],
@@ -588,45 +625,45 @@ class GearmanWorkerShell extends AppShell
             ],
         ];
 
-		/* @FIXME
-		//Split host and services to different worker processes to speed up the configuration generation
-		$hostCount = $this->Host->find('count');
-		//$serviceCount = $this->Service->find('count');
-		$chunk = 200;
-		$hostWorker = ceil($hostCount/$chunk);
-		$serviceWorker = $hostWorker;
-		//$serviceWorker = ceil($serviceCount/$chunk);
+        /* @FIXME
+        //Split host and services to different worker processes to speed up the configuration generation
+        $hostCount = $this->Host->find('count');
+        //$serviceCount = $this->Service->find('count');
+        $chunk = 200;
+        $hostWorker = ceil($hostCount/$chunk);
+        $serviceWorker = $hostWorker;
+        //$serviceWorker = ceil($serviceCount/$chunk);
 
-		for($i=0; $i<$hostWorker; $i++){
-			$tasks['export_hosts_'.$i] = [
-			    'text' => __('Create host configuration - Worker: %s', ($i +1)),
-				'options' => [
-					'limit' => $chunk,
-					'offset' => $chunk*$i,
-				]
-			];
-		}
+        for($i=0; $i<$hostWorker; $i++){
+            $tasks['export_hosts_'.$i] = [
+                'text' => __('Create host configuration - Worker: %s', ($i +1)),
+                'options' => [
+                    'limit' => $chunk,
+                    'offset' => $chunk*$i,
+                ]
+            ];
+        }
 
-		for($i=0; $i<$serviceWorker; $i++){
-			$tasks['export_services_'.$i] = [
-				'text' => __('Create service configuration - Worker: %s', ($i +1)),
-				'options' => [
-					'limit' => $chunk,
-					'offset' => $chunk*$i,
-				]
-			];
-		}
-		 */
+        for($i=0; $i<$serviceWorker; $i++){
+            $tasks['export_services_'.$i] = [
+                'text' => __('Create service configuration - Worker: %s', ($i +1)),
+                'options' => [
+                    'limit' => $chunk,
+                    'offset' => $chunk*$i,
+                ]
+            ];
+        }
+         */
 
 
-		foreach ($tasks as $taskName => $task) {
-			if(isset($task['options'])){
-				//Task with secial options
-				$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
-			}else{
-				//Normal task
-				$gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
-			}
+        foreach ($tasks as $taskName => $task) {
+            if(isset($task['options'])){
+                //Task with secial options
+                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
+            }else{
+                //Normal task
+                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+            }
             $this->Export->create();
             $data = [
                 'Export' => [

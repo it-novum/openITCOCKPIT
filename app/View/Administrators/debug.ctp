@@ -32,6 +32,15 @@
 	</div>
 </div>
 
+<?php if(!$gearmanReachable): ?>
+	<div id="error_msg">
+		<div class="alert alert-danger alert-block">
+			<a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
+			<?php echo __('Could not connect to Gearman Job Server! No background tasks will be executed!'); ?>
+		</div>
+	</div>
+<?php endif; ?>
+
 <div id="error_msg"></div>
 
 <div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false" data-widget-colorbutton="false" data-widget-fullscreenbutton="true" data-widget-editbutton="true" data-widget-togglebutton="false" style="position: relative; opacity: 1; left: 0px; top: 0px;" role="widget">
@@ -76,47 +85,80 @@
 	<div>
 		<!-- end widget edit box -->
 		<div class="widget-body padding-10">
+			<?php if($gearmanReachable && $isGearmanWorkerRunning): ?>
 			<dl class="dl-horizontal">
 				<dt><?php echo __('Monitoring engine');?>:</dt>
 				<dd>
-					<?php echo ($is_nagios_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo h($monitoring_engine); echo ($is_nagios_running == true)?__(''):__(' service nagios start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<?php echo ($backgroundProcessStatus['isNagiosRunning'])? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Database connector');?>:</dt>
 				<dd>
-					<?php $str = ''; ($is_statusengine)? $str = ' service statusengine start': $str = ' service ndo start';?>
-					<?php echo ($is_db_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo ($is_statusengine)?__('Statusengine'):__('NDOUtils'); echo ($is_db_running === true)?__(''):__($str); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+
+					<?php
+					$dbConnector = __('NDOUtils');
+					if($isStatusengineInstalled):
+						$dbConnector = __('Statusengine');
+					endif;
+					?>
+					<?php echo ($backgroundProcessStatus['isNdoRunning'] || $backgroundProcessStatus['isStatusengineRunning'])? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo $dbConnector; ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
-				<dt><?php echo __('Perf. data processor');?>:</dt>
+				<dt><?php echo __('Perfdata processor');?>:</dt>
 				<dd>
-					<?php $str = ''; ($is_statusengine_perfdata)? $str = ' service statusengine start': $str = ' service npcd start'; ?>
-					<?php echo ($is_npcd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo ($is_statusengine_perfdata)?__('Statusengine'):__('NPCD'); echo ($is_npcd_running === true)?__(''):__($str);?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<?php
+					$perfdataProcessor = __('NPCD');
+					if($isStatusenginePerfdataProcessor):
+						$perfdataProcessor = __('Statusengine');
+					endif;
+					?>
+					<?php echo ($backgroundProcessStatus['isNpcdRunning'] || ($isStatusenginePerfdataProcessor && $backgroundProcessStatus['isStatusengineRunning']))? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo $perfdataProcessor;?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Queuing engine');?>:</dt>
 				<dd>
-					<?php echo ($is_gearmand_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); echo ($is_gearmand_running === true)?__(''):  __(' service gearman-job-server start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<span class="text-success"><i class="fa fa-check"></i> <?php echo __('Running'); ?></span>
+					<a data-original-title="<?php echo h('openITCOCKPIT uses the Gearman Job Server to run different background tasks'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('Gearman Worker');?>:</dt>
 				<dd>
-					<?php echo ($is_gearman_worker_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo __('Gearman Worker'); echo ($is_gearman_worker_running === true)?__(''):  __(' service gearman_worker start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<?php echo ($backgroundProcessStatus['isGearmanWorkerRunning'])? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo __('Gearman Worker'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 				<dt><?php echo __('OITC Cmd');?>:</dt>
 				<dd>
-					<?php echo ($is_oitccmd_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
-					<a data-original-title="<?php echo __('OITC Cmd'); echo ($is_oitccmd_running === true)?__(''):  __(' service oitc_cmd start'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
+					<?php echo ($backgroundProcessStatus['isOitcCmdRunning'])? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<a data-original-title="<?php echo __('OITC Cmd'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
-				<?php /*?><dt><?php echo __('Database server');?>:</dt>
-				<dd><?php echo ($is_mysql_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?></dd> */ ?>
 				<dt><?php echo __('phpNSTA');?>:</dt>
 				<dd>
-					<?php echo ($is_phpNSTA_running === true)? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
+					<?php echo ($backgroundProcessStatus['isPhpNstaRunning'])? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>':'<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>';?>
 					<a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring'); ?>" data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
 				</dd>
 			</dl>
+			<?php endif; ?>
+			<?php if($gearmanReachable === false): ?>
+				<div id="error_msg">
+					<div class="alert alert-danger alert-block">
+						<a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
+						<?php echo __('As long as your Gearman-Job-Server is not running, we can not check the state of other daemons'); ?>
+						<br />
+						<?php echo __('Please start your Gearman-Job-Server first'); ?>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<?php if($isGearmanWorkerRunning === false):?>
+				<div id="error_msg">
+					<div class="alert alert-danger alert-block">
+						<a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Error'); ?></h5>
+						<?php echo __('As long as your gearman_worker is not running, we can not check the state of other daemons'); ?>
+						<br />
+						<?php echo __('Please start your gearman_worker first'); ?>
+					</div>
+				</div>
+			<?php endif; ?>
+
 		</div>
 
 	</div>
@@ -139,13 +181,19 @@
 				<dd><?php echo h($_SERVER['SERVER_SOFTWARE']); ?></dd>
 				<dt><?php echo __('TLS');?>:</dt>
 				<dd><?php echo h($_SERVER['HTTPS']);?></dd>
+				<dt><?php echo __('OS'); ?>:</dt>
+				<dd><?php echo h($osVersion); ?></dd>
+				<dt><?php echo __('Kernel'); ?>:</dt>
+				<dd><?php echo h(php_uname('r')); ?></dd>
+				<dt><?php echo __('Architecture'); ?>:</dt>
+				<dd><?php echo h(php_uname('m')); ?></dd>
 				<dt><?php echo __('PHP version');?>:</dt>
 				<dd><?php echo h(PHP_VERSION); ?></dd>
-				<dt><?php echo __('Memory limit');?>:</dt>
+				<dt><?php echo __('PHP Memory limit');?>:</dt>
 				<dd><?php echo h(str_replace("M", "", get_cfg_var("memory_limit"))); ?>MB</dd>
-				<dt><?php echo __('Max. execution time');?>:</dt>
+				<dt><?php echo __('PHP Max. execution time');?>:</dt>
 				<dd><?php echo h(ini_get("max_execution_time")); ?>s</dd>
-				<dt><?php echo __('Libraries');?>:</dt>
+				<dt><?php echo __('PHP Libraries');?>:</dt>
 				<dd><?php echo implode(', ', get_loaded_extensions()); ?></dd>
 			</dl>
 
@@ -262,7 +310,7 @@
 				<?php endif;?>
 				<br />
 				<b><?php echo __('Queuing engine');?>:</b>
-				<?php if($is_gearmand_running && !empty($gearmanStatus)): ?>
+				<?php if($gearmanReachable && !empty($gearmanStatus)): ?>
 					<div class="well">
 						<div class="container">
 							<div class="row">
@@ -369,6 +417,10 @@
 		elseif (strstr($agent, "Mac OS X 10.8"))			$os = "Mac OS X - Mountain Lion";
 		elseif (strstr($agent, "Mac OS X 10.9"))			$os = "Mac OS X - Mavericks";
 		elseif (strstr($agent, "Mac OS X 10.10"))			$os = "Mac OS X - Yosemite";
+		elseif (strstr($agent, "Mac OS X 10.11"))			$os = "Mac OS X - El Capitan";
+
+		elseif (strstr($agent, "Mac OS X 10.12"))			$os = "macOS Sierra ";
+
 		//Chrome
 		elseif (strstr($agent, "Mac OS X 10_5"))			$os = "Mac OS X - Leopard";
 		elseif (strstr($agent, "Mac OS X 10_6"))			$os = "Mac OS X - Snow Leopard";
@@ -376,6 +428,9 @@
 		elseif (strstr($agent, "Mac OS X 10_8"))			$os = "Mac OS X - Mountain Lion";
 		elseif (strstr($agent, "Mac OS X 10_9"))			$os = "Mac OS X - Mavericks";
 		elseif (strstr($agent, "Mac OS X 10_10"))			$os = "Mac OS X - Yosemite";
+		elseif (strstr($agent, "Mac OS X 10_11"))			$os = "Mac OS X - El Capitan";
+
+		elseif (strstr($agent, "Mac OS X 10_12"))			$os = "macOS Sierra ";
 
 		elseif (strstr($agent, "Mac OS"))					$os = "Mac OS X";
 		elseif (strstr($agent, "Linux"))					$os = "Linux";
