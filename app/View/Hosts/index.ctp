@@ -25,13 +25,13 @@
 
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
-    $this->Paginator->options(array('url' => $this->params['named']));
-    $filter = "/";
-    foreach($this->params->named as $key => $value){
-        if (!is_array($value)) {
+	$this->Paginator->options(array('url' => $this->params['named']));
+	$filter = "/";
+	foreach($this->params->named as $key => $value){
+		if (!is_array($value)) {
 			$filter.= $key.":".$value."/";
 		}
-    }
+	}
 ?>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -126,27 +126,27 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 					<div class="widget-body no-padding">
 						<?php
 						$options = [ 'avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('Search'), false, false);
-                        ?>
-                        <div class="mobile_table">
+						echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('Search'), false, false);
+						?>
+						<div class="mobile_table">
 							<table id="host_list" class="table table-striped table-bordered smart-form" style="">
 								<thead>
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort text-center" ><i class="fa fa-check-square-o fa-lg"></i></th>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Host.current_state'); echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
+										<th class="no-sort text-center" ><i class="fa fa-user fa-lg" title="<?php echo __('Acknowledgedment'); ?>"></i></th>
+										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg" title="<?php echo __('in Downtime'); ?>"></i></th>
+										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i></th>
 										<th class="no-sort text-center" ><i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i></th>
-										<th class="no-sort text-center" ><strong>P</strong></th>
+										<th class="no-sort text-center" ><strong title="<?php echo __('Passively transferred host'); ?>">P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Hostname'); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'address'); echo $this->Paginator->sort('address', __('IP address')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'last_hard_state_change'); echo $this->Paginator->sort('Host.last_hard_state_change', __('State since')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'last_check'); echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_hard_state_change'); echo $this->Paginator->sort('Host.last_hard_state_change', __('State since')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_check'); echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output'); echo $this->Paginator->sort('Host.output', __('Output')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'satellite_id'); echo $this->Paginator->sort('Host.satellite_id', __('Instance')); ?></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -184,59 +184,14 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 												?>
 												<?php //echo $this->Status->humanHostStatus($host['Host']['uuid'], '/hosts/browser/'.$host['Host']['id'])['html_icon']; ?>
 											</td>
-											<td class="width-50">
-												<div class="btn-group">
-													<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
-														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-													<?php else: ?>
-														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-													<?php endif; ?>
-													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-													<ul class="dropdown-menu">
-														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission && 	$allowSharing):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('deactivate') && $hasEditPermission):?>
-															<li>
-																<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $host['Host']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
-															</li>
-														<?php endif;?>
-														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
-															<li>
-																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
-															</li>
-														<?php endif; ?>
-														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
-															<li>
-																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
-															</li>
-														<?php endif; ?>
 
-														<?php
-															if($this->Acl->hasPermission('edit') && $hasEditPermission):
-																echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
-															endif;
-														?>
-														<?php if($this->Acl->hasPermission('delete') && $hasEditPermission):?>
-															<li class="divider"></li>
-															<li>
-																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
-															</li>
-														<?php endif;?>
-													</ul>
-												</div>
-											</td>
-
-											<td class="text-center">
+											<td class="text-center"><?php //debug($host['Hoststatus']);?>
 												<?php if($host['Hoststatus']['problem_has_been_acknowledged'] > 0):?>
-													<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledged'); ?>"></i>
+													<?php if($host['Hoststatus']['acknowledgement_type'] == 1):?>
+														<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledgedment'); ?>"></i>
+													<?php else:?>
+														<i class="fa fa-user-o fa-lg" title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+													<?php endif;?>
 												<?php endif;?>
 											</td>
 
@@ -300,6 +255,55 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 													echo $SatelliteNames[$host['Host']['satellite_id']];
 												endif;
 												?>
+											</td>
+											<td class="width-50">
+												<div class="btn-group">
+													<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
+														<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php else: ?>
+														<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+													<?php endif; ?>
+													<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+													<ul class="dropdown-menu pull-right">
+														<?php if($this->Acl->hasPermission('edit') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('sharing') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('deactivate') && $hasEditPermission):?>
+															<li>
+																<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $host['Host']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
+															</li>
+														<?php endif;?>
+														<?php if($this->Acl->hasPermission('serviceList', 'services')):?>
+															<li>
+																<a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i class="fa fa-list"></i> <?php echo __('Service List'); ?></a>
+															</li>
+														<?php endif; ?>
+														<?php if($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
+															<li>
+																<a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?></a>
+															</li>
+														<?php endif; ?>
+
+														<?php
+														if($this->Acl->hasPermission('edit') && $hasEditPermission):
+															echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+														endif;
+														?>
+														<?php if($this->Acl->hasPermission('delete') && $hasEditPermission):?>
+															<li class="divider"></li>
+															<li>
+																<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this host?'));?>
+															</li>
+														<?php endif;?>
+													</ul>
+												</div>
 											</td>
 										</tr>
 									<?php endforeach; ?>

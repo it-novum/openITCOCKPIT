@@ -41,6 +41,7 @@ App.Controllers.ServicetemplategroupsAllocateToHostController = Frontend.AppCont
 			$.ajax({
 				url: "/hosts/getHostByAjax/"+encodeURIComponent($(this).val())+".json",
 				type: "POST",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){

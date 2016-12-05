@@ -39,6 +39,7 @@ App.Controllers.ServicetemplategroupsEditController = Frontend.AppController.ext
 			$.ajax({
 				url: "/servicetemplategroups/loadServicetemplatesByContainerId/"+encodeURIComponent($(this).val())+".json",
 				type: "POST",
+				cache: false,
 				error: function(){},
 				success: function(){},
 				complete: function(response){

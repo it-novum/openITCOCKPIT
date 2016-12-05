@@ -56,10 +56,10 @@
 		$css = '';
 		$removeBGButtonVisibility = 'display:none;';
 		if($map['Map']['background'] != null && $map['Map']['background'] != ''):
-			$filePath = $backgroundThumbs['backgrounds']['path'].'/'.$map['Map']['background'];
+			$filePath = $backgroundThumbs['path'].'/'.$map['Map']['background'];
 			if(file_exists($filePath)):
-				$size = getimagesize($backgroundThumbs['backgrounds']['path'].DS.$map['Map']['background']);
-				$css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['backgrounds']['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
+				$size = getimagesize($backgroundThumbs['path'].DS.$map['Map']['background']);
+				$css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
 				$removeBGButtonVisibility = 'display:inline;';
 			else:
 				echo '<div class="alert alert-danger fade in">
@@ -101,6 +101,11 @@
 			  <?php echo __('Upload Background'); ?>
 			</button>
 
+			<!-- Button Upload icons set -->
+			<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#UploadIconsModal" id="icons-upload-btn">
+				<?php echo __('Upload Icons set'); ?>
+			</button>
+
 			<!-- Button Options -->
 			<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#OptionsModal" id="show-options-btn">
 			  <?php echo __('Options'); ?>
@@ -117,6 +122,29 @@
 						<div class="modal-body">
 							<div class="row">
 								<div class="background-dropzone dropzone" action="/map_module/backgroundUploads/upload/">
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Upload Dialog -->
+			<div class="modal fade" id="UploadIconsModal" tabindex="-1" role="dialog" aria-labelledby="UploadLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title" id="UploadLabel"><?php echo __('Upload your Icons Set'); ?></h4>
+						</div>
+						<div class="modal-body">
+							<div class="alert alert-danger" id="icons-upload-error" style="display: none"></div>
+							<div class="alert alert-success" id="icons-upload-success" style="display: none"></div>
+							<div class="row">
+								<div class="icons-dropzone dropzone" action="/map_module/backgroundUploads/uploadIconsSet/">
 								</div>
 							</div>
 						</div>
@@ -354,12 +382,12 @@
 								<div id="background-panel" class="panel-body thumbnailPanel menuPanel">
 									<?php
 									$i = 0;
-									foreach($backgroundThumbs['backgrounds']['files'] as $file):
-										$path = $backgroundThumbs['backgrounds']['thumbPath'].'/thumb_'.$file;
+									foreach($backgroundThumbs['files'] as $file):
+										$path = $backgroundThumbs['thumbPath'].'/thumb_'.$file['savedName'];
 										?>
-											<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize">
-												<div class="thumbnail backgroundThumbnailStyle">
-													<img class="background" src="<?php echo $path; ?>" original="<?php echo $backgroundThumbs['backgrounds']['webPath'].'/'.$file; ?>" filename="<?php echo h($file); ?>">
+											<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize" title="<?php echo h($file['displayName']); ?>">
+												<div class="thumbnail backgroundThumbnailStyle background-thumbnail">
+													<img class="background" src="<?php echo $path; ?>" original="<?php echo $backgroundThumbs['webPath'].'/'.$file['savedName']; ?>" filename-id="<?php echo $file['id']; ?>" filename="<?php echo h($file['savedName']); ?>">
 												</div>
 											</div>
 											<?php
@@ -384,15 +412,15 @@
 									<!-- items -->
 									<?php
 									$i = 0;
-									foreach($iconSets['items']['iconsets'] as $key => $iconset):
-										$path = $iconSets['items']['webPath'].'/'.$iconset.'/'.'ok.png';
+									foreach($iconSets['items']['iconsets'] as $iconset):
+										$path = $iconSets['items']['webPath'].'/'.$iconset['savedName'].'/'.'ok.png';
 										?>
-											<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer">
-												<div class="drag-element thumbnail thumbnailFix">
-													<?php if($iconSets['items']['fileDimensions'][$key] < 80): ?>
+											<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer" title="<?php echo h($iconset['displayName']); ?>">
+												<div class="drag-element thumbnail thumbnailFix iconset-thumbnail">
+													<?php if($iconset['dimension'] < 80): ?>
 														<span class="valignHelper"></span>
 													<?php endif; ?>
-													<img class="iconset" src="<?php echo $path; ?>" iconset="<?php echo h($iconset); ?>">
+													<img class="iconset" src="<?php echo $path; ?>" iconset-id="<?php echo $iconset['id']; ?>" iconset="<?php echo $iconset['savedName']; ?>">
 												</div>
 											</div>
 											<?php
@@ -514,7 +542,7 @@
 									//	echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
 										$_iconset = [];
 										foreach($iconSets['items']['iconsets'] as $name){
-											$_iconset[$name] = $name;
+											$_iconset[$name['savedName']] = $name['displayName'];
 										}
 										echo $this->Form->input('iconset', [
 												'options' => $this->Html->chosenPlaceholder($_iconset),
@@ -565,10 +593,6 @@
 										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'x']);
 										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'y']);
 										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
-										$_iconset = [];
-										foreach($iconSets['items']['iconsets'] as $name){
-											$_iconset[$name] = $name;
-										}
 										echo $this->Form->input('iconset', [
 												'options' => $this->Html->chosenPlaceholder($_iconset),
 												'data-placeholder' => __('Please select...'),
@@ -606,10 +630,6 @@
 										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'x']);
 										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'y']);
 										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
-										$_iconset = [];
-										foreach($iconSets['items']['iconsets'] as $name){
-											$_iconset[$name] = $name;
-										}
 										echo $this->Form->input('iconset', [
 												'options' => $this->Html->chosenPlaceholder($_iconset),
 												'data-placeholder' => __('Please select...'),
@@ -647,10 +667,6 @@
 										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'x']);
 										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'y']);
 										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
-										$_iconset = [];
-										foreach($iconSets['items']['iconsets'] as $name){
-											$_iconset[$name] = $name;
-										}
 										echo $this->Form->input('iconset', [
 												'options' => $this->Html->chosenPlaceholder($_iconset),
 												'data-placeholder' => __('Please select...'),
@@ -688,10 +704,6 @@
 										echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'x']);
 										echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'y']);
 										//echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
-										$_iconset = [];
-										foreach($iconSets['items']['iconsets'] as $name){
-											$_iconset[$name] = $name;
-										}
 										echo $this->Form->input('iconset', [
 												'options' => $this->Html->chosenPlaceholder($_iconset),
 												'data-placeholder' => __('Please select...'),
@@ -1179,6 +1191,36 @@
 				</div>
 			</div>
 			<!-- Delete Background Modal end -->
+
+			<!-- Delete Iconset Modal Dialog -->
+			<div class="modal fade" id="deleteIconsetModal" tabindex="-1" role="dialog" aria-labelledby="deleteIconsetLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only"><?php echo __('Close'); ?></span></button>
+							<h4 class="modal-title" id="deleteIconsetLabel"><?php echo __('Delete Icon set'); ?></h4>
+						</div>
+						<input type="hidden" id="IconsetId" value=""/>
+						<div class="modal-body">
+							<div id="deleteBackgroundModalContent">
+								<div class="row">
+									<div class="col-xs-12" id="editText">
+										<div class="padding-top-20"></div>
+										<?php
+										echo __('Do you really want to delete this Icon set? It could be used in multiple maps so please check if can be deleted');
+										?>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer deleteIconsetFooter">
+							<button id="confirmDeleteIconsetBtn" type="button" class="btn btn-danger" ><?php echo __('Delete'); ?></button>
+							<button id="dismissDeleteIconset" type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Cancel');?></button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Delete Iconset Modal end -->
 		</div>
 	</div>
 </div>

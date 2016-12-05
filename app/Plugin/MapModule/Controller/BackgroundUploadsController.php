@@ -30,6 +30,9 @@ App::uses('UUID', 'Lib');
 class BackgroundUploadsController extends MapModuleAppController {
 
 	public $layout = 'Admin.default';
+	public $uses = [
+		'MapModule.MapUpload',
+	];
 	//prevent asking for a view
 	public $autoRender = false;
 	//public $backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'Upload');
@@ -53,17 +56,25 @@ class BackgroundUploadsController extends MapModuleAppController {
 			//$_FILES['file']['name'];
 
 			$fileExtension = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
-			$filename = UUID::v4();
-			$fullFilePath = $backgroundFolder->path.DS.$filename.'.'.$fileExtension;
+			$uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'],PATHINFO_BASENAME));
+			$saveFilename = UUID::v4();
+			$fullFilePath = $backgroundFolder->path.DS.$saveFilename.'.'.$fileExtension;
 			if(move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)){
 				echo 'successfull';
 				$obj = [
 					'fullPath'=>$fullFilePath,
-					'uuidFilename'=>$filename,
+					'uuidFilename'=>$saveFilename,
 					'fileExtension'=>$fileExtension,
 					'folderInstance'=>$backgroundFolder
 				];
 				$this->createThumbnailsFromBackgrounds($obj);
+				$this->MapUpload->save([
+					'upload_type' => MapUpload::TYPE_BACKGROUND,
+					'upload_name' => $uploadFilename.'.'.$fileExtension,
+					'saved_name' => $saveFilename.'.'.$fileExtension,
+					'user_id' => $this->Auth->user('id'),
+					'container_id' => '1'
+				]);
 				return true;
 			}else{
 				return false;
@@ -72,6 +83,152 @@ class BackgroundUploadsController extends MapModuleAppController {
 		}else{
 			echo 'there is no file to store';
 		}
+	}
+
+	public function uploadIconsSet(){
+		if(empty($_FILES)) {
+			throw new ForbiddenException(__('There is no file to store'));
+		}
+
+		$itemsImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items';
+		$tempZipsDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'.DS.'temp';
+
+		//check if upload folder exist
+		if(!is_dir($itemsImgDirectory)){
+			mkdir($itemsImgDirectory);
+			chmod($itemsImgDirectory, 0777);
+		}
+		if(!is_dir($tempZipsDirectory)){
+			mkdir($tempZipsDirectory);
+			chmod($tempZipsDirectory, 0777);
+		}
+
+		$fileExtension = pathinfo($_FILES['file']['name'],PATHINFO_EXTENSION);
+		$uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'],PATHINFO_BASENAME));
+		$saveFilename = preg_replace("/[^a-zA-Z0-9]+/", "", $uploadFilename);
+
+		$zipTempFolder = new Folder($tempZipsDirectory);
+		$fullZipTempPath = $zipTempFolder->path.DS.$saveFilename.'.zip';
+		$fullFolderTempPath = $zipTempFolder->path.DS.$saveFilename;
+
+		try {
+			if($fileExtension !== 'zip') {
+				throw new Exception(__('Only zip files are accepted'));
+			}
+
+			if($_FILES['file']['error'] === 1){
+				throw new Exception('The uploaded file exceeds the upload_max_filesize directive in php.ini');
+			}
+
+			if(is_dir($itemsImgDirectory. DS .$saveFilename)){
+				throw new Exception(__('Icons set already exists'), 13);
+			}
+
+			mkdir($fullFolderTempPath);
+			chmod($fullFolderTempPath, 0777);
+
+			if(!move_uploaded_file($_FILES['file']['tmp_name'], $fullZipTempPath)) {
+				throw new Exception(__('Cannot upload zip'));
+			}
+
+			$myZip = new ZipArchive;
+			$openZip = $myZip->open($fullZipTempPath);
+			if (!$openZip) {
+				throw new Exception(__('Cannot unzip file'));
+			}
+			$myZip->extractTo($fullFolderTempPath);
+			$myZip->close();
+
+			$iconsNames = $this->getIconsNames();
+			$iconsDir = $this->getIconsSubDirectory($fullFolderTempPath);
+
+			if(is_null($iconsDir)){
+				throw new Exception(__('Please check the zip file. It must contain all icons: '.implode(', ', $iconsNames)));
+			}
+
+			mkdir($itemsImgDirectory. DS .$saveFilename);
+			foreach (scandir($iconsDir) as $object) {
+				if ($object != "." && $object != ".." && in_array($object, $iconsNames))
+					copy($iconsDir. DS .$object, $itemsImgDirectory. DS .$saveFilename. DS .$object);
+			}
+
+			$this->MapUpload->save([
+				'upload_type' => MapUpload::TYPE_ICON_SET,
+				'upload_name' => $uploadFilename,
+				'saved_name' => $saveFilename,
+				'user_id' => $this->Auth->user('id'),
+				'container_id' => '1'
+			]);
+
+		}catch(Exception $e){
+			if(is_dir($itemsImgDirectory. DS .$saveFilename) && $e->getCode() !== 13){
+				$this->removeDirectory($itemsImgDirectory. DS .$saveFilename);
+			}
+			throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
+
+		}finally{
+			if(is_file($fullZipTempPath)){
+				unlink($fullZipTempPath);
+			}
+			if(is_dir($fullFolderTempPath)){
+				$this->removeDirectory($fullFolderTempPath);
+			}
+		}
+
+
+	}
+
+	private function getIconsNames(){
+		return [
+			'ack.png',
+			'critical.png',
+			'down.png',
+			'error.png',
+			'okaytime.png',
+			'okaytimeuser.png',
+			'ok.png',
+			'pending.png',
+			'sack.png',
+			'sdowntime.png',
+			'unknown.png',
+			'unreachable.png',
+			'up.png',
+			'warning.png',
+		];
+	}
+
+	private function getIconsSubDirectory($startDir){
+		$iconDir = null;
+		$iconsNames = $this->getIconsNames();
+		foreach (scandir($startDir) as $object) {
+			if ($object != "." && $object != "..") {
+				if (is_dir($startDir. DS .$object)) {
+					$iconDir = $this->getIconsSubDirectory($startDir . DS . $object);
+					if(!is_null($iconDir))
+						return $iconDir;
+				}elseif(($keyO = array_search($object, $iconsNames)) !== false) {
+					unset($iconsNames[$keyO]);
+				}
+			}
+		}
+
+		if(empty($iconsNames)) { // array contains the rest of icons we didn't find
+			return $startDir;
+		}
+
+		return $iconDir;
+	}
+
+	private function removeDirectory($dir){
+		foreach (scandir($dir) as $object) {
+			if ($object != "." && $object != "..") {
+				if (is_dir($dir."/".$object))
+					$this->removeDirectory($dir."/".$object);
+				else
+					unlink($dir."/".$object);
+			}
+		}
+		rmdir($dir);
 	}
 
 	public function createThumbnailsFromBackgrounds($obj, $isShell = false){
@@ -157,35 +314,59 @@ class BackgroundUploadsController extends MapModuleAppController {
 	 * base64 encoded due to a encoding issue
 	 * @param $filename the uuid filename with file extension
 	 */
-	public function delete($filename){
+	public function delete($backgroundId){
 		//delete a background including its thumbnail
 		try{
-			$filename = base64_decode($filename);
+			$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+			$mapUpload = $this->MapUpload->find('first', [
+				'conditions' => [
+					'MapUpload.id' => $backgroundId,
+					'MapUpload.container_id' => $containerIds,
+				]
+			]);
+			if(empty($mapUpload)){
+				throw new Exception('Background cannot be found');
+			}
+			$backgroundName = $mapUpload['MapUpload']['saved_name'];
+			if(!$this->MapUpload->delete($backgroundId)){
+				throw new Exception('Backgound cannot be found');
+			}
 			//define background image directory
 			$backgroundImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
 
-			//check if bg image exists
-			if(!file_exists($backgroundImgDirectory. DS .$filename)){
-				throw new Exception($backgroundImgDirectory. DS .$filename. ' cannot be found');
+			if(file_exists($backgroundImgDirectory. DS .$backgroundName)){
+				unlink($backgroundImgDirectory. DS .$backgroundName);
 			}
 
-			//check if thumbnail exists
-			if(!file_exists($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename)){
-				throw new Exception($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename. ' cannot be found');
+			if(file_exists($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$backgroundName)){
+				unlink($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$backgroundName);
 			}
 
-			if(!unlink($backgroundImgDirectory. DS .$filename)){
-				//background image could not be deleted
-				throw new Exception('Background image could not be deleted');
-			}
-
-			if(!unlink($backgroundImgDirectory. DS .'thumb'. DS .'thumb_'.$filename)){
-				//thumbnail image could not be deleted
-				throw new Exception('Thumbnail image could not be deleted');
-			}
 			echo 'Background successfully deleted!';
 		}catch(Exception $e){
 			echo $e->getMessage();
+		}
+	}
+
+	public function deleteIconsSet($setId){
+		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$mapUpload = $this->MapUpload->find('first', [
+			'conditions' => [
+				'MapUpload.id' => $setId,
+				'MapUpload.container_id' => $containerIds,
+			]
+		]);
+		if(empty($mapUpload)){
+			return false;
+		}
+		$iconSetName = $mapUpload['MapUpload']['saved_name'];
+		if(!$this->MapUpload->delete($setId)){
+			return false;
+		}
+		$itemsImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items'. DS . $iconSetName;
+
+		if(is_dir($itemsImgDirectory)){
+			$this->removeDirectory($itemsImgDirectory);
 		}
 	}
 

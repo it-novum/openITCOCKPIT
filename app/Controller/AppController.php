@@ -277,7 +277,6 @@ class AppController extends Controller{
 		}
 	}
 
-
 	/**
 	 * Action-based authorization callback
 	 *
@@ -298,7 +297,7 @@ class AppController extends Controller{
 			$this->Frontend->setJson('localeStrings', $this->_localeStrings);
 		}
 		ClassRegistry::addObject('AuthComponent', $this->Auth);
-
+		$this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
 		$this->set('loggedIn', $this->Auth->loggedIn());
 		$this->set('systemname', $this->systemname);
 		//$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')

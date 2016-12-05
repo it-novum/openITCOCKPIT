@@ -148,8 +148,8 @@ class ServicesController extends AppController{
 					[
 						'0' => [
 							'name' => 'Passive',
-							'value' => 0,
-							'label' => ' passive',
+							'value' => 1,
+							'label' => 'Passive',
 							'data' => 'Filter.Servicestatus.active_checks_enabled',
 						],
 					]
@@ -246,6 +246,7 @@ class ServicesController extends AppController{
 				'Servicestatus.active_checks_enabled',
 				'Servicestatus.state_type',
 				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.acknowledgement_type',
 				'Servicestatus.is_flapping',
 
 				'Servicetemplate.id',
@@ -694,7 +695,8 @@ class ServicesController extends AppController{
 
 		$userContainerId = $this->Auth->user('container_id');
 		$hosts = $this->Host->find('list');
-		$servicetemplates = $this->Servicetemplate->find('list');
+		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
 		$timeperiods = $this->Timeperiod->find('list');
 		//container_id = 1 => ROOT
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -879,7 +881,8 @@ class ServicesController extends AppController{
 
 		$userContainerId = $this->Auth->user('container_id');
 		$hosts = $this->Host->find('list');
-		$servicetemplates = $this->Servicetemplate->find('list');
+		$myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+		$servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
 		$timeperiods = $this->Timeperiod->find('list');
 		//container_id = 1 => ROOT
 		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -919,10 +922,12 @@ class ServicesController extends AppController{
 		}
 		$servicegroups_for_changelog = [];
 		foreach(Hash::extract($service['Servicegroup'], '{n}.id', '{n}.id') as $servicegroup_id){
-			$servicegroups_for_changelog[] = [
-				'id' => $servicegroup_id,
-				'name' => $servicegroups[$servicegroup_id]
-			];
+			if(isset($servicegroups[$servicegroup_id])){
+				$servicegroups_for_changelog[] = [
+					'id' => $servicegroup_id,
+					'name' => $servicegroups[$servicegroup_id]
+				];
+			}
 		}
 		$service_for_changelog['Contact'] = $contacts_for_changelog;
 		$service_for_changelog['Contactgroup'] = $contactgroups_for_changelog;
@@ -1711,114 +1716,121 @@ class ServicesController extends AppController{
 	}
 
 	function browser($id = null){
-		if($this->Service->exists($id)){
-			$service = $this->Service->prepareForView($id);
-			//$_service = $this->Service->findById($id);
+		$browseByUUID = false;
+		$conditionsToFind = ['Service.id' => $id];
+		if(preg_match('/\-/', $id)){
+			$browseByUUID = true;
+			$conditionsToFind = ['Service.uuid' => $id];
+		}
 
-
-			$_service = $this->Service->find('first', [
-				'conditions' => [
-					'Service.id' => $id
+		$_service = $this->Service->find('first', [
+			'conditions' => $conditionsToFind,
+			'contain' => [
+				'Contact' => [
+					'fields' => [
+						'Contact.id',
+						'Contact.name'
+					]
 				],
-				'contain' => [
-					'Contact' => [
+				'Contactgroup' => [
+					'Container' => [
 						'fields' => [
-							'Contact.id',
-							'Contact.name'
+							'Container.name',
 						]
 					],
-					'Contactgroup' => [
-						'Container' => [
-							'fields' => [
-								'Container.name',
-							]
-						],
-						'fields' => [
-							'Contactgroup.id',
-						]
-					],
-					'Servicecommandargumentvalue',
-					'Host' => [
-						'Container'
-					],
-					'NotifyPeriod',
-					'CheckPeriod',
-
+					'fields' => [
+						'Contactgroup.id',
+					]
 				],
-			]);
+				'Servicecommandargumentvalue',
+				'Host' => [
+					'Container'
+				],
+				'NotifyPeriod',
+				'CheckPeriod',
 
-			if(!$this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'), false)){
-				$this->render403();
-				return;
-			}
+			],
+		]);
 
-			$allowEdit = false;
-			if($this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'))){
-				$allowEdit = true;
-			}
-
-			//Select command arguments, that we can replace them in in view
-			$commandarguments = [];
-			if($_service['Servicecommandargumentvalue']){
-				//The service has own command argument values
-				$_commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($_service['Service']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicecommandargumentvalue']['value'];
-				}
-			}else{
-				//The service command arguments are from the template
-				$_commandarguments = $this->Servicetemplatecommandargumentvalue->findAllByServicetemplateId($service['Servicetemplate']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicetemplatecommandargumentvalue']['value'];
-				}
-			}
-
-			$ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
-//			debug($service);
-			$service['Host'] = $_service['Host'];
-			$service['NotifyPeriod'] = $_service['NotifyPeriod'];
-			$service['CheckPeriod'] = $_service['CheckPeriod'];
-			unset($_service);
-
-			$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-			$hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
-
-			$acknowledged = [];
-			if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
-				$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-                if(!empty($acknowledged[0])){
-                    $acknowledged = $acknowledged[0];
-                }
-			}
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-            ]);
-			$username = $this->Auth->user('full_name');
-
-			$this->set(compact([
-			    'service',
-                'servicestatus',
-                'username',
-                'acknowledged',
-                'commandarguments',
-                'ContactsInherited',
-                'hoststatus',
-                'allowEdit',
-                'ticketSystem'
-                ])
-            );
-			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-			$this->loadModel('Systemsetting');
-			$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-			$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-			$this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
-			$this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
-		}else{
+		if(empty($_service)){
 			throw new NotFoundException(__('Service not found'));
 		}
+		if($browseByUUID){
+			$id = $_service['Service']['id'];
+		}
+
+		$service = $this->Service->prepareForView($id);
+		//$_service = $this->Service->findById($id);
+
+		if(!$this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'), false)){
+			$this->render403();
+			return;
+		}
+
+		$allowEdit = false;
+		if($this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+			$allowEdit = true;
+		}
+
+		//Select command arguments, that we can replace them in in view
+		$commandarguments = [];
+		if($_service['Servicecommandargumentvalue']){
+			//The service has own command argument values
+			$_commandarguments = $this->Servicecommandargumentvalue->findAllByServiceId($_service['Service']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicecommandargumentvalue']['value'];
+			}
+		}else{
+			//The service command arguments are from the template
+			$_commandarguments = $this->Servicetemplatecommandargumentvalue->findAllByServicetemplateId($service['Servicetemplate']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Servicetemplatecommandargumentvalue']['value'];
+			}
+		}
+
+		$ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
+//			debug($service);
+		$service['Host'] = $_service['Host'];
+		$service['NotifyPeriod'] = $_service['NotifyPeriod'];
+		$service['CheckPeriod'] = $_service['CheckPeriod'];
+		unset($_service);
+
+		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+		$hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
+
+		$acknowledged = [];
+		if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus']) && $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'] > 0){
+			$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+			if(!empty($acknowledged[0])){
+				$acknowledged = $acknowledged[0];
+			}
+		}
+		$ticketSystem = $this->Systemsetting->find('first', [
+			'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+		]);
+		$username = $this->Auth->user('full_name');
+
+		$this->set(compact([
+			'service',
+			'servicestatus',
+			'username',
+			'acknowledged',
+			'commandarguments',
+			'ContactsInherited',
+			'hoststatus',
+			'allowEdit',
+			'ticketSystem'
+			])
+		);
+		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
+		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+		$this->loadModel('Systemsetting');
+		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+		$this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
+		$this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
 	}
 
 	/*
@@ -1943,6 +1955,7 @@ class ServicesController extends AppController{
 				'Servicestatus.active_checks_enabled',
 				'Servicestatus.state_type',
 				'Servicestatus.problem_has_been_acknowledged',
+				'Servicestatus.acknowledgement_type',
 				'Servicestatus.is_flapping',
 
 				'Servicetemplate.id',
@@ -2660,109 +2673,6 @@ class ServicesController extends AppController{
 			}
 		}
 		return $changelogData;
-	}
-
-	public function showCheckMKLogfile($id = null){
-		if($this->Service->exists($id)){
-			$service = $this->Service->find('first', [
-				'fields' => [
-					'Service.id',
-					'Service.name',
-					'Host.uuid',
-					'Host.id',
-					'Host.name',
-				],
-				'conditions' => [
-					'Service.id' => $id
-				],
-				'contain' => [
-					'Host' => [
-					],
-				],
-			]);
-		}
-		$logfileContent = $this->loadCheckMkLogfile($service['Host']['uuid'],$service['Service']['name']);
-		$this->set(compact(['logfileContent', 'service']));
-
-	}
-
-	public function loadCheckMkLogfile($hostUuid,$serviceName){
-		$logtype = explode(' ',$serviceName);
-		$file = fopen('/opt/openitc/nagios/3rd/check_mk/var/logwatch/'.$hostUuid.'/'.$logtype[1], 'a+');
-		$update = false;
-
-		$FileAsArray = [];
-
-		while (!feof($file)) {
-			$line = fgets($file, 4096);
-			if($line){
-				preg_match ('/\<\<\<([^\]]*)\>\>\>/', $line, $matches);
-				if(sizeof($matches)>0){
-					#$FileAsArray[$matches[1]] = $zeile;
-					$LastMatch = $matches[1];
-				}else{
-					if(!isset($_POST) || (isset($_POST) && !array_key_exists(preg_replace('/\s/','_',(String)$LastMatch), $_POST)) && strlen((String)$LastMatch)>0){
-						$FileAsArray[(String)$LastMatch][] = $line;
-					}
-					else{
-						$update = true;
-					}
-				}
-			}
-
-
-		}
-		fclose($file);
-		return($FileAsArray);
-	}
-
-	public function modifyCheckMkLogfile(){
-		$this->autoRender = false;
-		$hostUuid = $this->request->data['host_uuid'];
-		$serviceName = $this->request->data['service_name'];
-		$arrayKeysToDelete = $this->request->data['arrayKeys'];
-		$logtype = explode(' ',$serviceName);
-
-		$file = fopen('/opt/openitc/nagios/3rd/check_mk/var/logwatch/'.$hostUuid.'/'.$logtype[1], 'r');
-
-		$FileAsArray = [];
-
-		while (!feof($file)) {
-			$line = fgets($file, 4096);
-			preg_match ('/\<\<\<([^\]]*)\>\>\>/', $line, $matches);
-			if(sizeof($matches)>0){
-				#$FileAsArray[$matches[1]] = $zeile;
-				$LastMatch = $matches[0];
-			}else{
-				$FileAsArray[(String)$LastMatch][] = $line;
-			}
-
-		}
-		fclose($file);
-		$file = fopen('/opt/openitc/nagios/3rd/check_mk/var/logwatch/'.$hostUuid.'/'.$logtype[1], 'w');
-
-		$counter = 0;
-		foreach($FileAsArray as $key => $value){
-			if(in_array($counter,$arrayKeysToDelete)){
-				unset($FileAsArray[$key]);
-			}else{
-				echo $key."\n";
-				fwrite($file,$key."\n");
-				if(is_array($value)){
-					foreach($value as $val){
-						echo $val;
-						fwrite($file,$val);
-					}
-				}else{
-					echo $value;
-					fwrite($file,$value);
-				}
-			}
-			$counter++;
-		}
-
-		fclose($file);
-
 	}
 
 	//Acl

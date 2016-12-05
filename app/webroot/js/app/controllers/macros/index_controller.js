@@ -75,6 +75,7 @@ App.Controllers.MacrosIndexController = Frontend.AppController.extend({
 		$.ajax({
 				url: "/Macros/addMacro/",
 				type: "POST",
+				cache: false,
 				data: this.macroNames,
 				error: function(){},
 				success: function(){},

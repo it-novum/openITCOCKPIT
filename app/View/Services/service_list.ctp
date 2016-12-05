@@ -152,10 +152,10 @@
 												<th class="no-sort"></th>
 												<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Service'); ?></th>
 												<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
-												<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
-												<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
-												<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
-												<th class="no-sort text-center" ><strong>P</strong></th>
+												<th class="no-sort text-center" ><i class="fa fa-user fa-lg" title="<?php echo __('Acknowledgedment'); ?>"></i></th>
+												<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg" title="<?php echo __('in Downtime'); ?>"></i></th>
+												<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i></th>
+												<th class="no-sort text-center" ><strong title="<?php echo __('Passively transferred service'); ?>">P</strong></th>
 												<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicename'); echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?></th>
 												<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change'); echo $this->Paginator->sort('Service.last_hard_state_change', __('Status since')); ?></th>
 												<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_check'); echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
@@ -217,7 +217,11 @@
 													</td>
 													<td class="text-center">
 														<?php if($this->Monitoring->checkForAck($service['Servicestatus']['problem_has_been_acknowledged'])): ?>
-															<i class="fa fa-user fa-lg "></i>
+															<?php if($service['Servicestatus']['acknowledgement_type'] == 1):?>
+																<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledgedment'); ?>"></i>
+															<?php else:?>
+																<i class="fa fa-user-o fa-lg" title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+															<?php endif;?>
 														<?php endif;?>
 													</td>
 													<td class="text-center">

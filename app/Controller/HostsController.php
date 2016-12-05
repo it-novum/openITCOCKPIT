@@ -136,7 +136,6 @@ class HostsController extends AppController{
 			'fields' => [
 				'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
 				'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-				'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
 				'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
 			],
 		],
@@ -203,6 +202,7 @@ class HostsController extends AppController{
 				'Hoststatus.active_checks_enabled',
 				'Hoststatus.state_type',
 				'Hoststatus.problem_has_been_acknowledged',
+				'Hoststatus.acknowledgement_type',
 				'Hoststatus.is_flapping',
 				'Hosttemplate.id',
 				'Hosttemplate.uuid',
@@ -271,6 +271,7 @@ class HostsController extends AppController{
 		$this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
 		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
 		$this->set('_serialize', ['all_hosts']);
+		$this->set('myNamedFilters', $this->request->data);
 		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
 			if(!isset($this->request->data['Filter']['HostStatus']['current_state'])) {
 				$this->set('HostStatus.current_state', []);
@@ -1726,142 +1727,151 @@ class HostsController extends AppController{
 	}
 
 	function browser($id = null){
-		if($this->Host->exists($id)){
-			$this->__unbindAssociations('Service');
-			// $uses is not the best choise at this point.
-			// due to loadModel() we get the results we need
-			$this->loadModel('Service');
-			$host = $this->Host->prepareForView($id);
-			$this->Service->unbindModel([
-				'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-				'hasMany' => ['Servicecommandargumentvalue', 'Serviceeventcommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-				'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
-			]);
-			$_host = $this->Host->find('first', [
-				'conditions' => [
-					'Host.id' => $id,
-				],
-				'contain' => [
-					'Contactgroup' => [
-						'Container'
-					],
-					'Contact',
-					'Hostcommandargumentvalue',
+		$browseByUUID = false;
+		$conditionsToFind = ['Host.id' => $id];
+		if(preg_match('/\-/', $id)){
+			$browseByUUID = true;
+			$conditionsToFind = ['Host.uuid' => $id];
+		}
+
+		$_host = $this->Host->find('first', [
+			'conditions' => $conditionsToFind,
+			'contain' => [
+				'Contactgroup' => [
 					'Container'
 				],
-			]);
-
-
-			$containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
-			$containerIdsToCheck[] = $_host['Host']['container_id'];
-
-			//Check if user is permitted to see this object
-			if(!$this->allowedByContainerId($containerIdsToCheck, false)){
-				$this->render403();
-				return;
-			}
-
-			//Check if user is permitted to edit this object
-			$allowEdit = false;
-			if($this->allowedByContainerId($containerIdsToCheck)){
-				$allowEdit = true;
-			}
-
-			$services = $this->Service->find('all',[
-				'recursive' => -1,
-				'conditions' => [
-					'Service.host_id' => $id,
-				],
-				'fields' => [
-					'Service.id',
-					'Service.uuid',
-					'Service.name',
-					'Servicetemplate.name',
-					'Host.uuid',
-				],
-				'contain' => [
-					'Host',
-					'Servicetemplate'
-				],
-				'order' => 'Service.name'
-			]);
-
-			$commandarguments = [];
-			if(!empty($_host['Hostcommandargumentvalue'])){
-				//The service has own command argument values
-				$_commandarguments = $this->Hostcommandargumentvalue->findAllByHostId($_host['Host']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hostcommandargumentvalue']['value'];
-				}
-			}else{
-				//The service command arguments are from the template
-				$_commandarguments = $this->Hosttemplatecommandargumentvalue->findAllByHosttemplateId($host['Hosttemplate']['id']);
-				$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-				foreach($_commandarguments as $commandargument){
-					$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hosttemplatecommandargumentvalue']['value'];
-				}
-			}
-
-			$ContactsInherited = $this->__inheritContactsAndContactgroups($host, $_host);
-
-			$parenthosts = [];
-			if(!empty($host['Parenthost'])){
-				$parenthosts = $this->Host->find('all', [
-					'recursive' => -1,
-					'conditions' => [
-						'Host.id' => $host['Parenthost'],
-					],
-					'fields' => [
-						'Host.id',
-						'Host.uuid',
-						'Host.name'
-					]
-				]);
-				$hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
-			}else{
-				$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
-			}
-
-			$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
-
-
-			$acknowledged = [];
-			if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
-				$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
-			}
-			$ticketSystem = $this->Systemsetting->find('first', [
-				'conditions' => ['key' => 'TICKET_SYSTEM.URL']
-			]);
-
-			$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
-			$username = $this->Auth->user('full_name');
-			$this->set(compact([
-					'host',
-					'hoststatus',
-					'servicestatus',
-					'services',
-					'username',
-					'path',
-					'commandarguments',
-					'acknowledged',
-					'hostDocuExists',
-					'ContactsInherited',
-					'parenthosts',
-					'allowEdit',
-					'ticketSystem'
-				])
-			);
-
-			$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-			$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-			$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
-			$this->loadModel('Systemsetting');
-			$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-			$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-		}else{
+				'Contact',
+				'Hostcommandargumentvalue',
+				'Container'
+			],
+		]);
+		
+		if(empty($_host)){
 			throw new NotFoundException(__('Host not found'));
 		}
+		if($browseByUUID){
+			$id = $_host['Host']['id'];
+		}
+
+		$this->__unbindAssociations('Service');
+		// $uses is not the best choise at this point.
+		// due to loadModel() we get the results we need
+		$this->loadModel('Service');
+		$host = $this->Host->prepareForView($id);
+		$this->Service->unbindModel([
+			'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
+			'hasMany' => ['Servicecommandargumentvalue', 'Serviceeventcommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
+			'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand']
+		]);
+
+		$containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $_host['Host']['container_id'];
+
+		//Check if user is permitted to see this object
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
+			$this->render403();
+			return;
+		}
+
+		//Check if user is permitted to edit this object
+		$allowEdit = false;
+		if($this->allowedByContainerId($containerIdsToCheck)){
+			$allowEdit = true;
+		}
+
+		$services = $this->Service->find('all',[
+			'recursive' => -1,
+			'conditions' => [
+				'Service.host_id' => $id,
+			],
+			'fields' => [
+				'Service.id',
+				'Service.uuid',
+				'Service.name',
+				'Servicetemplate.name',
+				'Service.disabled',
+				'Host.uuid',
+			],
+			'contain' => [
+				'Host',
+				'Servicetemplate'
+			],
+			'order' => 'Service.name'
+		]);
+
+		$commandarguments = [];
+		if(!empty($_host['Hostcommandargumentvalue'])){
+			//The service has own command argument values
+			$_commandarguments = $this->Hostcommandargumentvalue->findAllByHostId($_host['Host']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hostcommandargumentvalue']['value'];
+			}
+		}else{
+			//The service command arguments are from the template
+			$_commandarguments = $this->Hosttemplatecommandargumentvalue->findAllByHosttemplateId($host['Hosttemplate']['id']);
+			$_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
+			foreach($_commandarguments as $commandargument){
+				$commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hosttemplatecommandargumentvalue']['value'];
+			}
+		}
+
+		$ContactsInherited = $this->__inheritContactsAndContactgroups($host, $_host);
+
+		$parenthosts = [];
+		if(!empty($host['Parenthost'])){
+			$parenthosts = $this->Host->find('all', [
+				'recursive' => -1,
+				'conditions' => [
+					'Host.id' => $host['Parenthost'],
+				],
+				'fields' => [
+					'Host.id',
+					'Host.uuid',
+					'Host.name'
+				]
+			]);
+			$hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
+		}else{
+			$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+		}
+
+		$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+
+
+		$acknowledged = [];
+		if(isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0){
+			$acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
+		}
+		$ticketSystem = $this->Systemsetting->find('first', [
+			'conditions' => ['key' => 'TICKET_SYSTEM.URL']
+		]);
+
+		$servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
+		$username = $this->Auth->user('full_name');
+		$this->set(compact([
+				'host',
+				'hoststatus',
+				'servicestatus',
+				'services',
+				'username',
+				'path',
+				'commandarguments',
+				'acknowledged',
+				'hostDocuExists',
+				'ContactsInherited',
+				'parenthosts',
+				'allowEdit',
+				'ticketSystem'
+			])
+		);
+
+		$this->Frontend->setJson('dateformat', MY_DATEFORMAT);
+		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+		$this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
+		$this->loadModel('Systemsetting');
+		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 	}
 
 	/**

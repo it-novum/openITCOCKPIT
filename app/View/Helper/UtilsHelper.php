@@ -226,7 +226,7 @@ class UtilsHelper extends AppHelper {
  * @param array $options
  * @return string
  */
-	public function deleteButton($title = null, $url = null, $options = array(), $confirm = true) {
+	public function deleteButton($title = null, $url = null, $options = array(), $confirm = true, $postText = '') {
 		$_options = array('icon' => 'fa fa-trash-o');
 		$options = Hash::merge($options, $_options);
 		if(is_numeric($title)) {
@@ -245,7 +245,7 @@ class UtilsHelper extends AppHelper {
 		), $options);
 		$title = '<i class="'.$options['icon'].'"></i> ' . $title;
 		if($confirm){
-			return $this->Form->postLink($title, $url, $options, __('confirm_delete'));
+			return $this->Form->postLink($title, $url, $options, __('confirm_delete').' '.$postText);
 		}
 		return $this->Form->postLink($title, $url, $options);
 	}

@@ -27,9 +27,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
+			<i class="fa fa-terminal fa-fw "></i>
+				<?php echo __('Monitoring'); ?>
+			<span>>
 				<?php echo __('Commands'); ?>
 			</span>
 		</h1>
@@ -51,9 +51,9 @@
 						echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
 						if($isFilter):
 							echo " "; //Fix HTML
-							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times')); 
+							echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
 						endif;
-						?> 
+						?>
 					</div>
 					<span class="widget-icon hidden-mobile"> <i class="fa fa-terminal"></i> </span>
 					<h2 class="hidden-mobile"><?php echo __('Commands'); ?></h2>
@@ -88,7 +88,7 @@
 													<?php $order = $this->Paginator->param('order'); ?>
 													<th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
 													<th><?php echo $this->Utils->getDirection($order, 'Command.name'); echo $this->Paginator->sort('Command.name', 'Command name'); ?></th>
-													<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+													<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -99,7 +99,7 @@
 															<input type="checkbox" class="massChange" commandname="<?php echo h($command['Command']['name']); ?>" value="<?php echo $command['Command']['id']; ?>">
 														</td>
 														<td><?php echo h($command['Command']['name']); ?></td>
-														<td class="width-160">
+														<td>
 															<div class="btn-group">
 																<?php if($this->Acl->hasPermission('edit')): ?>
 																	<a href="<?php echo Router::url(['action' => 'edit', '_controller' => 'commands', '_action' => 'notifications', $command['Command']['id']]); ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -107,7 +107,7 @@
 																	<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 																<?php endif;?>
 																<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-																<ul class="dropdown-menu">
+																<ul class="dropdown-menu pull-right">
 																	<?php if($this->Acl->hasPermission('edit')): ?>
 																		<li>
 																			<a href="<?php echo Router::url(['action' => 'edit', '_controller' => 'commands', '_action' => 'notifications', $command['Command']['id']]); ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>

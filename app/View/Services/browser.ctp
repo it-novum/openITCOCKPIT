@@ -84,7 +84,7 @@
 		</ul>
 		<span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
 		<div role="content">
-			<div class="widget-body no-padding">
+			<div class="widget-body no-pwing">
 				<div class="tab-content padding-10">
 					<div id="tab1" class="tab-pane fade active in">
 						<?php echo $service['Service']['name']; ?> <strong><?php echo __('Last state change')?>: <?php echo $this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>

@@ -41,6 +41,7 @@ App.Controllers.HostsAllocateServiceTemplateGroupController = Frontend.AppContro
 			$.ajax({
 				url: "/hosts/getServiceTemplatesfromGroup/"+encodeURIComponent($(this).val())+".json",
 				type: "POST",
+				cache: false,
 				data: ({host_id:hostid}),
 				error: function(){},
 				success: function(){},

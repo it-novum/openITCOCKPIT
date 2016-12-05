@@ -106,16 +106,16 @@ foreach($this->params->named as $key => $value){
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th colspan="2" class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
-										<th class="no-sort text-center" ><strong>P</strong></th>
+										<th class="no-sort text-center" ><i class="fa fa-user fa-lg" title="<?php echo __('Acknowledgedment'); ?>"></i></th>
+										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg" title="<?php echo __('in Downtime'); ?>"></i></th>
+										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i></th>
+										<th class="no-sort text-center" ><strong title="<?php echo __('Passively transferred service'); ?>">P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicename'); echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change'); echo $this->Paginator->sort('Service.last_hard_state_change', __('Status since')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.last_check'); echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
-										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.next_check'); echo $this->Paginator->sort('Service.next_check', __('Next check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change'); echo $this->Paginator->sort('Service.last_hard_state_change', __('Status since')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.last_check'); echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
+										<th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.next_check'); echo $this->Paginator->sort('Service.next_check', __('Next check')); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.output'); echo $this->Paginator->sort('Service.output', __('Service output')); ?></th>
+										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -132,8 +132,8 @@ foreach($this->params->named as $key => $value){
 												endif;
 											endif;
 										endif;
-										
-										
+
+
 										if($tmp_host_name != $service['Host']['name']):
 											$tmp_host_name = $service['Host']['name'];
 										?>
@@ -159,7 +159,7 @@ foreach($this->params->named as $key => $value){
 
 										<?php endif; ?>
 											<tr>
-												
+
 												<?php
 												if($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
 													$serviceName = $service['Service']['name'];
@@ -167,7 +167,7 @@ foreach($this->params->named as $key => $value){
 													$serviceName = $service['Servicetemplate']['name'];
 												endif;
 												?>
-												
+
 												<td class="text-center width-5">
 													<?php if($allowEdit):?>
 														<input type="checkbox" class="massChange" servicename="<?php echo h($serviceName); ?>" value="<?php echo $service['Service']['id']; ?>" uuid="<?php echo $service['Service']['uuid']; ?>" host-uuid="<?php echo $service['Host']['uuid']; ?>">
@@ -186,42 +186,14 @@ foreach($this->params->named as $key => $value){
 													endif;
 													?>
 												</td>
-												<td class="width-50">
-													<div class="btn-group">
-														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php else: ?>
-															<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php endif; ?>
-														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-														<ul class="dropdown-menu">
-															<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-																<li>
-																	<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-																</li>
-															<?php endif; ?>
-															<?php if($this->Acl->hasPermission('deactivate') && $allowEdit): ?>
-																<li>
-																	<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $service['Service']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
-																</li>
-															<?php endif; ?>
-															<?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
-															   <li>
-																  <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']); ?>
-															   </li>
-															<?php endif; ?>
-															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
-																<li class="divider"></li>
-																<li>
-																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]);?>
-																</li>
-															<?php endif; ?>
-														</ul>
-													</div>
-												</td>
+
 												<td class="text-center">
 													<?php if($this->Monitoring->checkForAck($service['Servicestatus']['problem_has_been_acknowledged'])): ?>
-														<i class="fa fa-user fa-lg "></i>
+														<?php if($service['Servicestatus']['acknowledgement_type'] == 1):?>
+															<i class="fa fa-user fa-lg " title="<?php echo __('Acknowledgedment'); ?>"></i>
+														<?php else:?>
+															<i class="fa fa-user-o fa-lg" title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+														<?php endif;?>
 													<?php endif;?>
 												</td>
 												<td class="text-center">
@@ -272,6 +244,39 @@ foreach($this->params->named as $key => $value){
 													?>
 												</td>
 												<td><?php echo h($service['Servicestatus']['output']); ?></td>
+												<td class="width-50">
+													<div class="btn-group">
+														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+														<?php else: ?>
+															<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+														<?php endif; ?>
+														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+														<ul class="dropdown-menu pull-right">
+															<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
+																</li>
+															<?php endif; ?>
+															<?php if($this->Acl->hasPermission('deactivate') && $allowEdit): ?>
+																<li>
+																	<a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $service['Service']['id']; ?>"><i class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
+																</li>
+															<?php endif; ?>
+															<?php if($this->Acl->hasPermission('edit') && $allowEdit):?>
+																<li>
+																	<?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']); ?>
+																</li>
+															<?php endif; ?>
+															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
+																<li class="divider"></li>
+																<li>
+																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this service?'));?>
+																</li>
+															<?php endif; ?>
+														</ul>
+													</div>
+												</td>
 											</tr>
 									<?php endforeach; ?>
 								</tbody>
@@ -298,7 +303,7 @@ foreach($this->params->named as $key => $value){
 							<div class="col-xs-12 col-md-2">
 								<?php if($this->Acl->hasPermission('delete')):?>
 									<a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
-								<?php endif; ?> 
+								<?php endif; ?>
 							</div>
 							<div class="col-xs-12 col-md-2">
 								<div class="btn-group">

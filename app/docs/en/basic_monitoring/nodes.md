@@ -44,7 +44,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -61,13 +60,11 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 		</tr>
 		<tr>
 			<td>Nodes</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -80,7 +77,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -92,8 +88,7 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
+			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -104,8 +99,7 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
+			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -116,8 +110,7 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
+			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -129,7 +122,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -139,7 +131,6 @@ This structure is used to set the granular user permissions for each object
 			<td>Hosttemplates</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -151,7 +142,6 @@ This structure is used to set the granular user permissions for each object
 			<td>Hostgroups</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -167,7 +157,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 		</tr>
@@ -175,7 +164,6 @@ This structure is used to set the granular user permissions for each object
 			<td>Servicetemplates</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -188,7 +176,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -200,7 +187,6 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -211,7 +197,6 @@ This structure is used to set the granular user permissions for each object
 			<td>Servicetemplategroups</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -229,13 +214,11 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 		</tr>
 		<tr>
 			<td>Serviceescalations</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
@@ -253,13 +236,11 @@ This structure is used to set the granular user permissions for each object
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 		</tr>
 		<tr>
 			<td>Servicedependencies</td>
 			<td style="text-align:center"><font color="green">✓</font></td>
 			<td style="text-align:center"><font color="green">✓</font></td>
-			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>
 			<td style="text-align:center"><font color="red">✗</font></td>

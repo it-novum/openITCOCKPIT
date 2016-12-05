@@ -80,7 +80,7 @@
 													<th><?php echo $this->Utils->getDirection($order, 'company'); echo $this->Paginator->sort('company', __('Company')); ?></th>
 													<th><?php echo $this->Utils->getDirection($order, 'Usergroup.name'); echo $this->Paginator->sort('Usergroup.name', __('User role')); ?></th>
 													<th><?php echo $this->Utils->getDirection($order, 'status'); echo $this->Paginator->sort('status', __('Status')); ?></th>
-													<th class="no-sort text-center" ><i class="fa fa-gear fa-lg"></i></th>
+													<th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i></th>
 												</tr>
 											</thead>
 											<tbody>
@@ -101,7 +101,7 @@
 																	<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 																<?php endif; ?>
 																<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-																<ul class="dropdown-menu">
+																<ul class="dropdown-menu pull-right">
 																	<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 																		<li>
 																			<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $user['User']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>

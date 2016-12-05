@@ -149,6 +149,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 			$.ajax({
 				url: "/Services/longOutputByUuid/" + encodeURIComponent(self.service_uuid),
 				type: "GET",
+				cache: false,
 				error: function(){
 				},
 				success: function(){
@@ -263,6 +264,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 		$.ajax({
 			url: '/downtimes/validateDowntimeInputFromBrowser',
 			type: 'POST',
+			cache: false,
 			data: {
 				from: fromData + ' ' + fromTime,
 				to: toData + ' ' + toTime

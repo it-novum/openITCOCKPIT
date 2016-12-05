@@ -176,6 +176,16 @@
 								'checked' => (boolean)$this->Html->getParameter('Automap.show_label', false)
 							]); ?>
 						</div>
+						<div class="form-group padding-left-20">
+							<?php echo $this->Form->fancyCheckbox('group_by_host', [
+								'caption' => __('Group by host'),
+								'wrapGridClass' => 'col col-xs-2',
+								'captionGridClass' => 'col col-xs-2 no-padding',
+								'captionClass' => 'control-label text-left no-padding',
+								'icon' => '<i class="fa fa-sitemap"></i> ',
+								'checked' => (boolean)$this->Html->getParameter('Automap.group_by_host', false)
+							]); ?>
+						</div>
 						
 						<div class="form-group form-group-slider">
 							<label class="col col-md-1 control-label text-left" for="AutomapFontSize"><?php echo __('Icon size'); ?></label>
