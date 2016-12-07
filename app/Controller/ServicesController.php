@@ -2133,7 +2133,8 @@ class ServicesController extends AppController{
 					'service_uuid' => $service['Service']['uuid'],
 					'path' => $rrd_path,
 					'start' => $newStart,
-					'end' => $newEnd
+					'end' => $newEnd,
+					'label' => $service['Host']['name'] . ' / ' . $service['Servicetemplate']['name'],
 				]);
 				if(!isset($imageUrl['diskPath'])){
 					//The image is broken, i gues we have an RRD error here, so we render the RRD return text into an image and send it to the browser.
