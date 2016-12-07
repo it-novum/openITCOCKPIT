@@ -92,7 +92,8 @@ foreach($graphs as $graph):
 			'service_uuid' => $service['Service']['uuid'],
 			'path' => $rrd_path,
 			'start' => $graph['start'],
-			'end' => $graph['end']
+			'end' => $graph['end'],
+			'label' => $service['Host']['name'] . ' / ' . $service['Servicetemplate']['name'],
 		], [], true);
 		$error = false;
 		if(!isset($imageUrl['webPath'])):

@@ -221,7 +221,7 @@ class Rrd extends AppModel{
 			'--width', $width,
 
 			'--border', 1,
-			'--title='.$rrd_structure_datasource['label'],
+			'--title='.(isset($options['label']) ? $options['label'] : $rrd_structure_datasource['label']),
 			'--vertical-label='.$unit,
 			'--imgformat','PNG',
 			'DEF:var0='.$options['path'].$options['host_uuid'].DS.$options['service_uuid'].'.rrd:'.$rrd_structure_datasource['ds'].':AVERAGE',
