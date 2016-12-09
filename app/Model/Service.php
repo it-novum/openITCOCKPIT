@@ -880,38 +880,7 @@ class Service extends AppModel{
 
 		return !empty($result);
 	}
-
-	/**
-	* Delete old records (custom variables) from database
-	*
-	* ### Options
-	*
-	* - See cake-api beforeSave function
-	*
-	* @param	array $options with the options
-	* @return	true
-	* @author	Irina Bering <irina.bering@it-novum.com>
-	* @since	3.0.1
-	*
-	*/
-	public function beforeSave($options = []) {
-		if(isset($this->data['Customvariable'])){
-			$customvariablesToDelete = $this->Customvariable->find('all', [
-				'conditions' => [
-					'Customvariable.object_id' =>$this->data['Service']['id'],
-					'Customvariable.objecttype_id' => OBJECT_SERVICE,
-					'NOT' => [
-						'Customvariable.id' => Hash::extract($this->data['Customvariable'], '{n}.id')
-					]
-				]
-			]);
-			//Delete all custom variables that are remove by the user:
-			foreach($customvariablesToDelete as $customvariableToDelete){
-				$this->Customvariable->delete($customvariableToDelete['Customvariable']['id']);
-			}
-		}
-		return true;
-	}
+	
 
 	public function __delete($id, $userId){
 		if(is_numeric($id)){
