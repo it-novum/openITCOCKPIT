@@ -40,6 +40,7 @@
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
+	<?php if(!$isWidget): ?>
 	<header>
 		<span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
 		<h2><?php echo __('View map '.h($map['Map']['name']));?></h2>
@@ -57,6 +58,7 @@
 			<?php endif; ?>
 		</div>
 	</header>
+	<?php endif; ?>
 	<div id="map-editor">
 		<?php
 			$css = '';

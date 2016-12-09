@@ -30,7 +30,7 @@ if(!empty($widgetData['Widget']['Widget']['map_id'])):
 endif;
 ?>
 <div class="widget-body map-body">
-	<div class="padding-10">
+	<div class="padding-10 <?php if(!is_null($mapId)){ echo 'display-none'; } ?>" >
 		<div style="border:1px solid #c3c3c3;" class="padding-10">
 			<div class="row">
 				<div class="col-xs-12">
@@ -54,7 +54,7 @@ endif;
 		<?php
 		if($mapId): ?>
 			<div class="mapContainer" data-id-map="<?php echo $mapId; ?>">
-				<iframe width="100%" height="200" style="border:0px;" scrolling="no" src="/map_module/mapeditors/view/<?php echo $mapId; ?>/fullscreen:1" /></iframe>
+				<iframe width="100%" height="200" style="border:0px;overflow:hidden;" scrolling="no" src="/map_module/mapeditors/view/<?php echo $mapId; ?>/fullscreen:1/widget:1" /></iframe>
 			</div>
 		<?php else: ?>
 			<div class="mapContainer" data-id-map="0">
