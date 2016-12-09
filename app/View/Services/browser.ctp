@@ -101,12 +101,20 @@
 							<?php if($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged')) && !empty($acknowledged)):?>
 								<p>
 								<span class="fa-stack fa-lg">
-									<i class="fa fa-user fa-stack-2x"></i>
-									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+									<?php if($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1):?>
+                                    <i class="fa fa-user fa-stack-2x"></i>
+                                    <?php else:?>
+                                        <i class="fa fa-user-o fa-stack-2x"></i>
+                                    <?php endif;?>
+									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
 								</span>
 									<?php
-									echo __('The current status was already acknowledged by');?> <strong>
-										<?php echo h($acknowledged['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i>
+                                    if($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1):
+                                        echo __('The current status was already acknowledged by');
+                                    else:
+                                        echo __('The current status was already acknowledged (STICKY) by');
+                                    endif;?>
+                                    <strong><?php echo h($acknowledged['Acknowledged']['author_name']); ?></strong> (<i class="fa fa-clock-o"></i>
 									<?php
 									echo $this->Time->format($acknowledged['Acknowledged']['entry_time'],
 										$this->Auth->user('dateformat'),
