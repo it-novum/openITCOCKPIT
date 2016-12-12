@@ -992,6 +992,112 @@ class Host extends AppModel{
 		return true;
 	}
 
+	public function __deleteBySatellite($satelliteId, $userId){ // performance optimization
+		$hostsInSatellite = $this->find('all', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'Host.satellite_id' => $satelliteId
+			]
+		]);
+
+		$hostIds = [];
+		//remove from hostIds id that are not allowed to delete
+		$Service = ClassRegistry::init('Service');
+		foreach($hostsInSatellite as $hostKey => $hostArr){
+			$serviceIds = Hash::extract($Service->find('all',[
+				'recursive' => -1,
+				'conditions' => [
+					'host_id' => $hostArr['Host']['id'],
+				],
+				'fields' => [
+					'Service.id'
+				]
+			]), '{n}.Service.id');
+
+			//check if the host is used somwhere
+			if(CakePlugin::loaded('EventcorrelationModule')){
+				$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+				$evcCount = $this->Eventcorrelation->find('count',[
+					'conditions' => [
+						'OR' => [
+							'Eventcorrelation.host_id' => $hostArr['Host']['id'],
+							'Eventcorrelation.service_id' => $serviceIds
+						]
+					]
+				]);
+				if($evcCount == 0){
+					$hostIds[] = $hostArr['Host']['id'];
+				}else{
+					unset($hostsInSatellite[$hostKey]);
+				}
+			}
+		}
+
+		$Changelog = ClassRegistry::init('Changelog');
+		//Load the Service Model to delete Graphgenerator configurations
+		$serviceIds = array_keys($Service->find('list', [
+			'recursive' => -1,
+			'contain' => [],
+			'conditions' => [
+				'Service.host_id' => $hostIds
+			]
+		]));
+
+		$datasource = $this->getDataSource();
+		$DeletedHost = ClassRegistry::init('DeletedHost');
+		$DeletedService = ClassRegistry::init('DeletedService');
+		$GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+		$Documentation = ClassRegistry::init('Documentation');
+		try{
+			$datasource->begin();
+			$GraphgenTmplConf->deleteAll(['GraphgenTmplConf.service_id' => $serviceIds, true]);
+
+			foreach($hostsInSatellite as $hostArr){
+				$changelog_data = $Changelog->parseDataForChangelog(
+					'delete',
+					'hosts',
+					$hostArr['Host']['container_id'],
+					OBJECT_HOST,
+					$hostArr['Host']['container_id'],
+					$userId,
+					$hostArr['Host']['name'],
+					$hostArr
+				);
+				if($changelog_data){
+					CakeLog::write('log', serialize($changelog_data));
+				}
+
+				$DeletedHost->create();
+				$data = [
+					'DeletedHost' => [
+						'host_id' => $hostArr['Host']['id'],
+						'uuid' => $hostArr['Host']['uuid'],
+						'hosttemplate_id' => $hostArr['Host']['hosttemplate_id'],
+						'name' => $hostArr['Host']['name'],
+						'description' => $hostArr['Host']['description'],
+						'deleted_perfdata' => 0,
+					]
+				];
+				if(!$DeletedHost->save($data)){
+					throw new Exception(__('Cannot modify Host deletion data.'));
+				}
+				$this->_cleanupHostEscalationDependency($hostArr);
+				$documentation = $Documentation->findByUuid($hostArr['Host']['uuid']);
+				if(isset($documentation['Documentation']['id'])){
+					$Documentation->delete($documentation['Documentation']['id']);
+				}
+			}
+			$DeletedService->deleteAll(['DeletedService.host_id' => $serviceIds, true]);
+			$this->deleteAll(['Host.id' => $hostIds], true);
+			$datasource->commit();
+			return ['success' => true, 'message' => ''];
+		}catch(Exception $exc){
+			$datasource->rollback();
+			return ['success' => false, 'message' => $exc->getMessage()];
+		}
+	}
+
 	/**
 	 * Check if the host is part of a hostescalation and if it would be empty after the host would be deleted,
 	 * This prevents nagios from getting problems because of empty hostescalations.

@@ -28,9 +28,9 @@
  * @property Systemsetting Systemsetting
  */
 class AdministratorsController extends AppController{
-    public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
-    public $layout = 'Admin.default';
+	public $components = ['GearmanClient'];
+	public $uses = ['Proxy'];
+	public $layout = 'Admin.default';
 
 	function index(){
 	}
@@ -39,7 +39,27 @@ class AdministratorsController extends AppController{
 		$this->loadModel('Systemsetting');
 		$this->loadModel('Cronjob');
 		$this->loadModel('Register');
-		$this->set('systemsetting', $this->Systemsetting->findAsArray());
+
+
+		$systemsetting = $this->Systemsetting->findAsArray();
+		$this->set('systemsetting', $systemsetting);
+
+
+		Configure::load('gearman');
+		$this->Config = Configure::read('gearman');
+
+		$this->GearmanClient->client->setTimeout(5000);
+		$gearmanReachable = @$this->GearmanClient->client->ping(true);
+		$this->set('gearmanReachable', $gearmanReachable);
+
+
+		$isGearmanWorkerRunning = false;
+		exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+		if(sizeof($output) > 0){
+			$isGearmanWorkerRunning = true;
+		}
+		$this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
+
 
 		//Check if load cronjob exists
 		if(!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')){
@@ -87,7 +107,7 @@ class AdministratorsController extends AppController{
 		}
 
 
-
+		$output = null;
 		exec('LANG=C df -h', $output, $returncode);
 		$disks = [];
 		if($returncode == 0){
@@ -136,62 +156,60 @@ class AdministratorsController extends AppController{
 			}
 		}
 
-		$is_nagios_running = false;
-		$is_db_running = false;
-		$is_npcd_running = false;
-		$is_mysql_running = false;
-		$is_phpNSTA_running = false;
-		$is_statusengine = false;
-		$is_statusengine_perfdata = false;
-		$is_gearmand_running = false;
-		$gearmanStatus = [];
-		$is_gearman_worker_running = false;
-		$is_oitccmd_running = false;
-
-		Configure::load('nagios');
-		exec(Configure::read('nagios.nagios_status'), $output, $returncode);
-		if($returncode == 0){
-			$is_nagios_running = true;
-		}
-
-		$output = null;
-		//exec(Configure::read('nagios.ndo_status'), $output, $returncode);
-		exec('ps -eaf |grep ndo2db | grep -v grep', $output, $returncode);
-		if(sizeof($output) > 0){
-			$is_db_running = true;
-		}
-
-		if(!$is_db_running){
-			exec('ps -eaf |grep statusengine | grep -v grep', $output, $returncode);
-			if(sizeof($output) > 0){
-				$is_db_running = true;
-				$is_statusengine = true;
+		$osVersion = PHP_OS;
+		if(file_exists('/etc/os-release')){
+			foreach(file('/etc/os-release') as $_line){
+				$line = explode('=', $_line, 2);
+				if($line[0] == 'PRETTY_NAME'){
+					$osVersion = str_replace('"', '', $line[1]);
+				}
 			}
 		}
+		$this->set('osVersion', $osVersion);
 
-		$output = null;
-		//exec(Configure::read('nagios.npcd_status'), $output, $returncode);
-		exec('ps -eaf |grep npcd | grep -v grep', $output, $returncode);
-		if(sizeof($output) > 0){
-			$is_npcd_running = true;
+		if($gearmanReachable && $isGearmanWorkerRunning){
+			//Check if your background proesses are running
+			$backgroundProcessStatus = $this->GearmanClient->send('check_background_processes');
+			$this->set('backgroundProcessStatus', $backgroundProcessStatus);
 		}
 
-		if(!$is_npcd_running){
-			$statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
-			if(file_exists($statusengineConfig)){
-				require_once $statusengineConfig;
-				if(isset($config['process_perfdata'])){
-					if($config['process_perfdata'] === true && $is_statusengine === true){
-						$is_npcd_running = true;
-						$is_statusengine_perfdata = true;
-					}
+		$isNdoInstalled = false;
+		if(file_exists('/opt/openitc/nagios/bin/ndo2db')){
+			$isNdoInstalled = true;
+		}
+
+		$isStatusengineInstalled = false;
+		if(file_exists('/opt/statusengine/cakephp/app/Console/Command/StatusengineLegacyShell.php')){
+			$isStatusengineInstalled = true;
+		}
+
+		$this->set([
+			'isNdoInstalled' => $isNdoInstalled,
+			'isStatusengineInstalled' => $isStatusengineInstalled
+		]);
+
+		$isNpcdInstalled = false;
+		if(file_exists('/opt/openitc/nagios/bin/npcd')){
+			$isNpcdInstalled = true;
+		}
+
+		$isStatusenginePerfdataProcessor = false;
+		$statusengineConfig = '/opt/statusengine/cakephp/app/Config/Statusengine.php';
+		if(file_exists($statusengineConfig)){
+			require_once $statusengineConfig;
+			if(isset($config['process_perfdata'])){
+				if($config['process_perfdata'] === true){
+					$isStatusenginePerfdataProcessor = true;
 				}
 			}
 		}
 
+		$this->set('isStatusenginePerfdataProcessor', $isStatusenginePerfdataProcessor);
+
+
 		$output = null;
-		exec('ps -eaf |grep gearmand | grep -v grep', $output, $returncode);
-		if(sizeof($output) > 0){
+		exec($systemsetting['INIT']['INIT.GEARMAN_JOB_SERVER_STATUS'], $output, $returncode);
+		if($returncode == 0){
 			$is_gearmand_running = true;
 			$output = null;
 			exec('gearadmin --status', $output);
@@ -207,34 +225,9 @@ class AdministratorsController extends AppController{
 			}
 		}
 
-		$output = null;
-		exec('ps -eaf |grep gearman_worker | grep -v grep', $output, $returncode);
-		if(sizeof($output) > 0){
-			$is_gearman_worker_running = true;
-			$output = null;
-		}
-
-		$output = null;
-		exec('ps -eaf |grep Cmd | grep -v grep', $output, $returncode);
-		if(sizeof($output) > 0){
-			$is_oitccmd_running = true;
-			$output = null;
-		}
-
-
-		/*exec(Configure::read('nagios.mysql_status'), $output, $returncode);
-		if($returncode == 0){
-			$is_mysql_running = true;
-		}*/
-
-        $this->Config = Configure::read('gearman');
-        $result = unserialize($this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'phpnsta_status']), $this->Config['password'])));
-        if ($result['returncode'] === 0){
-			$is_phpNSTA_running = true;
-		}
-
 		//Get Monitoring engine + version
 		$output = null;
+		Configure::load('nagios');
 		exec(Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
 		$monitoring_engine = $output[1];
 
@@ -246,28 +239,17 @@ class AdministratorsController extends AppController{
 		$recipientAddress = $this->Auth->user('email');
 
 		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+		$this->Frontend->setJson('akey', $systemsetting['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
 
 		$this->set(compact([
 			'disks',
 			'memory',
 			'load',
-			'is_npcd_running',
-			'is_db_running',
-			'is_nagios_running',
-			'is_mysql_running',
-			'is_phpNSTA_running',
 			'isEnterprise',
-			'is_statusengine',
-			'is_statusengine_perfdata',
 			'monitoring_engine',
 			'mailConfig',
-			'is_gearmand_running',
 			'gearmanStatus',
 			'recipientAddress',
-			'is_gearman_worker_running',
-			'is_oitccmd_running',
 		]));
 	}
 

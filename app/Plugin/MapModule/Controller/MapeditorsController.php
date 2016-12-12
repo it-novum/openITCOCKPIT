@@ -235,7 +235,7 @@ class MapeditorsController extends MapModuleAppController {
 			$isFullscreen = true;
 			$this->Frontend->setJson('is_fullscren', true);
 		}
-
+		$isWidget = isset($this->request->params['named']['widget']);
 
 		$uuidsByItemType = [
 			'host' => [],
@@ -505,6 +505,7 @@ class MapeditorsController extends MapModuleAppController {
 			'hostgroups',
 			'servicegroups',
 			'isFullscreen',
+			'isWidget',
 			'icons'
 		]));
 	}

@@ -239,9 +239,11 @@ class GraphgeneratorsController extends AppController{
 		//debug($this->request->data['GraphgenTmpl']['id']);
 		//die();
 		if($this->GraphgenTmpl->validates($this->request->data)){
-			$this->GraphgenTmplConf->deleteAll([
-				'GraphgenTmplConf.graphgen_tmpl_id' => $this->request->data['GraphgenTmpl']['id']
-			]);
+			if(isset($this->request->data['GraphgenTmpl']['id'])){
+				$this->GraphgenTmplConf->deleteAll([
+					'GraphgenTmplConf.graphgen_tmpl_id' => $this->request->data['GraphgenTmpl']['id']
+				]);
+			}
 			if($this->GraphgenTmpl->saveAll($this->request->data)){
 				$this->set('success', true);
 			}
