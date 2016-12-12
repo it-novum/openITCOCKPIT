@@ -208,7 +208,6 @@ class ContainersController extends AppController{
 				'Container.id' => $id
 			]
 		]);
-
 		$childElements = $this->Container->find('all', [
 			'recursive' => -1,
 			'conditions' => [
@@ -219,7 +218,8 @@ class ContainersController extends AppController{
 						CT_LOCATION,
 						CT_NODE,
 						CT_HOSTGROUP,
-						CT_SERVICEGROUP
+						CT_SERVICEGROUP,
+						CT_CONTACTGROUP
 					]
 				]
 			]
@@ -393,6 +393,29 @@ class ContainersController extends AppController{
 							]
 						]);
 						foreach($servicegroupsToDelete as $container){
+							$this->Container->__delete($container, $userId);
+						}
+						break;
+					case CT_CONTACTGROUP:
+						//Check contact groups to delete
+						$Contactgroup = ClassRegistry::init('Contactgroup');
+						$contactgroupsToDelete = $Contactgroup->find('all', [
+							'recursive' => -1,
+							'contain' => [
+								'Container' => [
+									'fields' => [
+										'Container.id'
+									]
+								]
+							],
+							'conditions' => [
+								'Contactgroup.container_id' => $containerIds
+							],
+							'fields' => [
+								'Contactgroup.id'
+							]
+						]);
+						foreach($contactgroupsToDelete as $container){
 							$this->Container->__delete($container, $userId);
 						}
 						break;

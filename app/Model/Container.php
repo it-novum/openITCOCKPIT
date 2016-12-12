@@ -66,7 +66,7 @@ class Container extends AppModel{
 		],
 		'Contactgroup' => [
 			'className' => 'Contactgroup',
-			'foreignKey' => 'id',
+			'foreignKey' => 'container_id',
 			'dependent' => true,
 		],
 		'Location' => [
