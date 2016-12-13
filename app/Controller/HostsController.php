@@ -942,6 +942,7 @@ class HostsController extends AppController{
 				if(!empty($host)){
 					//Fill up required fields
 					$data['Host']['id'] = $host['Host']['id'];
+					$data['Host']['container_id'] = $host['Host']['container_id'];
 					$data['Host']['name'] = $host['Host']['name'];
 					$data['Host']['hosttemplate_id'] = $host['Host']['hosttemplate_id'];
 					$data['Host']['address'] = $host['Host']['address'];
@@ -1025,6 +1026,10 @@ class HostsController extends AppController{
 								}
 							}
 						}
+					}
+
+					if($this->request->data('Host.edit_priority') == 1){
+						$data['Host']['priority'] = $this->request->data('Host.priority');
 					}
 					$this->Host->save($data);
 					unset($data);

@@ -64,8 +64,10 @@ App.Controllers.HostsEditDetailsController = Frontend.AppController.extend({
 					$_input = $(input);
 					if($_input.hasClass('chosen')){
 						$_input.prop('disabled', true);
+						$_input.val('').removeAttr('selected');
 						$_input.trigger("chosen:updated");
 					}else{
+						$_input.val('').removeAttr('checked');
 						$_input.prop('disabled', true);
 					}
 				});
