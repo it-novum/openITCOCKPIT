@@ -30,6 +30,14 @@
 	<?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
+<?php if(!$QueryHandler->exists()): ?>
+	<div class="alert alert-danger alert-block">
+		<a href="#" data-dismiss="alert" class="close">×</a>
+		<h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?></h4>
+		<?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+	</div>
+<?php endif; ?>
+
 <div class="alert auto-hide alert-danger" id="flashFailed" style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">

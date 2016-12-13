@@ -102,6 +102,13 @@ class QueryHandler
 	/**
 	 * @return string
 	 */
+	public function getPath(){
+		return $this->queryHandler;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getLastError(){
 		$lastError =  $this->lastError;
 		$this->lastError = '';

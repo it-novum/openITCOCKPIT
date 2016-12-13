@@ -51,6 +51,14 @@ foreach($this->params->named as $key => $value){
 	<?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
+<?php if(!$QueryHandler->exists()): ?>
+	<div class="alert alert-danger alert-block">
+		<a href="#" data-dismiss="alert" class="close">×</a>
+		<h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?></h4>
+		<?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+	</div>
+<?php endif; ?>
+
 <section id="widget-grid" class="">
 	<div class="row">
 		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
