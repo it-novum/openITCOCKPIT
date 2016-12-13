@@ -65,12 +65,12 @@ class Externalcommand extends NagiosModuleAppModel{
 		}
 		
 		if($options['type'] == 'hostOnly'){
-			$type = 'SCHEDULE_FORCED_HOST_CHECK';
+			$this->_write('SCHEDULE_FORCED_HOST_CHECK;'.$options['uuid'].';'.$timestamp, $options['satellite_id']);
 		}else{
-			$type = 'SCHEDULE_FORCED_HOST_SVC_CHECKS';
+			$this->_write('SCHEDULE_FORCED_HOST_CHECK;'.$options['uuid'].';'.$timestamp, $options['satellite_id']);
+			$this->_write('SCHEDULE_FORCED_HOST_SVC_CHECKS;'.$options['uuid'].';'.$timestamp, $options['satellite_id']);
 		}
-		
-		$this->_write($type.';'.$options['uuid'].';'.$timestamp, $options['satellite_id']);
+
 	}
 	
 	/**
