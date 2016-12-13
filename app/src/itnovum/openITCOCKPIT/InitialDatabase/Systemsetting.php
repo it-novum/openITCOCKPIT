@@ -69,7 +69,7 @@ class Systemsetting extends Importer
 					'value' => '/usr/share/openitcockpit/app/run/',
 					'info' => 'Path where the sudo server will try to create its socket file',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -80,7 +80,7 @@ class Systemsetting extends Importer
 					'value' => 'sudo.sock',
 					'info' => 'Sudoservers socket name',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -91,7 +91,7 @@ class Systemsetting extends Importer
 					'value' => '49588',
 					'info' => 'Permissions of the socket file',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -102,7 +102,7 @@ class Systemsetting extends Importer
 					'value' => 'www-data',
 					'info' => 'Username of the webserver',
 					'section' => 'WEBSERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -113,7 +113,7 @@ class Systemsetting extends Importer
 					'value' => 'www-data',
 					'info' => 'Usergroup of the webserver',
 					'section' => 'WEBSERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -124,7 +124,7 @@ class Systemsetting extends Importer
 					'value' => '16877',
 					'info' => 'Permissions of the socket folder',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -135,7 +135,7 @@ class Systemsetting extends Importer
 					'value' => '1fea123e07f730f76e661bced33a94152378611e',
 					'info' => 'API key for the sudoserver socket API',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -146,7 +146,7 @@ class Systemsetting extends Importer
 					'value' => 'nagios',
 					'info' => 'The user of your monitoring system',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -157,7 +157,7 @@ class Systemsetting extends Importer
 					'value' => 'nagios',
 					'info' => 'The group of your monitoring system',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -168,7 +168,7 @@ class Systemsetting extends Importer
 					'value' => 'foo@example.org',
 					'info' => 'Sender mail address for notifications',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -179,7 +179,7 @@ class Systemsetting extends Importer
 					'value' => 'openITCOCKPIT Notification',
 					'info' => 'The name we should display in your mail client',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -190,7 +190,7 @@ class Systemsetting extends Importer
 					'value' => '**** openITCOCKPIT notification by it-novum GmbH ****',
 					'info' => 'The header in the plain text mail',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -201,7 +201,7 @@ class Systemsetting extends Importer
 					'value' => '/opt/openitc/nagios/var/rw/nagios.cmd',
 					'info' => 'The command pipe for your monitoring system',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -212,7 +212,7 @@ class Systemsetting extends Importer
 					'value' => '10',
 					'info' => 'Time in minutes the cron will check for recurring downtimes',
 					'section' => 'CRONJOB',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-02 10:59:39'
 				)
 			),
@@ -223,7 +223,7 @@ class Systemsetting extends Importer
 					'value' => '127.0.0.1',
 					'info' => 'The IP address or FQDN of the system',
 					'section' => 'SYSTEM',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -234,7 +234,7 @@ class Systemsetting extends Importer
 					'value' => 'u',
 					'info' => 'Host initial state [o,d,u]',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -245,7 +245,7 @@ class Systemsetting extends Importer
 					'value' => 'u',
 					'info' => 'Service initial state [o,w,u,c]',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -256,7 +256,7 @@ class Systemsetting extends Importer
 					'value' => 'service nagios restart',
 					'info' => 'Command to restart your monitoring software',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -267,7 +267,7 @@ class Systemsetting extends Importer
 					'value' => 'service nagios reload',
 					'info' => 'Command to reload your monitoring software',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -278,7 +278,7 @@ class Systemsetting extends Importer
 					'value' => 'service nagios stop',
 					'info' => 'Command to stop your monitoring software',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -289,7 +289,7 @@ class Systemsetting extends Importer
 					'value' => 'service nagios start',
 					'info' => 'Command to start your monitoring software',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -311,7 +311,7 @@ class Systemsetting extends Importer
 					'value' => 'openITCOCKPIT',
 					'info' => 'The name of your system',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -322,7 +322,7 @@ class Systemsetting extends Importer
 					'value' => 'worker.sock',
 					'info' => 'Sudoservers worker socket name',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -333,7 +333,7 @@ class Systemsetting extends Importer
 					'value' => '49588',
 					'info' => 'Permissions of the worker socket file',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -344,7 +344,7 @@ class Systemsetting extends Importer
 					'value' => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
 					'info' => 'Path to check_mk binary',
 					'section' => 'CHECK_MK',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -355,7 +355,7 @@ class Systemsetting extends Importer
 					'value' => 'response.sock',
 					'info' => 'Sudoservers worker socket name',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -366,7 +366,7 @@ class Systemsetting extends Importer
 					'value' => '49588',
 					'info' => 'Permissions of the worker socket file',
 					'section' => 'SUDO_SERVER',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -377,7 +377,7 @@ class Systemsetting extends Importer
 					'value' => '/etc/openitcockpit/nagios.cfg',
 					'info' => 'Path to monitoring core configuration file',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -388,7 +388,7 @@ class Systemsetting extends Importer
 					'value' => '(perl|dsmc|java|ksh|VBoxHeadless)',
 					'info' => 'These are the services that should not be compressed by check_mk as regular expression',
 					'section' => 'CHECK_MK',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -399,7 +399,7 @@ class Systemsetting extends Importer
 					'value' => '/opt/openitc/nagios/3rd/check_mk/etc/',
 					'info' => 'Path to Check_MK confi files',
 					'section' => 'CHECK_MK',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -410,7 +410,7 @@ class Systemsetting extends Importer
 					'value' => '/opt/openitc/nagios/3rd/check_mk/var/',
 					'info' => 'Path to Check_MK variable files',
 					'section' => 'CHECK_MK',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -421,7 +421,7 @@ class Systemsetting extends Importer
 					'value' => 'CHECK_MK_ACTIVE',
 					'info' => 'The name of the check_mk active check service template',
 					'section' => 'CHECK_MK',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -432,7 +432,7 @@ class Systemsetting extends Importer
 					'value' => 'Mastersystem',
 					'info' => 'The name of your openITCOCKPIT main instance',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -443,7 +443,7 @@ class Systemsetting extends Importer
 					'value' => 'session',
 					'info' => 'The authentication method that shoud be used for login',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -454,7 +454,7 @@ class Systemsetting extends Importer
 					'value' => '192.168.1.10',
 					'info' => 'The address or hostname of your LDAP server',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -465,7 +465,7 @@ class Systemsetting extends Importer
 					'value' => '389',
 					'info' => 'The port where your LDAP server is listen to. Notice: If you want to use TLS the default port 389 shoud work as well! (SSL default Port is 636)',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -476,7 +476,7 @@ class Systemsetting extends Importer
 					'value' => 'DC=example,DC=org',
 					'info' => 'Your BASEDN',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -487,7 +487,7 @@ class Systemsetting extends Importer
 					'value' => 'administrator',
 					'info' => 'The username that the system will use to connect to your LDAP server',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -498,7 +498,7 @@ class Systemsetting extends Importer
 					'value' => 'Testing123!',
 					'info' => 'The password that the system will use to connect to your LDAP server',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -509,7 +509,7 @@ class Systemsetting extends Importer
 					'value' => '@example.org',
 					'info' => 'The Suffix of your domain',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-15 19:20:23'
 				)
 			),
@@ -520,7 +520,7 @@ class Systemsetting extends Importer
 					'value' => '1',
 					'info' => 'If PHP shoud upgrade the security of a plain connection to a TLS encrypted connection',
 					'section' => 'FRONTEND',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -531,7 +531,7 @@ class Systemsetting extends Importer
 					'value' => '1440',
 					'info' => 'Time in minutes the cron will check for partitions in database and drop old partitions',
 					'section' => 'CRONJOB',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-02 10:59:39'
 				)
 			),
@@ -542,7 +542,7 @@ class Systemsetting extends Importer
 					'value' => '2',
 					'info' => 'Time in weeks how long service check results will be stored',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -553,7 +553,7 @@ class Systemsetting extends Importer
 					'value' => '2',
 					'info' => 'Time in weeks how long host check results will be stored',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -564,7 +564,7 @@ class Systemsetting extends Importer
 					'value' => '53',
 					'info' => 'Time in weeks how long state change events will be stored',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -575,7 +575,7 @@ class Systemsetting extends Importer
 					'value' => '2',
 					'info' => 'Time in weeks how long logentries will be stored',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -586,7 +586,7 @@ class Systemsetting extends Importer
 					'value' => '/opt/openitc/nagios/var/status.dat',
 					'info' => 'Path to the status.dat of the monitoring system',
 					'section' => 'MONITORING',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -608,7 +608,7 @@ class Systemsetting extends Importer
 					'value' => '2',
 					'info' => 'Time in weeks how long contactnotifications will be stored (keep eq to NOTIFICATIONS AND CONTACTNOTIFICATIONMETHODS)',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -619,7 +619,7 @@ class Systemsetting extends Importer
 					'value' => '2',
 					'info' => 'Time in weeks how long contactnotificationmethods will be stored (keep eq to NOTIFICATIONS AND CONTACTNOTIFICATIONS)',
 					'section' => 'ARCHIVE',
-					'created' => '0000-00-00 00:00:00',
+					'created' => '1970-01-01 00:00:00',
 					'modified' => '2015-01-16 00:41:41'
 				)
 			),
@@ -663,8 +663,8 @@ class Systemsetting extends Importer
 					'value' => 'service sudo_server status',
 					'info' => 'Command to query the status of your sudo_server',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 55 => array(
@@ -674,8 +674,8 @@ class Systemsetting extends Importer
 					'value' => 'service gearman_worker status',
 					'info' => 'Command to query the status of gearman_worker',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 56 => array(
@@ -685,8 +685,8 @@ class Systemsetting extends Importer
 					'value' => 'service oitc_cmd status',
 					'info' => 'Command to query the status of your oitc_cmd',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 57 => array(
@@ -696,8 +696,8 @@ class Systemsetting extends Importer
 					'value' => 'service npcd status',
 					'info' => 'Command to query the status of your NPCD',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 58 => array(
@@ -707,8 +707,8 @@ class Systemsetting extends Importer
 					'value' => 'service ndo status',
 					'info' => 'Command to query the status of your NDOUtils',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 59 => array(
@@ -718,8 +718,8 @@ class Systemsetting extends Importer
 					'value' => 'service statusengine status',
 					'info' => 'Command to query the status of your statusengine',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 60 => array(
@@ -729,8 +729,8 @@ class Systemsetting extends Importer
 					'value' => 'service gearman-job-server status',
 					'info' => 'Command to query the status of  gearman-job-server',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 61 => array(
@@ -740,8 +740,8 @@ class Systemsetting extends Importer
 					'value' => 'service phpNSTA status',
 					'info' => 'Command to query the status of  phpNSTA',
 					'section' => 'INIT',
-					'created' => '0000-00-00 00:00:00',
-					'modified' => '0000-00-00 00:00:00'
+					'created' => '1970-01-01 00:00:00',
+					'modified' => '1970-01-01 00:00:00'
 				)
 			),
 			(int) 62 => array(
@@ -751,6 +751,17 @@ class Systemsetting extends Importer
 					'value' => '',
 					'info' => 'Link to the ticket system',
 					'section' => 'TICKET_SYSTEM',
+					'created' => '2016-06-13 11:47:47',
+					'modified' => '2016-06-13 11:47:47'
+				)
+			),
+			(int) 63 => array(
+				'Systemsetting' => array(
+					'id' => '64',
+					'key' => 'MONITORING.QUERY_HANDLER',
+					'value' => '/opt/openitc/nagios/var/rw/nagios.qh',
+					'info' => 'Path to the query handler of your monitoring engine',
+					'section' => 'MONITORING',
 					'created' => '2016-06-13 11:47:47',
 					'modified' => '2016-06-13 11:47:47'
 				)
