@@ -67,15 +67,11 @@ foreach($this->params->named as $key => $value){
 					<div class="widget-toolbar hidden-mobile" role="menu">
 						<a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i class="fa fa-lg fa-table"></i></a>
 						<ul class="dropdown-menu arrow-box-up-right pull-right">
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Edit'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Graph'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Passive'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hostname'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('IP-Address'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('State since'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Last check'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="9"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Output'); ?></a></li>
-							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="10"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Instance'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Passive'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Hostname'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('IP-Address'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Instance'); ?></a></li>
+							<li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left" /> &nbsp; <?php echo __('Edit'); ?></a></li>
 
 						</ul>
 						<div class="clearfix"></div>
@@ -122,13 +118,9 @@ foreach($this->params->named as $key => $value){
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="no-sort"></th>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Host.current_state'); echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-area-chart fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Hostname'); ?></th>
 										<th class="no-sort"><?php echo __('IP address'); ?></th>
-										<th class="no-sort tableStatewidth"><?php echo __('State since'); ?></th>
-										<th class="no-sort tableStatewidth"><?php echo __('Last check'); ?></th>
-										<th class="no-sort"><?php echo __('Output'); ?></th>
 										<th class="no-sort"><?php echo $this->Utils->getDirection($order, 'satellite_id'); echo $this->Paginator->sort('Host.satellite_id', __('Instance')); ?></th>
 										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
@@ -159,18 +151,8 @@ foreach($this->params->named as $key => $value){
 												endif;
 												echo $this->Status->humanHostStatus($host['Host']['uuid'], $href)['html_icon']; ?>
 											</td>
-											<td class="text-center">
-												<?php if($this->Monitoring->checkForHostGraph($host['Host']['uuid'])): ?>
-													<?php
-													$graphHref = 'javascript:void(0);';
-													if($this->Acl->hasPermission('serviceList', 'services')):
-														$graphHref = '/services/serviceList/'.$host['Host']['id'];
-													endif;
-													?>
-													<a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i class="fa fa-area-chart fa-lg "></i></a>
-												<?php endif;?>
-											</td>
-											<td class="text-center">
+
+											<td class="text-center width-15">
 												<?php
 												if($host['Host']['active_checks_enabled'] !== null && $host['Host']['active_checks_enabled'] !== '' || $host['Host']['satellite_id'] > 0):
 													if($host['Host']['active_checks_enabled'] == 0 || $host['Host']['satellite_id'] > 0): ?>
@@ -189,9 +171,6 @@ foreach($this->params->named as $key => $value){
 												<?php endif; ?>
 											</td>
 											<td><?php echo h($host['Host']['address']); ?></td>
-											<td><?php echo __('n/a'); ?></td>
-											<td><?php echo __('n/a'); ?></td>
-											<td><?php echo __('n/a'); ?></td>
 											<td>
 												<?php
 												if($host['Host']['satellite_id'] == 0):
