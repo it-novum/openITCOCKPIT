@@ -93,15 +93,9 @@ foreach($this->params->named as $key => $value){
 									<tr>
 										<?php $order = $this->Paginator->param('order'); ?>
 										<th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus'); echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-										<th class="no-sort text-center" ><i class="fa fa-user fa-lg"></i></th>
-										<th class="no-sort text-center" ><i class="fa fa-power-off fa-lg"></i></th>
 										<th class="no-sort text-center" ><i class="fa fa fa-area-chart fa-lg"></i></th>
 										<th class="no-sort text-center" ><strong>P</strong></th>
 										<th class="no-sort"><?php echo __('Servicename'); ?></th>
-										<th class="no-sort tableStatewidth"><?php echo __('Status since'); ?></th>
-										<th class="no-sort tableStatewidth"><?php echo __('Last check'); ?></th>
-										<th class="no-sort tableStatewidth"><?php echo __('Next check'); ?></th>
-										<th class="no-sort"><?php echo __('Service output'); ?></th>
 										<th class="no-sort text-center editItemWidth" ><i class="fa fa-gear fa-lg"></i></th>
 									</tr>
 								</thead>
@@ -137,7 +131,7 @@ foreach($this->params->named as $key => $value){
 
 										<?php endif; ?>
 											<tr>
-												<td class="text-center">
+												<td class="text-center width-100">
 													<?php
 													$href = 'javascript:void(0);';
 													if($this->Acl->hasPermission('browser')):
@@ -147,14 +141,12 @@ foreach($this->params->named as $key => $value){
 													?>
 												</td>
 
-												<td class="text-center"> </td>
-												<td class="text-center"> </td>
-												<td class="text-center">
+												<td class="text-center width-15">
 													<?php if($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
 														<a class="txt-color-blueDark" href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i class="fa fa-area-chart fa-lg popupGraph" host-uuid="<?php echo $service['Host']['uuid']; ?>" service-uuid="<?php echo $service['Service']['uuid']; ?>"></i></a>
 													<?php endif;?>
 												</td>
-												<td class="text-center">
+												<td class="text-center width-15">
 													<?php if($service['Service']['active_checks_enabled'] === '0' || $service['Servicetemplate']['active_checks_enabled'] === '0' || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0):?>
 														<strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
 													<?php endif;?>
@@ -173,14 +165,7 @@ foreach($this->params->named as $key => $value){
 													<?php endif; ?>
 
 												</td>
-												<td>
-													<?php echo __('n/a'); ?>
-												</td>
-												<td><?php echo __('n/a'); ?></td>
-												<td>
-													<?php echo __('n/a'); ?>
-												</td>
-												<td><?php echo __('n/a'); ?></td>
+
 												<td class="width-50">
 													<div class="btn-group">
 														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
