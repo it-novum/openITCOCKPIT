@@ -28,18 +28,10 @@ class Systemsetting extends AppModel{
 	public function findNice(){
 		$systemsettings = $this->find('all');
 		$all_systemsettings = [];
-		
-		$all_systemsettings['WEBSERVER']   = Hash::extract($systemsettings, '{n}.Systemsetting[section=WEBSERVER]');
-		$all_systemsettings['SUDO_SERVER'] = Hash::extract($systemsettings, '{n}.Systemsetting[section=SUDO_SERVER]');
-		$all_systemsettings['MONITORING']  = Hash::extract($systemsettings, '{n}.Systemsetting[section=MONITORING]');
-		//$all_systemsettings['CRONJOB']     = Hash::extract($systemsettings, '{n}.Systemsetting[section=CRONJOB]');
-		$all_systemsettings['SYSTEM']      = Hash::extract($systemsettings, '{n}.Systemsetting[section=SYSTEM]');
-		$all_systemsettings['FRONTEND']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=FRONTEND]');
-		$all_systemsettings['CHECK_MK']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=CHECK_MK]');
-		$all_systemsettings['ARCHIVE']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=ARCHIVE]');
-		$all_systemsettings['TICKET_SYSTEM']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=TICKET_SYSTEM]');
-		$all_systemsettings['INIT']    = Hash::extract($systemsettings, '{n}.Systemsetting[section=INIT]');
 
+		foreach($systemsettings as $systemsetting){
+			$all_systemsettings[$systemsetting['Systemsetting']['section']][] = $systemsetting['Systemsetting'];
+		}
 
 		return $all_systemsettings;
 	}

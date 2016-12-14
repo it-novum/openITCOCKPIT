@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler	$QueryHandler
+ */
+
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
 	$this->Paginator->options(array('url' => $this->params['named']));
@@ -52,6 +56,14 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 	<h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
 	<?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
+
+<?php if(!$QueryHandler->exists()): ?>
+	<div class="alert alert-danger alert-block">
+		<a href="#" data-dismiss="alert" class="close">×</a>
+		<h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?></h4>
+		<?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+	</div>
+<?php endif; ?>
 
 <section id="widget-grid" class="">
 

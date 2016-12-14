@@ -280,6 +280,9 @@ class HostsController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	public function view($id = null){
@@ -1877,6 +1880,9 @@ class HostsController extends AppController{
 		$this->loadModel('Systemsetting');
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	/**
