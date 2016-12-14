@@ -112,8 +112,26 @@
 									<?php echo $this->Form->input('keep_tags', ['type' => 'checkbox', 'checked' => false, 'label' => __('Keep existing'), 'disabled' => true]);?>
 								</div>
 							</div>
+							<hr />
+
+							<div>
+								<?php echo $this->Form->input('edit_priority', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit priority')], 'wrapInput' => false, 'class' => 'parent_checkbox']);?>
+								<div class="scope">
+									<div class="form-group">
+										<label class="col col-md-2 control-label" for="HostPriority"><?php echo __('Priority');?> </label>
+										<div class="col col-xs-10 col-md-10 col-lg-10 smart-form">
+											<div class="rating pull-left">
+												<?php // The smallest priority is 1 at the moment
+												for($i = 5; $i > 0; $i--): ?>
+													<input type="radio" id="Hoststars-rating-<?php echo $i; ?>" value="<?php echo $i; ?>" name="data[Host][priority]" disabled="disabled">
+													<label for="Hoststars-rating-<?php echo $i; ?>"><i class="fa fa-fire"></i></label>
+												<?php endfor; ?>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-						
 					</div> <!-- close col -->
 				</div> <!-- close row-->
 			<br />

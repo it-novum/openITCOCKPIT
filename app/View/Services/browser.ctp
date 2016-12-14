@@ -29,6 +29,15 @@
 	<h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
 	<?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
+
+<?php if(!$QueryHandler->exists()): ?>
+	<div class="alert alert-danger alert-block">
+		<a href="#" data-dismiss="alert" class="close">×</a>
+		<h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?></h4>
+		<?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+	</div>
+<?php endif; ?>
+
 <input type="hidden" id="serviceHasGraphs" value="<?php echo (int)$this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid']); ?>">
 <div class="alert auto-hide alert-danger" id="flashFailed" style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">

@@ -354,6 +354,9 @@ class ServicesController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	public function view($id = null){
@@ -1831,6 +1834,9 @@ class ServicesController extends AppController{
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 		$this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
 		$this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	/*

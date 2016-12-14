@@ -280,6 +280,9 @@ class HostsController extends AppController{
 		}else{
 			$this->set('isFilter', false);
 		}
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	public function view($id = null){
@@ -942,6 +945,7 @@ class HostsController extends AppController{
 				if(!empty($host)){
 					//Fill up required fields
 					$data['Host']['id'] = $host['Host']['id'];
+					$data['Host']['container_id'] = $host['Host']['container_id'];
 					$data['Host']['name'] = $host['Host']['name'];
 					$data['Host']['hosttemplate_id'] = $host['Host']['hosttemplate_id'];
 					$data['Host']['address'] = $host['Host']['address'];
@@ -1025,6 +1029,10 @@ class HostsController extends AppController{
 								}
 							}
 						}
+					}
+
+					if($this->request->data('Host.edit_priority') == 1){
+						$data['Host']['priority'] = $this->request->data('Host.priority');
 					}
 					$this->Host->save($data);
 					unset($data);
@@ -1872,6 +1880,9 @@ class HostsController extends AppController{
 		$this->loadModel('Systemsetting');
 		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
 		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+
+		$queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
+		$this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
 	}
 
 	/**
