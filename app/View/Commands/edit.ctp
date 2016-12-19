@@ -50,6 +50,9 @@
 			<?php endif;?>
 			<?php echo $this->Utils->backButton();?>
 		</div>
+		<div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+			<?php echo __('UUID: %s', h($command['Command']['uuid'])); ?>
+		</div>
 	</header>
 	<div>
 		<div class="widget-body">
@@ -66,9 +69,7 @@
 				<span class="col col-md-10 col-xs-12 text-info"><i class="fa fa-info-circle"></i> <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?></span>
 				<br /><br />
 				<?php echo $this->Form->input('description', ['value' => $command['Command']['description'], 'label' => __('Description')]); ?>
-				<br />
-				<span class="col col-md-2 text-right text-muted"><?php echo __('UUID'); ?></span>
-				<span class="col col-md-10 col-xs-12 text-muted"><?php echo $command['Command']['uuid']; ?></span>
+
 				<br />
 				<fieldset class=" form-inline required padding-10">
 					<legend class="font-sm">

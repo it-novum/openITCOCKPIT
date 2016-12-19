@@ -63,6 +63,11 @@ $notification_settings = [
 			<?php endif; ?>
 			<?php echo $this->Utils->backButton(__('Back'), $back_url);?>
 		</div>
+
+		<div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+			<?php echo __('UUID: %s', h($servicetemplate['Servicetemplate']['uuid'])); ?>
+		</div>
+
 		<ul class="nav nav-tabs pull-right" id="widget-tab-1">
 			<li class="active">
 				<a href="#tab1" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span class="hidden-mobile hidden-tablet"> <?php echo __('Basic configuration'); ?></span> </a>

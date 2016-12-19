@@ -1437,3 +1437,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .tableStatewidth{
 	min-width:155px;
 }
+
+.cursor-default{
+	cursor: default;
+}
