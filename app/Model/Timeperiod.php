@@ -149,4 +149,8 @@ class Timeperiod extends AppModel{
 			]
 		]);
 	}
+
+	public function createUUID(){
+		return UUID::v4();
+	}
 }

@@ -607,10 +607,10 @@ class CommandsController extends AppController{
 
 
 					];
-					debug($newCommandData);
 					if(!$this->Command->saveAll($newCommandData)){
 						throw new Exception('Some of the Commands could not be copied');
-					}				}
+					}
+				}
 
 				$datasource->commit();
 				$this->setFlash(__('Commands are successfully copied'));
