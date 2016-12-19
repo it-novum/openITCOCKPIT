@@ -66,11 +66,15 @@ class NagiosNotificationShell extends AppShell{
 			'hoststate' => ['help' => __d('oitc_console', 'current host state')],
 			'hostaddress' => ['help' => __d('oitc_console', 'host address')],
 			'hostoutput' => ['help' => __d('oitc_console', 'host output')],
+			'hostackauthor' => ['help' => __d('oitc_console', 'host acknowledgement author')],
+			'hostackcomment' => ['help' => __d('oitc_console', 'host acknowledgement comment')],
 			'contactmail' => ['help' => __d('oitc_console', 'recivers mail address')],
 			'contactalias' => ['help' => __d('oitc_console', 'human name of the contact')],
 			'servicedesc' => ['help' => __d('oitc_console', 'Service uuid you want to notify')],
 			'servicestate' => ['help' => __d('oitc_console', 'service state')],
-			'serviceoutput' => ['help' => __d('oitc_console', 'service output')]
+			'serviceoutput' => ['help' => __d('oitc_console', 'service output')],
+			'serviceackauthor' => ['help' => __d('oitc_console', 'service acknowledgement author')],
+			'serviceackcomment' => ['help' => __d('oitc_console', 'service acknowledgement comment')]
 		]);
 		return $parser;
 	}
@@ -114,6 +118,24 @@ class NagiosNotificationShell extends AppShell{
 				$return['hostoutput'] = $this->params['hostoutput'];
 			}
 		}
+
+		if(isset($_SERVER['NAGIOS_HOSTACKAUTHOR'])){
+			$return['hostackauthor'] = $_SERVER['NAGIOS_HOSTACKAUTHOR'];
+		}else{
+			if(array_key_exists('hostackauthor', $this->params)){
+				$return['hostackauthor'] = $this->params['hostackauthor'];
+			}
+		}
+
+		if(isset($_SERVER['NAGIOS_HOSTACKCOMMENT'])){
+			$return['hostackcomment'] = $_SERVER['NAGIOS_HOSTACKCOMMENT'];
+		}else{
+			if(array_key_exists('hostackcomment', $this->params)){
+				$return['hostackcomment'] = $this->params['hostackcomment'];
+			}
+		}
+
+
 		if(isset($_SERVER['NAGIOS_CONTACTEMAIL'])){
 			$return['contactmail'] = $_SERVER['NAGIOS_CONTACTEMAIL'];
 		}else{
@@ -152,6 +174,22 @@ class NagiosNotificationShell extends AppShell{
 				$return['serviceoutput'] = $this->params['serviceoutput'];
 			}
 		}
+
+		if(isset($_SERVER['NAGIOS_SERVICEACKAUTHOR'])){
+			$return['serviceackauthor'] = $_SERVER['NAGIOS_SERVICEACKAUTHOR'];
+		}else{
+			if(array_key_exists('serviceackauthor', $this->params)){
+				$return['serviceackauthor'] = $this->params['serviceackauthor'];
+			}
+		}
+
+		if(isset($_SERVER['NAGIOS_SERVICEACKCOMMENT'])){
+			$return['serviceackcomment'] = $_SERVER['NAGIOS_SERVICEACKCOMMENT'];
+		}else{
+			if(array_key_exists('serviceoutput', $this->params)){
+				$return['serviceackcomment'] = $this->params['serviceackcomment'];
+			}
+		}
 		
 		return $return;
 	}
@@ -168,7 +206,7 @@ class NagiosNotificationShell extends AppShell{
 			],
 			'contain' => []
 		]);
-		
+
 		return ['hostUuid' => $host['Host']['uuid'], 'hostname' => $host['Host']['name']];
 	}
 	

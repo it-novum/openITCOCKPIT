@@ -117,6 +117,7 @@ table.head-wrap {
 	background-image: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
 	background-repeat: repeat-x;
 }
+
 .header.container table td.logo {
 	padding:15px
 }
@@ -349,6 +350,22 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
     color: #92a2a8 !important;
 }
 
+.notification_type{
+	position: relative;
+}
+
+.notification_type:after{
+	content: '<?php echo h($parameters['notificationtype']); ?>';
+	color:white;
+	font-size:x-large;
+	bottom:0px;
+	line-height: 1;
+	letter-spacing: 10px;
+	font-weight:bold;
+	text-shadow: 1px 1px 1px #A09D9D, 0 0 0 #000, 1px 1px 1px #def;
+	position: absolute;
+}
+
 @media only screen and (max-width:600px) {
 	a[class="btn"] {
 		display:block !important;
@@ -373,7 +390,7 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 	<td></td>
 	<td class="header container" >
 			
-		<div class="content">
+		<div class="content notification_type">
 		<table>
 			<tr>
 				<td><img src="cid:100" height="30" width="120" /></td>
@@ -403,6 +420,30 @@ ul.sidebar li a h1,ul.sidebar li a h2,ul.sidebar li a h3,ul.sidebar li a h4,ul.s
 				<h5>&nbsp;<?php echo __('Service');?> <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['serviceUuid'] ?>/action:browser/model:Service' style="text-decoration:none" class="<?php echo $parameters['servicestate']; ?>"><?php echo $parameters['servicedesc']; ?></a></span> on Host <span><a href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host' style="text-decoration:none" class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span></h5>
 				<hr noshade width="560" size="3" align="left"><br>
 				<table width="100%">
+					<?php
+					if(isset($parameters['notificationtype']) && $parameters['notificationtype'] === 'ACKNOWLEDGEMENT'): ?>
+						<tr>
+							<td colspan="2">
+								<i class="fa fa-user fa-stack-2x"></i>
+								<strong><?php
+									echo __('The current status was already acknowledged by %s ', $parameters['serviceackauthor']);
+									echo __('with the comment "');
+									if(!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $parameters['serviceackcomment'], $ticketDetails)):
+										echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2]))?
+											$this->Html->link(
+												$ticketDetails[1].' '.$ticketDetails[2],
+												$_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'].$ticketDetails[3],
+												['target' => '_blank']):$parameters['serviceackcomment'];
+									else:
+										echo h($parameters['serviceackcomment']);
+									endif;
+									?>".
+								</strong>
+							</td>
+						</tr>
+						<?php
+					endif;
+					?>
 					<tr>
 						<td><strong><?php echo __('Time');?>:</strong></td>
 						<td><?php echo date('H:i:s T'); ?></td>
