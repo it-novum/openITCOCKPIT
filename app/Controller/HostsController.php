@@ -800,15 +800,6 @@ class HostsController extends AppController{
 			$data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
 				$this->request->data, 'edit');
 
-			//Delete Command argument values
-			//Fetching all commandargument_id of the command arguments out of database:
-			$commandargumentIdsOfDatabase = Hash::extract($host['Hostcommandargumentvalue'], '{n}.commandargument_id');
-
-			//Fetching all commandargument_id out of $this->request-data
-			$commandargumentIdsOfRequest = [];
-			if(isset($this->request->data['Hostcommandargumentvalue'])){
-				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Hostcommandargumentvalue'], '{n}.commandargument_id');
-			}
 
 			$data_to_save['Host']['own_customvariables'] = 0;
 			//Add Customvariables data to $data_to_save
@@ -824,26 +815,10 @@ class HostsController extends AppController{
 
 			$this->Host->set($data_to_save);
 			if($this->Host->validates()){
-				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-				foreach($commandargumentIdsOfDatabase as $commandargumentId){
-					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-						$hostCommandArgumentValue = $this->Hostcommandargumentvalue->find('first', [
-							'conditions' => [
-								'host_id' => $id,
-								'commandargument_id' => $commandargumentId
-							]
-						]);
-						if(!empty($hostCommandArgumentValue['Hostcommandargumentvalue'])){
-							$this->Hostcommandargumentvalue->delete($hostCommandArgumentValue['Hostcommandargumentvalue']);
-						}
-					}
-				}
-				if(!isset($data_to_save['Hostcommandargumentvalue']) || empty($data_to_save['Hostcommandargumentvalue'])){
-					$this->Hostcommandargumentvalue->deleteAll(
-						['Hostcommandargumentvalue.host_id' => $id]
-					);
-				}
+				//Delete old command argument values
+				$this->Hostcommandargumentvalue->deleteAll([
+					'host_id' => $host['Host']['id']
+				]);
 
 				$this->Customvariable->deleteAll([
 					'object_id' => $host['Host']['id'],

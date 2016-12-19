@@ -648,6 +648,16 @@ class Host extends AppModel{
 		if(empty($host['Host']['hosttemplate_id']) || $host['Host']['hosttemplate_id'] == 0){
 			return $host;
 		}
+
+		$hostcommandargumentvalue = [];
+		if(!empty($host['Hostcommandargumentvalue'])){
+			$hostcommandargumentvalue = $host['Hostcommandargumentvalue'];
+		}else{
+			if($host['Host']['command_id'] === $host['Hosttemplate']['command_id'] || $host['Host']['command_id'] === null) {
+				$hostcommandargumentvalue = $host['Hosttemplate']['Hosttemplatecommandargumentvalue'];
+			}
+		}
+
 		$host = [
 			'Host' => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), Set::classicExtract($host['Hosttemplate'], '{(' . implode('|', array_keys(Hash::diff($host['Host'], Hash::filter($host['Host'], ['Host', 'filterNullValues'])))) . ')}')),
 			'Contact' => Hash::extract((($host['Host']['own_contacts']) ? $host['Contact'] : $host['Hosttemplate']['Contact']), '{n}.id'),
@@ -655,7 +665,7 @@ class Host extends AppModel{
 			'Contactgroup' => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
 			'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
 			'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
-			'Hostcommandargumentvalue' => (!empty($host['Hostcommandargumentvalue'])) ? $host['Hostcommandargumentvalue'] : (($host['Host']['command_id'] === $host['Hosttemplate']['command_id'])?$host['Hosttemplate']['Hosttemplatecommandargumentvalue']:[]),
+			'Hostcommandargumentvalue' => $hostcommandargumentvalue,
 			'Hosttemplate' => $host['Hosttemplate'],
 			'Hostgroup' => Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id'),
 			'CheckCommand' => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
