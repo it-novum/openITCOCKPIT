@@ -567,4 +567,64 @@ class CommandsController extends AppController{
 		$this->set(compact(['servicestemplates', 'commandName']));
 		$this->set('back_url', $this->referer());
 	}
+
+	public function copy($id = null){
+
+		$commands = $this->Command->find('all',[
+			'conditions' => [
+				'Command.id' => func_get_args()
+			],
+		]);
+
+		$commands = Hash::combine($commands, '{n}.Command.id', '{n}');
+
+		if($this->request->is('post') || $this->request->is('put')){
+			foreach ($commands as $key => $command) {
+				unset($commands[$key]['Command']['id']);
+				unset($commands[$key]['Command']['uuid']);
+				foreach ($commands[$key]['Commandargument'] as $key2 => $commandargument) {
+					unset($commands[$key]['Commandargument'][$key2]['id']);
+					unset($commands[$key]['Commandargument'][$key2]['command_id']);
+					unset($commands[$key]['Commandargument'][$key2]['created']);
+					unset($commands[$key]['Commandargument'][$key2]['modified']);
+				}
+			}
+
+			$datasource = $this->Command->getDataSource();
+			try{
+				$datasource->begin();
+				foreach ($this->request->data['Command'] as $newCommand) {
+					$newCommandArgs = $commands[$newCommand['source']]['Commandargument'];
+					$newCommandData = [
+						'Command' => [
+							'uuid' => $this->Command->createUUID(),
+							'name' => $newCommand['name'],
+							'command_line' => $newCommand['command_line'],
+							'command_type' => $newCommand['command_type'],
+							'description' => $newCommand['description']
+						],
+						'Commandargument' => $newCommandArgs
+
+
+					];
+					debug($newCommandData);
+					if(!$this->Command->saveAll($newCommandData)){
+						throw new Exception('Some of the Commands could not be copied');
+					}				}
+
+				$datasource->commit();
+				$this->setFlash(__('Commands are successfully copied'));
+				$this->redirect(array('action' => 'index'));
+
+			} catch(Exception $e) {
+				$datasource->rollback();
+				$this->setFlash(__($e->getMessage()), false);
+				$this->redirect(['action' => 'index']);
+			}
+
+		}
+
+		$this->set(compact('commands'));
+		$this->set('back_url', $this->referer());
+	}
 }
