@@ -67,49 +67,17 @@ class ServicechecksController extends AppController{
 
 		]);
 
-		/*
-		$service = $this->Service->find('first', [
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Service.name',
-				'Service.servicetemplate_id',
-				'Service.service_url',
-			],
-			'conditions' => [
-				'Service.id' => $id
-			],
-			'contain' => [
-				'Servicetemplate' => [
-					'fields' => [
-						'Servicetemplate.id',
-						'Servicetemplate.name'
-					]
-				],
-				'Host' => [
-					'Container' => [
-						'fields' => [
-							'Container.*',
-						]
-					],
-					'fields' => [
-						'Host.id',
-						'Host.uuid',
-						'Host.name',
-						'Host.address',
-					]
-				]
-			]
-		]);
-		*/
+		$containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $service['Host']['container_id'];
 
-		if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+		//Check if user is permitted to see this object
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
 			$this->render403();
 			return;
 		}
 
 		$allowEdit = false;
-		if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+		if($this->allowedByContainerId($containerIdsToCheck)){
 			$allowEdit = true;
 		}
 

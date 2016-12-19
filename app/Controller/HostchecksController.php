@@ -63,8 +63,12 @@ class HostchecksController extends AppController{
 				'Container'
 			]
 		]);
-		
-		if(!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))){
+
+		$containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $host['Host']['container_id'];
+
+		//Check if user is permitted to see this object
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
 			$this->render403();
 			return;
 		}
