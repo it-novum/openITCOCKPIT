@@ -406,7 +406,7 @@ class HosttemplatesController extends AppController{
 					}
 				}
 
-				//Refil data that was loaded by ajax due to selected container id
+				//Refill data that was loaded by ajax due to selected container id
 				if($this->Container->exists($this->request->data('Hosttemplate.container_id'))){
 					$containerId = $this->request->data('Hosttemplate.container_id');
 					$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
@@ -419,7 +419,7 @@ class HosttemplatesController extends AppController{
 			}
 		}
 
-		//Restor contacts after submit
+		//Restore contacts after submit
 		$hosttemplate['Contact'] = Hash::combine($hosttemplate['Contact'], '{n}.id', '{n}.id');
 		$hosttemplate['Contactgroup'] = Hash::combine($hosttemplate['Contactgroup'], '{n}.id', '{n}.id');
 
@@ -628,7 +628,7 @@ class HosttemplatesController extends AppController{
 					}
 				}
 
-				//Refil data that was loaded by ajax due to selected container id
+				//Refill data that was loaded by ajax due to selected container id
 				if($this->Container->exists($this->request->data('Hosttemplate.container_id'))){
 					$container_id = $this->request->data('Hosttemplate.container_id');
 					$containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
