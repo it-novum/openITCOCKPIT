@@ -27,7 +27,7 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i>
+			<i class="fa fa-fw fa-user"></i>
 				<?php echo __('Administration'); ?>
 			<span>>
 				<?php echo __('Manage users'); ?>

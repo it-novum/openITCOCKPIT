@@ -28,9 +28,9 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-envelope fa-fw "></i>
-				<?php echo __('Notifications'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('Overview'); ?>
+				<?php echo __('Notifications'); ?>
 			</span>
 		</h1>
 	</div>

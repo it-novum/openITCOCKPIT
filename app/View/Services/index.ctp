@@ -36,9 +36,9 @@ foreach($this->params->named as $key => $value){
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-gear fa-fw "></i>
-				<?php echo __('Services'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('List'); ?>
+				<?php echo __('Services'); ?>
 			</span>
 		</h1>
 	</div>

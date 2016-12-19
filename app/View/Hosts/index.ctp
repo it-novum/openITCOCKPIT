@@ -41,9 +41,9 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-desktop fa-fw "></i>
-				<?php echo __('Hosts')?>
+				<?php echo __('Basic Monitoring')?>
 			<span>>
-				<?php echo __('List'); ?>
+				<?php echo __('Hosts'); ?>
 			</span>
 		</h1>
 	</div>

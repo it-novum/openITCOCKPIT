@@ -28,9 +28,9 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-power-off fa-fw "></i>
-				<?php echo __('Downtimes'); ?>
+				<?php echo __('Basic Monitoring'); ?>
 			<span>>
-				<?php echo __('Hosts'); ?>
+				<?php echo __('Downtimes'); ?>
 			</span>
 		</h1>
 	</div>
@@ -325,4 +325,3 @@
 			</div>
 	</div>
 </section>
-

@@ -71,7 +71,7 @@ $config = [
 			'children' => [
 				'changelog' => [
 					'url' => ['controller' => 'changelogs', 'action' => 'index'],
-					'title' => 'Change Log',
+					'title' => 'Changelog',
 					'icon' => 'code-fork',
 					'parent_controller' => 'Administrators'
 				],

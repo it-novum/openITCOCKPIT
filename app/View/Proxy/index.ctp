@@ -23,6 +23,20 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<div class="row">
+	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+		<h1 class="page-title txt-color-blueDark">
+			<i class="fa fa-fw fa-bolt"></i>
+				<?php echo __('Administration'); ?>
+			<span>>
+				<?php echo __('Proxy'); ?>
+			</span>
+		</h1>
+	</div>
+</div>
+
+
 <div class="well no-padding">
 	<?php echo $this->Form->create('Proxy', array(
 		//'url' => '/login/login',
@@ -48,7 +62,7 @@
 								'value' => $proxy[0]['Proxy']['ipaddress']
 							);
 						endif;
-						
+
 						echo $this->Form->input('ipaddress', $proxyconf); ?>
 						<b class="tooltip tooltip-top-left"><i class="fa fa-exchange txt-color-teal"></i> <?php echo __('Please enter the address of your proxy server'); ?></b>
 					</label>
@@ -64,12 +78,12 @@
 								'value' => $proxy[0]['Proxy']['port']
 							);
 						endif;
-						
+
 						echo $this->Form->input('port', $proxyconf); ?>
-						<b class="tooltip tooltip-top-left"><i class="fa fa-terminal txt-color-teal"></i> <?php echo __('Please enter the port of your proxy'); ?></b> 
+						<b class="tooltip tooltip-top-left"><i class="fa fa-terminal txt-color-teal"></i> <?php echo __('Please enter the port of your proxy'); ?></b>
 					</label>
 				</section>
-				
+
 				<?php
 				$checked = '';
 				if(isset($proxy[0]['Proxy']['enabled']) && $proxy[0]['Proxy']['enabled'] === true):
@@ -82,8 +96,8 @@
 						<i data-swchoff-text="OFF" data-swchon-text="ON"></i><?php echo __('Enable Proxy'); ?>
 					</label>
 				</section>
-				
-				
+
+
 			</div>
 		</fieldset>
 		<?php if($this->Acl->hasPermission('edit')): ?>
