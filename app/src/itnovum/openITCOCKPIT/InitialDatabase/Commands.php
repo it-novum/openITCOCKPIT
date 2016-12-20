@@ -59,7 +59,7 @@ class Commands extends Importer
 						array(
 							'id' => '1',
 							'name' => 'host-notify-by-cake',
-							'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$"',
+							'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$HOSTACKAUTHOR$" --hostackcomment "$HOSTACKCOMMENT$"',
 							'command_type' => '3',
 							'human_args' => NULL,
 							'uuid' => 'a13ff7f1-0642-4a11-be05-9931ca98da10',
@@ -74,7 +74,7 @@ class Commands extends Importer
 						array(
 							'id' => '2',
 							'name' => 'service-notify-by-cake',
-							'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$"',
+							'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$SERVICEACKAUTHOR$" --serviceackcomment "$SERVICEACKCOMMENT$"',
 							'command_type' => '3',
 							'human_args' => NULL,
 							'uuid' => 'a517bbb6-f299-4b57-9865-a4e0b70597e4',
