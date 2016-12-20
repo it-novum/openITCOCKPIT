@@ -1185,56 +1185,6 @@ class ServicesController extends AppController{
 			}
 			$data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($this->request->data, $servicetemplate), $this->request->data, 'edit');
 
-			//Delete Command argument values
-			//Fetching all commandargument_id of the command arguments out of database:
-			$commandargumentIdsOfDatabase = Hash::extract($service['Servicecommandargumentvalue'], '{n}.commandargument_id');
-			//Fetching all commandargument_id out of $this->request-data
-			$commandargumentIdsOfRequest = [];
-			if(isset($this->request->data['Servicecommandargumentvalue'])){
-				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicecommandargumentvalue'], '{n}.commandargument_id');
-			}
-			// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-			foreach($commandargumentIdsOfDatabase as $commandargumentId){
-				if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-					// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-					$entry = $this->Servicecommandargumentvalue->find('first', [
-						'conditions' => [
-							'service_id' => $id,
-							'commandargument_id' => $commandargumentId
-						]
-					]);
-					if(isset($entry['Servicecommandargumentvalue'])){
-						$this->Servicecommandargumentvalue->delete($entry['Servicecommandargumentvalue']);
-					}
-				}
-			}
-			if(!isset($data_to_save['Servicecommandargumentvalue']) || empty($data_to_save['Servicecommandargumentvalue'])){
-				$this->Servicecommandargumentvalue->deleteAll(
-					['Servicecommandargumentvalue.service_id' => $id]
-				);
-			}
-			if(isset($data_to_save['Servicecommandargumentvalue']) && !empty($data_to_save['Servicecommandargumentvalue'])){
-				$data_to_save['Servicecommandargumentvalue'] = $this->request->data['Servicecommandargumentvalue'];
-			}
-
-			//Delete Event Command argument values
-			//Fetching all commandargument_id of the command arguments out of database:
-			$commandargumentIdsOfDatabase = Hash::extract($service['Serviceeventcommandargumentvalue'], '{n}.commandargument_id');
-			//Fetching all commandargument_id out of $this->request-data
-			$commandargumentIdsOfRequest = [];
-			if(isset($this->request->data['Serviceeventcommandargumentvalue'])){
-				$commandargumentIdsOfRequest = Hash::extract($this->request->data['Serviceeventcommandargumentvalue'], '{n}.commandargument_id');
-			}
-
-			if(!isset($data_to_save['Serviceeventcommandargumentvalue']) || empty($data_to_save['Serviceeventcommandargumentvalue'])){
-				$this->Serviceeventcommandargumentvalue->deleteAll(
-					['Serviceeventcommandargumentvalue.service_id' => $id]
-				);
-			}
-			if(isset($data_to_save['Serviceeventcommandargumentvalue']) && !empty($data_to_save['Serviceeventcommandargumentvalue'])){
-				$data_to_save['Serviceeventcommandargumentvalue'] = $this->request->data['Serviceeventcommandargumentvalue'];
-			}
-
 			$data_to_save['Service']['own_customvariables'] = 0;
 			//Add Customvariables data to $data_to_save
 			$data_to_save['Customvariable'] = [];
@@ -1249,21 +1199,15 @@ class ServicesController extends AppController{
 
 			$this->Service->set($data_to_save);
 			if($this->Service->validates()){
-				// Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-				foreach($commandargumentIdsOfDatabase as $commandargumentId){
-					if(!in_array($commandargumentId, $commandargumentIdsOfRequest)){
-						// Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-						$entry = $this->Serviceeventcommandargumentvalue->find('first', [
-							'conditions' => [
-								'service_id' => $id,
-								'commandargument_id' => $commandargumentId
-							]
-						]);
-						if(isset($entry['Serviceeventcommandargumentvalue'])){
-							$this->Serviceeventcommandargumentvalue->delete($entry['Serviceeventcommandargumentvalue']);
-						}
-					}
-				}
+				//Delete old command argument values
+				$this->Servicecommandargumentvalue->deleteAll([
+					'service_id' => $service['Service']['id']
+				]);
+
+				//Delete old event handler command argument values
+				$this->Serviceeventcommandargumentvalue->deleteAll([
+					'service_id' => $service['Service']['id']
+				]);
 
 				$this->Customvariable->deleteAll([
 					'object_id' => $service['Service']['id'],

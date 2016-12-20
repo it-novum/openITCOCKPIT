@@ -695,13 +695,33 @@ class Service extends AppModel{
 		if(!isset($service['Service']['servicetemplate_id']) || $service['Service']['servicetemplate_id'] == 0){
 			return $service;
 		}
+
+		$servicecommandargumentvalue = [];
+		if(!empty($service['Servicecommandargumentvalue'])){
+			$servicecommandargumentvalue = $service['Servicecommandargumentvalue'];
+		}else{
+			if($service['Service']['command_id'] === $service['Servicetemplate']['command_id'] || $service['Service']['command_id'] === null) {
+				$servicecommandargumentvalue = $service['Servicetemplate']['Servicetemplatecommandargumentvalue'];
+			}
+		}
+
+		$serviceeventcommandargumentvalue = [];
+		if(!empty($service['Serviceeventcommandargumentvalue'])){
+			$serviceeventcommandargumentvalue = $service['Serviceeventcommandargumentvalue'];
+		}else{
+			if($service['Service']['eventhandler_command_id'] === $service['Servicetemplate']['eventhandler_command_id'] || $service['Service']['eventhandler_command_id'] === null) {
+				$serviceeventcommandargumentvalue = $service['Servicetemplate']['Servicetemplateeventcommandargumentvalue'];
+			}
+		}
+
+
 		$service = [
 			'Service'			=> Hash::merge(Hash::filter($service['Service'], ['Service', 'filterNullValues']), Set::classicExtract($service['Servicetemplate'], '{('.implode('|', array_keys(Hash::diff($service['Service'], Hash::filter($service['Service'], ['Service','filterNullValues'])))).')}')),
 			'Contact'			=> Hash::extract((($service['Service']['own_contacts'])?$service['Contact']:$service['Servicetemplate']['Contact']), '{n}.id'),
 			'Contactgroup'		=> Hash::extract((($service['Service']['own_contactgroups'])?$service['Contactgroup']:$service['Servicetemplate']['Contactgroup']), '{n}.id'),
 			'Customvariable' 	=> ($service['Service']['own_customvariables'])?$service['Customvariable']:$service['Servicetemplate']['Customvariable'],
-			'Servicecommandargumentvalue' => (!empty($service['Servicecommandargumentvalue']))?$service['Servicecommandargumentvalue']:$service['Servicetemplate']['Servicetemplatecommandargumentvalue'],
-			'Serviceeventcommandargumentvalue' => (!empty($service['Serviceeventcommandargumentvalue']))?$service['Serviceeventcommandargumentvalue']:$service['Servicetemplate']['Servicetemplateeventcommandargumentvalue'],
+			'Servicecommandargumentvalue' => $servicecommandargumentvalue,
+			'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
 			'Servicetemplate'	=> $service['Servicetemplate'],
 			'Servicegroup'		=> $service['Servicegroup'],
 			'Host'				=> $service['Host'],
@@ -835,6 +855,17 @@ class Service extends AppModel{
 						$diff_array['Servicecommandargumentvalue'] = $diff_data;
 					}
 				//	debug(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0])));
+					$diff_data = $this->getDiffAsArray($this->prepareForCompare(Set::classicExtract($service, $data[0]),$data[1]),
+						$this->prepareForCompare(Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0]),
+							$compare_array['Servicetemplate'][$key][1]));
+				}
+			}elseif($data[0] == 'Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}'){
+				if(isset($service['Serviceeventcommandargumentvalue'])){
+					if(!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0])))){
+						$diff_data = Set::classicExtract($service, $data[0]);
+						$diff_array['Serviceeventcommandargumentvalue'] = $diff_data;
+					}
+					//	debug(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0])));
 					$diff_data = $this->getDiffAsArray($this->prepareForCompare(Set::classicExtract($service, $data[0]),$data[1]),
 						$this->prepareForCompare(Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0]),
 							$compare_array['Servicetemplate'][$key][1]));
