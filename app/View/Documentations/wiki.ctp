@@ -26,9 +26,9 @@
 <div class="row">
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-12">
 		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-book fa-fw "></i> 
-				<?php echo __('Documentation'); ?> 
-			<span>> 
+			<i class="fa fa-book fa-fw "></i>
+			<?php echo __('Documentation'); ?>
+			<span>>
 				<?php echo __('openITCOCKPIT'); ?>
 			</span>
 		</h1>
@@ -41,7 +41,7 @@
 		<h2><?php echo __('Documentation'); ?></h2>
 		<?php if($renderPage === true): ?>
 			<div class="widget-toolbar" role="menu">
-				<?php echo $this->Utils->backButton(__('Back to overview'), 'wiki');?>
+				<div class="btn btn-default btn-xs" iconcolor="white" id="doku_back"><i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to overview'); ?></div>
 			</div>
 		<?php endif;?>
 	</header>
