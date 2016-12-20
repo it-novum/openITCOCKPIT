@@ -1441,3 +1441,14 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .cursor-default{
 	cursor: default;
 }
+
+#scroll-top-container{
+	background: rgba(71, 69, 68, 0.8);
+	color: #FFF;
+	position: fixed;
+	bottom:30px;
+	right:30px;
+	padding: 1em;
+	border-radius: 8px;
+	display:none;
+}

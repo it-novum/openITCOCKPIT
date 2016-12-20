@@ -108,5 +108,8 @@ if($sideMenuClosed){
 	// Gibt das div der Tastenkombinationen aus
 	echo $this->element('shortcuts');
 	?>
+	<div id="scroll-top-container">
+		<i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
+	</div>
 </body>
 </html>
