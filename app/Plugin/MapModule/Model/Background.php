@@ -25,11 +25,11 @@
 
 class Background extends MapModuleAppModel{
 	public $useTable = false;
-	
+
 	public function findFiles(){
-		
+
 		App::uses('Folder', 'Utility');
-		
+
 		$backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds');
 		$itemsFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items');
 
@@ -70,7 +70,7 @@ class Background extends MapModuleAppModel{
 		$relativeBackgroundThumbPath = $imageDir. DS .'backgrounds'. DS .'thumb';
 		$files = [
 			'items' => [
-			//keep these commented files and folders in array .. may needed for "non-iconsets"
+				//keep these commented files and folders in array .. may needed for "non-iconsets"
 				'path'=>$relativeItemsPath,
 				/*'files'=>$itemsFolder->find(),*/
 				'files'=>$items,
@@ -83,12 +83,15 @@ class Background extends MapModuleAppModel{
 		];
 		return $files;
 	}
-	
+
 	public function findBackgrounds(){
 		App::uses('Folder', 'Utility');
 		App::uses('MapUpload', 'MapModule.Model');
 		App::uses('TreeComponent', 'Controller');
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
+		if(!is_dir($basePath)){
+			mkdir($basePath);
+		}
 
 		$imageDir = DS .'map_module'. DS .'img';
 		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
@@ -139,7 +142,7 @@ class Background extends MapModuleAppModel{
 			'files'=>$backgroundSets
 		];
 	}
-	
+
 	public function findIconsets(){
 		App::uses('MapUpload', 'MapModule.Model');
 		App::uses('TreeComponent', 'Controller');
@@ -193,6 +196,6 @@ class Background extends MapModuleAppModel{
 				]
 			];
 		}
-		
+
 	}
 }
