@@ -118,7 +118,7 @@
 													<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
 												<?php endif;?>
 												<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-												<ul class="dropdown-menu">
+												<ul class="dropdown-menu pull-right">
 													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
 														<li>
 															<a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
