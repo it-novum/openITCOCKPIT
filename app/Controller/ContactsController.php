@@ -547,44 +547,70 @@ class ContactsController extends AppController{
 			],
 		]);
 
-		//$contacts = Hash::combine($contacts, '{n}.Contact.id', '{n}');
-		debug($contacts);
-		/*if($this->request->is('post') || $this->request->is('put')){
-			foreach ($commands as $key => $command) {
-				unset($commands[$key]['Command']['id']);
-				unset($commands[$key]['Command']['uuid']);
-				foreach ($commands[$key]['Commandargument'] as $key2 => $commandargument) {
-					unset($commands[$key]['Commandargument'][$key2]['id']);
-					unset($commands[$key]['Commandargument'][$key2]['command_id']);
-					unset($commands[$key]['Commandargument'][$key2]['created']);
-					unset($commands[$key]['Commandargument'][$key2]['modified']);
+		$contacts = Hash::combine($contacts, '{n}.Contact.id', '{n}');
+
+		if($this->request->is('post') || $this->request->is('put')){
+			foreach ($contacts as $key => $contact) {
+				unset($contacts[$key]['Contact']['id']);
+				unset($contacts[$key]['Contact']['uuid']);
+				foreach ($contacts[$key]['Container'] as $key2 => $container) {
+					unset($contacts[$key]['Container'][$key2]['ContactsToContainer']['id']);
+					unset($contacts[$key]['Container'][$key2]['ContactsToContainer']['contact_id']);
 				}
 			}
 
-			$datasource = $this->Command->getDataSource();
+			$datasource = $this->Contact->getDataSource();
 			try{
 				$datasource->begin();
-				foreach ($this->request->data['Command'] as $newCommand) {
-					$newCommandArgs = $commands[$newCommand['source']]['Commandargument'];
-					$newCommandData = [
-						'Command' => [
-							'uuid' => $this->Command->createUUID(),
-							'name' => $newCommand['name'],
-							'command_line' => $newCommand['command_line'],
-							'command_type' => $newCommand['command_type'],
-							'description' => $newCommand['description']
-						],
-						'Commandargument' => $newCommandArgs
-
+				foreach ($this->request->data['Contact'] as $newContact) {
+					foreach ($contacts[$newContact['source']]['Container'] as $container) {
+						$newContactContainer['Container'][] = $container['id'];
+					}
+					foreach ($contacts[$newContact['source']]['HostCommands'] as $hostCommand) {
+						$newContactHostCommands = [
+							$hostCommand['id']
+						];
+					}
+					foreach ($contacts[$newContact['source']]['ServiceCommands'] as $serviceCommand) {
+						$newContactServiceCommands = [
+							$serviceCommand['id']
+						];
+					}
+					$newContactData = [
+						'Container' => $newContactContainer,
+						'Contact' => [
+							'uuid' => $this->Contact->createUUID(),
+							'name' => $newContact['name'],
+							'description' => $newContact['description'],
+							'email' => $newContact['email'],
+							'phone' => $newContact['phone'],
+							'host_timeperiod_id' => $newContact['host_timeperiod_id'],
+							'HostCommands' => $newContactHostCommands,
+							'host_notifications_enabled' => $newContact['host_notifications_enabled'],
+							'notify_host_recovery' => $newContact['notify_host_recovery'],
+							'notify_host_down' => $newContact['notify_host_down'],
+							'notify_host_unreachable' => $newContact['notify_host_unreachable'],
+							'notify_host_flapping' => $newContact['notify_host_flapping'],
+							'notify_host_downtime' => $newContact['notify_host_downtime'],
+							'service_timeperiod_id' => $newContact['service_timeperiod_id'],
+							'ServiceCommands' => $newContactServiceCommands,
+							'service_notifications_enabled' => $newContact['service_notifications_enabled'],
+							'notify_service_recovery' => $newContact['notify_service_recovery'],
+							'notify_service_warning' => $newContact['notify_service_warning'],
+							'notify_service_unknown' => $newContact['notify_service_unknown'],
+							'notify_service_critical' => $newContact['notify_service_critical'],
+							'notify_service_flapping' => $newContact['notify_service_flapping'],
+							'notify_service_downtime' => $newContact['notify_service_downtime']
+						]
 
 					];
-					if(!$this->Command->saveAll($newCommandData)){
-						throw new Exception('Some of the Commands could not be copied');
+
+					if(!$this->Contact->saveAll($newContactData)){
+						throw new Exception('Some of the Contacts could not be copied');
 					}
 				}
-
 				$datasource->commit();
-				$this->setFlash(__('Commands are successfully copied'));
+				$this->setFlash(__('Contacts are successfully copied'));
 				$this->redirect(array('action' => 'index'));
 
 			} catch(Exception $e) {
@@ -593,7 +619,7 @@ class ContactsController extends AppController{
 				$this->redirect(['action' => 'index']);
 			}
 
-		}*/
+		}
 
 		$this->set(compact('contacts'));
 		$this->set('back_url', $this->referer());
