@@ -132,6 +132,9 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 							</li>
 						</ul>
 					<?php endif;?>
+					<div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md">
+						<?php echo __('UUID: %s', h($hostgroup['Hostgroup']['uuid'])); ?>
+					</div>
 				</header>
 				<div>
 					<div class="widget-body no-padding">

@@ -47,6 +47,9 @@
 			<?php endif; ?>
 			<?php echo $this->Utils->backButton() ?>
 		</div>
+		<div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+			<?php echo __('UUID: %s', h($timeperiod['Timeperiod']['uuid'])); ?>
+		</div>
 	</header>
 	<div>
 		<div class="widget-body">
