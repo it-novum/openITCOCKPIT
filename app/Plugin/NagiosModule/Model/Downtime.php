@@ -140,7 +140,8 @@ class Downtime extends NagiosModuleAppModel{
 						]
 					]
 				],
-				'findType' => 'all'
+				'findType' => 'all',
+				'group' => 'Downtime.downtimehistory_id'
 			]
 		];
 
@@ -272,7 +273,8 @@ class Downtime extends NagiosModuleAppModel{
 					]
 
 				],
-				'findType' => 'all'
+				'findType' => 'all',
+				'group' => 'Downtime.downtimehistory_id'
 			]
 		];
 

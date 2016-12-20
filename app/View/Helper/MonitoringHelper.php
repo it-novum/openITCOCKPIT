@@ -224,6 +224,20 @@ class MonitoringHelper extends AppHelper{
 				'html' => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-green"></i>',
 				'value' => true
 			];
+		}elseif($was_started == 1 && strtotime($scheduled_end_time) < time() && $was_cancelled == 0){
+			$label = __('Downtime is expired');
+			return [
+				'label' => $label,
+				'html' => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-red"></i>',
+				'value' => false
+			];
+		}elseif($was_started == 1 && $was_cancelled == 1){
+			$label = __('Downtime was cancelled');
+			return [
+				'label' => $label,
+				'html' => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-red"></i>',
+				'value' => false
+			];
 		}
 
 		$label = __('Downtime not started yet');
