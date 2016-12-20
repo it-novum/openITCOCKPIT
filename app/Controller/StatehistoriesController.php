@@ -48,36 +48,6 @@ class StatehistoriesController extends AppController{
 			throw new NotFoundException(__('invalid service'));
 		}
 
-		/*
-		$service = $this->Service->find('first', [
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Service.name',
-				'Service.servicetemplate_id',
-				'Service.service_url'
-			],
-			'conditions' => [
-				'Service.id' => $id
-			],
-			'contain' => [
-				'Servicetemplate' => [
-					'fields' => [
-						'Servicetemplate.id',
-						'Servicetemplate.name'
-					]
-				],
-				'Host' => [
-					'fields' => [
-						'Host.id',
-						'Host.uuid',
-						'Host.name',
-						'Host.address'
-					]
-				]
-			]
-		]);*/
-
 		$service = $this->Service->find('first', [
 			'recursive' => -1,
 			'contain' => [
@@ -96,13 +66,18 @@ class StatehistoriesController extends AppController{
 			],
 		]);
 
-		if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+		$containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $service['Host']['container_id'];
+
+		//Check if user is permitted to see this object
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
 			$this->render403();
 			return;
 		}
 
+
 		$allowEdit = false;
-		if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
+		if($this->allowedByContainerId($containerIdsToCheck)){
 			$allowEdit = true;
 		}
 
@@ -168,7 +143,12 @@ class StatehistoriesController extends AppController{
 			]
 		]);
 
-		if(!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))){
+
+		$containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+		$containerIdsToCheck[] = $host['Host']['container_id'];
+
+		//Check if user is permitted to see this object
+		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
 			$this->render403();
 			return;
 		}
