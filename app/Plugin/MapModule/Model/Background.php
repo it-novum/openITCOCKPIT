@@ -25,11 +25,11 @@
 
 class Background extends MapModuleAppModel{
 	public $useTable = false;
-
+	
 	public function findFiles(){
-
+		
 		App::uses('Folder', 'Utility');
-
+		
 		$backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds');
 		$itemsFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items');
 
@@ -70,7 +70,7 @@ class Background extends MapModuleAppModel{
 		$relativeBackgroundThumbPath = $imageDir. DS .'backgrounds'. DS .'thumb';
 		$files = [
 			'items' => [
-				//keep these commented files and folders in array .. may needed for "non-iconsets"
+			//keep these commented files and folders in array .. may needed for "non-iconsets"
 				'path'=>$relativeItemsPath,
 				/*'files'=>$itemsFolder->find(),*/
 				'files'=>$items,
@@ -83,15 +83,12 @@ class Background extends MapModuleAppModel{
 		];
 		return $files;
 	}
-
+	
 	public function findBackgrounds(){
 		App::uses('Folder', 'Utility');
 		App::uses('MapUpload', 'MapModule.Model');
 		App::uses('TreeComponent', 'Controller');
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
-		if(!is_dir($basePath)){
-			mkdir($basePath);
-		}
 
 		$imageDir = DS .'map_module'. DS .'img';
 		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
@@ -142,7 +139,7 @@ class Background extends MapModuleAppModel{
 			'files'=>$backgroundSets
 		];
 	}
-
+	
 	public function findIconsets(){
 		App::uses('MapUpload', 'MapModule.Model');
 		App::uses('TreeComponent', 'Controller');
@@ -150,6 +147,7 @@ class Background extends MapModuleAppModel{
 		$myTreeComponent = new TreeComponent();
 		$containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 		$myMapUpload = new MapUpload();
+		$this->importIconsFromFilesToDB();
 		$allMapsIcons = $myMapUpload->find('all', [
 			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds]
 		]);
@@ -175,6 +173,30 @@ class Background extends MapModuleAppModel{
 			]
 		];
 	}
+	
+	private function importIconsFromFilesToDB(){ // all icon sets, user had before updating openITCOCKPIT, must be imported into DB
+		$itemsImgDirectory = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items';
+		$findMapUpload = new MapUpload();
+		$checkMapsIcons = $findMapUpload->find('all', [
+			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET]
+		]);
+		if(!empty($checkMapsIcons))
+			return true;
+
+		//if table is empty we perform importing icons into DB
+		foreach (scandir($itemsImgDirectory) as $object) {
+			if ($object != "." && $object != ".." && is_dir($itemsImgDirectory. DS .$object) && file_exists($itemsImgDirectory. DS .$object. DS .'ok.png')){
+				$myMapUpload = new MapUpload();
+				$myMapUpload->save([
+					'upload_type' => MapUpload::TYPE_ICON_SET,
+					'upload_name' => $object,
+					'saved_name' => $object,
+					'user_id' => null,
+					'container_id' => '1'
+				]);
+			}
+		}
+	}
 
 	public function findIcons(){
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'icons';
@@ -196,6 +218,6 @@ class Background extends MapModuleAppModel{
 				]
 			];
 		}
-
+		
 	}
 }
