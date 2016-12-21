@@ -89,6 +89,9 @@ class Background extends MapModuleAppModel{
 		App::uses('MapUpload', 'MapModule.Model');
 		App::uses('TreeComponent', 'Controller');
 		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
+		if(!is_dir($basePath)){
+			mkdir($basePath);
+		}
 
 		$imageDir = DS .'map_module'. DS .'img';
 		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
