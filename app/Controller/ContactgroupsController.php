@@ -417,4 +417,61 @@ class ContactgroupsController extends AppController{
 
 
 	}
+
+	public function copy($id = null){
+
+		$contactgroups = $this->Contactgroup->find('all',[
+			'conditions' => [
+				'Contactgroup.id' => func_get_args()
+			],
+		]);
+
+		$contactgroups = Hash::combine($contactgroups, '{n}.Contactgroup.id', '{n}');
+		if($this->request->is('post') || $this->request->is('put')){
+			foreach ($contactgroups as $key => $contactgroup) {
+				unset($contactgroups[$key]['Contactgroup']['id']);
+				unset($contactgroups[$key]['Contactgroup']['uuid']);
+			}
+
+			$datasource = $this->Contactgroup->getDataSource();
+			try{
+				$datasource->begin();
+				foreach ($this->request->data['Contactgroup'] as $newContactGroup) {
+					foreach ($contactgroups[$newContactGroup['source']]['Contact'] as $contact) {
+						$newContactgroupContacts[] = $contact['id'];
+					}
+					$newContactGroupData = [
+						'Container' => [
+							'parent_id' => $newContactGroup['parent_id'],
+							'name' => $newContactGroup['name'],
+							'containertype_id' => 6
+						],
+						'Contactgroup' => [
+							'description' => $newContactGroup['description'],
+							'Contact' => $newContactgroupContacts,
+							'uuid' => $this->Contactgroup->createUUID()
+						],
+						'Contact' => $newContactgroupContacts
+					];
+
+					if(!$this->Contactgroup->saveAll($newContactGroupData)){
+						throw new Exception('Some of the Contactgroups could not be copied');
+					}
+				}
+				$datasource->commit();
+				$this->setFlash(__('Contactgroups are successfully copied'));
+				$this->redirect(array('action' => 'index'));
+
+			} catch(Exception $e) {
+				$datasource->rollback();
+				$this->setFlash(__($e->getMessage()), false);
+				$this->redirect(['action' => 'index']);
+			}
+
+		}
+
+		$this->set(compact('contactgroups'));
+		$this->set('back_url', $this->referer());
+	}
+
 }

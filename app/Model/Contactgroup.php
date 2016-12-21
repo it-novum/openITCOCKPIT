@@ -164,4 +164,8 @@ class Contactgroup extends AppModel{
 		return $return;
 	}
 
+	function createUUID(){
+		return UUID::v4();
+	}
+
 }
