@@ -102,7 +102,39 @@
         <apply executable="php" taskname="lint">
             <arg value="-l" />
 
-            <fileset dir="${basedir}/app">
+            <fileset dir="${basedir}/app/Config">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Console">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Controller">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Lib">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Model">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Plugin">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/Test">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/View">
+                <include name="**/*.php" />
+                <modified />
+            </fileset>
+            <fileset dir="${basedir}/app/src">
                 <include name="**/*.php" />
                 <modified />
             </fileset>
@@ -116,7 +148,15 @@
             description="Measure project size using PHPLOC and print human readable output. Intended for usage on the command line.">
         <exec executable="${phploc}" taskname="phploc">
             <arg value="--count-tests" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phploc.done" value="true"/>
@@ -132,7 +172,15 @@
             <arg path="${basedir}/build/logs/phploc.csv" />
             <arg value="--log-xml" />
             <arg path="${basedir}/build/logs/phploc.xml" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phploc.done" value="true"/>
@@ -146,7 +194,15 @@
             <arg value="--jdepend-xml=${basedir}/build/logs/jdepend.xml" />
             <arg value="--jdepend-chart=${basedir}/build/pdepend/dependencies.svg" />
             <arg value="--overview-pyramid=${basedir}/build/pdepend/overview-pyramid.svg" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="pdepend.done" value="true"/>
@@ -156,7 +212,15 @@
             unless="phpmd.done"
             description="Perform project mess detection using PHPMD and print human readable output. Intended for usage on the command line before committing.">
         <exec executable="${phpmd}" taskname="phpmd">
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
             <arg value="text" />
             <arg path="${basedir}/build/phpmd.xml" />
         </exec>
@@ -169,7 +233,15 @@
             depends="prepare"
             description="Perform project mess detection using PHPMD and log result in XML format. Intended for usage within a continuous integration environment.">
         <exec executable="${phpmd}" taskname="phpmd">
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
             <arg value="xml" />
             <arg path="${basedir}/build/phpmd.xml" />
             <arg value="--reportfile" />
@@ -186,7 +258,15 @@
             <arg value="--standard=PSR2" />
             <arg value="--extensions=php" />
             <arg value="--ignore=autoload.php" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phpcs.done" value="true"/>
@@ -202,7 +282,15 @@
             <arg value="--standard=PSR2" />
             <arg value="--extensions=php" />
             <arg value="--ignore=autoload.php" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phpcs.done" value="true"/>
@@ -212,7 +300,15 @@
             unless="phpcpd.done"
             description="Find duplicate code using PHPCPD and print human readable output. Intended for usage on the command line before committing.">
         <exec executable="${phpcpd}" taskname="phpcpd">
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phpcpd.done" value="true"/>
@@ -225,7 +321,15 @@
         <exec executable="${phpcpd}" taskname="phpcpd">
             <arg value="--log-pmd" />
             <arg path="${basedir}/build/logs/pmd-cpd.xml" />
-            <arg path="${basedir}/app" />
+            <arg path="${basedir}/app/Config" />
+            <arg path="${basedir}/app/Console" />
+            <arg path="${basedir}/app/Controller" />
+            <arg path="${basedir}/app/Lib" />
+            <arg path="${basedir}/app/Model" />
+            <arg path="${basedir}/app/Plugin" />
+            <arg path="${basedir}/app/Test" />
+            <arg path="${basedir}/app/View" />
+            <arg path="${basedir}/app/src" />
         </exec>
 
         <property name="phpcpd.done" value="true"/>
