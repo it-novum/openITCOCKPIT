@@ -579,7 +579,7 @@ class ContactsController extends AppController{
 					$newContactData = [
 						'Container' => $newContactContainer,
 						'Contact' => [
-							'uuid' => $this->Contact->createUUID(),
+							'uuid' => UUID::v4(),
 							'name' => $newContact['name'],
 							'description' => $newContact['description'],
 							'email' => $newContact['email'],

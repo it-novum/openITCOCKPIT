@@ -219,7 +219,6 @@ class ContactgroupsController extends AppController{
 				$contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
 			}
 
-			App::uses('UUID', 'Lib');
 			$this->request->data['Contactgroup']['uuid'] = UUID::v4();
 			$this->request->data['Container']['containertype_id'] = CT_CONTACTGROUP;
 			$ext_data_for_changelog = [];
@@ -449,7 +448,7 @@ class ContactgroupsController extends AppController{
 						'Contactgroup' => [
 							'description' => $newContactGroup['description'],
 							'Contact' => $newContactgroupContacts,
-							'uuid' => $this->Contactgroup->createUUID()
+							'uuid' => UUID::v4()
 						],
 						'Contact' => $newContactgroupContacts
 					];

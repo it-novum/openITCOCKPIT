@@ -25,7 +25,7 @@
 
 
 class CommandsController extends AppController{
-	public $uses = ['Command', 'Commandargument', 'Macro'];
+	public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
 	public $layout = 'Admin.default';
 	public $components = array('Paginator', 'ListFilter.ListFilter', 'RequestHandler');
 	public $helpers = array('ListFilter.ListFilter');
@@ -181,7 +181,7 @@ class CommandsController extends AppController{
 		$this->set('command_types', $this->getCommandTypes());
 
 		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Command']['uuid'] = $this->Command->createUUID();
+			$this->request->data['Command']['uuid'] = UUID::v4();
 			$this->request->data = $this->rewritePostData();
 
 			if($this->Command->saveAll($this->request->data)){
@@ -520,7 +520,7 @@ class CommandsController extends AppController{
 		return false;
 		foreach($this->Command->find('all', array('fields' => array('uuid', 'id'))) as $command){
 			debug($command);
-			$command['Command']['uuid'] = $this->Command->createUUID();
+			$command['Command']['uuid'] = UUID::v4();
 			$this->Command->save($command);
 		}
 	}
@@ -597,7 +597,7 @@ class CommandsController extends AppController{
 					$newCommandArgs = $commands[$newCommand['source']]['Commandargument'];
 					$newCommandData = [
 						'Command' => [
-							'uuid' => $this->Command->createUUID(),
+							'uuid' => UUID::v4(),
 							'name' => $newCommand['name'],
 							'command_line' => $newCommand['command_line'],
 							'command_type' => $newCommand['command_type'],

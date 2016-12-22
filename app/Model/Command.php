@@ -58,7 +58,7 @@ class Command extends AppModel{
 
 	function __construct(){
 		parent::__construct();
-		App::uses('UUID', 'Lib');
+		App::uses('Lib');
 	}
 
 	/**
@@ -152,10 +152,6 @@ class Command extends AppModel{
 			],
 		];
 		return $this->find($type, Hash::merge($_options, $options));
-	}
-
-	function createUUID(){
-		return UUID::v4();
 	}
 
 	public function afterSave($created, $options = array()){

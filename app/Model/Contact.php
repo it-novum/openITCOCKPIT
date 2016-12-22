@@ -290,7 +290,4 @@ class Contact extends AppModel{
 		return $result;
 	}
 
-	function createUUID(){
-		return UUID::v4();
-	}
 }

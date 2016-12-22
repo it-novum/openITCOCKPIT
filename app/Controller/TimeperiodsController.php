@@ -486,7 +486,7 @@ class TimeperiodsController extends AppController{
 					$newTimeperiodRanges = $timeperiods[$newTimeperiod['source']]['Timerange'];
 					$newTimeperiodData = [
 						'Timeperiod' => [
-							'uuid' => $this->Timeperiod->createUUID(),
+							'uuid' => UUID::v4(),
 							'name' => $newTimeperiod['name'],
 							'container_id' => $newTimeperiod['container_id'],
 							'description' => $newTimeperiod['description']
