@@ -58,7 +58,7 @@ class Command extends AppModel{
 
 	function __construct(){
 		parent::__construct();
-		App::uses('Lib');
+		App::uses('UUID', 'Lib');
 	}
 
 	/**
