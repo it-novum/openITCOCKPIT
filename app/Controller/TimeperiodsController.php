@@ -456,4 +456,62 @@ class TimeperiodsController extends AppController{
 	function controller(){
 		return 'TimeperiodsController';
 	}
+
+	public function copy($id = null){
+
+		$timeperiods = $this->Timeperiod->find('all',[
+			'conditions' => [
+				'Timeperiod.id' => func_get_args()
+			],
+		]);
+
+		$timeperiods = Hash::combine($timeperiods, '{n}.Timeperiod.id', '{n}');
+
+		if($this->request->is('post') || $this->request->is('put')){
+			foreach ($timeperiods as $key => $timeperiod) {
+				unset($timeperiods[$key]['Timeperiod']['id']);
+				unset($timeperiods[$key]['Timeperiod']['uuid']);
+				unset($timeperiods[$key]['Timeperiod']['created']);
+				unset($timeperiods[$key]['Timeperiod']['modified']);
+				foreach ($timeperiods[$key]['Timerange'] as $key2 => $timerange) {
+					unset($timeperiods[$key]['Timerange'][$key2]['id']);
+					unset($timeperiods[$key]['Timerange'][$key2]['timeperiod_id']);
+				}
+			}
+
+			$datasource = $this->Timeperiod->getDataSource();
+			try{
+				$datasource->begin();
+				foreach ($this->request->data['Timeperiod'] as $newTimeperiod) {
+					$newTimeperiodRanges = $timeperiods[$newTimeperiod['source']]['Timerange'];
+					$newTimeperiodData = [
+						'Timeperiod' => [
+							'uuid' => UUID::v4(),
+							'name' => $newTimeperiod['name'],
+							'container_id' => $newTimeperiod['container_id'],
+							'description' => $newTimeperiod['description']
+						],
+						'Timerange' => $newTimeperiodRanges
+					];
+
+					if(!$this->Timeperiod->saveAll($newTimeperiodData)){
+						throw new Exception('Some of the Timeperiods could not be copied');
+					}
+				}
+
+				$datasource->commit();
+				$this->setFlash(__('Timeperiods are successfully copied'));
+				$this->redirect(array('action' => 'index'));
+
+			} catch(Exception $e) {
+				$datasource->rollback();
+				$this->setFlash(__($e->getMessage()), false);
+				$this->redirect(['action' => 'index']);
+			}
+
+		}
+
+		$this->set(compact('timeperiods'));
+		$this->set('back_url', $this->referer());
+	}
 }

@@ -65,6 +65,7 @@ class Contactgroup extends AppModel{
 	public function __construct($id = false, $table = null, $ds = null){
 		parent::__construct($id, $table, $ds);
 		$this->Contact = ClassRegistry::init('Contact');
+		App::uses('UUID', 'Lib');
 		//$this->primaryKey = 'id';
 	}
 

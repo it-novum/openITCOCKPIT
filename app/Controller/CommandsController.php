@@ -25,7 +25,7 @@
 
 
 class CommandsController extends AppController{
-	public $uses = ['Command', 'Commandargument', 'Macro'];
+	public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
 	public $layout = 'Admin.default';
 	public $components = array('Paginator', 'ListFilter.ListFilter', 'RequestHandler');
 	public $helpers = array('ListFilter.ListFilter');
@@ -181,7 +181,7 @@ class CommandsController extends AppController{
 		$this->set('command_types', $this->getCommandTypes());
 
 		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Command']['uuid'] = $this->Command->createUUID();
+			$this->request->data['Command']['uuid'] = UUID::v4();
 			$this->request->data = $this->rewritePostData();
 
 			if($this->Command->saveAll($this->request->data)){
@@ -520,7 +520,7 @@ class CommandsController extends AppController{
 		return false;
 		foreach($this->Command->find('all', array('fields' => array('uuid', 'id'))) as $command){
 			debug($command);
-			$command['Command']['uuid'] = $this->Command->createUUID();
+			$command['Command']['uuid'] = UUID::v4();
 			$this->Command->save($command);
 		}
 	}
@@ -565,6 +565,66 @@ class CommandsController extends AppController{
 		]);
 
 		$this->set(compact(['servicestemplates', 'commandName']));
+		$this->set('back_url', $this->referer());
+	}
+
+	public function copy($id = null){
+
+		$commands = $this->Command->find('all',[
+			'conditions' => [
+				'Command.id' => func_get_args()
+			],
+		]);
+
+		$commands = Hash::combine($commands, '{n}.Command.id', '{n}');
+
+		if($this->request->is('post') || $this->request->is('put')){
+			foreach ($commands as $key => $command) {
+				unset($commands[$key]['Command']['id']);
+				unset($commands[$key]['Command']['uuid']);
+				foreach ($commands[$key]['Commandargument'] as $key2 => $commandargument) {
+					unset($commands[$key]['Commandargument'][$key2]['id']);
+					unset($commands[$key]['Commandargument'][$key2]['command_id']);
+					unset($commands[$key]['Commandargument'][$key2]['created']);
+					unset($commands[$key]['Commandargument'][$key2]['modified']);
+				}
+			}
+
+			$datasource = $this->Command->getDataSource();
+			try{
+				$datasource->begin();
+				foreach ($this->request->data['Command'] as $newCommand) {
+					$newCommandArgs = $commands[$newCommand['source']]['Commandargument'];
+					$newCommandData = [
+						'Command' => [
+							'uuid' => UUID::v4(),
+							'name' => $newCommand['name'],
+							'command_line' => $newCommand['command_line'],
+							'command_type' => $newCommand['command_type'],
+							'description' => $newCommand['description']
+						],
+						'Commandargument' => $newCommandArgs
+
+
+					];
+					if(!$this->Command->saveAll($newCommandData)){
+						throw new Exception('Some of the Commands could not be copied');
+					}
+				}
+
+				$datasource->commit();
+				$this->setFlash(__('Commands are successfully copied'));
+				$this->redirect(array('action' => 'index'));
+
+			} catch(Exception $e) {
+				$datasource->rollback();
+				$this->setFlash(__($e->getMessage()), false);
+				$this->redirect(['action' => 'index']);
+			}
+
+		}
+
+		$this->set(compact('commands'));
 		$this->set('back_url', $this->referer());
 	}
 }

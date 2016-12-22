@@ -289,4 +289,5 @@ class Contact extends AppModel{
 		$result = !empty($this->data[$this->name]['email']) || !empty($this->data[$this->name]['phone']);
 		return $result;
 	}
+
 }
