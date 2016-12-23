@@ -29,8 +29,8 @@ $config = array(
             'parent' => 'admin',
             'children' => [
                 'openid' => [
-                    'url' => ['controller' => 'openid', 'action' => 'add', 'plugin' => 'openid_module'],
-                    'title' => 'Open ID',
+                    'url' => ['controller' => 'openid', 'action' => 'index', 'plugin' => 'openid_module'],
+                    'title' => 'OpenID',
                     'icon' => 'star',
                     'parent_controller' => 'openid'
                 ]

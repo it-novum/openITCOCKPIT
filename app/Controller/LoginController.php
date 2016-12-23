@@ -38,6 +38,7 @@ class LoginController extends AppController {
 	}
 
 	public function login($redirectBack = 0){
+		$this->loadModel('OpenidModule.Openid');
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$displayMethod = false;
 		$authMethods = [
@@ -196,9 +197,11 @@ class LoginController extends AppController {
 			}
 		}
 
+		$openIdObj = $this->Openid->getOpenIdConnects(); // in case if login page must be shown in $openIdObj are the buttons to login with OpenID
 		$message = 'Please login';
 		$this->set('message', $message);
 		$this->set('_serialize', ['message']);
+		$this->set('openIdButtons', $openIdObj);
 	}
 
 	public function onetimetoken($id = null, $rememberMe = false){

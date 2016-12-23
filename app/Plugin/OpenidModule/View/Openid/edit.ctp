@@ -28,7 +28,7 @@
 	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
 		<h1 class="page-title txt-color-blueDark">
 			<i class="fa fa-star fa-fw "></i>
-				<?php echo __('New OpenID Connect');?>
+				<?php echo __('Edit OpenID Connect');?>
 			<span>>
 			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
 			</span>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
 	<header>
 		<span class="widget-icon"> <i class="fa fa-star"></i> </span>
-		<h2><?php echo __('Add OpenID Connect'); ?></h2>
+		<h2><?php echo __('Edit OpenID Connect'); ?></h2>
 		<div class="widget-toolbar" role="menu">
 			<?php echo $this->Utils->backButton();?>
 		</div>
@@ -51,10 +51,11 @@
 				echo $this->Form->create('Openid', array(
 					'class' => 'form-horizontal clear'
 				));
-				echo $this->Form->input('Openid.my_domain', ['label' => __('Domain'), 'placeholder' => 'openitcockpit.org', 'value' => 'openitcockpit.org']);
+				echo $this->Form->input('id', ['type' => 'hidden', 'value' => $openID['Openid']['id']]);
+				echo $this->Form->input('Openid.my_domain', ['label' => __('Domain'), 'placeholder' => 'openitcockpit.org', 'value' => $openID['Openid']['my_domain']]);
 				echo $this->Form->input('returnUrl', ['label' => __('Return Url'), 'readOnly' => true, 'value' => $returnUrl]);
-				echo $this->Form->input('Openid.identity', ['label' => __('Identity')]);
-				echo $this->Form->input('Openid.client_secret', ['label' => __('Client secret')]);
+				echo $this->Form->input('Openid.identity', ['label' => __('Identity'), 'value' => $openID['Openid']['identity']]);
+				echo $this->Form->input('Openid.client_secret', ['label' => __('Client secret'), 'value' => $openID['Openid']['client_secret']]);
 			?>
 			<div class="form-group">
 			<?php
@@ -62,13 +63,13 @@
 					'caption' => __('Show login page'),
 					'captionGridClass' => 'col col-md-2 text-right',
 					'class' => 'onoffswitch-checkbox notification_control',
-					'checked' => true,
+					'checked' => $openID['Openid']['show_login_page'],
 					'wrapGridClass' => 'col col-xs-2',
 				]);
 			?>
 			</div>
 			<?php
-				echo $this->Form->input('Openid.button_text', ['label' => __('Button text')]);
+				echo $this->Form->input('Openid.button_text', ['label' => __('Button text'), 'value' => $openID['Openid']['button_text']]);
 			?>
 			<div class="form-group">
 				<?php
@@ -76,7 +77,7 @@
 					'caption' => __('Active'),
 					'captionGridClass' => 'col col-md-2 text-right',
 					'class' => 'onoffswitch-checkbox notification_control',
-					'checked' => true,
+					'checked' => $openID['Openid']['active'],
 					'wrapGridClass' => 'col col-xs-2',
 				]);
 				?>
