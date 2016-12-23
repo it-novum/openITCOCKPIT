@@ -153,7 +153,7 @@ class SudoMessageInterface implements MessageComponentInterface {
 				break;
 				
 			case 'd41d8cd98f00b204e9800998ecf8427e':
-				$this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please run openitcockpit-update\n"', [
+				$this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please run the command openitcockpit-update on the console.\n\nAfter that please check your User Roles for possible new settings.\n"', [
 					'task' => 'd41d8cd98f00b204e9800998ecf8427e'
 				]);
 				break;
