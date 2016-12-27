@@ -128,7 +128,7 @@ class DocumentationsController extends AppController{
 						'name' => __('Automap'),
 						'description' => 'You can quickly create a map of host and their services filtered by regular expressions.',
 						'file' => 'automap',
-						'icon' => 'fa fa-globe',
+						'icon' => 'fa fa-magic',
 					],
 					'maps' => [
 						'name' => __('Maps'),
