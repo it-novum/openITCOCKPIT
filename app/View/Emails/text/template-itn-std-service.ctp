@@ -23,12 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-foreach($parameters as $parameter):
-	if(!is_array($parameter))
-		echo $parameter."\n";
+foreach ($parameters as $parameter):
+    if (!is_array($parameter))
+        echo $parameter."\n";
 endforeach;
 ?>
-
 
 
 --- BEGIN TICKET SYSTEM INFORMATION ---

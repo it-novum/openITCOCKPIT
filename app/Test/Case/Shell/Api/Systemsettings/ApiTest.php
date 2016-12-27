@@ -29,12 +29,14 @@ use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
 class ApiTest extends CakeTestCase
 {
-    public function testInstanceOfApi(){
+    public function testInstanceOfApi()
+    {
         $api = new Api($this->getShell(), 'Systemsettings');
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api', $api);
     }
 
-    public function testIfRecordExists(){
+    public function testIfRecordExists()
+    {
         $api = new Api($this->getRealShell(), 'Systemsettings');
         $api->setOptionsFromOptionParser($this->getOptionParser(
             null,
@@ -45,7 +47,8 @@ class ApiTest extends CakeTestCase
         $this->assertTrue($api->exists());
     }
 
-    public function testAddAndUpdateAndDeleteRecord(){
+    public function testAddAndUpdateAndDeleteRecord()
+    {
         $api = new Api($this->getRealShell(), 'Systemsettings');
         $api->setOptionsFromOptionParser($this->getOptionParser(
             'add',
@@ -53,7 +56,7 @@ class ApiTest extends CakeTestCase
             [
                 'value for foobar',
                 'description for foobar',
-                'section of foobar'
+                'section of foobar',
             ]
         ));
 
@@ -63,7 +66,7 @@ class ApiTest extends CakeTestCase
             [
                 'new value for foobar',
                 'new description for foobar',
-                'new section of foobar'
+                'new section of foobar',
             ]
         ));
 
@@ -71,17 +74,17 @@ class ApiTest extends CakeTestCase
 
         $record = $api->getRecordByKey('FOOBAR');
         $fildsToRemove = ['id', 'created', 'modified'];
-        foreach($fildsToRemove as $field){
+        foreach ($fildsToRemove as $field) {
             unset($record['Systemsettings'][$field]);
-    }
+        }
 
         $assertedRecord = [
             'Systemsettings' => [
-                'key' => 'FOOBAR',
-                'value' => 'new value for foobar',
-                'info' => 'new description for foobar',
-                'section' => 'new section of foobar'
-            ]
+                'key'     => 'FOOBAR',
+                'value'   => 'new value for foobar',
+                'info'    => 'new description for foobar',
+                'section' => 'new section of foobar',
+            ],
         ];
 
         $this->assertEquals($assertedRecord, $record);
@@ -95,29 +98,35 @@ class ApiTest extends CakeTestCase
         $this->assertTrue($api->delete());
     }
 
-    private function getRealShell(){
+    private function getRealShell()
+    {
         $shell = new Shell();
         $shell->loadModel('Systemsettings');
+
         return $shell;
     }
 
-    public function getShell(){
+    public function getShell()
+    {
         $shell = $this->getMockBuilder('Shell')
             ->disableOriginalConstructor()
             ->getMock();
         $shell->expects($this->any())->method('loadModel')->will($this->returnValue(true));
+
         return $shell;
     }
 
-    public function getOptionParser($action, $data, $args){
+    public function getOptionParser($action, $data, $args)
+    {
         $parameters = [
             'plugin' => '',
-            'model' => 'systemsettings',
+            'model'  => 'systemsettings',
             'action' => $action,
-            'data' => $data
+            'data'   => $data,
         ];
         $optionParser = new OptionParser();
         $optionParser->parse($parameters, $args);
+
         return $optionParser;
     }
 }

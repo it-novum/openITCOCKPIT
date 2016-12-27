@@ -24,7 +24,8 @@
 //	confirmation.
 
 // app/Model/Category.php
-class Category extends AppModel {
-	public $actsAs = array('Tree');
-	var $useTable = false;
+class Category extends AppModel
+{
+    public $actsAs = ['Tree'];
+    var $useTable = false;
 }

@@ -596,13 +596,13 @@ Mauris ante pede, eros auctor ac, suscipit quis, malesuada sed, nulla. Integer s
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('s'); 
+$mpdf = new mPDF('s');
 
 $mpdf->SetDisplayMode('fullpage');
 
 $mpdf->WriteHTML($html);
 
-$mpdf->Output(); 
+$mpdf->Output();
 
 exit;
 

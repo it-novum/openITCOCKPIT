@@ -23,47 +23,52 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class PerfdataHelper extends AppHelper{
-		/**
-		* Parst Perfdata-String und gibt Ergebnis als Array zurueck
-		* @param string $perfdata_string Performance string z.B. batCapacity=100%;75:;50:;0;100 batVoltage=54;;
-		* @return array $perfdata_array formatierstes Array als Performance-Infos
-		*/
-		public function parsePerfData($perfdata_string){
-				$perfdata = array();
-				$perf_data_structure = array('label','current_value','unit', 'warning', 'critical', 'min', 'max');
-						$i = 0;
-				foreach(explode(" ", $perfdata_string) as $data_set){
-						foreach(explode(';', $data_set) as $value){
-								if(preg_match('/=/', $value)){
-										$s = preg_split('/=/', $value);
-										if(isset($s[0])){
-												$perfdata[$i][]  = $s[0];
-												//Einheit auslesen
-												$number = '';
-												$unit = '';
-												foreach(str_split($s[1]) as $char ){
-														if( $char == '.' || $char == ',' || ($char >= '0' && $char <= '9') ){
-																$number .= $char;
-														}else{
-																$unit .= $char;
-														}
-												}
-												$perfdata[$i][] = str_replace(',', '.', $number);
-												$perfdata[$i][] = $unit;
-												continue;
-										}
-								}
-								if(isset($s[0])){
-										$perfdata[$i][] = $value;
-								}
-						}
-						if(isset($s[0])){
-								$perfdata[$i] = array_combine($perf_data_structure, array_merge($perfdata[$i], (( sizeof($perf_data_structure)-sizeof($perfdata[$i]) )>0) ? array_fill(sizeof($perfdata[$i]),(sizeof($perf_data_structure)-sizeof($perfdata[$i])),''):array()));
-								unset($s);
-						}
-										$i++;
-						}
-				return($perfdata);
-		}
+class PerfdataHelper extends AppHelper
+{
+    /**
+     * Parst Perfdata-String und gibt Ergebnis als Array zurueck
+     *
+     * @param string $perfdata_string Performance string z.B. batCapacity=100%;75:;50:;0;100 batVoltage=54;;
+     *
+     * @return array $perfdata_array formatierstes Array als Performance-Infos
+     */
+    public function parsePerfData($perfdata_string)
+    {
+        $perfdata = [];
+        $perf_data_structure = ['label', 'current_value', 'unit', 'warning', 'critical', 'min', 'max'];
+        $i = 0;
+        foreach (explode(" ", $perfdata_string) as $data_set) {
+            foreach (explode(';', $data_set) as $value) {
+                if (preg_match('/=/', $value)) {
+                    $s = preg_split('/=/', $value);
+                    if (isset($s[0])) {
+                        $perfdata[$i][] = $s[0];
+                        //Einheit auslesen
+                        $number = '';
+                        $unit = '';
+                        foreach (str_split($s[1]) as $char) {
+                            if ($char == '.' || $char == ',' || ($char >= '0' && $char <= '9')) {
+                                $number .= $char;
+                            } else {
+                                $unit .= $char;
+                            }
+                        }
+                        $perfdata[$i][] = str_replace(',', '.', $number);
+                        $perfdata[$i][] = $unit;
+                        continue;
+                    }
+                }
+                if (isset($s[0])) {
+                    $perfdata[$i][] = $value;
+                }
+            }
+            if (isset($s[0])) {
+                $perfdata[$i] = array_combine($perf_data_structure, array_merge($perfdata[$i], ((sizeof($perf_data_structure) - sizeof($perfdata[$i])) > 0) ? array_fill(sizeof($perfdata[$i]), (sizeof($perf_data_structure) - sizeof($perfdata[$i])), '') : []));
+                unset($s);
+            }
+            $i++;
+        }
+
+        return ($perfdata);
+    }
 }

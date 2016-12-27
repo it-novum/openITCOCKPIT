@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Removing Header and Footer
- * @author Nicola Asuni
- * @since 2008-03-04
+ * @author   Nicola Asuni
+ * @since    2008-03-04
  */
 
 require_once('../config/lang/eng.php');
@@ -51,7 +51,7 @@ $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -75,7 +75,7 @@ Default page header and footer are disabled using setPrintHeader() and setPrintF
 EOD;
 
 // print a block of text using Write()
-$pdf->Write($h=0, $txt, $link='', $fill=0, $align='C', $ln=true, $stretch=0, $firstline=false, $firstblock=false, $maxh=0);
+$pdf->Write($h = 0, $txt, $link = '', $fill = 0, $align = 'C', $ln = true, $stretch = 0, $firstline = false, $firstblock = false, $maxh = 0);
 
 // ---------------------------------------------------------
 

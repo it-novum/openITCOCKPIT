@@ -24,34 +24,34 @@
 //	confirmation.
 
 $config = [
-	'acl_dependencies' => [
-		'AppController' => [],
-		'always_allowed' => [
-			'BackgroundUploads' => [
-				'upload',
-				'createThumbnailsFromBackgrounds'
-			],
-			'Mapeditors' => [
-				'hostUuidFromServiceUuid',
-				'fullscreen',
-				'popoverHostStatus',
-				'popoverServicegroupStatus',
-				'popoverHostgroupStatus',
-				'popoverServiceStatus',
-				'popoverMapStatus',
-				'servicesForWizard',
-				'hostFromSerice',
-				'hostFromService',
-			],
-			'Maps' => [
-				'loadUsersForTenant'
-			],
-			'Mapviews' => [
-				'refreshNagiosObjects'
-			],
-			
-		],
-		'dependencies' => [
-		]
-	]
+    'acl_dependencies' => [
+        'AppController'  => [],
+        'always_allowed' => [
+            'BackgroundUploads' => [
+                'upload',
+                'createThumbnailsFromBackgrounds',
+            ],
+            'Mapeditors'        => [
+                'hostUuidFromServiceUuid',
+                'fullscreen',
+                'popoverHostStatus',
+                'popoverServicegroupStatus',
+                'popoverHostgroupStatus',
+                'popoverServiceStatus',
+                'popoverMapStatus',
+                'servicesForWizard',
+                'hostFromSerice',
+                'hostFromService',
+            ],
+            'Maps'              => [
+                'loadUsersForTenant',
+            ],
+            'Mapviews'          => [
+                'refreshNagiosObjects',
+            ],
+
+        ],
+        'dependencies'   => [
+        ],
+    ],
 ];

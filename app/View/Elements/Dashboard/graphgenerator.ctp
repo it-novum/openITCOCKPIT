@@ -26,40 +26,43 @@
 $widgetData = $widgetMaps[$widget['Widget']['id']];
 //debug($widgetData);
 $graphId = null;
-if(!empty($widgetData['Widget']['Widget']['graph_id'])):
-	$graphId = $widgetData['Widget']['Widget']['graph_id'];
+if (!empty($widgetData['Widget']['Widget']['graph_id'])):
+    $graphId = $widgetData['Widget']['Widget']['graph_id'];
 endif;
 ?>
 <div class="widget-body graph-body">
-	<div class="padding-10">
-		<div style="border:1px solid #c3c3c3;" class="padding-10">
-			<div class="row">
-				<div class="col-xs-12">
-					<select class="chosen graphSelectGraph" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" style="width:100%;">
-						<option></option>
-						<?php foreach($graphListForWidget as $key => $val):
-								$selected = '';
-								if($graphId !== null && $val['GraphgenTmpl']['id'] == $graphId):
-									$selected = 'selected="selected"';
-								endif;
-							?>
-							<option value="<?php echo $val['GraphgenTmpl']['id']; ?>" <?php echo $selected; ?>><?php echo h($val['GraphgenTmpl']['name']); ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="graphWrapper">
-		<?php
-		if($graphId): ?>
-			<div class="graphContainer" data-id-graph="<?php echo $graphId; ?>">
-				<iframe width="100%" height="401" style="border:0px;" scrolling="no" src="/graphgenerators/view/<?php echo $graphId; ?>" /></iframe>
-			</div>
-		<?php else: ?>
-			<div class="graphContainer" data-id-graph="0">
-				<center><?php echo __('No graph selected or selected graph has been deleted');?></center>
-			</div>
-		<?php endif; ?>
-	</div>
+    <div class="padding-10">
+        <div style="border:1px solid #c3c3c3;" class="padding-10">
+            <div class="row">
+                <div class="col-xs-12">
+                    <select class="chosen graphSelectGraph" data-widget-id="<?php echo $widget['Widget']['id']; ?>"
+                            placeholder="<?php echo __('Please select'); ?>" style="width:100%;">
+                        <option></option>
+                        <?php foreach ($graphListForWidget as $key => $val):
+                            $selected = '';
+                            if ($graphId !== null && $val['GraphgenTmpl']['id'] == $graphId):
+                                $selected = 'selected="selected"';
+                            endif;
+                            ?>
+                            <option value="<?php echo $val['GraphgenTmpl']['id']; ?>" <?php echo $selected; ?>><?php echo h($val['GraphgenTmpl']['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="graphWrapper">
+        <?php
+        if ($graphId): ?>
+            <div class="graphContainer" data-id-graph="<?php echo $graphId; ?>">
+                <iframe width="100%" height="401" style="border:0px;" scrolling="no"
+                        src="/graphgenerators/view/<?php echo $graphId; ?>"/>
+                </iframe>
+            </div>
+        <?php else: ?>
+            <div class="graphContainer" data-id-graph="0">
+                <center><?php echo __('No graph selected or selected graph has been deleted'); ?></center>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>

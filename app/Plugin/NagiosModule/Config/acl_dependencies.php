@@ -24,14 +24,14 @@
 //	confirmation.
 
 $config = [
-	'acl_dependencies' => [
-		'AppController' => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403'],
-		'always_allowed' => [
-		],
-		'dependencies' => [
-			'Cmd' => [
-				'submit' => ['ack']
-			],
-		]
-	]
+    'acl_dependencies' => [
+        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403'],
+        'always_allowed' => [
+        ],
+        'dependencies'   => [
+            'Cmd' => [
+                'submit' => ['ack'],
+            ],
+        ],
+    ],
 ];

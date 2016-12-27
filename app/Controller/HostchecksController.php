@@ -23,87 +23,90 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class HostchecksController extends AppController{	
-	/*
-	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-	 * use this external model to fetch the required data out of the database
-	 */
-	public $uses = [MONITORING_HOSTCHECK, MONITORING_HOSTSTATUS, 'Host', 'Documentation'];
-	
-	
-	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler'];
-	public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
-	public $layout = 'Admin.default';
-	
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Servicecheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-			],
-		],
-	];
-	
-	public function index($id = null){
-		if(!$this->Host->exists($id)){
-			throw new NotFoundException(__('invalid host'));
-		}
-		
-		$host = $this->Host->find('first', [
-			'fields' => [
-				'Host.id',
-				'Host.uuid',
-				'Host.name',
-				'Host.address',
-				'Host.host_url'
-			],
-			'conditions' => [
-				'Host.id' => $id
-			],
-			'contain' => [
-				'Container'
-			]
-		]);
+class HostchecksController extends AppController
+{
+    /*
+     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
+     * use this external model to fetch the required data out of the database
+     */
+    public $uses = [MONITORING_HOSTCHECK, MONITORING_HOSTSTATUS, 'Host', 'Documentation'];
 
-		$containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-		$containerIdsToCheck[] = $host['Host']['container_id'];
 
-		//Check if user is permitted to see this object
-		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
-			$this->render403();
-			return;
-		}
-		
-		$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-			'fields' => [
-				'Objects.name1',
-				'Hoststatus.current_state'
-			]
-		]);
-		
-		
-		$requestSettings = $this->Hostcheck->listSettings($this->request, $host['Host']['uuid']);
-		
-		if(isset($this->paginate['conditions'])){
-			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-		}else{
-			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-		}
-		
-		
-		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-		
-		$all_hostchecks = $this->Paginator->paginate();
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $layout = 'Admin.default';
 
-		$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Servicecheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-		$this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'hostDocuExists']));
-		$this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-		
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
+    public function index($id = null)
+    {
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('invalid host'));
+        }
+
+        $host = $this->Host->find('first', [
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.host_url',
+            ],
+            'conditions' => [
+                'Host.id' => $id,
+            ],
+            'contain'    => [
+                'Container',
+            ],
+        ]);
+
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+
+        //Check if user is permitted to see this object
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+
+            return;
+        }
+
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+            'fields' => [
+                'Objects.name1',
+                'Hoststatus.current_state',
+            ],
+        ]);
+
+
+        $requestSettings = $this->Hostcheck->listSettings($this->request, $host['Host']['uuid']);
+
+        if (isset($this->paginate['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        } else {
+            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+        }
+
+
+        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
+        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
+
+        $all_hostchecks = $this->Paginator->paginate();
+
+        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+
+        $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'hostDocuExists']));
+        $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
+
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
 }

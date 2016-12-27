@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class WidgetHostStatusList extends AppModel{
-	public $useTable = 'widget_host_status_lists';
-	public $belongsTo = ['Widget'];
+class WidgetHostStatusList extends AppModel
+{
+    public $useTable = 'widget_host_status_lists';
+    public $belongsTo = ['Widget'];
 }

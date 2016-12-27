@@ -24,53 +24,55 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-pencil-square-o fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
-			<span>>
-				<?php echo __('Servicetemplategroup');?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-pencil-square-o fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Servicetemplategroup'); ?>
 			</span>
-			<div class="third_level"> <?php __('Allocate to hostgroup'); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php __('Allocate to hostgroup'); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-		<h2 class="hidden-mobile hidden-tablet"><?php echo __('Allocate servicetemplategroup'); ?> <strong><?php echo $servicetemplategroup['Container']['name']; ?></strong> <?php echo __('to hostgroup');?></h2>
-		<div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-			<?php echo $this->Utils->backButton(__('Back'), $back_url);?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Service', [
-					'class' => 'form-horizontal clear'
-				]); ?>
-				<div class="row">
-					<div class="col-xs-12 col-md-8">
-						<?php echo $this->Form->input('Hostgroup.id', [
-							'options' => $this->Html->chosenPlaceholder($hostgroups),
-							'data-placeholder' => __('Please select...'),
-							'class' => 'chosen',
-							'wrapInput' => 'col col-xs-12 col-md-8',
-							'style' => 'width: 100%',
-							'required' => true,
-							'label' => [
-								'class' => 'col col-xs-1 control-label',
-								'text' => __('Hostgroup'),
-							],
-						]); ?>
+    <header>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Allocate servicetemplategroup'); ?>
+            <strong><?php echo $servicetemplategroup['Container']['name']; ?></strong> <?php echo __('to hostgroup'); ?>
+        </h2>
+        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
+            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Service', [
+                'class' => 'form-horizontal clear',
+            ]); ?>
+            <div class="row">
+                <div class="col-xs-12 col-md-8">
+                    <?php echo $this->Form->input('Hostgroup.id', [
+                        'options'          => $this->Html->chosenPlaceholder($hostgroups),
+                        'data-placeholder' => __('Please select...'),
+                        'class'            => 'chosen',
+                        'wrapInput'        => 'col col-xs-12 col-md-8',
+                        'style'            => 'width: 100%',
+                        'required'         => true,
+                        'label'            => [
+                            'class' => 'col col-xs-1 control-label',
+                            'text'  => __('Hostgroup'),
+                        ],
+                    ]); ?>
 
-						<div id="ajaxContent"><!-- content gets loaded by ajax --></div>
-					</div>
-				</div>
-				<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+                    <div id="ajaxContent"><!-- content gets loaded by ajax --></div>
+                </div>
+            </div>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>

@@ -23,28 +23,30 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GrapherHelper extends AppHelper{
-	
-	public function createGrapherErrorPng($error){
-		
-		$targetPath = WWW_ROOT . 'img' . DS . 'graphs';
-		$fileName = md5(rand().time().rand()).'.png';
-		
-		$img = imagecreatetruecolor(947, 173);
-		imagesavealpha($img, true);
-		$background = imagecolorallocatealpha($img, 255, 110, 110, 0);
-		$textColor = imagecolorallocate($img, 255, 255, 255);
-		imagefill($img, 0, 0, $background);
-		
-		imagestring($img, 5, 5, 5, 'Error:', $textColor);
-		imagestring($img, 5, 5, 25, $error, $textColor);
-		
-		imagepng($img, $targetPath.DS.$fileName);
-		imagedestroy($img);
-		
-		return [
-			'webPath' => DS . 'img' . DS . 'graphs' .DS . $fileName,
-			'diskPath' => $targetPath.DS.$fileName
-		];
-	}
+class GrapherHelper extends AppHelper
+{
+
+    public function createGrapherErrorPng($error)
+    {
+
+        $targetPath = WWW_ROOT.'img'.DS.'graphs';
+        $fileName = md5(rand().time().rand()).'.png';
+
+        $img = imagecreatetruecolor(947, 173);
+        imagesavealpha($img, true);
+        $background = imagecolorallocatealpha($img, 255, 110, 110, 0);
+        $textColor = imagecolorallocate($img, 255, 255, 255);
+        imagefill($img, 0, 0, $background);
+
+        imagestring($img, 5, 5, 5, 'Error:', $textColor);
+        imagestring($img, 5, 5, 25, $error, $textColor);
+
+        imagepng($img, $targetPath.DS.$fileName);
+        imagedestroy($img);
+
+        return [
+            'webPath'  => DS.'img'.DS.'graphs'.DS.$fileName,
+            'diskPath' => $targetPath.DS.$fileName,
+        ];
+    }
 }

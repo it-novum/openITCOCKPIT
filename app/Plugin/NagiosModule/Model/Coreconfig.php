@@ -23,42 +23,47 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Coreconfig extends NagiosModuleAppModel{
-	public $useTable = false;
-	
-	/*
-	 * NOTICE:
-	 * You can use this Model, where you cant use the CoreConfigComponent, for example in a shell
-	 */
-	
-	function __construct($id = false, $table = null, $ds = null){
-		parent::__construct($id, $table, $ds);
-		$this->Systemsetting = ClassRegistry::init('Systemsetting');
-		$this->_systemsettings = $this->Systemsetting->findAsArray();
-		$this->Config = [];
-	}
-	
-	public function _read($key = null){ //sadly read() is used by cakePHP, we dont want to overright this!
-		if(empty($this->Config)){
-			$this->loadConfigAsArray();
-		}
-		if(isset($this->Config[$key])){
-			return $this->Config[$key];
-		}
-		return flase;
-	}
-	
-	public function loadConfigAsArray(){
-		$config = $this->_systemsettings['MONITORING']['MONITORING.CORECONFIG'];
-		$coreconfig = fopen($config, "r");
-		while(!feof($coreconfig)){
-			$line = trim(fgets($coreconfig));
-			$strpos = strpos($line, '#');
-			
-			if($line != '' && ($strpos === false || $strpos > 0)){
-				$parsed = explode('=', $line, 2);
-				$this->Config[$parsed[0]] = $parsed[1];
-			}
-		}
-	}
+class Coreconfig extends NagiosModuleAppModel
+{
+    public $useTable = false;
+
+    /*
+     * NOTICE:
+     * You can use this Model, where you cant use the CoreConfigComponent, for example in a shell
+     */
+
+    function __construct($id = false, $table = null, $ds = null)
+    {
+        parent::__construct($id, $table, $ds);
+        $this->Systemsetting = ClassRegistry::init('Systemsetting');
+        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        $this->Config = [];
+    }
+
+    public function _read($key = null)
+    { //sadly read() is used by cakePHP, we dont want to overright this!
+        if (empty($this->Config)) {
+            $this->loadConfigAsArray();
+        }
+        if (isset($this->Config[$key])) {
+            return $this->Config[$key];
+        }
+
+        return flase;
+    }
+
+    public function loadConfigAsArray()
+    {
+        $config = $this->_systemsettings['MONITORING']['MONITORING.CORECONFIG'];
+        $coreconfig = fopen($config, "r");
+        while (!feof($coreconfig)) {
+            $line = trim(fgets($coreconfig));
+            $strpos = strpos($line, '#');
+
+            if ($line != '' && ($strpos === false || $strpos > 0)) {
+                $parsed = explode('=', $line, 2);
+                $this->Config[$parsed[0]] = $parsed[1];
+            }
+        }
+    }
 }

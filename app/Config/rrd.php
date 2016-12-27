@@ -24,9 +24,9 @@
 //	confirmation.
 
 
-$config = array(
-    'rrd' => array(
-        'allowedExtensions' => array('rrd', 'xml'),
-        'path' => '/opt/openitc/nagios/share/perfdata/',
-    )
-);
+$config = [
+    'rrd' => [
+        'allowedExtensions' => ['rrd', 'xml'],
+        'path'              => '/opt/openitc/nagios/share/perfdata/',
+    ],
+];

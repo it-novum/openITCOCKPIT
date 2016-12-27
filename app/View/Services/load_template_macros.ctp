@@ -32,13 +32,13 @@
  *      |__/
 */
 $customvariable = [
-	'html' => '',
-	'count' => 0
+    'html'  => '',
+    'count' => 0,
 ];
 
-if(!empty($servicetemplate['Customvariable'])):
-	$this->CustomVariables->setup('SERVICE', OBJECT_SERVICE);
-	$customvariable['html'] = $this->CustomVariables->fetchHtml($servicetemplate['Customvariable']);
-	$customvariable['count'] = sizeof($servicetemplate['Customvariable']);
+if (!empty($servicetemplate['Customvariable'])):
+    $this->CustomVariables->setup('SERVICE', OBJECT_SERVICE);
+    $customvariable['html'] = $this->CustomVariables->fetchHtml($servicetemplate['Customvariable']);
+    $customvariable['count'] = sizeof($servicetemplate['Customvariable']);
 endif;
 echo json_encode($customvariable);

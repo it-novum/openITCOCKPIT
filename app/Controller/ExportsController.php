@@ -23,119 +23,124 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ExportsController extends AppController{
-	public $layout = 'Admin.default';
+class ExportsController extends AppController
+{
+    public $layout = 'Admin.default';
 
-	public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-		'RequestHandler',
-		'AdditionalLinks',
-		'GearmanClient',
-	];
-	public $helpers = [
-		'ListFilter.ListFilter',
-	];
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+        'AdditionalLinks',
+        'GearmanClient',
+    ];
+    public $helpers = [
+        'ListFilter.ListFilter',
+    ];
 
-	public function index(){
-		App::uses('UUID', 'Lib');
-		Configure::load('gearman');
-		$this->Config = Configure::read('gearman');
+    public function index()
+    {
+        App::uses('UUID', 'Lib');
+        Configure::load('gearman');
+        $this->Config = Configure::read('gearman');
 
-		$this->GearmanClient->client->setTimeout(5000);
-		$gearmanReachable = @$this->GearmanClient->client->ping(true);
+        $this->GearmanClient->client->setTimeout(5000);
+        $gearmanReachable = @$this->GearmanClient->client->ping(true);
 
-		$exportRunning = true;
-		$result = $this->Export->findByTask('export_started');
-		if(empty($result)){
-			$exportRunning = false;
-		}else{
-			if($result['Export']['finished'] == 1){
-				$exportRunning = false;
-			}
-		}
+        $exportRunning = true;
+        $result = $this->Export->findByTask('export_started');
+        if (empty($result)) {
+            $exportRunning = false;
+        } else {
+            if ($result['Export']['finished'] == 1) {
+                $exportRunning = false;
+            }
+        }
 
-		$this->loadModel('Systemsetting');
-		$this->set('gearmanReachable', $gearmanReachable);
-		$this->set('exportRunning', $exportRunning);
-		$this->Frontend->setJson('exportRunning', $exportRunning);
-		$this->Frontend->setJson('uuidRegEx', UUID::JSregex());
-	}
+        $this->loadModel('Systemsetting');
+        $this->set('gearmanReachable', $gearmanReachable);
+        $this->set('exportRunning', $exportRunning);
+        $this->Frontend->setJson('exportRunning', $exportRunning);
+        $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
+    }
 
-	public function broadcast(){
-		$this->allowOnlyAjaxRequests();
-		$_exportRecords = $this->Export->find('all');
+    public function broadcast()
+    {
+        $this->allowOnlyAjaxRequests();
+        $_exportRecords = $this->Export->find('all');
 
-		$exportRecords = [];
+        $exportRecords = [];
 
-		$exportFinished = [
-			'finished' => false,
-			'successfully' => false
-		];
+        $exportFinished = [
+            'finished'     => false,
+            'successfully' => false,
+        ];
 
-		foreach($_exportRecords as $exportRecord){
-			$exportRecords[$exportRecord['Export']['id']] = [
-				'task' => $exportRecord['Export']['task'],
-				'text' => h($exportRecord['Export']['text']),
-				'finished' => $exportRecord['Export']['finished'],
-				'successfully' => $exportRecord['Export']['successfully'],
-			];
+        foreach ($_exportRecords as $exportRecord) {
+            $exportRecords[$exportRecord['Export']['id']] = [
+                'task'         => $exportRecord['Export']['task'],
+                'text'         => h($exportRecord['Export']['text']),
+                'finished'     => $exportRecord['Export']['finished'],
+                'successfully' => $exportRecord['Export']['successfully'],
+            ];
 
-			if($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1){
-				$exportFinished = [
-					'finished' => true,
-					'successfully' => (bool)$exportRecord['Export']['successfully']
-				];
-			}
-		}
+            if ($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1) {
+                $exportFinished = [
+                    'finished'     => true,
+                    'successfully' => (bool)$exportRecord['Export']['successfully'],
+                ];
+            }
+        }
 
-		$this->set(compact(['exportRecords', 'exportFinished']));
-		$this->set('_serialize', ['exportRecords', 'exportFinished']);
-	}
+        $this->set(compact(['exportRecords', 'exportFinished']));
+        $this->set('_serialize', ['exportRecords', 'exportFinished']);
+    }
 
-	public function launchExport($createBackup = 1){
-		if(!$this->request->is('ajax')){
-			throw new MethodNotAllowedException();
-		}
-		//session_write_close();
+    public function launchExport($createBackup = 1)
+    {
+        if (!$this->request->is('ajax')) {
+            throw new MethodNotAllowedException();
+        }
+        //session_write_close();
 
-		$exportRunning = true;
-		$result = $this->Export->findByTask('export_started');
-		if(empty($result)){
-			$exportRunning = false;
-		}else{
-			if($result['Export']['finished'] == 1){
-				$exportRunning = false;
-			}
-		}
+        $exportRunning = true;
+        $result = $this->Export->findByTask('export_started');
+        if (empty($result)) {
+            $exportRunning = false;
+        } else {
+            if ($result['Export']['finished'] == 1) {
+                $exportRunning = false;
+            }
+        }
 
-		$exportStarted = false;
-		if($exportRunning === false){
-			//Remove old records from DB that javascript is not confused
+        $exportStarted = false;
+        if ($exportRunning === false) {
+            //Remove old records from DB that javascript is not confused
 
-			$this->Export->deleteAll(true);
+            $this->Export->deleteAll(true);
 
-			Configure::load('gearman');
-			$this->Config = Configure::read('gearman');
-			$this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
-			$exportStarted = true;
-		}
+            Configure::load('gearman');
+            $this->Config = Configure::read('gearman');
+            $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'export_start_export', 'backup' => (int)$createBackup]), $this->Config['password']));
+            $exportStarted = true;
+        }
 
-		$export = [
-			'exportRunning' => $exportRunning,
-			'exportStarted' => $exportStarted
-		];
-		$this->set('export', $export);
-		$this->set('_serialize', ['export']);
-	}
+        $export = [
+            'exportRunning' => $exportRunning,
+            'exportStarted' => $exportStarted,
+        ];
+        $this->set('export', $export);
+        $this->set('_serialize', ['export']);
+    }
 
-	public function verifyConfig(){
-		//$this->allowOnlyAjaxRequests();
-		Configure::load('gearman');
-		$this->Config = Configure::read('gearman');
-		$result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
-		$result = unserialize($result);
-		$this->set('result', $result);
-		$this->set('_serialize', ['result']);
-	}
+    public function verifyConfig()
+    {
+        //$this->allowOnlyAjaxRequests();
+        Configure::load('gearman');
+        $this->Config = Configure::read('gearman');
+        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
+        $result = unserialize($result);
+        $this->set('result', $result);
+        $this->set('_serialize', ['result']);
+    }
 }

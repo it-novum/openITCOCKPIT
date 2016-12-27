@@ -4,11 +4,13 @@ use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 use itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader;
 use itnovum\openITCOCKPIT\ApiShell\RootUser;
 
-class ApiShell extends AppShell{
+class ApiShell extends AppShell
+{
 
-    public function main(){
+    public function main()
+    {
         $rootUser = new RootUser();
-        if($rootUser->isRootUser() === false){
+        if ($rootUser->isRootUser() === false) {
             $this->err('This shell only can be used by root user');
             exit(1);
         }
@@ -18,7 +20,7 @@ class ApiShell extends AppShell{
         $optionParser->parse($this->params, $this->args);
 
         $apiExtensionLoader = new ApiExtensionLoader($this, $optionParser);
-        if($apiExtensionLoader->isAvailable() === false){
+        if ($apiExtensionLoader->isAvailable() === false) {
             $this->err(sprintf('Model %s is not supported by this shell', $optionParser->getModel()));
             exit(1);
         }
@@ -29,19 +31,22 @@ class ApiShell extends AppShell{
 
     }
 
-    public function getOptionParser(){
+    public function getOptionParser()
+    {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'plugin' => ['short' => 'p', 'help' => 'Name of the plugin to modify. If empty the request gets routet to the core'],
-            'model' => ['short' => 'm', 'help' => 'Name of the model', 'requried' => true],
+            'model'  => ['short' => 'm', 'help' => 'Name of the model', 'requried' => true],
             'action' => ['short' => 'a', 'help' => "add|update|delete"],
-            'data' => ['short' => 'd', 'help' => "String of data"],
+            'data'   => ['short' => 'd', 'help' => "String of data"],
 
         ]);
+
         return $parser;
     }
 
-    public function _welcome(){
+    public function _welcome()
+    {
 
     }
 

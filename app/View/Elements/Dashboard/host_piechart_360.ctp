@@ -24,35 +24,35 @@
 //	confirmation.
 ?>
 <div class="row no-padding">
-	<div class="col-xs-12 text-center">
-		<?php
-		if($widgetHostStateArray['total'] > 0):
-			$overview_chart =  $this->PieChart->createPieChart($widgetHostStateArray['state']);
-			echo $this->Html->image('/img/charts/'.$overview_chart);
-			$stateColors = [
-				'ok',
-				'critical',
-				'unknown'
-			];?>
-			<div class="text-center font-xs">
-				<?php foreach($widgetHostStateArray['state'] as $state => $stateCount):?>
-					<div class="col-md-4 no-padding">
-						<a href="<?php echo Router::url([
-							'controller' => 'hosts',
-							'action' => 'index',
-							'plugin' => '',
-							'Filter.Hoststatus.current_state['.$state.']' => 1
-						]); ?>">
-							<i class="fa fa-square <?php echo $stateColors[$state]?>"></i>
-							<?php echo $stateCount .' ('.round($stateCount/$widgetHostStateArray['total'] * 100, 2).' %)'; ?>
-						</a>
-					</div>
-				<?php endforeach; ?>
-			</div>
-		<?php else:?>
-			<div class="text-muted padding-top-80">
-				<h5><?php echo __('No hosts are monitored on your system. Please create first a host'); ?></h5>
-			</div>
-		<?php endif; ?>
-	</div>
+    <div class="col-xs-12 text-center">
+        <?php
+        if ($widgetHostStateArray['total'] > 0):
+            $overview_chart = $this->PieChart->createPieChart($widgetHostStateArray['state']);
+            echo $this->Html->image('/img/charts/'.$overview_chart);
+            $stateColors = [
+                'ok',
+                'critical',
+                'unknown',
+            ]; ?>
+            <div class="text-center font-xs">
+                <?php foreach ($widgetHostStateArray['state'] as $state => $stateCount): ?>
+                    <div class="col-md-4 no-padding">
+                        <a href="<?php echo Router::url([
+                            'controller'                                  => 'hosts',
+                            'action'                                      => 'index',
+                            'plugin'                                      => '',
+                            'Filter.Hoststatus.current_state['.$state.']' => 1,
+                        ]); ?>">
+                            <i class="fa fa-square <?php echo $stateColors[$state] ?>"></i>
+                            <?php echo $stateCount.' ('.round($stateCount / $widgetHostStateArray['total'] * 100, 2).' %)'; ?>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="text-muted padding-top-80">
+                <h5><?php echo __('No hosts are monitored on your system. Please create first a host'); ?></h5>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>

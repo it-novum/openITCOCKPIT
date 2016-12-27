@@ -30,50 +30,55 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
 class CustomVariableTest extends \CakeTestCase
 {
-	public function testInstance(){
-		$CustomVariable = new CustomVariable('key', 'value');
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable', $CustomVariable);
-	}
+    public function testInstance()
+    {
+        $CustomVariable = new CustomVariable('key', 'value');
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable', $CustomVariable);
+    }
 
-	public function testGetValuesBack(){
-		$CustomVariable = new CustomVariable('key', 'value', 10, 2048);
-		$this->assertEquals('key', $CustomVariable->getName());
-		$this->assertEquals('value', $CustomVariable->getValue());
-		$this->assertEquals(10, $CustomVariable->getId());
-		$this->assertEquals(2048, $CustomVariable->getObjecttypeId());
-	}
+    public function testGetValuesBack()
+    {
+        $CustomVariable = new CustomVariable('key', 'value', 10, 2048);
+        $this->assertEquals('key', $CustomVariable->getName());
+        $this->assertEquals('value', $CustomVariable->getValue());
+        $this->assertEquals(10, $CustomVariable->getId());
+        $this->assertEquals(2048, $CustomVariable->getObjecttypeId());
+    }
 
-	public function testGetCustomVariableAsArrayWithId(){
-		$CustomVariable = new CustomVariable('key', 'value', 10);
-		$assert = [
-			'name' => 'key',
-			'value' => 'value',
-			'id' => 10,
-		];
+    public function testGetCustomVariableAsArrayWithId()
+    {
+        $CustomVariable = new CustomVariable('key', 'value', 10);
+        $assert = [
+            'name'  => 'key',
+            'value' => 'value',
+            'id'    => 10,
+        ];
 
-		$this->assertEquals($assert, $CustomVariable->asArray());
-	}
+        $this->assertEquals($assert, $CustomVariable->asArray());
+    }
 
-	public function testGetCustomVariableAsArrayWithObjecttypeId(){
-		$CustomVariable = new CustomVariable('key', 'value', 0, 2048);
-		$assert = [
-			'name' => 'key',
-			'value' => 'value',
-			'objecttype_id' => 2048
-		];
+    public function testGetCustomVariableAsArrayWithObjecttypeId()
+    {
+        $CustomVariable = new CustomVariable('key', 'value', 0, 2048);
+        $assert = [
+            'name'          => 'key',
+            'value'         => 'value',
+            'objecttype_id' => 2048,
+        ];
 
-		$this->assertEquals($assert, $CustomVariable->asArray());
-	}
+        $this->assertEquals($assert, $CustomVariable->asArray());
+    }
 
-	public function testGetCustomVariableAsArrayWithIdAndObjecttypeId(){
-		$CustomVariable = new CustomVariable('key', 'value', 10, 2048);
-		$assert = [
-			'name' => 'key',
-			'value' => 'value',
-			'id' => 10,
-			'objecttype_id' => 2048
-		];
+    public function testGetCustomVariableAsArrayWithIdAndObjecttypeId()
+    {
+        $CustomVariable = new CustomVariable('key', 'value', 10, 2048);
+        $assert = [
+            'name'          => 'key',
+            'value'         => 'value',
+            'id'            => 10,
+            'objecttype_id' => 2048,
+        ];
 
-		$this->assertEquals($assert, $CustomVariable->asArray());
-	}
+        $this->assertEquals($assert, $CustomVariable->asArray());
+    }
 }

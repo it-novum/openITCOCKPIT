@@ -23,60 +23,70 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CustomValidationErrorsComponent extends Component{
-	public $customFields = [];
-	public $Model = null;
-	public function initialize(Controller $controller) {
-	    $this->Controller = $controller;
-	}
-	
-	public function loadModel(Model $model){
-		$this->Model = $model;
-	}
+class CustomValidationErrorsComponent extends Component
+{
+    public $customFields = [];
+    public $Model = null;
 
-	/**
-	 * Function to set the custom fields that errors should be displayed in the frontend
-	 * @param array $fields
-	 */
-	public function customFields($fields = []){
-		$this->customFields = $fields;
-	}
-	
-	/**
-	 * Checks for validation errors on fields, that are not generated with $this->Form
-	 */
-	public function fetchErrors(){
-		foreach($this->customFields as $fieldName){
-			if(isset($this->Model->validationErrors[$fieldName])){
-				$this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[$fieldName]);
-			}
-		}
-	}
-	
-	public function fetchErrorsFromArray(){
-		foreach($this->customFields as $fieldName){
-			if(isset($this->Model->validationErrors[0][$fieldName])){
-				$this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[0][$fieldName]);
-			}
-		}
-	}
-	
-	/**
-	 * Checks if a user submit a form with a validation error and if there are now custom fields (not echo $this->Form->input)
-	 * that needs to be refilled now
-	 *
-	 * @param  array $customFildsToRefill fields to check as array
-	 * @return void
-	 */
-	public function checkForRefill($customFildsToRefill = []){
-		$refill = [];
-		foreach($customFildsToRefill as $modelName => $fieldsArray){
-			foreach($fieldsArray as $field){
-				if(isset($this->Controller->request->data[$modelName][$field])){
-					$refill[$modelName][$field] = $this->Controller->request->data[$modelName][$field];
-				}
-			}
-		}
-		$this->Controller->set('customRefill', $refill);
-	}
+    public function initialize(Controller $controller)
+    {
+        $this->Controller = $controller;
+    }
+
+    public function loadModel(Model $model)
+    {
+        $this->Model = $model;
+    }
+
+    /**
+     * Function to set the custom fields that errors should be displayed in the frontend
+     *
+     * @param array $fields
+     */
+    public function customFields($fields = [])
+    {
+        $this->customFields = $fields;
+    }
+
+    /**
+     * Checks for validation errors on fields, that are not generated with $this->Form
+     */
+    public function fetchErrors()
+    {
+        foreach ($this->customFields as $fieldName) {
+            if (isset($this->Model->validationErrors[$fieldName])) {
+                $this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[$fieldName]);
+            }
+        }
+    }
+
+    public function fetchErrorsFromArray()
+    {
+        foreach ($this->customFields as $fieldName) {
+            if (isset($this->Model->validationErrors[0][$fieldName])) {
+                $this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[0][$fieldName]);
+            }
+        }
+    }
+
+    /**
+     * Checks if a user submit a form with a validation error and if there are now custom fields (not echo
+     * $this->Form->input) that needs to be refilled now
+     *
+     * @param  array $customFildsToRefill fields to check as array
+     *
+     * @return void
+     */
+    public function checkForRefill($customFildsToRefill = [])
+    {
+        $refill = [];
+        foreach ($customFildsToRefill as $modelName => $fieldsArray) {
+            foreach ($fieldsArray as $field) {
+                if (isset($this->Controller->request->data[$modelName][$field])) {
+                    $refill[$modelName][$field] = $this->Controller->request->data[$modelName][$field];
+                }
+            }
+        }
+        $this->Controller->set('customRefill', $refill);
+    }
 }

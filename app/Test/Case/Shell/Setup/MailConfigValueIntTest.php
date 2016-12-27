@@ -29,27 +29,32 @@ namespace itnovum\openITCOCKPIT\SetupShell;
 
 class MailConfigValueIntTest extends \PHPUnit_Framework_TestCase
 {
-    public function testIsNotInt(){
+    public function testIsNotInt()
+    {
         $this->setExpectedException('\itnovum\openITCOCKPIT\Exceptions\NotIntException');
         $intValue = new MailConfigValueInt('string');
     }
 
-    public function testGetIntValueForConfig(){
+    public function testGetIntValueForConfig()
+    {
         $intValue = new MailConfigValueInt(5);
         $this->assertEquals(5, $intValue->getValueForConfig());
     }
 
-    public function testGetIntValue(){
+    public function testGetIntValue()
+    {
         $intValue = new MailConfigValueInt(5);
         $this->assertEquals(5, $intValue->getValue());
     }
 
-    public function testGetZeroValue(){
+    public function testGetZeroValue()
+    {
         $intValue = new MailConfigValueInt(0);
         $this->assertEquals(0, $intValue->getValue());
     }
 
-    public function testGetZeroValueForConfig(){
+    public function testGetZeroValueForConfig()
+    {
         $intValue = new MailConfigValueInt(0);
         $this->assertEquals(0, $intValue->getValueForConfig());
     }

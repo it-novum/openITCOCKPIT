@@ -23,46 +23,51 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Systemsetting extends AppModel{
-	
-	public function findNice(){
-		$systemsettings = $this->find('all');
-		$all_systemsettings = [];
+class Systemsetting extends AppModel
+{
 
-		foreach($systemsettings as $systemsetting){
-			$all_systemsettings[$systemsetting['Systemsetting']['section']][] = $systemsetting['Systemsetting'];
-		}
+    public function findNice()
+    {
+        $systemsettings = $this->find('all');
+        $all_systemsettings = [];
 
-		return $all_systemsettings;
-	}
-	
-	public function findAsArray(){
-		$return = [];
-		$systemsettings = $this->findNice();
-		
-		foreach($systemsettings as $key => $values){
-			$return[$key] = [];
-			foreach($values as $value){
-				$return[$key][$value['key']] = $value['value'];
-			}
-		}
-		
-		return $return;
-	}
-	
-	public function findAsArraySection($section = ''){
-		$return = [];
-		$systemsettings = $this->findAllBySection($section);
+        foreach ($systemsettings as $systemsetting) {
+            $all_systemsettings[$systemsetting['Systemsetting']['section']][] = $systemsetting['Systemsetting'];
+        }
 
-		$all_systemsettings = [];
-		$all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section='.$section.']');
-		
-		foreach($all_systemsettings as $key => $values){
-			$return[$key] = [];
-			foreach($values as $value){
-				$return[$key][$value['key']] = $value['value'];
-			}
-		}
-		return $return;
-	}
+        return $all_systemsettings;
+    }
+
+    public function findAsArray()
+    {
+        $return = [];
+        $systemsettings = $this->findNice();
+
+        foreach ($systemsettings as $key => $values) {
+            $return[$key] = [];
+            foreach ($values as $value) {
+                $return[$key][$value['key']] = $value['value'];
+            }
+        }
+
+        return $return;
+    }
+
+    public function findAsArraySection($section = '')
+    {
+        $return = [];
+        $systemsettings = $this->findAllBySection($section);
+
+        $all_systemsettings = [];
+        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section='.$section.']');
+
+        foreach ($all_systemsettings as $key => $values) {
+            $return[$key] = [];
+            foreach ($values as $value) {
+                $return[$key][$value['key']] = $value['value'];
+            }
+        }
+
+        return $return;
+    }
 }

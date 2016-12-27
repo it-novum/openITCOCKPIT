@@ -28,64 +28,72 @@ namespace itnovum\openITCOCKPIT\Core;
 
 class ContainerRepositoryTest extends \CakeTestCase
 {
-	public function testInstance(){
-		$ContainerRepository = new ContainerRepository();
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ContainerRepository', $ContainerRepository);
-	}
+    public function testInstance()
+    {
+        $ContainerRepository = new ContainerRepository();
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ContainerRepository', $ContainerRepository);
+    }
 
-	public function testAddContainerWithInt(){
-		$ContainerRepository = new ContainerRepository([1,2]);
-		$ContainerRepository->addContainer(3);
+    public function testAddContainerWithInt()
+    {
+        $ContainerRepository = new ContainerRepository([1, 2]);
+        $ContainerRepository->addContainer(3);
 
-		$assert = [1,2,3];
-		$this->assertEquals($assert, $ContainerRepository->getContainer());
-	}
+        $assert = [1, 2, 3];
+        $this->assertEquals($assert, $ContainerRepository->getContainer());
+    }
 
-	public function testAddContainerWithStrings(){
-		$ContainerRepository = new ContainerRepository(['1',2]);
-		$ContainerRepository->addContainer('3');
+    public function testAddContainerWithStrings()
+    {
+        $ContainerRepository = new ContainerRepository(['1', 2]);
+        $ContainerRepository->addContainer('3');
 
-		$assert = [1,2,3];
-		$this->assertEquals($assert, $ContainerRepository->getContainer());
-	}
+        $assert = [1, 2, 3];
+        $this->assertEquals($assert, $ContainerRepository->getContainer());
+    }
 
 
-	public function testAddContainerWithArray(){
-		$ContainerRepository = new ContainerRepository([1,2]);
-		$ContainerRepository->addContainer([1,3,5,10]);
+    public function testAddContainerWithArray()
+    {
+        $ContainerRepository = new ContainerRepository([1, 2]);
+        $ContainerRepository->addContainer([1, 3, 5, 10]);
 
-		$assert = [1,2,3,5,10];
-		$this->assertEquals($assert, $ContainerRepository->getContainer());
-	}
+        $assert = [1, 2, 3, 5, 10];
+        $this->assertEquals($assert, $ContainerRepository->getContainer());
+    }
 
-	public function testRemoveContainerInt(){
-		$ContainerRepository = new ContainerRepository([1,2,3]);
-		$ContainerRepository->removeContainerId(2);
+    public function testRemoveContainerInt()
+    {
+        $ContainerRepository = new ContainerRepository([1, 2, 3]);
+        $ContainerRepository->removeContainerId(2);
 
-		$assert = [1,3];
-		$this->assertEquals($assert, $ContainerRepository->getContainer());
-	}
+        $assert = [1, 3];
+        $this->assertEquals($assert, $ContainerRepository->getContainer());
+    }
 
-	public function testRemoveContainerArray(){
-		$ContainerRepository = new ContainerRepository([1,2,3,5,6]);
-		$ContainerRepository->removeContainerId([2,5]);
+    public function testRemoveContainerArray()
+    {
+        $ContainerRepository = new ContainerRepository([1, 2, 3, 5, 6]);
+        $ContainerRepository->removeContainerId([2, 5]);
 
-		$assert = [1,3,6];
-		$this->assertEquals($assert, $ContainerRepository->getContainer());
-	}
+        $assert = [1, 3, 6];
+        $this->assertEquals($assert, $ContainerRepository->getContainer());
+    }
 
-	public function testAddContainerExistsTrue(){
-		$ContainerRepository = new ContainerRepository([1,2]);
-		$result = $ContainerRepository->exists(1);
+    public function testAddContainerExistsTrue()
+    {
+        $ContainerRepository = new ContainerRepository([1, 2]);
+        $result = $ContainerRepository->exists(1);
 
-		$this->assertTrue($result);
-	}
+        $this->assertTrue($result);
+    }
 
-	public function testAddContainerExistsFalse(){
-		$ContainerRepository = new ContainerRepository([]);
-		$result = $ContainerRepository->exists(1);
+    public function testAddContainerExistsFalse()
+    {
+        $ContainerRepository = new ContainerRepository([]);
+        $result = $ContainerRepository->exists(1);
 
-		$this->assertFalse($result);
-	}
+        $this->assertFalse($result);
+    }
 
 }

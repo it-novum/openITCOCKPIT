@@ -2,9 +2,9 @@
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('en-x','A4','','',32,25,47,47,10,10); 
+$mpdf = new mPDF('en-x', 'A4', '', '', 32, 25, 47, 47, 10, 10);
 
-$mpdf->mirrorMargins = 1;	// Use different Odd/Even headers and footers and mirror margins
+$mpdf->mirrorMargins = 1;    // Use different Odd/Even headers and footers and mirror margins
 
 $header = '
 <table width="100%" style="border-bottom: 1px solid #000000; vertical-align: bottom; font-family: serif; font-size: 9pt; color: #000088;"><tr>
@@ -26,9 +26,9 @@ $footerE = '<div align="center">See <a href="http://mpdf1.com/manual/index.php">
 
 
 $mpdf->SetHTMLHeader($header);
-$mpdf->SetHTMLHeader($headerE,'E');
+$mpdf->SetHTMLHeader($headerE, 'E');
 $mpdf->SetHTMLFooter($footer);
-$mpdf->SetHTMLFooter($footerE,'E');
+$mpdf->SetHTMLFooter($footerE, 'E');
 
 
 $html = '

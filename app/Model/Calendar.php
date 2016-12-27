@@ -23,85 +23,89 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Calendar extends AppModel{
+class Calendar extends AppModel
+{
 
-	public $hasMany = [
-		'CalendarHoliday' => [
-			'className' => 'CalendarHoliday',
-			'dependent' => true
-		]
-	];
+    public $hasMany = [
+        'CalendarHoliday' => [
+            'className' => 'CalendarHoliday',
+            'dependent' => true,
+        ],
+    ];
 
-	public $belongsTo = ['Container'];
-	public $validate = [
-		'name' => [
-			'notBlank' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'container_id' => [
-			'notBlank' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs a numeric value.'
-			],
-			'notZero' => [
-				'rule' => ['comparison', '>', 0],
-				'message' => 'The value should be greate than zero.',
-			],
-		],
-	];
+    public $belongsTo = ['Container'];
+    public $validate = [
+        'name'         => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'container_id' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs a numeric value.',
+            ],
+            'notZero'  => [
+                'rule'    => ['comparison', '>', 0],
+                'message' => 'The value should be greate than zero.',
+            ],
+        ],
+    ];
 
-	public function prepareForSave($request_data){
-		$holidays = [];
-		foreach($request_data as $date => $holidayValues){
-			$holidays[] = [
-				'date' => $date,
-				'name' => $holidayValues['name'],
-				'default_holiday' => $holidayValues['default_holiday']
-			];
-		}
-		return $holidays;
-	}
+    public function prepareForSave($request_data)
+    {
+        $holidays = [];
+        foreach ($request_data as $date => $holidayValues) {
+            $holidays[] = [
+                'date'            => $date,
+                'name'            => $holidayValues['name'],
+                'default_holiday' => $holidayValues['default_holiday'],
+            ];
+        }
 
-	public function calendarsByContainerId($container_ids = [], $type = 'all'){
-		if(!is_array($container_ids)){
-			$container_ids = [$container_ids];
-		}
+        return $holidays;
+    }
 
-		$container_ids = array_unique($container_ids);
+    public function calendarsByContainerId($container_ids = [], $type = 'all')
+    {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
 
-		//Lookup for the tenant container of $container_id
-		$this->Container = ClassRegistry::init('Container');
+        $container_ids = array_unique($container_ids);
 
-		$tenantContainerIds = [];
+        //Lookup for the tenant container of $container_id
+        $this->Container = ClassRegistry::init('Container');
 
-		foreach($container_ids as $container_id){
-			if($container_id != ROOT_CONTAINER){
+        $tenantContainerIds = [];
 
-				// Get contaier id of the tenant container
-				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-				$path = $this->Container->getPath($container_id);
-				$tenantContainerIds[] = $path[1]['Container']['id'];
-			}else{
-				$tenantContainerIds[] = ROOT_CONTAINER;
-			}
-		}
-		$tenantContainerIds = array_unique($tenantContainerIds);
+        foreach ($container_ids as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
 
-		return $this->find($type, [
-			'conditions' => [
-				'Calendar.container_id' => $tenantContainerIds
-			],
-			'order' => [
-				'Calendar.name' => 'ASC'
-			]
-		]);
-	}
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $this->Container->getPath($container_id);
+                $tenantContainerIds[] = $path[1]['Container']['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        return $this->find($type, [
+            'conditions' => [
+                'Calendar.container_id' => $tenantContainerIds,
+            ],
+            'order'      => [
+                'Calendar.name' => 'ASC',
+            ],
+        ]);
+    }
 }

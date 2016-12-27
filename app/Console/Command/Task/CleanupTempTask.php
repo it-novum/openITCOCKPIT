@@ -23,41 +23,45 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CleanupTempTask extends AppShell{
+class CleanupTempTask extends AppShell
+{
 
-	public function execute($quiet = false){
-		$this->params['quiet'] = $quiet;
-		$this->stdout->styles('green', ['text' => 'green']);
-		$this->out('Delete temporary files...', false);
-		$this->clenupGrapher();
-		$this->clenupPiCharts();
-		$this->out('<green>   Ok</green>');
-		$this->hr();
-	}
-	
-	public function clenupGrapher(){
-		$path = WWW_ROOT . 'img' . DS . 'graphs';
-		if(is_dir($path)){
-			App::uses('Folder', 'Utility');
-			$folder = new Folder($path);
-			foreach($folder->find() as $file){
-				if(filemtime($path . DS . $file) < (time() - 120)){
-					unlink($path . DS . $file);
-				}
-			}
-		}
-	}
-	
-	public function clenupPiCharts(){
-		$path = WWW_ROOT . 'img' . DS . 'charts';
-		if(is_dir($path)){
-			App::uses('Folder', 'Utility');
-			$folder = new Folder($path);
-			foreach($folder->find() as $file){
-				if(filemtime($path . DS . $file) < (time() - 120)){
-					unlink($path . DS . $file);
-				}
-			}
-		}
-	}
+    public function execute($quiet = false)
+    {
+        $this->params['quiet'] = $quiet;
+        $this->stdout->styles('green', ['text' => 'green']);
+        $this->out('Delete temporary files...', false);
+        $this->clenupGrapher();
+        $this->clenupPiCharts();
+        $this->out('<green>   Ok</green>');
+        $this->hr();
+    }
+
+    public function clenupGrapher()
+    {
+        $path = WWW_ROOT.'img'.DS.'graphs';
+        if (is_dir($path)) {
+            App::uses('Folder', 'Utility');
+            $folder = new Folder($path);
+            foreach ($folder->find() as $file) {
+                if (filemtime($path.DS.$file) < (time() - 120)) {
+                    unlink($path.DS.$file);
+                }
+            }
+        }
+    }
+
+    public function clenupPiCharts()
+    {
+        $path = WWW_ROOT.'img'.DS.'charts';
+        if (is_dir($path)) {
+            App::uses('Folder', 'Utility');
+            $folder = new Folder($path);
+            foreach ($folder->find() as $file) {
+                if (filemtime($path.DS.$file) < (time() - 120)) {
+                    unlink($path.DS.$file);
+                }
+            }
+        }
+    }
 }

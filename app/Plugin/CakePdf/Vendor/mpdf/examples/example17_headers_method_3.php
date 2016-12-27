@@ -1,7 +1,6 @@
 <?php
 
 
-
 $html = '
 <!-- defines the headers/footers - this must occur before the headers/footers are set -->
 
@@ -42,9 +41,9 @@ mpdf-->
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('en-GB-x','A4','','',32,25,27,25,16,13); 
+$mpdf = new mPDF('en-GB-x', 'A4', '', '', 32, 25, 27, 25, 16, 13);
 
-$mpdf->mirrorMargins = 1;	// Use different Odd/Even headers and footers and mirror margins
+$mpdf->mirrorMargins = 1;    // Use different Odd/Even headers and footers and mirror margins
 
 $mpdf->WriteHTML($html);
 

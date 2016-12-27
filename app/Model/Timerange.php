@@ -23,64 +23,67 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Timerange extends AppModel{
-	public $tablePrefix = 'timeperiod_';
+class Timerange extends AppModel
+{
+    public $tablePrefix = 'timeperiod_';
 
-	public $validate = array(
-		'day'     => array(
-			'notBlank'  => array(
-			'rule'          => 'notBlank',
-			'message' => 'This field cannot be left blank.',
-			'required' => true
-			),
-		),
-		'start'     => array(
-			'notBlank'  => array(
-				'rule'          => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			),
-			'time' => array(
-				'rule'    => array('custom', '/^(([0-2][0-9]):([0-5][0-9]))$/'),
-				'message' => 'Please enter a valid time (HH:MM).',
-				'required' => true
-			),
-			'startBeforeEnd' => array(
-				'rule' => array('startBeforeEnd', 'end' ),
-				'message' => 'The start time must be before the end time.',
-			),
-		),
-		'end'     => array(
-			'notBlank'  => array(
-				'rule'          => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			),
-			'time' => array(
-				'rule'    => array('custom', '/^(([0-2][0-9]):([0-5][0-9])|(24:00))$/'),
-				'message' => 'Please enter a valid time (HH:MM).',
-				'required' => true
-			),
-		),
-	);
+    public $validate = [
+        'day'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'start' => [
+            'notBlank'       => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'           => [
+                'rule'     => ['custom', '/^(([0-2][0-9]):([0-5][0-9]))$/'],
+                'message'  => 'Please enter a valid time (HH:MM).',
+                'required' => true,
+            ],
+            'startBeforeEnd' => [
+                'rule'    => ['startBeforeEnd', 'end'],
+                'message' => 'The start time must be before the end time.',
+            ],
+        ],
+        'end'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'     => [
+                'rule'     => ['custom', '/^(([0-2][0-9]):([0-5][0-9])|(24:00))$/'],
+                'message'  => 'Please enter a valid time (HH:MM).',
+                'required' => true,
+            ],
+        ],
+    ];
 
-	public $belongsTo = array(
-		'Timeperiod' => array(
-			'className' => 'Timeperiod',
-			'dependent' => true
-		)
-	);
+    public $belongsTo = [
+        'Timeperiod' => [
+            'className' => 'Timeperiod',
+            'dependent' => true,
+        ],
+    ];
 
-	public function startBeforeEnd( $field=array(), $compare_field=null ) {
-		foreach( $field as $key => $value ){
-			$v1 = $value;
-			$v2 = $this->data[$this->name][ $compare_field ];
-			if($v1 > $v2) {
-				return false;
-			} else {
-				continue;
-			}
-		}
-		return true;
-	}
+    public function startBeforeEnd($field = [], $compare_field = null)
+    {
+        foreach ($field as $key => $value) {
+            $v1 = $value;
+            $v2 = $this->data[$this->name][$compare_field];
+            if ($v1 > $v2) {
+                return false;
+            } else {
+                continue;
+            }
+        }
+
+        return true;
+    }
 }

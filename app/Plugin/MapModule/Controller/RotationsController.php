@@ -23,92 +23,101 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class RotationsController extends MapModuleAppController {
-	public $layout = 'Admin.default';
-		public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-	];
-	public $helpers = [
-		'ListFilter.ListFilter',
-	];
+class RotationsController extends MapModuleAppController
+{
+    public $layout = 'Admin.default';
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+    ];
+    public $helpers = [
+        'ListFilter.ListFilter',
+    ];
 
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Rotation.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-			],
-		],
-	];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Rotation.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public $uses = ['MapModule.Rotation', 'MapModule.Map'];
+    public $uses = ['MapModule.Rotation', 'MapModule.Map'];
 
 
-	public function index(){
-		$all_rotations = $this->Paginator->paginate();
+    public function index()
+    {
+        $all_rotations = $this->Paginator->paginate();
 
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
 
-		$this->set(compact(['all_rotations']));
-	}
+        $this->set(compact(['all_rotations']));
+    }
 
-	public function add(){
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Map'] = $this->request->data['Rotation']['Map'];
-			if($this->Rotation->save($this->request->data)){
-				$this->setFlash(__('Rotation saved successfully'));
-				return $this->redirect(['action' => 'index']);
-			}
-			$this->setFlash(__('Could not save data'), false);
-			debug($this->Rotation->validationErrors);
-		}
+    public function add()
+    {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
+            if ($this->Rotation->save($this->request->data)) {
+                $this->setFlash(__('Rotation saved successfully'));
 
-		$maps = $this->Map->find('list');
-		$this->set(compact('maps'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->setFlash(__('Could not save data'), false);
+            debug($this->Rotation->validationErrors);
+        }
 
-	}
+        $maps = $this->Map->find('list');
+        $this->set(compact('maps'));
 
-		public function edit($id = null){
-		if(!$this->Rotation->exists($id)){
-			throw new NotFoundException(__('Invalid map rotation'));
-		}
+    }
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Map'] = $this->request->data['Rotation']['Map'];
-			if($this->Rotation->save($this->request->data)){
-				$this->setFlash(__('Rotation modifed successfully'));
-				return $this->redirect(['action' => 'index']);
-			}
-			$this->setFlash(__('Could not save data'), false);
-			debug($this->Rotation->validationErrors);
-		}
+    public function edit($id = null)
+    {
+        if (!$this->Rotation->exists($id)) {
+            throw new NotFoundException(__('Invalid map rotation'));
+        }
 
-		$rotation = $this->Rotation->findById($id);
-		$maps = $this->Map->find('list');
-		$this->set(compact('maps', 'rotation'));
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
+            if ($this->Rotation->save($this->request->data)) {
+                $this->setFlash(__('Rotation modifed successfully'));
 
-	}
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->setFlash(__('Could not save data'), false);
+            debug($this->Rotation->validationErrors);
+        }
 
-	public function delete($id = null){
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
+        $rotation = $this->Rotation->findById($id);
+        $maps = $this->Map->find('list');
+        $this->set(compact('maps', 'rotation'));
 
-		$this->Rotation->id = $id;
-		if (!$this->Rotation->exists()){
-			throw new NotFoundException(__('Invalid map rotation'));
-		}
+    }
 
-		if($this->Rotation->delete()){
-			$this->setFlash(__('Map rotation deleted successfully'));
-			return $this->redirect(['action' => 'index']);
-		}
-		$this->setFlash(__('Could not delete map rotation'), false);
-		return $this->redirect(['action' => 'index']);
+    public function delete($id = null)
+    {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
-	}
+        $this->Rotation->id = $id;
+        if (!$this->Rotation->exists()) {
+            throw new NotFoundException(__('Invalid map rotation'));
+        }
+
+        if ($this->Rotation->delete()) {
+            $this->setFlash(__('Map rotation deleted successfully'));
+
+            return $this->redirect(['action' => 'index']);
+        }
+        $this->setFlash(__('Could not delete map rotation'), false);
+
+        return $this->redirect(['action' => 'index']);
+
+    }
 }

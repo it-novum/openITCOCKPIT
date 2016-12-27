@@ -25,20 +25,21 @@
 ?>
 <div id="error_msg"></div>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-comments fa-fw "></i>
-				<?php echo __('Communication'); ?>
-		</h1>
-	</div>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-comments fa-fw "></i>
+            <?php echo __('Communication'); ?>
+        </h1>
+    </div>
 </div>
 
-<div class="jarviswidget jarviswidget-color-blueDark chat-widget" id="wid-id-1"  data-widget-editbutton="true" data-widget-fullscreenbutton="true">
+<div class="jarviswidget jarviswidget-color-blueDark chat-widget" id="wid-id-1" data-widget-editbutton="true"
+     data-widget-fullscreenbutton="true">
 
-	<header>
-		<span class="widget-icon"> <i class="fa fa-comments txt-color-white"></i> </span>
-		<h2> <?php echo __('Public Chat');?> </h2>
-		<?php /*
+    <header>
+        <span class="widget-icon"> <i class="fa fa-comments txt-color-white"></i> </span>
+        <h2> <?php echo __('Public Chat'); ?> </h2>
+        <?php /*
 		<div class="widget-toolbar">
 			<!-- add: non-hidden - to disable auto hide -->
 
@@ -63,25 +64,25 @@
 				</ul>
 			</div>
 		</div> */ ?>
-	</header>
+    </header>
 
-	<!-- widget div-->
-	<div>
-		<!-- widget edit box -->
-		<div class="jarviswidget-editbox">
-			<div>
-				<label>Title:</label>
-				<input type="text" />
-			</div>
-		</div>
-		<!-- end widget edit box -->
+    <!-- widget div-->
+    <div>
+        <!-- widget edit box -->
+        <div class="jarviswidget-editbox">
+            <div>
+                <label>Title:</label>
+                <input type="text"/>
+            </div>
+        </div>
+        <!-- end widget edit box -->
 
-		<div class="widget-body widget-hide-overflow no-padding">
-			<!-- content goes here -->
+        <div class="widget-body widget-hide-overflow no-padding">
+            <!-- content goes here -->
 
-			<!-- CHAT CONTAINER -->
-			<div id="chat-container">
-				<?php/*
+            <!-- CHAT CONTAINER -->
+            <div id="chat-container">
+                <?php /*
 				<span class="chat-list-open-close"><i class="fa fa-user"></i><b>!</b></span>
 
 				<div class="chat-list-body custom-scroll">
@@ -123,40 +124,43 @@
 						</form>
 					</div>
 				</div> */ ?>
-			</div>
+            </div>
 
-			<!-- CHAT BODY -->
-			<div id="chat-body" class="chat-body custom-scroll">
-				<ul>
-				</ul>
-			</div>
+            <!-- CHAT BODY -->
+            <div id="chat-body" class="chat-body custom-scroll">
+                <ul>
+                </ul>
+            </div>
 
-			<!-- CHAT FOOTER -->
-			<div class="chat-footer">
+            <!-- CHAT FOOTER -->
+            <div class="chat-footer">
 
-				<!-- CHAT TEXTAREA -->
-				<div class="textarea-div">
+                <!-- CHAT TEXTAREA -->
+                <div class="textarea-div">
 
-					<div class="typearea">
-						<textarea placeholder="<?php echo __('Write a reply...'); ?>" id="textarea-expand" class="custom-scroll"></textarea>
-					</div>
+                    <div class="typearea">
+                        <textarea placeholder="<?php echo __('Write a reply...'); ?>" id="textarea-expand"
+                                  class="custom-scroll"></textarea>
+                    </div>
 
-				</div>
+                </div>
 
-				<!-- CHAT REPLY/SEND -->
-				<span class="textarea-controls">
-					<button class="btn btn-sm btn-primary pull-right" >
-						<?php echo __('Send');?>
+                <!-- CHAT REPLY/SEND -->
+                <span class="textarea-controls">
+					<button class="btn btn-sm btn-primary pull-right">
+						<?php echo __('Send'); ?>
 					</button>
-					<span class="pull-right smart-form" style="margin-top: 3px; margin-right: 10px;"> <label class="checkbox pull-right">
-							<input type="checkbox" name="subscription" id="subscription" checked="checked" >
-							<i></i><?php echo __('Press'); ?> <strong> <?php echo __('ENTER'); ?> </strong> <?php echo __('to send'); ?> </label> </span> </span>
+					<span class="pull-right smart-form" style="margin-top: 3px; margin-right: 10px;"> <label
+                                class="checkbox pull-right">
+							<input type="checkbox" name="subscription" id="subscription" checked="checked">
+							<i></i><?php echo __('Press'); ?>
+                            <strong> <?php echo __('ENTER'); ?> </strong> <?php echo __('to send'); ?> </label> </span> </span>
 
-			</div>
+            </div>
 
-			<!-- end content -->
-		</div>
+            <!-- end content -->
+        </div>
 
-	</div>
-	<!-- end widget div -->
+    </div>
+    <!-- end widget div -->
 </div>

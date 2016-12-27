@@ -23,10 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NagiosController extends AppController{
-	//Wird nur für die Menüpunkte benötigt
-	public $layout = 'Admin.default';
-	function index(){
-		//...
-	}
+class NagiosController extends AppController
+{
+    //Wird nur für die Menüpunkte benötigt
+    public $layout = 'Admin.default';
+
+    function index()
+    {
+        //...
+    }
 }

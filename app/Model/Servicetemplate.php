@@ -23,414 +23,427 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicetemplate extends AppModel{
-	public $hasAndBelongsToMany = [
-		'Contactgroup' => [
-			'className' => 'Contactgroup',
-			'joinTable' => 'contactgroups_to_servicetemplates',
-			'foreignKey' => 'servicetemplate_id',
-			'associationForeignKey' => 'contactgroup_id',
-			'unique' => true,
-			'dependent' => true
-		],
-		'Contact' => [
-			'className' => 'Contact',
-			'joinTable' => 'contacts_to_servicetemplates',
-			'foreignKey' => 'servicetemplate_id',
-			'associationForeignKey' => 'contact_id',
-			'unique' => true,
-			'dependent' => true
-		],
-		'Servicetemplategroup' => [
-			'joinTable' => 'servicetemplates_to_servicetemplategroups',
-			'foreignKey' => 'servicetemplate_id',
-			'unique' => true,
-			'dependent'=> true
-		]
-	];
+class Servicetemplate extends AppModel
+{
+    public $hasAndBelongsToMany = [
+        'Contactgroup'         => [
+            'className'             => 'Contactgroup',
+            'joinTable'             => 'contactgroups_to_servicetemplates',
+            'foreignKey'            => 'servicetemplate_id',
+            'associationForeignKey' => 'contactgroup_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
+        'Contact'              => [
+            'className'             => 'Contact',
+            'joinTable'             => 'contacts_to_servicetemplates',
+            'foreignKey'            => 'servicetemplate_id',
+            'associationForeignKey' => 'contact_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
+        'Servicetemplategroup' => [
+            'joinTable'  => 'servicetemplates_to_servicetemplategroups',
+            'foreignKey' => 'servicetemplate_id',
+            'unique'     => true,
+            'dependent'  => true,
+        ],
+    ];
 
 
-	public $belongsTo = [
-		'Container' => [
-			'className' => 'Container',
-			'foreignKey' => 'container_id',
-		],
-		'CheckPeriod' => [
-			'className' => 'Timeperiod',
-			'foreignKey' => 'check_period_id',
-		],
-		'NotifyPeriod' => [
-			'className' => 'Timeperiod',
-			'foreignKey' => 'notify_period_id',
-		],
-		'CheckCommand' => [
-			'className' => 'Command',
-			'foreignKey' => 'command_id',
-		],
-		'EventhandlerCommand' => [
-			'className' => 'Command',
-			'foreignKey' => 'eventhandler_command_id',
-		],
-	];
+    public $belongsTo = [
+        'Container'           => [
+            'className'  => 'Container',
+            'foreignKey' => 'container_id',
+        ],
+        'CheckPeriod'         => [
+            'className'  => 'Timeperiod',
+            'foreignKey' => 'check_period_id',
+        ],
+        'NotifyPeriod'        => [
+            'className'  => 'Timeperiod',
+            'foreignKey' => 'notify_period_id',
+        ],
+        'CheckCommand'        => [
+            'className'  => 'Command',
+            'foreignKey' => 'command_id',
+        ],
+        'EventhandlerCommand' => [
+            'className'  => 'Command',
+            'foreignKey' => 'eventhandler_command_id',
+        ],
+    ];
 
-	public $hasMany = [
-		'Customvariable' => [
-			'className' => 'Customvariable',
-			'foreignKey' => 'object_id',
-			'conditions' => [
-				'objecttype_id' => OBJECT_SERVICETEMPLATE,
-			],
-			'dependent' => true
-		],
-		'Servicetemplatecommandargumentvalue' => [
-			'dependent' => true,
-		],
-		'Servicetemplateeventcommandargumentvalue' => [
-			'dependent' => true,
-		],
-		'Service' => [
-			'className' => 'Service',
-			'foreignKey' => 'servicetemplate_id',
-			'dependent' => true
-		],
+    public $hasMany = [
+        'Customvariable'                           => [
+            'className'  => 'Customvariable',
+            'foreignKey' => 'object_id',
+            'conditions' => [
+                'objecttype_id' => OBJECT_SERVICETEMPLATE,
+            ],
+            'dependent'  => true,
+        ],
+        'Servicetemplatecommandargumentvalue'      => [
+            'dependent' => true,
+        ],
+        'Servicetemplateeventcommandargumentvalue' => [
+            'dependent' => true,
+        ],
+        'Service'                                  => [
+            'className'  => 'Service',
+            'foreignKey' => 'servicetemplate_id',
+            'dependent'  => true,
+        ],
 
-	];
+    ];
 
-	public $validate = [
-		'container_id' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			]
-		],
-		'name' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank',
-				'required' => true
-			]
-		],
-		'description' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank',
-				'required' => true
-			]
-		],
-		'command_id' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'notZero' => [
-				'rule' => ['comparison', '>', 0],
-				'message' => 'This field cannot be left blank.',
-			],
+    public $validate = [
+        'container_id'               => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'name'                       => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+        'description'                => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+        'command_id'                 => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'notZero'    => [
+                'rule'    => ['comparison', '>', 0],
+                'message' => 'This field cannot be left blank.',
+            ],
 
-		],
-		'check_period_id' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'notZero' => [
-				'rule' => ['comparison', '>', 0],
-				'message' => 'This field cannot be left blank.',
-			],
+        ],
+        'check_period_id'            => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'notZero'    => [
+                'rule'    => ['comparison', '>', 0],
+                'message' => 'This field cannot be left blank.',
+            ],
 
-		],
-		'max_check_attempts' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field need to be numeric.'
-			],
-			'comparison' => [
-				'rule' => ['comparison', '>=', 1],
-				'message' => 'This value need to be at least 1'
-			]
-		],
-		'check_interval' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field need to be numeric.',
-			],
-			'comparison' => [
-				'rule' => ['comparison', '>=', 1],
-				'message' => 'This value need to be at least 1'
-			]
-		],
-		'retry_interval' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field need to be numeric.',
-			],
-			'comparison' => [
-				'rule' => ['comparison', '>=', 1],
-				'message' => 'This value need to be at least 1'
-			]
-		],
-		'notify_on_recovery' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_on_warning' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_on_unknown' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_on_critical' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_on_flapping' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_on_downtime' => [
-			'check_options' => [
-				'rule' => ['checkNotificationOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'allowEmpty' => true,
-				'required' => false
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'notify_period_id' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'notification_interval' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field need to be numeric.',
-			],
-			'comparison' => [
-				'rule' => ['comparison', '>=', 0],
-				'message' => 'This value need to be at least 0'
-			]
-		],
-		'flap_detection_on_ok' => [
-			'check_options' => [
-				'rule' => ['checkFlapDetectionOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'required' => false,
-				'allowEmpty' => true
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'flap_detection_on_warning' => [
-			'check_options' => [
-				'rule' => ['checkFlapDetectionOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'required' => false,
-				'allowEmpty' => true
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'flap_detection_on_unknown' => [
-			'check_options' => [
-				'rule' => ['checkFlapDetectionOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'required' => false,
-				'allowEmpty' => true
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		],
-		'flap_detection_on_critical' => [
-			'check_options' => [
-				'rule' => ['checkFlapDetectionOptions', 'service'],
-				'message' => 'You have to choose at least one option.',
-				'required' => false,
-				'allowEmpty' => true
-			],
-			'boolean' => [
-				'rule'    => ['boolean'],
-				'message' => 'Incorrect datatype'
-			]
-		]
-	];
+        ],
+        'max_check_attempts'         => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'    => [
+                'rule'    => 'numeric',
+                'message' => 'This field need to be numeric.',
+            ],
+            'comparison' => [
+                'rule'    => ['comparison', '>=', 1],
+                'message' => 'This value need to be at least 1',
+            ],
+        ],
+        'check_interval'             => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'    => [
+                'rule'    => 'numeric',
+                'message' => 'This field need to be numeric.',
+            ],
+            'comparison' => [
+                'rule'    => ['comparison', '>=', 1],
+                'message' => 'This value need to be at least 1',
+            ],
+        ],
+        'retry_interval'             => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'    => [
+                'rule'    => 'numeric',
+                'message' => 'This field need to be numeric.',
+            ],
+            'comparison' => [
+                'rule'    => ['comparison', '>=', 1],
+                'message' => 'This value need to be at least 1',
+            ],
+        ],
+        'notify_on_recovery'         => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_on_warning'          => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_on_unknown'          => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_on_critical'         => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_on_flapping'         => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_on_downtime'         => [
+            'check_options' => [
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'allowEmpty' => true,
+                'required'   => false,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'notify_period_id'           => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'notification_interval'      => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'    => [
+                'rule'    => 'numeric',
+                'message' => 'This field need to be numeric.',
+            ],
+            'comparison' => [
+                'rule'    => ['comparison', '>=', 0],
+                'message' => 'This value need to be at least 0',
+            ],
+        ],
+        'flap_detection_on_ok'       => [
+            'check_options' => [
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
+                'allowEmpty' => true,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'flap_detection_on_warning'  => [
+            'check_options' => [
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
+                'allowEmpty' => true,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'flap_detection_on_unknown'  => [
+            'check_options' => [
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
+                'allowEmpty' => true,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+        'flap_detection_on_critical' => [
+            'check_options' => [
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
+                'allowEmpty' => true,
+            ],
+            'boolean'       => [
+                'rule'    => ['boolean'],
+                'message' => 'Incorrect datatype',
+            ],
+        ],
+    ];
 
-	function __construct($id = false, $table = null, $ds = null){
-		parent::__construct($id, $table, $ds);
-		App::uses('UUID', 'Lib');
-			$this->notification_options = [
-							'service' => [
-								'notify_on_recovery',
-								'notify_on_warning',
-								'notify_on_unknown',
-								'notify_on_critical',
-								'notify_on_flapping',
-								'notify_on_downtime'
-							],
-						];
+    function __construct($id = false, $table = null, $ds = null)
+    {
+        parent::__construct($id, $table, $ds);
+        App::uses('UUID', 'Lib');
+        $this->notification_options = [
+            'service' => [
+                'notify_on_recovery',
+                'notify_on_warning',
+                'notify_on_unknown',
+                'notify_on_critical',
+                'notify_on_flapping',
+                'notify_on_downtime',
+            ],
+        ];
 
-			$this->flapdetection_options = [
-							'service' => [
-								'flap_detection_on_ok',
-								'flap_detection_on_warning',
-								'flap_detection_on_unknown',
-								'flap_detection_on_critical'
-							],
-						];
-	}
+        $this->flapdetection_options = [
+            'service' => [
+                'flap_detection_on_ok',
+                'flap_detection_on_warning',
+                'flap_detection_on_unknown',
+                'flap_detection_on_critical',
+            ],
+        ];
+    }
 
-	function checkNotificationOptions($data, $notification_type){
-		foreach($this->data as $request){
-			foreach($request as $request_key => $request_value){
-				if(in_array($request_key, $this->notification_options[$notification_type]) && $request_value == 1){
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    function checkNotificationOptions($data, $notification_type)
+    {
+        foreach ($this->data as $request) {
+            foreach ($request as $request_key => $request_value) {
+                if (in_array($request_key, $this->notification_options[$notification_type]) && $request_value == 1) {
+                    return true;
+                }
+            }
+        }
 
-	function checkFlapDetectionOptions($data, $flapdetection_type){
-		if(isset($this->data['Servicetemplate']['flap_detection_enabled']) && (boolean)$this->data['Servicetemplate']['flap_detection_enabled'] === true){
-			foreach($this->data as $request){
-				foreach($request as $request_key => $request_value){
-					if(in_array($request_key, $this->flapdetection_options[$flapdetection_type]) && $request_value == 1){
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		return true;
-	}
+        return false;
+    }
 
-	public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false){
-		$conditions = [
-			'Servicetemplate.container_id' => $container_ids,
-		];
-		if(!$ignoreType){
-			$conditions['Servicetemplate.servicetemplatetype_id'] = $servicetemplate_type;
-		}
-		return $this->find($type, [
-			'conditions' => $conditions,
-			'order' => [
-				'Servicetemplate.name' => 'ASC'
-			]
-		]);
-	}
+    function checkFlapDetectionOptions($data, $flapdetection_type)
+    {
+        if (isset($this->data['Servicetemplate']['flap_detection_enabled']) && (boolean)$this->data['Servicetemplate']['flap_detection_enabled'] === true) {
+            foreach ($this->data as $request) {
+                foreach ($request as $request_key => $request_value) {
+                    if (in_array($request_key, $this->flapdetection_options[$flapdetection_type]) && $request_value == 1) {
+                        return true;
+                    }
+                }
+            }
 
-	public function createUUID(){
-		return UUID::v4();
-	}
+            return false;
+        }
 
-	public function __allowDelete($servicetemplateId){
-		$Service = ClassRegistry::init('Service');
-		$services = $Service->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'Service.servicetemplate_id' => $servicetemplateId
-			],
-			'fields' => [
-				'Service.id'
-			]
-		]);
+        return true;
+    }
 
-		//check if the host is used somwhere
-		if(CakePlugin::loaded('EventcorrelationModule')){
-			$notInUse = true;
-			$result = [];
-			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
-			foreach ($services as $service) {
-				$evcCount = $this->Eventcorrelation->find('count',[
-					'conditions' => [
-						'service_id' => $service['Service']['id']
-					]
-				]);
-				$result[] = $evcCount;
-			}
-			foreach ($result as $value) {
-				if($value > 0){
-					$notInUse = false;
-				}
-			}
-			return $notInUse;
-		}
-		return true;
-	}
+    public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false)
+    {
+        $conditions = [
+            'Servicetemplate.container_id' => $container_ids,
+        ];
+        if (!$ignoreType) {
+            $conditions['Servicetemplate.servicetemplatetype_id'] = $servicetemplate_type;
+        }
+
+        return $this->find($type, [
+            'conditions' => $conditions,
+            'order'      => [
+                'Servicetemplate.name' => 'ASC',
+            ],
+        ]);
+    }
+
+    public function createUUID()
+    {
+        return UUID::v4();
+    }
+
+    public function __allowDelete($servicetemplateId)
+    {
+        $Service = ClassRegistry::init('Service');
+        $services = $Service->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.servicetemplate_id' => $servicetemplateId,
+            ],
+            'fields'     => [
+                'Service.id',
+            ],
+        ]);
+
+        //check if the host is used somwhere
+        if (CakePlugin::loaded('EventcorrelationModule')) {
+            $notInUse = true;
+            $result = [];
+            $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+            foreach ($services as $service) {
+                $evcCount = $this->Eventcorrelation->find('count', [
+                    'conditions' => [
+                        'service_id' => $service['Service']['id'],
+                    ],
+                ]);
+                $result[] = $evcCount;
+            }
+            foreach ($result as $value) {
+                if ($value > 0) {
+                    $notInUse = false;
+                }
+            }
+
+            return $notInUse;
+        }
+
+        return true;
+    }
 }

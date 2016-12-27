@@ -25,27 +25,27 @@
 
 ?>
 <div class="widget-body notice-body">
-	<?php
-	echo $this->Form->create('noticeForm', array(
-		'class' => 'notice_form clear',
-		'id' => '',
-	));
+    <?php
+    echo $this->Form->create('noticeForm', [
+        'class' => 'notice_form clear',
+        'id'    => '',
+    ]);
 
-	echo $this->Form->input('notice', array(
-		'type' => 'textarea',
-		'class' => 'notice_textarea',
-		'label' => 'Your notice (Markdown allowed)',
-		'value' => '',
-	));
+    echo $this->Form->input('notice', [
+        'type'  => 'textarea',
+        'class' => 'notice_textarea',
+        'label' => 'Your notice (Markdown allowed)',
+        'value' => '',
+    ]);
 
-	$options_button = array(
-		'label' => 'Save',
-		'class' => 'notice_save btn btn-sm btn-primary',
-	);
-	echo $this->Form->end($options_button);
+    $options_button = [
+        'label' => 'Save',
+        'class' => 'notice_save btn btn-sm btn-primary',
+    ];
+    echo $this->Form->end($options_button);
 
-	?>
+    ?>
 
-	<div class="widget-notice-title"><i class="fa fa-cog "></i></div>
-	<div class="widget-notice"></div>
+    <div class="widget-notice-title"><i class="fa fa-cog "></i></div>
+    <div class="widget-notice"></div>
 </div>

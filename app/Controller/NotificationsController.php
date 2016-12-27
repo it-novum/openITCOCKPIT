@@ -23,303 +23,310 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NotificationsController extends AppController{
+class NotificationsController extends AppController
+{
 
-	/*
-	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-	 * use this external model to fetch the required data out of the database
-	 */
-	//public $uses = [MONITORING_NOTIFICATION, MONITORING_OBJECTS, 'Host', 'Service'];
-	public $uses = [MONITORING_NOTIFICATION, 'Host', MONITORING_HOSTSTATUS, 'Service', MONITORING_SERVICESTATUS, 'Documentation'];
+    /*
+     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
+     * use this external model to fetch the required data out of the database
+     */
+    //public $uses = [MONITORING_NOTIFICATION, MONITORING_OBJECTS, 'Host', 'Service'];
+    public $uses = [MONITORING_NOTIFICATION, 'Host', MONITORING_HOSTSTATUS, 'Service', MONITORING_SERVICESTATUS, 'Documentation'];
 
-	public $components = array('Paginator', 'ListFilter.ListFilter','RequestHandler');
-	public $helpers = array('ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid');
-	public $layout = 'Admin.default';
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
+    public $layout = 'Admin.default';
 
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-			],
-		],
-		'hostNotification' => [
-			'fields' => [
-				'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-			],
-		],
-		'serviceNotification' => [
-			'fields' => [
-				'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-			],
-		]
-	];
+    public $listFilters = [
+        'index'               => [
+            'fields' => [
+                'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
+        'hostNotification'    => [
+            'fields' => [
+                'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
+        'serviceNotification' => [
+            'fields' => [
+                'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public function index(){
+    public function index()
+    {
 
-		$order = $this->ListsettingsParser();
+        $order = $this->ListsettingsParser();
 
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-		$paginatorLimit = $this->Paginator->settings['limit'];
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+        $paginatorLimit = $this->Paginator->settings['limit'];
 
-		//--force --doit --yes-i-know-what-i-do
-		$all_notification = $this->Paginator->paginate(null, [], $order);
-		$this->set(compact(['all_notification', 'paginatorLimit']));
-		//Data for json and xml view /notifications.json or .xml
-		$this->set('_serialize', array('all_notification'));
-	}
+        //--force --doit --yes-i-know-what-i-do
+        $all_notification = $this->Paginator->paginate(null, [], $order);
+        $this->set(compact(['all_notification', 'paginatorLimit']));
+        //Data for json and xml view /notifications.json or .xml
+        $this->set('_serialize', ['all_notification']);
+    }
 
-	public function hostNotification($host_id){
-		if($this->Host->exists($host_id)){
+    public function hostNotification($host_id)
+    {
+        if ($this->Host->exists($host_id)) {
 
-			//$host = $this->Host->findById($host_id);
+            //$host = $this->Host->findById($host_id);
 
-			$host = $this->Host->find('first', [
-				'fields' => [
-					'Host.id',
-					'Host.uuid',
-					'Host.name',
-					'Host.address',
-					'Host.host_url'
-				],
-				'conditions' => [
-					'Host.id' => $host_id
-				],
-				'contain' => [
-					'Container'
-				]
-			]);
+            $host = $this->Host->find('first', [
+                'fields'     => [
+                    'Host.id',
+                    'Host.uuid',
+                    'Host.name',
+                    'Host.address',
+                    'Host.host_url',
+                ],
+                'conditions' => [
+                    'Host.id' => $host_id,
+                ],
+                'contain'    => [
+                    'Container',
+                ],
+            ]);
 
-			if(!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))){
-				$this->render403();
-				return;
-			}
+            if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))) {
+                $this->render403();
 
-			$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-				'fields' => [
-					'Objects.name1',
-					'Hoststatus.current_state'
-				]
-			]);
+                return;
+            }
 
-			$order = $this->ListsettingsParser('hostNotification', ['hostUuid' => $host['Host']['uuid']]);
-			//--force --doit --yes-i-know-what-i-do
-			$all_notification = $this->Paginator->paginate(null, [], $order);
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+                'fields' => [
+                    'Objects.name1',
+                    'Hoststatus.current_state',
+                ],
+            ]);
 
-			$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+            $order = $this->ListsettingsParser('hostNotification', ['hostUuid' => $host['Host']['uuid']]);
+            //--force --doit --yes-i-know-what-i-do
+            $all_notification = $this->Paginator->paginate(null, [], $order);
 
-			$this->set(compact(['host', 'hoststatus', 'all_notification', 'hostDocuExists']));
+            $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
 
-			if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-				$this->set('isFilter', true);
-			}else{
-				$this->set('isFilter', false);
-			}
+            $this->set(compact(['host', 'hoststatus', 'all_notification', 'hostDocuExists']));
 
-		}else{
-			throw new NotFoundException(__('Invalid host'));
-		}
-	}
+            if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+                $this->set('isFilter', true);
+            } else {
+                $this->set('isFilter', false);
+            }
 
-	public function serviceNotification($service_id){
-		if($this->Service->exists($service_id)){
-			/*
-			$service = $this->Service->find('first', [
-				'fields' => [
-					'Service.id',
-					'Service.uuid',
-					'Service.name',
-					'Service.servicetemplate_id',
-					'Service.service_url'
-				],
-				'conditions' => [
-					'Service.id' => $service_id
-				],
-				'contain' => [
-					'Servicetemplate' => [
-						'fields' => [
-							'Servicetemplate.id',
-							'Servicetemplate.name'
-						]
-					],
-					'Host' => [
-						'fields' => [
-							'Host.id',
-							'Host.uuid',
-							'Host.name',
-							'Host.address'
-						]
-					]
-				]
-			]);*/
-			$service = $this->Service->find('first', [
-				'recursive' => -1,
-				'contain' => [
-					'Host' =>[
-						'Container',
-					],
-					'Servicetemplate' => [
-						'fields' => [
-							'Servicetemplate.id',
-							'Servicetemplate.name'
-						]
-					]
-				],
-				'conditions' => [
-					'Service.id' => $service_id
-				],
-			]);
+        } else {
+            throw new NotFoundException(__('Invalid host'));
+        }
+    }
 
-			if(!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
-				$this->render403();
-				return;
-			}
+    public function serviceNotification($service_id)
+    {
+        if ($this->Service->exists($service_id)) {
+            /*
+            $service = $this->Service->find('first', [
+                'fields' => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.servicetemplate_id',
+                    'Service.service_url'
+                ],
+                'conditions' => [
+                    'Service.id' => $service_id
+                ],
+                'contain' => [
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name'
+                        ]
+                    ],
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.uuid',
+                            'Host.name',
+                            'Host.address'
+                        ]
+                    ]
+                ]
+            ]);*/
+            $service = $this->Service->find('first', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Host'            => [
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $service_id,
+                ],
+            ]);
 
-			$allowEdit = false;
-			if($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))){
-				$allowEdit = true;
-			}
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->render403();
 
-			$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-				'fields' => [
-					'Objects.name2',
-					'Servicestatus.current_state'
-				]
-			]);
-			$order = $this->ListsettingsParser('serviceNotification', ['hostUuid' => $service['Host']['uuid'], 'serviceUuid' => $service['Service']['uuid']]);
+                return;
+            }
 
+            $allowEdit = false;
+            if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $allowEdit = true;
+            }
 
-			//--force --doit --yes-i-know-what-i-do
-			$all_notification = $this->Paginator->paginate(null, [], $order);
-			$this->set(compact(['service', 'servicestatus', 'all_notification', 'allowEdit']));
-
-			if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-				$this->set('isFilter', true);
-			}else{
-				$this->set('isFilter', false);
-			}
-
-		}else{
-			throw new NotFoundException(__('Invalid host'));
-		}
-	}
-
-	private function ListsettingsParser($action = 'index', $options = []){
-		//Get Parameters out of $_GET
-		if(isset($this->request->params['named']['Listsettings'])){
-			$this->request->data['Listsettings'] = $this->request->params['named']['Listsettings'];
-		}
-
-		switch($action){
-			case 'serviceNotification':
-				$requestSettings = $this->Notification->serviceListSettings($this->request->data, $options['hostUuid'], $options['serviceUuid']);
-
-				$join = [
-					'join' => [
-						'table' => 'servicetemplates',
-						'type'	=> 'INNER',
-						'alias'	=> 'Servicetemplate',
-						'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
-					],
-					'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name']
-				];
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Objects.name2',
+                    'Servicestatus.current_state',
+                ],
+            ]);
+            $order = $this->ListsettingsParser('serviceNotification', ['hostUuid' => $service['Host']['uuid'], 'serviceUuid' => $service['Service']['uuid']]);
 
 
-				break;
+            //--force --doit --yes-i-know-what-i-do
+            $all_notification = $this->Paginator->paginate(null, [], $order);
+            $this->set(compact(['service', 'servicestatus', 'all_notification', 'allowEdit']));
 
-			case 'hostNotification':
-				$requestSettings = $this->Notification->hostListSettings($this->request->data, $options['hostUuid']);
-				$join = [
-					'join' => null,
-					'fields' => []
-				];
-				break;
+            if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+                $this->set('isFilter', true);
+            } else {
+                $this->set('isFilter', false);
+            }
 
+        } else {
+            throw new NotFoundException(__('Invalid host'));
+        }
+    }
 
-			default:
-				$requestSettings = $this->Notification->listSettings($this->request->data);
-				$join = [
-					'join' => null,
-					'fields' => []
-				];
-				break;
-		}
+    private function ListsettingsParser($action = 'index', $options = [])
+    {
+        //Get Parameters out of $_GET
+        if (isset($this->request->params['named']['Listsettings'])) {
+            $this->request->data['Listsettings'] = $this->request->params['named']['Listsettings'];
+        }
 
-		//if(isset($this->request->data['Listsettings'])){
-		//	$this->set('NotificationListsettings', $this->request->data['Listsettings']);
-		//}
-		$this->set('NotificationListsettings', $requestSettings['Listsettings']);
+        switch ($action) {
+            case 'serviceNotification':
+                $requestSettings = $this->Notification->serviceListSettings($this->request->data, $options['hostUuid'], $options['serviceUuid']);
 
-		if(!isset($requestSettings['paginator']['limit'])){
-			$requestSettings['paginator']['limit'] = $this->Paginator->settings['limit'];
-			$requestSettings['Listsettings']['limit'] = $this->Paginator->settings['limit'];
-		}
-
-
-		if(!isset($requestSettings['notifiction_type']) && !isset($requestSettings['Listsettings']['view'])){
-			$requestSettings['notifiction_type'] = 0;
-			$requestSettings['Listsettings']['view'] = 'hostOnly';
-		}
-
-		if(isset($requestSettings['Listsettings']['view'])){
-			if($requestSettings['Listsettings']['view'] == 'serviceOnly'){
-				$join = [
-					'join' => [
-						'table' => 'servicetemplates',
-						'type'	=> 'INNER',
-						'alias'	=> 'Servicetemplate',
-						'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
-					],
-					'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name']
-				];
-			}
-		}
-
-		if(!isset($requestSettings['Listsettings']['from'])){
-			$requestSettings['Listsettings']['from'] = date('d.m.Y H:i', strtotime('3 days ago'));
-		}
-
-		if(!isset($requestSettings['Listsettings']['to'])){
-			$requestSettings['Listsettings']['to'] = date('d.m.Y H:i', time());
-		}
-
-		if(isset($this->paginate['conditions'])){
-			//Merging our conditions and ListFilterComponents conditions
-			if(isset($requestSettings['paginator']['conditions'])){
-				$requestSettings['paginator']['conditions'] = Hash::merge($requestSettings['paginator']['conditions'], $this->paginate['conditions']);
-			}else{
-				$requestSettings['paginator']['conditions'] = $this->paginate['conditions'];
-			}
-		}
-
-		$order = [];
-		if(isset($this->request->params['named']['sort']) && isset($this->request->params['named']['direction'])){
-			$order = [$this->request->params['named']['sort'] => $this->request->params['named']['direction']];
-		}else{
-			$order = ['Notification.start_time' => 'desc'];
-		}
-		//$this->Frontend->setJson('HostOrService', $requestSettings['Listsettings']['view']);
-
-		// Set URL Parameters to template
-		$ListsettingsUrlParams = [];
-		if(!empty($requestSettings['Listsettings'])){
-			$ListsettingsUrlParams['Listsettings'] = $requestSettings['Listsettings'];
-			$this->set('ListsettingsUrlParams',$ListsettingsUrlParams);
-		}else{
-			$this->set('ListsettingsUrlParams',[] );
-		}
+                $join = [
+                    'join'   => [
+                        'table'      => 'servicetemplates',
+                        'type'       => 'INNER',
+                        'alias'      => 'Servicetemplate',
+                        'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
+                    ],
+                    'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
+                ];
 
 
-		$this->Paginator->settings = Hash::merge(
-			$this->Notification->paginatorSettings(
-				$requestSettings['notifiction_type'], $order, $requestSettings['conditions'], $join, $this->MY_RIGHTS
-			),
-			$requestSettings['paginator']
-		);
+                break;
 
-		return [key($order)];
-	}
+            case 'hostNotification':
+                $requestSettings = $this->Notification->hostListSettings($this->request->data, $options['hostUuid']);
+                $join = [
+                    'join'   => null,
+                    'fields' => [],
+                ];
+                break;
+
+
+            default:
+                $requestSettings = $this->Notification->listSettings($this->request->data);
+                $join = [
+                    'join'   => null,
+                    'fields' => [],
+                ];
+                break;
+        }
+
+        //if(isset($this->request->data['Listsettings'])){
+        //	$this->set('NotificationListsettings', $this->request->data['Listsettings']);
+        //}
+        $this->set('NotificationListsettings', $requestSettings['Listsettings']);
+
+        if (!isset($requestSettings['paginator']['limit'])) {
+            $requestSettings['paginator']['limit'] = $this->Paginator->settings['limit'];
+            $requestSettings['Listsettings']['limit'] = $this->Paginator->settings['limit'];
+        }
+
+
+        if (!isset($requestSettings['notifiction_type']) && !isset($requestSettings['Listsettings']['view'])) {
+            $requestSettings['notifiction_type'] = 0;
+            $requestSettings['Listsettings']['view'] = 'hostOnly';
+        }
+
+        if (isset($requestSettings['Listsettings']['view'])) {
+            if ($requestSettings['Listsettings']['view'] == 'serviceOnly') {
+                $join = [
+                    'join'   => [
+                        'table'      => 'servicetemplates',
+                        'type'       => 'INNER',
+                        'alias'      => 'Servicetemplate',
+                        'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
+                    ],
+                    'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
+                ];
+            }
+        }
+
+        if (!isset($requestSettings['Listsettings']['from'])) {
+            $requestSettings['Listsettings']['from'] = date('d.m.Y H:i', strtotime('3 days ago'));
+        }
+
+        if (!isset($requestSettings['Listsettings']['to'])) {
+            $requestSettings['Listsettings']['to'] = date('d.m.Y H:i', time());
+        }
+
+        if (isset($this->paginate['conditions'])) {
+            //Merging our conditions and ListFilterComponents conditions
+            if (isset($requestSettings['paginator']['conditions'])) {
+                $requestSettings['paginator']['conditions'] = Hash::merge($requestSettings['paginator']['conditions'], $this->paginate['conditions']);
+            } else {
+                $requestSettings['paginator']['conditions'] = $this->paginate['conditions'];
+            }
+        }
+
+        $order = [];
+        if (isset($this->request->params['named']['sort']) && isset($this->request->params['named']['direction'])) {
+            $order = [$this->request->params['named']['sort'] => $this->request->params['named']['direction']];
+        } else {
+            $order = ['Notification.start_time' => 'desc'];
+        }
+        //$this->Frontend->setJson('HostOrService', $requestSettings['Listsettings']['view']);
+
+        // Set URL Parameters to template
+        $ListsettingsUrlParams = [];
+        if (!empty($requestSettings['Listsettings'])) {
+            $ListsettingsUrlParams['Listsettings'] = $requestSettings['Listsettings'];
+            $this->set('ListsettingsUrlParams', $ListsettingsUrlParams);
+        } else {
+            $this->set('ListsettingsUrlParams', []);
+        }
+
+
+        $this->Paginator->settings = Hash::merge(
+            $this->Notification->paginatorSettings(
+                $requestSettings['notifiction_type'], $order, $requestSettings['conditions'], $join, $this->MY_RIGHTS
+            ),
+            $requestSettings['paginator']
+        );
+
+        return [key($order)];
+    }
 }

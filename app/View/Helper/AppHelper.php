@@ -24,40 +24,46 @@
 //	confirmation.
 
 App::uses('Helper', 'View');
-class AppHelper extends Helper {
 
-/**
- * If we're in production mode, append the version to all assetes.
- *
- * @param string $path 
- * @return string
- */	
-	public function assetTimestamp($path) {
-		if(Configure::read('debug') === 0) {
-			$path.= '?v' . Configure::read('general.version');
-			return $path;
-		} 
-		// special case for module assets, which are routed through the CMS plugin
-		// but Helper doesn't detect the absolute path to it correctly.
-		else if(strpos($path, 'module_assets') !== false) {
-			$path.= '?' . time();
-			return $path;
-		}
-		else { 
-			return parent::assetTimestamp($path);
-		}
-	}
-	
-	public function change($change){
-		if($change === false){
-			return __('false');
-		}
-		
-		if($change == 'true'){
-			return __('true');
-		}
-		
-		return $change;
-	}
-	
+class AppHelper extends Helper
+{
+
+    /**
+     * If we're in production mode, append the version to all assetes.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    public function assetTimestamp($path)
+    {
+        if (Configure::read('debug') === 0) {
+            $path .= '?v'.Configure::read('general.version');
+
+            return $path;
+        }
+        // special case for module assets, which are routed through the CMS plugin
+        // but Helper doesn't detect the absolute path to it correctly.
+        else if (strpos($path, 'module_assets') !== false) {
+            $path .= '?'.time();
+
+            return $path;
+        } else {
+            return parent::assetTimestamp($path);
+        }
+    }
+
+    public function change($change)
+    {
+        if ($change === false) {
+            return __('false');
+        }
+
+        if ($change == 'true') {
+            return __('true');
+        }
+
+        return $change;
+    }
+
 }

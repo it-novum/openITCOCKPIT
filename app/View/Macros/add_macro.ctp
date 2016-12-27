@@ -37,25 +37,30 @@ App::uses('UUID', 'Lib');
 $uuid = sha1(UUID::v4());
 ?>
 <tr>
-	<?php if($macroCount <= 256): ?>
-		<td class="text-primary"><?php echo $newMacro; ?></td>
-		<td>
-			<div class="form-group">
-				<input type="hidden" value="<?php echo $newMacro; ?>" macro="name" uuid="<?php echo $uuid; ?>" name="data[<?php echo $uuid; ?>][Macro][name]" />
-				<input class="form-control systemsetting-input" type="text" maxlength="255" name="data[<?php echo $uuid; ?>][Macro][value]">
-			</div>
-		</td>
-		<td>
-			<input class="form-control systemsetting-input" type="text" maxlength="255" name="data[<?php echo $uuid; ?>][Macro][description]">
-			<input class="form-control" type="hidden" value="0" name="data[<?php echo $uuid; ?>][Macro][password]">
-		</td>
-		<td>
-			<a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red isPassword" href="javascript:void(0);"><i class="fa fa-eye-slash fa-lg"></i></a>
-			<a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red deleteMacro" href="javascript:void(0);"><i class="fa fa-trash-o fa-lg"></i></a>
-		</td>
-	<?php else: ?>
-		<td colspan="4" class="text-center" id="limitReached">
-			<span class="txt-color-red"><?php echo __('the maximum number of 256 macros is exceeded'); ?></span>
-		</td>
-	<?php endif; ?>
+    <?php if ($macroCount <= 256): ?>
+        <td class="text-primary"><?php echo $newMacro; ?></td>
+        <td>
+            <div class="form-group">
+                <input type="hidden" value="<?php echo $newMacro; ?>" macro="name" uuid="<?php echo $uuid; ?>"
+                       name="data[<?php echo $uuid; ?>][Macro][name]"/>
+                <input class="form-control systemsetting-input" type="text" maxlength="255"
+                       name="data[<?php echo $uuid; ?>][Macro][value]">
+            </div>
+        </td>
+        <td>
+            <input class="form-control systemsetting-input" type="text" maxlength="255"
+                   name="data[<?php echo $uuid; ?>][Macro][description]">
+            <input class="form-control" type="hidden" value="0" name="data[<?php echo $uuid; ?>][Macro][password]">
+        </td>
+        <td>
+            <a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red isPassword" href="javascript:void(0);"><i
+                        class="fa fa-eye-slash fa-lg"></i></a>
+            <a style="padding: 6px;" class="btn btn-default btn-sx txt-color-red deleteMacro"
+               href="javascript:void(0);"><i class="fa fa-trash-o fa-lg"></i></a>
+        </td>
+    <?php else: ?>
+        <td colspan="4" class="text-center" id="limitReached">
+            <span class="txt-color-red"><?php echo __('the maximum number of 256 macros is exceeded'); ?></span>
+        </td>
+    <?php endif; ?>
 </tr>

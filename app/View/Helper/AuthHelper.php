@@ -23,37 +23,45 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AuthHelper extends AppHelper {
+class AuthHelper extends AppHelper
+{
 
-/**
- * whether the user is logged in
- *
- * @return bool
- */
-	public function isLoggedIn() {
-		$auth = ClassRegistry::getObject('AuthComponent');
-		return $auth->loggedIn();
-	}
+    /**
+     * whether the user is logged in
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
+        $auth = ClassRegistry::getObject('AuthComponent');
 
-/**
- * Accessor to the logged in user's properties
- *
- * @param string $key 
- * @return mixed
- */
-	public function user($key = null) {
-		$auth = ClassRegistry::getObject('AuthComponent');
-		return $auth->user($key);
-	}
+        return $auth->loggedIn();
+    }
 
-/**
- * Returns whether the user has the given $right
- *
- * @param string $right 
- * @return bool
- */
-	public function hasRight($right) {
-		$auth = ClassRegistry::getObject('AuthComponent');	
-		return $auth->hasRight($right);
-	}
+    /**
+     * Accessor to the logged in user's properties
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function user($key = null)
+    {
+        $auth = ClassRegistry::getObject('AuthComponent');
+
+        return $auth->user($key);
+    }
+
+    /**
+     * Returns whether the user has the given $right
+     *
+     * @param string $right
+     *
+     * @return bool
+     */
+    public function hasRight($right)
+    {
+        $auth = ClassRegistry::getObject('AuthComponent');
+
+        return $auth->hasRight($right);
+    }
 }

@@ -8,7 +8,6 @@ require_once 'Node.php';
  * An element within the tree. Consists of a tag name which defines the type of the
  * element and any number of Node children. It also contains a CodeDefinition matching
  * the tag name of the element.
- *
  * @author jbowens
  */
 class ElementNode extends Node
@@ -33,7 +32,7 @@ class ElementNode extends Node
      */
     public function __construct()
     {
-        $this->children = array();
+        $this->children = [];
         $this->nestDepth = 0;
     }
 
@@ -50,7 +49,6 @@ class ElementNode extends Node
 
     /**
      * Gets the CodeDefinition that defines this element.
-     *
      * @return this element's code definition
      */
     public function getCodeDefinition()
@@ -71,7 +69,6 @@ class ElementNode extends Node
 
     /**
      * Returns the tag name of this element.
-     *
      * @return the element's tag name
      */
     public function getTagName()
@@ -81,7 +78,6 @@ class ElementNode extends Node
 
     /**
      * Returns the attribute (used as the option in bbcode definitions) of this element.
-     *
      * @return the attribute of this element
      */
     public function getAttribute()
@@ -91,7 +87,6 @@ class ElementNode extends Node
 
     /**
      * Returns all the children of this element.
-     *
      * @return an array of this node's child nodes
      */
     public function getChildren()
@@ -102,9 +97,7 @@ class ElementNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsText()
-     *
      * Returns the element as text (not including any bbcode markup)
-     *
      * @return the plain text representation of this node
      */
     public function getAsText()
@@ -115,6 +108,7 @@ class ElementNode extends Node
             $s = "";
             foreach ($this->getChildren() as $child)
                 $s .= $child->getAsText();
+
             return $s;
         }
     }
@@ -122,16 +116,14 @@ class ElementNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsBBCode()
-     *
      * Returns the element as bbcode (with all unclosed tags closed)
-     *
      * @return the bbcode representation of this element
      */
     public function getAsBBCode()
     {
         $str = "[".$this->tagName;
         if ($this->attribute != null) {
-            $str .= "=" . $this->attribute;
+            $str .= "=".$this->attribute;
         }
         $str .= "]";
         foreach ($this->getChildren() as $child) {
@@ -145,14 +137,12 @@ class ElementNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsHTML()
-     *
      * Returns the element as html with all replacements made
-     *
      * @return the html representation of this node
      */
     public function getAsHTML()
     {
-        if($this->codeDefinition) {
+        if ($this->codeDefinition) {
             return $this->codeDefinition->asHtml($this);
         } else {
             return "";
@@ -160,8 +150,8 @@ class ElementNode extends Node
     }
 
     /**
-     * Adds a child to this node's content. A child may be a TextNode, or 
-     * another ElementNode... or anything else that may extend the 
+     * Adds a child to this node's content. A child may be a TextNode, or
+     * another ElementNode... or anything else that may extend the
      * abstract Node class.
      *
      * @param child the node to add as a child
@@ -206,7 +196,7 @@ class ElementNode extends Node
     }
 
     /**
-     * Traverses the parse tree upwards, going from parent to parent, until it finds a 
+     * Traverses the parse tree upwards, going from parent to parent, until it finds a
      * parent who has the given tag name. Returns the parent with the matching tag name
      * if it exists, otherwise returns null.
      *

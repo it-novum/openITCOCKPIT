@@ -1,7 +1,7 @@
 <?php
 //
 $timeo_start = microtime(true);
-ini_set("memory_limit","128M");
+ini_set("memory_limit", "128M");
 //
 
 $html = "
@@ -371,25 +371,22 @@ Unicode Plane 0 (BMPU+0000 - U+FFFF):
 ";
 
 
-
-
-
 //==============================================================
 //==============================================================
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF(); 
+$mpdf = new mPDF();
 
-$mpdf->useAdobeCJK = true;		// Default setting in config.php
-						// You can set this to false if you have defined other CJK fonts
+$mpdf->useAdobeCJK = true;        // Default setting in config.php
+// You can set this to false if you have defined other CJK fonts
 
-$mpdf->SetAutoFont(AUTOFONT_ALL);	//	AUTOFONT_CJK | AUTOFONT_THAIVIET | AUTOFONT_RTL | AUTOFONT_INDIC	// AUTOFONT_ALL
-						// () = default ALL, 0 turns OFF (default initially)
+$mpdf->SetAutoFont(AUTOFONT_ALL);    //	AUTOFONT_CJK | AUTOFONT_THAIVIET | AUTOFONT_RTL | AUTOFONT_INDIC	// AUTOFONT_ALL
+// () = default ALL, 0 turns OFF (default initially)
 
 $mpdf->WriteHTML($html);
 
-$mpdf->Output(); 
+$mpdf->Output();
 
 exit;
 //==============================================================

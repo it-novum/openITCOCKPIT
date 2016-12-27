@@ -28,7 +28,7 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 interface ImporterInterface
 {
 
-	public function getData();
+    public function getData();
 
-	public function isTableEmpty();
+    public function isTableEmpty();
 }

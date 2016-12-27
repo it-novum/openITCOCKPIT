@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class WidgetServiceStatusList extends AppModel{
-	public $useTable = 'widget_service_status_lists';
-	public $belongsTo = ['Widget'];
+class WidgetServiceStatusList extends AppModel
+{
+    public $useTable = 'widget_service_status_lists';
+    public $belongsTo = ['Widget'];
 }

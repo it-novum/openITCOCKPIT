@@ -23,78 +23,83 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class BbcodeComponent extends Component{
+class BbcodeComponent extends Component
+{
 
-	/**
-	 * initialize the BB Code Component
-	 *
-	 * @param Controller $controller  The current CakePHP controller instance
-	 * @set object $bbparser to the current view for BbcodeHelper
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function initialize(Controller $controller) {
-	    $this->Controller = $controller;
-		
-		require_once APP . "Lib/jbbcode-1.2.0/Parser.php";
-		$bbparser = new JBBCode\Parser();
-		$bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
-		$builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('right', '<p align="right">{param}</p>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('center', '<p align="center">{param}</p>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('justify', '<p align="justify">{param}</p>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('xx-small', '<span style="font-size: xx-small;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('x-small', '<span style="font-size: x-small;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('small', '<span style="font-size: small;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('xx-large', '<span style="font-size: xx-large;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('x-large', '<span style="font-size: x-large;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
-		$builder = new JBBCode\CodeDefinitionBuilder('large', '<span style="font-size: large;">{param}</span>');
-		$bbparser->addCodeDefinition($builder->build());
+    /**
+     * initialize the BB Code Component
+     *
+     * @param Controller $controller The current CakePHP controller instance
+     *
+     * @set    object $bbparser to the current view for BbcodeHelper
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function initialize(Controller $controller)
+    {
+        $this->Controller = $controller;
 
-		$builder = new JBBCode\CodeDefinitionBuilder('code', '<pre style="line-height: 12px;">{param}</pre>');
-		$bbparser->addCodeDefinition($builder->build());
-		$this->Controller->set('bbparser', $bbparser);
-		$this->bbparser = $bbparser;
-	}
-	
-	/**
-	 * Converts BB code to HTML
-	 *
-	 * @param string $bbcode  The BB Code you want to convert to HTML
-	 * @param bool $nl2br    If you want to replace \n with <br>
-	 * @return string with HTML parts
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function asHtml($bbcode, $nl2br = true){
-		$this->bbparser->parse(htmlentities($bbcode));
-		if($nl2br === true){
-			return nl2br($this->bbparser->getAsHtml());
-		}
-		return $this->bbparser->getAsHtml();
-	}
-	
-	/**
-	 * Becasue nagios simply store the newline as string in the database '\n' -.-
-	 *
-	 * @param string $string You want to replace the new line char as stirng
-	 * @return string with HTML <br> for new line
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function nagiosNl2br($string){
-		return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
-	}
+        require_once APP."Lib/jbbcode-1.2.0/Parser.php";
+        $bbparser = new JBBCode\Parser();
+        $bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
+        $builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('right', '<p align="right">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('center', '<p align="center">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('justify', '<p align="justify">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('xx-small', '<span style="font-size: xx-small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('x-small', '<span style="font-size: x-small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('small', '<span style="font-size: small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('xx-large', '<span style="font-size: xx-large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('x-large', '<span style="font-size: x-large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('large', '<span style="font-size: large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+
+        $builder = new JBBCode\CodeDefinitionBuilder('code', '<pre style="line-height: 12px;">{param}</pre>');
+        $bbparser->addCodeDefinition($builder->build());
+        $this->Controller->set('bbparser', $bbparser);
+        $this->bbparser = $bbparser;
+    }
+
+    /**
+     * Converts BB code to HTML
+     *
+     * @param string $bbcode The BB Code you want to convert to HTML
+     * @param bool   $nl2br  If you want to replace \n with <br>
+     *
+     * @return string with HTML parts
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function asHtml($bbcode, $nl2br = true)
+    {
+        $this->bbparser->parse(htmlentities($bbcode));
+        if ($nl2br === true) {
+            return nl2br($this->bbparser->getAsHtml());
+        }
+
+        return $this->bbparser->getAsHtml();
+    }
+
+    /**
+     * Becasue nagios simply store the newline as string in the database '\n' -.-
+     *
+     * @param string $string You want to replace the new line char as stirng
+     *
+     * @return string with HTML <br> for new line
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function nagiosNl2br($string)
+    {
+        return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
+    }
 }

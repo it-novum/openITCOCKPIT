@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: No-write page regions
- * @author Nicola Asuni
- * @since 2010-10-14
+ * @author   Nicola Asuni
+ * @since    2010-10-14
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 064', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -82,34 +82,34 @@ Nulla facilisi. Cras varius quam eget libero aliquam vitae tincidunt leo rutrum.
 $pdf->AddPage();
 
 // print some graphic content
-$pdf->Image('../images/image_demo.jpg', 155,  30, 40, 40, 'JPG', '', '', true);
-$pdf->Image('../images/image_demo.jpg',  15, 230, 40, 40, 'JPG', '', '', true);
+$pdf->Image('../images/image_demo.jpg', 155, 30, 40, 40, 'JPG', '', '', true);
+$pdf->Image('../images/image_demo.jpg', 15, 230, 40, 40, 'JPG', '', '', true);
 
 // define some graphic styles
-$styleA = array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0));
-$styleB = array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 3, 'color' => array(127, 127, 127));
+$styleA = ['width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [255, 0, 0]];
+$styleB = ['width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 3, 'color' => [127, 127, 127]];
 $pdf->SetFillColor(220, 255, 220);
 
 // write a trapezoid with some information about no-write page regions
-$pdf->Polygon(array(15,90, 57,90, 67,140, 15,140), 'DF', array($styleB, $styleA, $styleB, $styleB));
+$pdf->Polygon([15, 90, 57, 90, 67, 140, 15, 140], 'DF', [$styleB, $styleA, $styleB, $styleB]);
 $pdf->SetXY(15, 90);
 $pdf->Cell(42, 0, 'xt,yt', 0, 0, 'R', false, '', 0, false, 'T', 'T');
 $pdf->SetXY(15, 140);
 $pdf->Cell(52, 0, 'xb,yb', 0, 0, 'R', false, '', 0, false, 'B', 'B');
 $pdf->SetXY(15, 115);
 $pdf->Cell(40, 0, 'side', 0, 0, 'R', false, '', 0, false, 'B', 'B');
-$pdf->SetLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+$pdf->SetLineStyle(['width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [0, 0, 0]]);
 $pdf->Arrow(60, 115, 35, 115, 2, 5, 15);
 
 // write a trapezoid with some information about no-write page regions
-$pdf->Polygon(array(145,130, 195,130, 195,180, 155,180), 'DF', array($styleB, $styleB, $styleB, $styleA));
+$pdf->Polygon([145, 130, 195, 130, 195, 180, 155, 180], 'DF', [$styleB, $styleB, $styleB, $styleA]);
 $pdf->SetXY(145, 130);
 $pdf->Cell(42, 0, 'xt,yt', 0, 0, 'L', false, '', 0, false, 'T', 'T');
 $pdf->SetXY(155, 180);
 $pdf->Cell(52, 0, 'xb,yb', 0, 0, 'L', false, '', 0, false, 'B', 'B');
 $pdf->SetXY(160, 155);
 $pdf->Cell(30, 0, 'side', 0, 0, 'L', false, '', 0, false, 'B', 'B');
-$pdf->SetLineStyle(array('width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+$pdf->SetLineStyle(['width' => 0.254, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [0, 0, 0]]);
 $pdf->Arrow(155, 155, 180, 155, 2, 5, 15);
 
 // reset x,y position
@@ -127,12 +127,12 @@ $pdf->SetXY(15, 30);
 	'yb' => Y bottom
 	'side' => page side ('L' = left or 'R' = right)
 */
-$regions = array(
-array('page' => '', 'xt' => 153, 'yt' =>  30, 'xb' => 153, 'yb' =>  70, 'side' => 'R'),
-array('page' => '', 'xt' =>  60, 'yt' =>  90, 'xb' =>  70, 'yb' => 140, 'side' => 'L'),
-array('page' => '', 'xt' => 143, 'yt' => 130, 'xb' => 153, 'yb' => 180, 'side' => 'R'),
-array('page' => '', 'xt' =>  58, 'yt' => 230, 'xb' =>  58, 'yb' => 270, 'side' => 'L')
-);
+$regions = [
+    ['page' => '', 'xt' => 153, 'yt' => 30, 'xb' => 153, 'yb' => 70, 'side' => 'R'],
+    ['page' => '', 'xt' => 60, 'yt' => 90, 'xb' => 70, 'yb' => 140, 'side' => 'L'],
+    ['page' => '', 'xt' => 143, 'yt' => 130, 'xb' => 153, 'yb' => 180, 'side' => 'R'],
+    ['page' => '', 'xt' => 58, 'yt' => 230, 'xb' => 58, 'yb' => 270, 'side' => 'L'],
+];
 
 // set page regions, check also getPageRegions(), addPageRegion() and removePageRegion()
 $pdf->setPageRegions($regions);
@@ -144,19 +144,19 @@ $pdf->writeHTML($txt, true, false, true, false, '');
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // set a circular no-write region on the second page
-$regions = array(
-array('page' => 2, 'xt' => 195, 'yt' => 110, 'xb' => 179.693, 'yb' =>  113.045, 'side' => 'R'),
-array('page' => 2, 'xt' => 179.693, 'yt' => 113.045, 'xb' => 166.716, 'yb' => 121.716, 'side' => 'R'),
-array('page' => 2, 'xt' => 166.716, 'yt' => 121.716, 'xb' => 158.045, 'yb' => 134.693, 'side' => 'R'),
-array('page' => 2, 'xt' => 158.045, 'yt' => 134.693, 'xb' => 155, 'yb' => 150, 'side' => 'R'),
-array('page' => 2, 'xt' => 155, 'yt' => 150, 'xb' => 158.045, 'yb' => 165.307, 'side' => 'R'),
-array('page' => 2, 'xt' => 158.045, 'yt' => 165.307, 'xb' => 166.716, 'yb' => 178.284, 'side' => 'R'),
-array('page' => 2, 'xt' => 166.716, 'yt' => 178.284, 'xb' => 179.693, 'yb' => 186.955, 'side' => 'R'),
-array('page' => 2, 'xt' => 179.693, 'yt' => 186.955, 'xb' => 195, 'yb' => 190, 'side' => 'R')
-);
+$regions = [
+    ['page' => 2, 'xt' => 195, 'yt' => 110, 'xb' => 179.693, 'yb' => 113.045, 'side' => 'R'],
+    ['page' => 2, 'xt' => 179.693, 'yt' => 113.045, 'xb' => 166.716, 'yb' => 121.716, 'side' => 'R'],
+    ['page' => 2, 'xt' => 166.716, 'yt' => 121.716, 'xb' => 158.045, 'yb' => 134.693, 'side' => 'R'],
+    ['page' => 2, 'xt' => 158.045, 'yt' => 134.693, 'xb' => 155, 'yb' => 150, 'side' => 'R'],
+    ['page' => 2, 'xt' => 155, 'yt' => 150, 'xb' => 158.045, 'yb' => 165.307, 'side' => 'R'],
+    ['page' => 2, 'xt' => 158.045, 'yt' => 165.307, 'xb' => 166.716, 'yb' => 178.284, 'side' => 'R'],
+    ['page' => 2, 'xt' => 166.716, 'yt' => 178.284, 'xb' => 179.693, 'yb' => 186.955, 'side' => 'R'],
+    ['page' => 2, 'xt' => 179.693, 'yt' => 186.955, 'xb' => 195, 'yb' => 190, 'side' => 'R'],
+];
 $pdf->setPageRegions($regions);
 
-$pdf->Polygon(array(195,110, 179.693,113.045, 166.716,121.716, 158.045,134.693, 155,150, 158.045,165.307, 166.716,178.284, 179.693,186.955, 195,190), 'DF');
+$pdf->Polygon([195, 110, 179.693, 113.045, 166.716, 121.716, 158.045, 134.693, 155, 150, 158.045, 165.307, 166.716, 178.284, 179.693, 186.955, 195, 190], 'DF');
 
 $pdf->Ln(15);
 

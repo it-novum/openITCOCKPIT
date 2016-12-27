@@ -26,32 +26,34 @@
 
 App::uses('Widget', 'Admin.Lib');
 
-class HostsStatusList extends WidgetBase{
-	protected $iconname = 'comment';
-	protected $bodyClasses = 'text-left';
-	protected $bodyStyles = 'min-height: 180px;';
-	protected $viewName = 'Dashboard/widget_statuslist_hosts';
+class HostsStatusList extends WidgetBase
+{
+    protected $iconname = 'comment';
+    protected $bodyClasses = 'text-left';
+    protected $bodyStyles = 'min-height: 180px;';
+    protected $viewName = 'Dashboard/widget_statuslist_hosts';
 
-	public function compileTemplateData(){
-		//debug($this->id);
+    public function compileTemplateData()
+    {
+        //debug($this->id);
 
-		$hostStatusListConfig = $this->Widget->find('first', [
-			// 'fields' => [
-			// 	'WidgetServiceStatusList.id'
-			// ],
-			'recursive' => -1,
-			'contain' => [
-				'WidgetHostStatusList'
-			],
-			'conditions' => [
-				'Widget.id' => $this->id
-			]
-		]);
-		//debug($serviceStatusListConfig);
-		$templateVariables = [
-			'config' => $hostStatusListConfig['WidgetHostStatusList'],
-		];
-		// debug($templateVariables);
-		$this->setTemplateVariables($templateVariables);
-	}
+        $hostStatusListConfig = $this->Widget->find('first', [
+            // 'fields' => [
+            // 	'WidgetServiceStatusList.id'
+            // ],
+            'recursive'  => -1,
+            'contain'    => [
+                'WidgetHostStatusList',
+            ],
+            'conditions' => [
+                'Widget.id' => $this->id,
+            ],
+        ]);
+        //debug($serviceStatusListConfig);
+        $templateVariables = [
+            'config' => $hostStatusListConfig['WidgetHostStatusList'],
+        ];
+        // debug($templateVariables);
+        $this->setTemplateVariables($templateVariables);
+    }
 }

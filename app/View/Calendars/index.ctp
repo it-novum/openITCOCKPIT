@@ -23,121 +23,135 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-calendar-o"></i>
-				<?php echo __('Calendar'); ?>
-		</h1>
-	</div>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-calendar-o"></i>
+            <?php echo __('Calendar'); ?>
+        </h1>
+    </div>
 </div>
 
 <section id="widget-grid" class="">
-	<div class="row">
-		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false" >
-				<header>
-					<div class="widget-toolbar" role="menu">
-						<?php
-						if($this->Acl->hasPermission('edit')):
-							echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', [
-								'class' => 'btn btn-xs btn-success',
-								'icon' => 'fa fa-plus'
-							]);
-						endif;
-						?>
-					</div>
-					<span class="widget-icon"> <i class="fa fa-calendar"></i> </span>
-					<h2><?php echo __('Calendars'); ?></h2>
-				</header>
-				<div>
-					<div class="widget-body no-padding">
-						<div class="tab-content">
-							<div id="tab1" class="tab-pane fade active in">
-								<table id="datatable_fixed_column" class="table table-striped table-bordered smart-form">
-									<thead>
-										<tr>
-											<?php $order = $this->Paginator->param('order'); ?>
-											<th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
-											<th><?php echo $this->Utils->getDirection($order, 'name'); echo $this->Paginator->sort('name', 'Name'); ?></th>
-											<th><?php echo $this->Utils->getDirection($order, 'description'); echo $this->Paginator->sort('description', 'Description'); ?></th>
-											<th class="text-center"><i class="fa fa-gear fa-lg"></i>
-										</tr>
-									</thead>
-									<tbody>
-										<?php
-										foreach($calendars as $calendar):
-											$allowEdit = $this->Acl->isWritableContainer($calendar['Calendar']['container_id']);
-											?>
-											<tr>
-												<td class="text-center" style="width: 15px;">
-													<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-														<input type="checkbox" class="massChange" calendarname="<?php echo h($calendar['Calendar']['name']); ?>" value="<?php echo $calendar['Calendar']['id']; ?>">
-													<?php endif; ?>
-												</td>
-												<td><?php echo h($calendar['Calendar']['name']); ?></td>
-												<td><?php echo h($calendar['Calendar']['description']); ?></td>
-												<td class="width-50">
-													<div class="btn-group">
-														<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-															<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $calendar['Calendar']['id']; ?>" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php else: ?>
-															<a href="javascript:void(0);" class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-														<?php endif; ?>
-														<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-														<ul class="dropdown-menu pull-right">
-															<?php if($this->Acl->hasPermission('edit') && $allowEdit): ?>
-																<li>
-																	<a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $calendar['Calendar']['id']; ?>"><i class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-																</li>
-															<?php endif; ?>
-															<?php if($this->Acl->hasPermission('delete') && $allowEdit): ?>
-																<li class="divider"></li>
-																<li>
-																	<?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $calendar['Calendar']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-																</li>
-															<?php endif; ?>
-														</ul>
-													</div>
-												</td>
-											</tr>
-										<?php endforeach; ?>
-									</tbody>
-								</table>
-								<?php if(empty($calendars)):?>
-									<div class="noMatch">
-										<center>
-											<span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-										</center>
-									</div>
-								<?php endif;?>
-							</div>
-							<div class="padding-top-10"></div>
-							<?php echo $this->element('calendar_mass_changes'); ?>
-							<div style="padding: 5px 10px;">
-								<div class="row">
-									<div class="col-sm-6">
-										<div class="dataTables_info" style="line-height: 32px;" id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
-									</div>
-									<div class="col-sm-6 text-right">
-										<div class="dataTables_paginate paging_bootstrap">
-											<?php echo $this->Paginator->pagination([
-												'ul' => 'pagination'
-											]); ?>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- end widget content -->
-				</div>
-				<!-- end widget div -->
-			</div>
-			<!-- end widget -->
-		</div>
-	</div>
-	<!-- end row -->
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <?php
+                        if ($this->Acl->hasPermission('edit')):
+                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', [
+                                'class' => 'btn btn-xs btn-success',
+                                'icon'  => 'fa fa-plus',
+                            ]);
+                        endif;
+                        ?>
+                    </div>
+                    <span class="widget-icon"> <i class="fa fa-calendar"></i> </span>
+                    <h2><?php echo __('Calendars'); ?></h2>
+                </header>
+                <div>
+                    <div class="widget-body no-padding">
+                        <div class="tab-content">
+                            <div id="tab1" class="tab-pane fade active in">
+                                <table id="datatable_fixed_column"
+                                       class="table table-striped table-bordered smart-form">
+                                    <thead>
+                                    <tr>
+                                        <?php $order = $this->Paginator->param('order'); ?>
+                                        <th class="no-sort" style="width: 15px;"><i
+                                                    class="fa fa-check-square-o fa-lg"></i></th>
+                                        <th><?php echo $this->Utils->getDirection($order, 'name');
+                                            echo $this->Paginator->sort('name', 'Name'); ?></th>
+                                        <th><?php echo $this->Utils->getDirection($order, 'description');
+                                            echo $this->Paginator->sort('description', 'Description'); ?></th>
+                                        <th class="text-center"><i class="fa fa-gear fa-lg"></i>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    foreach ($calendars as $calendar):
+                                        $allowEdit = $this->Acl->isWritableContainer($calendar['Calendar']['container_id']);
+                                        ?>
+                                        <tr>
+                                            <td class="text-center" style="width: 15px;">
+                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
+                                                    <input type="checkbox" class="massChange"
+                                                           calendarname="<?php echo h($calendar['Calendar']['name']); ?>"
+                                                           value="<?php echo $calendar['Calendar']['id']; ?>">
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo h($calendar['Calendar']['name']); ?></td>
+                                            <td><?php echo h($calendar['Calendar']['description']); ?></td>
+                                            <td class="width-50">
+                                                <div class="btn-group">
+                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
+                                                        <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $calendar['Calendar']['id']; ?>"
+                                                           class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                    class="fa fa-cog"></i>&nbsp;</a>
+                                                    <?php endif; ?>
+                                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                                       class="btn btn-default dropdown-toggle"><span
+                                                                class="caret"></span></a>
+                                                    <ul class="dropdown-menu pull-right">
+                                                        <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
+                                                            <li>
+                                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $calendar['Calendar']['id']; ?>"><i
+                                                                            class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
+                                                            <li class="divider"></li>
+                                                            <li>
+                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $calendar['Calendar']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                                <?php if (empty($calendars)): ?>
+                                    <div class="noMatch">
+                                        <center>
+                                            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                                        </center>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="padding-top-10"></div>
+                            <?php echo $this->element('calendar_mass_changes'); ?>
+                            <div style="padding: 5px 10px;">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="dataTables_info" style="line-height: 32px;"
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                    </div>
+                                    <div class="col-sm-6 text-right">
+                                        <div class="dataTables_paginate paging_bootstrap">
+                                            <?php echo $this->Paginator->pagination([
+                                                'ul' => 'pagination',
+                                            ]); ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end widget content -->
+                </div>
+                <!-- end widget div -->
+            </div>
+            <!-- end widget -->
+    </div>
+    </div>
+    <!-- end row -->
 </section>
 <!-- end widget grid -->

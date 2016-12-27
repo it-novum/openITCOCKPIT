@@ -23,10 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Flappinghistory extends NagiosModuleAppModel{
+class Flappinghistory extends NagiosModuleAppModel
+{
 
-	public $useTable = 'flappinghistory';
-	public $primaryKey = 'flappinghistory_id';
-	public $tablePrefix = 'nagios_';
+    public $useTable = 'flappinghistory';
+    public $primaryKey = 'flappinghistory_id';
+    public $tablePrefix = 'nagios_';
 
 }
