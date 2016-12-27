@@ -34,26 +34,27 @@
 /**
  * @file
  * Arrays of Spot Colors for TCPDF library
- * @author Nicola Asuni
+ * @author  Nicola Asuni
  * @package com.tecnick.tcpdf
- * @since 5.9.012 (2010-11-11)
-*/
+ * @since   5.9.012 (2010-11-11)
+ */
 
 /**
  * Array of Spot colors (C,M,Y,K,name)
  * Color keys must be in lowercase and without spaces.
- * As long as no open standard for spot colours exists, you have to buy a colour book by one of the colour manufacturers and insert the values and names of spot colours directly.
- * Common industry standard spot colors are: ANPA-COLOR, DIC, FOCOLTONE, GCMI, HKS, PANTONE, TOYO, TRUMATCH.
+ * As long as no open standard for spot colours exists, you have to buy a colour book by one of the colour
+ * manufacturers and insert the values and names of spot colours directly. Common industry standard spot colors are:
+ * ANPA-COLOR, DIC, FOCOLTONE, GCMI, HKS, PANTONE, TOYO, TRUMATCH.
  */
-$spotcolor = array (
-	// the following are just examples, fill the array with your own values
-	'mytcpdfblack' => array(0, 0, 0, 100, 'My TCPDF Black'),
-	'mytcpdfred' => array(30, 100, 90, 10, 'My TCPDF Red'),
-	'mytcpdfgreen' => array(100, 30, 100, 0, 'My TCPDF Green'),
-	'mytcpdfblue' => array(100, 60, 10, 5, 'My TCPDF Blue'),
-	'mytcpdfyellow' => array(0, 20, 100, 0, 'My TCPDF Yellow'),
-	// ...
-);
+$spotcolor = [
+    // the following are just examples, fill the array with your own values
+    'mytcpdfblack'  => [0, 0, 0, 100, 'My TCPDF Black'],
+    'mytcpdfred'    => [30, 100, 90, 10, 'My TCPDF Red'],
+    'mytcpdfgreen'  => [100, 30, 100, 0, 'My TCPDF Green'],
+    'mytcpdfblue'   => [100, 60, 10, 5, 'My TCPDF Blue'],
+    'mytcpdfyellow' => [0, 20, 100, 0, 'My TCPDF Yellow'],
+    // ...
+];
 
 //============================================================+
 // END OF FILE

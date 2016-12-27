@@ -23,44 +23,46 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DeletedHostsController extends AppController{
-	public $layout = 'Admin.default';
-	public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-		'RequestHandler',
-		'AdditionalLinks',
-	];
-	public $helpers = ['ListFilter.ListFilter'];
-	public $uses = ['DeletedHost', 'Host'];
-	
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'DeletedHost.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-				'DeletedHost.uuid' => ['label' => 'UUID', 'searchType' => 'wildcard'],
-			],
-		],
-	];
-	
-	public function index(){
-		$this->Paginator->settings['order'] = [
-			'created' => 'DESC'
-		];
-		
-		if($this->isApiRequest()){
-			$deletedHosts = $this->DeletedHost->find('all');
-		}else{
-			$deletedHosts = $this->Paginator->paginate();
-		}
-		
-		$this->set(compact(['deletedHosts']));
-		$this->set('_serialize', ['deletedHosts']);
-		
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
+class DeletedHostsController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+        'AdditionalLinks',
+    ];
+    public $helpers = ['ListFilter.ListFilter'];
+    public $uses = ['DeletedHost', 'Host'];
+
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'DeletedHost.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'DeletedHost.uuid' => ['label' => 'UUID', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
+
+    public function index()
+    {
+        $this->Paginator->settings['order'] = [
+            'created' => 'DESC',
+        ];
+
+        if ($this->isApiRequest()) {
+            $deletedHosts = $this->DeletedHost->find('all');
+        } else {
+            $deletedHosts = $this->Paginator->paginate();
+        }
+
+        $this->set(compact(['deletedHosts']));
+        $this->set('_serialize', ['deletedHosts']);
+
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
 }

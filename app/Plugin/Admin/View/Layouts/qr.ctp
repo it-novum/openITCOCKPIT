@@ -24,21 +24,22 @@
 //	confirmation.
 
 ?>
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<!--[if IE]>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<![endif]-->
-	<?php echo $this->Html->charset(); ?>
-	<title>
-		<?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
-	</title>
-	<?php
-		echo $this->Html->meta('icon');
-		echo $this->element('assets');
-	?>
+    <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <![endif]-->
+    <?php echo $this->Html->charset(); ?>
+    <title>
+        <?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
+    </title>
+    <?php
+    echo $this->Html->meta('icon');
+    echo $this->element('assets');
+    ?>
 </head>
 <body style="background-color:#FFFFFF !important;" class="">
-	<?php echo $content_for_layout; ?>
+<?php echo $content_for_layout; ?>
 </body>
 </html>

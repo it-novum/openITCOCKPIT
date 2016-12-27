@@ -24,18 +24,19 @@
 //	confirmation.
 
 
-class MapUpload extends MapModuleAppModel{
+class MapUpload extends MapModuleAppModel
+{
 
     const TYPE_BACKGROUND = 1;
     const TYPE_ICON_SET = 2;
 
-    public $belongsTo = array(
+    public $belongsTo = [
         'Container' => [
             'foreignKey' => 'container_id',
-            'className' => 'Container',
+            'className'  => 'Container',
         ],
-        'User' => [
+        'User'      => [
             'foreignKey' => 'user_id',
-            'className' => 'User',
-        ]);
+            'className'  => 'User',
+        ]];
 }

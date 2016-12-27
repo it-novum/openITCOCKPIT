@@ -23,36 +23,39 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require APP . '/Vendor/Ratchet/vendor/autoload.php';
+require APP.'/Vendor/Ratchet/vendor/autoload.php';
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Http\HttpServer;
-require_once APP . '/Lib/ChatMessageInterface.php';
 
-class WebsocketServerShell extends AppShell {
-	
-	public $uses = ['User'];
-	
-	public function main() {
-		$this->out('Start Websocket Server');
-		$chatInterface = new ChatMessageInterface($this);
-		
-	    $loop   = React\EventLoop\Factory::create();
-		$loop->addPeriodicTimer(120, array($chatInterface, 'eventLoop'));
+require_once APP.'/Lib/ChatMessageInterface.php';
 
-	    $webSock = new React\Socket\Server($loop);
-	    $webSock->listen(8080, '0.0.0.0');
+class WebsocketServerShell extends AppShell
+{
 
-		$webServer = new Ratchet\Server\IoServer(
-			new Ratchet\Http\HttpServer(
-			new Ratchet\WebSocket\WsServer(
-				//new Ratchet\Wamp\WampServer(
-					$chatInterface
-				//)
-			)
-			),
-			$webSock
-	    );
-	    $loop->run();
-	}
+    public $uses = ['User'];
+
+    public function main()
+    {
+        $this->out('Start Websocket Server');
+        $chatInterface = new ChatMessageInterface($this);
+
+        $loop = React\EventLoop\Factory::create();
+        $loop->addPeriodicTimer(120, [$chatInterface, 'eventLoop']);
+
+        $webSock = new React\Socket\Server($loop);
+        $webSock->listen(8080, '0.0.0.0');
+
+        $webServer = new Ratchet\Server\IoServer(
+            new Ratchet\Http\HttpServer(
+                new Ratchet\WebSocket\WsServer(
+                //new Ratchet\Wamp\WampServer(
+                    $chatInterface
+                //)
+                )
+            ),
+            $webSock
+        );
+        $loop->run();
+    }
 }

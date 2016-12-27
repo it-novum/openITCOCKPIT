@@ -24,50 +24,52 @@
 //	confirmation.
 
 
-class ParentOutages extends WidgetBase{
-	protected $iconname = 'exchange';
-	protected $bodyStyles = 'min-height:180px;padding:0;';
-	protected $viewName = 'Dashboard/widget_parent_outages';
+class ParentOutages extends WidgetBase
+{
+    protected $iconname = 'exchange';
+    protected $bodyStyles = 'min-height:180px;padding:0;';
+    protected $viewName = 'Dashboard/widget_parent_outages';
 
-	public function compileTemplateData(){
-		$parentOutages = $this->Parenthost->find('all', [
-			'joins' => [
-				[
-					'table' => 'nagios_objects',
-					'type' => 'INNER',
-					'alias' => 'Objects',
-					'conditions' => 'Objects.object_id = Parenthost.parent_host_object_id',
-				], [
-					'table' => 'nagios_hoststatus',
-					'type' => 'INNER',
-					'alias' => 'Hoststatus',
-					'conditions' => 'Hoststatus.host_object_id = Parenthost.parent_host_object_id',
-				], [
-					'table' => 'hosts',
-					'type' => 'INNER',
-					'alias' => 'Host',
-					'conditions' => 'Host.uuid = Objects.name1',
-				],
-			],
-			'fields' => [
-				'Parenthost.parent_host_object_id',
-				'Hoststatus.current_state',
-				'Hoststatus.output',
-				'Objects.name1',
-				'Host.name',
-				'Host.id',
-			],
-			'conditions' => [
-				'Hoststatus.current_state >' => 0,
-			],
-			'group' => ['Host.uuid'],
-		]);
+    public function compileTemplateData()
+    {
+        $parentOutages = $this->Parenthost->find('all', [
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = Parenthost.parent_host_object_id',
+                ], [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = Parenthost.parent_host_object_id',
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Objects.name1',
+                ],
+            ],
+            'fields'     => [
+                'Parenthost.parent_host_object_id',
+                'Hoststatus.current_state',
+                'Hoststatus.output',
+                'Objects.name1',
+                'Host.name',
+                'Host.id',
+            ],
+            'conditions' => [
+                'Hoststatus.current_state >' => 0,
+            ],
+            'group'      => ['Host.uuid'],
+        ]);
 
-		$templateVariables = [
-			'parentOutages' => $parentOutages,
-		];
+        $templateVariables = [
+            'parentOutages' => $parentOutages,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 
 }

@@ -25,21 +25,23 @@
 
 ?>
 <div class="widget-body">
-<?php if(empty($hostsInDowntime)): ?>
-	<div class="text-center text-success padding-top-50">
-		<h3><i class="fa fa-check"></i> <?php echo __('Currently are no hosts in scheduled downtime');?></h3>
-	</div>
-<?php else: ?>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped">
-			<tbody>
-				<?php foreach($hostsInDowntime as $host): ?>
-					<tr>
-						<td><a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']);?></a></td>
-					</tr>
-				<?php endforeach;?>
-			</tbody>
-		</table>
-	</div>
-<?php endif;?>
+    <?php if (empty($hostsInDowntime)): ?>
+        <div class="text-center text-success padding-top-50">
+            <h3><i class="fa fa-check"></i> <?php echo __('Currently are no hosts in scheduled downtime'); ?></h3>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                <?php foreach ($hostsInDowntime as $host): ?>
+                    <tr>
+                        <td>
+                            <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 </div>

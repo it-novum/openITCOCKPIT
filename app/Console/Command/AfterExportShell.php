@@ -23,45 +23,49 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AfterExportShell extends AppShell{
+class AfterExportShell extends AppShell
+{
 
-	public function main(){
-		$parameter = false;
-		$this->stdout->styles('red', ['text' => 'red']);
-		
-		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
-			return strpos($value, 'Module') !== false;
-		});
-		if(in_array('DistributeModule', $modulePlugins)){
-			//Only create the task if DistributeModule is loaded
-			$_task = new TaskCollection($this);
-			$AfterExport = $_task->load('AfterExport');
-		}else{
-			$this->out('<red>Error: DistributeModule not found or installed</red>');
-			exit(0);
-		}
-		
-		if(isset($this->params['quiet']) && $this->params['quiet'] == true){
-			$AfterExport->beQuiet();
-		}
-		
-		if(array_key_exists('single', $this->params)){
-			$AfterExport->init();
-			$AfterExport->execute();
-			$parameter = true;
-		}
-		
-		if($parameter === false){
-			$this->out('<red>'.__('Usage error: Call with --help to get more information ').'</red>');
-		}
-		
-	}
-	
-	public function getOptionParser(){
-		$parser = parent::getOptionParser();
-		$parser->addOptions([
-			'single' => ['help' => 'Run after export command single threaded', 'boolean' => false],
-		]);
-		return $parser;
-	}
+    public function main()
+    {
+        $parameter = false;
+        $this->stdout->styles('red', ['text' => 'red']);
+
+        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+        if (in_array('DistributeModule', $modulePlugins)) {
+            //Only create the task if DistributeModule is loaded
+            $_task = new TaskCollection($this);
+            $AfterExport = $_task->load('AfterExport');
+        } else {
+            $this->out('<red>Error: DistributeModule not found or installed</red>');
+            exit(0);
+        }
+
+        if (isset($this->params['quiet']) && $this->params['quiet'] == true) {
+            $AfterExport->beQuiet();
+        }
+
+        if (array_key_exists('single', $this->params)) {
+            $AfterExport->init();
+            $AfterExport->execute();
+            $parameter = true;
+        }
+
+        if ($parameter === false) {
+            $this->out('<red>'.__('Usage error: Call with --help to get more information ').'</red>');
+        }
+
+    }
+
+    public function getOptionParser()
+    {
+        $parser = parent::getOptionParser();
+        $parser->addOptions([
+            'single' => ['help' => 'Run after export command single threaded', 'boolean' => false],
+        ]);
+
+        return $parser;
+    }
 }

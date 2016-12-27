@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Parenthost extends AppModel{
-	public $useTable = 'hosts';
+class Parenthost extends AppModel
+{
+    public $useTable = 'hosts';
 
-	public $hasAndBelongsToMany = [
-		'Host' => [
-			'className' => 'Host',
-			'joinTable' => 'hosts_to_parenthosts',
-			'foreignKey' => 'parenthost_id',
-			'associationForeignKey' => 'host_id',
-			'unique' => true,
-			'dependent' => true
-		]
-	];
+    public $hasAndBelongsToMany = [
+        'Host' => [
+            'className'             => 'Host',
+            'joinTable'             => 'hosts_to_parenthosts',
+            'foreignKey'            => 'parenthost_id',
+            'associationForeignKey' => 'host_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
+    ];
 }
 

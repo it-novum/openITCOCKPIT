@@ -2,10 +2,8 @@
 /**
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
- *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       DebugKit.Controller
@@ -18,10 +16,10 @@ App::uses('AppController', 'Controller');
 
 /**
  * Class DebugKitAppController
- *
  * @package       DebugKit.Controller
  * @since         DebugKit 0.1
  */
-class DebugKitAppController extends AppController {
+class DebugKitAppController extends AppController
+{
 
 }

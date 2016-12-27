@@ -26,41 +26,45 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Importer implements ImporterInterface
 {
-	/**
-	 * @var \Model
-	 */
-	protected $Model;
+    /**
+     * @var \Model
+     */
+    protected $Model;
 
-	public function __construct(\Model $Model)
-	{
-		$this->Model = $Model;
-	}
+    public function __construct(\Model $Model)
+    {
+        $this->Model = $Model;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isTableEmpty(){
-		$this->unbindAllAssociations();
-		$result = $this->Model->find('all');
-		return empty($result);
+    /**
+     * @return bool
+     */
+    public function isTableEmpty()
+    {
+        $this->unbindAllAssociations();
+        $result = $this->Model->find('all');
 
-	}
+        return empty($result);
 
-	/**
-	 * @return array
-	 */
-	public function getData(){
-		return [];
-	}
+    }
 
-	public function unbindAllAssociations(){
-		foreach(['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association){
-			if(!empty($this->Model->{$association})){
-				foreach($this->Model->{$association} as $accociatedModel){
-					$this->Model->unbindModel([$association => [$accociatedModel['className']]]);
-				}
-			}
-		}
-	}
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return [];
+    }
+
+    public function unbindAllAssociations()
+    {
+        foreach (['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association) {
+            if (!empty($this->Model->{$association})) {
+                foreach ($this->Model->{$association} as $accociatedModel) {
+                    $this->Model->unbindModel([$association => [$accociatedModel['className']]]);
+                }
+            }
+        }
+    }
 
 }

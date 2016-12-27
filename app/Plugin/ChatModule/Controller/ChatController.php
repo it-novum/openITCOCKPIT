@@ -23,15 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ChatController extends ChatModuleAppController {
-	public $layout = 'Admin.default';
+class ChatController extends ChatModuleAppController
+{
+    public $layout = 'Admin.default';
 
-	public function index() {
-		//$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
-		//$this->Frontend->setJson('websocket_port', 8080);
-		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/chat_server');
-		$this->Frontend->setJson('username', $this->Auth->user('full_name'));
-		$this->Frontend->setJson('user_id', $this->Auth->user('id'));
-		$this->Frontend->setJson('new_message', __('New message!'));
-	}
+    public function index()
+    {
+        //$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
+        //$this->Frontend->setJson('websocket_port', 8080);
+        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/chat_server');
+        $this->Frontend->setJson('username', $this->Auth->user('full_name'));
+        $this->Frontend->setJson('user_id', $this->Auth->user('id'));
+        $this->Frontend->setJson('new_message', __('New message!'));
+    }
 }

@@ -1,9 +1,7 @@
 <?php
 
 
-
-
-define('_MPDF_PATH','../');
+define('_MPDF_PATH', '../');
 include("../mpdf.php");
 
 
@@ -174,28 +172,31 @@ Checkboxes: <br />
 //==============================================================
 //==============================================================
 //==============================================================
-if (isset($_REQUEST['html'])) { echo '<html><head><style>'.file_get_contents('mpdfstyletables.css').'</style></head><body>'.$html.'</body></html>'; exit; }
-if (isset($_REQUEST['source'])) { 
-	$file = __FILE__;
-	header("Content-Type: text/plain");
-	header("Content-Length: ". filesize($file));
-	header("Content-Disposition: attachment; filename='".$file."'");
-	readfile($file);
-	exit; 
+if (isset($_REQUEST['html'])) {
+    echo '<html><head><style>'.file_get_contents('mpdfstyletables.css').'</style></head><body>'.$html.'</body></html>';
+    exit;
+}
+if (isset($_REQUEST['source'])) {
+    $file = __FILE__;
+    header("Content-Type: text/plain");
+    header("Content-Length: ".filesize($file));
+    header("Content-Disposition: attachment; filename='".$file."'");
+    readfile($file);
+    exit;
 }
 //==============================================================
 //==============================================================
 //==============================================================
 
-$mpdf=new mPDF('c'); 
+$mpdf = new mPDF('c');
 
 $mpdf->default_lineheight_correction = 1.2;
 
 // LOAD a stylesheet
 $stylesheet = file_get_contents('mpdfstyletables.css');
-$mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+$mpdf->WriteHTML($stylesheet, 1);    // The parameter 1 tells that this is css/style only and no body/html/text
 
-$mpdf->SetColumns(2,'J');
+$mpdf->SetColumns(2, 'J');
 
 $mpdf->WriteHTML($html);
 

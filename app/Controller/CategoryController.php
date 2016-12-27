@@ -23,10 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CategoryController extends AppController {
-	public $layout = 'Admin.default';
+class CategoryController extends AppController
+{
+    public $layout = 'Admin.default';
 
-    public function index() {
+    public function index()
+    {
         $data = $this->Category->generateTreeList();
 //        $this->set('data', $data);
         $this->set(compact('data', $data));

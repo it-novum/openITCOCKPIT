@@ -23,15 +23,15 @@
 /**
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
- * @brief TCPDF language file: Spanish; Castilian
- * @author Nicola Asuni
- * @since 2004-03-03
+ * @brief   TCPDF language file: Spanish; Castilian
+ * @author  Nicola Asuni
+ * @since   2004-03-03
  */
 
 // Spanish; Castilian
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

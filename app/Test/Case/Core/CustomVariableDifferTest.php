@@ -30,146 +30,157 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
 class CustomVariableDifferTest extends \CakeTestCase
 {
-	public function testInstance(){
-		$CustomVariableDiffer = new CustomVariableDiffer([], []);
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableDiffer', $CustomVariableDiffer);
-	}
+    public function testInstance()
+    {
+        $CustomVariableDiffer = new CustomVariableDiffer([], []);
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableDiffer', $CustomVariableDiffer);
+    }
 
-	public function testConvertCustomVariablesToRepository(){
-		$CustomVariableDiffer = new CustomVariableDiffer([], []);
+    public function testConvertCustomVariablesToRepository()
+    {
+        $CustomVariableDiffer = new CustomVariableDiffer([], []);
 
-		$CustomVariablesRepository = new CustomVariablesRepository();
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('EINSTEMPLATE', 1));
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('ZWEITEMPLATE', 2));
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('DREITEMPLATE', 3));
-
-
-		$result = $CustomVariableDiffer->convertCustomVariablesToRepository($this->getHosttemplateCustomVariables());
-		$this->assertEquals($CustomVariablesRepository, $result);
-	}
+        $CustomVariablesRepository = new CustomVariablesRepository();
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('EINSTEMPLATE', 1));
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('ZWEITEMPLATE', 2));
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('DREITEMPLATE', 3));
 
 
-	public function testGetCustomVariablesToSaveAsRepositoryByDifferentKeys(){
-		$hostMacros = $this->getHostWithDifferentMacros();
-		$hosttemplateMacros = $this->getHosttemplateCustomVariables();
-
-		$CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
-
-		$CustomVariablesRepository = new CustomVariablesRepository();
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('FOO', 'BAR'));
-
-		$this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
-	}
-
-	public function testGetCustomVariablesToSaveAsRepositoryByDifferentValues(){
-		$hostMacros = $this->getHostWithDifferentMacrosValues();
-		$hosttemplateMacros = $this->getHosttemplateCustomVariables();
-
-		$CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
-
-		$CustomVariablesRepository = new CustomVariablesRepository();
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('DREITEMPLATE', '5'));
-
-		$this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
-	}
+        $result = $CustomVariableDiffer->convertCustomVariablesToRepository($this->getHosttemplateCustomVariables());
+        $this->assertEquals($CustomVariablesRepository, $result);
+    }
 
 
-	public function testGetCustomVariablesToSaveAsRepositoryWithoutDifferences(){
-		$hostMacros = $this->getHostWithoutDifferences();
-		$hosttemplateMacros = $this->getHosttemplateCustomVariables();
+    public function testGetCustomVariablesToSaveAsRepositoryByDifferentKeys()
+    {
+        $hostMacros = $this->getHostWithDifferentMacros();
+        $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
-		$CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
+        $CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
 
-		$CustomVariablesRepository = new CustomVariablesRepository();
+        $CustomVariablesRepository = new CustomVariablesRepository();
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('FOO', 'BAR'));
 
-		//Both repository should be empty
-		$this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
-	}
+        $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
+    }
 
-	public function testGetCustomVariablesToSaveAsRepositoryFromHosttemplateWithoutVariables(){
-		$hostMacros = $this->getHostWithDifferentMacros();
-		$hosttemplateMacros = $this->getHosttemplateWhitoutCustomVariables();
+    public function testGetCustomVariablesToSaveAsRepositoryByDifferentValues()
+    {
+        $hostMacros = $this->getHostWithDifferentMacrosValues();
+        $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
-		$CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
+        $CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
 
-		$CustomVariablesRepository = new CustomVariablesRepository();
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('EINSTEMPLATE', '1'));
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('ZWEITEMPLATE', '2'));
-		$CustomVariablesRepository->addCustomVariable(new CustomVariable('FOO', 'BAR'));
+        $CustomVariablesRepository = new CustomVariablesRepository();
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('DREITEMPLATE', '5'));
 
-		$this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
-	}
+        $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
+    }
 
-	private function getHosttemplateWhitoutCustomVariables(){
-		return array();
-	}
 
-	private function getHosttemplateCustomVariables(){
-		return array(
-			(int) 0 => array(
-				'name' => 'EINSTEMPLATE',
-				'value' => '1'
-			),
-			(int) 1 => array(
-				'name' => 'ZWEITEMPLATE',
-				'value' => '2'
-			),
-			(int) 2 => array(
-				'name' => 'DREITEMPLATE',
-				'value' => '3'
-			)
-		);
-	}
+    public function testGetCustomVariablesToSaveAsRepositoryWithoutDifferences()
+    {
+        $hostMacros = $this->getHostWithoutDifferences();
+        $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
-	private function getHostWithDifferentMacros(){
-		return array(
-			(int) 0 => array(
-			'name' => 'EINSTEMPLATE',
-			'value' => '1'
-		),
-			(int) 1 => array(
-			'name' => 'ZWEITEMPLATE',
-			'value' => '2'
-		),
-			(int) 2 => array(
-			'name' => 'FOO',
-			'value' => 'BAR'
-			)
-		);
-	}
+        $CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
 
-	private function getHostWithDifferentMacrosValues(){
-		return array(
-			(int) 0 => array(
-				'name' => 'EINSTEMPLATE',
-				'value' => '1'
-			),
-			(int) 1 => array(
-				'name' => 'ZWEITEMPLATE',
-				'value' => '2'
-			),
-			(int) 2 => array(
-				'name' => 'DREITEMPLATE',
-				'value' => '5'
-			)
-		);
-	}
+        $CustomVariablesRepository = new CustomVariablesRepository();
 
-	private function getHostWithoutDifferences(){
-		return array(
-			(int) 0 => array(
-				'name' => 'EINSTEMPLATE',
-				'value' => '1'
-			),
-			(int) 1 => array(
-				'name' => 'ZWEITEMPLATE',
-				'value' => '2'
-			),
-			(int) 2 => array(
-				'name' => 'DREITEMPLATE',
-				'value' => '3'
-			)
-		);
-	}
+        //Both repository should be empty
+        $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
+    }
+
+    public function testGetCustomVariablesToSaveAsRepositoryFromHosttemplateWithoutVariables()
+    {
+        $hostMacros = $this->getHostWithDifferentMacros();
+        $hosttemplateMacros = $this->getHosttemplateWhitoutCustomVariables();
+
+        $CustomVariableDiffer = new CustomVariableDiffer($hostMacros, $hosttemplateMacros);
+
+        $CustomVariablesRepository = new CustomVariablesRepository();
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('EINSTEMPLATE', '1'));
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('ZWEITEMPLATE', '2'));
+        $CustomVariablesRepository->addCustomVariable(new CustomVariable('FOO', 'BAR'));
+
+        $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
+    }
+
+    private function getHosttemplateWhitoutCustomVariables()
+    {
+        return [];
+    }
+
+    private function getHosttemplateCustomVariables()
+    {
+        return [
+            (int)0 => [
+                'name'  => 'EINSTEMPLATE',
+                'value' => '1',
+            ],
+            (int)1 => [
+                'name'  => 'ZWEITEMPLATE',
+                'value' => '2',
+            ],
+            (int)2 => [
+                'name'  => 'DREITEMPLATE',
+                'value' => '3',
+            ],
+        ];
+    }
+
+    private function getHostWithDifferentMacros()
+    {
+        return [
+            (int)0 => [
+                'name'  => 'EINSTEMPLATE',
+                'value' => '1',
+            ],
+            (int)1 => [
+                'name'  => 'ZWEITEMPLATE',
+                'value' => '2',
+            ],
+            (int)2 => [
+                'name'  => 'FOO',
+                'value' => 'BAR',
+            ],
+        ];
+    }
+
+    private function getHostWithDifferentMacrosValues()
+    {
+        return [
+            (int)0 => [
+                'name'  => 'EINSTEMPLATE',
+                'value' => '1',
+            ],
+            (int)1 => [
+                'name'  => 'ZWEITEMPLATE',
+                'value' => '2',
+            ],
+            (int)2 => [
+                'name'  => 'DREITEMPLATE',
+                'value' => '5',
+            ],
+        ];
+    }
+
+    private function getHostWithoutDifferences()
+    {
+        return [
+            (int)0 => [
+                'name'  => 'EINSTEMPLATE',
+                'value' => '1',
+            ],
+            (int)1 => [
+                'name'  => 'ZWEITEMPLATE',
+                'value' => '2',
+            ],
+            (int)2 => [
+                'name'  => 'DREITEMPLATE',
+                'value' => '3',
+            ],
+        ];
+    }
 
 }

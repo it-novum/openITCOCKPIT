@@ -23,12 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class QrController extends AppController{
-	public $layout = 'Admin.qr';
-	
-	public function index(){
-		$this->Frontend->setJson('qr_url', $_GET['url']);
-		$this->Frontend->setJson('qr_width', $_GET['width']);
-		$this->Frontend->setJson('qr_height', $_GET['height']);
-	}
+class QrController extends AppController
+{
+    public $layout = 'Admin.qr';
+
+    public function index()
+    {
+        $this->Frontend->setJson('qr_url', $_GET['url']);
+        $this->Frontend->setJson('qr_width', $_GET['width']);
+        $this->Frontend->setJson('qr_height', $_GET['height']);
+    }
 }

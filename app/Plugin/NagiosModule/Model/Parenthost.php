@@ -23,9 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Parenthost extends NagiosModuleAppModel{
-	//public $useDbConfig = 'nagios';
-	public $useTable = 'host_parenthosts';
-	public $tablePrefix = 'nagios_';
-	public $primaryKey = 'host_parenthost_id';
+class Parenthost extends NagiosModuleAppModel
+{
+    //public $useDbConfig = 'nagios';
+    public $useTable = 'host_parenthosts';
+    public $tablePrefix = 'nagios_';
+    public $primaryKey = 'host_parenthost_id';
 }

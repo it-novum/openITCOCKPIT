@@ -24,20 +24,21 @@
 //	confirmation.
 
 
-class WidgetGraphgenerator extends AppModel{
-	public $belongsTo = ['Widget'];
-	public $validate = [
-		'widget_id' => [
-			'notBlank' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-			], 'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs a numeric value.',
-			], 'notZero' => [
-				'rule' => ['comparison', '>', 0],
-				'message' => 'The value should be greate than zero.',
-			],
-		],
-	];
+class WidgetGraphgenerator extends AppModel
+{
+    public $belongsTo = ['Widget'];
+    public $validate = [
+        'widget_id' => [
+            'notBlank'   => [
+                'rule'    => 'notBlank',
+                'message' => 'This field cannot be left blank.',
+            ], 'numeric' => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs a numeric value.',
+            ], 'notZero' => [
+                'rule'    => ['comparison', '>', 0],
+                'message' => 'The value should be greate than zero.',
+            ],
+        ],
+    ];
 }

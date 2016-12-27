@@ -1,6 +1,9 @@
 <?php
-class FrontendDependenciesController extends FrontendAppController {
-	public function index() {
-		
-	}
+
+class FrontendDependenciesController extends FrontendAppController
+{
+    public function index()
+    {
+
+    }
 }

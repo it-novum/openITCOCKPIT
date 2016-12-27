@@ -35,19 +35,19 @@ $servicegroupStatus = $this->Mapstatus->servicegroupstatus($uuid);
 
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
-	<tr>
-		<th colspan="2" class="h6"><?php echo __('Servicegroup'); ?></th>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Servicegroup Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Container']['name'] ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Servicegroup']['description'] ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-		<td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($servicegroupStatus['state'])['class']; ?> "><?php echo $servicegroupStatus['human_state']; ?></td>
-	</tr>
+    <tr>
+        <th colspan="2" class="h6"><?php echo __('Servicegroup'); ?></th>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Servicegroup Name'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Container']['name'] ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicegroups[0]['Servicegroup']['description'] ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
+        <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($servicegroupStatus['state'])['class']; ?> "><?php echo $servicegroupStatus['human_state']; ?></td>
+    </tr>
 </table>

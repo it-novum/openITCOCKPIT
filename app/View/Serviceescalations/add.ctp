@@ -24,165 +24,165 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-bomb fa-fw "></i>
-				<?php echo __('Monitoring');?>
-			<span>>
-				<?php echo __('Serviceescalation'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-bomb fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Serviceescalation'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
-		<h2><?php echo __('Add Serviceescalation'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php echo $this->Utils->backButton();?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Serviceescalation', array(
-					'class' => 'form-horizontal clear'
-				));
-				
-				echo $this->Form->input('Serviceescalation.container_id', [
-					'options' => $this->Html->chosenPlaceholder($containers),
-					'class' => 'chosen',
-					'style' => 'width: 100%;',
-					'label' => __('Container'),
-					'SelectionMode' => 'single',
-				]);
-				
-				echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service', [
-					'label' =>  __('<i class="fa fa-plus-square text-success"></i> Services'),
-					'options' => $services,
-					'required' => true,
-					'escape' => false,
-					'divClass' => 'col col-xs-10 success',
-					'selected' => isset($this->request->data['Serviceescalation']['Service'])?$this->request->data['Serviceescalation']['Service']:[],
-					'target' => '#ServiceescalationServiceExcluded',
-				]);
-				
-				echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service_excluded', [
-					'label' =>  __('<i class="fa fa-plus-square text-danger"></i> Services (excluded)'),
-					'options' => $services,
-					'required' => false,
-					'escape' => false,
-					'divClass' => 'col col-xs-10 danger',
-					'selected' => isset($this->request->data['Serviceescalation']['Service_excluded'])?$this->request->data['Serviceescalation']['Service_excluded']:[],
-					'target' => '#ServiceescalationService',
-				]);
-				
-				
-				echo $this->Form->input('Serviceescalation.Servicegroup', [
-					'options' => $servicegroups,
-					'class' => 'chosen',
-					'multiple' => true,
-					'style' => 'width:100%;',
-					'label' => __('<i class="fa fa-plus-square text-success"></i> Servicegroups'),
-					'data-placeholder' => __('Please choose a servicegroup'),
-					'wrapInput' => [
-						'tag' => 'div',
-						'class' => 'col col-xs-10 success'
-					],
-					'target' => '#ServiceescalationServicegroupExcluded'
-				]);
-				
-				echo $this->Form->input('Serviceescalation.Servicegroup_excluded', [
-					'options' => $servicegroups,
-					'class' => 'chosen',
-					'multiple' => true,
-					'style' => 'width:100%;',
-					'label' => __('<i class="fa fa-minus-square text-danger"></i> Servicegroups (excluded)'),
-					'data-placeholder' => __('Please choose a servicegroup'),
-					'wrapInput' => [
-						'tag' => 'div',
-						'class' => 'col col-xs-10 danger'
-					],
-					'target' => '#ServiceescalationServicegroup'
-				]);
-				
-				echo $this->Form->input('Serviceescalation.first_notification', [
-					'label' => __('First escalation notice'),
-					'placeholder' => 0,
-					'min' => 0
-				]);
-				
-				echo $this->Form->input('Serviceescalation.last_notification', [
-					'label' => __('Last escalation notice'),
-					'placeholder' => 0,
-					'min' => 0
-				]);
-				
-				echo $this->Form->input('Serviceescalation.notification_interval', [
-					'label' => __('Notification interval'),
-					'placeholder' => 60,
-					'min' => 0,
-					'help' => __('Interval in minutes')
-				]);
-				
-				echo $this->Form->input('Serviceescalation.timeperiod_id', [
-					'options' => $timeperiods,
-					'class' => 'chosen',
-					'multiple' => false,
-					'style' => 'width:100%;',
-					'label' => __('Timeperiod'),
-					'data-placeholder' => __('Please choose a contact')
-				]);
-				
-				echo $this->Form->input('Serviceescalation.Contact', [
-					'options' => $contacts,
-					'class' => 'chosen',
-					'multiple' => true,
-					'style' => 'width:100%;',
-					'label' => __('Contacts'),
-					'data-placeholder' => __('Please choose a contact')
-				]);
-				
-				echo $this->Form->input('Serviceescalation.Contactgroup', [
-					'options' => $contactgroups,
-					'class' => 'chosen',
-					'multiple' => true,
-					'style' => 'width:100%;',
-					'label' => __('Contactgroups'),
-					'data-placeholder' => __('Please choose a contactgroup')
-				]);
-			?>
-			<fieldset>
-				<legend class="font-sm">
-					<label ><?php echo __('Serviceescalation options'); ?></label>
-					<?php if(isset($validation_service_notification)): ?>
-						<span class="text-danger"><?php echo $validation_service_notification; ?></span>
-					<?php endif; ?>
-				</legend>
-				<?php
-					$escalation_options = [
-									'escalate_on_recovery' => 'fa-square txt-color-greenLight',
-									'escalate_on_warning' => 'fa-square txt-color-orange',
-									'escalate_on_critical' => 'fa-square txt-color-redLight',
-									'escalate_on_unknown' => 'fa-square txt-color-blueDark'
-					];
-				foreach($escalation_options as $escalation_option => $icon):?>
-				<div style="border-bottom:1px solid lightGray;">
-					<?php echo $this->Form->fancyCheckbox($escalation_option, array(
-						'caption' => ucfirst(preg_replace('/escalate_on_/','',$escalation_option)),
-						'icon' => '<i class="fa '.$icon.'"></i> ',
-						'checked' => $this->CustomValidationErrors->refill($escalation_option, false),
-					)); ?>
-					<div class="clearfix"></div>
-				</div>
-				<?php endforeach;?>
-			</fieldset>
-			<br />
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
+        <h2><?php echo __('Add Serviceescalation'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton(); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Serviceescalation', [
+                'class' => 'form-horizontal clear',
+            ]);
+
+            echo $this->Form->input('Serviceescalation.container_id', [
+                'options'       => $this->Html->chosenPlaceholder($containers),
+                'class'         => 'chosen',
+                'style'         => 'width: 100%;',
+                'label'         => __('Container'),
+                'SelectionMode' => 'single',
+            ]);
+
+            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service', [
+                'label'    => __('<i class="fa fa-plus-square text-success"></i> Services'),
+                'options'  => $services,
+                'required' => true,
+                'escape'   => false,
+                'divClass' => 'col col-xs-10 success',
+                'selected' => isset($this->request->data['Serviceescalation']['Service']) ? $this->request->data['Serviceescalation']['Service'] : [],
+                'target'   => '#ServiceescalationServiceExcluded',
+            ]);
+
+            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service_excluded', [
+                'label'    => __('<i class="fa fa-plus-square text-danger"></i> Services (excluded)'),
+                'options'  => $services,
+                'required' => false,
+                'escape'   => false,
+                'divClass' => 'col col-xs-10 danger',
+                'selected' => isset($this->request->data['Serviceescalation']['Service_excluded']) ? $this->request->data['Serviceescalation']['Service_excluded'] : [],
+                'target'   => '#ServiceescalationService',
+            ]);
+
+
+            echo $this->Form->input('Serviceescalation.Servicegroup', [
+                'options'          => $servicegroups,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => __('<i class="fa fa-plus-square text-success"></i> Servicegroups'),
+                'data-placeholder' => __('Please choose a servicegroup'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 success',
+                ],
+                'target'           => '#ServiceescalationServicegroupExcluded',
+            ]);
+
+            echo $this->Form->input('Serviceescalation.Servicegroup_excluded', [
+                'options'          => $servicegroups,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Servicegroups (excluded)'),
+                'data-placeholder' => __('Please choose a servicegroup'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 danger',
+                ],
+                'target'           => '#ServiceescalationServicegroup',
+            ]);
+
+            echo $this->Form->input('Serviceescalation.first_notification', [
+                'label'       => __('First escalation notice'),
+                'placeholder' => 0,
+                'min'         => 0,
+            ]);
+
+            echo $this->Form->input('Serviceescalation.last_notification', [
+                'label'       => __('Last escalation notice'),
+                'placeholder' => 0,
+                'min'         => 0,
+            ]);
+
+            echo $this->Form->input('Serviceescalation.notification_interval', [
+                'label'       => __('Notification interval'),
+                'placeholder' => 60,
+                'min'         => 0,
+                'help'        => __('Interval in minutes'),
+            ]);
+
+            echo $this->Form->input('Serviceescalation.timeperiod_id', [
+                'options'          => $timeperiods,
+                'class'            => 'chosen',
+                'multiple'         => false,
+                'style'            => 'width:100%;',
+                'label'            => __('Timeperiod'),
+                'data-placeholder' => __('Please choose a contact'),
+            ]);
+
+            echo $this->Form->input('Serviceescalation.Contact', [
+                'options'          => $contacts,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => __('Contacts'),
+                'data-placeholder' => __('Please choose a contact'),
+            ]);
+
+            echo $this->Form->input('Serviceescalation.Contactgroup', [
+                'options'          => $contactgroups,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => __('Contactgroups'),
+                'data-placeholder' => __('Please choose a contactgroup'),
+            ]);
+            ?>
+            <fieldset>
+                <legend class="font-sm">
+                    <label><?php echo __('Serviceescalation options'); ?></label>
+                    <?php if (isset($validation_service_notification)): ?>
+                        <span class="text-danger"><?php echo $validation_service_notification; ?></span>
+                    <?php endif; ?>
+                </legend>
+                <?php
+                $escalation_options = [
+                    'escalate_on_recovery' => 'fa-square txt-color-greenLight',
+                    'escalate_on_warning'  => 'fa-square txt-color-orange',
+                    'escalate_on_critical' => 'fa-square txt-color-redLight',
+                    'escalate_on_unknown'  => 'fa-square txt-color-blueDark',
+                ];
+                foreach ($escalation_options as $escalation_option => $icon):?>
+                    <div style="border-bottom:1px solid lightGray;">
+                        <?php echo $this->Form->fancyCheckbox($escalation_option, [
+                            'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
+                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'checked' => $this->CustomValidationErrors->refill($escalation_option, false),
+                        ]); ?>
+                        <div class="clearfix"></div>
+                    </div>
+                <?php endforeach; ?>
+            </fieldset>
+            <br/>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>

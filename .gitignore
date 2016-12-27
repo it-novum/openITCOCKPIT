@@ -4,6 +4,7 @@ tmp/*
 app/tmp/*
 app/[Cc]onfig/database.php
 vendor
+build
 !empty
 lib/Cake/Console/Templates/skel/tmp/*
 ._*

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Cmd extends NagiosModuleAppModel{
-	public $useTable = false;
+class Cmd extends NagiosModuleAppModel
+{
+    public $useTable = false;
 }

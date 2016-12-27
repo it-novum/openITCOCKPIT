@@ -27,13 +27,15 @@ use \itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use \itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
 use \itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 
-class SetupShell extends AppShell{
+class SetupShell extends AppShell
+{
     public $uses = ['Systemsetting', 'User', 'Cronjob', 'ContainerUserMembership'];
 
     public $load = true;
 
-    public function main(){
-        if($this->load === true){
+    public function main()
+    {
+        if ($this->load === true) {
             App::uses('Folder', 'Utility');
             App::import('Component', 'Auth');
             $this->Auth = @new AuthComponent(null);
@@ -60,8 +62,8 @@ class SetupShell extends AppShell{
         $this->Systemdata = ['Systemsetting' => []];
         $this->Mail = [];
 
-        $menuSelection = strtoupper($this->in(__d('oitc_console', 'Are you sure to continue?'), array('Y', 'N')));
-        switch($menuSelection){
+        $menuSelection = strtoupper($this->in(__d('oitc_console', 'Are you sure to continue?'), ['Y', 'N']));
+        switch ($menuSelection) {
             case 'Y':
                 $this->setup();
                 break;
@@ -75,18 +77,19 @@ class SetupShell extends AppShell{
         $this->main();
     }
 
-    public function setup(){
-        if($this->fetchUserdata()){
+    public function setup()
+    {
+        if ($this->fetchUserdata()) {
             $this->User->create();
-            if($this->User->saveAll($this->Userdata)){
+            if ($this->User->saveAll($this->Userdata)) {
                 $this->out('<green>User created successfully</green>');
-                if($this->fetchSystemAddress()){
-                    if($this->Systemsetting->save($this->Systemdata)){
+                if ($this->fetchSystemAddress()) {
+                    if ($this->Systemsetting->save($this->Systemdata)) {
                         $this->out('<green>Saved IP address successfully</green>');
-                        if($this->fetchMailconfig()){
-                            if($this->Systemsetting->save($this->Systemdata)){
+                        if ($this->fetchMailconfig()) {
+                            if ($this->Systemsetting->save($this->Systemdata)) {
                                 //Return mail address saved successfully
-                                $file = fopen(APP . 'Config' . DS . 'email.php', 'w+');
+                                $file = fopen(APP.'Config'.DS.'email.php', 'w+');
                                 $mailHost = new MailConfigValue($this->Mail['host']);
                                 $mailPort = new MailConfigValueInt((int)$this->Mail['port']);
                                 $mailUsername = new MailConfigValue($this->Mail['username']);
@@ -110,24 +113,25 @@ class SetupShell extends AppShell{
                     }
 
                 }
-            }else{
+            } else {
                 $this->out('The following errors occured:');
                 $validationErrors = [];
-                foreach($this->User->validationErrors as $fieldName => $validationErrors){
-                    foreach($validationErrors as $validationError){
+                foreach ($this->User->validationErrors as $fieldName => $validationErrors) {
+                    foreach ($validationErrors as $validationError) {
                         $validationErrors[] = $validationError;
                     }
                 }
                 $validationErrors = array_unique($validationErrors);
-                foreach($validationErrors as $validationError){
-                    $this->out("\t" . '<red>' . $validationError . '</red>');
+                foreach ($validationErrors as $validationError) {
+                    $this->out("\t".'<red>'.$validationError.'</red>');
                 }
             }
         }
 
     }
 
-    public function fetchUserdata(){
+    public function fetchUserdata()
+    {
         $this->Userdata['User']['firstname'] = $this->askFirstname();
         $this->Userdata['User']['lastname'] = $this->askLastname();
         $this->Userdata['User']['email'] = $this->askEmail();
@@ -138,22 +142,22 @@ class SetupShell extends AppShell{
         $this->Userdata['User']['Container'] = [0 => '1'];
         $this->Userdata['ContainerUserMembership'] = [
             [
-                'container_id' => 1,
-                'permission_level' => 2
+                'container_id'     => 1,
+                'permission_level' => 2,
             ],
         ];
 
         $this->out('You entered:');
         $this->out('First name:', false);
-        $this->out('<blue>' . $this->Userdata['User']['firstname'] . '</blue>');
+        $this->out('<blue>'.$this->Userdata['User']['firstname'].'</blue>');
         $this->out('Last name:', false);
-        $this->out('<blue>' . $this->Userdata['User']['lastname'] . '</blue>');
+        $this->out('<blue>'.$this->Userdata['User']['lastname'].'</blue>');
         $this->out('Email:', false);
-        $this->out('<blue>' . $this->Userdata['User']['email'] . '</blue>');
+        $this->out('<blue>'.$this->Userdata['User']['email'].'</blue>');
         $this->out('Password:', false);
-        $this->out('<blue>' . $this->Userdata['User']['new_password'] . '</blue>');
+        $this->out('<blue>'.$this->Userdata['User']['new_password'].'</blue>');
 
-        if(!$this->askContinue('If you want to continue type Y or N if you want to change the data')){
+        if (!$this->askContinue('If you want to continue type Y or N if you want to change the data')) {
             $this->fetchUserdata();
         }
 
@@ -161,41 +165,46 @@ class SetupShell extends AppShell{
 
     }
 
-    public function askFirstname(){
+    public function askFirstname()
+    {
         $input = $this->in(__d('oitc_console', 'Please enter your first name'));
         $input = trim($input);
-        if(strlen($input) > 0){
+        if (strlen($input) > 0) {
             return $input;
         }
         $this->askFirstname();
     }
 
-    public function askLastname(){
+    public function askLastname()
+    {
         $input = $this->in(__d('oitc_console', 'Please enter your last name'));
         $input = trim($input);
-        if(strlen($input) > 0){
+        if (strlen($input) > 0) {
             return $input;
         }
         $this->askLastname();
     }
 
-    public function askEmail(){
+    public function askEmail()
+    {
         $input = $this->in(__d('oitc_console', 'Please enter your email address. This will be the username for the login.'));
         $input = trim($input);
-        if(!Validation::email($input)){
+        if (!Validation::email($input)) {
             $this->askEmail();
         }
+
         return $input;
     }
 
-    public function askPassword(){
+    public function askPassword()
+    {
         $this->out('<blue>The password must consist of 6-12 alphanumeric characters and must contain at least one digit</blue>');
         $pw1 = $this->in(__d('oitc_console', 'Please enter a password for the login.'));
         $pw1 = trim($pw1);
-        if(strlen($pw1) >= 6 && strlen($pw1) <= 12){
+        if (strlen($pw1) >= 6 && strlen($pw1) <= 12) {
             $pw2 = $this->in(__d('oitc_console', 'Please confirm your password'));
             $pw2 = trim($pw2);
-            if($pw1 == $pw2){
+            if ($pw1 == $pw2) {
                 return $pw1;
             }
         }
@@ -203,40 +212,45 @@ class SetupShell extends AppShell{
         $this->askPassword();
     }
 
-    public function askContinue($message){
-        $input = strtoupper($this->in(__d('oitc_console', $message), array('Y', 'N')));
+    public function askContinue($message)
+    {
+        $input = strtoupper($this->in(__d('oitc_console', $message), ['Y', 'N']));
         $input = trim($input);
-        if($input == 'Y'){
+        if ($input == 'Y') {
             return true;
-        }elseif($input == 'N'){
+        } elseif ($input == 'N') {
             return false;
-        }else{
+        } else {
             $this->askContinue();
         }
     }
 
-    public function fetchSystemAddress(){
+    public function fetchSystemAddress()
+    {
         $currentValue = $this->Systemsetting->findByKey('SYSTEM.ADDRESS');
         $currentValue['Systemsetting']['value'] = $this->askSystemIp();
         $this->Systemdata = $currentValue;
+
         return true;
     }
 
-    public function askSystemIp(){
+    public function askSystemIp()
+    {
         $input = $this->in(__d('oitc_console', 'Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later.'));
         $input = trim($input);
-        if(strlen($input) > 0){
+        if (strlen($input) > 0) {
             return $input;
         }
         $this->askSystemIp();
     }
 
-    public function fetchMailconfig(){
+    public function fetchMailconfig()
+    {
         $this->out('<blue>The installer will ask you now for your mail configuration</blue>');
         $this->out('<blue>This configuration is used by the interface and the monitoring software to send emails</blue>');
         $this->out('<blue>You don\'t need to install a local mailserver</blue>');
         $this->out('<blue>If you want to change this settings later </blue>', false);
-        $this->out('<red>' . APP . 'Config' . DS . 'email.php </red>', false);
+        $this->out('<red>'.APP.'Config'.DS.'email.php </red>', false);
         $this->out('<blue> is the place you need to search for</blue>');
 
         $currentValue = $this->Systemsetting->findByKey('MONITORING.FROM_ADDRESS');
@@ -248,80 +262,93 @@ class SetupShell extends AppShell{
         $this->Mail['port'] = $this->askMailPort();
         $this->Mail['username'] = $this->askMailUser();
         $this->Mail['password'] = $this->askMailPassword();
+
         return true;
     }
 
-    public function askFromAddress(){
+    public function askFromAddress()
+    {
         $this->out('<blue>openITCOCKPIT requires a valid mail address to send mails. (e.g. openitcockpit@example.org)</blue>');
         $input = $this->in(__d('oitc_console', 'Please enter your return mail address'));
         $input = trim($input);
-        if(!Validation::email($input)){
+        if (!Validation::email($input)) {
             $this->askFromAddress();
         }
+
         return $input;
     }
 
-    public function askMailhost(){
+    public function askMailhost()
+    {
         $this->out('<blue>If you want to use a local installed mail server (e.g.postfix) enter 127.0.0.1 as address and left username and password blank</blue>');
         $input = $this->in(__d('oitc_console', 'Please enter the address of your mail server (e.g. mail.example.org)'));
         $input = trim($input);
-        if(strlen($input) > 0){
+        if (strlen($input) > 0) {
             return $input;
         }
         $this->askMailhost();
     }
 
-    public function askMailPort(){
+    public function askMailPort()
+    {
         $this->out('<blue>I guess you want to enter 25 as port</blue>');
         $input = $this->in(__d('oitc_console', 'Please enter the port of your mail server'), null, 25);
         $input = trim($input);
-        if(strlen($input) > 0 && is_numeric($input)){
+        if (strlen($input) > 0 && is_numeric($input)) {
             return $input;
         }
         $this->askMailPort();
     }
 
-    public function askMailUser(){
+    public function askMailUser()
+    {
         $this->out('<blue>Your username may looks like </blue>', false);
         $this->out('<red>domain\jdoe</red> or <red>john.doe@example.org</red>');
         $input = $this->in(__d('oitc_console', 'Please enter your username, or leave it blank if you don\'t need a user'));
         $input = trim($input);
+
         return $input;
     }
 
-    public function askMailPassword(){
+    public function askMailPassword()
+    {
         $input = $this->in(__d('oitc_console', 'Please enter your password, or leave it blank if you don\'t need a password'));
         $input = trim($input);
+
         return $input;
     }
 
-    public function createMysqlPartitions(){
+    public function createMysqlPartitions()
+    {
         $this->out('Create MySQL partitions', false);
-        if(file_exists('/etc/openitcockpit/mysql.cnf')){
-            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . APP . 'partitions.sql', $out, $ret);
-            if($ret == 0){
+        if (file_exists('/etc/openitcockpit/mysql.cnf')) {
+            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < '.APP.'partitions.sql', $out, $ret);
+            if ($ret == 0) {
                 $this->out('<green> ...OK</green>');
+
                 return true;
             }
             $this->out('<red> ...ERROR</red>');
+
             return false;
         }
         $this->out('<red> MySQL configuration file /etc/openitcockpit/mysql.cnf does not exist</red>');
+
         return false;
     }
 
 
-
-    public function createCronjobs(){
+    public function createCronjobs()
+    {
         $this->out('<blue>Checking for missing cronjobs</blue>');
         //Check if load cronjob exists
-        if(!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')){
+        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
             $this->Cronjob->add('CpuLoad', 'Core', 15);
         }
 
         //Check if version check cronjob exists
-        if(!$this->Cronjob->checkForCronjob('VersionCheck', 'Core')){
+        if (!$this->Cronjob->checkForCronjob('VersionCheck', 'Core')) {
             //Cron does not exists, so we create it
             $this->Cronjob->add('VersionCheck', 'Core', 1440);
         }

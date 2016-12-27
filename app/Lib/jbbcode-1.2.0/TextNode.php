@@ -6,7 +6,6 @@ require_once 'Node.php';
 
 /**
  * Represents a piece of text data. TextNodes never have children.
- *
  * @author jbowens
  */
 class TextNode extends Node
@@ -32,7 +31,6 @@ class TextNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::isTextNode()
-     *
      * returns true
      */
     public function isTextNode()
@@ -42,7 +40,6 @@ class TextNode extends Node
 
     /**
      * Returns the text string value of this text node.
-     *
      * @return string
      */
     public function getValue()
@@ -53,9 +50,7 @@ class TextNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsText()
-     *
      * Returns the text representation of this node.
-     *
      * @return this node represented as text
      */
     public function getAsText()
@@ -66,9 +61,7 @@ class TextNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsBBCode()
-     *
      * Returns the bbcode representation of this node. (Just its value)
-     *
      * @return this node represented as bbcode
      */
     public function getAsBBCode()
@@ -79,9 +72,7 @@ class TextNode extends Node
     /**
      * (non-PHPdoc)
      * @see JBBCode.Node::getAsHTML()
-     *
      * Returns the html representation of this node. (Just its value)
-     *
      * @return this node represented as HTML
      */
     public function getAsHTML()

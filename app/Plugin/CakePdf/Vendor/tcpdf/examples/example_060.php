@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Advanced page settings.
- * @author Nicola Asuni
- * @since 2010-05-17
+ * @author   Nicola Asuni
+ * @since    2010-05-17
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 060', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -70,22 +70,22 @@ $pdf->SetFont('helvetica', '', 20);
 // ---------------------------------------------------------
 
 // set page format (read source code documentation for further information)
-$page_format = array(
-	'MediaBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
-	'CropBox' => array ('llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297),
-	'BleedBox' => array ('llx' => 5, 'lly' => 5, 'urx' => 205, 'ury' => 292),
-	'TrimBox' => array ('llx' => 10, 'lly' => 10, 'urx' => 200, 'ury' => 287),
-	'ArtBox' => array ('llx' => 15, 'lly' => 15, 'urx' => 195, 'ury' => 282),
-	'Dur' => 3,
-	'trans' => array(
-		'D' => 1.5,
-		'S' => 'Split',
-		'Dm' => 'V',
-		'M' => 'O'
-	),
-	'Rotate' => 90,
-	'PZ' => 1,
-);
+$page_format = [
+    'MediaBox' => ['llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297],
+    'CropBox'  => ['llx' => 0, 'lly' => 0, 'urx' => 210, 'ury' => 297],
+    'BleedBox' => ['llx' => 5, 'lly' => 5, 'urx' => 205, 'ury' => 292],
+    'TrimBox'  => ['llx' => 10, 'lly' => 10, 'urx' => 200, 'ury' => 287],
+    'ArtBox'   => ['llx' => 15, 'lly' => 15, 'urx' => 195, 'ury' => 282],
+    'Dur'      => 3,
+    'trans'    => [
+        'D'  => 1.5,
+        'S'  => 'Split',
+        'Dm' => 'V',
+        'M'  => 'O',
+    ],
+    'Rotate'   => 90,
+    'PZ'       => 1,
+];
 
 // Check the example n. 29 for viewer preferences
 

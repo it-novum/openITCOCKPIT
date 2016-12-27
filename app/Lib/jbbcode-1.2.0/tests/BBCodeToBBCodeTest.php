@@ -1,11 +1,10 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php');
+require_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php');
 
 /**
  * Test cases testing the functionality of parsing bbcode and
  * retrieving a bbcode well-formed bbcode representation.
- *
  * @author jbowens
  */
 class BBCodeToBBCodeTest extends PHPUnit_Framework_TestCase
@@ -21,6 +20,7 @@ class BBCodeToBBCodeTest extends PHPUnit_Framework_TestCase
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse($bbcode);
+
         return $parser->getAsBBCode();
     }
 
@@ -46,15 +46,15 @@ class BBCodeToBBCodeTest extends PHPUnit_Framework_TestCase
     public function testOneTagWithSurroundingText()
     {
         $this->assertBBCodeOutput('buffer text [b]this is bold[/b] buffer text',
-                                  'buffer text [b]this is bold[/b] buffer text');
+            'buffer text [b]this is bold[/b] buffer text');
     }
 
     public function testMultipleTags()
     {
-        $bbcode = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and ' .
-                  'things like [u]that[/u].';
-        $bbcodeOutput = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and ' .
-                        'things like [u]that[/u].';
+        $bbcode = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and '.
+            'things like [u]that[/u].';
+        $bbcodeOutput = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and '.
+            'things like [u]that[/u].';
         $this->assertBBCodeOutput($bbcode, $bbcodeOutput);
     }
 

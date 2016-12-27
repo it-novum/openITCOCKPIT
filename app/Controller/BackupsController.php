@@ -23,14 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class BackupsController extends AppController{
+class BackupsController extends AppController
+{
     public $layout = 'Admin.default';
     public $components = ['GearmanClient'];
     public $uses = ['Proxy'];
-    
+
     public function index()
     {
-        $backupfiles = array();
+        $backupfiles = [];
         $files = scandir("/opt/openitc/nagios/backup/");
         foreach ($files as $file) {
             if (strstr($file, "mysql_oitc_bkp_")) {

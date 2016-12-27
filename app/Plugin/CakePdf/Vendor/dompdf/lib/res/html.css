@@ -48,323 +48,321 @@
 
 /* $Id: html.css,v 1.4 2006-04-05 20:09:00 benjcarson Exp $ */
 
-
-html { 
-  display: -dompdf-page;
+html {
+    display: -dompdf-page;
 }
 
 /* blocks */
 
 div, map, dt, isindex {
-  display: block;
+    display: block;
 }
 
 body {
-  page-break-before: avoid;
-  display: block;
-  margin: 8px;
+    page-break-before: avoid;
+    display: block;
+    margin: 8px;
 }
 
 p, dl, multicol {
-  display: block;
-  margin: 1em 0;
+    display: block;
+    margin: 1em 0;
 }
 
 dd {
-  display: block;
-  margin-left: 40px;
+    display: block;
+    margin-left: 40px;
 }
 
 blockquote {
-  display: block;
-  margin: 1em 40px;
+    display: block;
+    margin: 1em 40px;
 }
 
 address {
-  display: block;
-  font-style: italic;
+    display: block;
+    font-style: italic;
 }
 
 center {
-  display: block;
-  text-align: center;
+    display: block;
+    text-align: center;
 }
 
 blockquote[type=cite] {
-  display: block;
-  margin: 1em 0px;
-  padding-left: 1em;
-  border-left: solid;
-  border-color: blue;
-  border-width: thin;
+    display: block;
+    margin: 1em 0px;
+    padding-left: 1em;
+    border-left: solid;
+    border-color: blue;
+    border-width: thin;
 }
 
 h1 {
-  display: block;
-  font-size: 2em;
-  font-weight: bold;
-  margin: .67em 0;
+    display: block;
+    font-size: 2em;
+    font-weight: bold;
+    margin: .67em 0;
 }
 
 h2 {
-  display: block;
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: .83em 0;
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: .83em 0;
 }
 
 h3 {
-  display: block;
-  font-size: 1.17em;
-  font-weight: bold;
-  margin: 1em 0;
+    display: block;
+    font-size: 1.17em;
+    font-weight: bold;
+    margin: 1em 0;
 }
 
 h4 {
-  display: block;
-  font-weight: bold;
-  margin: 1.33em 0;
+    display: block;
+    font-weight: bold;
+    margin: 1.33em 0;
 }
 
 h5 {
-  display: block;
-  font-size: 0.83em;
-  font-weight: bold;
-  margin: 1.67em 0;
+    display: block;
+    font-size: 0.83em;
+    font-weight: bold;
+    margin: 1.67em 0;
 }
 
 h6 {
-  display: block;
-  font-size: 0.67em;
-  font-weight: bold;
-  margin: 2.33em 0;
+    display: block;
+    font-size: 0.67em;
+    font-weight: bold;
+    margin: 2.33em 0;
 }
 
 listing {
-  display: block;
-  font-family: fixed;
-  font-size: medium;
-  white-space: pre;
-  margin: 1em 0;
+    display: block;
+    font-family: fixed;
+    font-size: medium;
+    white-space: pre;
+    margin: 1em 0;
 }
 
 plaintext, xmp, pre {
-  display: block;
-  font-family: fixed;
-  white-space: pre;
-  margin: 1em 0;
+    display: block;
+    font-family: fixed;
+    white-space: pre;
+    margin: 1em 0;
 }
 
 /* tables */
 
 table {
-  display: table;
-  border-spacing: 2px; 
-  border-collapse: separate;
-  margin-top: 0;
-  margin-bottom: 0;
-  text-indent: 0;
+    display: table;
+    border-spacing: 2px;
+    border-collapse: separate;
+    margin-top: 0;
+    margin-bottom: 0;
+    text-indent: 0;
 }
 
 /* make sure backgrounds are inherited in tables  -- see bug 4510 */
 td, th, tr {
-  background: inherit;
+    background: inherit;
 }
-   
-/* caption inherits from table not table-outer */  
+
+/* caption inherits from table not table-outer */
 caption {
-  display: table-caption;
-  text-align: center;
+    display: table-caption;
+    text-align: center;
 }
 
 tr {
-  display: table-row;
-  vertical-align: inherit;
+    display: table-row;
+    vertical-align: inherit;
 }
 
 col {
-  display: table-column;
+    display: table-column;
 }
 
 colgroup {
-  display: table-column-group;
+    display: table-column-group;
 }
 
 tbody {
-  display: table-row-group;
-  vertical-align: middle;
+    display: table-row-group;
+    vertical-align: middle;
 }
 
 thead {
-  display: table-header-group;
-  vertical-align: middle;
+    display: table-header-group;
+    vertical-align: middle;
 }
 
 tfoot {
-  display: table-footer-group;
-  vertical-align: middle;
+    display: table-footer-group;
+    vertical-align: middle;
 }
 
-td { 
-  display: table-cell;
-  vertical-align: inherit;
-  text-align: inherit; 
-  padding: 1px;
+td {
+    display: table-cell;
+    vertical-align: inherit;
+    text-align: inherit;
+    padding: 1px;
 }
 
 th {
-  display: table-cell;
-  vertical-align: inherit;
-  font-weight: bold;
-  padding: 1px;
-  text-align: center;
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    padding: 1px;
+    text-align: center;
 }
 
 /* inlines */
 
 q:before {
-  content: open-quote;
+    content: open-quote;
 }
 
 q:after {
-  content: close-quote;
+    content: close-quote;
 }
 
 a:link {
-  color: #00c;
-  text-decoration: underline;
+    color: #00c;
+    text-decoration: underline;
 }
 
 b, strong {
-  font-weight: bolder;
+    font-weight: bolder;
 }
 
 i, cite, em, var, dfn {
-  font-style: italic;
+    font-style: italic;
 }
 
 tt, code, kbd, samp {
-  font-family: fixed;
+    font-family: fixed;
 }
 
 u, ins {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 s, strike, del {
-  text-decoration: line-through;
+    text-decoration: line-through;
 }
 
 blink {
-  text-decoration: blink;
+    text-decoration: blink;
 }
 
 big {
-  font-size: larger;
+    font-size: larger;
 }
 
 small {
-  font-size: smaller;
+    font-size: smaller;
 }
 
 sub {
-  vertical-align: sub;
-  font-size: smaller;
-  line-height: normal;
+    vertical-align: sub;
+    font-size: smaller;
+    line-height: normal;
 }
 
 sup {
-  vertical-align: super;
-  font-size: smaller;
-  line-height: normal;
+    vertical-align: super;
+    font-size: smaller;
+    line-height: normal;
 }
 
 nobr {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
 /* lists */
 
 ul, menu, dir {
-  display: block;
-  list-style-type: disc;
-  margin: 1em 0;
-  padding-left: 40px;
+    display: block;
+    list-style-type: disc;
+    margin: 1em 0;
+    padding-left: 40px;
 }
 
 ol {
-  display: block;
-  list-style-type: decimal;
-  margin: 1em 0;
-  padding-left: 40px;
+    display: block;
+    list-style-type: decimal;
+    margin: 1em 0;
+    padding-left: 40px;
 }
 
 li {
-  display: list-item;
+    display: list-item;
 }
 
 /* nested lists have no top/bottom margins */
-ul ul,   ul ol,   ul dir,   ul menu,   ul dl,
-ol ul,   ol ol,   ol dir,   ol menu,   ol dl,
-dir ul,  dir ol,  dir dir,  dir menu,  dir dl,
+ul ul, ul ol, ul dir, ul menu, ul dl,
+ol ul, ol ol, ol dir, ol menu, ol dl,
+dir ul, dir ol, dir dir, dir menu, dir dl,
 menu ul, menu ol, menu dir, menu menu, menu dl,
-dl ul,   dl ol,   dl dir,   dl menu,   dl dl {
-  margin-top: 0;
-  margin-bottom: 0;
+dl ul, dl ol, dl dir, dl menu, dl dl {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /* 2 deep unordered lists use a circle */
-ol ul,   ul ul,   menu ul,   dir ul,
+ol ul, ul ul, menu ul, dir ul,
 ol menu, ul menu, menu menu, dir menu,
-ol dir,  ul dir,  menu dir,  dir dir {
-  list-style-type: circle;
+ol dir, ul dir, menu dir, dir dir {
+    list-style-type: circle;
 }
 
 /* 3 deep (or more) unordered lists use a square */
-ol ol ul,     ol ul ul,     ol menu ul,     ol dir ul,
-ol ol menu,   ol ul menu,   ol menu menu,   ol dir menu,
-ol ol dir,    ol ul dir,    ol menu dir,    ol dir dir,
-ul ol ul,     ul ul ul,     ul menu ul,     ul dir ul,
-ul ol menu,   ul ul menu,   ul menu menu,   ul dir menu,
-ul ol dir,    ul ul dir,    ul menu dir,    ul dir dir,
-menu ol ul,   menu ul ul,   menu menu ul,   menu dir ul,
+ol ol ul, ol ul ul, ol menu ul, ol dir ul,
+ol ol menu, ol ul menu, ol menu menu, ol dir menu,
+ol ol dir, ol ul dir, ol menu dir, ol dir dir,
+ul ol ul, ul ul ul, ul menu ul, ul dir ul,
+ul ol menu, ul ul menu, ul menu menu, ul dir menu,
+ul ol dir, ul ul dir, ul menu dir, ul dir dir,
+menu ol ul, menu ul ul, menu menu ul, menu dir ul,
 menu ol menu, menu ul menu, menu menu menu, menu dir menu,
-menu ol dir,  menu ul dir,  menu menu dir,  menu dir dir,
-dir ol ul,    dir ul ul,    dir menu ul,    dir dir ul,
-dir ol menu,  dir ul menu,  dir menu menu,  dir dir menu,
-dir ol dir,   dir ul dir,   dir menu dir,   dir dir dir {
-  list-style-type: square;
+menu ol dir, menu ul dir, menu menu dir, menu dir dir,
+dir ol ul, dir ul ul, dir menu ul, dir dir ul,
+dir ol menu, dir ul menu, dir menu menu, dir dir menu,
+dir ol dir, dir ul dir, dir menu dir, dir dir dir {
+    list-style-type: square;
 }
-
 
 /* leafs */
 
 hr {
-  display: block;
-  height: 2px;
-  border: 1px inset;
-  margin: 0.5em auto 0.5em auto;
+    display: block;
+    height: 2px;
+    border: 1px inset;
+    margin: 0.5em auto 0.5em auto;
 }
 
 iframe {
-  border: 2px inset;
+    border: 2px inset;
 }
 
 noframes {
-  display: none;
+    display: none;
 }
 
-br { 
-  display: -dompdf-br;
+br {
+    display: -dompdf-br;
 }
 
 img_inner {
-  display: -dompdf-image;
+    display: -dompdf-image;
 }
 
 /* hidden elements */
 area, base, basefont, head, meta, script, style, title,
 noembed, noscript, param {
-   display: none;
+    display: none;
 }
 

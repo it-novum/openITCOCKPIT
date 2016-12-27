@@ -17,9 +17,10 @@
 //  limitations under the License.
 //
 
-class FilterLZW {
-    
-    var $sTable = array();
+class FilterLZW
+{
+
+    var $sTable = [];
     var $data = null;
     var $dataLength = 0;
     var $tIdx;
@@ -28,20 +29,22 @@ class FilterLZW {
     var $bitPointer;
     var $nextData = 0;
     var $nextBits = 0;
-    var $andTable = array(511, 1023, 2047, 4095);
+    var $andTable = [511, 1023, 2047, 4095];
 
-    function error($msg) {
+    function error($msg)
+    {
         die($msg);
     }
-    
+
     /**
      * Method to decode LZW compressed data.
      *
      * @param string data    The compressed data.
      */
-    function decode($data) {
+    function decode($data)
+    {
 
-        if($data[0] == 0x00 && $data[1] == 0x01) {
+        if ($data[0] == 0x00 && $data[1] == 0x01) {
             $this->error('LZW flavour not supported.');
         }
 
@@ -92,7 +95,7 @@ class FilterLZW {
                 }
             }
         }
-        
+
         return $uncompData;
     }
 
@@ -100,8 +103,9 @@ class FilterLZW {
     /**
      * Initialize the string table.
      */
-    function initsTable() {
-        $this->sTable = array();
+    function initsTable()
+    {
+        $this->sTable = [];
 
         for ($i = 0; $i < 256; $i++)
             $this->sTable[$i] = chr($i);
@@ -113,7 +117,8 @@ class FilterLZW {
     /**
      * Add a new string to the string table.
      */
-    function addStringToTable ($oldString, $newString='') {
+    function addStringToTable($oldString, $newString = '')
+    {
         $string = $oldString.$newString;
 
         // Add this new String to the table
@@ -129,7 +134,8 @@ class FilterLZW {
     }
 
     // Returns the next 9, 10, 11 or 12 bits
-    function getNextCode() {
+    function getNextCode()
+    {
         if ($this->bytePointer == $this->dataLength) {
             return 257;
         }
@@ -142,13 +148,14 @@ class FilterLZW {
             $this->nextBits += 8;
         }
 
-        $code = ($this->nextData >> ($this->nextBits - $this->bitsToGet)) & $this->andTable[$this->bitsToGet-9];
+        $code = ($this->nextData >> ($this->nextBits - $this->bitsToGet)) & $this->andTable[$this->bitsToGet - 9];
         $this->nextBits -= $this->bitsToGet;
 
         return $code;
     }
-    
-    function encode($in) {
+
+    function encode($in)
+    {
         $this->error("LZW encoding not implemented.");
     }
 }

@@ -23,46 +23,50 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hoststatus extends NagiosModuleAppModel{
-	//public $useDbConfig = 'nagios';
-	public $useTable = 'hoststatus';
-	public $primaryKey = 'hoststatus_id';
-	public $tablePrefix = 'nagios_';
-	public $belongsTo = [
-		'Objects' => [
-			'className' => 'NagiosModule.Objects',
-			'foreignKey' => 'host_object_id',
-		]
-	];
+class Hoststatus extends NagiosModuleAppModel
+{
+    //public $useDbConfig = 'nagios';
+    public $useTable = 'hoststatus';
+    public $primaryKey = 'hoststatus_id';
+    public $tablePrefix = 'nagios_';
+    public $belongsTo = [
+        'Objects' => [
+            'className'  => 'NagiosModule.Objects',
+            'foreignKey' => 'host_object_id',
+        ],
+    ];
 
-	/**
-	 * Return the host status as array for given uuid as stirng or array
-	 *
-	 * @param          string $uuid    UUID or array $uuid you want to get host status for
-	 * @param    array        $options for the find request (see cakephp's find for all options)
-	 * @return array
-	 */
-	public function byUuid($uuid = null, $options = []){
-		$return = [];
-		
-		$_options = [
-			'conditions' => [
-				'Objects.name1' => $uuid,
-				'Objects.objecttype_id' => 1
-			],
-		];
-		
-		$options = Hash::merge($_options, $options);
-		
-		if($uuid !== null){
-			$hoststatus = $this->find('all', $options);
-			
-			if(!empty($hoststatus)){
-				foreach($hoststatus as $hs){
-					$return[$hs['Objects']['name1']] = $hs;
-				}
-			}
-		}
-		return $return;
-	}
+    /**
+     * Return the host status as array for given uuid as stirng or array
+     *
+     * @param          string $uuid    UUID or array $uuid you want to get host status for
+     * @param    array        $options for the find request (see cakephp's find for all options)
+     *
+     * @return array
+     */
+    public function byUuid($uuid = null, $options = [])
+    {
+        $return = [];
+
+        $_options = [
+            'conditions' => [
+                'Objects.name1'         => $uuid,
+                'Objects.objecttype_id' => 1,
+            ],
+        ];
+
+        $options = Hash::merge($_options, $options);
+
+        if ($uuid !== null) {
+            $hoststatus = $this->find('all', $options);
+
+            if (!empty($hoststatus)) {
+                foreach ($hoststatus as $hs) {
+                    $return[$hs['Objects']['name1']] = $hs;
+                }
+            }
+        }
+
+        return $return;
+    }
 }

@@ -3,13 +3,13 @@
 
 include("../mpdf.php");
 
-$mpdf=new mPDF(''); 
+$mpdf = new mPDF('');
 
-$mpdf->useKerning=true;
+$mpdf->useKerning = true;
 
-$mpdf->restrictColorSpace=3; 	// forces everything to convert to CMYK colors
+$mpdf->restrictColorSpace = 3;    // forces everything to convert to CMYK colors
 
-$mpdf->AddSpotColor('PANTONE 534 EC',85,65,47,9);
+$mpdf->AddSpotColor('PANTONE 534 EC', 85, 65, 47, 9);
 
 //==============================================================
 $html = '
@@ -444,7 +444,8 @@ $mpdf->WriteHTML($html);
 //==============================================================
 //==============================================================
 // OUTPUT
-$mpdf->Output(); exit;
+$mpdf->Output();
+exit;
 
 
 //==============================================================

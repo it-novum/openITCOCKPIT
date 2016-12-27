@@ -26,6 +26,7 @@
 
 App::uses('AppModel', 'Model');
 
-class MapModuleAppModel extends AppModel {
+class MapModuleAppModel extends AppModel
+{
 
 }

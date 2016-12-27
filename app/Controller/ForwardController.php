@@ -23,67 +23,69 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ForwardController extends AppController{
-	public $layout = 'Admin.default';
-	
-	public $uses = [
-		'Host',
-		'Hosttemplate',
-		'Timeperiod',
-		'Command',
-		'Contact',
-		'Contactgroup',
-		'Container',
-		'Customvariable',
-		'Hostescalation',
-		'Hostgroup',
-		'Service',
-		'Servicetemplate',
-		'Serviceescalations',
-		'Servicegroup',
-		'Hostdependency',
-		'Servicedependency'
-	];
-	
-	public $components = ['Uuid'];
-	
-	public function index(){
-		
-		$_options = [
-			'uuid' => null,
-			'action' => 'edit',
-			'model' => 'unknown'
-		];
-		$options = Hash::merge($_options, $this->request->params['named']);
-		
-		
-		if($options['model'] == 'unknown'){
-			$this->Uuid->buildCache();
-			$this->uuidCache = $this->Uuid->getCache();
-			if(isset($this->uuidCache[$options['uuid']])){
-				//Redirect to to object
-				$this->redirect('/'.strtolower(Inflector::pluralize($this->uuidCache[$options['uuid']]['ModelName'])).'/'.$options['action'].'/'.$this->uuidCache[$options['uuid']]['id']);
-			}else{
-				if(isset($this->request->params['named']['exception']) && $this->request->params['named']['exception'] == 'false'){
-					$this->setFlash(__('No entry found'), false);
-					$this->redirect($this->referer());
-				}
-				
-				throw new NotFoundException(__('Object not found'));
-			}
-		}else{
-			$object = $this->{$options['model']}->findByUuid($options['uuid']);
-			if(!empty($object)){
-				if(isset($this->request->params['named']['exception']) && $this->request->params['named']['exception'] == 'false'){
-					$this->setFlash(__('No entry found'), false);
-					$this->redirect($this->referer());
-				}
-				
-				$this->redirect('/'.strtolower(Inflector::pluralize($options['model'])).'/'.$options['action'].'/'.$object[$options['model']]['id']);
-			}else{
-				throw new NotFoundException(__('Object not found'));
-			}
-		}
-	}
-	
+class ForwardController extends AppController
+{
+    public $layout = 'Admin.default';
+
+    public $uses = [
+        'Host',
+        'Hosttemplate',
+        'Timeperiod',
+        'Command',
+        'Contact',
+        'Contactgroup',
+        'Container',
+        'Customvariable',
+        'Hostescalation',
+        'Hostgroup',
+        'Service',
+        'Servicetemplate',
+        'Serviceescalations',
+        'Servicegroup',
+        'Hostdependency',
+        'Servicedependency',
+    ];
+
+    public $components = ['Uuid'];
+
+    public function index()
+    {
+
+        $_options = [
+            'uuid'   => null,
+            'action' => 'edit',
+            'model'  => 'unknown',
+        ];
+        $options = Hash::merge($_options, $this->request->params['named']);
+
+
+        if ($options['model'] == 'unknown') {
+            $this->Uuid->buildCache();
+            $this->uuidCache = $this->Uuid->getCache();
+            if (isset($this->uuidCache[$options['uuid']])) {
+                //Redirect to to object
+                $this->redirect('/'.strtolower(Inflector::pluralize($this->uuidCache[$options['uuid']]['ModelName'])).'/'.$options['action'].'/'.$this->uuidCache[$options['uuid']]['id']);
+            } else {
+                if (isset($this->request->params['named']['exception']) && $this->request->params['named']['exception'] == 'false') {
+                    $this->setFlash(__('No entry found'), false);
+                    $this->redirect($this->referer());
+                }
+
+                throw new NotFoundException(__('Object not found'));
+            }
+        } else {
+            $object = $this->{$options['model']}->findByUuid($options['uuid']);
+            if (!empty($object)) {
+                if (isset($this->request->params['named']['exception']) && $this->request->params['named']['exception'] == 'false') {
+                    $this->setFlash(__('No entry found'), false);
+                    $this->redirect($this->referer());
+                }
+
+                $this->redirect('/'.strtolower(Inflector::pluralize($options['model'])).'/'.$options['action'].'/'.$object[$options['model']]['id']);
+            } else {
+                throw new NotFoundException(__('Object not found'));
+            }
+        }
+    }
+
 }

@@ -24,40 +24,40 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i> 
-				Nagios 
-			<span>> 
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-terminal fa-fw "></i>
+            Nagios
+            <span>> 
 				Commands
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-		<h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?> command</h2>
-		<div class="widget-toolbar" role="menu"> 
-			<?php echo $this->Utils->backButton() ?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Command', array(
-					'class' => 'form-horizontal clear'
-				));
-				echo $this->Form->input('Objects.name1');
-				echo $this->Form->input('command_line');
-				?>
-			<br />
-			<div id="console"></div>
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
+        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?> command</h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton() ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Command', [
+                'class' => 'form-horizontal clear',
+            ]);
+            echo $this->Form->input('Objects.name1');
+            echo $this->Form->input('command_line');
+            ?>
+            <br/>
+            <div id="console"></div>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>

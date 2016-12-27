@@ -1,12 +1,11 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php';
+require_once dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php';
 
 /**
  * Test cases for the default bbcode set.
- *
  * @author jbowens
- * @since May 2013
+ * @since  May 2013
  */
 class DefaultCodesTest extends PHPUnit_Framework_TestCase
 {

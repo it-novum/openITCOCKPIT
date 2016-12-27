@@ -40,14 +40,14 @@
     <div>
         <div class="widget-body">
             <?php
-            echo $this->Form->create('Backup', array('url' => 'restore'));
+            echo $this->Form->create('Backup', ['url' => 'restore']);
 
             echo $this->Form->input('backupfile', [
-                    'options' => $backupfiles,
-                    'multiple' => false,
-                    'class' => 'chosen',
-                    'style' => 'width: 80%',
-                    'label' => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+                    'options'   => $backupfiles,
+                    'multiple'  => false,
+                    'class'     => 'chosen',
+                    'style'     => 'width: 80%',
+                    'label'     => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
                     'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
                 ]
             );
@@ -57,10 +57,10 @@
             <div class="row">
                 <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
                 <?php
-                $options_restore = array(
+                $options_restore = [
                     'class' => 'btn btn-primary',
-                    'style' => 'submit'
-                );
+                    'style' => 'submit',
+                ];
                 echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
                 echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
                 echo $this->Form->button('Start Restore', $options_restore);
@@ -73,13 +73,13 @@
     <div class="widget-body">
         <label class="col col-xs-2 col-md-2 col-lg-2" for="CreateBackup">Create new Backup</label>
         <?php
-        $options_backup = array(
-            'class' => 'btn btn-primary',
-            'formaction' => Router::url(array('controller' => 'backups', 'action' => 'backup'))
-        );
+        $options_backup = [
+            'class'      => 'btn btn-primary',
+            'formaction' => Router::url(['controller' => 'backups', 'action' => 'backup']),
+        ];
         echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
         echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-            echo $this->Form->button('Start Backup', $options_backup);
+        echo $this->Form->button('Start Backup', $options_backup);
         echo "</div>";
         ?>
     </div>

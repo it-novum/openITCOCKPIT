@@ -428,9 +428,9 @@ Human-readable text is only produced as part of the barcode object in EAN-13, IS
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('','','','',20,15,25,25,10,10); 
+$mpdf = new mPDF('', '', '', '', 20, 15, 25, 25, 10, 10);
 $mpdf->WriteHTML($html);
-$mpdf->Output(); 
+$mpdf->Output();
 
 exit;
 

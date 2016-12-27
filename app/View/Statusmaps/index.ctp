@@ -51,45 +51,45 @@ echo $this->Html->script('vendor/sigmajs/plugins/sigma.layout.forceAtlas2/superv
 echo $this->Html->script('vendor/sigmajs/plugins/sigma.layout.forceAtlas2/worker.js', ['inline' => false]);
 echo $this->Html->script('vendor/sigmajs/plugins/sigma.parsers.json/sigma.parsers.json.js', ['inline' => false]);
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-globe fa-fw "></i> 
-				<?php echo __('Expert Monitoring')?> 
-			<span>> 
-				<?php echo __('Statusmap'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-globe fa-fw "></i>
+            <?php echo __('Expert Monitoring') ?>
+            <span>>
+                <?php echo __('Statusmap'); ?>
 			</span>
-		</h1>
-	</div>
+        </h1>
+    </div>
 </div>
 
 <section id="widget-grid" class="">
-	<div class="row">
-		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false" >
-				<header>
-					<div class="widget-toolbar" role="menu">
-						
-					</div>
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
 
-					<span class="widget-icon hidden-mobile"> <i class="fa fa-globe"></i> </span>
-					<h2 class="hidden-mobile"><?php echo __('Statusmap');?> </h2>
+                    </div>
 
-				</header>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-globe"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Statusmap'); ?> </h2>
 
-				<div>
-					<div class="widget-body no-padding">
-						<div id="node_search">
-							<i class="fa fa-desktop"></i> &nbsp; <?php echo __('Hostsearch'); ?>:<br/>
-							<input name="enter_node" id="enter_node" />
-							<input type="hidden" id="my_node_id" />
-							<button id="search_entered_node"><i class="fa fa-search-plus"></i></button>
-							<div id="autocomplete_results"></div>
-						</div>
-						<div id="my_statusmap"></div>
-						<div class="popover" id="popover"></div>
-				</div>
-			</div>
-	</div>
+                </header>
+
+                <div>
+                    <div class="widget-body no-padding">
+                        <div id="node_search">
+                            <i class="fa fa-desktop"></i> &nbsp; <?php echo __('Hostsearch'); ?>:<br/>
+                            <input name="enter_node" id="enter_node"/>
+                            <input type="hidden" id="my_node_id"/>
+                            <button id="search_entered_node"><i class="fa fa-search-plus"></i></button>
+                            <div id="autocomplete_results"></div>
+                        </div>
+                        <div id="my_statusmap"></div>
+                        <div class="popover" id="popover"></div>
+                    </div>
+                </div>
+            </div>
 </section>

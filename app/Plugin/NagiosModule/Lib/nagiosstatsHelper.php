@@ -29,92 +29,92 @@
  */
 
 $minMax = [
-	'HSTPSC',
-	'PSVHSTPSC',
-	'PSVHSTLAT',
-	'ACTHSTPSC',
-	'ACTHSTEXT',
-	'ACTHSTLAT',
-	'SVCPSC',
-	'PSVSVCPSC',
-	'ACTSVCPSC',
-	'PSVSVCLAT',
-	'ACTSVCEXT',
-	'ACTSVCLAT'
+    'HSTPSC',
+    'PSVHSTPSC',
+    'PSVHSTLAT',
+    'ACTHSTPSC',
+    'ACTHSTEXT',
+    'ACTHSTLAT',
+    'SVCPSC',
+    'PSVSVCPSC',
+    'ACTSVCPSC',
+    'PSVSVCLAT',
+    'ACTSVCEXT',
+    'ACTSVCLAT',
 ];
 
 $values = [
-	0 => 'MIN',
-	1 => 'MAX',
-	2 => 'AVG'
+    0 => 'MIN',
+    1 => 'MAX',
+    2 => 'AVG',
 ];
 
 //Define static values:
 $echo = [
-	'NAGIOSVERSION',
-	'NUMHOSTS',
-	'NUMSERVICES',
-	'NAGIOSPID'
+    'NAGIOSVERSION',
+    'NUMHOSTS',
+    'NUMSERVICES',
+    'NAGIOSPID',
 ];
 
-foreach($minMax as $key){
-	for($i = 0; $i < 3; $i++){
-		$echo[] = $values[$i].$key;
-	}
+foreach ($minMax as $key) {
+    for ($i = 0; $i < 3; $i++) {
+        $echo[] = $values[$i].$key;
+    }
 }
 
 $numeric = [
-	'NUMEXTCMDS', 
-	'NUMPSVSVCCHECKS', 
-	'NUMSACTSVCCHECKS', 
-	'NUMCACHEDSVCCHECKS', 
-	'NUMOACTSVCCHECKS', 
-	'NUMACTSVCCHECKS', 
-	'NUMPSVHSTCHECKS', 
-	'NUMSERHSTCHECKS', 
-	'NUMPARHSTCHECKS', 
-	'NUMPARHSTCHECKS', 
-	'NUMSACTHSTCHECKS', 
-	'NUMCACHEDHSTCHECKS', 
-	'NUMOACTHSTCHECKS', 
-	'NUMACTHSTCHECKS'
+    'NUMEXTCMDS',
+    'NUMPSVSVCCHECKS',
+    'NUMSACTSVCCHECKS',
+    'NUMCACHEDSVCCHECKS',
+    'NUMOACTSVCCHECKS',
+    'NUMACTSVCCHECKS',
+    'NUMPSVHSTCHECKS',
+    'NUMSERHSTCHECKS',
+    'NUMPARHSTCHECKS',
+    'NUMPARHSTCHECKS',
+    'NUMSACTHSTCHECKS',
+    'NUMCACHEDHSTCHECKS',
+    'NUMOACTHSTCHECKS',
+    'NUMACTHSTCHECKS',
 ];
 
 
 $values = [
-	0 => 1,
-	1 => 5,
-	2 => 15
+    0 => 1,
+    1 => 5,
+    2 => 15,
 ];
 
-foreach($numeric as $key){
-	for($i = 0; $i < 3; $i++){
-		$echo[] = $key.$values[$i].'M';
-	}
+foreach ($numeric as $key) {
+    for ($i = 0; $i < 3; $i++) {
+        $echo[] = $key.$values[$i].'M';
+    }
 }
 
 $numeric = [
-	'NUMHSTACTCHK',
-	'NUMHSTPSVCHK',
-	'NUMSVCACTCHK',
-	'NUMSVCPSVCHK',
-	'NUMHSTCHECKED',
-	'NUMSVCCHECKED'
+    'NUMHSTACTCHK',
+    'NUMHSTPSVCHK',
+    'NUMSVCACTCHK',
+    'NUMSVCPSVCHK',
+    'NUMHSTCHECKED',
+    'NUMSVCCHECKED',
 
 ];
 
 
 $values = [
-	0 => 1,
-	1 => 5,
-	2 => 15,
-	3 => 60
+    0 => 1,
+    1 => 5,
+    2 => 15,
+    3 => 60,
 ];
 
-foreach($numeric as $key){
-	for($i = 0; $i < 4; $i++){
-		$echo[] = $key.$values[$i].'M';
-	}
+foreach ($numeric as $key) {
+    for ($i = 0; $i < 4; $i++) {
+        $echo[] = $key.$values[$i].'M';
+    }
 }
 
 echo implode(',', $echo);

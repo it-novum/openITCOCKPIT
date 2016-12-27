@@ -23,15 +23,15 @@
 /**
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
- * @brief TCPDF language file: Farsi
- * @author Sina Saeedi
- * @since 2011-04-12
+ * @brief   TCPDF language file: Farsi
+ * @author  Sina Saeedi
+ * @since   2011-04-12
  */
 
 // Farsi
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

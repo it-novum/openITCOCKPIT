@@ -26,6 +26,7 @@
 
 App::uses('AppController', 'Controller');
 
-class ChatModuleAppController extends AppController {
+class ChatModuleAppController extends AppController
+{
 
 }

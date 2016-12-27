@@ -25,22 +25,22 @@
 
 ?>
 <div class="widget-body browser-body">
-	<?php
-	echo $this->Form->create('browser', array(
-		'class' => 'widgetBrowserForm clear',
-		'id' => '',
-	));
+    <?php
+    echo $this->Form->create('browser', [
+        'class' => 'widgetBrowserForm clear',
+        'id'    => '',
+    ]);
 
-	echo $this->Form->input('url');
+    echo $this->Form->input('url');
 
-	$options_button = array(
-		'label' => 'Save',
-		'class' => 'browser_save btn btn-sm btn-primary',
-	);
-	echo $this->Form->end($options_button);
+    $options_button = [
+        'label' => 'Save',
+        'class' => 'browser_save btn btn-sm btn-primary',
+    ];
+    echo $this->Form->end($options_button);
 
-	?>
+    ?>
 
-	<div class="widget-browser-title"><i class="fa fa-cog "></i></div>
-	<div class="widget-browser"></div>
+    <div class="widget-browser-title"><i class="fa fa-cog "></i></div>
+    <div class="widget-browser"></div>
 </div>

@@ -7,7 +7,6 @@ require_once "CodeDefinition.php";
 /**
  * Implements the builder pattern for the CodeDefinition class. A builder
  * is the recommended way of constructing CodeDefinition objects.
- *
  * @author jbowens
  */
 class CodeDefinitionBuilder
@@ -24,7 +23,7 @@ class CodeDefinitionBuilder
     /**
      * Construct a CodeDefinitionBuilder.
      *
-     * @param $tagName  the tag name of the definition to build
+     * @param $tagName          the tag name of the definition to build
      * @param $replacementText  the replacement text of the definition to build
      */
     public function __construct($tagName, $replacementText)
@@ -41,6 +40,7 @@ class CodeDefinitionBuilder
     public function setTagName($tagName)
     {
         $this->tagName = $tagName;
+
         return $this;
     }
 
@@ -53,6 +53,7 @@ class CodeDefinitionBuilder
     public function setReplacementText($replacementText)
     {
         $this->replacementText = $replacementText;
+
         return $this;
     }
 
@@ -65,6 +66,7 @@ class CodeDefinitionBuilder
     public function setUseOption($option)
     {
         $this->useOption = $option;
+
         return $this;
     }
 
@@ -77,6 +79,7 @@ class CodeDefinitionBuilder
     public function setParseContent($parseContent)
     {
         $this->parseContent = $parseContent;
+
         return $this;
     }
 
@@ -84,15 +87,17 @@ class CodeDefinitionBuilder
      * Sets the nest limit for this code definition.
      *
      * @param $nestLimit a positive integer, or -1 if there is no limit.
+     *
      * @throws InvalidArgumentException  if the nest limit is invalid
      */
     public function setNestLimit($limit)
     {
-        if(!is_int($limit) || ($limit <= 0 && -1 != $limit)) {
-            throw new InvalidArgumentException("A nest limit must be a positive integer " .
-                                               "or -1.");
+        if (!is_int($limit) || ($limit <= 0 && -1 != $limit)) {
+            throw new InvalidArgumentException("A nest limit must be a positive integer ".
+                "or -1.");
         }
         $this->nestLimit = $limit;
+
         return $this;
     }
 
@@ -104,6 +109,7 @@ class CodeDefinitionBuilder
     public function setOptionValidator(\JBBCode\InputValidator $validator)
     {
         $this->optionValidator = $validator;
+
         return $this;
     }
 
@@ -115,6 +121,7 @@ class CodeDefinitionBuilder
     public function setBodyValidator(\JBBCode\InputValidator $validator)
     {
         $this->bodyValidator = $validator;
+
         return $this;
     }
 
@@ -124,6 +131,7 @@ class CodeDefinitionBuilder
     public function removeOptionValidator()
     {
         $this->optionValidator = null;
+
         return $this;
     }
 
@@ -133,23 +141,24 @@ class CodeDefinitionBuilder
     public function removeBodyValidator()
     {
         $this->bodyValidator = null;
+
         return $this;
     }
-    
+
     /**
      * Builds a CodeDefinition with the current state of the builder.
-     *
      * @return a new CodeDefinition instance
      */
     public function build()
     {
         $definition = CodeDefinition::construct($this->tagName,
-                                                $this->replacementText,
-                                                $this->useOption,
-                                                $this->parseContent,
-                                                $this->nestLimit,
-                                                $this->optionValidator,
-                                                $this->bodyValidator);
+            $this->replacementText,
+            $this->useOption,
+            $this->parseContent,
+            $this->nestLimit,
+            $this->optionValidator,
+            $this->bodyValidator);
+
         return $definition;
     }
 

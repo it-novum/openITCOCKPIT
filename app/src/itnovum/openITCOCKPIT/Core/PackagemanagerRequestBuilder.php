@@ -27,91 +27,95 @@ namespace itnovum\openITCOCKPIT\Core;
 class PackagemanagerRequestBuilder
 {
 
-	/**
-	 * @var string
-	 */
-	private $internalAddress = 'http://172.16.2.87';
+    /**
+     * @var string
+     */
+    private $internalAddress = 'http://172.16.2.87';
 
-	/**
-	 * @var array
-	 */
-	private $internalOptions = [
-		'CURLOPT_SSL_VERIFYPEER' => false,
-		'CURLOPT_SSL_VERIFYHOST' => false
-	];
+    /**
+     * @var array
+     */
+    private $internalOptions = [
+        'CURLOPT_SSL_VERIFYPEER' => false,
+        'CURLOPT_SSL_VERIFYHOST' => false,
+    ];
 
-	/**
-	 * @var string
-	 */
-	private $externalAddress = 'https://packagemanager.it-novum.com';
+    /**
+     * @var string
+     */
+    private $externalAddress = 'https://packagemanager.it-novum.com';
 
-	/**
-	 * @var array
-	 */
-	private $externalOptions = [];
+    /**
+     * @var array
+     */
+    private $externalOptions = [];
 
-	/**
-	 * @var string
-	 */
-	private $baseUrl = '%s/modules/fetch/%s.json';
+    /**
+     * @var string
+     */
+    private $baseUrl = '%s/modules/fetch/%s.json';
 
-	/**
-	 * @var string
-	 */
-	private $checkLicenseUrl = '%s/licences/check/%s.json';
+    /**
+     * @var string
+     */
+    private $checkLicenseUrl = '%s/licences/check/%s.json';
 
-	/**
-	 * @var string
-	 */
-	private $ENVIRONMENT;
+    /**
+     * @var string
+     */
+    private $ENVIRONMENT;
 
-	/**
-	 * @var string
-	 */
-	private $license = '';
+    /**
+     * @var string
+     */
+    private $license = '';
 
-	/**
-	 * PackagemanagerRequestBuilder constructor.
-	 * @param string $ENVIRONMENT
-	 * @param string $license
-	 */
-	public function __construct($ENVIRONMENT, $license = '')
-	{
-		$this->ENVIRONMENT = $ENVIRONMENT;
-		$this->license = $license;
-	}
+    /**
+     * PackagemanagerRequestBuilder constructor.
+     *
+     * @param string $ENVIRONMENT
+     * @param string $license
+     */
+    public function __construct($ENVIRONMENT, $license = '')
+    {
+        $this->ENVIRONMENT = $ENVIRONMENT;
+        $this->license = $license;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUrl(){
-		if($this->ENVIRONMENT === \Environments::DEVELOPMENT){
-			return sprintf($this->baseUrl, $this->internalAddress, $this->license);
-		}
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+            return sprintf($this->baseUrl, $this->internalAddress, $this->license);
+        }
 
-		return sprintf($this->baseUrl, $this->externalAddress, $this->license);
-	}
+        return sprintf($this->baseUrl, $this->externalAddress, $this->license);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getUrlForLicenseCheck(){
-		if($this->ENVIRONMENT === \Environments::DEVELOPMENT){
-			return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
-		}
+    /**
+     * @return string
+     */
+    public function getUrlForLicenseCheck()
+    {
+        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+            return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
+        }
 
-		return sprintf($this->checkLicenseUrl, $this->externalAddress, $this->license);
-	}
+        return sprintf($this->checkLicenseUrl, $this->externalAddress, $this->license);
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getOptions(){
-		if($this->ENVIRONMENT === \Environments::DEVELOPMENT){
-			return $this->internalOptions;
-		}
+    /**
+     * @return array
+     */
+    public function getOptions()
+    {
+        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+            return $this->internalOptions;
+        }
 
-		return $this->externalOptions;
-	}
+        return $this->externalOptions;
+    }
 
 }

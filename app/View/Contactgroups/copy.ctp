@@ -24,50 +24,50 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-pencil-square-o fa-fw "></i>
-			<?php echo __('Monitoring'); ?>
-			<span>>
-				<?php echo $this->Utils->pluralize($contactgroups, __('Contactgroups'), __('Contactgroups'));?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-pencil-square-o fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo $this->Utils->pluralize($contactgroups, __('Contactgroups'), __('Contactgroups')); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-		<h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?> <?php echo $this->Utils->pluralize($contactgroups, __('contactgroups'), __('contactgroups'));?></h2>
-		<div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-			<?php echo $this->Utils->backButton(__('Back'), $back_url);?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-			echo $this->Form->create('Contactgroup', [
-				'class' => 'form-horizontal clear'
-			]); ?>
-			<?php foreach($contactgroups as $key => $contactgroup):?>
-				<div class="row">
-					<div class="col-xs-12 col-md-9 col-lg-7">
-						<fieldset>
-							<legend><?php echo $contactgroup['Container']['name']?></legend>
-							<?php
-							echo $this->Form->input('Contactgroup.'.$key.'.name', ['value' => $contactgroup['Container']['name'], 'label' => __('Contactgroupname'), 'required' => true]);
-							echo $this->Form->input('Contactgroup.'.$key.'.description', ['value' => $contactgroup['Contactgroup']['description'], 'label' => __('Description'), 'required' => false]);
-							echo $this->Form->input('Contactgroup.'.$key.'.source', ['value' => $contactgroup['Contactgroup']['id'], 'type' => 'hidden']);
-							echo $this->Form->input('Contactgroup.'.$key.'.parent_id', ['value' => $contactgroup['Container']['parent_id'], 'type' => 'hidden']);
-							?>
-						</fieldset>
-					</div> <!-- close col -->
-				</div> <!-- close row-->
-			<?php endforeach; ?>
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div> <!-- close widget body -->
-	</div>
+    <header>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($contactgroups, __('contactgroups'), __('contactgroups')); ?></h2>
+        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
+            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Contactgroup', [
+                'class' => 'form-horizontal clear',
+            ]); ?>
+            <?php foreach ($contactgroups as $key => $contactgroup): ?>
+                <div class="row">
+                    <div class="col-xs-12 col-md-9 col-lg-7">
+                        <fieldset>
+                            <legend><?php echo $contactgroup['Container']['name'] ?></legend>
+                            <?php
+                            echo $this->Form->input('Contactgroup.'.$key.'.name', ['value' => $contactgroup['Container']['name'], 'label' => __('Contactgroupname'), 'required' => true]);
+                            echo $this->Form->input('Contactgroup.'.$key.'.description', ['value' => $contactgroup['Contactgroup']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Contactgroup.'.$key.'.source', ['value' => $contactgroup['Contactgroup']['id'], 'type' => 'hidden']);
+                            echo $this->Form->input('Contactgroup.'.$key.'.parent_id', ['value' => $contactgroup['Container']['parent_id'], 'type' => 'hidden']);
+                            ?>
+                        </fieldset>
+                    </div> <!-- close col -->
+                </div> <!-- close row-->
+            <?php endforeach; ?>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div> <!-- close widget body -->
+    </div>
 </div> <!-- end jarviswidget -->

@@ -415,7 +415,7 @@ modified Persian letter  &#x649;<br />
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('ar'); 
+$mpdf = new mPDF('ar');
 
 $mpdf->SetDirectionality('rtl');
 

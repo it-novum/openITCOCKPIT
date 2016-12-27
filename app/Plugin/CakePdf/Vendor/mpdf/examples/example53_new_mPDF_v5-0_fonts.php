@@ -1,5 +1,5 @@
 <?php
-ini_set("memory_limit","128M");
+ini_set("memory_limit", "128M");
 
 
 $html = '
@@ -401,14 +401,17 @@ $this->fontdata = array(<br />
 //==============================================================
 //==============================================================
 //==============================================================
-if ($_REQUEST['html']) { echo $html; exit; }
-if ($_REQUEST['source']) { 
-	$file = __FILE__;
-	header("Content-Type: text/plain");
-	header("Content-Length: ". filesize($file));
-	header("Content-Disposition: attachment; filename='".$file."'");
-	readfile($file);
-	exit; 
+if ($_REQUEST['html']) {
+    echo $html;
+    exit;
+}
+if ($_REQUEST['source']) {
+    $file = __FILE__;
+    header("Content-Type: text/plain");
+    header("Content-Length: ".filesize($file));
+    header("Content-Disposition: attachment; filename='".$file."'");
+    readfile($file);
+    exit;
 }
 //==============================================================
 //==============================================================
@@ -418,7 +421,7 @@ if ($_REQUEST['source']) {
 
 include("../mpdf.php");
 
-$mpdf=new mPDF(); 
+$mpdf = new mPDF();
 
 $mpdf->WriteHTML($html);
 

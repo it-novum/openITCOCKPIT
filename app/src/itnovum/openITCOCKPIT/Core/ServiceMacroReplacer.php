@@ -28,126 +28,137 @@ namespace itnovum\openITCOCKPIT\Core;
 class ServiceMacroReplacer
 {
 
-	/**
-	 * @var array
-	 */
-	private $service;
+    /**
+     * @var array
+     */
+    private $service;
 
-	/**
-	 * @var array
-	 */
-	private $servicestatus;
+    /**
+     * @var array
+     */
+    private $servicestatus;
 
-	/**
-	 * @var array
-	 */
-	private $mapping = [
-		'basic' => [
-			'$SERVICEID$' => 'id', //Not a real macro
-			'$SERVICEDESC$' => 'uuid',
-			'$SERVICEDISPLAYNAME$' => 'name',
-		],
-		'status' => [
-			'$SERVICESTATEID$' => 'current_state',
-			'$LASTSERVICESTATEID$' => 'last_hard_state',
-			'$SERVICEOUTPUT$' => 'output',
-		]
-	];
+    /**
+     * @var array
+     */
+    private $mapping = [
+        'basic'  => [
+            '$SERVICEID$'          => 'id', //Not a real macro
+            '$SERVICEDESC$'        => 'uuid',
+            '$SERVICEDISPLAYNAME$' => 'name',
+        ],
+        'status' => [
+            '$SERVICESTATEID$'     => 'current_state',
+            '$LASTSERVICESTATEID$' => 'last_hard_state',
+            '$SERVICEOUTPUT$'      => 'output',
+        ],
+    ];
 
-	/**
-	 * HostMacroReplacer constructor.
-	 * @param array $service result of CakePHPs find()
-	 * @param array $servicestatus result of CakePHPs find()
-	 */
+    /**
+     * HostMacroReplacer constructor.
+     *
+     * @param array $service       result of CakePHPs find()
+     * @param array $servicestatus result of CakePHPs find()
+     */
 
-	public function __construct($service, $servicestatus = [])
-	{
-		$this->service = $service;
-		$this->servicestatus = $servicestatus;
-	}
+    public function __construct($service, $servicestatus = [])
+    {
+        $this->service = $service;
+        $this->servicestatus = $servicestatus;
+    }
 
-	/**
-	 * Replace the folowing Macros:
-	 * - $SERVICEID$ => Service.id //Not a real macro
-	 * - $SERVICEDESC$ => Service.uuid
-	 * - $SERVICEDISPLAYNAME$ => Service.name
-	 *
-	 * @param string $msg
-	 */
-	public function replaceBasicMacros($msg){
-		$mapping = $this->buildMapping('basic');
-		return str_replace($mapping['search'], $mapping['replace'], $msg);
-	}
+    /**
+     * Replace the folowing Macros:
+     * - $SERVICEID$ => Service.id //Not a real macro
+     * - $SERVICEDESC$ => Service.uuid
+     * - $SERVICEDISPLAYNAME$ => Service.name
+     *
+     * @param string $msg
+     */
+    public function replaceBasicMacros($msg)
+    {
+        $mapping = $this->buildMapping('basic');
 
-	/**
-	 * Replace the folowing Macros:
-	 * - $SERVICESTATEID$ => Servicestatus.current_state,
-	 * - $LASTSERVICESTATEID$ => Servicestatus.last_hard_state
-	 * - $SERVICEOUTPUT$ => Servicestatus.output
-	 *
-	 * @param string $msg
-	 */
-	public function replaceStatusMacros($msg){
-		$mapping = $this->buildMapping('status');
-		return str_replace($mapping['search'], $mapping['replace'], $msg);
-	}
+        return str_replace($mapping['search'], $mapping['replace'], $msg);
+    }
 
-	/**
-	 * Try to replace all known macros
-	 * @param $msg
-	 * @return string mixed
-	 */
-	public function replaceAllMacros($msg){
-		$msg = $this->replaceBasicMacros($msg);
-		$msg = $this->replaceStatusMacros($msg);
-		return $msg;
-	}
+    /**
+     * Replace the folowing Macros:
+     * - $SERVICESTATEID$ => Servicestatus.current_state,
+     * - $LASTSERVICESTATEID$ => Servicestatus.last_hard_state
+     * - $SERVICEOUTPUT$ => Servicestatus.output
+     *
+     * @param string $msg
+     */
+    public function replaceStatusMacros($msg)
+    {
+        $mapping = $this->buildMapping('status');
 
-	/**
-	 * @param string $type a key of $this->mapping
-	 */
-	private function buildMapping($type){
-		$recordsToMap = $this->mapping[$type];
-		$mapping = [
-			'search' => [],
-			'replace' => []
-		];
-		foreach($recordsToMap as $macroName => $databaseField){
-			$mapping['search'][] = $macroName;
-			$findReplacement = false;
+        return str_replace($mapping['search'], $mapping['replace'], $msg);
+    }
 
-			if($macroName === '$SERVICEDISPLAYNAME$'){
-				$servicename = null;
-				if(isset($this->service['Service']['name'])){
-					$servicename = $this->service['Service']['name'];
-				}
-				if($servicename === '' || $servicename === null){
-					if(isset($this->service['Servicetemplate']['name'])) {
-						$servicename = $this->service['Servicetemplate']['name'];
-					}
-				}
-				if($servicename === null){
-					$servicename = '$SERVICEDISPLAYNAME$';
-				}
-				$mapping['replace'][] = $servicename;
-			}else{
-				if(isset($this->service['Service'][$databaseField])){
-					$mapping['replace'][] = $this->service['Service'][$databaseField];
-					$findReplacement = true;
-				}
+    /**
+     * Try to replace all known macros
+     *
+     * @param $msg
+     *
+     * @return string mixed
+     */
+    public function replaceAllMacros($msg)
+    {
+        $msg = $this->replaceBasicMacros($msg);
+        $msg = $this->replaceStatusMacros($msg);
 
-				//Check if this is a status field
-				if(isset($this->servicestatus['Servicestatus'][$databaseField])){
-					$mapping['replace'][] = $this->servicestatus['Servicestatus'][$databaseField];
-					$findReplacement = true;
-				}
+        return $msg;
+    }
 
-				if($findReplacement === false){
-					//Field not set in given __construct data
-					$mapping['replace'][] = $macroName;
-				}
-			}
-		}
-		return $mapping;
-	}
+    /**
+     * @param string $type a key of $this->mapping
+     */
+    private function buildMapping($type)
+    {
+        $recordsToMap = $this->mapping[$type];
+        $mapping = [
+            'search'  => [],
+            'replace' => [],
+        ];
+        foreach ($recordsToMap as $macroName => $databaseField) {
+            $mapping['search'][] = $macroName;
+            $findReplacement = false;
+
+            if ($macroName === '$SERVICEDISPLAYNAME$') {
+                $servicename = null;
+                if (isset($this->service['Service']['name'])) {
+                    $servicename = $this->service['Service']['name'];
+                }
+                if ($servicename === '' || $servicename === null) {
+                    if (isset($this->service['Servicetemplate']['name'])) {
+                        $servicename = $this->service['Servicetemplate']['name'];
+                    }
+                }
+                if ($servicename === null) {
+                    $servicename = '$SERVICEDISPLAYNAME$';
+                }
+                $mapping['replace'][] = $servicename;
+            } else {
+                if (isset($this->service['Service'][$databaseField])) {
+                    $mapping['replace'][] = $this->service['Service'][$databaseField];
+                    $findReplacement = true;
+                }
+
+                //Check if this is a status field
+                if (isset($this->servicestatus['Servicestatus'][$databaseField])) {
+                    $mapping['replace'][] = $this->servicestatus['Servicestatus'][$databaseField];
+                    $findReplacement = true;
+                }
+
+                if ($findReplacement === false) {
+                    //Field not set in given __construct data
+                    $mapping['replace'][] = $macroName;
+                }
+            }
+        }
+
+        return $mapping;
+    }
 }

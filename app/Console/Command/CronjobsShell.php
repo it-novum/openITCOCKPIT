@@ -23,105 +23,111 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CronjobsShell extends AppShell{
-	public $uses = [
-		'Cronjob',
-		'Cronschedule',
-	];
+class CronjobsShell extends AppShell
+{
+    public $uses = [
+        'Cronjob',
+        'Cronschedule',
+    ];
 
-	public function main(){
-		//Configure::load('nagios');
-		$this->parser = $this->getOptionParser();
-		$this->force = false;
+    public function main()
+    {
+        //Configure::load('nagios');
+        $this->parser = $this->getOptionParser();
+        $this->force = false;
 
-		try{
-			$this->cronjobs = $this->Cronjob->find('all');
-		}catch(Exception $e){
-			debug($e->getMessage());
-			exit(0);
-		}
+        try {
+            $this->cronjobs = $this->Cronjob->find('all');
+        } catch (Exception $e) {
+            debug($e->getMessage());
+            exit(0);
+        }
 
-		if(array_key_exists('force', $this->params)){
-			$this->force = true;
-		}
+        if (array_key_exists('force', $this->params)) {
+            $this->force = true;
+        }
 
-		$this->quiet = false;
-		if(isset($this->params['quiet']) && $this->params['quiet'] == true){
-			$this->quiet = true;
-		}
+        $this->quiet = false;
+        if (isset($this->params['quiet']) && $this->params['quiet'] == true) {
+            $this->quiet = true;
+        }
 
-		$this->cronjobsToExecute = [];
-		foreach($this->cronjobs as $cronjob){
-			if(
-				$cronjob['Cronschedule']['start_time'] == null ||
-				(time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
-				$this->force === true
-			){
-				$this->scheduleCronjob($cronjob);
-			}
+        $this->cronjobsToExecute = [];
+        foreach ($this->cronjobs as $cronjob) {
+            if (
+                $cronjob['Cronschedule']['start_time'] == null ||
+                (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
+                $this->force === true
+            ) {
+                $this->scheduleCronjob($cronjob);
+            }
 
-		}
-	}
+        }
+    }
 
-	public function getOptionParser(){
-		$parser = parent::getOptionParser();
-		$parser->addOptions([
-			'force' => ['short' => 'f', 'help' => __d('oitc_console', 'All cronjobs will be forced to execute!')],
-		]);
-		return $parser;
-	}
+    public function getOptionParser()
+    {
+        $parser = parent::getOptionParser();
+        $parser->addOptions([
+            'force' => ['short' => 'f', 'help' => __d('oitc_console', 'All cronjobs will be forced to execute!')],
+        ]);
 
-	public function scheduleCronjob($cronjob){
+        return $parser;
+    }
 
-		//Flag the cronjob as is_running in DB and set start_time
-		$cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
-		$cronjob['Cronschedule']['is_running'] = 1;
-		if($cronjob['Cronschedule']['id'] == null || $cronjob['Cronschedule']['id'] == ''){
-			//The cron was never scheduled or the databases was truncated
-			$cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
-			if(!$this->Cronjob->saveAll($cronjob)){
-				//Error in save
-				return false;
-			}
+    public function scheduleCronjob($cronjob)
+    {
 
-			// We saved new data and need to select this now again (because of DB truncate or cron never runs or what ever)
-			$cronjob = $this->Cronjob->find('first', [
-				'conditions' => [
-					'Cronjob.id' => $cronjob['Cronjob']['id']
-				]
-			]);
-		}
+        //Flag the cronjob as is_running in DB and set start_time
+        $cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
+        $cronjob['Cronschedule']['is_running'] = 1;
+        if ($cronjob['Cronschedule']['id'] == null || $cronjob['Cronschedule']['id'] == '') {
+            //The cron was never scheduled or the databases was truncated
+            $cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
+            if (!$this->Cronjob->saveAll($cronjob)) {
+                //Error in save
+                return false;
+            }
 
-		//Executing the cron
-		if($cronjob['Cronjob']['plugin'] == 'Core'){
-			//This is Core cronjob, so we load the Task and lets rock
-			$_task = new TaskCollection($this);
-			$extTask =  $_task->load($cronjob['Cronjob']['task']);
-			$extTask->execute($this->quiet);
-		}else{
-			try{
-				$_task = new TaskCollection($this);
-				$extTask =  $_task->load($cronjob['Cronjob']['plugin'].'.'.$cronjob['Cronjob']['task']);
-				$extTask->execute($this->quiet);
-			}catch (Exception $e){
-				debug($e);
-			}
-		}
+            // We saved new data and need to select this now again (because of DB truncate or cron never runs or what ever)
+            $cronjob = $this->Cronjob->find('first', [
+                'conditions' => [
+                    'Cronjob.id' => $cronjob['Cronjob']['id'],
+                ],
+            ]);
+        }
 
-		//Cronjob is done, set is_running back to 0 and the end_time
-		$cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
-		$cronjob['Cronschedule']['is_running'] = 0;
-		if($this->Cronjob->saveAll($cronjob)){
-			//Cronjob done
-			return true;
-		}
+        //Executing the cron
+        if ($cronjob['Cronjob']['plugin'] == 'Core') {
+            //This is Core cronjob, so we load the Task and lets rock
+            $_task = new TaskCollection($this);
+            $extTask = $_task->load($cronjob['Cronjob']['task']);
+            $extTask->execute($this->quiet);
+        } else {
+            try {
+                $_task = new TaskCollection($this);
+                $extTask = $_task->load($cronjob['Cronjob']['plugin'].'.'.$cronjob['Cronjob']['task']);
+                $extTask->execute($this->quiet);
+            } catch (Exception $e) {
+                debug($e);
+            }
+        }
 
-		//Error on execution of the cron
-		return false;
+        //Cronjob is done, set is_running back to 0 and the end_time
+        $cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
+        $cronjob['Cronschedule']['is_running'] = 0;
+        if ($this->Cronjob->saveAll($cronjob)) {
+            //Cronjob done
+            return true;
+        }
 
-	}
+        //Error on execution of the cron
+        return false;
 
-	public function m2s($minutes){
-		return $minutes * 60;
-	}
+    }
+
+    public function m2s($minutes)
+    {
+        return $minutes * 60;
+    }
 }

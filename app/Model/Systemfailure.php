@@ -23,78 +23,79 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Systemfailure extends AppModel{
-	public $belongsTo = array(
-		'User' => [
-			'dependent' => false,
-			'foreignKey' => 'user_id',
-			'className' => 'User'
-	]);
-	
-	
-	public $validate = [
-		'comment' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'from_date' => [
-			'notBlank' => [
-				'rule'=> 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'date' => [
-				'rule' => ['date', 'dmy'],
-				'message' => 'Please enter a valid date'
-			]
-		],
-		'from_time' => [
-			'notBlank' => [
-				'rule'=> 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'time' => [
-				'rule' => 'time',
-				'message' => 'Please enter a valid time'
-			]
-		],
-		'to_date' => [
-			'notBlank' => [
-				'rule'=> 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'date' => [
-				'rule' => ['date', 'dmy'],
-				'message' => 'Please enter a valid date'
-			]
-		],
-		'to_time' => [
-			'notBlank' => [
-				'rule'=> 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'time' => [
-				'rule' => 'time',
-				'message' => 'Please enter a valid time'
-			]
-		],
-		'user_id' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'notBlank' => [
-				'rule'    => 'numeric',
-				'message' => 'Please enter a number',
-				'required' => true
-			],
-		],
-	];
+class Systemfailure extends AppModel
+{
+    public $belongsTo = [
+        'User' => [
+            'dependent'  => false,
+            'foreignKey' => 'user_id',
+            'className'  => 'User',
+        ]];
+
+
+    public $validate = [
+        'comment'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'from_date' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'date'     => [
+                'rule'    => ['date', 'dmy'],
+                'message' => 'Please enter a valid date',
+            ],
+        ],
+        'from_time' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'     => [
+                'rule'    => 'time',
+                'message' => 'Please enter a valid time',
+            ],
+        ],
+        'to_date'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'date'     => [
+                'rule'    => ['date', 'dmy'],
+                'message' => 'Please enter a valid date',
+            ],
+        ],
+        'to_time'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'     => [
+                'rule'    => 'time',
+                'message' => 'Please enter a valid time',
+            ],
+        ],
+        'user_id'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'notBlank' => [
+                'rule'     => 'numeric',
+                'message'  => 'Please enter a number',
+                'required' => true,
+            ],
+        ],
+    ];
 }

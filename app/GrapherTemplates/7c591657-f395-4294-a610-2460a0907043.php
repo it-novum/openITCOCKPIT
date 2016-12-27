@@ -29,37 +29,37 @@
  */
 
 $serviceName = $service['Service']['name'];
-if($service['Service']['name'] == '' || $service['Service']['name'] == null){
-	$serviceName = $service['Servicetemplate']['name'];
+if ($service['Service']['name'] == '' || $service['Service']['name'] == null) {
+    $serviceName = $service['Servicetemplate']['name'];
 }
 
 $templateSettings = [
-	[
-		'--vertical-label=Traffic bits per sec',
-		'--title=Traffic bits per sec',
-		'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:1:AVERAGE',
-		'DEF:var2='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:2:AVERAGE',
-		'CDEF:var3=var2,-1,*',
-		'AREA:var1#FF000055:',
-		'LINE1:var1#FF0000FF:in',
-		'GPRINT:var1:LAST:%7.2lf bits last',
-		'GPRINT:var1:AVERAGE:%7.2lf bits avg',
-		'GPRINT:var1:MAX:%7.2lf bits max\n',
-		'AREA:var3#00ff0055:',
-		'LINE1:var3#00ff00FF:out',
-		'GPRINT:var2:LAST:%7.2lf bits last',
-		'GPRINT:var2:AVERAGE:%7.2lf bits avg',
-		'GPRINT:var2:MAX:%7.2lf bits max'
-	],
-	[
-		'--vertical-label=Utilisation %',
-		'--title=Utilisation % ('.$serviceName.')',
-		'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:3:AVERAGE',
-		'AREA:var1#0000FF55:',
-		'LINE1:var1#0000FFFF:Utilisation',
-		'GPRINT:var1:LAST:%7.2lf %% last',
-		'GPRINT:var1:AVERAGE:%7.2lf %% avg',
-		'GPRINT:var1:MAX:%7.2lf %% max'
-	]
+    [
+        '--vertical-label=Traffic bits per sec',
+        '--title=Traffic bits per sec',
+        'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:1:AVERAGE',
+        'DEF:var2='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:2:AVERAGE',
+        'CDEF:var3=var2,-1,*',
+        'AREA:var1#FF000055:',
+        'LINE1:var1#FF0000FF:in',
+        'GPRINT:var1:LAST:%7.2lf bits last',
+        'GPRINT:var1:AVERAGE:%7.2lf bits avg',
+        'GPRINT:var1:MAX:%7.2lf bits max\n',
+        'AREA:var3#00ff0055:',
+        'LINE1:var3#00ff00FF:out',
+        'GPRINT:var2:LAST:%7.2lf bits last',
+        'GPRINT:var2:AVERAGE:%7.2lf bits avg',
+        'GPRINT:var2:MAX:%7.2lf bits max',
+    ],
+    [
+        '--vertical-label=Utilisation %',
+        '--title=Utilisation % ('.$serviceName.')',
+        'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:3:AVERAGE',
+        'AREA:var1#0000FF55:',
+        'LINE1:var1#0000FFFF:Utilisation',
+        'GPRINT:var1:LAST:%7.2lf %% last',
+        'GPRINT:var1:AVERAGE:%7.2lf %% avg',
+        'GPRINT:var1:MAX:%7.2lf %% max',
+    ],
 ];
 

@@ -24,69 +24,69 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-retweet fa-fw "></i> 
-				<?php echo __('Map'); ?> 
-			<span>> 
-				<?php echo __('Rotation'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-retweet fa-fw "></i>
+            <?php echo __('Map'); ?>
+            <span>>
+                <?php echo __('Rotation'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
-		<h2><?php echo __('Edit map rotation'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php echo $this->Utils->backButton();?>
-			<?php echo $this->Utils->deleteButton(null, $rotation['Rotation']['id']);?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<div class="row">
-				<div class="col-xs-12 col-md-12 col-lg-12">
-					<?php
-					echo $this->Form->create('Rotation', array(
-						'class' => 'form-horizontal clear'
-					));
-			
-					echo $this->Form->input('id', [
-						'type' => 'hidden', 
-						'value' => $rotation['Rotation']['id']
-					]);
+    <header>
+        <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
+        <h2><?php echo __('Edit map rotation'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton(); ?>
+            <?php echo $this->Utils->deleteButton(null, $rotation['Rotation']['id']); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <div class="row">
+                <div class="col-xs-12 col-md-12 col-lg-12">
+                    <?php
+                    echo $this->Form->create('Rotation', [
+                        'class' => 'form-horizontal clear',
+                    ]);
 
-					echo $this->Form->input('name', [
-						'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-						'value' => $rotation['Rotation']['name']
-					]);
-			
-					echo $this->Form->input('interval', [
-						'label' => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-						'value' => $rotation['Rotation']['interval'],
-						'help' => __('Interval in seconds')
-					]);
-					
-					echo $this->Form->input('Rotation.Map', [
-						'options' => $maps,
-						'multiple' => true,
-						'class' => 'chosen',
-						'style' => 'width:100%;',
-						'label' => ['text' => __('Maps'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-						'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-						'selected' => Hash::extract($rotation['Map'], '{n}.id')
-						]);
-					?>
-				</div>
-			</div>
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+                    echo $this->Form->input('id', [
+                        'type'  => 'hidden',
+                        'value' => $rotation['Rotation']['id'],
+                    ]);
+
+                    echo $this->Form->input('name', [
+                        'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
+                        'value'     => $rotation['Rotation']['name'],
+                    ]);
+
+                    echo $this->Form->input('interval', [
+                        'label'     => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
+                        'value'     => $rotation['Rotation']['interval'],
+                        'help'      => __('Interval in seconds'),
+                    ]);
+
+                    echo $this->Form->input('Rotation.Map', [
+                        'options'   => $maps,
+                        'multiple'  => true,
+                        'class'     => 'chosen',
+                        'style'     => 'width:100%;',
+                        'label'     => ['text' => __('Maps'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
+                        'selected'  => Hash::extract($rotation['Map'], '{n}.id'),
+                    ]);
+                    ?>
+                </div>
+            </div>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>
 

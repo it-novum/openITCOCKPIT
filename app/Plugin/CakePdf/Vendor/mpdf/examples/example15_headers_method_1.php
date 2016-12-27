@@ -2,43 +2,43 @@
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('c'); 
+$mpdf = new mPDF('c');
 
-$mpdf->mirrorMargins = 1;	// Use different Odd/Even headers and footers and mirror margins
+$mpdf->mirrorMargins = 1;    // Use different Odd/Even headers and footers and mirror margins
 
-$mpdf->defaultheaderfontsize = 10;	/* in pts */
-$mpdf->defaultheaderfontstyle = B;	/* blank, B, I, or BI */
-$mpdf->defaultheaderline = 1; 	/* 1 to include line below header/above footer */
+$mpdf->defaultheaderfontsize = 10;    /* in pts */
+$mpdf->defaultheaderfontstyle = B;    /* blank, B, I, or BI */
+$mpdf->defaultheaderline = 1;    /* 1 to include line below header/above footer */
 
-$mpdf->defaultfooterfontsize = 12;	/* in pts */
-$mpdf->defaultfooterfontstyle = B;	/* blank, B, I, or BI */
-$mpdf->defaultfooterline = 1; 	/* 1 to include line below header/above footer */
+$mpdf->defaultfooterfontsize = 12;    /* in pts */
+$mpdf->defaultfooterfontstyle = B;    /* blank, B, I, or BI */
+$mpdf->defaultfooterline = 1;    /* 1 to include line below header/above footer */
 
 
 $mpdf->SetHeader('{DATE j-m-Y}|{PAGENO}/{nb}|My document');
-$mpdf->SetFooter('{PAGENO}');	/* defines footer for Odd and Even Pages - placed at Outer margin */
+$mpdf->SetFooter('{PAGENO}');    /* defines footer for Odd and Even Pages - placed at Outer margin */
 
-$mpdf->SetFooter(array(
-	'L' => array(
-		'content' => 'Text to go on the left',
-		'font-family' => 'sans-serif',
-		'font-style' => 'B',	/* blank, B, I, or BI */
-		'font-size' => '10',	/* in pts */
-	),
-	'C' => array(
-		'content' => '- {PAGENO} -',
-		'font-family' => 'serif',
-		'font-style' => 'BI',
-		'font-size' => '18',	/* gives default */
-	),
-	'R' => array(
-		'content' => 'Printed @ {DATE j-m-Y H:m}',
-		'font-family' => 'monospace',
-		'font-style' => '',
-		'font-size' => '10',
-	),
-	'line' => 1,		/* 1 to include line below header/above footer */
-), 'E'	/* defines footer for Even Pages */
+$mpdf->SetFooter([
+    'L'    => [
+        'content'     => 'Text to go on the left',
+        'font-family' => 'sans-serif',
+        'font-style'  => 'B',    /* blank, B, I, or BI */
+        'font-size'   => '10',    /* in pts */
+    ],
+    'C'    => [
+        'content'     => '- {PAGENO} -',
+        'font-family' => 'serif',
+        'font-style'  => 'BI',
+        'font-size'   => '18',    /* gives default */
+    ],
+    'R'    => [
+        'content'     => 'Printed @ {DATE j-m-Y H:m}',
+        'font-family' => 'monospace',
+        'font-style'  => '',
+        'font-size'   => '10',
+    ],
+    'line' => 1,        /* 1 to include line below header/above footer */
+], 'E'    /* defines footer for Even Pages */
 );
 
 

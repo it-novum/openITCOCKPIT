@@ -27,45 +27,47 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Macro extends Importer
 {
-	/**
-	 * @property \Macro $Model
-	 */
+    /**
+     * @property \Macro $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import()
-	{
-		if($this->isTableEmpty()){
-			$data = $this->getData();
-			foreach ($data as $record) {
-				$this->Model->create();
-				$this->Model->saveAll($record);
-			}
-		}
-		return true;
-	}
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
+                $this->Model->saveAll($record);
+            }
+        }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data = array(
-			0 =>
-				array(
-					'Macro' =>
-						array(
-							'id' => '1',
-							'name' => '$USER1$',
-							'value' => '/opt/openitc/nagios/libexec',
-							'description' => 'Path to monitoring plugins',
-							'password' => '0',
-							'created' => '2015-01-05 15:17:23',
-							'modified' => '2015-01-05 15:17:23',
-						),
-				),
-		);
-		return $data;
-	}
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data = [
+            0 =>
+                [
+                    'Macro' =>
+                        [
+                            'id'          => '1',
+                            'name'        => '$USER1$',
+                            'value'       => '/opt/openitc/nagios/libexec',
+                            'description' => 'Path to monitoring plugins',
+                            'password'    => '0',
+                            'created'     => '2015-01-05 15:17:23',
+                            'modified'    => '2015-01-05 15:17:23',
+                        ],
+                ],
+        ];
+
+        return $data;
+    }
 }

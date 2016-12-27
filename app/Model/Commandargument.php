@@ -24,35 +24,36 @@
 //	confirmation.
 
 
-class Commandargument extends AppModel{
-	public $belongsTo = [
-		'Command' => [
-			'className' => 'Command',
-			'dependent' => true,
-			'foreignKey' => 'command_id'
-		],
-	];
+class Commandargument extends AppModel
+{
+    public $belongsTo = [
+        'Command' => [
+            'className'  => 'Command',
+            'dependent'  => true,
+            'foreignKey' => 'command_id',
+        ],
+    ];
 
-	public $hasMany = [
-		'Hostcommandargumentvalue' => [
-			'className' => 'Hostcommandargumentvalue',
-			'dependent' => true,
-		],
-		'Hosttemplatecommandargumentvalue' => [
-			'className' => 'Hosttemplatecommandargumentvalue',
-			'dependent' => true,
-		],
-		'Servicecommandargumentvalue' => [
-			'className' => 'Servicecommandargumentvalue',
-			'dependent' => true,
-		],
-		'Servicetemplatecommandargumentvalue' => [
-			'className' => 'Servicetemplatecommandargumentvalue',
-			'dependent' => true,
-		],
-		'Servicetemplateeventcommandargumentvalue' => [ // "Eventhandler" for Servicetemplate
-			'className' => 'Servicetemplateeventcommandargumentvalue',
-			'dependent' => true,
-		],
-	];
+    public $hasMany = [
+        'Hostcommandargumentvalue'                 => [
+            'className' => 'Hostcommandargumentvalue',
+            'dependent' => true,
+        ],
+        'Hosttemplatecommandargumentvalue'         => [
+            'className' => 'Hosttemplatecommandargumentvalue',
+            'dependent' => true,
+        ],
+        'Servicecommandargumentvalue'              => [
+            'className' => 'Servicecommandargumentvalue',
+            'dependent' => true,
+        ],
+        'Servicetemplatecommandargumentvalue'      => [
+            'className' => 'Servicetemplatecommandargumentvalue',
+            'dependent' => true,
+        ],
+        'Servicetemplateeventcommandargumentvalue' => [ // "Eventhandler" for Servicetemplate
+            'className' => 'Servicetemplateeventcommandargumentvalue',
+            'dependent' => true,
+        ],
+    ];
 }

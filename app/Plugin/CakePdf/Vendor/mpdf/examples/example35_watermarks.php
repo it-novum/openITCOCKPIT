@@ -23,7 +23,7 @@ $html = '
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('c'); 
+$mpdf = new mPDF('c');
 
 $mpdf->SetDisplayMode('fullpage');
 
@@ -35,7 +35,7 @@ $mpdf->showWatermarkText = true;
 $mpdf->WriteHTML($html);
 $mpdf->AddPage();
 
-$mpdf->SetWatermarkImage('tiger.wmf', 1, '', array(160,10));
+$mpdf->SetWatermarkImage('tiger.wmf', 1, '', [160, 10]);
 $mpdf->showWatermarkImage = true;
 
 $mpdf->WriteHTML('<h2>Using a Watermark as a Header</h2>');

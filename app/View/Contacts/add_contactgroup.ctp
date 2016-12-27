@@ -24,41 +24,41 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
-				<?php echo __('Contact groups'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-terminal fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Contact groups'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-		<h2><?php echo __('Add contact group'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php echo $this->Utils->backButton();?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Contact', array(
-					'class' => 'form-horizontal clear'
-				));
-				echo $this->Form->input('Container.parent_id', ['options' => $containers, 'selected' => $user_container_id, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container')]);
-				echo $this->Form->input('Container.name', ['label' => __('Contact group name')]);
-				echo $this->Form->input('Contactgroup.description', ['label' => __('Description')]);
-				echo $this->Form->input('Contact.id', ['options' => $contacts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contacts'), 'data-placeholder' => __('Please choose a contact')]);
-			?>
-			<br />
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
+        <h2><?php echo __('Add contact group'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton(); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Contact', [
+                'class' => 'form-horizontal clear',
+            ]);
+            echo $this->Form->input('Container.parent_id', ['options' => $containers, 'selected' => $user_container_id, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container')]);
+            echo $this->Form->input('Container.name', ['label' => __('Contact group name')]);
+            echo $this->Form->input('Contactgroup.description', ['label' => __('Description')]);
+            echo $this->Form->input('Contact.id', ['options' => $contacts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contacts'), 'data-placeholder' => __('Please choose a contact')]);
+            ?>
+            <br/>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>

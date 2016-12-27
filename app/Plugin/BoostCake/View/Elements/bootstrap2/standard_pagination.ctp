@@ -1,3 +1,3 @@
-<?php echo $this->Paginator->pagination(array(
-	'div' => 'pagination'
-)); ?>
+<?php echo $this->Paginator->pagination([
+    'div' => 'pagination',
+]); ?>

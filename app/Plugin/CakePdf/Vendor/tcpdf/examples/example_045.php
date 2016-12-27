@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Bookmarks and Table of Content
- * @author Nicola Asuni
- * @since 2008-03-04
+ * @author   Nicola Asuni
+ * @since    2008-03-04
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 045', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -73,32 +73,32 @@ $pdf->SetFont('times', 'B', 20);
 $pdf->AddPage();
 
 // set a bookmark for the current position
-$pdf->Bookmark('Chapter 1', 0, 0, '', 'B', array(0,64,128));
+$pdf->Bookmark('Chapter 1', 0, 0, '', 'B', [0, 64, 128]);
 
 // print a line using Cell()
 $pdf->Cell(0, 10, 'Chapter 1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.1', 1, 0, '', '', array(128,0,0));
+$pdf->Bookmark('Paragraph 1.1', 1, 0, '', '', [128, 0, 0]);
 $pdf->Cell(0, 10, 'Paragraph 1.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.2', 1, 0, '', '', array(128,0,0));
+$pdf->Bookmark('Paragraph 1.2', 1, 0, '', '', [128, 0, 0]);
 $pdf->Cell(0, 10, 'Paragraph 1.2', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0, '', 'I', array(0,128,0));
+$pdf->Bookmark('Sub-Paragraph 1.2.1', 2, 0, '', 'I', [0, 128, 0]);
 $pdf->Cell(0, 10, 'Sub-Paragraph 1.2.1', 0, 1, 'L');
 
 $pdf->AddPage();
-$pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', array(128,0,0));
+$pdf->Bookmark('Paragraph 1.3', 1, 0, '', '', [128, 0, 0]);
 $pdf->Cell(0, 10, 'Paragraph 1.3', 0, 1, 'L');
 
 // add some pages and bookmarks
 for ($i = 2; $i < 12; $i++) {
-	$pdf->AddPage();
-	$pdf->Bookmark('Chapter '.$i, 0, 0, '', 'B', array(0,64,128));
-	$pdf->Cell(0, 10, 'Chapter '.$i, 0, 1, 'L');
+    $pdf->AddPage();
+    $pdf->Bookmark('Chapter '.$i, 0, 0, '', 'B', [0, 64, 128]);
+    $pdf->Cell(0, 10, 'Chapter '.$i, 0, 1, 'L');
 }
 
 // . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -115,7 +115,7 @@ $pdf->SetFont('dejavusans', '', 12);
 
 // add a simple Table Of Content at first page
 // (check the example n. 59 for the HTML version)
-$pdf->addTOC(1, 'courier', '.', 'INDEX', 'B', array(128,0,0));
+$pdf->addTOC(1, 'courier', '.', 'INDEX', 'B', [128, 0, 0]);
 
 // end of TOC page
 $pdf->endTOCPage();

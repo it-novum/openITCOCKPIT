@@ -29,79 +29,87 @@ namespace itnovum\openITCOCKPIT\HostgroupsController;
 class CumulatedServicestatusCollectionTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testInstance(){
+    public function testInstance()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection', $collection);
     }
 
-    public function testExistsByExistingHostId(){
+    public function testExistsByExistingHostId()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $result = $collection->existsByHostId(6);
         $this->assertTrue($result);
     }
 
-    public function testNotExistsByNonExistingHostId(){
+    public function testNotExistsByNonExistingHostId()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $result = $collection->existsByHostId(12345678);
         $this->assertFalse($result);
     }
 
-    public function testGetStatusByHostId(){
+    public function testGetStatusByHostId()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostId(6);
         $this->assertEquals(2, $cumulatedServicestatus);
     }
 
-    public function testAssertMissingRecord(){
+    public function testAssertMissingRecord()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $this->setExpectedException('\itnovum\openITCOCKPIT\HostgroupsController\Exceptions\RecordExistsException');
         $result = $collection->getByHostId(12345678);
     }
 
-    public function testEvenIfNotExistsOnExisting(){
+    public function testEvenIfNotExistsOnExisting()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostIdEvenIfNotExists(6);
         $this->assertEquals(2, $cumulatedServicestatus);
     }
 
-    public function testEvenIfNotExistsOnNonExisting(){
+    public function testEvenIfNotExistsOnNonExisting()
+    {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostIdEvenIfNotExists(12345678);
         $this->assertEquals(-1, $cumulatedServicestatus);
     }
 
-    public function testGetCollectionAsArray(){
+    public function testGetCollectionAsArray()
+    {
         $data = [
             [
                 'Host' => [
-                    'id' => 10
+                    'id' => 10,
                 ],
-                0 => [
-                    'cumulated' => 0
-                ]
+                0      => [
+                    'cumulated' => 0,
+                ],
             ],
             [
                 'Host' => [
-                    'id' => 15
+                    'id' => 15,
                 ],
-                0 => [
-                    'cumulated' => 3
-                ]
+                0      => [
+                    'cumulated' => 3,
+                ],
             ],
             [
                 'Host' => [
-                    'id' => '1337'
+                    'id' => '1337',
                 ],
-                0 => [
-                    'cumulated' => '2'
-                ]
+                0      => [
+                    'cumulated' => '2',
+                ],
             ],
         ];
         $collection = new CumulatedServicestatusCollection($data);
         $asserted = [
-            10 => 0,
-            15 => 3,
-            1337 => 2
+            10   => 0,
+            15   => 3,
+            1337 => 2,
         ];
         $this->assertEquals($asserted, $collection->getCollectionAsArray());
     }
@@ -109,57 +117,58 @@ class CumulatedServicestatusCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    private function servicesExtendedLoaderFake(){
-        return array(
-            (int) 0 => array(
-                'Host' => array(
-                    'id' => '2'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '0'
-                )
-            ),
-            (int) 1 => array(
-                'Host' => array(
-                    'id' => '3'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '0'
-                )
-            ),
-            (int) 2 => array(
-                'Host' => array(
-                    'id' => '4'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '0'
-                )
-            ),
-            (int) 3 => array(
-                'Host' => array(
-                    'id' => '6'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '2'
-                )
-            ),
-            (int) 4 => array(
-                'Host' => array(
-                    'id' => '7'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '0'
-                )
-            ),
-            (int) 5 => array(
-                'Host' => array(
-                    'id' => '8'
-                ),
-                (int) 0 => array(
-                    'cumulated' => '0'
-                )
-            )
-        );
+    private function servicesExtendedLoaderFake()
+    {
+        return [
+            (int)0 => [
+                'Host' => [
+                    'id' => '2',
+                ],
+                (int)0 => [
+                    'cumulated' => '0',
+                ],
+            ],
+            (int)1 => [
+                'Host' => [
+                    'id' => '3',
+                ],
+                (int)0 => [
+                    'cumulated' => '0',
+                ],
+            ],
+            (int)2 => [
+                'Host' => [
+                    'id' => '4',
+                ],
+                (int)0 => [
+                    'cumulated' => '0',
+                ],
+            ],
+            (int)3 => [
+                'Host' => [
+                    'id' => '6',
+                ],
+                (int)0 => [
+                    'cumulated' => '2',
+                ],
+            ],
+            (int)4 => [
+                'Host' => [
+                    'id' => '7',
+                ],
+                (int)0 => [
+                    'cumulated' => '0',
+                ],
+            ],
+            (int)5 => [
+                'Host' => [
+                    'id' => '8',
+                ],
+                (int)0 => [
+                    'cumulated' => '0',
+                ],
+            ],
+        ];
     }
 
 }

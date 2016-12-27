@@ -23,11 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Mapicon extends MapModuleAppModel{
-	public $belongsTo = [
-		'Map' => [
-			'className' => 'MapModule.Map',
-			'dependent' => true,
-		]
-	];
+class Mapicon extends MapModuleAppModel
+{
+    public $belongsTo = [
+        'Map' => [
+            'className' => 'MapModule.Map',
+            'dependent' => true,
+        ],
+    ];
 }

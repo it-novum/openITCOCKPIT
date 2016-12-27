@@ -72,11 +72,11 @@ $html = '
 //==============================================================
 //==============================================================
 include("../mpdf.php");
-$mpdf=new mPDF('c'); 
+$mpdf = new mPDF('c');
 
 $mpdf->mirrorMargins = true;
 
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 
 $mpdf->WriteHTML($html);
 

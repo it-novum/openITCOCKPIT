@@ -30,115 +30,123 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
 class CustomVariableMergerTest extends \CakeTestCase
 {
-	public function testInstance(){
-		$CustomVariableMerger = new CustomVariableMerger([], []);
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableMerger', $CustomVariableMerger);
-	}
+    public function testInstance()
+    {
+        $CustomVariableMerger = new CustomVariableMerger([], []);
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableMerger', $CustomVariableMerger);
+    }
 
-	public function testMergeCustomVariablesOfHosttemplateAndHost(){
-		$CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacros(), $this->getHosttemplateCustomVariables());
+    public function testMergeCustomVariablesOfHosttemplateAndHost()
+    {
+        $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacros(), $this->getHosttemplateCustomVariables());
 
-		$hosttemplateVariable1 = new CustomVariable('EINSTEMPLATE', '1', 0, OBJECT_HOSTTEMPLATE);
-		$hosttemplateVariable2 = new CustomVariable('ZWEITEMPLATE', '2', 0, OBJECT_HOSTTEMPLATE);
-		$hosttemplateVariable3 = new CustomVariable('DREITEMPLATE', '3', 0, OBJECT_HOSTTEMPLATE);
+        $hosttemplateVariable1 = new CustomVariable('EINSTEMPLATE', '1', 0, OBJECT_HOSTTEMPLATE);
+        $hosttemplateVariable2 = new CustomVariable('ZWEITEMPLATE', '2', 0, OBJECT_HOSTTEMPLATE);
+        $hosttemplateVariable3 = new CustomVariable('DREITEMPLATE', '3', 0, OBJECT_HOSTTEMPLATE);
 
-		$hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
+        $hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
 
-		$AssertedRepository = new CustomVariablesRepository();
-		$AssertedRepository->addCustomVariable($hostVariable1);
-		$AssertedRepository->addCustomVariable($hosttemplateVariable1);
-		$AssertedRepository->addCustomVariable($hosttemplateVariable2);
-		$AssertedRepository->addCustomVariable($hosttemplateVariable3);
+        $AssertedRepository = new CustomVariablesRepository();
+        $AssertedRepository->addCustomVariable($hostVariable1);
+        $AssertedRepository->addCustomVariable($hosttemplateVariable1);
+        $AssertedRepository->addCustomVariable($hosttemplateVariable2);
+        $AssertedRepository->addCustomVariable($hosttemplateVariable3);
 
-		$this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
-	}
+        $this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
+    }
 
-	public function testMergeCustomVariablesOfHosttemplateAndHost2(){
-		$CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateCustomVariables());
+    public function testMergeCustomVariablesOfHosttemplateAndHost2()
+    {
+        $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateCustomVariables());
 
-		$hosttemplateVariable3 = new CustomVariable('DREITEMPLATE', '3', 0, OBJECT_HOSTTEMPLATE);
+        $hosttemplateVariable3 = new CustomVariable('DREITEMPLATE', '3', 0, OBJECT_HOSTTEMPLATE);
 
-		$hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
-		$hostVariable2 = new CustomVariable('EINSTEMPLATE', '8', 0, OBJECT_HOST);
-		$hostVariable3 = new CustomVariable('ZWEITEMPLATE', '9', 0, OBJECT_HOST);
+        $hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
+        $hostVariable2 = new CustomVariable('EINSTEMPLATE', '8', 0, OBJECT_HOST);
+        $hostVariable3 = new CustomVariable('ZWEITEMPLATE', '9', 0, OBJECT_HOST);
 
-		$AssertedRepository = new CustomVariablesRepository();
-		$AssertedRepository->addCustomVariable($hostVariable1);
-		$AssertedRepository->addCustomVariable($hostVariable2);
-		$AssertedRepository->addCustomVariable($hostVariable3);
-		$AssertedRepository->addCustomVariable($hosttemplateVariable3);
+        $AssertedRepository = new CustomVariablesRepository();
+        $AssertedRepository->addCustomVariable($hostVariable1);
+        $AssertedRepository->addCustomVariable($hostVariable2);
+        $AssertedRepository->addCustomVariable($hostVariable3);
+        $AssertedRepository->addCustomVariable($hosttemplateVariable3);
 
-		$this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
-	}
+        $this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
+    }
 
-	public function testMergeCustomVariablesOfHostWithEmptyHosttemplate(){
-		$CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateWhitoutCustomVariables());
+    public function testMergeCustomVariablesOfHostWithEmptyHosttemplate()
+    {
+        $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateWhitoutCustomVariables());
 
-		$hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
-		$hostVariable2 = new CustomVariable('EINSTEMPLATE', '8', 0, OBJECT_HOST);
-		$hostVariable3 = new CustomVariable('ZWEITEMPLATE', '9', 0, OBJECT_HOST);
+        $hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
+        $hostVariable2 = new CustomVariable('EINSTEMPLATE', '8', 0, OBJECT_HOST);
+        $hostVariable3 = new CustomVariable('ZWEITEMPLATE', '9', 0, OBJECT_HOST);
 
-		$AssertedRepository = new CustomVariablesRepository();
-		$AssertedRepository->addCustomVariable($hostVariable1);
-		$AssertedRepository->addCustomVariable($hostVariable2);
-		$AssertedRepository->addCustomVariable($hostVariable3);
+        $AssertedRepository = new CustomVariablesRepository();
+        $AssertedRepository->addCustomVariable($hostVariable1);
+        $AssertedRepository->addCustomVariable($hostVariable2);
+        $AssertedRepository->addCustomVariable($hostVariable3);
 
-		$this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
-	}
+        $this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
+    }
 
 
-	private function getHosttemplateWhitoutCustomVariables(){
-		return array();
-	}
+    private function getHosttemplateWhitoutCustomVariables()
+    {
+        return [];
+    }
 
-	private function getHosttemplateCustomVariables(){
-		return array(
-			(int) 0 => array(
-				'name' => 'EINSTEMPLATE',
-				'value' => '1',
-				'objecttype_id' => OBJECT_HOSTTEMPLATE
-			),
-			(int) 1 => array(
-				'name' => 'ZWEITEMPLATE',
-				'value' => '2',
-				'objecttype_id' => OBJECT_HOSTTEMPLATE
-			),
-			(int) 2 => array(
-				'name' => 'DREITEMPLATE',
-				'value' => '3',
-				'objecttype_id' => OBJECT_HOSTTEMPLATE
-			)
-		);
-	}
+    private function getHosttemplateCustomVariables()
+    {
+        return [
+            (int)0 => [
+                'name'          => 'EINSTEMPLATE',
+                'value'         => '1',
+                'objecttype_id' => OBJECT_HOSTTEMPLATE,
+            ],
+            (int)1 => [
+                'name'          => 'ZWEITEMPLATE',
+                'value'         => '2',
+                'objecttype_id' => OBJECT_HOSTTEMPLATE,
+            ],
+            (int)2 => [
+                'name'          => 'DREITEMPLATE',
+                'value'         => '3',
+                'objecttype_id' => OBJECT_HOSTTEMPLATE,
+            ],
+        ];
+    }
 
-	private function getHostWithDifferentMacros(){
-		return array(
-			(int) 2 => array(
-			'name' => 'FOO',
-			'value' => 'BAR',
-			'objecttype_id' => OBJECT_HOST
-			)
-		);
-	}
+    private function getHostWithDifferentMacros()
+    {
+        return [
+            (int)2 => [
+                'name'          => 'FOO',
+                'value'         => 'BAR',
+                'objecttype_id' => OBJECT_HOST,
+            ],
+        ];
+    }
 
-	private function getHostWithDifferentMacrosValues(){
-		return array(
-			(int) 0 => array(
-				'name' => 'FOO',
-				'value' => 'BAR',
-				'objecttype_id' => OBJECT_HOST
-			),
-			(int) 1 => array(
-				'name' => 'EINSTEMPLATE',
-				'value' => '8',
-				'objecttype_id' => OBJECT_HOST
-			),
-			(int) 2 => array(
-				'name' => 'ZWEITEMPLATE',
-				'value' => '9',
-				'objecttype_id' => OBJECT_HOST
-			)
-		);
-	}
+    private function getHostWithDifferentMacrosValues()
+    {
+        return [
+            (int)0 => [
+                'name'          => 'FOO',
+                'value'         => 'BAR',
+                'objecttype_id' => OBJECT_HOST,
+            ],
+            (int)1 => [
+                'name'          => 'EINSTEMPLATE',
+                'value'         => '8',
+                'objecttype_id' => OBJECT_HOST,
+            ],
+            (int)2 => [
+                'name'          => 'ZWEITEMPLATE',
+                'value'         => '9',
+                'objecttype_id' => OBJECT_HOST,
+            ],
+        ];
+    }
 
 }
