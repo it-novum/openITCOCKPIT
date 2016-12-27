@@ -353,6 +353,10 @@ echo $this->Form->create('Service', [
 <!-- second page -->
 <!-- expert settings -->
 <div id="tab2" class="tab-pane fade">
+	<div class="form-group">
+		<label class="col col-md-1 control-label text-left" for="ServiceName"><?php echo __('Host'); ?></label>
+		<div class="col col-xs-10 padding-top-5"><?php echo $service['Host']['name']; ?></div>
+	</div>
 <span class="note pull-left"><?php echo __('Check settings'); ?>:</span>
 <br class="clearfix"/>
 <?php echo $this->Form->input('Service.command_id', [
