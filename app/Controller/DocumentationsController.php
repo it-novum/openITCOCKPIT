@@ -119,7 +119,7 @@ class DocumentationsController extends AppController{
 				'children' => [
 					'statusmap' => [
 						'name' => __('Statusmap'),
-						'description' => 'The [statusmap] visualizes your hosts, ' .
+						'description' => 'The statusmap visualizes your hosts, ' .
 							'with their connection with each other and their states.',
 						'file' => 'statusmap',
 						'icon' => 'fa fa-globe',
