@@ -3976,7 +3976,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '56',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '43',
+                                    'value' => '{\'memory\' : (90.0, 95.0), \'pagefile\' : (90.0, 95.0), \'average\': 60}',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
@@ -4042,7 +4052,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '57',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '44',
+                                    'value' => '{\'state\': [\'1\'], \'errors\': (0.01, 0.1), \'traffic\': (50.0, 80.0)}',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
@@ -4108,7 +4128,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '55',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '45',
+                                    'value' => '(30,60)',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
@@ -4174,7 +4204,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '54',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '46',
+                                    'value' => '{\'ignored\': (), \'state_if_stopped\': 1}',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
@@ -4240,7 +4280,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '53',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '47',
+                                    'value' => '{\'state\': [\'1\'], \'errors\': (0.01, 0.1), \'traffic\': (50.0, 80.0)}',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
@@ -4306,7 +4356,17 @@ class Servicetemplate extends Importer
 					'Customvariable' =>
 						array(),
 					'Servicetemplatecommandargumentvalue' =>
-						array(),
+                        array(
+                            0 =>
+                                array(
+                                    'id' => '52',
+                                    'commandargument_id' => '39',
+                                    'servicetemplate_id' => '48',
+                                    'value' => '{\'TIME_WAIT\' : (170, 200), \'ESTABLISHED\' : (100, 200) }',
+                                    'created' => '2015-01-16 00:31:22',
+                                    'modified' => '2015-01-16 00:31:22',
+                                ),
+                        ),
 					'Servicetemplateeventcommandargumentvalue' =>
 						array(),
 					'Contactgroup' =>
