@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Full page background
- * @author Nicola Asuni
- * @since 2009-04-16
+ * @author   Nicola Asuni
+ * @since    2009-04-16
  */
 
 require_once('../config/lang/eng.php');
@@ -32,23 +32,25 @@ require_once('../tcpdf.php');
 
 
 // Extend the TCPDF class to create custom Header and Footer
-class MYPDF extends TCPDF {
-	//Page header
-	public function Header() {
-		// get the current page break margin
-		$bMargin = $this->getBreakMargin();
-		// get current auto-page-break mode
-		$auto_page_break = $this->AutoPageBreak;
-		// disable auto-page-break
-		$this->SetAutoPageBreak(false, 0);
-		// set bacground image
-		$img_file = K_PATH_IMAGES.'image_demo.jpg';
-		$this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
-		// restore auto-page-break status
-		$this->SetAutoPageBreak($auto_page_break, $bMargin);
-		// set the starting point for the page content
-		$this->setPageMark();
-	}
+class MYPDF extends TCPDF
+{
+    //Page header
+    public function Header()
+    {
+        // get the current page break margin
+        $bMargin = $this->getBreakMargin();
+        // get current auto-page-break mode
+        $auto_page_break = $this->AutoPageBreak;
+        // disable auto-page-break
+        $this->SetAutoPageBreak(false, 0);
+        // set bacground image
+        $img_file = K_PATH_IMAGES.'image_demo.jpg';
+        $this->Image($img_file, 0, 0, 210, 297, '', '', '', false, 300, '', false, false, 0);
+        // restore auto-page-break status
+        $this->SetAutoPageBreak($auto_page_break, $bMargin);
+        // set the starting point for the page content
+        $this->setPageMark();
+    }
 }
 
 // create new PDF document
@@ -62,7 +64,7 @@ $pdf->SetSubject('TCPDF Tutorial');
 $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -76,7 +78,7 @@ $pdf->SetFooterMargin(0);
 $pdf->setPrintFooter(false);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);

@@ -42,13 +42,15 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser){
+    public function setOptionsFromOptionParser(OptionParser $optionParser)
+    {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest(){
-        switch($this->optionParser->getAction()){
+    public function dispatchRequest()
+    {
+        switch ($this->optionParser->getAction()) {
             case 'create_missing_cronjobs':
                 $this->create_missing_cronjobs();
                 break;
@@ -58,18 +60,19 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function create_missing_cronjobs(){
-		//Check if load cronjob exists
-		if(!$this->Database->checkForCronjob('CpuLoad', 'Core')){
-			//Cron does not exists, so we create it
-			$this->Database->add('CpuLoad', 'Core', 15);
-		}
+    public function create_missing_cronjobs()
+    {
+        //Check if load cronjob exists
+        if (!$this->Database->checkForCronjob('CpuLoad', 'Core')) {
+            //Cron does not exists, so we create it
+            $this->Database->add('CpuLoad', 'Core', 15);
+        }
 
-		//Check if version check cronjob exists
-		if(!$this->Database->checkForCronjob('VersionCheck', 'Core')){
-			//Cron does not exists, so we create it
-			$this->Database->add('VersionCheck', 'Core', 1440);
-		}
+        //Check if version check cronjob exists
+        if (!$this->Database->checkForCronjob('VersionCheck', 'Core')) {
+            //Cron does not exists, so we create it
+            $this->Database->add('VersionCheck', 'Core', 1440);
+        }
     }
 
 }

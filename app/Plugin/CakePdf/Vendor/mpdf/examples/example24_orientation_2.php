@@ -138,24 +138,24 @@ $footerE = '<div align="center" style="background-color: #f0f2ff;background: tra
 include("../mpdf.php");
 
 
-$mpdf=new mPDF('c','A4','','',42,15,57,57,20,17); 
+$mpdf = new mPDF('c', 'A4', '', '', 42, 15, 57, 57, 20, 17);
 
 $mpdf->displayDefaultOrientation = true;
 
 $mpdf->forcePortraitHeaders = true;
 $mpdf->forcePortraitMargins = true;
 
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 
 $mpdf->mirrorMargins = 1;
 
 $stylesheet = file_get_contents('mpdfstyletables.css');
-$mpdf->WriteHTML($stylesheet,1);
+$mpdf->WriteHTML($stylesheet, 1);
 
 $mpdf->SetHTMLHeader($header);
-$mpdf->SetHTMLHeader($headerE,'E');
+$mpdf->SetHTMLHeader($headerE, 'E');
 $mpdf->SetHTMLFooter($footer);
-$mpdf->SetHTMLFooter($footerE,'E');
+$mpdf->SetHTMLFooter($footerE, 'E');
 
 $mpdf->WriteHTML($html);
 
@@ -166,14 +166,14 @@ $mpdf->WriteHTML($htmlL);
 
 // Columns
 $mpdf->AddPage('L');
-$mpdf->SetColumns(3,'J');
+$mpdf->SetColumns(3, 'J');
 $mpdf->WriteHTML($loremH);
 
 $mpdf->SetColumns(0);
 $mpdf->WriteHTML('<hr />');
 
 
-$mpdf->SetColumns(2,'J');
+$mpdf->SetColumns(2, 'J');
 $mpdf->WriteHTML($loremH);
 $mpdf->WriteHTML('<hr />');
 $mpdf->SetColumns(0);

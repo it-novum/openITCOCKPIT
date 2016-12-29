@@ -29,27 +29,29 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 class CustomVariableHelper
 {
 
-	public function convertCustomVariablesToRepository($customVariables){
-		$repository = new CustomVariablesRepository();
-		foreach($customVariables as $customVariable){
-			$key = $customVariable['name'];
-			$value = $customVariable['value'];
+    public function convertCustomVariablesToRepository($customVariables)
+    {
+        $repository = new CustomVariablesRepository();
+        foreach ($customVariables as $customVariable) {
+            $key = $customVariable['name'];
+            $value = $customVariable['value'];
 
-			$id = 0;
-			if(isset($customVariable['id'])){
-				$id = $customVariable['id'];
-			}
+            $id = 0;
+            if (isset($customVariable['id'])) {
+                $id = $customVariable['id'];
+            }
 
-			$objecttype_id = 0;
-			if(isset($customVariable['objecttype_id'])){
-				$objecttype_id = $customVariable['objecttype_id'];
-			}
+            $objecttype_id = 0;
+            if (isset($customVariable['objecttype_id'])) {
+                $objecttype_id = $customVariable['objecttype_id'];
+            }
 
-			$repository->addCustomVariable(
-				new CustomVariable($key, $value, $id, $objecttype_id)
-			);
-		}
-		return $repository;
-	}
+            $repository->addCustomVariable(
+                new CustomVariable($key, $value, $id, $objecttype_id)
+            );
+        }
+
+        return $repository;
+    }
 
 }

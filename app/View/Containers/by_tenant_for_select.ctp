@@ -32,29 +32,29 @@
  *      |__/                                    
 */
 
- /*
+/*
 We need to find a better solution!
 <div class="form-group">
-	<label class="col col-md-2 control-label" for="ContainerName"><?php echo __('parent node'); ?></label>
-	<div class="col col-xs-10">
-		<select class="select2, select_path" data-placeholder="<?php echo __('please select');?>">
-			<!--
-				We need an empty option for the browsers -.- 
-				See: http://ivaynberg.github.io/select2/
-			-->
-			<option></option>
-			<?php foreach($paths as $parent_id => $path): ?>
-				<option value="<?php echo $parent_id; ?>"><?php echo $path; ?>
-			<?php endforeach; ?>
-		</select>
-		<?php //echo $this->Form->input('Container.parent_id', array('options' => ($paths), 'class' => 'select2, select_path', 'label' => false, 'data-placeholder' => __('please select'))); ?>
-	</div>
+   <label class="col col-md-2 control-label" for="ContainerName"><?php echo __('parent node'); ?></label>
+   <div class="col col-xs-10">
+       <select class="select2, select_path" data-placeholder="<?php echo __('please select');?>">
+           <!--
+               We need an empty option for the browsers -.-
+               See: http://ivaynberg.github.io/select2/
+           -->
+           <option></option>
+           <?php foreach($paths as $parent_id => $path): ?>
+               <option value="<?php echo $parent_id; ?>"><?php echo $path; ?>
+           <?php endforeach; ?>
+       </select>
+       <?php //echo $this->Form->input('Container.parent_id', array('options' => ($paths), 'class' => 'select2, select_path', 'label' => false, 'data-placeholder' => __('please select'))); ?>
+   </div>
 </div>
 */
 ?>
 <div class="form-group">
-	<label class="col col-md-2 control-label" for="ContainerName"><?php echo __('parent node'); ?></label>
-	<div class="col col-xs-10">
-		<?php echo $this->Form->input('Container.parent_id', array('options' => ($paths), 'class' => 'chosen select_path', 'label' => false, 'data-placeholder' => __('please select'))); ?>
-	</div>
+    <label class="col col-md-2 control-label" for="ContainerName"><?php echo __('parent node'); ?></label>
+    <div class="col col-xs-10">
+        <?php echo $this->Form->input('Container.parent_id', ['options' => ($paths), 'class' => 'chosen select_path', 'label' => false, 'data-placeholder' => __('please select')]); ?>
+    </div>
 </div>

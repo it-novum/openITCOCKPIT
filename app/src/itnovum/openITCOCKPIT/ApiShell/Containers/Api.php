@@ -42,13 +42,15 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser){
+    public function setOptionsFromOptionParser(OptionParser $optionParser)
+    {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest(){
-        switch($this->optionParser->getAction()){
+    public function dispatchRequest()
+    {
+        switch ($this->optionParser->getAction()) {
             case 'update_container_type':
                 $this->update_container_type();
                 break;
@@ -58,22 +60,24 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function update_container_type(){
+    public function update_container_type()
+    {
         $records = $this->getRecordsByTypeId();
-        foreach ($records as $record){
+        foreach ($records as $record) {
             $record['Containers']['containertype_id'] = CT_NODE;
-            if(!$this->Database->save($record)){
+            if (!$this->Database->save($record)) {
                 throw new \Exception('Could not save data');
             }
         }
     }
 
 
-    public function getRecordsByTypeId(){
+    public function getRecordsByTypeId()
+    {
         return $this->Database->find('all', [
             'conditions' => [
-                'containertype_id' => CT_DEVICEGROUP
-            ]
+                'containertype_id' => CT_DEVICEGROUP,
+            ],
         ]);
     }
 

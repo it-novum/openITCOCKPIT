@@ -1,14 +1,13 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'validators' . DIRECTORY_SEPARATOR . 'UrlValidator.php';
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'validators' . DIRECTORY_SEPARATOR . 'CssColorValidator.php';
+require_once dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php';
+require_once dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'validators'.DIRECTORY_SEPARATOR.'UrlValidator.php';
+require_once dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'validators'.DIRECTORY_SEPARATOR.'CssColorValidator.php';
 
 /**
  * Test cases for InputValidators.
- *
  * @author jbowens
- * @since May 2013
+ * @since  May 2013
  */
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
@@ -36,7 +35,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     /**
      * Tests an invalid url as an option to a url bbcode.
-     *
      * @depends testInvalidUrl
      */
     public function testInvalidOptionUrlBBCode()
@@ -45,12 +43,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse('[url=javascript:alert("HACKED!");]click me[/url]');
         $this->assertEquals('[url=javascript:alert("HACKED!");]click me[/url]',
-                $parser->getAsHtml());
+            $parser->getAsHtml());
     }
 
     /**
      * Tests an invalid url as the body to a url bbcode.
-     *
      * @depends testInvalidUrl
      */
     public function testInvalidBodyUrlBBCode()
@@ -63,7 +60,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     /**
      * Tests a valid url as the body to a url bbcode.
-     *
      * @depends testValidUrl
      */
     public function testValidUrlBBCode()
@@ -72,7 +68,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse('[url]http://jbbcode.com[/url]');
         $this->assertEquals('<a href="http://jbbcode.com">http://jbbcode.com</a>',
-                $parser->getAsHtml());
+            $parser->getAsHtml());
     }
 
     /**
@@ -119,7 +115,6 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
 
     /**
      * Tests valid css colors in a color bbcode.
-     *
      * @depends testCssColorEnglish
      * @depends testCssColorHex
      */
@@ -129,14 +124,13 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse('[color=red]colorful text[/color]');
         $this->assertEquals('<span style="color: red">colorful text</span>',
-                $parser->getAsHtml());
+            $parser->getAsHtml());
         $parser->parse('[color=#00ff00]green[/color]');
         $this->assertEquals('<span style="color: #00ff00">green</span>', $parser->getAsHtml());
     }
 
     /**
      * Tests invalid css colors in a color bbcode.
-     *
      * @depends testInvalidCssColor
      */
     public function testInvalidColorBBCode()
@@ -145,7 +139,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse('[color=" onclick="alert(\'hey ya!\');]click me[/color]');
         $this->assertEquals('[color=" onclick="alert(\'hey ya!\');]click me[/color]',
-                $parser->getAsHtml());
+            $parser->getAsHtml());
     }
 
 }

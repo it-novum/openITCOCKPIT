@@ -23,22 +23,22 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = array(
-	'public_actions' => array(
+$config = [
+    'public_actions' => [
 
-	),
-	'auth_actions' => array(
-		'NagiosModule.hosts' => array(
-			'*' => '*'
-		),
-		'NagiosModule.nagios' => array(
-			'*' => '*'
-		),
-		'NagiosModule.configs' => array(
-			'*' => '*'
-		),
-		'NagiosModule.cmd' => [
-			'*' => '*'
-		],
-	)
-);
+    ],
+    'auth_actions'   => [
+        'NagiosModule.hosts'   => [
+            '*' => '*',
+        ],
+        'NagiosModule.nagios'  => [
+            '*' => '*',
+        ],
+        'NagiosModule.configs' => [
+            '*' => '*',
+        ],
+        'NagiosModule.cmd'     => [
+            '*' => '*',
+        ],
+    ],
+];

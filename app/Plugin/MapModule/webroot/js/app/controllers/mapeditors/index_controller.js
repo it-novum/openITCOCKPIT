@@ -25,16 +25,16 @@
 App.Controllers.MapeditorsIndexController = Frontend.AppController.extend({
 
 
-	argumentNames: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
-	
-	components: ['Ajaxloader'],
-	
-	_initialize: function() {
+    argumentNames: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	},
+    components: ['Ajaxloader'],
+
+    _initialize: function () {
+
+    },
 
 });

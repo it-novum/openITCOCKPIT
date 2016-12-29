@@ -27,58 +27,60 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Usergroup extends Importer
 {
-	/**
-	 * @property \Usergroup $Model
-	 */
+    /**
+     * @property \Usergroup $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import()
-	{
-		if ($this->isTableEmpty()) {
-			$data = $this->getData();
-			foreach ($data as $record) {
-				$this->Model->create();
-				$this->Model->saveAll($record);
-			}
-		}
-		return true;
-	}
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
+                $this->Model->saveAll($record);
+            }
+        }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data = array(
-			0 =>
-				array(
-					'Usergroup' =>
-						array(
-							'id' => '1',
-							'name' => 'Administrator',
-							'description' => '',
-							'created' => '2015-08-19 14:57:42',
-							'modified' => '2015-08-19 14:57:42',
-						),
-					'User' =>
-						array(),
-				),
-			1 =>
-				array(
-					'Usergroup' =>
-						array(
-							'id' => '2',
-							'name' => 'Viewer',
-							'description' => '',
-							'created' => '2015-08-19 15:00:36',
-							'modified' => '2015-08-19 15:00:36',
-						),
-					'User' =>
-						array(),
-				),
-		);
-		return $data;
-	}
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data = [
+            0 =>
+                [
+                    'Usergroup' =>
+                        [
+                            'id'          => '1',
+                            'name'        => 'Administrator',
+                            'description' => '',
+                            'created'     => '2015-08-19 14:57:42',
+                            'modified'    => '2015-08-19 14:57:42',
+                        ],
+                    'User'      =>
+                        [],
+                ],
+            1 =>
+                [
+                    'Usergroup' =>
+                        [
+                            'id'          => '2',
+                            'name'        => 'Viewer',
+                            'description' => '',
+                            'created'     => '2015-08-19 15:00:36',
+                            'modified'    => '2015-08-19 15:00:36',
+                        ],
+                    'User'      =>
+                        [],
+                ],
+        ];
+
+        return $data;
+    }
 }

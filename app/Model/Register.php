@@ -23,26 +23,29 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Register extends AppModel{
-	public $validate = [
-		'license' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		//'accepted' => [
-		//	'rule' => 'isEnabled',
-		//	'message' => 'You need to accept the terms in the license agreement',
-		//	'required' => true
-		//]
-	];
-	
-	public function isEnabled(){
-		if($this->data['Register']['accepted'] == 1){
-			return true;
-		}
-		return false;
-	}
+class Register extends AppModel
+{
+    public $validate = [
+        'license' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        //'accepted' => [
+        //	'rule' => 'isEnabled',
+        //	'message' => 'You need to accept the terms in the license agreement',
+        //	'required' => true
+        //]
+    ];
+
+    public function isEnabled()
+    {
+        if ($this->data['Register']['accepted'] == 1) {
+            return true;
+        }
+
+        return false;
+    }
 }

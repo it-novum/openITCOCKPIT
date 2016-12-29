@@ -24,15 +24,15 @@
 //	confirmation.
 
 ?>
-<?php $this->Paginator->options(array('url' => $this->params['named'])); ?>
+<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-desktop fa-fw "></i> 
-				Map Editor
-			<span>> 
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-desktop fa-fw "></i>
+            Map Editor
+            <span>> 
 				List
 			</span>
-		</h1>
-	</div>
+        </h1>
+    </div>
 </div>

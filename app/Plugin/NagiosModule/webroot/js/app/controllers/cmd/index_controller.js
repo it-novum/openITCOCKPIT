@@ -24,15 +24,15 @@
 
 App.Controllers.CmdIndexController = Frontend.AppController.extend({
 
-	_initialize: function() {
-		/*
-		 * bind change event on select box button
-		 */
-		$('#CmdCommand').change(function(){
-			$('.api_structure_container').hide();
-			$('#'+$(this).val()).show();
-		});
-		
-	},
-	
+    _initialize: function () {
+        /*
+         * bind change event on select box button
+         */
+        $('#CmdCommand').change(function () {
+            $('.api_structure_container').hide();
+            $('#' + $(this).val()).show();
+        });
+
+    },
+
 });

@@ -23,35 +23,35 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if(empty($widgetParentOutages)): ?>
-	<div class="text-center text-success padding-50">
-		<h5 class="padding-top-20">
-			<i class="fa fa-check"></i>
-			<?php echo __('Currently are no network segment issues');?>
-		</h5>
-	</div>
-	<?php else: ?>
-	<div style="overflow:auto;">
-		<div class="table-responsive">
-			<table class="table table-bordered table-striped">
-				<tbody>
-					<?php foreach($widgetParentOutages as $host): ?>
-						<tr>
-							<?php $class = 'text-danger';
-							if($host['Hoststatus']['current_state'] == 2):
-								$class = 'txt-color-blueDark';
-							endif; ?>
-							<td title="<?php echo h($host['Hoststatus']['output']); ?>" class="dashboard-table">
-								<a class="<?php echo $class; ?>"
-									href="/hosts/browser/<?php echo $host['Host']['id']; ?>">
-									<?php echo h($host['Host']['name']); ?>
-								</a>
-							</td>
-						</tr>
-					<?php endforeach;?>
-				</tbody>
-			</table>
-		</div>
-	</div>
-<?php
+if (empty($widgetParentOutages)): ?>
+    <div class="text-center text-success padding-50">
+        <h5 class="padding-top-20">
+            <i class="fa fa-check"></i>
+            <?php echo __('Currently are no network segment issues'); ?>
+        </h5>
+    </div>
+<?php else: ?>
+    <div style="overflow:auto;">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                <?php foreach ($widgetParentOutages as $host): ?>
+                    <tr>
+                        <?php $class = 'text-danger';
+                        if ($host['Hoststatus']['current_state'] == 2):
+                            $class = 'txt-color-blueDark';
+                        endif; ?>
+                        <td title="<?php echo h($host['Hoststatus']['output']); ?>" class="dashboard-table">
+                            <a class="<?php echo $class; ?>"
+                               href="/hosts/browser/<?php echo $host['Host']['id']; ?>">
+                                <?php echo h($host['Host']['name']); ?>
+                            </a>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <?php
 endif;

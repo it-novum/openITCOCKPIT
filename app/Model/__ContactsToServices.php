@@ -23,11 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class __ContactsToServices extends AppModel{
-	/* This is a model for an linking table!
-	 * We only use this model, to delete elements (__allowDelete()), never use this Model for some else than $this->find('count')!
-	 */
-	
-	public $useTable = 'contacts_to_services';
-	public $primaryKey = 'id';
+class __ContactsToServices extends AppModel
+{
+    /* This is a model for an linking table!
+     * We only use this model, to delete elements (__allowDelete()), never use this Model for some else than $this->find('count')!
+     */
+
+    public $useTable = 'contacts_to_services';
+    public $primaryKey = 'id';
 }

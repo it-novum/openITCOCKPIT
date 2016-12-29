@@ -24,56 +24,56 @@
 //	confirmation.
 ?>
 <div id="titles">
-	<div id="credits">
-		<div id="the-end">openITCOCKPIT</div>
-		<br />
-		
-		<h1>Developers</h1>
-		<dl>
-			<dt>Software architect</dt>
-			<dd>Irina Bering</dd>
-			<dt>Software architect</dt>
-			<dd>Daniel Ziegler</dd>
-			<dt>Developer</dt>
-			<dd>Maximilian Pappert</dd>
-			<dt>Developer</dt>
-			<dd>Patrick Nawracay</dd>
-			<dt>Developer</dt>
-			<dd>Christian Fleck</dd>
-			<dt>Developer</dt>
-			<dd>Stephan Girgenti-Müller</dd>
-		</dl>
-		
-		
-		<h1>Special Thanks</h1>
-		<p>Steffen Rieger, Christian Michel, René Kleffel, Michael Ziegler, Adrian Röbig and more...</p>
-		<div class="clearfix"></div>
-		
-		<h1>Special Thanks</h1>
-		<p>Thanks to all the developers for the beautiful libraries and classes.</p>
-		<div class="clearfix"></div>
-		
-		<h1>Developed using</h1>
-		<p><?php echo $this->html->image('logos/php.png'); ?></p>
-		<p><?php echo $this->html->image('logos/cakephp.png'); ?></p>
-		<p><?php echo $this->html->image('logos/jquery.png'); ?></p>
-		<p><?php echo $this->html->image('logos/jquery_ui.png'); ?></p>
-		<div class="clearfix"></div>
-		
-		<div class="fineprint">All trademarks are the property of the trademark owners.</div>
-		
-		<br />
-		<h1>Powered by it-novum</h1>
-		<p><?php echo $this->html->image('logos/it-novum.png'); ?></p>
+    <div id="credits">
+        <div id="the-end">openITCOCKPIT</div>
+        <br/>
 
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-		<p><?php echo $this->html->image('logos/openITCOCKPIT.png'); ?></p>
+        <h1>Developers</h1>
+        <dl>
+            <dt>Software architect</dt>
+            <dd>Irina Bering</dd>
+            <dt>Software architect</dt>
+            <dd>Daniel Ziegler</dd>
+            <dt>Developer</dt>
+            <dd>Maximilian Pappert</dd>
+            <dt>Developer</dt>
+            <dd>Patrick Nawracay</dd>
+            <dt>Developer</dt>
+            <dd>Christian Fleck</dd>
+            <dt>Developer</dt>
+            <dd>Stephan Girgenti-Müller</dd>
+        </dl>
 
-	</div>
-	<div class="clearfix"></div>
+
+        <h1>Special Thanks</h1>
+        <p>Steffen Rieger, Christian Michel, René Kleffel, Michael Ziegler, Adrian Röbig and more...</p>
+        <div class="clearfix"></div>
+
+        <h1>Special Thanks</h1>
+        <p>Thanks to all the developers for the beautiful libraries and classes.</p>
+        <div class="clearfix"></div>
+
+        <h1>Developed using</h1>
+        <p><?php echo $this->html->image('logos/php.png'); ?></p>
+        <p><?php echo $this->html->image('logos/cakephp.png'); ?></p>
+        <p><?php echo $this->html->image('logos/jquery.png'); ?></p>
+        <p><?php echo $this->html->image('logos/jquery_ui.png'); ?></p>
+        <div class="clearfix"></div>
+
+        <div class="fineprint">All trademarks are the property of the trademark owners.</div>
+
+        <br/>
+        <h1>Powered by it-novum</h1>
+        <p><?php echo $this->html->image('logos/it-novum.png'); ?></p>
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <p><?php echo $this->html->image('logos/openITCOCKPIT.png'); ?></p>
+
+    </div>
+    <div class="clearfix"></div>
 </div>

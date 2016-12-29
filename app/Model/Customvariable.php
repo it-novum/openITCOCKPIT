@@ -23,38 +23,42 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Customvariable extends AppModel{
-	
-	var $validateNames = [];
-	
-	var $validate = [
-		'name' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'Macro name cannot be left blank.',
-				'required' => true,
-				'allowEmpty' => false
-			],
-			'isUniqueInData' => [
-				'rule' => ['isUniqueInData'],
-				'message' => 'Macro name needs to be unique',
-			],
-		],
-		'value' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'Macro value cannot be left blank.',
-				'required' => true,
-				'allowEmpty' => false
-			],
-		],
-	];
-	
-	public function isUniqueInData($data){
-		if(!in_array($data, $this->validateNames)){
-			$this->validateNames[] = $data;
-			return true;
-		}
-		return false;
-	}
+class Customvariable extends AppModel
+{
+
+    var $validateNames = [];
+
+    var $validate = [
+        'name'  => [
+            'notBlank'       => [
+                'rule'       => 'notBlank',
+                'message'    => 'Macro name cannot be left blank.',
+                'required'   => true,
+                'allowEmpty' => false,
+            ],
+            'isUniqueInData' => [
+                'rule'    => ['isUniqueInData'],
+                'message' => 'Macro name needs to be unique',
+            ],
+        ],
+        'value' => [
+            'notBlank' => [
+                'rule'       => 'notBlank',
+                'message'    => 'Macro value cannot be left blank.',
+                'required'   => true,
+                'allowEmpty' => false,
+            ],
+        ],
+    ];
+
+    public function isUniqueInData($data)
+    {
+        if (!in_array($data, $this->validateNames)) {
+            $this->validateNames[] = $data;
+
+            return true;
+        }
+
+        return false;
+    }
 }

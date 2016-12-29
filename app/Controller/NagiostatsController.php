@@ -23,21 +23,23 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NagiostatsController extends AppController{
-		/*
-		 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-		 * use this external model to fetch the required data out of the database
-		 */
-		public $uses = [MONITORING_NAGIOSTAT];
-	
-		public $components = array('Paginator', 'ListFilter.ListFilter','RequestHandler');
-		public $helpers = array('ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid');
-		public $layout = 'Admin.default';
-		
-		public function index(){
-			$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-			$this->loadModel('Systemsetting');
-			$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-			$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-		}
+class NagiostatsController extends AppController
+{
+    /*
+     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
+     * use this external model to fetch the required data out of the database
+     */
+    public $uses = [MONITORING_NAGIOSTAT];
+
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
+    public $layout = 'Admin.default';
+
+    public function index()
+    {
+        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $this->loadModel('Systemsetting');
+        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+    }
 }

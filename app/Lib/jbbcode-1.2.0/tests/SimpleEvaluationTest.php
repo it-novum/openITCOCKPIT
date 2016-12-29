@@ -1,6 +1,6 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php');
+require_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php');
 
 class SimpleEvaluationTest extends PHPUnit_Framework_TestCase
 {
@@ -16,6 +16,7 @@ class SimpleEvaluationTest extends PHPUnit_Framework_TestCase
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse($bbcode);
+
         return $parser->getAsHtml();
     }
 
@@ -42,7 +43,7 @@ class SimpleEvaluationTest extends PHPUnit_Framework_TestCase
     public function testOneTagWithSurroundingText()
     {
         $this->assertProduces('buffer text [b]this is bold[/b] buffer text',
-                              'buffer text <strong>this is bold</strong> buffer text');
+            'buffer text <strong>this is bold</strong> buffer text');
     }
 
     public function testMultipleTags()

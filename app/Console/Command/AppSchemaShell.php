@@ -25,53 +25,57 @@
 
 App::uses('SchemaShell', 'Console/Command');
 
-class AppSchemaShell extends SchemaShell{
-	/**
-	 * Overriding update to have non-interactive schema updates
-	 *
-	 * @param CakeSchema $Schema
-	 * @param string     $table
-	 * @return void
-	 */
-	protected function _update(&$Schema, $table = null){
-		$db = ConnectionManager::getDataSource($this->Schema->connection);
+class AppSchemaShell extends SchemaShell
+{
+    /**
+     * Overriding update to have non-interactive schema updates
+     *
+     * @param CakeSchema $Schema
+     * @param string     $table
+     *
+     * @return void
+     */
+    protected function _update(&$Schema, $table = null)
+    {
+        $db = ConnectionManager::getDataSource($this->Schema->connection);
 
-		$this->out(__d('cake_console', 'Comparing Database to Schema...'));
-		$options = array();
-		if(isset($this->params['force'])){
-			$options['models'] = false;
-		}
-		$Old = $this->Schema->read($options);
-		$compare = $this->Schema->compare($Old, $Schema);
+        $this->out(__d('cake_console', 'Comparing Database to Schema...'));
+        $options = [];
+        if (isset($this->params['force'])) {
+            $options['models'] = false;
+        }
+        $Old = $this->Schema->read($options);
+        $compare = $this->Schema->compare($Old, $Schema);
 
-		$contents = array();
+        $contents = [];
 
-		if(empty($table)){
-			foreach($compare as $table => $changes){
-				if(isset($compare[$table]['create'])){
-					$contents[$table] = $db->createSchema($Schema, $table);
-				}else{
-					$contents[$table] = $db->alterSchema(array($table => $compare[$table]), $table);
-				}
-			}
-		}elseif(isset($compare[$table])){
-			if(isset($compare[$table]['create'])){
-				$contents[$table] = $db->createSchema($Schema, $table);
-			}else{
-				$contents[$table] = $db->alterSchema(array($table => $compare[$table]), $table);
-			}
-		}
+        if (empty($table)) {
+            foreach ($compare as $table => $changes) {
+                if (isset($compare[$table]['create'])) {
+                    $contents[$table] = $db->createSchema($Schema, $table);
+                } else {
+                    $contents[$table] = $db->alterSchema([$table => $compare[$table]], $table);
+                }
+            }
+        } elseif (isset($compare[$table])) {
+            if (isset($compare[$table]['create'])) {
+                $contents[$table] = $db->createSchema($Schema, $table);
+            } else {
+                $contents[$table] = $db->alterSchema([$table => $compare[$table]], $table);
+            }
+        }
 
-		if(empty($contents)){
-			$this->out(__d('cake_console', 'Schema is up to date.'));
-			return $this->_stop();
-		}
+        if (empty($contents)) {
+            $this->out(__d('cake_console', 'Schema is up to date.'));
 
-		$this->out("\n" . __d('cake_console', 'The following statements will run.'));
-		$this->out(array_map('trim', $contents));
+            return $this->_stop();
+        }
 
-		$this->out(__d('cake_console', 'Updating Database...'));
-		$this->_run($contents, 'update', $Schema);
-		$this->out(__d('cake_console', 'End update.'));
-	}
+        $this->out("\n".__d('cake_console', 'The following statements will run.'));
+        $this->out(array_map('trim', $contents));
+
+        $this->out(__d('cake_console', 'Updating Database...'));
+        $this->_run($contents, 'update', $Schema);
+        $this->out(__d('cake_console', 'End update.'));
+    }
 }

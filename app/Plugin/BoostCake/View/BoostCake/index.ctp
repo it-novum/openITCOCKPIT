@@ -2,42 +2,43 @@
 <?php $this->set('title_for_layout', 'Bootstrap Plugin for CakePHP'); ?>
 
 <div class="jumbotron">
-	<h1>
-		BoostCake
-		<iframe src="http://ghbtns.com/github-btn.html?user=slywalker&repo=cakephp-plugin-boost_cake&type=watch&count=true&size=large" allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe>
-	</h1>
-	<p>
-		This is a plugin for CakePHP using Bootstrap
-	</p>
-	<p>
-		<a href="https://travis-ci.org/slywalker/cakephp-plugin-boost_cake">
-			<img src="https://travis-ci.org/slywalker/cakephp-plugin-boost_cake.png" alt="Build Status">
-		</a>
-		<a href="https://packagist.org/packages/slywalker/boost_cake">
-			<img src="https://poser.pugx.org/slywalker/boost_cake/d/total.png" alt="Total Downloads">
-		</a>
-		<a href="https://packagist.org/packages/slywalker/boost_cake">
-			<img src="https://poser.pugx.org/slywalker/boost_cake/v/stable.png" alt="Latest Stable Version">
-		</a>
-	</p>
-	<p>
-		<a href="https://github.com/slywalker/cakephp-plugin-boost_cake" class="btn btn-primary btn-large">
-			Github Project <i class="icon-chevron-right icon-white"></i>
-		</a>
-		<a href="https://packagist.org/packages/slywalker/boost_cake" class="btn btn-primary btn-large">
-			Packagist <i class="icon-chevron-right icon-white"></i>
-		</a>
-	</p>
+    <h1>
+        BoostCake
+        <iframe src="http://ghbtns.com/github-btn.html?user=slywalker&repo=cakephp-plugin-boost_cake&type=watch&count=true&size=large"
+                allowtransparency="true" frameborder="0" scrolling="0" width="170" height="30"></iframe>
+    </h1>
+    <p>
+        This is a plugin for CakePHP using Bootstrap
+    </p>
+    <p>
+        <a href="https://travis-ci.org/slywalker/cakephp-plugin-boost_cake">
+            <img src="https://travis-ci.org/slywalker/cakephp-plugin-boost_cake.png" alt="Build Status">
+        </a>
+        <a href="https://packagist.org/packages/slywalker/boost_cake">
+            <img src="https://poser.pugx.org/slywalker/boost_cake/d/total.png" alt="Total Downloads">
+        </a>
+        <a href="https://packagist.org/packages/slywalker/boost_cake">
+            <img src="https://poser.pugx.org/slywalker/boost_cake/v/stable.png" alt="Latest Stable Version">
+        </a>
+    </p>
+    <p>
+        <a href="https://github.com/slywalker/cakephp-plugin-boost_cake" class="btn btn-primary btn-large">
+            Github Project <i class="icon-chevron-right icon-white"></i>
+        </a>
+        <a href="https://packagist.org/packages/slywalker/boost_cake" class="btn btn-primary btn-large">
+            Packagist <i class="icon-chevron-right icon-white"></i>
+        </a>
+    </p>
 </div>
 
 <div class="page-header">
-	<h2>Installation</h2>
+    <h2>Installation</h2>
 </div>
 
 <h3>Composer</h3>
 <p>
-	Ensure require is present in <code>composer.json</code>.
-	This will install the plugin into <code>Plugin/BoostCake</code>:
+    Ensure require is present in <code>composer.json</code>.
+    This will install the plugin into <code>Plugin/BoostCake</code>:
 </p>
 
 <pre class="prettyprint">{

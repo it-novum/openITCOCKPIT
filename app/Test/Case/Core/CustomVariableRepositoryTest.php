@@ -30,108 +30,114 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
 class CustomVariableRepositoryTest extends \CakeTestCase
 {
-	public function testInstance(){
-		$CustomVariableRepository = new CustomVariablesRepository();
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariablesRepository', $CustomVariableRepository);
-	}
+    public function testInstance()
+    {
+        $CustomVariableRepository = new CustomVariablesRepository();
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariablesRepository', $CustomVariableRepository);
+    }
 
-	public function testAddAndGet(){
-		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
-		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
-		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+    public function testAddAndGet()
+    {
+        $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+        $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+        $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
 
-		$CustomVarialeRepository = new CustomVariablesRepository();
-		$CustomVarialeRepository->addCustomVariable($CustomVariable1);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable2);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable3);
+        $CustomVarialeRepository = new CustomVariablesRepository();
+        $CustomVarialeRepository->addCustomVariable($CustomVariable1);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable2);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable3);
 
-		$assert = [
-			$CustomVariable1,
-			$CustomVariable2,
-			$CustomVariable3
-		];
+        $assert = [
+            $CustomVariable1,
+            $CustomVariable2,
+            $CustomVariable3,
+        ];
 
-		$this->assertEquals($assert, $CustomVarialeRepository->getAllCustomVariables());
-	}
+        $this->assertEquals($assert, $CustomVarialeRepository->getAllCustomVariables());
+    }
 
-	public function testAddAndGetCustomVariableByName(){
-		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
-		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
-		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+    public function testAddAndGetCustomVariableByName()
+    {
+        $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+        $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+        $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
 
-		$CustomVarialeRepository = new CustomVariablesRepository();
-		$CustomVarialeRepository->addCustomVariable($CustomVariable1);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable2);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable3);
+        $CustomVarialeRepository = new CustomVariablesRepository();
+        $CustomVarialeRepository->addCustomVariable($CustomVariable1);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable2);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable3);
 
-		$assert = $CustomVariable2;
+        $assert = $CustomVariable2;
 
-		$this->assertEquals($assert, $CustomVarialeRepository->getByVariableName('BAR'));
-	}
+        $this->assertEquals($assert, $CustomVarialeRepository->getByVariableName('BAR'));
+    }
 
-	public function testAddAndGetSize(){
-		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
-		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
-		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+    public function testAddAndGetSize()
+    {
+        $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+        $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+        $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
 
-		$CustomVarialeRepository = new CustomVariablesRepository();
-		$CustomVarialeRepository->addCustomVariable($CustomVariable1);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable2);
-		$CustomVarialeRepository->addCustomVariable($CustomVariable3);
+        $CustomVarialeRepository = new CustomVariablesRepository();
+        $CustomVarialeRepository->addCustomVariable($CustomVariable1);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable2);
+        $CustomVarialeRepository->addCustomVariable($CustomVariable3);
 
-		$this->assertEquals(3, $CustomVarialeRepository->getSize());
-	}
+        $this->assertEquals(3, $CustomVarialeRepository->getSize());
+    }
 
-	public function getAllCustomVariablesAsArray(){
-		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
-		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
-		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+    public function getAllCustomVariablesAsArray()
+    {
+        $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+        $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+        $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
 
-		$CustomVariableRepository = new CustomVariablesRepository();
-		$CustomVariableRepository->addCustomVariable($CustomVariable1);
-		$CustomVariableRepository->addCustomVariable($CustomVariable2);
-		$CustomVariableRepository->addCustomVariable($CustomVariable3);
+        $CustomVariableRepository = new CustomVariablesRepository();
+        $CustomVariableRepository->addCustomVariable($CustomVariable1);
+        $CustomVariableRepository->addCustomVariable($CustomVariable2);
+        $CustomVariableRepository->addCustomVariable($CustomVariable3);
 
-		$assert = [
-			[
-				'name' => 'FOO',
-				'value' => 'BAR',
-				'id' => 1,
-				'objecttype_id' => 2048
-			],
-			[
-				'name' => 'BAR',
-				'value' => 'FOO',
-				'id' => 1,
-				'objecttype_id' => 2048
-			],
-			[
-				'name' => 'FOOBAR',
-				'value' => 'BARFOO',
-				'id' => 1,
-				'objecttype_id' => 2048
-			],
-		];
+        $assert = [
+            [
+                'name'          => 'FOO',
+                'value'         => 'BAR',
+                'id'            => 1,
+                'objecttype_id' => 2048,
+            ],
+            [
+                'name'          => 'BAR',
+                'value'         => 'FOO',
+                'id'            => 1,
+                'objecttype_id' => 2048,
+            ],
+            [
+                'name'          => 'FOOBAR',
+                'value'         => 'BARFOO',
+                'id'            => 1,
+                'objecttype_id' => 2048,
+            ],
+        ];
 
-		$this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariablesAsArray());
-	}
+        $this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariablesAsArray());
+    }
 
-	public function testDeleteVariableByBVarName(){
-		$CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
-		$CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
-		$CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
+    public function testDeleteVariableByBVarName()
+    {
+        $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
+        $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
+        $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
 
-		$CustomVariableRepository = new CustomVariablesRepository();
-		$CustomVariableRepository->addCustomVariable($CustomVariable1);
-		$CustomVariableRepository->addCustomVariable($CustomVariable2);
-		$CustomVariableRepository->addCustomVariable($CustomVariable3);
+        $CustomVariableRepository = new CustomVariablesRepository();
+        $CustomVariableRepository->addCustomVariable($CustomVariable1);
+        $CustomVariableRepository->addCustomVariable($CustomVariable2);
+        $CustomVariableRepository->addCustomVariable($CustomVariable3);
 
-		$assert = [
-			$CustomVariable1,
-			$CustomVariable3
-		];
+        $assert = [
+            $CustomVariable1,
+            $CustomVariable3,
+        ];
 
-		$CustomVariableRepository->deleteByVariableName($CustomVariable2->getName());
-		$this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariables());
-	}
+        $CustomVariableRepository->deleteByVariableName($CustomVariable2->getName());
+        $this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariables());
+    }
 }

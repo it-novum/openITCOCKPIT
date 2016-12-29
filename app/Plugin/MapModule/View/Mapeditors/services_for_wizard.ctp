@@ -33,5 +33,5 @@
 */
 ?>
 <?php foreach ($services as $service) : ?>
-	<option value="<?php echo $service['Service']['id']; ?>"><?php echo $service[0]['ServiceDescription']; ?></option>
+    <option value="<?php echo $service['Service']['id']; ?>"><?php echo $service[0]['ServiceDescription']; ?></option>
 <?php endforeach; ?>

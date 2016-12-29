@@ -1,18 +1,17 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php';
+require_once dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php';
 
 /**
  * Test cases for the code definition parameter that disallows parsing
  * of an element's content.
- *
  * @author jbowens
  */
 class ParseContentTest extends PHPUnit_Framework_TestCase
 {
 
     /**
-     * Tests that when a bbcode is created with parseContent = false, 
+     * Tests that when a bbcode is created with parseContent = false,
      * its contents actually are not parsed.
      */
     public function testSimpleNoParsing()
@@ -32,7 +31,7 @@ class ParseContentTest extends PHPUnit_Framework_TestCase
 
     public function testNoParsingWithBufferText()
     {
-        
+
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->addBBCode('verbatim', '{param}', false, false);
@@ -48,7 +47,7 @@ class ParseContentTest extends PHPUnit_Framework_TestCase
      */
     public function testUnclosedTag()
     {
-    
+
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->addBBCode('verbatim', '{param}', false, false);

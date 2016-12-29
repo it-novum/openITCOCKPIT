@@ -24,87 +24,92 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Trafficlight extends Widget{
-	public $isDefault = false;
-	public $icon = 'fa-road';
-	public $element = 'trafficlight';
-	public $width = 4;
-	public $height = 16;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 11;
-		$this->title = __('Traffic light');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetServicesForTrafficlight = $this->QueryCache->trafficLightServices();
-		$service = [];
-		if($widgetData['Widget']['service_id'] !== null){
-			if($this->Controller->Service->exists($widgetData['Widget']['service_id'])){
-				$query = [
-					'recursive' => -1,
-					'conditions' => [
-						'Service.id' => $widgetData['Widget']['service_id'],
-						'HostsToContainers.container_id' => $this->Controller->MY_RIGHTS,
-						'Service.disabled' => 0
-					],
-					'contain' => [],
-					'fields' => [
-						'Host.id',
-						'Service.id',
-						'Service.uuid',
-						'Servicestatus.current_state',
-						'Servicestatus.is_flapping',
-						'Servicestatus.normal_check_interval',
-					],
-					'joins' => [
-						[
-							'table' => 'hosts',
-							'type' => 'INNER',
-							'alias' => 'Host',
-							'conditions' => 'Service.host_id = Host.id'
-						],
-						[
-							'table' => 'nagios_objects',
-							'type' => 'INNER',
-							'alias' => 'ServiceObject',
-							'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2'
-						],
-						[
-							'table' => 'nagios_servicestatus',
-							'type' => 'LEFT OUTER',
-							'alias' => 'Servicestatus',
-							'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id'
-						],
-						[
-							'table' => 'hosts_to_containers',
-							'alias' => 'HostsToContainers',
-							'type' => 'LEFT',
-							'conditions' => [
-								'HostsToContainers.host_id = Host.id',
-							]
-						],
-					]
-				];
-		
-				$service = $this->Controller->Service->find('first', $query);
-			}
-		}
-		
-		$this->Controller->viewVars['widgetTrafficlights'][$widgetData['Widget']['id']] = [
-			'Service' => $service,
-			'Widget' => $widgetData,
-		];
-		$this->Controller->set('widgetServicesForTrafficlight', $widgetServicesForTrafficlight);
-	}
-	
-	public function refresh($widget){
-		$this->setData($widget);
-		return [
-			'element' => 'Dashboard'.DS.$this->element
-		];
-	}
-	
+class Trafficlight extends Widget
+{
+    public $isDefault = false;
+    public $icon = 'fa-road';
+    public $element = 'trafficlight';
+    public $width = 4;
+    public $height = 16;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 11;
+        $this->title = __('Traffic light');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetServicesForTrafficlight = $this->QueryCache->trafficLightServices();
+        $service = [];
+        if ($widgetData['Widget']['service_id'] !== null) {
+            if ($this->Controller->Service->exists($widgetData['Widget']['service_id'])) {
+                $query = [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Service.id'                     => $widgetData['Widget']['service_id'],
+                        'HostsToContainers.container_id' => $this->Controller->MY_RIGHTS,
+                        'Service.disabled'               => 0,
+                    ],
+                    'contain'    => [],
+                    'fields'     => [
+                        'Host.id',
+                        'Service.id',
+                        'Service.uuid',
+                        'Servicestatus.current_state',
+                        'Servicestatus.is_flapping',
+                        'Servicestatus.normal_check_interval',
+                    ],
+                    'joins'      => [
+                        [
+                            'table'      => 'hosts',
+                            'type'       => 'INNER',
+                            'alias'      => 'Host',
+                            'conditions' => 'Service.host_id = Host.id',
+                        ],
+                        [
+                            'table'      => 'nagios_objects',
+                            'type'       => 'INNER',
+                            'alias'      => 'ServiceObject',
+                            'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                        ],
+                        [
+                            'table'      => 'nagios_servicestatus',
+                            'type'       => 'LEFT OUTER',
+                            'alias'      => 'Servicestatus',
+                            'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                        ],
+                        [
+                            'table'      => 'hosts_to_containers',
+                            'alias'      => 'HostsToContainers',
+                            'type'       => 'LEFT',
+                            'conditions' => [
+                                'HostsToContainers.host_id = Host.id',
+                            ],
+                        ],
+                    ],
+                ];
+
+                $service = $this->Controller->Service->find('first', $query);
+            }
+        }
+
+        $this->Controller->viewVars['widgetTrafficlights'][$widgetData['Widget']['id']] = [
+            'Service' => $service,
+            'Widget'  => $widgetData,
+        ];
+        $this->Controller->set('widgetServicesForTrafficlight', $widgetServicesForTrafficlight);
+    }
+
+    public function refresh($widget)
+    {
+        $this->setData($widget);
+
+        return [
+            'element' => 'Dashboard'.DS.$this->element,
+        ];
+    }
+
 }

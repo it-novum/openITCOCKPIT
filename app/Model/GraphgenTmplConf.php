@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GraphgenTmplConf extends AppModel{
-	public $belongsTo = ['GraphgenTmpl', 'Service'];
+class GraphgenTmplConf extends AppModel
+{
+    public $belongsTo = ['GraphgenTmpl', 'Service'];
 }

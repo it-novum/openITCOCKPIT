@@ -23,81 +23,86 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicestatus extends NagiosModuleAppModel{
-	//public $useDbConfig = 'nagios';
-	public $useTable = 'servicestatus';
-	public $primaryKey = 'servicestatus_id';
-	public $tablePrefix = 'nagios_';
-	public $belongsTo = [
-		'Objects' => [
-			'className' => 'NagiosModule.Objects',
-			'foreignKey' => 'service_object_id',
-		]
-	];
+class Servicestatus extends NagiosModuleAppModel
+{
+    //public $useDbConfig = 'nagios';
+    public $useTable = 'servicestatus';
+    public $primaryKey = 'servicestatus_id';
+    public $tablePrefix = 'nagios_';
+    public $belongsTo = [
+        'Objects' => [
+            'className'  => 'NagiosModule.Objects',
+            'foreignKey' => 'service_object_id',
+        ],
+    ];
 
-	/**
-	 * Return the service status as array for given uuid as stirng or array
-	 *
-	 * @param	string or array $uuid you want to get service status for
-	 * @param	array $options for the find request (see cakephp's find for all options)
-	 * @return	void
-	 * @author	Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since	3.0
-	 * @version	3.0.1
-	 *
-	 */
-	public function byUuid($uuid = null, $options = []){
-		$return = [];
-		if($uuid !== null){
+    /**
+     * Return the service status as array for given uuid as stirng or array
+     *
+     * @param          string   or array $uuid you want to get service status for
+     * @param    array $options for the find request (see cakephp's find for all options)
+     *
+     * @return    void
+     * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since      3.0
+     * @version    3.0.1
+     */
+    public function byUuid($uuid = null, $options = [])
+    {
+        $return = [];
+        if ($uuid !== null) {
 
-			$_options = [
-				'conditions' => [
-					'Objects.name2' => $uuid,
-					'Objects.objecttype_id' => 2
-				],
-			];
+            $_options = [
+                'conditions' => [
+                    'Objects.name2'         => $uuid,
+                    'Objects.objecttype_id' => 2,
+                ],
+            ];
 
-			$options = Hash::merge($_options, $options);
-			$servicestatus = $this->find('all', $options);
+            $options = Hash::merge($_options, $options);
+            $servicestatus = $this->find('all', $options);
 
-			if(!empty($servicestatus)){
-				foreach($servicestatus as $nagios_servicestatus){
-					$return[$nagios_servicestatus['Objects']['name2']] = $nagios_servicestatus;
-				}
-			}
-		}
-		return $return;
-	}
+            if (!empty($servicestatus)) {
+                foreach ($servicestatus as $nagios_servicestatus) {
+                    $return[$nagios_servicestatus['Objects']['name2']] = $nagios_servicestatus;
+                }
+            }
+        }
 
-	/**
-	 * Return the service status as string for given uuid
-	 *
-	 * @param	string  $uuid you want to get service status for
-	 * @param	array $options for the find request (see cakephp's find for all options)
-	 * @return	void
-	 * @author	Irina Bering <irina.bering@it-novum.com>
-	 * @since	3.0.6
-	 * @version	3.0.6
-	 *
-	 */
-	public function currentStateByUuid($uuid = null){
-		$return = null;
-		if($uuid !== null){
+        return $return;
+    }
 
-			$_options = [
-				'conditions' => [
-					'Objects.name2' => $uuid,
-					'Objects.objecttype_id' => 2
-				],
-			];
-			$servicestatus = $this->find('all', $_options);
+    /**
+     * Return the service status as string for given uuid
+     *
+     * @param    string $uuid    you want to get service status for
+     * @param    array  $options for the find request (see cakephp's find for all options)
+     *
+     * @return    void
+     * @author     Irina Bering <irina.bering@it-novum.com>
+     * @since      3.0.6
+     * @version    3.0.6
+     */
+    public function currentStateByUuid($uuid = null)
+    {
+        $return = null;
+        if ($uuid !== null) {
 
-			if(!empty($servicestatus)){
-				foreach($servicestatus as $nagios_servicestatus){
-					return $nagios_servicestatus['Servicestatus']['current_state'];
-				}
-			}
-		}
-		return $return;
-	}
+            $_options = [
+                'conditions' => [
+                    'Objects.name2'         => $uuid,
+                    'Objects.objecttype_id' => 2,
+                ],
+            ];
+            $servicestatus = $this->find('all', $_options);
+
+            if (!empty($servicestatus)) {
+                foreach ($servicestatus as $nagios_servicestatus) {
+                    return $nagios_servicestatus['Servicestatus']['current_state'];
+                }
+            }
+        }
+
+        return $return;
+    }
 }

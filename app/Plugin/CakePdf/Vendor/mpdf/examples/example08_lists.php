@@ -115,13 +115,13 @@ ol, ul { text-align: justify;
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('-s'); 
+$mpdf = new mPDF('-s');
 
 $mpdf->SetDisplayMode('fullpage');
 
 $mpdf->WriteHTML($html);
 
-$mpdf->list_align_style = 'L';	// Determines alignment of numbers in numbered lists
+$mpdf->list_align_style = 'L';    // Determines alignment of numbers in numbered lists
 $mpdf->list_number_suffix = ')';
 
 $mpdf->WriteHTML($html);

@@ -32,34 +32,34 @@ class LogentriesController extends AppController
      */
     public $uses = [MONITORING_LOGENTRY, 'Host', 'Service'];
 
-    public $components = array('Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Uuid');
-    public $helpers = array('ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid');
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'Admin.default';
 
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Logentry.logentry_data' => ['label' => 'Logentry', 'searchType' => 'wildcard']
+                'Logentry.logentry_data' => ['label' => 'Logentry', 'searchType' => 'wildcard'],
             ],
-        ]
+        ],
     ];
 
     public function index()
     {
         $requestSettings = $this->Logentry->listSettings($this->request->data);
 
-        if(!is_array($this->Paginator->settings)){
+        if (!is_array($this->Paginator->settings)) {
             $this->Paginator->settings = [];
         }
-        if(!isset($this->Paginator->settings['conditions'])) {
+        if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-        if(!isset($this->Paginator->settings['order'])) {
+        if (!isset($this->Paginator->settings['order'])) {
             $this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
         }
-        if(isset($this->paginate['conditions'])) {
+        if (isset($this->paginate['conditions'])) {
             $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-        }else{
+        } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
@@ -74,9 +74,9 @@ class LogentriesController extends AppController
         $this->set('LogentiresListsettings', $requestSettings['Listsettings']);
         $this->set('logentry_types', $this->Logentry->types());
 
-        if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);
-        } else{
+        } else {
             $this->set('isFilter', false);
         }
     }

@@ -25,29 +25,29 @@
 
 ?>
 <div class="widget-body">
-<?php if(empty($servicesInDowntime)): ?>
-	<div class="text-center text-success padding-top-50">
-		<h3><i class="fa fa-check"></i> <?php echo __('Currently are no services in scheduled downtime');?></h3>
-	</div>
-<?php else: ?>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped">
-			<tbody>
-				<?php foreach($servicesInDowntime as $service): ?>
-					<tr>
-						<td><a href="/services/browser/<?php echo $service['Service']['id']; ?>">
-							<?php
-							if($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
-								echo h($service['Service']['name']);
-							else:
-								echo h($service['Servicetemplate']['name']);
-							endif;
-							?>
-						</a></td>
-					</tr>
-				<?php endforeach;?>
-			</tbody>
-		</table>
-	</div>
-<?php endif;?>
+    <?php if (empty($servicesInDowntime)): ?>
+        <div class="text-center text-success padding-top-50">
+            <h3><i class="fa fa-check"></i> <?php echo __('Currently are no services in scheduled downtime'); ?></h3>
+        </div>
+    <?php else: ?>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                <?php foreach ($servicesInDowntime as $service): ?>
+                    <tr>
+                        <td><a href="/services/browser/<?php echo $service['Service']['id']; ?>">
+                                <?php
+                                if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
+                                    echo h($service['Service']['name']);
+                                else:
+                                    echo h($service['Servicetemplate']['name']);
+                                endif;
+                                ?>
+                            </a></td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
 </div>

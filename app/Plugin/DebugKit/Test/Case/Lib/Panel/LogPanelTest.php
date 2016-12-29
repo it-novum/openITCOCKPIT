@@ -1,15 +1,11 @@
 <?php
 /**
  * DebugKit Log Panel Test Cases
- *
  * PHP 5
- *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
- *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       DebugKit.Test.Case.Lib.Panel
@@ -21,45 +17,45 @@ App::uses('Controller', 'Controller');
 
 /**
  * Class LogPanelTest
- *
  * @package       DebugKit.Test.Case.Lib.Panel
  */
-class LogPanelTest extends CakeTestCase {
+class LogPanelTest extends CakeTestCase
+{
 
-/**
- * set up
- *
- * @return void
- */
-	public function setUp() {
-		parent::setUp();
-		$this->panel = new LogPanel();
-	}
+    /**
+     * set up
+     * @return void
+     */
+    public function setUp()
+    {
+        parent::setUp();
+        $this->panel = new LogPanel();
+    }
 
-/**
- * Test that logging configs are created.
- *
- * @return void
- */
-	public function testConstructor() {
-		$result = CakeLog::configured();
-		$this->assertContains('debug_kit_log_panel', $result);
-		$this->assertTrue(count($result) > 1, 'Default loggers were not added.');
-	}
+    /**
+     * Test that logging configs are created.
+     * @return void
+     */
+    public function testConstructor()
+    {
+        $result = CakeLog::configured();
+        $this->assertContains('debug_kit_log_panel', $result);
+        $this->assertTrue(count($result) > 1, 'Default loggers were not added.');
+    }
 
-/**
- * testBeforeRender
- *
- * @return void
- */
-	public function testBeforeRender() {
-		$controller = new Controller();
+    /**
+     * testBeforeRender
+     * @return void
+     */
+    public function testBeforeRender()
+    {
+        $controller = new Controller();
 
-		CakeLog::write('error', 'Test');
+        CakeLog::write('error', 'Test');
 
-		$result = $this->panel->beforeRender($controller);
-		$this->assertInstanceOf('DebugKitLog', $result);
-		$this->assertTrue(isset($result->logs));
-		$this->assertCount(1, $result->logs['error']);
-	}
+        $result = $this->panel->beforeRender($controller);
+        $this->assertInstanceOf('DebugKitLog', $result);
+        $this->assertTrue(isset($result->logs));
+        $this->assertCount(1, $result->logs['error']);
+    }
 }

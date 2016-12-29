@@ -26,7 +26,8 @@
 
 App::uses('AppController', 'Controller');
 
-class NagiosModuleAppController extends AppController {
-	// How to bake:
-	// ./app/Console/cake bake plugin NagiosModule
+class NagiosModuleAppController extends AppController
+{
+    // How to bake:
+    // ./app/Console/cake bake plugin NagiosModule
 }

@@ -28,40 +28,45 @@ namespace itnovum\openITCOCKPIT\Core;
 class UserDefinedMacroReplacer
 {
 
-	/**
-	 * @var array
-	 */
-	private $macros;
+    /**
+     * @var array
+     */
+    private $macros;
 
-	/**
-	 * @var array
-	 */
-	private $mapping;
+    /**
+     * @var array
+     */
+    private $mapping;
 
-	/**
-	 * UserDefinedMacroReplacer constructor.
-	 * @param array $macros result of CakePHPs find()
-	 */
+    /**
+     * UserDefinedMacroReplacer constructor.
+     *
+     * @param array $macros result of CakePHPs find()
+     */
 
-	public function __construct($macros)
-	{
-		$this->macros = $macros;
-		$this->buildMapping();
-	}
+    public function __construct($macros)
+    {
+        $this->macros = $macros;
+        $this->buildMapping();
+    }
 
-	/**
-	 * Try to replace al $USERx$ macros in given string
-	 * @param string $msg
-	 * @return string
-	 */
-	public function replaceMacros($msg){
-		return str_replace(array_keys($this->mapping), array_values($this->mapping), $msg);
-	}
+    /**
+     * Try to replace al $USERx$ macros in given string
+     *
+     * @param string $msg
+     *
+     * @return string
+     */
+    public function replaceMacros($msg)
+    {
+        return str_replace(array_keys($this->mapping), array_values($this->mapping), $msg);
+    }
 
-	private function buildMapping(){
-		$this->mapping = [];
-		foreach($this->macros as $macro){
-			$this->mapping[$macro['Macro']['name']] = $macro['Macro']['value'];
-		}
-	}
+    private function buildMapping()
+    {
+        $this->mapping = [];
+        foreach ($this->macros as $macro) {
+            $this->mapping[$macro['Macro']['name']] = $macro['Macro']['value'];
+        }
+    }
 }

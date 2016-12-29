@@ -6,21 +6,24 @@
 
 namespace Httpful\Handlers;
 
-class FormHandler extends MimeHandlerAdapter 
+class FormHandler extends MimeHandlerAdapter
 {
     /**
      * @param string $body
+     *
      * @return mixed
      */
     public function parse($body)
     {
-        $parsed = array();
+        $parsed = [];
         parse_str($body, $parsed);
+
         return $parsed;
     }
-    
+
     /**
      * @param mixed $payload
+     *
      * @return string
      */
     public function serialize($payload)

@@ -24,37 +24,42 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Servicedowntimes extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-power-off';
-	public $element = 'service_downtimes';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 6;
-		$this->title = __('Service downtimes');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetServiceDowntimes = $this->QueryCache->serviceDowntimes();
-		$this->Controller->set(compact(['widgetServiceDowntimes']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 5, // x
-			'col' => 24, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
+class Servicedowntimes extends Widget
+{
+    public $isDefault = true;
+    public $icon = 'fa-power-off';
+    public $element = 'service_downtimes';
+    public $width = 5;
+    public $height = 13;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 6;
+        $this->title = __('Service downtimes');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetServiceDowntimes = $this->QueryCache->serviceDowntimes();
+        $this->Controller->set(compact(['widgetServiceDowntimes']));
+    }
+
+    public function getRestoreConfig($tabId)
+    {
+        $restorConfig = [
+            'dashboard_tab_id' => $tabId,
+            'type_id'          => $this->typeId,
+            'row'              => 5, // x
+            'col'              => 24, // y
+            'width'            => 5,
+            'height'           => 13,
+            'title'            => $this->title,
+            'color'            => $this->defaultColor,
+        ];
+
+        return $restorConfig;
+    }
+
 }

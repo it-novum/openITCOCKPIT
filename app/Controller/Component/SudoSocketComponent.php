@@ -23,31 +23,35 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SudoSocketComponent extends Component{
-	public function initialize(Controller $controller) {
-		$this->Controller = $controller;
-		$this->Controller->loadModel('Systemsetting');
-		$this->_systemsettings = $this->Controller->Systemsetting->findAsArray();
-		$this->socket = $this->createSocket();
-	}
-	
-	
-	public function createSocket(){
-		return socket_create(AF_UNIX, SOCK_DGRAM, 0);
-	}
-	
-	public function send($task = 'ping', $payload = []){
-		$data = [
-			'task' => $task,
-			'payload' => $payload,
-			'key' => $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']
-		];
-		$data = json_encode($data);
-		$addr = $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET']
-			. $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'];
-		if(!@socket_sendto($this->socket, $data, strlen($data), 0, $addr)){
-			throw new Exception(__('Could not connect to UNIX socket ') . $addr);
-		};
-	}
-	
+class SudoSocketComponent extends Component
+{
+    public function initialize(Controller $controller)
+    {
+        $this->Controller = $controller;
+        $this->Controller->loadModel('Systemsetting');
+        $this->_systemsettings = $this->Controller->Systemsetting->findAsArray();
+        $this->socket = $this->createSocket();
+    }
+
+
+    public function createSocket()
+    {
+        return socket_create(AF_UNIX, SOCK_DGRAM, 0);
+    }
+
+    public function send($task = 'ping', $payload = [])
+    {
+        $data = [
+            'task'    => $task,
+            'payload' => $payload,
+            'key'     => $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY'],
+        ];
+        $data = json_encode($data);
+        $addr = $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET']
+            .$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'];
+        if (!@socket_sendto($this->socket, $data, strlen($data), 0, $addr)) {
+            throw new Exception(__('Could not connect to UNIX socket ').$addr);
+        };
+    }
+
 }

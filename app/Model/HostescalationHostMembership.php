@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class HostescalationHostMembership extends AppModel{
-	public $useTable = 'hosts_to_hostescalations';
-	public $belongsTo = [
-		'Hostescalation' => [
-			'className' => 'Hostescalation',
-			'foreignKey' => 'hostescalation_id'
-		],
-		
-		'Host' => [
-			'className' => 'Host',
-			'foreignKey' => 'host_id'
-		]
-	];
-	
+class HostescalationHostMembership extends AppModel
+{
+    public $useTable = 'hosts_to_hostescalations';
+    public $belongsTo = [
+        'Hostescalation' => [
+            'className'  => 'Hostescalation',
+            'foreignKey' => 'hostescalation_id',
+        ],
+
+        'Host' => [
+            'className'  => 'Host',
+            'foreignKey' => 'host_id',
+        ],
+    ];
+
 }

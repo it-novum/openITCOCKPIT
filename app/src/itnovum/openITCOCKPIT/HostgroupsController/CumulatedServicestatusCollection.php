@@ -36,30 +36,35 @@ class CumulatedServicestatusCollection
 
     /**
      * CumulatedServicestatusCollection constructor.
+     *
      * @param array $comulatedServicestatusArray
      */
     public function __construct($comulatedServicestatusArray)
     {
-        foreach($comulatedServicestatusArray as $servicestatus){
+        foreach ($comulatedServicestatusArray as $servicestatus) {
             $this->collection[$servicestatus['Host']['id']] = $servicestatus[0]['cumulated'];
         }
     }
 
     /**
      * @param int $hostId
+     *
      * @retrun bool
      */
-    public function existsByHostId($hostId){
+    public function existsByHostId($hostId)
+    {
         return isset($this->collection[$hostId]);
     }
 
     /**
      * @param $hostId
+     *
      * @return int Servicestatus cumulated (0, 1, 2, 3)
      * @throws RecordExistsException
      */
-    public function getByHostId($hostId){
-        if($this->existsByHostId($hostId)){
+    public function getByHostId($hostId)
+    {
+        if ($this->existsByHostId($hostId)) {
             return $this->collection[$hostId];
         }
         throw new RecordExistsException('Record not found in collection!');
@@ -67,10 +72,12 @@ class CumulatedServicestatusCollection
 
     /**
      * @param $hostId
+     *
      * @return int|-1
      */
-    public function getByHostIdEvenIfNotExists($hostId){
-        if($this->existsByHostId($hostId)){
+    public function getByHostIdEvenIfNotExists($hostId)
+    {
+        if ($this->existsByHostId($hostId)) {
             return $this->collection[$hostId];
         }
 
@@ -80,7 +87,8 @@ class CumulatedServicestatusCollection
     /**
      * @return array
      */
-    public function getCollectionAsArray(){
+    public function getCollectionAsArray()
+    {
         return $this->collection;
     }
 }

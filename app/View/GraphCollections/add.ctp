@@ -25,81 +25,81 @@
 ?>
 
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-area-chart fa-fw"></i>
-			<?php echo __('Monitoring'); ?>
-			<span>>
-				<?php echo __('Graph Collections'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-area-chart fa-fw"></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Graph Collections'); ?>
 			</span>
-		</h1>
-	</div>
+        </h1>
+    </div>
 </div>
 
 <div class="overlay" style="display: none;">
-	<div id="nag_longoutput_loader"
-		 style="position: absolute; top: 50%; left: 50%; margin-top: -29px; margin-left: -23px; z-index: 20; font-size: 40px; color: #fff;">
-		<i class="fa fa-cog fa-lg fa-spin"></i>
-	</div>
+    <div id="nag_longoutput_loader"
+         style="position: absolute; top: 50%; left: 50%; margin-top: -29px; margin-left: -23px; z-index: 20; font-size: 40px; color: #fff;">
+        <i class="fa fa-cog fa-lg fa-spin"></i>
+    </div>
 </div>
 
 <section id="widget-grid" class="">
-	<div class="row">
-		<article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-			<div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-				<header>
-					<span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
-					<h2 class="hidden-mobile"><?php echo __('Add Graph Collection'); ?></h2>
-				</header>
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Add Graph Collection'); ?></h2>
+                </header>
 
-				<div>
-					<div class="widget-body">
-						<div class="tab-content">
-							<div id="new-edit" class="tab-pane fade active in">
-								<?php echo $this->Form->create('GraphCollection', [
-									'class' => 'form-horizontal clear',
-								]); ?>
+                <div>
+                    <div class="widget-body">
+                        <div class="tab-content">
+                            <div id="new-edit" class="tab-pane fade active in">
+                                <?php echo $this->Form->create('GraphCollection', [
+                                    'class' => 'form-horizontal clear',
+                                ]); ?>
 
-								<div class="padding-top-10"></div>
-								<div class="row">
-									<div class="col-xs-12 col-md-12 col-lg-12">
-										<?php
-										echo $this->Form->input('name', [
-											'label' => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-											'div' => [
-												'class' => 'form-group required',
-											]
-										]);
-										echo $this->Form->input('description', [
-											'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-										]);
-										echo $this->Form->input('GraphgenTmpl', [
-											'options' => $this->Html->chosenPlaceholder($templates),
-											'class' => 'chosen',
-											'multiple' => 'multiple',
-											'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-											'label' => ['text' => __('Templates'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-											'div' => [
-												'class' => 'form-group required',
-											]
-										]);
-										?>
-									</div>
-								</div>
-								<?php echo $this->Form->formActions(); ?>
+                                <div class="padding-top-10"></div>
+                                <div class="row">
+                                    <div class="col-xs-12 col-md-12 col-lg-12">
+                                        <?php
+                                        echo $this->Form->input('name', [
+                                            'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                            'div'       => [
+                                                'class' => 'form-group required',
+                                            ],
+                                        ]);
+                                        echo $this->Form->input('description', [
+                                            'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                        ]);
+                                        echo $this->Form->input('GraphgenTmpl', [
+                                            'options'   => $this->Html->chosenPlaceholder($templates),
+                                            'class'     => 'chosen',
+                                            'multiple'  => 'multiple',
+                                            'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                            'label'     => ['text' => __('Templates'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'div'       => [
+                                                'class' => 'form-group required',
+                                            ],
+                                        ]);
+                                        ?>
+                                    </div>
+                                </div>
+                                <?php echo $this->Form->formActions(); ?>
 
-							</div>
+                            </div>
 
-						</div>
-						<!-- close tab content -->
-					</div>
-					<div class="padding-top-20"></div>
-					<div class="padding-top-20"></div>
-					<!-- close widget body -->
-				</div>
-			</div>
-		</article>
-	</div>
+                        </div>
+                        <!-- close tab content -->
+                    </div>
+                    <div class="padding-top-20"></div>
+                    <div class="padding-top-20"></div>
+                    <!-- close widget body -->
+                </div>
+            </div>
+        </article>
+    </div>
 </section>

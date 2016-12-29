@@ -1,4 +1,6 @@
 <?php
-class FrontendAppController extends AppController {
+
+class FrontendAppController extends AppController
+{
 
 }

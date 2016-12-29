@@ -25,348 +25,357 @@
 
 use itnovum\openITCOCKPIT\Core\ContainerRepository;
 
-class AutomapsController extends AppController{
-	public $layout = 'Admin.default';
-	public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, 'Systemsetting', MONITORING_ACKNOWLEDGED];
-	public $components = ['CustomValidationErrors'];
-	public $helpers = ['CustomValidationErrors', 'Status'];
+class AutomapsController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, 'Systemsetting', MONITORING_ACKNOWLEDGED];
+    public $components = ['CustomValidationErrors'];
+    public $helpers = ['CustomValidationErrors', 'Status'];
 
-	public function index(){
+    public function index()
+    {
 
-		$options = [
-			'conditions' => [
-				'Automap.container_id' => $this->MY_RIGHTS
-			],
-		];
+        $options = [
+            'conditions' => [
+                'Automap.container_id' => $this->MY_RIGHTS,
+            ],
+        ];
 
-		$query = Hash::merge($options, $this->Paginator->settings);
+        $query = Hash::merge($options, $this->Paginator->settings);
 
-		if($this->isApiRequest()){
-			unset($query['limit']);
-			$all_automaps = $this->Automap->find('all', $query);
-		}else{
-			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-			$all_automaps = $this->Paginator->paginate();
-		}
-		$this->set(compact(['all_automaps']));
-		$this->set('_serialize', ['all_automaps']);
+        if ($this->isApiRequest()) {
+            unset($query['limit']);
+            $all_automaps = $this->Automap->find('all', $query);
+        } else {
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $all_automaps = $this->Paginator->paginate();
+        }
+        $this->set(compact(['all_automaps']));
+        $this->set('_serialize', ['all_automaps']);
 
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
 
-	public function add(){
-		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-		$this->set(compact(['containers']));
+    public function add()
+    {
+        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        $this->set(compact(['containers']));
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->Automap->create();
-			if($this->Automap->save($this->request->data)){
-				$this->setFlash(__('Automap saved successfully'));
-				$this->redirect(['action' => 'index']);
-			}else{
-				$this->setFlash(__('Data could not be saved'), false);
-				$this->CustomValidationErrors->loadModel($this->Automap);
-				$this->CustomValidationErrors->customFields(['show_ok']);
-				$this->CustomValidationErrors->fetchErrors();
-			}
-		}
-	}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->Automap->create();
+            if ($this->Automap->save($this->request->data)) {
+                $this->setFlash(__('Automap saved successfully'));
+                $this->redirect(['action' => 'index']);
+            } else {
+                $this->setFlash(__('Data could not be saved'), false);
+                $this->CustomValidationErrors->loadModel($this->Automap);
+                $this->CustomValidationErrors->customFields(['show_ok']);
+                $this->CustomValidationErrors->fetchErrors();
+            }
+        }
+    }
 
-	public function edit($id){
-		if(!$this->Automap->exists($id)){
-			throw new NotFoundException(__('Invalid automap'));
-		}
+    public function edit($id)
+    {
+        if (!$this->Automap->exists($id)) {
+            throw new NotFoundException(__('Invalid automap'));
+        }
 
-		if($this->request->is('post') || $this->request->is('put')){
-			if($this->Automap->save($this->request->data)){
-				$this->setFlash(__('Automap saved successfully'));
-				$this->redirect(['action' => 'index']);
-			}else{
-				$this->setFlash(__('Data could not be saved'), false);
-				$this->CustomValidationErrors->loadModel($this->Automap);
-				$this->CustomValidationErrors->customFields(['show_ok']);
-				$this->CustomValidationErrors->fetchErrors();
-			}
-		}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($this->Automap->save($this->request->data)) {
+                $this->setFlash(__('Automap saved successfully'));
+                $this->redirect(['action' => 'index']);
+            } else {
+                $this->setFlash(__('Data could not be saved'), false);
+                $this->CustomValidationErrors->loadModel($this->Automap);
+                $this->CustomValidationErrors->customFields(['show_ok']);
+                $this->CustomValidationErrors->fetchErrors();
+            }
+        }
 
-		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
-		$automap = $this->Automap->findById($id);
+        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        $automap = $this->Automap->findById($id);
 
-		if(!$this->allowedByContainerId($automap['Automap']['container_id'])){
-			$this->render403();
-			return;
-		}
+        if (!$this->allowedByContainerId($automap['Automap']['container_id'])) {
+            $this->render403();
 
-		$this->set(compact(['automap', 'containers']));
-		$this->request->data = Hash::merge($automap, $this->request->data);
-	}
+            return;
+        }
 
-	public function view($id){
-		if(!$this->Automap->exists($id)){
-			throw new NotFoundException(__('Invalid automap'));
-		}
+        $this->set(compact(['automap', 'containers']));
+        $this->request->data = Hash::merge($automap, $this->request->data);
+    }
 
-		$this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+    public function view($id)
+    {
+        if (!$this->Automap->exists($id)) {
+            throw new NotFoundException(__('Invalid automap'));
+        }
 
-		$automap = $this->Automap->findById($id);
+        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-		if(!$this->allowedByContainerId($automap['Automap']['container_id'], false)){
-			$this->render403();
-			return;
-		}
+        $automap = $this->Automap->findById($id);
 
-		$ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
-		if((bool)$automap['Automap']['recursive'] == true) {
-			if($automap['Automap']['container_id'] == ROOT_CONTAINER){
-				$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
-			}else{
-				$childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), false);
-			}
-			$ContainerRepository->addContainer($childContainers);
+        if (!$this->allowedByContainerId($automap['Automap']['container_id'], false)) {
+            $this->render403();
 
-			//Remove root container, if the parent container of the Automap is not root
-			if($automap['Automap']['container_id'] != ROOT_CONTAINER){
-				$ContainerRepository->removeContainerId(ROOT_CONTAINER);
-			}
-		}
+            return;
+        }
 
+        $ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
+        if ((bool)$automap['Automap']['recursive'] == true) {
+            if ($automap['Automap']['container_id'] == ROOT_CONTAINER) {
+                $childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
+            } else {
+                $childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), false);
+            }
+            $ContainerRepository->addContainer($childContainers);
 
-
-		$fontSizes = [
-			1 => 'xx-small',
-			2 => 'x-small',
-			3 => 'small',
-			4 => 'medium',
-			5 => 'large',
-			6 => 'x-large',
-			7 => 'xx-large'
-		];
+            //Remove root container, if the parent container of the Automap is not root
+            if ($automap['Automap']['container_id'] != ROOT_CONTAINER) {
+                $ContainerRepository->removeContainerId(ROOT_CONTAINER);
+            }
+        }
 
 
-		$conditions = [];
-
-		$current_stateConditions = [];
-
-		$state_types = [
-			'show_unknown' => 3,
-			'show_critical' => 2,
-			'show_warning' => 1,
-			'show_ok' => 0,
-		];
-
-		foreach($state_types as $stateName => $stateNumber){
-			if($automap['Automap'][$stateName]){
-				$current_stateConditions[] = $stateNumber;
-			}
-		}
-		if(sizeof($current_stateConditions) !== 4){
-			$conditions['Servicestatus.current_state'] = $current_stateConditions;
-		}
-
-		if($automap['Automap']['show_acknowledged'] == false){
-			$conditions['Servicestatus.problem_has_been_acknowledged'] = 0;
-		}
-
-		if($automap['Automap']['show_downtime'] == false){
-			$conditions['Servicestatus.scheduled_downtime_depth'] = 0;
-		}
-
-		$hosts = $this->Host->find('list', [
-			'contain' => [],
-			'joins' => [
-				[
-					'table' => 'hosts_to_containers',
-					'alias' => 'HostsToContainers',
-					'type' => 'LEFT',
-					'conditions' => [
-						'HostsToContainers.host_id = Host.id',
-					]
-				]
-			],
-			'conditions' => [
-				'HostsToContainers.container_id' => $ContainerRepository->getContainer(),
-				'Host.disabled' => 0,
-				'Host.name REGEXP' => $automap['Automap']['host_regex']
-			]
-		]);
-
-		$services = $this->Service->find('all', [
-			'recursive' => -1,
-			'joins' => [
-				[
-					'table' => 'hosts',
-					'alias' => 'Host',
-					'type' => 'INNER',
-					'conditions' => [
-						'Host.id = Service.host_id'
-					]
-				],
-				[
-					'table' => 'servicetemplates',
-					'alias' => 'Servicetemplate',
-					'type' => 'INNER',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id'
-					]
-				],
-				[
-					'table' => 'nagios_objects',
-					'alias' => 'ServiceObject',
-					'type' => 'INNER',
-					'conditions' => [
-						'ServiceObject.name2 = Service.uuid',
-						'ServiceObject.objecttype_id' => 2
-					]
-				],
-				[
-					'table' => 'nagios_servicestatus',
-					'alias' => 'Servicestatus',
-					'type' => 'INNER',
-					'conditions' => [
-						'Servicestatus.service_object_id = ServiceObject.object_id'
-					]
-				]
-			],
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Service.name',
-				'Service.host_id',
-				'Servicetemplate.name',
-
-				'ServiceObject.object_id',
-
-				'Servicestatus.current_state',
-				'Servicestatus.problem_has_been_acknowledged',
-				'Servicestatus.scheduled_downtime_depth',
-
-				'Host.id',
-				'Host.name',
-			],
-			'conditions' => [
-				'Service.host_id' => array_keys($hosts),
-				'Service.disabled' => 0,
-				'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex'],
-				$conditions
-			]
-		]);
-
-		$username = $this->Auth->user('full_name');
-
-		$this->set(compact(['fontSizes', 'automap', 'hosts', 'services', 'username']));
-		$this->set('_serialize', ['automap', 'hosts', 'services']);
-	}
-
-	public function loadServiceDetails($serviceId = null){
-		$this->allowOnlyAjaxRequests();
-
-		if(!$this->Service->exists($serviceId)){
-			throw new NotFoundException(__('Invalid service'));
-		}
-
-		$service = $this->Service->find('first', [
-			'contain' => [
-				'Servicetemplate' => [
-					'fields' => [
-						'Servicetemplate.id',
-						'Servicetemplate.name'
-					]
-				],
-				'Host' => [
-					'fields' => [
-						'Host.id',
-						'Host.uuid',
-						'Host.name'
-					]
-				]
-			],
-			'conditions' => [
-				'Service.id' => $serviceId
-			],
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Service.name'
-			]
-		]);
-
-		$serviceName = $service['Servicetemplate']['name'];
-		if($service['Service']['name'] !== null || $service['Service']['name'] != ''){
-			$serviceName = $service['Service']['name'];
-		}
-
-		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-
-		$exitCodes = [
-			0 => __('Ok'),
-			1 => __('Warning'),
-			2 => __('Critical'),
-			3 => __('Unknown'),
-		];
-
-		$stateTypes = [
-			0 => __('Soft'),
-			1 => __('Hard')
-		];
-
-		$servicestatus = [
-			'Servicestatus' => [
-				'current_state' => $exitCodes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state']],
-				'state_type' => $stateTypes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['state_type']],
-				'last_state_change' => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-				'perfdata' => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['perfdata']),
-				'output' => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['output']),
-				'last_check' => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-				'scheduled_downtime_depth' => $servicestatus[$service['Service']['uuid']]['Servicestatus']['scheduled_downtime_depth'],
-				'problem_has_been_acknowledged' => $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'],
-			]
-		];
-
-		$acknowledged = [];
-		if($servicestatus['Servicestatus']['problem_has_been_acknowledged'] == 1){
-			$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-			$acknowledged = __('The current status was already acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
-		}
+        $fontSizes = [
+            1 => 'xx-small',
+            2 => 'x-small',
+            3 => 'small',
+            4 => 'medium',
+            5 => 'large',
+            6 => 'x-large',
+            7 => 'xx-large',
+        ];
 
 
-		//Check for Graph
-		$hasRrdGraph = false;
-		Configure::load('rrd');
-		if(file_exists(Configure::read('rrd.path').$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd')){
-			$hasRrdGraph = true;
-		}
+        $conditions = [];
 
-		$this->set(compact(['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']));
-		$this->set('_serialize', ['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']);
-	}
+        $current_stateConditions = [];
 
-	public function delete($id = null){
-		if (!$this->request->is('post')){
-			throw new MethodNotAllowedException();
-		}
-		if (!$this->Automap->exists($id)){
-			throw new NotFoundException(__('Invalid Automap'));
-		}
+        $state_types = [
+            'show_unknown'  => 3,
+            'show_critical' => 2,
+            'show_warning'  => 1,
+            'show_ok'       => 0,
+        ];
 
-		$automap = $this->Automap->findById($id);
+        foreach ($state_types as $stateName => $stateNumber) {
+            if ($automap['Automap'][$stateName]) {
+                $current_stateConditions[] = $stateNumber;
+            }
+        }
+        if (sizeof($current_stateConditions) !== 4) {
+            $conditions['Servicestatus.current_state'] = $current_stateConditions;
+        }
 
-		if(!$this->allowedByContainerId($automap['Automap']['container_id'])){
-			$this->render403();
-			return;
-		}
+        if ($automap['Automap']['show_acknowledged'] == false) {
+            $conditions['Servicestatus.problem_has_been_acknowledged'] = 0;
+        }
 
-		if($this->Automap->delete($id)){
-			$this->setFlash(__('Automap deleted'));
-			$this->redirect(array('action' => 'index'));
-		}
-		$this->setFlash(__('Could not delete Automap'), false);
-		$this->redirect(array('action' => 'index'));
-	}
+        if ($automap['Automap']['show_downtime'] == false) {
+            $conditions['Servicestatus.scheduled_downtime_depth'] = 0;
+        }
+
+        $hosts = $this->Host->find('list', [
+            'contain'    => [],
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $ContainerRepository->getContainer(),
+                'Host.disabled'                  => 0,
+                'Host.name REGEXP'               => $automap['Automap']['host_regex'],
+            ],
+        ]);
+
+        $services = $this->Service->find('all', [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'servicetemplates',
+                    'alias'      => 'Servicetemplate',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ],
+                [
+                    'table'      => 'nagios_objects',
+                    'alias'      => 'ServiceObject',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'ServiceObject.name2 = Service.uuid',
+                        'ServiceObject.objecttype_id' => 2,
+                    ],
+                ],
+                [
+                    'table'      => 'nagios_servicestatus',
+                    'alias'      => 'Servicestatus',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Servicestatus.service_object_id = ServiceObject.object_id',
+                    ],
+                ],
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Servicetemplate.name',
+
+                'ServiceObject.object_id',
+
+                'Servicestatus.current_state',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.scheduled_downtime_depth',
+
+                'Host.id',
+                'Host.name',
+            ],
+            'conditions' => [
+                'Service.host_id'                                                      => array_keys($hosts),
+                'Service.disabled'                                                     => 0,
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex'],
+                $conditions,
+            ],
+        ]);
+
+        $username = $this->Auth->user('full_name');
+
+        $this->set(compact(['fontSizes', 'automap', 'hosts', 'services', 'username']));
+        $this->set('_serialize', ['automap', 'hosts', 'services']);
+    }
+
+    public function loadServiceDetails($serviceId = null)
+    {
+        $this->allowOnlyAjaxRequests();
+
+        if (!$this->Service->exists($serviceId)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $this->Service->find('first', [
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                    ],
+                ],
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Service.id' => $serviceId,
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+            ],
+        ]);
+
+        $serviceName = $service['Servicetemplate']['name'];
+        if ($service['Service']['name'] !== null || $service['Service']['name'] != '') {
+            $serviceName = $service['Service']['name'];
+        }
+
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+
+        $exitCodes = [
+            0 => __('Ok'),
+            1 => __('Warning'),
+            2 => __('Critical'),
+            3 => __('Unknown'),
+        ];
+
+        $stateTypes = [
+            0 => __('Soft'),
+            1 => __('Hard'),
+        ];
+
+        $servicestatus = [
+            'Servicestatus' => [
+                'current_state'                 => $exitCodes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state']],
+                'state_type'                    => $stateTypes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['state_type']],
+                'last_state_change'             => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'perfdata'                      => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['perfdata']),
+                'output'                        => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['output']),
+                'last_check'                    => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'scheduled_downtime_depth'      => $servicestatus[$service['Service']['uuid']]['Servicestatus']['scheduled_downtime_depth'],
+                'problem_has_been_acknowledged' => $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'],
+            ],
+        ];
+
+        $acknowledged = [];
+        if ($servicestatus['Servicestatus']['problem_has_been_acknowledged'] == 1) {
+            $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
+            $acknowledged = __('The current status was already acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
+        }
+
+
+        //Check for Graph
+        $hasRrdGraph = false;
+        Configure::load('rrd');
+        if (file_exists(Configure::read('rrd.path').$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd')) {
+            $hasRrdGraph = true;
+        }
+
+        $this->set(compact(['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']));
+        $this->set('_serialize', ['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']);
+    }
+
+    public function delete($id = null)
+    {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Automap->exists($id)) {
+            throw new NotFoundException(__('Invalid Automap'));
+        }
+
+        $automap = $this->Automap->findById($id);
+
+        if (!$this->allowedByContainerId($automap['Automap']['container_id'])) {
+            $this->render403();
+
+            return;
+        }
+
+        if ($this->Automap->delete($id)) {
+            $this->setFlash(__('Automap deleted'));
+            $this->redirect(['action' => 'index']);
+        }
+        $this->setFlash(__('Could not delete Automap'), false);
+        $this->redirect(['action' => 'index']);
+    }
 
 }

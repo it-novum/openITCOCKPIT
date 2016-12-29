@@ -199,85 +199,85 @@ text direction (RTL arabic characters) remains fully automatic and unconfigurabl
 ";
 
 //==============================================================
-	// Set Header and Footer
-	$h = array (
-  'odd' => 
-  array (
-    'R' => 
-    array (
-      'content' => '{PAGENO}',
-      'font-size' => 8,
-      'font-style' => 'B',
-    ),
-    'L' => 
-    array (
-      'content' => "\xd9\x82\xd8\xa7\xd9\x84 \xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
-      'font-size' => 8,
-      'font-style' => 'B',
-    ),
-    'line' => 1,
-  ),
-  'even' => 
-  array (
-    'L' => 
-    array (
-      'content' => '{PAGENO}',
-      'font-size' => 8,
-      'font-style' => 'B',
-    ),
-    'R' => 
-    array (
-      'content' => "\xd9\x82\xd8\xa7\xd9\x84 \xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
-      'font-size' => 8,
-      'font-style' => 'B',
-    ),
-    'line' => 1,
-  ),
-);
+// Set Header and Footer
+$h = [
+    'odd'  =>
+        [
+            'R'    =>
+                [
+                    'content'    => '{PAGENO}',
+                    'font-size'  => 8,
+                    'font-style' => 'B',
+                ],
+            'L'    =>
+                [
+                    'content'    => "\xd9\x82\xd8\xa7\xd9\x84 \xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
+                    'font-size'  => 8,
+                    'font-style' => 'B',
+                ],
+            'line' => 1,
+        ],
+    'even' =>
+        [
+            'L'    =>
+                [
+                    'content'    => '{PAGENO}',
+                    'font-size'  => 8,
+                    'font-style' => 'B',
+                ],
+            'R'    =>
+                [
+                    'content'    => "\xd9\x82\xd8\xa7\xd9\x84 \xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
+                    'font-size'  => 8,
+                    'font-style' => 'B',
+                ],
+            'line' => 1,
+        ],
+];
 
-	$f = array (
-  'odd' => 
-  array (
-    'L' => 
-    array (
-      'content' => '{DATE Y-m-d}',
-      'font-size' => 8,
-      'font-style' => 'BI',
-    ),
-    'C' => 
-    array (
-      'content' => '- {PAGENO} -',
-      'font-size' => 8,
-    ),
-    'R' => 
-    array (
-      'content' => "\xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
-      'font-size' => 8,
-    ),
-    'line' => 1,
-  ),
-  'even' => 
-  array (
-    'L' => 
-    array (
-      'content' => "\xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
-      'font-size' => 8,
-      'font-style' => 'B',
-    ),
-    'C' => 
-    array (
-      'content' => '- {PAGENO} -',
-      'font-size' => 8,
-    ),
-    'R' => 
-    array (
-      'content' => '{DATE Y-m-d}',
-      'font-size' => 8,
-      'font-style' => 'BI',
-    ),
-    'line' => 1,
-  ),
-);
+$f = [
+    'odd'  =>
+        [
+            'L'    =>
+                [
+                    'content'    => '{DATE Y-m-d}',
+                    'font-size'  => 8,
+                    'font-style' => 'BI',
+                ],
+            'C'    =>
+                [
+                    'content'   => '- {PAGENO} -',
+                    'font-size' => 8,
+                ],
+            'R'    =>
+                [
+                    'content'   => "\xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
+                    'font-size' => 8,
+                ],
+            'line' => 1,
+        ],
+    'even' =>
+        [
+            'L'    =>
+                [
+                    'content'    => "\xd8\xa7\xd9\x84\xd8\xb1\xd8\xa6\xd9\x8a\xd8\xb3",
+                    'font-size'  => 8,
+                    'font-style' => 'B',
+                ],
+            'C'    =>
+                [
+                    'content'   => '- {PAGENO} -',
+                    'font-size' => 8,
+                ],
+            'R'    =>
+                [
+                    'content'    => '{DATE Y-m-d}',
+                    'font-size'  => 8,
+                    'font-style' => 'BI',
+                ],
+            'line' => 1,
+        ],
+];
 
 //==============================================================
 //==============================================================
@@ -285,14 +285,14 @@ text direction (RTL arabic characters) remains fully automatic and unconfigurabl
 include("../mpdf.php");
 
 
-$mpdf=new mPDF('ar','A4','','',32,25,27,25,16,13); 
+$mpdf = new mPDF('ar', 'A4', '', '', 32, 25, 27, 25, 16, 13);
 
 // From mPDF 5.1 onwards you must set:
 $mpdf->SetDirectionality('rtl');
 $mpdf->debug = true;
 $mpdf->mirrorMargins = true;
 $mpdf->useSubstitutions = true;
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 
 
 $mpdf->setHeader($h);
@@ -300,12 +300,12 @@ $mpdf->setFooter($f);
 
 
 $stylesheet = file_get_contents('mpdfstyletables.css');
-$mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+$mpdf->WriteHTML($stylesheet, 1);    // The parameter 1 tells that this is css/style only and no body/html/text
 
 $mpdf->WriteHTML($html);
 $mpdf->AddPage();
 
-$mpdf->SetColumns(2,'J');
+$mpdf->SetColumns(2, 'J');
 $mpdf->WriteHTML($html);
 
 $mpdf->Output();

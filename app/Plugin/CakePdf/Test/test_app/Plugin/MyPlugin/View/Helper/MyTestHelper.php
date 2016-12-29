@@ -2,9 +2,11 @@
 
 App::uses('AppHelper', 'View/Helper');
 
-class MyTestHelper extends AppHelper {
+class MyTestHelper extends AppHelper
+{
 
-	public function dummyMethod() {
-		return true;
-	}
+    public function dummyMethod()
+    {
+        return true;
+    }
 }

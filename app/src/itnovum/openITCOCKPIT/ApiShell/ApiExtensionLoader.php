@@ -34,7 +34,7 @@ class ApiExtensionLoader
     private $availableModels = [
         'Systemsettings',
         'Containers',
-        'Cronjob'
+        'Cronjob',
     ];
 
     /**
@@ -62,18 +62,23 @@ class ApiExtensionLoader
     /**
      * @param string $pluginName
      * @param string $modelName
+     *
      * @return bool
      */
-    public function isAvailable(){
-        if(strlen($this->pluginName) > 0){
+    public function isAvailable()
+    {
+        if (strlen($this->pluginName) > 0) {
             return in_array($this->pluginName.'.'.$this->modelName, $this->availableModels);
         }
+
         return in_array($this->modelName, $this->availableModels);
     }
 
-    public function getApi(){
+    public function getApi()
+    {
         $namespace = sprintf('itnovum\openITCOCKPIT\ApiShell\%s\Api', $this->modelName);
         $this->Cake->loadModel($this->modelName);
+
         return new $namespace($this->Cake, $this->modelName);
     }
 

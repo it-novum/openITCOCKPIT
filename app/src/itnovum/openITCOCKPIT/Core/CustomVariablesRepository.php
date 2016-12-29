@@ -29,69 +29,79 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
 class CustomVariablesRepository
 {
-	/**
-	 * @var array
-	 */
-	private $customvariables = [];
+    /**
+     * @var array
+     */
+    private $customvariables = [];
 
-	public function __construct()
-	{
-	}
+    public function __construct()
+    {
+    }
 
-	public function addCustomVariable(CustomVariable $CustomVariable){
-		$this->customvariables[] = $CustomVariable;
-	}
+    public function addCustomVariable(CustomVariable $CustomVariable)
+    {
+        $this->customvariables[] = $CustomVariable;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getAllCustomVariables(){
-		return $this->customvariables;
-	}
+    /**
+     * @return array
+     */
+    public function getAllCustomVariables()
+    {
+        return $this->customvariables;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getAllCustomVariablesAsArray(){
-		$customVariables = [];
-		foreach($this->customvariables as $customvariable){
-			$customVariables[] = $customvariable->asArray();
-		}
-		return $customVariables;
-	}
+    /**
+     * @return array
+     */
+    public function getAllCustomVariablesAsArray()
+    {
+        $customVariables = [];
+        foreach ($this->customvariables as $customvariable) {
+            $customVariables[] = $customvariable->asArray();
+        }
 
-	/**
-	 * @param string $name
-	 * @return CustomVariable|false
-	 */
-	public function getByVariableName($name){
-		foreach($this->customvariables as $customvariable){
-			if($customvariable->getName() == $name){
-				return $customvariable;
-			}
-		}
-		return false;
-	}
+        return $customVariables;
+    }
 
-	/**
-	 * @param string $name
-	 * @return void
-	 */
-	public function deleteByVariableName($name){
-		$customvariables = [];
-		foreach($this->customvariables as $customvariable){
-			if($customvariable->getName() != $name){
-				$customvariables[] = $customvariable;
-			}
-		}
-		$this->customvariables = $customvariables;
-	}
+    /**
+     * @param string $name
+     *
+     * @return CustomVariable|false
+     */
+    public function getByVariableName($name)
+    {
+        foreach ($this->customvariables as $customvariable) {
+            if ($customvariable->getName() == $name) {
+                return $customvariable;
+            }
+        }
 
-	/**
-	 * @return int
-	 */
-	public function getSize(){
-		return sizeof($this->customvariables);
-	}
+        return false;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return void
+     */
+    public function deleteByVariableName($name)
+    {
+        $customvariables = [];
+        foreach ($this->customvariables as $customvariable) {
+            if ($customvariable->getName() != $name) {
+                $customvariables[] = $customvariable;
+            }
+        }
+        $this->customvariables = $customvariables;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize()
+    {
+        return sizeof($this->customvariables);
+    }
 
 }

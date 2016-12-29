@@ -24,32 +24,34 @@
 
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
-class LicenseTest extends \PHPUnit_Framework_TestCase{
-	//run test: oitc test app Core/ValueObjects/License
+class LicenseTest extends \PHPUnit_Framework_TestCase
+{
+    //run test: oitc test app Core/ValueObjects/License
 
-	public function testInstance()
-	{
-		$License = new License([]);
-		$this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ValueObjects\License', $License);
-	}
+    public function testInstance()
+    {
+        $License = new License([]);
+        $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ValueObjects\License', $License);
+    }
 
-	public function testGetLicense()
-	{
-		$License = new License($this->getLicense());
-		$this->assertEquals('1234-5678-901234-567890', $License->getLicense());
-	}
+    public function testGetLicense()
+    {
+        $License = new License($this->getLicense());
+        $this->assertEquals('1234-5678-901234-567890', $License->getLicense());
+    }
 
-	public function testGetLicenseFromEmptyArray()
-	{
-		$License = new License([]);
-		$this->assertEquals('', $License->getLicense());
-	}
+    public function testGetLicenseFromEmptyArray()
+    {
+        $License = new License([]);
+        $this->assertEquals('', $License->getLicense());
+    }
 
-	/**
-	 * Retunr a CakePHP's find like license result
-	 * @return array
-	 */
-	private function getLicense(){
-		return ['Register' => ['license' => '1234-5678-901234-567890']];
-	}
+    /**
+     * Retunr a CakePHP's find like license result
+     * @return array
+     */
+    private function getLicense()
+    {
+        return ['Register' => ['license' => '1234-5678-901234-567890']];
+    }
 }

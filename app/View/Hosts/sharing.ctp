@@ -24,72 +24,72 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-sitemap fa-rotate-270"></i>
-				<?php echo __('Monitoring'); ?>
-			<span>>
-				<?php echo __('Host'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-sitemap fa-rotate-270"></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Host'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
-		<h2 class="hidden-mobile hidden-tablet"><?php echo __('Sharing').': '.$host['Host']['name'];?></h2>
-		<div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-			<?php echo $this->Utils->backButton(__('Back'));?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Host', [
-					'class' => 'form-horizontal clear'
-				]); ?>
-				<div class="row">
-					<?php
-						echo $this->Form->input('Host.id', [
-								'type' => 'hidden',
-								'value' => $host['Host']['id'],
-								'wrapInput' => 'col col-xs-8',
-							]
-						);
-						echo $this->Form->input('container_id', [
-								'type' => 'hidden',
-								'value' => $host['Host']['container_id']
-							]
-						);
-						echo $this->Form->input('host_container_id', [
-								'options' => $containers,
-								'multiple' => false,
-								'selected' => $host['Host']['container_id'],
-								'class' => 'chosen',
-								'style' => 'width: 100%',
-								'label' => __('Primary container'),
-								'wrapInput' => 'col col-xs-8',
-								'disabled' => true
-							]
-						);
-						echo $this->Form->input('Container', [
-								'options' => $sharingContainers,
-								'multiple' => true,
-								'selected' => $this->Html->getParameter('Container.Container', Hash::extract($host['Container'], '{n}.id')),
-								'class' => 'chosen',
-								'style' => 'width: 100%',
-								'label' => __('Shared containers'),
-								'wrapInput' => 'col col-xs-8'
-							]
-						);
-					?>
-				</div> <!-- close col -->
-			</div> <!-- close row-->
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div> <!-- close widget body -->
-	</div>
+    <header>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Sharing').': '.$host['Host']['name']; ?></h2>
+        <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
+            <?php echo $this->Utils->backButton(__('Back')); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Host', [
+                'class' => 'form-horizontal clear',
+            ]); ?>
+            <div class="row">
+                <?php
+                echo $this->Form->input('Host.id', [
+                        'type'      => 'hidden',
+                        'value'     => $host['Host']['id'],
+                        'wrapInput' => 'col col-xs-8',
+                    ]
+                );
+                echo $this->Form->input('container_id', [
+                        'type'  => 'hidden',
+                        'value' => $host['Host']['container_id'],
+                    ]
+                );
+                echo $this->Form->input('host_container_id', [
+                        'options'   => $containers,
+                        'multiple'  => false,
+                        'selected'  => $host['Host']['container_id'],
+                        'class'     => 'chosen',
+                        'style'     => 'width: 100%',
+                        'label'     => __('Primary container'),
+                        'wrapInput' => 'col col-xs-8',
+                        'disabled'  => true,
+                    ]
+                );
+                echo $this->Form->input('Container', [
+                        'options'   => $sharingContainers,
+                        'multiple'  => true,
+                        'selected'  => $this->Html->getParameter('Container.Container', Hash::extract($host['Container'], '{n}.id')),
+                        'class'     => 'chosen',
+                        'style'     => 'width: 100%',
+                        'label'     => __('Shared containers'),
+                        'wrapInput' => 'col col-xs-8',
+                    ]
+                );
+                ?>
+            </div> <!-- close col -->
+        </div> <!-- close row-->
+        <br/>
+        <?php echo $this->Form->formActions(); ?>
+    </div> <!-- close widget body -->
+</div>
 </div> <!-- end jarviswidget -->

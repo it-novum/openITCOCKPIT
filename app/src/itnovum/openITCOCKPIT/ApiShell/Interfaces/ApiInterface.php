@@ -31,13 +31,16 @@ interface ApiInterface
 {
     /**
      * Set the optionParser for the API interface
+     *
      * @param OptionParser $optionParser
+     *
      * @return mixed
      */
     public function setOptionsFromOptionParser(OptionParser $optionParser);
 
     /**
      * Get called by the ApiShell to run the specific API command
+     *
      * @param OptionParser $optionParser
      */
     public function dispatchRequest();

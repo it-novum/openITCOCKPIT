@@ -24,32 +24,32 @@
 //	confirmation.
 ?>
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-table"></i> </span>
-		<h2>Change your password</h2>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php echo $this->Form->create('User', array(
-				'class' => 'form-horizontal'
-			)) ?>
-			<?php echo $this->Form->input('current_password', array(
-				'type' => 'password',
-			)) ?>
-			<hr>
-			<?php echo $this->Form->input('new_password', array(
-				'type' => 'password',
-				'help' => __('user_model.password_requirement_notice')
-			)) ?>
-			<?php echo $this->Form->input('new_password_repeat', array(
-				'type' => 'password',
-				'label' => 'Confirm your new password'
-			)) ?>
-			
-			<?php echo $this->Form->formActions('Change your password', array('cancelButton' => array(
-				'title' => 'Cancel',
-				'url' => '/admin/dashboard'
-			))); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+        <h2>Change your password</h2>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php echo $this->Form->create('User', [
+                'class' => 'form-horizontal',
+            ]) ?>
+            <?php echo $this->Form->input('current_password', [
+                'type' => 'password',
+            ]) ?>
+            <hr>
+            <?php echo $this->Form->input('new_password', [
+                'type' => 'password',
+                'help' => __('user_model.password_requirement_notice'),
+            ]) ?>
+            <?php echo $this->Form->input('new_password_repeat', [
+                'type'  => 'password',
+                'label' => 'Confirm your new password',
+            ]) ?>
+
+            <?php echo $this->Form->formActions('Change your password', ['cancelButton' => [
+                'title' => 'Cancel',
+                'url'   => '/admin/dashboard',
+            ]]); ?>
+        </div>
+    </div>
 </div>

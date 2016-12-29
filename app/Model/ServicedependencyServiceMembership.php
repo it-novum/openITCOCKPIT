@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServicedependencyServiceMembership extends AppModel{
-	public $useTable = 'services_to_servicedependencies';
-	public $belongsTo = [
-		'Servicedependency' => [
-			'className' => 'Servicedependency',
-			'foreignKey' => 'servicedependency_id'
-		],
+class ServicedependencyServiceMembership extends AppModel
+{
+    public $useTable = 'services_to_servicedependencies';
+    public $belongsTo = [
+        'Servicedependency' => [
+            'className'  => 'Servicedependency',
+            'foreignKey' => 'servicedependency_id',
+        ],
 
-		'Service' => [
-			'className' => 'Service',
-			'foreignKey' => 'service_id'
-		]
-	];
+        'Service' => [
+            'className'  => 'Service',
+            'foreignKey' => 'service_id',
+        ],
+    ];
 
 }

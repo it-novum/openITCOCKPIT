@@ -24,23 +24,26 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Service180 extends Widget{
-	public $isDefault = false;
-	public $icon = 'fa-pie-chart';
-	public $element = 'service_piechart_180';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 8;
-		$this->title = __('Services Piechart 180');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetServiceStateArray180 = $this->QueryCache->serviceStateCount180();
-		$this->Controller->set(compact(['widgetServiceStateArray180']));
-	}
-	
+class Service180 extends Widget
+{
+    public $isDefault = false;
+    public $icon = 'fa-pie-chart';
+    public $element = 'service_piechart_180';
+    public $width = 5;
+    public $height = 13;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 8;
+        $this->title = __('Services Piechart 180');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetServiceStateArray180 = $this->QueryCache->serviceStateCount180();
+        $this->Controller->set(compact(['widgetServiceStateArray180']));
+    }
+
 }

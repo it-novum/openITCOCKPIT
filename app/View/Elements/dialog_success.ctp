@@ -24,14 +24,14 @@
 //	confirmation.
 ?>
 <div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	<h4 class="modal-title"><?php echo __('success') ?></h4>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title"><?php echo __('success') ?></h4>
 </div>
 <div class="modal-body">
-	<div class="alert alert-info">
-		<?php echo isset($message) ? $message : __('dialog.action_successful') ?>
-	</div>
+    <div class="alert alert-info">
+        <?php echo isset($message) ? $message : __('dialog.action_successful') ?>
+    </div>
 </div>
 <div class="modal-footer">
-	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 </div>

@@ -23,16 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class WidgetHelper extends AppHelper{
-	public $widgetTypes = [];
+class WidgetHelper extends AppHelper
+{
+    public $widgetTypes = [];
 
-	public function beforeRender($viewFile){
-		$this->View = $this->_View;
-		$this->widgetTypes = $this->_View->viewVars['widgetTypes'];
-		//debug($this->widgetTypes);
-	}
+    public function beforeRender($viewFile)
+    {
+        $this->View = $this->_View;
+        $this->widgetTypes = $this->_View->viewVars['widgetTypes'];
+        //debug($this->widgetTypes);
+    }
 
-	public function get($widgetType){
-		return $this->View->element($this->widgetTypes[$widgetType]['element']);
-	}
+    public function get($widgetType)
+    {
+        return $this->View->element($this->widgetTypes[$widgetType]['element']);
+    }
 }

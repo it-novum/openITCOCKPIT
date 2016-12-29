@@ -28,22 +28,25 @@ App::uses('File', 'Utility');
 App::import('Utility', 'Xml');
 
 
-class RrdsController extends AppController{
+class RrdsController extends AppController
+{
 
-    var $uses = array('Rrd');
+    var $uses = ['Rrd'];
 
-    function index(){
+    function index()
+    {
 
     }
 
-    public function ajax(){
+    public function ajax()
+    {
         //Do some AJAX Requesthandling...
-        if($this->request->is('ajax')){
-            if(isset($this->request->data['host_uuid']) && isset($this->request->data['service_uuid'])){
+        if ($this->request->is('ajax')) {
+            if (isset($this->request->data['host_uuid']) && isset($this->request->data['service_uuid'])) {
                 $this->set('rrd_data', $this->Rrd->getPerfDataFiles($this->request->data['host_uuid'], $this->request->data['service_uuid']));
-                $this->set('_serialize', array('rrd_data'));
+                $this->set('_serialize', ['rrd_data']);
             }
-        }else{
+        } else {
             $this->redirect('/');
         }
     }

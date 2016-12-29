@@ -24,68 +24,70 @@
 
 App.Components.GridComponent = Frontend.Component.extend({
 
-	gridContainerGroup : 'mapeditorGrid',
+    gridContainerGroup: 'mapeditorGrid',
 
-	drawGrid:function(svgContainerId, opt){
-		var opt = opt || {};
-		var sizeX = opt.sizeX || 20;
-		var sizeY = opt.sizeY || 20;
-		var gridTextSize = opt.fontSize || '10px';
-		var gridColor = opt.gridColor || '#DDD';
+    drawGrid: function (svgContainerId, opt) {
+        var opt = opt || {};
+        var sizeX = opt.sizeX || 20;
+        var sizeY = opt.sizeY || 20;
+        var gridTextSize = opt.fontSize || '10px';
+        var gridColor = opt.gridColor || '#DDD';
 
-		svgContainerId = '#'+svgContainerId;
+        svgContainerId = '#' + svgContainerId;
 
-		if(sizeX < 0){
-			sizeX = 20;
-			sizeY = 20;
-		}
+        if (sizeX < 0) {
+            sizeX = 20;
+            sizeY = 20;
+        }
 
-		sizeX = parseInt(sizeX);
-		sizeY = parseInt(sizeY);
-		$(svgContainerId).svg();
-		var svg = $(svgContainerId).svg('get');
+        sizeX = parseInt(sizeX);
+        sizeY = parseInt(sizeY);
+        $(svgContainerId).svg();
+        var svg = $(svgContainerId).svg('get');
 
-		var grid = svg.group(this.gridContainerGroup);
+        var grid = svg.group(this.gridContainerGroup);
 
-		var containerHeight = $(svgContainerId).height();
-		var containerWidth = $(svgContainerId).width();
+        var containerHeight = $(svgContainerId).height();
+        var containerWidth = $(svgContainerId).width();
 
-		var loopIterationsX = containerWidth/sizeX;
-		var loopIterationsY = containerHeight/sizeY;
+        var loopIterationsX = containerWidth / sizeX;
+        var loopIterationsY = containerHeight / sizeY;
 
-		//vertical Grid lines and Text
-		for (var i = 1; i < parseInt(loopIterationsX)+1; i++) {
-			svg.line(grid, sizeX*i, 0, sizeX*i, containerHeight, {
-				stroke:gridColor, strokeWidth: 0.35
-			});
+        //vertical Grid lines and Text
+        for (var i = 1; i < parseInt(loopIterationsX) + 1; i++) {
+            svg.line(grid, sizeX * i, 0, sizeX * i, containerHeight, {
+                stroke: gridColor, strokeWidth: 0.35
+            });
 
-			svg.text(grid, sizeX*i, 10, Math.round(sizeX*i).toString(), {
-				fontFamily:'monospace, Courier New',
-				fontSize:gridTextSize
-			});
-		};
-		//horizontal Grid lines and Text
-		for (var i = 1; i < parseInt(loopIterationsY)+1; i++) {
-			svg.line(grid, 0, sizeY*i, containerWidth, sizeY*i, {
-				stroke:gridColor, strokeWidth: 0.35
-			});
+            svg.text(grid, sizeX * i, 10, Math.round(sizeX * i).toString(), {
+                fontFamily: 'monospace, Courier New',
+                fontSize: gridTextSize
+            });
+        }
+        ;
+        //horizontal Grid lines and Text
+        for (var i = 1; i < parseInt(loopIterationsY) + 1; i++) {
+            svg.line(grid, 0, sizeY * i, containerWidth, sizeY * i, {
+                stroke: gridColor, strokeWidth: 0.35
+            });
 
-			svg.text(grid, 0, sizeY*i, Math.round(sizeY*i).toString(), {
-				fontFamily:'monospace, Courier New',
-				fontSize:gridTextSize
-			})
-		};
-	},
+            svg.text(grid, 0, sizeY * i, Math.round(sizeY * i).toString(), {
+                fontFamily: 'monospace, Courier New',
+                fontSize: gridTextSize
+            })
+        }
+        ;
+    },
 
-	refreshGrid:function(svgContainerId, opt){
-		//remove old grid 
-		this.removeGrid(svgContainerId);
-		//draw new grid
-		this.drawGrid(svgContainerId, opt);
-	},
+    refreshGrid: function (svgContainerId, opt) {
+        //remove old grid 
+        this.removeGrid(svgContainerId);
+        //draw new grid
+        this.drawGrid(svgContainerId, opt);
+    },
 
-	removeGrid:function(svgContainerId){
-		$('#'+svgContainerId).children().remove();
-		$('#'+svgContainerId).removeClass('hasSVG');
-	}
+    removeGrid: function (svgContainerId) {
+        $('#' + svgContainerId).children().remove();
+        $('#' + svgContainerId).removeClass('hasSVG');
+    }
 });

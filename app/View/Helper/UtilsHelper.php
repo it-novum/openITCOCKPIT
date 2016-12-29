@@ -23,724 +23,822 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UtilsHelper extends AppHelper {
-/**
- * Used helpers
- *
- * @var string
- */
-	public $helpers = array('Form', 'Html', 'Paginator', 'Text', 'Auth');
-/**
- * Returns a nicely formatted date and time
- *
- * @param string $date
- * @return string
- */
-	public function niceDate($date) {
-		return utf8_encode(strftime("%A, %e. %B %Y", strtotime($date)));
-	}
+class UtilsHelper extends AppHelper
+{
+    /**
+     * Used helpers
+     * @var string
+     */
+    public $helpers = ['Form', 'Html', 'Paginator', 'Text', 'Auth'];
 
-/**
- * Returns a nicely formatted date and time
- *
- * @param string $date
- * @return string
- */
-	public function niceDateAndTime($date) {
-		return utf8_encode(strftime("%A, %e. %B %Y at %R", strtotime($date)));
-	}
+    /**
+     * Returns a nicely formatted date and time
+     *
+     * @param string $date
+     *
+     * @return string
+     */
+    public function niceDate($date)
+    {
+        return utf8_encode(strftime("%A, %e. %B %Y", strtotime($date)));
+    }
 
-/**
- * Formats a given number to a price, e.g. 5.000 €
- *
- * @return void
- */
-	public function price($number, $decimals = 2, $suffix = ' &euro;') {
-		if(empty($number)) {
-			$number = 0;
-		}
-		return number_format($number, $decimals, ',', '.') . $suffix;
-	}
+    /**
+     * Returns a nicely formatted date and time
+     *
+     * @param string $date
+     *
+     * @return string
+     */
+    public function niceDateAndTime($date)
+    {
+        return utf8_encode(strftime("%A, %e. %B %Y at %R", strtotime($date)));
+    }
 
-/**
- * Takes a DB date value and formats it correctly
- *
- * @param string $date
- * @return string
- */
-	public function date($date) {
-		if(empty($date)) {
-			return '';
-		} else {
-			return $this->formatDate($date, 'd.m.Y');
-		}
-	}
+    /**
+     * Formats a given number to a price, e.g. 5.000 €
+     * @return void
+     */
+    public function price($number, $decimals = 2, $suffix = ' &euro;')
+    {
+        if (empty($number)) {
+            $number = 0;
+        }
 
-/**
- * Takes a DB datetime value and formats it correctly
- *
- * @param string $date
- * @return string
- */
-	public function dateAndTime($date) {
-		if(empty($date)) {
-			return '';
-		} else {
-			return $this->formatDate($date, 'd.m.Y \a\t H:i');
-		}
-	}
+        return number_format($number, $decimals, ',', '.').$suffix;
+    }
 
-/**
- * Parses the given $date and formats it by $format. If $date is null,
- * the current date is used.
- *
- * @param string $date
- * @param string $format
- * @return string
- */
-	public function formatDate($date = null, $format = 'd.m.Y H:i') {
-		if($date) {
-			$time = strtotime($date);
-		} else {
-			$time = time();
-		}
-		// Datum ist nicht parsebar
-		if($time === false) {
-			return $date;
-		}
-		return date($format, $time);
-	}
+    /**
+     * Takes a DB date value and formats it correctly
+     *
+     * @param string $date
+     *
+     * @return string
+     */
+    public function date($date)
+    {
+        if (empty($date)) {
+            return '';
+        } else {
+            return $this->formatDate($date, 'd.m.Y');
+        }
+    }
 
-/**
- * Renders a checked or unchecked checkbox icon, based on the value. Value can be
- * boolean or numeric (0/1)
- *
- * @param mixed $value
- * @return string
- */
-	public function graphicalCheckbox($value) {
-		return sprintf('<i class="glyphicon glyphicon-%s"></i>', ($value ? 'ok' : 'remove'));
-	}
+    /**
+     * Takes a DB datetime value and formats it correctly
+     *
+     * @param string $date
+     *
+     * @return string
+     */
+    public function dateAndTime($date)
+    {
+        if (empty($date)) {
+            return '';
+        } else {
+            return $this->formatDate($date, 'd.m.Y \a\t H:i');
+        }
+    }
 
-/**
- * Renders the customer's buttons in his showreels
- *
- * @param array $buttons
- * @return string
- */
-	public function customerButtons($buttons = array()) {
-		$return = '';
-		for ($i=1; $i < 4; $i++) {
-			if (isset($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"])) {
-				$return .= $this->button($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"], array('target'=>'_blank')).' ';
-			}
-		}
-		return $return;
-	}
+    /**
+     * Parses the given $date and formats it by $format. If $date is null,
+     * the current date is used.
+     *
+     * @param string $date
+     * @param string $format
+     *
+     * @return string
+     */
+    public function formatDate($date = null, $format = 'd.m.Y H:i')
+    {
+        if ($date) {
+            $time = strtotime($date);
+        } else {
+            $time = time();
+        }
+        // Datum ist nicht parsebar
+        if ($time === false) {
+            return $date;
+        }
 
-/**
- * Renders an edit button
- *
- * @param string $title
- * @param string $url
- * @param array $options
- * @return void
- */
-	public function editButton($title = null, $url = null, $options = array()) {
-		if(!$title) {
-			$title = __('edit');
-		}
-		if(is_numeric($url) || is_string($url)) {
-			$url = array('action' => 'edit', $url);
-		}
-		$options = Set::merge(array(
-			'class' => 'btn btn-primary btn-xs',
-			'escape' => false,
-		), $options);
-		$title = '<i class="fa fa-edit"></i> ' . $title;
-		return $this->Html->link($title, $url, $options);
-	}
+        return date($format, $time);
+    }
 
-/**
- * renders an add button
- *
- * @param string $title
- * @param array $options
- * @return string
- */
-	public function addButton($title = null, $options = array()) {
-		if(!$title) {
-			$title = __('add');
-		}
-		$options = Set::merge(array(
-			'url' => array('action' => 'add'),
-			'class' => 'btn btn-success',
-			'escape' => false,
-		), $options);
+    /**
+     * Renders a checked or unchecked checkbox icon, based on the value. Value can be
+     * boolean or numeric (0/1)
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public function graphicalCheckbox($value)
+    {
+        return sprintf('<i class="glyphicon glyphicon-%s"></i>', ($value ? 'ok' : 'remove'));
+    }
 
-		if($options['url'] === null) {
-			$options['url'] = array('action' => 'add');
-		}
-		$url = $options['url'];
-		unset($options['url']);
-		$title = '<i class="fa fa-plus"></i> ' . $title;
-		return $this->Html->link($title, $url, $options);
-	}
+    /**
+     * Renders the customer's buttons in his showreels
+     *
+     * @param array $buttons
+     *
+     * @return string
+     */
+    public function customerButtons($buttons = [])
+    {
+        $return = '';
+        for ($i = 1; $i < 4; $i++) {
+            if (isset($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"])) {
+                $return .= $this->button($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"], ['target' => '_blank']).' ';
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Renders an edit button
+     *
+     * @param string $title
+     * @param string $url
+     * @param array  $options
+     *
+     * @return void
+     */
+    public function editButton($title = null, $url = null, $options = [])
+    {
+        if (!$title) {
+            $title = __('edit');
+        }
+        if (is_numeric($url) || is_string($url)) {
+            $url = ['action' => 'edit', $url];
+        }
+        $options = Set::merge([
+            'class'  => 'btn btn-primary btn-xs',
+            'escape' => false,
+        ], $options);
+        $title = '<i class="fa fa-edit"></i> '.$title;
+
+        return $this->Html->link($title, $url, $options);
+    }
+
+    /**
+     * renders an add button
+     *
+     * @param string $title
+     * @param array  $options
+     *
+     * @return string
+     */
+    public function addButton($title = null, $options = [])
+    {
+        if (!$title) {
+            $title = __('add');
+        }
+        $options = Set::merge([
+            'url'    => ['action' => 'add'],
+            'class'  => 'btn btn-success',
+            'escape' => false,
+        ], $options);
+
+        if ($options['url'] === null) {
+            $options['url'] = ['action' => 'add'];
+        }
+        $url = $options['url'];
+        unset($options['url']);
+        $title = '<i class="fa fa-plus"></i> '.$title;
+
+        return $this->Html->link($title, $url, $options);
+    }
 
 
-/**
- * Returns a mailto link
- *
- * @param string $email
- * @param string $subject
- * @param string $body
- * @return string
- */
-	public function emailLink($email = null, $subject = null, $body = null) {
-		$all = '';
-		if (isset($email)) {
-			$all .= $email;
-		}
-		$_subject = isset($subject);
-		$_body = isset($body);
-		if ($_subject || $_body) {
-			$all .= '?';
-			if ($_subject && $_body) {
-				$all .= 'subject=' . $subject . '&body=' . $body;
-			} else {
-				if ($_body) {
-					$all .= 'body=' . $body;
-				} else {
-					$all .= 'subject=' . $subject;
-				}
-			}
-		}
-		return 'mailto:' . $all;
-	}
+    /**
+     * Returns a mailto link
+     *
+     * @param string $email
+     * @param string $subject
+     * @param string $body
+     *
+     * @return string
+     */
+    public function emailLink($email = null, $subject = null, $body = null)
+    {
+        $all = '';
+        if (isset($email)) {
+            $all .= $email;
+        }
+        $_subject = isset($subject);
+        $_body = isset($body);
+        if ($_subject || $_body) {
+            $all .= '?';
+            if ($_subject && $_body) {
+                $all .= 'subject='.$subject.'&body='.$body;
+            } else {
+                if ($_body) {
+                    $all .= 'body='.$body;
+                } else {
+                    $all .= 'subject='.$subject;
+                }
+            }
+        }
 
-/**
- * Renders a delete button
- *
- * @param string $title
- * @param mixed $url	Either a string or array url, or an ID
- * @param array $options
- * @return string
- */
-	public function deleteButton($title = null, $url = null, $options = array(), $confirm = true, $postText = '') {
-		$_options = array('icon' => 'fa fa-trash-o');
-		$options = Hash::merge($options, $_options);
-		if(is_numeric($title)) {
-			$url = $title;
-			$title = null;
-		}
-		if(!$title) {
-			$title = __('Delete');
-		}
-		if(is_numeric($url) || is_string($url) || ( is_array($url) && !isset($url['action']) )) {
-			$url = array('action' => 'delete', $url);
-		}
-		$options = Set::merge(array(
-			'class' => 'btn btn-danger btn-xs',
-			'escape' => false,
-		), $options);
-		$title = '<i class="'.$options['icon'].'"></i> ' . $title;
-		if($confirm){
-			return $this->Form->postLink($title, $url, $options, __('confirm_delete').' '.$postText);
-		}
-		return $this->Form->postLink($title, $url, $options);
-	}
+        return 'mailto:'.$all;
+    }
 
-/**
- * Renders a back button
- *
- * @param string $title
- * @param mixed $url	Either a string or array url
- * @param array $options
- * @return string
- */
-	public function backButton($title = null, $url = null, $options = array()) {
-		if(!$title) {
-			$title = __('back_to_list');
-		}
-		if(!$url) {
-			$url = array('action' => 'index');
-		}
-		$options = Set::merge(array(
-			'class' => 'btn btn-default btn-xs',
-			'escape' => false,
-			'iconColor' => 'white'
-		), $options);
+    /**
+     * Renders a delete button
+     *
+     * @param string $title
+     * @param mixed  $url Either a string or array url, or an ID
+     * @param array  $options
+     *
+     * @return string
+     */
+    public function deleteButton($title = null, $url = null, $options = [], $confirm = true, $postText = '')
+    {
+        $_options = ['icon' => 'fa fa-trash-o'];
+        $options = Hash::merge($options, $_options);
+        if (is_numeric($title)) {
+            $url = $title;
+            $title = null;
+        }
+        if (!$title) {
+            $title = __('Delete');
+        }
+        if (is_numeric($url) || is_string($url) || (is_array($url) && !isset($url['action']))) {
+            $url = ['action' => 'delete', $url];
+        }
+        $options = Set::merge([
+            'class'  => 'btn btn-danger btn-xs',
+            'escape' => false,
+        ], $options);
+        $title = '<i class="'.$options['icon'].'"></i> '.$title;
+        if ($confirm) {
+            return $this->Form->postLink($title, $url, $options, __('confirm_delete').' '.$postText);
+        }
 
-		$title = '<i class="glyphicon glyphicon-' . $options['iconColor'] . ' glyphicon-arrow-left"></i> ' . $title;
-		return $this->Html->link($title, $url, $options);
-	}
+        return $this->Form->postLink($title, $url, $options);
+    }
 
-/**
- * Returns a form action block
- *
- * @param string $saveText
- * @param string $options
- * @return void
- */
-	public function formActions($saveText = null, array $options = array()) {
-		if(!$saveText) {
-			$saveText = __('formactions.save');
-		}
-		$options = Set::merge(array(
-			'cancelButton' => array(
-				'title' => __('formactions.cancel'),
-				'url' => array('action' => 'index'),
-			),
-			'delete' => null
-		), $options);
+    /**
+     * Renders a back button
+     *
+     * @param string $title
+     * @param mixed  $url Either a string or array url
+     * @param array  $options
+     *
+     * @return string
+     */
+    public function backButton($title = null, $url = null, $options = [])
+    {
+        if (!$title) {
+            $title = __('back_to_list');
+        }
+        if (!$url) {
+            $url = ['action' => 'index'];
+        }
+        $options = Set::merge([
+            'class'     => 'btn btn-default btn-xs',
+            'escape'    => false,
+            'iconColor' => 'white',
+        ], $options);
 
-		$out = '';
-		$out.= '<div class="form-actions"><div class="pull-left">';
-		if($options['cancelButton']) {
-			$out.= $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], array('class' => 'btn btn-cancel')) . '&nbsp;';
-		}
-		$out.= $this->Form->submit($saveText, array('div' => false, 'class' => 'btn btn-primary'));
-		$out.= '</div>';
+        $title = '<i class="glyphicon glyphicon-'.$options['iconColor'].' glyphicon-arrow-left"></i> '.$title;
 
-		if(!empty($options['delete'])) {
-			if(is_numeric($options['delete']) || is_string($options['delete'])) {
-				$options['delete'] = array(
-					'id' => $options['delete'],
-					'title' => __('delete')
-				);
-			}
-			$out.= '<div class="pull-right">';
-			$id = 1;
-			$out.= $this->deleteButton($options['delete']['title'], $options['delete']['id']);
-			$out.= '</div>';
-		}
+        return $this->Html->link($title, $url, $options);
+    }
 
-		$out.= '</div>';
-		return $out;
-	}
+    /**
+     * Returns a form action block
+     *
+     * @param string $saveText
+     * @param string $options
+     *
+     * @return void
+     */
+    public function formActions($saveText = null, array $options = [])
+    {
+        if (!$saveText) {
+            $saveText = __('formactions.save');
+        }
+        $options = Set::merge([
+            'cancelButton' => [
+                'title' => __('formactions.cancel'),
+                'url'   => ['action' => 'index'],
+            ],
+            'delete'       => null,
+        ], $options);
 
-/**
- * Renders a view button
- *
- * @param string $title
- * @param string $url
- * @return void
- */
-	public function viewButton($title = null, $url = null) {
-		if(!$title) {
-			$title = __('details');
-		}
-		if(is_numeric($url) || is_string($url)) {
-			$url = array('action' => 'view', $url);
-		}
-		$title = '<i class="glyphicon glyphicon-white glyphicon-search"></i> ' . $title;
-		return $this->Html->link($title, $url, array('class' => 'btn btn-default btn-xs', 'escape' => false));
-	}
+        $out = '';
+        $out .= '<div class="form-actions"><div class="pull-left">';
+        if ($options['cancelButton']) {
+            $out .= $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-cancel']).'&nbsp;';
+        }
+        $out .= $this->Form->submit($saveText, ['div' => false, 'class' => 'btn btn-primary']);
+        $out .= '</div>';
 
-/**
- * Renders a print button
- *
- * @param bool $mini
- * @return void
- */
-	public function printButton($mini = false) {
-		$title = '<i class="glyphicon glyphicon-print"></i> ';
-		$title .= __('print');
-		return $this->Html->link(
-			$title,
-			'javascript:window.print()',
-			array('class' => 'btn print-button' . ($mini ? ' btn-xs' : ''), 'escape' => false)
-		);
-	}
+        if (!empty($options['delete'])) {
+            if (is_numeric($options['delete']) || is_string($options['delete'])) {
+                $options['delete'] = [
+                    'id'    => $options['delete'],
+                    'title' => __('delete'),
+                ];
+            }
+            $out .= '<div class="pull-right">';
+            $id = 1;
+            $out .= $this->deleteButton($options['delete']['title'], $options['delete']['id']);
+            $out .= '</div>';
+        }
 
-/**
- * Renders a standard button
- *
- * @param string $title
- * @param array $url
- * @param array $options
- * @return void
- */
-	public function button($title, $url, $options = array()) {
-		$options = Set::merge(array(
-			'class' => 'btn btn-default'
-		), $options);
-		return $this->Html->link($title, $url, $options);
-	}
+        $out .= '</div>';
 
-/**
- * Returns the name of the given country code
- * @param  string $code
- * @return string
- */
-	public function country($code) {
-		return Configure::read('countries.' . $code);
-	}
+        return $out;
+    }
 
-	public function readableFilesize($size, $retstring = null, $round = true) {
-		$sizes = array('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
-        if ($retstring === null) { $retstring = '%01.0f %s'; }
+    /**
+     * Renders a view button
+     *
+     * @param string $title
+     * @param string $url
+     *
+     * @return void
+     */
+    public function viewButton($title = null, $url = null)
+    {
+        if (!$title) {
+            $title = __('details');
+        }
+        if (is_numeric($url) || is_string($url)) {
+            $url = ['action' => 'view', $url];
+        }
+        $title = '<i class="glyphicon glyphicon-white glyphicon-search"></i> '.$title;
+
+        return $this->Html->link($title, $url, ['class' => 'btn btn-default btn-xs', 'escape' => false]);
+    }
+
+    /**
+     * Renders a print button
+     *
+     * @param bool $mini
+     *
+     * @return void
+     */
+    public function printButton($mini = false)
+    {
+        $title = '<i class="glyphicon glyphicon-print"></i> ';
+        $title .= __('print');
+
+        return $this->Html->link(
+            $title,
+            'javascript:window.print()',
+            ['class' => 'btn print-button'.($mini ? ' btn-xs' : ''), 'escape' => false]
+        );
+    }
+
+    /**
+     * Renders a standard button
+     *
+     * @param string $title
+     * @param array  $url
+     * @param array  $options
+     *
+     * @return void
+     */
+    public function button($title, $url, $options = [])
+    {
+        $options = Set::merge([
+            'class' => 'btn btn-default',
+        ], $options);
+
+        return $this->Html->link($title, $url, $options);
+    }
+
+    /**
+     * Returns the name of the given country code
+     *
+     * @param  string $code
+     *
+     * @return string
+     */
+    public function country($code)
+    {
+        return Configure::read('countries.'.$code);
+    }
+
+    public function readableFilesize($size, $retstring = null, $round = true)
+    {
+        $sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        if ($retstring === null) {
+            $retstring = '%01.0f %s';
+        }
         $lastsizestring = end($sizes);
         foreach ($sizes as $sizestring) {
-                if ($size < 1024) { break; }
-                if ($sizestring != $lastsizestring) { $size /= 1024; }
+            if ($size < 1024) {
+                break;
+            }
+            if ($sizestring != $lastsizestring) {
+                $size /= 1024;
+            }
         }
-        if ($sizestring == $sizes[0]) { $retstring = '%01d %s'; }
+        if ($sizestring == $sizes[0]) {
+            $retstring = '%01d %s';
+        }
 
-		$size = ($round) ? floor($size) : $size;
+        $size = ($round) ? floor($size) : $size;
 
         return sprintf($retstring, $size, $sizestring);
-	}
+    }
 
-/**
- * converts the seconds of a comment to minutes /hours if appropiate
- * @param  int $seconds
- * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
- */
-	public function secToTime($seconds) {
-		$seconds = str_replace(',', '.', $seconds);
-		if ($seconds < 60) {
-		    return 'Sekunde ' . round($seconds, 0);
-		}
+    /**
+     * converts the seconds of a comment to minutes /hours if appropiate
+     *
+     * @param  int $seconds
+     *
+     * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
+     */
+    public function secToTime($seconds)
+    {
+        $seconds = str_replace(',', '.', $seconds);
+        if ($seconds < 60) {
+            return 'Sekunde '.round($seconds, 0);
+        }
 
-		$minutes = bcdiv($seconds, '60', 0);
-		$seconds = bcmod($seconds, '60');
+        $minutes = bcdiv($seconds, '60', 0);
+        $seconds = bcmod($seconds, '60');
 
-		if ($minutes < 60) {
-			if ($seconds < 10) {
-				$seconds = '0' . $seconds;
-			}
-		    return 'Minute ' . $minutes . ':' . $seconds;
-		}
+        if ($minutes < 60) {
+            if ($seconds < 10) {
+                $seconds = '0'.$seconds;
+            }
 
-		$hours = bcdiv($minutes, '60', 0);
-		$minutes = bcmod($minutes, '60');
+            return 'Minute '.$minutes.':'.$seconds;
+        }
 
-		//delete this line if you uncomment the end for transformation in days if needed
-		return 'Stunde ' . $hours . ':' . $minutes . ':' . $seconds;
-/*
-		if (!($hours >= 24)) {
-		    return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
-		}
+        $hours = bcdiv($minutes, '60', 0);
+        $minutes = bcmod($minutes, '60');
 
-		$days = bcdiv($hours, '24', 0);
-		$hours = bcmod($hours, '24');
+        //delete this line if you uncomment the end for transformation in days if needed
+        return 'Stunde '.$hours.':'.$minutes.':'.$seconds;
+        /*
+                if (!($hours >= 24)) {
+                    return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
+                }
 
-		return $days . ' Tage ' . $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
-*/
-	}
+                $days = bcdiv($hours, '24', 0);
+                $hours = bcmod($hours, '24');
 
-/**
- * converts the seconds of a comment to minutes /hours if appropiate
- * @param  int $seconds
- * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
- */
-	public function secToTimestamp($seconds) {
-		$seconds = str_replace(',', '.', $seconds);
-		if ($seconds < 60) {
-		    return '00:00:' . str_pad(round($seconds, 0), 2, 0, STR_PAD_LEFT);
-		}
+                return $days . ' Tage ' . $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
+        */
+    }
 
-		$minutes = bcdiv($seconds, '60', 0);
-		$seconds = bcmod($seconds, '60');
+    /**
+     * converts the seconds of a comment to minutes /hours if appropiate
+     *
+     * @param  int $seconds
+     *
+     * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
+     */
+    public function secToTimestamp($seconds)
+    {
+        $seconds = str_replace(',', '.', $seconds);
+        if ($seconds < 60) {
+            return '00:00:'.str_pad(round($seconds, 0), 2, 0, STR_PAD_LEFT);
+        }
 
-		$seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
+        $minutes = bcdiv($seconds, '60', 0);
+        $seconds = bcmod($seconds, '60');
 
-		if ($minutes < 60) {
-		    return '00:' . str_pad($minutes, 2, 0, STR_PAD_LEFT) . ':' . $seconds;
-		}
+        $seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
 
-		$hours = bcdiv($minutes, '60', 0);
-		$minutes = bcmod($minutes, '60');
+        if ($minutes < 60) {
+            return '00:'.str_pad($minutes, 2, 0, STR_PAD_LEFT).':'.$seconds;
+        }
 
-		$minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
-		//delete this line if you uncomment the end for transformation in days if needed
-		return str_pad($hours, 2, 0, STR_PAD_LEFT) . ':' . $minutes . ':' . $seconds;
-/*
-		if (!($hours >= 24)) {
-		    return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
-		}
+        $hours = bcdiv($minutes, '60', 0);
+        $minutes = bcmod($minutes, '60');
 
-		$days = bcdiv($hours, '24', 0);
-		$hours = bcmod($hours, '24');
+        $minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
 
-		return $days . ' Tage ' . $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
-*/
-	}
+        //delete this line if you uncomment the end for transformation in days if needed
+        return str_pad($hours, 2, 0, STR_PAD_LEFT).':'.$minutes.':'.$seconds;
+        /*
+                if (!($hours >= 24)) {
+                    return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
+                }
 
-/**
- * creates a classes string for the body
- * @param  int $backgroundImage number of background image
- * @return string                  classes string
- */
-	public function getEpicBgClasses() {
-		if (isset($this->_View->viewVars['backgroundImage']) && is_numeric($this->_View->viewVars['backgroundImage'])) {
-			$backgroundImage = $this->_View->viewVars['backgroundImage'];
-		} else {
-			$backgroundImage = 1;
-		}
-		$BgClasses = 'epic-bg';
-		if (isset($backgroundImage) && $backgroundImage >= 0 && $backgroundImage <= 8) {
-			$BgClasses .= ' epic-bg-' . $backgroundImage;
-		} else {
-			$BgClasses .= ' epic-bg-1';
-		}
-		return $BgClasses;
-	}
+                $days = bcdiv($hours, '24', 0);
+                $hours = bcmod($hours, '24');
 
-/**
- * returns user role dependet classes. It's also possible to only set one of both classes.
- * @param  string $userClass  class to be returned if user has user role
- * @param  string $adminClass class to be returned if user has admin role
- * @return string             class string
- */
-	public function getRightAccessClass($userClass = '', $adminClass = '') {
-		if (empty($userClass) && empty($adminClass)) {
-			return '';
-		}
-		if ($this->Auth->isLoggedIn() && $this->Auth->hasRight('accessAdministration')) {
-			if (!empty($adminClass)) {
-				$returnClass = ' ' . $adminClass . ' ';
-			}
-		}  else {
-			if (!empty($userClass)) {
-				$returnClass = ' ' . $userClass . ' ';
-			} else {
-				$returnClass = '';
-			}
-		}
-		return $returnClass;
-	}
+                return $days . ' Tage ' . $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
+        */
+    }
 
-/**
- * renders a flag
- * @param  string $countryCode 2 characters country code
- * @param  string $class
- * @return string
- */
-	public function flag($countryCode, $class = 'flag-small') {
-		$countries = Configure::read('countries');
-		$flag = '';
-		if (in_array($countryCode, array_keys($countries))) {
-			$flag = $this->Html->image('/files/flags/' . $countryCode . '.png', array(
-				'class' => $class
-			));
-		}
-		return $flag;
-	}
+    /**
+     * creates a classes string for the body
+     *
+     * @param  int $backgroundImage number of background image
+     *
+     * @return string                  classes string
+     */
+    public function getEpicBgClasses()
+    {
+        if (isset($this->_View->viewVars['backgroundImage']) && is_numeric($this->_View->viewVars['backgroundImage'])) {
+            $backgroundImage = $this->_View->viewVars['backgroundImage'];
+        } else {
+            $backgroundImage = 1;
+        }
+        $BgClasses = 'epic-bg';
+        if (isset($backgroundImage) && $backgroundImage >= 0 && $backgroundImage <= 8) {
+            $BgClasses .= ' epic-bg-'.$backgroundImage;
+        } else {
+            $BgClasses .= ' epic-bg-1';
+        }
 
-/**
- * returns a formatted final score
- * @param  array $match
- * @return string        team_home_total : team_away_total
- */
-	public function getFinalScore($match) {
-		$scores = Utils::calculateFinalScore($match);
-		return $scores['teamHomeTotal'] . ' : ' . $scores['teamAwayTotal'];
-	}
+        return $BgClasses;
+    }
 
-/**
- * append English Ordinal Suffix
- * @param  int $n
- * @return string
- */
-	public function appendEnglishOrdinalSuffix($n) {
-		if (!in_array(($n % 100),array(11,12,13))) {
-			switch ($n % 10) {
-				case 1:  return $n . 'st';
-				case 2:  return $n . 'nd';
-				case 3:  return $n . 'rd';
-			}
-		}
-	    return $n . 'th';
-	}
+    /**
+     * returns user role dependet classes. It's also possible to only set one of both classes.
+     *
+     * @param  string $userClass  class to be returned if user has user role
+     * @param  string $adminClass class to be returned if user has admin role
+     *
+     * @return string             class string
+     */
+    public function getRightAccessClass($userClass = '', $adminClass = '')
+    {
+        if (empty($userClass) && empty($adminClass)) {
+            return '';
+        }
+        if ($this->Auth->isLoggedIn() && $this->Auth->hasRight('accessAdministration')) {
+            if (!empty($adminClass)) {
+                $returnClass = ' '.$adminClass.' ';
+            }
+        } else {
+            if (!empty($userClass)) {
+                $returnClass = ' '.$userClass.' ';
+            } else {
+                $returnClass = '';
+            }
+        }
 
-/**
- * returns terms and conditions link
- * @return string
- */
-	public function termsAndConditionsLink() {
-		return __('register.i_accept_the') . ' ' . $this->Html->link(__('terms_and_conditions'),
-			array(
-				'controller' => 'contents',
-				'action' => 'content',
-				'page.terms_of_use'
-			),
-			array(
-				'target' => '_blank'
-			)
-		) . '.';
-	}
+        return $returnClass;
+    }
 
-/**
- * Formats a key/value array to a table
- *
- * @param array $data
- * @param array $options
- * @return string
- */
-	public function captionTable($data, array $options = array()) {
-		$options = Set::merge(array(
-			'additionalClasses' => ''
-		), $options);
-		return $this->_View->element('common/caption_table', array(
-			'map'=> $data,
-			'options' => $options
-		));
-	}
+    /**
+     * renders a flag
+     *
+     * @param  string $countryCode 2 characters country code
+     * @param  string $class
+     *
+     * @return string
+     */
+    public function flag($countryCode, $class = 'flag-small')
+    {
+        $countries = Configure::read('countries');
+        $flag = '';
+        if (in_array($countryCode, array_keys($countries))) {
+            $flag = $this->Html->image('/files/flags/'.$countryCode.'.png', [
+                'class' => $class,
+            ]);
+        }
 
-	public function getDirection($order, $key){
-		if(!is_array($order))
-			$order = array();
+        return $flag;
+    }
 
-		if(array_key_exists($key, $order)):
-			if($order[$key] == 'asc'):
-				return '<i class="fa fa-sort-asc">&nbsp;</i>';
-			endif;
-			return '<i class="fa fa-sort-desc">&nbsp;</i>';
-		endif;
-		return '<i class="fa fa-sort">&nbsp;</i>';
-	}
+    /**
+     * returns a formatted final score
+     *
+     * @param  array $match
+     *
+     * @return string        team_home_total : team_away_total
+     */
+    public function getFinalScore($match)
+    {
+        $scores = Utils::calculateFinalScore($match);
 
-	public function formatExportCount($count){
-		if($count <= 9){
-			return "&nbsp".$count."&nbsp;";
-		}
+        return $scores['teamHomeTotal'].' : '.$scores['teamAwayTotal'];
+    }
 
-		return $count;
-	}
+    /**
+     * append English Ordinal Suffix
+     *
+     * @param  int $n
+     *
+     * @return string
+     */
+    public function appendEnglishOrdinalSuffix($n)
+    {
+        if (!in_array(($n % 100), [11, 12, 13])) {
+            switch ($n % 10) {
+                case 1:
+                    return $n.'st';
+                case 2:
+                    return $n.'nd';
+                case 3:
+                    return $n.'rd';
+            }
+        }
 
+        return $n.'th';
+    }
 
-	/**
-	 * Formats a given value in seconds to a human readable string of time
-	 * Example 125 will return:
-	 * 2 minutes and 5 seconds
-	 *
-	 *
-	 * @param integer $seconds to format
-	 * @return string $ as human date
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 * @deprecated This function is deprecated and will be removed in the next version!
-	 *
-	 */
-	public function secondsInWords($seconds){
-		//$min = (int)($seconds / 60);
-		//$sec = (int)($seconds % 60);
-		//return $min.' '.__('minutes').' '.__('and').' '.$sec.' '.__('seconds');
-		return $this->secondsInHuman($seconds);
-	}
+    /**
+     * returns terms and conditions link
+     * @return string
+     */
+    public function termsAndConditionsLink()
+    {
+        return __('register.i_accept_the').' '.$this->Html->link(__('terms_and_conditions'),
+                [
+                    'controller' => 'contents',
+                    'action'     => 'content',
+                    'page.terms_of_use',
+                ],
+                [
+                    'target' => '_blank',
+                ]
+            ).'.';
+    }
 
-	/**
-	 * Formats a given value in seconds to a human readable string of time
-	 * Example 58536006 will return:
-	 * 1 years, 10 months, 8 days, 12 hours, 0 minutes and 6 seconds
-	 *
-	 *
-	 * @param integer $seconds to format
-	 * @return string $ as human date
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function secondsInHuman($duration){
-		if($duration == ''){
-			$duration = 0;
-		}
-		$zero = new DateTime("@0");
-		$seconds = new DateTime("@$duration");
+    /**
+     * Formats a key/value array to a table
+     *
+     * @param array $data
+     * @param array $options
+     *
+     * @return string
+     */
+    public function captionTable($data, array $options = [])
+    {
+        $options = Set::merge([
+            'additionalClasses' => '',
+        ], $options);
 
-		$closure = function($duration){
-			//Check how mutch "time" we need
-			if($duration >= 31536000){
-				// 1 year or more
-				return '%y '.__('years').', %m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-			}elseif($duration >= 2678400){
-				// 1 month or more
-				return '%m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-			}elseif($duration >= 86400){
-				// 1 day or more
-				return '%a '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-			}elseif($duration >= 3600){
-				// 1 hour or more
-				return '%h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-			}elseif($duration >= 60){
-				// 1 minute or more
-				return '%i '.__('minutes').' and %s '.__('seconds');
-			}elseif($duration >= 0){
-				// 0 second or more
-				return '%s '.__('seconds');
-			}
-		};
+        return $this->_View->element('common/caption_table', [
+            'map'     => $data,
+            'options' => $options,
+        ]);
+    }
 
-		$format = $closure($duration);
+    public function getDirection($order, $key)
+    {
+        if (!is_array($order))
+            $order = [];
 
-		return $zero->diff($seconds)->format($format);
-	}
+        if (array_key_exists($key, $order)):
+            if ($order[$key] == 'asc'):
+                return '<i class="fa fa-sort-asc">&nbsp;</i>';
+            endif;
 
-	public function pluralize($items, $singular, $plural){
-		if(is_array($items)){
-			if(sizeof($items) > 1){
-				return $plural;
-			}
-			return $singular;
-		}
+            return '<i class="fa fa-sort-desc">&nbsp;</i>';
+        endif;
 
-		if(is_numeric($items)){
-			if($items > 1){
-				return $plural;
-			}
-			return $singular;
-		}
-	}
+        return '<i class="fa fa-sort">&nbsp;</i>';
+    }
+
+    public function formatExportCount($count)
+    {
+        if ($count <= 9) {
+            return "&nbsp".$count."&nbsp;";
+        }
+
+        return $count;
+    }
 
 
-	/**
-	 * Formats a given value in seconds to a human short readable string with time units
-	 * Example 58536006 will return:
-	 * 1Y 10M 8D 12h 0m 6s
-	 *
-	 *
-	 * @param integer $seconds to format
-	 * @return string $ as human date
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function secondsInHumanShort($duration){
+    /**
+     * Formats a given value in seconds to a human readable string of time
+     * Example 125 will return:
+     * 2 minutes and 5 seconds
+     *
+     * @param integer $seconds to format
+     *
+     * @return string $ as human date
+     * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since      3.0
+     * @deprecated This function is deprecated and will be removed in the next version!
+     */
+    public function secondsInWords($seconds)
+    {
+        //$min = (int)($seconds / 60);
+        //$sec = (int)($seconds % 60);
+        //return $min.' '.__('minutes').' '.__('and').' '.$sec.' '.__('seconds');
+        return $this->secondsInHuman($seconds);
+    }
 
-		if($duration == ''){
-			$duration = 0;
-		}
+    /**
+     * Formats a given value in seconds to a human readable string of time
+     * Example 58536006 will return:
+     * 1 years, 10 months, 8 days, 12 hours, 0 minutes and 6 seconds
+     *
+     * @param integer $seconds to format
+     *
+     * @return string $ as human date
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function secondsInHuman($duration)
+    {
+        if ($duration == '') {
+            $duration = 0;
+        }
+        $zero = new DateTime("@0");
+        $seconds = new DateTime("@$duration");
 
-		$zero = new DateTime("@0");
-		$seconds = new DateTime("@$duration");
-		$closure = function($duration){
-			//Check how much "time" we need
-			if($duration >= 31536000){
-				// 1 year or more
-				return '%y'.__('Y').' %m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-			}elseif($duration >= 2678400){
-				// 1 month or more
-				return '%m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-			}elseif($duration >= 86400){
-				// 1 day or more
-				return '%a'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-			}elseif($duration >= 3600){
-				// 1 hour or more
-				return '%h'.__('h').' %i'.__('m').' %s'.__('s');
-			}elseif($duration >= 60){
-				// 1 minute or more
-				return '%i'.__('m').' %s'.__('s');
-			}elseif($duration >= 0){
-				// 0 second or more
-				return '%s'.__('s');
-			}
-		};
+        $closure = function ($duration) {
+            //Check how mutch "time" we need
+            if ($duration >= 31536000) {
+                // 1 year or more
+                return '%y '.__('years').', %m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
+            } elseif ($duration >= 2678400) {
+                // 1 month or more
+                return '%m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
+            } elseif ($duration >= 86400) {
+                // 1 day or more
+                return '%a '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
+            } elseif ($duration >= 3600) {
+                // 1 hour or more
+                return '%h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
+            } elseif ($duration >= 60) {
+                // 1 minute or more
+                return '%i '.__('minutes').' and %s '.__('seconds');
+            } elseif ($duration >= 0) {
+                // 0 second or more
+                return '%s '.__('seconds');
+            }
+        };
 
-		$format = $closure($duration);
+        $format = $closure($duration);
 
-		return $zero->diff($seconds)->format($format);
-	}
+        return $zero->diff($seconds)->format($format);
+    }
+
+    public function pluralize($items, $singular, $plural)
+    {
+        if (is_array($items)) {
+            if (sizeof($items) > 1) {
+                return $plural;
+            }
+
+            return $singular;
+        }
+
+        if (is_numeric($items)) {
+            if ($items > 1) {
+                return $plural;
+            }
+
+            return $singular;
+        }
+    }
+
+
+    /**
+     * Formats a given value in seconds to a human short readable string with time units
+     * Example 58536006 will return:
+     * 1Y 10M 8D 12h 0m 6s
+     *
+     * @param integer $seconds to format
+     *
+     * @return string $ as human date
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function secondsInHumanShort($duration)
+    {
+
+        if ($duration == '') {
+            $duration = 0;
+        }
+
+        $zero = new DateTime("@0");
+        $seconds = new DateTime("@$duration");
+        $closure = function ($duration) {
+            //Check how much "time" we need
+            if ($duration >= 31536000) {
+                // 1 year or more
+                return '%y'.__('Y').' %m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+            } elseif ($duration >= 2678400) {
+                // 1 month or more
+                return '%m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+            } elseif ($duration >= 86400) {
+                // 1 day or more
+                return '%a'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
+            } elseif ($duration >= 3600) {
+                // 1 hour or more
+                return '%h'.__('h').' %i'.__('m').' %s'.__('s');
+            } elseif ($duration >= 60) {
+                // 1 minute or more
+                return '%i'.__('m').' %s'.__('s');
+            } elseif ($duration >= 0) {
+                // 0 second or more
+                return '%s'.__('s');
+            }
+        };
+
+        $format = $closure($duration);
+
+        return $zero->diff($seconds)->format($format);
+    }
 }

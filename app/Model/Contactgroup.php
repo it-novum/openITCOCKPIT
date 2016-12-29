@@ -29,140 +29,148 @@
  * a contact belongsTo a container (many to one)
  */
 
-class Contactgroup extends AppModel{
-	//public $primaryKey = 'container_id';
+class Contactgroup extends AppModel
+{
+    //public $primaryKey = 'container_id';
 //	public $primaryKeyArray = array('id','container_id');
 
-	public $belongsTo = array(
-		'Container' => [
-			'className' => 'Container',
-			'conditions' => ['Contactgroup.container_id = Container.id'],
-			'dependent' => true,
-			'foreignKey' => 'container_id',
-			'associatedKey' => 'id'
-		]);
+    public $belongsTo = [
+        'Container' => [
+            'className'     => 'Container',
+            'conditions'    => ['Contactgroup.container_id = Container.id'],
+            'dependent'     => true,
+            'foreignKey'    => 'container_id',
+            'associatedKey' => 'id',
+        ]];
 
-	public $hasAndBelongsToMany = array(
-		'Contact' => [
-			'joinTable' => 'contacts_to_contactgroups',
-			'foreignKey' => 'contactgroup_id',
-			'unique' => true,
-		]
-	);
+    public $hasAndBelongsToMany = [
+        'Contact' => [
+            'joinTable'  => 'contacts_to_contactgroups',
+            'foreignKey' => 'contactgroup_id',
+            'unique'     => true,
+        ],
+    ];
 
-	public $recursive = 1;
+    public $recursive = 1;
 
-	public $validate = [
-		'Contact' => [
-			'rule' => ['multiple', [
-				'min' => 1,
-			]],
-			'message' => 'Please select at least 1 contact',
-			'required' => true
-			]
-		];
+    public $validate = [
+        'Contact' => [
+            'rule'     => ['multiple', [
+                'min' => 1,
+            ]],
+            'message'  => 'Please select at least 1 contact',
+            'required' => true,
+        ],
+    ];
 
-	public function __construct($id = false, $table = null, $ds = null){
-		parent::__construct($id, $table, $ds);
-		$this->Contact = ClassRegistry::init('Contact');
-		App::uses('UUID', 'Lib');
-		//$this->primaryKey = 'id';
-	}
+    public function __construct($id = false, $table = null, $ds = null)
+    {
+        parent::__construct($id, $table, $ds);
+        $this->Contact = ClassRegistry::init('Contact');
+        App::uses('UUID', 'Lib');
+        //$this->primaryKey = 'id';
+    }
 
 
-	public function saveContactgroup($data = []){
-		debug($data);
-		if($this->saveAll($data)){
-			$contactgroup = $this->findById($this->id);
-			if(isset($data['Contact']) && !empty($data['Contact'])){
-				foreach($data['Contact'] as $contact_id){
-					$contact = $this->Contact->findById($contact_id);
-					$contact['Container']['ContactsToContainer']['contact_id'] = $contact_id;
-					debug($contactgroup['Contactgroup']['container_id']);
-					$contact['Container']['ContactsToContainer']['container_id'] = $contactgroup['Contactgroup']['container_id'];
-					if($this->Contact->saveAll($contact, ['validate' => false])){
-						// $this->setFlash(__('contact group successfully saved'));
-						//$this->redirect(['action' => 'index']);
-						echo "jup";
-					}else{
-						//$this->setFlash(__('could not save data'), false);
-						echo "not";
-					}
-				}
-			}
-		}
-	}
+    public function saveContactgroup($data = [])
+    {
+        debug($data);
+        if ($this->saveAll($data)) {
+            $contactgroup = $this->findById($this->id);
+            if (isset($data['Contact']) && !empty($data['Contact'])) {
+                foreach ($data['Contact'] as $contact_id) {
+                    $contact = $this->Contact->findById($contact_id);
+                    $contact['Container']['ContactsToContainer']['contact_id'] = $contact_id;
+                    debug($contactgroup['Contactgroup']['container_id']);
+                    $contact['Container']['ContactsToContainer']['container_id'] = $contactgroup['Contactgroup']['container_id'];
+                    if ($this->Contact->saveAll($contact, ['validate' => false])) {
+                        // $this->setFlash(__('contact group successfully saved'));
+                        //$this->redirect(['action' => 'index']);
+                        echo "jup";
+                    } else {
+                        //$this->setFlash(__('could not save data'), false);
+                        echo "not";
+                    }
+                }
+            }
+        }
+    }
 
-	public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id'){
-		if(!is_array($container_ids)){
-			$container_ids = [$container_ids];
-		}
+    public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id')
+    {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
 
-		//Lookup for the tenant container of $container_id
-		$this->Container = ClassRegistry::init('Container');
+        //Lookup for the tenant container of $container_id
+        $this->Container = ClassRegistry::init('Container');
 
-		$tenantContainerIds = [];
+        $tenantContainerIds = [];
 
-		foreach($container_ids as $container_id){
-			if($container_id != ROOT_CONTAINER){
+        foreach ($container_ids as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
 
-				// Get container id of the tenant container
-				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-				$path = Cache::remember('ContactGroupContactsByContainerId:'. $container_id, function() use ($container_id) {
-					return $this->Container->getPath($container_id);
-				}, 'migration');
-				$tenantContainerIds[] = $path[1]['Container']['id'];
-			}else{
-				$tenantContainerIds[] = ROOT_CONTAINER;
-			}
-		}
-		$tenantContainerIds = array_unique($tenantContainerIds);
+                // Get container id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = Cache::remember('ContactGroupContactsByContainerId:'.$container_id, function () use ($container_id) {
+                    return $this->Container->getPath($container_id);
+                }, 'migration');
+                $tenantContainerIds[] = $path[1]['Container']['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
 
-		switch($type){
-			case 'all':
-				return $this->find('all', [
-					'conditions' => [
-						'Container.parent_id' => $tenantContainerIds,
-						'Container.containertype_id' => CT_CONTACTGROUP
-					],
-					'recursive' => 1,
-					'order' => [
-						'Container.name' => 'ASC'
-					]
-				]);
+        switch ($type) {
+            case 'all':
+                return $this->find('all', [
+                    'conditions' => [
+                        'Container.parent_id'        => $tenantContainerIds,
+                        'Container.containertype_id' => CT_CONTACTGROUP,
+                    ],
+                    'recursive'  => 1,
+                    'order'      => [
+                        'Container.name' => 'ASC',
+                    ],
+                ]);
 
-			default:
-				$return = [];
-				$results = $this->find('all', [
-					'conditions' => [
-						'Container.parent_id' => $tenantContainerIds,
-						'Container.containertype_id' => CT_CONTACTGROUP
-					],
-					'recursive' => 1,
-					'order' => [
-						'Container.name' => 'ASC'
-					]
-				]);
-				foreach($results as $result){
-					$return[$result['Contactgroup'][$index]] = $result['Container']['name'];
-				}
-				return $return;
-		}
-		return [];
-	}
+            default:
+                $return = [];
+                $results = $this->find('all', [
+                    'conditions' => [
+                        'Container.parent_id'        => $tenantContainerIds,
+                        'Container.containertype_id' => CT_CONTACTGROUP,
+                    ],
+                    'recursive'  => 1,
+                    'order'      => [
+                        'Container.name' => 'ASC',
+                    ],
+                ]);
+                foreach ($results as $result) {
+                    $return[$result['Contactgroup'][$index]] = $result['Container']['name'];
+                }
 
-	public function findList(){
-		$return = [];
-		$results = $this->find('all', [
-			'conditions' => [
-				'Container.containertype_id' => CT_CONTACTGROUP
-			],
-			'recursive' => 1
-		]);
-		foreach($results as $result){
-			$return[$result['Contactgroup']['id']] = $result['Container']['name'];
-		}
-		return $return;
-	}
+                return $return;
+        }
+
+        return [];
+    }
+
+    public function findList()
+    {
+        $return = [];
+        $results = $this->find('all', [
+            'conditions' => [
+                'Container.containertype_id' => CT_CONTACTGROUP,
+            ],
+            'recursive'  => 1,
+        ]);
+        foreach ($results as $result) {
+            $return[$result['Contactgroup']['id']] = $result['Container']['name'];
+        }
+
+        return $return;
+    }
 
 }

@@ -32,13 +32,13 @@
  *      |__/                                    
 */
 $customvariable = [
-	'html' => '',
-	'count' => 0
+    'html'  => '',
+    'count' => 0,
 ];
 
-if(!empty($hosttemplate['Customvariable'])):
-	$this->CustomVariables->setup('HOST', OBJECT_HOST);
-	$customvariable['html'] = $this->CustomVariables->fetchHtml($hosttemplate['Customvariable']);
-	$customvariable['count'] = sizeof($hosttemplate['Customvariable']);
+if (!empty($hosttemplate['Customvariable'])):
+    $this->CustomVariables->setup('HOST', OBJECT_HOST);
+    $customvariable['html'] = $this->CustomVariables->fetchHtml($hosttemplate['Customvariable']);
+    $customvariable['count'] = sizeof($hosttemplate['Customvariable']);
 endif;
 echo json_encode($customvariable);

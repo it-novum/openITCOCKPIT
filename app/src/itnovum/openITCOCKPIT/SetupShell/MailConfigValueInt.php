@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\SetupShell;
 
 
-
 use itnovum\openITCOCKPIT\Exceptions\NotIntException;
 
 class MailConfigValueInt
@@ -39,12 +38,14 @@ class MailConfigValueInt
 
     /**
      * MailConfigValueInt constructor.
+     *
      * @param $value
+     *
      * @throws NotIntException
      */
     function __construct($value)
     {
-        if(!is_int($value)){
+        if (!is_int($value)) {
             throw new NotIntException(sprintf('Value should be int %s given', gettype($value)));
         }
         $this->value = $value;
@@ -53,24 +54,28 @@ class MailConfigValueInt
     /**
      * @return String
      */
-    public function getValue(){
+    public function getValue()
+    {
         return $this->value;
     }
 
     /**
      * @return string
      */
-    public function getValueForConfig(){
-        if($this->isEmpty()){
+    public function getValueForConfig()
+    {
+        if ($this->isEmpty()) {
             return 0;
         }
+
         return $this->value;
     }
 
     /**
      * @return bool
      */
-    public function isEmpty(){
+    public function isEmpty()
+    {
         return empty($this->value);
     }
 }

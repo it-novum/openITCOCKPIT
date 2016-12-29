@@ -27,29 +27,33 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Skeleton extends Importer
 {
-	/**
-	 * @property \Command	$Model
-	 */
+    /**
+     * @property \Command $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import(){
-		$data = $this->getData();
-		foreach($data as $record){
-			if(!$this->Model->exists($record['foo']['id'])){
-				$this->Model->create();
-				$this->Model->saveAll($record);
-			}
-		}
-		return true;
-	}
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        $data = $this->getData();
+        foreach ($data as $record) {
+            if (!$this->Model->exists($record['foo']['id'])) {
+                $this->Model->create();
+                $this->Model->saveAll($record);
+            }
+        }
 
-	/**
-	 * @return array
-	 */
-	public function getData(){
-		$data = [];
-		return $data;
-	}
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data = [];
+
+        return $data;
+    }
 }

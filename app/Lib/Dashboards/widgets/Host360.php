@@ -24,37 +24,42 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Host360 extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-pie-chart';
-	public $element = 'host_piechart_360';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 3;
-		$this->title = __('Hosts Piechart');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostStateArray = $this->QueryCache->hostStateCount();
-		$this->Controller->set(compact(['widgetHostStateArray']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 11, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
+class Host360 extends Widget
+{
+    public $isDefault = true;
+    public $icon = 'fa-pie-chart';
+    public $element = 'host_piechart_360';
+    public $width = 5;
+    public $height = 13;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 3;
+        $this->title = __('Hosts Piechart');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetHostStateArray = $this->QueryCache->hostStateCount();
+        $this->Controller->set(compact(['widgetHostStateArray']));
+    }
+
+    public function getRestoreConfig($tabId)
+    {
+        $restorConfig = [
+            'dashboard_tab_id' => $tabId,
+            'type_id'          => $this->typeId,
+            'row'              => 0, // x
+            'col'              => 11, // y
+            'width'            => 5,
+            'height'           => 13,
+            'title'            => $this->title,
+            'color'            => $this->defaultColor,
+        ];
+
+        return $restorConfig;
+    }
+
 }

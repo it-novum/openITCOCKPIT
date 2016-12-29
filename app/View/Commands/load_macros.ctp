@@ -24,20 +24,20 @@
 //	confirmation.
 ?>
 <table id="macrosTable" class="table table-striped table-bordered smart-form" style="">
-	<thead>
-		<tr>
-			<th><?php echo __('Name'); ?></th>
-			<th><?php echo __('Value'); ?></th>
-			<th><?php echo __('Description'); ?></th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php foreach($all_macros as $macro): ?>
-			<tr>
-				<td class="text-primary"><?php echo $macro['Macro']['name']; ?></td>
-				<td><?php echo $macro['Macro']['value']; ?></td>
-				<td><?php echo $macro['Macro']['description']; ?></td>
-			</tr>
-		<?php endforeach;?>
-	</tbody>
-	</table>
+    <thead>
+    <tr>
+        <th><?php echo __('Name'); ?></th>
+        <th><?php echo __('Value'); ?></th>
+        <th><?php echo __('Description'); ?></th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($all_macros as $macro): ?>
+        <tr>
+            <td class="text-primary"><?php echo $macro['Macro']['name']; ?></td>
+            <td><?php echo $macro['Macro']['value']; ?></td>
+            <td><?php echo $macro['Macro']['description']; ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
