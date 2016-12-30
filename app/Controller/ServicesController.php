@@ -126,6 +126,12 @@ class ServicesController extends AppController
                 ],
                 'Servicestatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
+                        '0' => [
+                            'name'  => 'Not Acknowledged',
+                            'value' => 1,
+                            'label' => 'Not Acknowledged',
+                            'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
+                        ],
                         '1' => [
                             'name'  => 'Acknowledged',
                             'value' => 1,
