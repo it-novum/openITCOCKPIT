@@ -85,12 +85,9 @@
 
             <?php
             echo $this->Form->input('paginatorlength', [
-                'options' => [5 => '5', 10 => '10', 25 => '25', 50 => '50', 100 => '100', 150 => '150'],
-                'empty'   => __('Please Choose'),
-                'label'   => __('Listelement Length'),
-                'value'   => $paginatorLength,
-                'help'    => __('This field defines the length of every list in the openITCOCKPIT System for your Profile'),
-                'class'   => 'chosen',
+                'label' => __('Listelement Length'),
+                'value' => $paginatorLength,
+                'help'    => __('This field defines the length of every list in the openITCOCKPIT System for your Profile. You can choose between 1 and 1000'),
             ]);
             ?>
             <hr/>

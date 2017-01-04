@@ -36,22 +36,21 @@ App::uses('User', 'Model');
 
 
 /**
- * @property User                     $User
- * @property Changelog                $Changelog
- * @property Systemsetting            $Systemsetting
- * @property SessionComponent         $Session
- * @property FrontendComponent        $Frontend
- * @property AppAuthComponent         $AppAuth
- * @property CookieComponent          $Cookie
- * @property RequestHandlerComponent  $RequestHandler
- * @property PaginatorComponent       $Paginator
- * @property MenuComponent            $Menu
- * @property ConstantsComponent       $Constants
- * @property TreeComponent            $Tree
+ * @property User $User
+ * @property Changelog $Changelog
+ * @property Systemsetting $Systemsetting
+ * @property SessionComponent $Session
+ * @property FrontendComponent $Frontend
+ * @property AppAuthComponent $AppAuth
+ * @property CookieComponent $Cookie
+ * @property RequestHandlerComponent $RequestHandler
+ * @property PaginatorComponent $Paginator
+ * @property MenuComponent $Menu
+ * @property ConstantsComponent $Constants
+ * @property TreeComponent $Tree
  * @property AdditionalLinksComponent $AdditionalLinks
  */
-class AppController extends Controller
-{
+class AppController extends Controller {
 
     /**
      * @var array
@@ -117,9 +116,9 @@ class AppController extends Controller
      * @var array
      */
     public $helpers = [
-        'Html'      => ['className' => 'AppHtml'],
+        'Html' => ['className' => 'AppHtml'],
         'Paginator' => ['className' => 'BoostCake.BoostCakePaginator'],
-        'Form'      => ['className' => 'AppForm'],
+        'Form' => ['className' => 'AppForm'],
         'Session',
         'Utils',
         'Frontend.Frontend',
@@ -144,8 +143,7 @@ class AppController extends Controller
      * Called before every controller actions. Should not be overridden.
      * @return void
      */
-    public function beforeFilter()
-    {
+    public function beforeFilter() {
 
         //DANGER ZONE - ALLOW ALL ACTIONS
         //$this->Auth->allow();
@@ -162,8 +160,7 @@ class AppController extends Controller
         }
     }
 
-    protected function __getUserRights()
-    {
+    protected function __getUserRights() {
         //The user is logedIn, so we need to select container permissions out of DB
         $_user = $this->User->findById($this->Auth->user('id'));
         $rights = [ROOT_CONTAINER];
@@ -192,7 +189,7 @@ class AppController extends Controller
             'conditions' => [
                 'Aro.foreign_key' => $this->Auth->user('usergroup_id'),
             ],
-            'fields'     => [
+            'fields' => [
                 'Aro.foreign_key',
                 'Permission.aco_id',
             ],
@@ -241,7 +238,11 @@ class AppController extends Controller
             $this->Paginator->settings['limit'] = $this->Auth->user('paginatorlength');
             if ($this->Auth->user('paginatorlength') > 100) {
                 //paginator maxLimit must be also set now
-                $this->Paginator->settings['maxLimit'] = $this->Auth->user('paginatorlength');
+                $maxLength = $this->Auth->user('paginatorlength');
+                if($this->Auth->user('paginatorlength') > 1000){
+                    $maxLength = 1000;
+                }
+                $this->Paginator->settings['maxLimit'] = $maxLength;
             }
         } else {
             $this->Paginator->settings['limit'] = 25;
@@ -259,8 +260,7 @@ class AppController extends Controller
      * beforeFilter() Replacement for sub controllers.
      * @return void
      */
-    protected function _beforeAction()
-    {
+    protected function _beforeAction() {
         if ($this->Session->check('FRONTEND.SYSTEMNAME')) {
             $this->systemname = $this->Session->read('FRONTEND.SYSTEMNAME');
         } else {
@@ -281,8 +281,7 @@ class AppController extends Controller
      *
      * @return bool
      */
-    public function isAuthorized($user)
-    {
+    public function isAuthorized($user) {
         return ClassRegistry::getObject('AuthActions')->isAuthorized($user, $this->plugin, $this->name, $this->action);
     }
 
@@ -290,8 +289,7 @@ class AppController extends Controller
      * Called before rendering the main controller view
      * @return void
      */
-    public function beforeRender()
-    {
+    public function beforeRender() {
         if (!$this->request->is('ajax')) {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
@@ -313,39 +311,39 @@ class AppController extends Controller
             ];
             $hoststatusCountResult = $this->Host->find('all', [
                 'conditions' => [
-                    'Host.disabled'                  => 0,
-                    'HostObject.is_active'           => 1,
+                    'Host.disabled' => 0,
+                    'HostObject.is_active' => 1,
                     'HostsToContainers.container_id' => $this->MY_RIGHTS,
-                    'Hoststatus.current_state >'     => 0,
+                    'Hoststatus.current_state >' => 0,
                 ],
-                'contain'    => [],
-                'fields'     => [
+                'contain' => [],
+                'fields' => [
                     'Hoststatus.current_state',
                     'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
                 ],
-                'group'      => [
+                'group' => [
                     'Hoststatus.current_state',
                 ],
-                'joins'      => [
+                'joins' => [
 
                     [
-                        'table'      => 'nagios_objects',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostObject',
+                        'table' => 'nagios_objects',
+                        'type' => 'INNER',
+                        'alias' => 'HostObject',
                         'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                     ],
 
                     [
-                        'table'      => 'nagios_hoststatus',
-                        'type'       => 'INNER',
-                        'alias'      => 'Hoststatus',
+                        'table' => 'nagios_hoststatus',
+                        'type' => 'INNER',
+                        'alias' => 'Hoststatus',
                         'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                     ],
 
                     [
-                        'table'      => 'hosts_to_containers',
-                        'alias'      => 'HostsToContainers',
-                        'type'       => 'INNER',
+                        'table' => 'hosts_to_containers',
+                        'alias' => 'HostsToContainers',
+                        'type' => 'INNER',
                         'conditions' => [
                             'HostsToContainers.host_id = Host.id',
                         ],
@@ -364,43 +362,43 @@ class AppController extends Controller
             ];
             $servicestatusCountResult = $this->Host->find('all', [
                 'conditions' => [
-                    'Service.disabled'               => 0,
-                    'Servicestatus.current_state >'  => 0,
-                    'ServiceObject.is_active'        => 1,
+                    'Service.disabled' => 0,
+                    'Servicestatus.current_state >' => 0,
+                    'ServiceObject.is_active' => 1,
                     'HostsToContainers.container_id' => $this->MY_RIGHTS,
 
                 ],
-                'contain'    => [],
-                'fields'     => [
+                'contain' => [],
+                'fields' => [
                     'Servicestatus.current_state',
                     'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
                 ],
-                'group'      => [
+                'group' => [
                     'Servicestatus.current_state',
                 ],
-                'joins'      => [
+                'joins' => [
                     [
-                        'table'      => 'hosts_to_containers',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostsToContainers',
+                        'table' => 'hosts_to_containers',
+                        'type' => 'INNER',
+                        'alias' => 'HostsToContainers',
                         'conditions' => 'HostsToContainers.host_id = Host.id',
                     ],
                     [
-                        'table'      => 'services',
-                        'type'       => 'INNER',
-                        'alias'      => 'Service',
+                        'table' => 'services',
+                        'type' => 'INNER',
+                        'alias' => 'Service',
                         'conditions' => 'Service.host_id = Host.id',
                     ],
                     [
-                        'table'      => 'nagios_objects',
-                        'type'       => 'INNER',
-                        'alias'      => 'ServiceObject',
+                        'table' => 'nagios_objects',
+                        'type' => 'INNER',
+                        'alias' => 'ServiceObject',
                         'conditions' => 'ServiceObject.name2 = Service.uuid',
                     ],
                     [
-                        'table'      => 'nagios_servicestatus',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicestatus',
+                        'table' => 'nagios_servicestatus',
+                        'type' => 'INNER',
+                        'alias' => 'Servicestatus',
                         'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                     ],
                 ],
@@ -443,8 +441,7 @@ class AppController extends Controller
      *
      * @return void
      */
-    protected function _addLocaleStrings()
-    {
+    protected function _addLocaleStrings() {
         $strings = func_get_args();
         if (isset($strings[0]) && is_array($strings[0])) {
             $strings = $strings[0];
@@ -458,13 +455,12 @@ class AppController extends Controller
      * Proxy for Controller::redirect() to handle AJAX redirects
      *
      * @param mixed $url
-     * @param int   $status
-     * @param bool  $exit
+     * @param int $status
+     * @param bool $exit
      *
      * @return void
      */
-    public function redirect($url, $status = null, $exit = true)
-    {
+    public function redirect($url, $status = null, $exit = true) {
         // this statement catches not authenticated or not authorized ajax requests
         // AuthComponent will call Controller::redirect(null, 403) in those cases.
         // with this we're making sure that we return valid JSON responses in all cases
@@ -485,13 +481,12 @@ class AppController extends Controller
      * Sets a flash messages and redirects to the given url.
      * Will use the index action, if no $url was given.
      *
-     * @param string       $msg
+     * @param string $msg
      * @param array|string $url
      *
      * @return void
      */
-    public function flashBack($msg, $url = null, $success = false)
-    {
+    public function flashBack($msg, $url = null, $success = false) {
         if (!$url) {
             $url = ['action' => 'index'];
         }
@@ -502,17 +497,16 @@ class AppController extends Controller
     /**
      * Override setFlash to add bootstrap classes
      *
-     * @param string  $message
-     * @param bool    $success
-     * @param string  $key
+     * @param string $message
+     * @param bool $success
+     * @param string $key
      * @param boolean $autoHide
      *
      * @return void
      */
-    public function setFlash($message, $success = true, $key = 'flash', $autoHide = true)
-    {
+    public function setFlash($message, $success = true, $key = 'flash', $autoHide = true) {
         $this->Session->setFlash($message, 'default', [
-            'class' => 'alert '.($autoHide ? 'auto-hide' : '').' alert-'.($success ? 'success' : 'danger'),
+            'class' => 'alert ' . ($autoHide ? 'auto-hide' : '') . ' alert-' . ($success ? 'success' : 'danger'),
         ], $key);
     }
 
@@ -523,12 +517,11 @@ class AppController extends Controller
      * return $this->serviceResponse(Types::CODE_SUCCESS, array('message' => 'all good'));
      *
      * @param string $code the return code of the action
-     * @param array  $data array for the data key
+     * @param array $data array for the data key
      *
      * @return ServiceResponse
      */
-    public function serviceResponse($code, $data = [])
-    {
+    public function serviceResponse($code, $data = []) {
         return new ServiceResponse($code, $data);
     }
 
@@ -539,8 +532,7 @@ class AppController extends Controller
      *
      * @return    string    The rendered HTML
      */
-    protected function widgetResponse(CakeResponse $response)
-    {
+    protected function widgetResponse(CakeResponse $response) {
         // get the frontendData set by the Frontend plugin and remove unnecessary data
         $frontendData = $this->viewVars['frontendData'];
         unset($frontendData['Types']);
@@ -548,7 +540,7 @@ class AppController extends Controller
             'code' => Types::CODE_SUCCESS,
             'data' => [
                 'frontendData' => $frontendData,
-                'html'         => $response->body(),
+                'html' => $response->body(),
             ],
         ];
 
@@ -560,12 +552,11 @@ class AppController extends Controller
      *
      * @param string $action Action name to render
      * @param string $layout Layout to use
-     * @param string $file   File to use for rendering
+     * @param string $file File to use for rendering
      *
      * @return string Full output string of view contents
      */
-    public function render($action = null, $layout = null, $file = null)
-    {
+    public function render($action = null, $layout = null, $file = null) {
         // if this is a widget request, we use widgetResponse to guarantee a
         // consistent data format
         if (isset($this->request->params['widget']) && $this->request->params['widget'] === true) {
@@ -588,8 +579,7 @@ class AppController extends Controller
      * @return void
      * @since 3.0
      */
-    protected function __unbindAssociations($ModelName)
-    {
+    protected function __unbindAssociations($ModelName) {
         foreach (['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association) {
             if (!empty($this->{$ModelName}->{$association})) {
                 foreach ($this->{$ModelName}->{$association} as $accociatedModel) {
@@ -611,8 +601,7 @@ class AppController extends Controller
      * @throws MissingActionException When actions are not defined and scaffolding is
      *    not enabled.
      */
-    public function invokeAction(CakeRequest $request)
-    {
+    public function invokeAction(CakeRequest $request) {
         $result = parent::invokeAction($request);
 
         // Set the additional links for each controller!
@@ -625,12 +614,12 @@ class AppController extends Controller
         $additionalContent = $this->AdditionalLinks->fetchContentData($controller, $action, $contentPositions);
         //debug($additionalContent);
         foreach ($additionalLinks as $viewPosition => $linkData) {
-            $this->set('additionalLinks'.ucfirst($viewPosition), $linkData);
+            $this->set('additionalLinks' . ucfirst($viewPosition), $linkData);
         }
 
         foreach ($additionalContent as $viewPosition => $linkData) {
             //debug($linkData);
-            $this->set('additionalElements'.ucfirst($viewPosition), $linkData);
+            $this->set('additionalElements' . ucfirst($viewPosition), $linkData);
         }
 
         return $result; // Return what was returned before
@@ -639,8 +628,7 @@ class AppController extends Controller
     /**
      * @throws MethodNotAllowedException
      */
-    protected function allowOnlyAjaxRequests()
-    {
+    protected function allowOnlyAjaxRequests() {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException(__('This is only allowed via AJAX.'));
         }
@@ -649,15 +637,13 @@ class AppController extends Controller
     /**
      * @throws MethodNotAllowedException
      */
-    protected function allowOnlyPostRequests()
-    {
+    protected function allowOnlyPostRequests() {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException(__('This is only allowed via POST.'));
         }
     }
 
-    public function getNamedParameter($paramName, $default = null)
-    {
+    public function getNamedParameter($paramName, $default = null) {
         if (isset($this->request->params['named'][$paramName])) {
             return $this->request->params['named'][$paramName];
         }
@@ -668,8 +654,7 @@ class AppController extends Controller
     /**
      * REST API functionality
      */
-    protected function serializeId()
-    {
+    protected function serializeId() {
         if ($this->request->ext != 'json') {
             return;
         }
@@ -696,8 +681,7 @@ class AppController extends Controller
     /**
      * REST API functionality
      */
-    protected function serializeErrorMessage()
-    {
+    protected function serializeErrorMessage() {
         $name = Inflector::singularize($this->name);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
@@ -719,8 +703,7 @@ class AppController extends Controller
 
     //$useLevel === false: Check if user is permitted to SEE this object
     //$useLevel === true:  Check if user is permitted to EDIT this object
-    public function allowedByContainerId($containerIds = [], $useLevel = true)
-    {
+    public function allowedByContainerId($containerIds = [], $useLevel = true) {
         if ($this->hasRootPrivileges === true) {
             return true;
         }
@@ -773,8 +756,7 @@ class AppController extends Controller
         return false;
     }
 
-    protected function getWriteContainers()
-    {
+    protected function getWriteContainers() {
         $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function ($value) {
             if ((int)$value === WRITE_RIGHT) {
                 return true;
@@ -787,13 +769,12 @@ class AppController extends Controller
         return $MY_WRITE_RIGHTS;
     }
 
-    public function render403($options = [])
-    {
+    public function render403($options = []) {
         $_options = [
             'headline' => __('Permission denied'),
-            'error'    => __('You are not permitted to access this object'),
-            'icon'     => 'fa-exclamation-triangle',
-            'referer'  => ['action' => 'index'],
+            'error' => __('You are not permitted to access this object'),
+            'icon' => 'fa-exclamation-triangle',
+            'referer' => ['action' => 'index'],
         ];
 
         $options = Hash::merge($_options, $options);
@@ -805,8 +786,7 @@ class AppController extends Controller
     /**
      * @return Model[]
      */
-    protected function getLoadedModels()
-    {
+    protected function getLoadedModels() {
         $models = [];
         foreach ($this->uses as $modelName) {
             if (strpos($modelName, '.') !== false) {
@@ -818,8 +798,7 @@ class AppController extends Controller
         return $models;
     }
 
-    protected function isApiRequest()
-    {
+    protected function isApiRequest() {
         if ($this->isJsonRequest() || $this->isXmlRequest()) {
             return true;
         }
@@ -827,19 +806,16 @@ class AppController extends Controller
         return false;
     }
 
-    protected function isJsonRequest()
-    {
+    protected function isJsonRequest() {
         return $this->request->ext === 'json';
     }
 
-    protected function isXmlRequest()
-    {
+    protected function isXmlRequest() {
         return $this->request->ext === 'xml';
     }
 
-    public function checkForUpdates()
-    {
-        $path = APP.'Lib'.DS.'AvailableVersion.php';
+    public function checkForUpdates() {
+        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
         $availableVersion = '???';
         if (file_exists($path)) {
             require_once $path;
