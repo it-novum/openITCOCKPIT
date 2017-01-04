@@ -254,7 +254,6 @@ class ContactgroupsController extends AppController
             if (isset($this->request->data['Contactgroup']['Contact'])) {
                 $this->request->data['Contact'] = $this->request->data['Contactgroup']['Contact'];
             }
-
             if ($this->Contactgroup->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -432,41 +431,51 @@ class ContactgroupsController extends AppController
 
     public function copy($id = null)
     {
-
         $contactgroups = $this->Contactgroup->find('all', [
+            'recursive' => -1,
+            'contain' =>[
+                'Container' => [
+                    'fields' => [
+                        'Container.name',
+                        'Container.parent_id',
+                        'Container.containertype_id',
+                    ]
+                ],
+                'Contact' => [
+                    'fields' =>[
+                        'Contact.id'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Contactgroup.description'
+            ],
             'conditions' => [
                 'Contactgroup.id' => func_get_args(),
             ],
         ]);
 
         $contactgroups = Hash::combine($contactgroups, '{n}.Contactgroup.id', '{n}');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($contactgroups as $key => $contactgroup) {
-                unset($contactgroups[$key]['Contactgroup']['id']);
-                unset($contactgroups[$key]['Contactgroup']['uuid']);
-            }
 
+        if ($this->request->is('post') || $this->request->is('put')) {
             $datasource = $this->Contactgroup->getDataSource();
             try {
                 $datasource->begin();
-                foreach ($this->request->data['Contactgroup'] as $newContactGroup) {
-                    foreach ($contactgroups[$newContactGroup['source']]['Contact'] as $contact) {
-                        $newContactgroupContacts[] = $contact['id'];
-                    }
+                foreach ($this->request->data['Contactgroup'] as $sourceContactGroupId => $newContactGroup) {
                     $newContactGroupData = [
                         'Container'    => [
-                            'parent_id'        => $newContactGroup['parent_id'],
+                            'parent_id'        => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
                             'name'             => $newContactGroup['name'],
-                            'containertype_id' => 6,
+                            'containertype_id' => $contactgroups[$sourceContactGroupId]['Container']['containertype_id'],
                         ],
                         'Contactgroup' => [
                             'description' => $newContactGroup['description'],
-                            'Contact'     => $newContactgroupContacts,
                             'uuid'        => UUID::v4(),
+                            'Contact'     => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
                         ],
-                        'Contact'      => $newContactgroupContacts,
+                        'Contact' => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id')
                     ];
-
+                    $this->Contactgroup->create();
                     if (!$this->Contactgroup->saveAll($newContactGroupData)) {
                         throw new Exception('Some of the Contactgroups could not be copied');
                     }
@@ -480,11 +489,8 @@ class ContactgroupsController extends AppController
                 $this->setFlash(__($e->getMessage()), false);
                 $this->redirect(['action' => 'index']);
             }
-
         }
-
         $this->set(compact('contactgroups'));
         $this->set('back_url', $this->referer());
     }
-
 }

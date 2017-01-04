@@ -558,69 +558,47 @@ class ContactsController extends AppController
     {
 
         $contacts = $this->Contact->find('all', [
+            'recursive' => 0,
+            'contain' => [
+                'Container' => [
+                    'fields' => [
+                        'Container.id'
+                    ],
+                ],
+                'HostCommands',
+                'ServiceCommands'
+            ],
             'conditions' => [
                 'Contact.id' => func_get_args(),
             ],
         ]);
-
         $contacts = Hash::combine($contacts, '{n}.Contact.id', '{n}');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($contacts as $key => $contact) {
-                unset($contacts[$key]['Contact']['id']);
-                unset($contacts[$key]['Contact']['uuid']);
-                foreach ($contacts[$key]['Container'] as $key2 => $container) {
-                    unset($contacts[$key]['Container'][$key2]['ContactsToContainer']['id']);
-                    unset($contacts[$key]['Container'][$key2]['ContactsToContainer']['contact_id']);
-                }
-            }
-
             $datasource = $this->Contact->getDataSource();
             try {
                 $datasource->begin();
-                foreach ($this->request->data['Contact'] as $newContact) {
-                    foreach ($contacts[$newContact['source']]['Container'] as $container) {
-                        $newContactContainer['Container'][] = $container['id'];
-                    }
-                    foreach ($contacts[$newContact['source']]['HostCommands'] as $hostCommand) {
-                        $newContactHostCommands = [
-                            $hostCommand['id'],
-                        ];
-                    }
-                    foreach ($contacts[$newContact['source']]['ServiceCommands'] as $serviceCommand) {
-                        $newContactServiceCommands = [
-                            $serviceCommand['id'],
-                        ];
-                    }
+                foreach ($this->request->data['Contact'] as $sourceContactId => $newContact) {
+                    $newContact['uuid'] = UUID::v4();
+                    unset($contacts[$sourceContactId]['Contact']['id']); // remove contact id for save
+
                     $newContactData = [
-                        'Container' => $newContactContainer,
-                        'Contact'   => [
-                            'uuid'                          => UUID::v4(),
-                            'name'                          => $newContact['name'],
-                            'description'                   => $newContact['description'],
-                            'email'                         => $newContact['email'],
-                            'phone'                         => $newContact['phone'],
-                            'host_timeperiod_id'            => $newContact['host_timeperiod_id'],
-                            'HostCommands'                  => $newContactHostCommands,
-                            'host_notifications_enabled'    => $newContact['host_notifications_enabled'],
-                            'notify_host_recovery'          => $newContact['notify_host_recovery'],
-                            'notify_host_down'              => $newContact['notify_host_down'],
-                            'notify_host_unreachable'       => $newContact['notify_host_unreachable'],
-                            'notify_host_flapping'          => $newContact['notify_host_flapping'],
-                            'notify_host_downtime'          => $newContact['notify_host_downtime'],
-                            'service_timeperiod_id'         => $newContact['service_timeperiod_id'],
-                            'ServiceCommands'               => $newContactServiceCommands,
-                            'service_notifications_enabled' => $newContact['service_notifications_enabled'],
-                            'notify_service_recovery'       => $newContact['notify_service_recovery'],
-                            'notify_service_warning'        => $newContact['notify_service_warning'],
-                            'notify_service_unknown'        => $newContact['notify_service_unknown'],
-                            'notify_service_critical'       => $newContact['notify_service_critical'],
-                            'notify_service_flapping'       => $newContact['notify_service_flapping'],
-                            'notify_service_downtime'       => $newContact['notify_service_downtime'],
-                        ],
-
+                        'Contact' => Hash::merge(
+                            $contacts[$sourceContactId]['Contact'],
+                            $newContact,
+                            ['HostCommands' => [
+                                $contacts[$sourceContactId]['HostCommands'][0]['id']]
+                            ],
+                            ['ServiceCommands' => [
+                                $contacts[$sourceContactId]['ServiceCommands'][0]['id']]
+                            ]
+                        ),
+                        'Container' => [
+                            'Container' =>
+                                Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id')
+                        ]
                     ];
-
+                    $this->Contact->create();
                     if (!$this->Contact->saveAll($newContactData)) {
                         throw new Exception('Some of the Contacts could not be copied');
                     }
@@ -628,16 +606,15 @@ class ContactsController extends AppController
                 $datasource->commit();
                 $this->setFlash(__('Contacts are successfully copied'));
                 $this->redirect(['action' => 'index']);
-
             } catch (Exception $e) {
                 $datasource->rollback();
                 $this->setFlash(__($e->getMessage()), false);
                 $this->redirect(['action' => 'index']);
             }
-
         }
 
         $this->set(compact('contacts'));
         $this->set('back_url', $this->referer());
     }
 }
+

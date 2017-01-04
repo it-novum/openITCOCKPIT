@@ -39,12 +39,24 @@ class Contact extends AppModel
             'joinTable'             => 'contacts_to_hostcommands',
             'foreignKey'            => 'contact_id',
             'associationForeignKey' => 'command_id',
+            'fields' => [
+                'id',
+                'name',
+                'description',
+                'command_line'
+            ]
         ],
         'ServiceCommands' => [
             'className'             => 'Command',
             'joinTable'             => 'contacts_to_servicecommands',
             'foreignKey'            => 'contact_id',
             'associationForeignKey' => 'command_id',
+            'fields' => [
+                'id',
+                'name',
+                'description',
+                'command_line'
+            ]
         ],
 
         'Contactgroup' => [

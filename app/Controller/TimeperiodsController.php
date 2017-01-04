@@ -36,7 +36,7 @@ class TimeperiodsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Timeperiod.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Timeperiod.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
                 'Timeperiod.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
             ],
         ],
@@ -45,8 +45,8 @@ class TimeperiodsController extends AppController
     function index()
     {
         $options = [
-            'recursive'  => -1,
-            'order'      => [
+            'recursive' => -1,
+            'order' => [
                 'Timeperiod.name' => 'asc',
             ],
             'conditions' => [
@@ -253,10 +253,10 @@ class TimeperiodsController extends AppController
         //Check contacts
         $this->loadModel('Contact');
         $contactCount = $this->Contact->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'or' => [
-                    'host_timeperiod_id'    => $timeperiodId,
+                    'host_timeperiod_id' => $timeperiodId,
                     'service_timeperiod_id' => $timeperiodId,
                 ],
             ],
@@ -268,10 +268,10 @@ class TimeperiodsController extends AppController
         //Check service templates
         $this->loadModel('Servicetemplate');
         $servicetemplateCount = $this->Servicetemplate->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id'  => $timeperiodId,
+                    'check_period_id' => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -283,10 +283,10 @@ class TimeperiodsController extends AppController
         //Check services
         $this->loadModel('Service');
         $serviceCount = $this->Service->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id'  => $timeperiodId,
+                    'check_period_id' => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -298,10 +298,10 @@ class TimeperiodsController extends AppController
         //Check host templates
         $this->loadModel('Hosttemplate');
         $hosttemplateCount = $this->Hosttemplate->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id'  => $timeperiodId,
+                    'check_period_id' => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -313,10 +313,10 @@ class TimeperiodsController extends AppController
         //Check hosts
         $this->loadModel('Host');
         $hostCount = $this->Host->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id'  => $timeperiodId,
+                    'check_period_id' => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -328,7 +328,7 @@ class TimeperiodsController extends AppController
         //Check host escalations
         $this->loadModel('Hostescalation');
         $hostescalationCount = $this->Hostescalation->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'timeperiod_id' => $timeperiodId,
             ],
@@ -340,7 +340,7 @@ class TimeperiodsController extends AppController
         //Check service escalations
         $this->loadModel('Serviceescalation');
         $serviceescalationCount = $this->Serviceescalation->find('count', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'timeperiod_id' => $timeperiodId,
             ],
@@ -353,7 +353,7 @@ class TimeperiodsController extends AppController
         if (in_array('AutoreportModule', CakePlugin::loaded())) {
             $this->loadModel('AutoreportModule.Autoreport');
             $autoreportCount = $this->Autoreport->find('count', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'timeperiod_id' => $timeperiodId,
                 ],
@@ -473,42 +473,48 @@ class TimeperiodsController extends AppController
 
     public function copy($id = null)
     {
-
         $timeperiods = $this->Timeperiod->find('all', [
+            'contain' => [
+                'Timerange' => [
+                    'fields' => [
+                        'Timerange.day',
+                        'Timerange.start',
+                        'Timerange.end'
+                    ]
+                ]
+            ],
             'conditions' => [
                 'Timeperiod.id' => func_get_args(),
             ],
+            'fields' => [
+                'Timeperiod.name',
+                'Timeperiod.container_id',
+                'Timeperiod.description',
+            ]
         ]);
 
+
         $timeperiods = Hash::combine($timeperiods, '{n}.Timeperiod.id', '{n}');
-
+        $timeperiods = Hash::remove($timeperiods, '{n}.Timerange.{n}.timeperiod_id'); //clean up time ranges
         if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($timeperiods as $key => $timeperiod) {
-                unset($timeperiods[$key]['Timeperiod']['id']);
-                unset($timeperiods[$key]['Timeperiod']['uuid']);
-                unset($timeperiods[$key]['Timeperiod']['created']);
-                unset($timeperiods[$key]['Timeperiod']['modified']);
-                foreach ($timeperiods[$key]['Timerange'] as $key2 => $timerange) {
-                    unset($timeperiods[$key]['Timerange'][$key2]['id']);
-                    unset($timeperiods[$key]['Timerange'][$key2]['timeperiod_id']);
-                }
-            }
-
             $datasource = $this->Timeperiod->getDataSource();
             try {
                 $datasource->begin();
-                foreach ($this->request->data['Timeperiod'] as $newTimeperiod) {
-                    $newTimeperiodRanges = $timeperiods[$newTimeperiod['source']]['Timerange'];
+                foreach ($this->request->data['Timeperiod'] as $sourcePeriodId => $timeperiodData) {
+                    $timeRanges = [];
+                    if(!empty($timeperiods[$sourcePeriodId]['Timerange'])){
+                        $timeRanges = $timeperiods[$sourcePeriodId]['Timerange'];
+                    }
                     $newTimeperiodData = [
                         'Timeperiod' => [
-                            'uuid'         => UUID::v4(),
-                            'name'         => $newTimeperiod['name'],
-                            'container_id' => $newTimeperiod['container_id'],
-                            'description'  => $newTimeperiod['description'],
+                            'uuid' => UUID::v4(),
+                            'name' => $timeperiodData['name'],
+                            'container_id' => $timeperiodData['container_id'],
+                            'description' => $timeperiodData['description'],
                         ],
-                        'Timerange'  => $newTimeperiodRanges,
+                        'Timerange' => $timeRanges,
                     ];
-
+                    $this->Timeperiod->create();
                     if (!$this->Timeperiod->saveAll($newTimeperiodData)) {
                         throw new Exception('Some of the Timeperiods could not be copied');
                     }

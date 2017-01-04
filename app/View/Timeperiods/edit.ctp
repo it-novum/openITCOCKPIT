@@ -107,44 +107,61 @@
                         <span class="text-danger"><?php echo (isset($timerange_errors['check_timerange'])) ? $timerange_errors['check_timerange'][0] : ''; ?></span>
                     <?php endif; ?>
                 </legend>
-                <?php if (sizeof($timeperiod['Timerange']) === 0): ?>
-                    <div class="col-md-10 padding-top-10 required">
+                <?php
+                $intern_day_counter = 0;
+                $tmp_day = 0;
+                foreach ($timeperiod['Timerange'] as $key => $timerange):
+                    if ($tmp_day != $timerange['day']):
+                        $tmp_day = $timerange['day'];
+                        $intern_day_counter = 0;
+                    endif;
+                    ?>
+                    <div class="col-md-10 padding-top-10 timerange required">
                         <?php
-                        echo $this->Form->input('Timerange.0.day', [
-                                'options'  => $weekdays,
-                                'multiple' => false,
-                                'class'    => 'chosen weekdays',
-                                'div'      => false,
-
+                        echo $this->Form->input('Timerange.'.$key.'.day', [
+                                'options'   => $weekdays,
+                                'multiple'  => false,
+                                'class'     => 'chosen weekdays',
+                                'div'       => false,
                                 'wrapInput' => 'col-md-2',
                                 'label'     => ['text' => __('Day'), 'class' => 'col-md-1 no-padding text-right'],
+                                'default'   => $timerange['day'],
                             ]
                         );
 
-                        echo $this->Form->input('Timerange.0.start', [
-                                'class'       => 'col-xs-8 no-padding',
+                        if (isset($timerange['id'])) {
+                            echo $this->Form->input('Timerange.'.$key.'.id', [
+                                'type'  => 'hidden',
+                                'value' => $timerange['id'],
+                            ]);
+                        }
+                        echo $this->Form->input('Timerange.'.$key.'.start', [
+                                'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                 'placeholder' => '00:00',
                                 'maxlength'   => 5,
                                 'size'        => 5,
                                 'div'         => false,
                                 'wrapInput'   => 'col-md-2',
-                                'label'       => ['class' => 'col-md-2 text-right'],
+                                'label'       => ['class' => 'col col-md-2 text-right control-label'],
+                                'value'       => $timerange['start'],
                                 'error'       => [
                                     'attributes' => [
                                         'wrap'  => 'div',
                                         'class' => 'text-danger',
                                     ],
                                 ],
+                                'errorClass'  => 'text-danger error',
                             ]
                         );
-                        echo $this->Form->input('Timerange.0.end', [
-                                'class'       => 'col-xs-8 no-padding',
+                        echo $this->Form->input('Timerange.'.$key.'.end', [
+                                'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                 'placeholder' => '24:00',
                                 'maxlength'   => 5,
                                 'size'        => 5,
                                 'div'         => false,
                                 'wrapInput'   => 'col-md-2',
                                 'label'       => ['class' => 'col-md-2 text-right'],
+                                'value'       => $timerange['end'],
                                 'error'       => [
                                     'attributes' => [
                                         'wrap'  => 'div',
@@ -154,85 +171,15 @@
                             ]
                         );
                         ?>
-                        <a class="btn btn-default btn-xs txt-color-red removeTimeRangeDivButton">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
-                    </div>
-                <?php else: ?>
-                    <?php
-                    $intern_day_counter = 0;
-                    $tmp_day = 0;
-                    foreach ($timeperiod['Timerange'] as $key => $timerange):
-                        if ($tmp_day != $timerange['day']):
-                            $tmp_day = $timerange['day'];
-                            $intern_day_counter = 0;
-                        endif;
-                        ?>
-                        <div class="col-md-10 padding-top-10 timerange required">
-                            <?php
-                            echo $this->Form->input('Timerange.'.$key.'.day', [
-                                    'options'   => $weekdays,
-                                    'multiple'  => false,
-                                    'class'     => 'chosen weekdays',
-                                    'div'       => false,
-                                    'wrapInput' => 'col-md-2',
-                                    'label'     => ['text' => __('Day'), 'class' => 'col-md-1 no-padding text-right'],
-                                    'default'   => $timerange['day'],
-                                ]
-                            );
-
-                            if (isset($timerange['id'])) {
-                                echo $this->Form->input('Timerange.'.$key.'.id', [
-                                    'type'  => 'hidden',
-                                    'value' => $timerange['id'],
-                                ]);
-                            }
-                            echo $this->Form->input('Timerange.'.$key.'.start', [
-                                    'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
-                                    'placeholder' => '00:00',
-                                    'maxlength'   => 5,
-                                    'size'        => 5,
-                                    'div'         => false,
-                                    'wrapInput'   => 'col-md-2',
-                                    'label'       => ['class' => 'col col-md-2 text-right control-label'],
-                                    'value'       => $timerange['start'],
-                                    'error'       => [
-                                        'attributes' => [
-                                            'wrap'  => 'div',
-                                            'class' => 'text-danger',
-                                        ],
-                                    ],
-                                    'errorClass'  => 'text-danger error',
-                                ]
-                            );
-                            echo $this->Form->input('Timerange.'.$key.'.end', [
-                                    'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
-                                    'placeholder' => '24:00',
-                                    'maxlength'   => 5,
-                                    'size'        => 5,
-                                    'div'         => false,
-                                    'wrapInput'   => 'col-md-2',
-                                    'label'       => ['class' => 'col-md-2 text-right'],
-                                    'value'       => $timerange['end'],
-                                    'error'       => [
-                                        'attributes' => [
-                                            'wrap'  => 'div',
-                                            'class' => 'text-danger',
-                                        ],
-                                    ],
-                                ]
-                            );
-                            ?>
-                            <div class="col-md-1">
-                                <a class="btn btn-default btn-xs txt-color-red removeTimeRangeDivButton">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
-                            </div>
+                        <div class="col-md-1">
+                            <a class="btn btn-default btn-xs txt-color-red removeTimeRangeDivButton">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
                         </div>
-                        <?php
-                        $intern_day_counter++;
-                    endforeach; ?>
-                <?php endif; ?>
+                    </div>
+                    <?php
+                    $intern_day_counter++;
+                endforeach; ?>
                 <div class="col-md-2 padding-top-10 right" id="addTimerangeButton">
                     <a class="btn btn-primary btn-xs addTimeRangeDivButton">
                         <i class="fa fa-plus"></i>

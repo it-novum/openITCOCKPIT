@@ -372,6 +372,7 @@ class CommandsController extends AppController
 
     protected function __delete($command)
     {
+        $userId = $this->Auth->user('id');
         $this->Command->id = $command['Command']['id'];
         if ($this->Command->delete()) {
             $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -594,44 +595,49 @@ class CommandsController extends AppController
 
     public function copy($id = null)
     {
-
         $commands = $this->Command->find('all', [
+            'resursive' => -1,
+            'contain' =>[
+                'Commandargument' => [
+                    'fields' => [
+                        'Commandargument.name',
+                        'Commandargument.human_name'
+                    ]
+                ]
+            ],
             'conditions' => [
                 'Command.id' => func_get_args(),
             ],
+            'fields' => [
+                'Command.name',
+                'Command.command_line',
+                'Command.description',
+                'Command.command_type'
+            ]
         ]);
-
         $commands = Hash::combine($commands, '{n}.Command.id', '{n}');
-
+        $commands = Hash::remove($commands, '{n}.Commandargument.{n}.command_id'); //clean up source command id
         if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($commands as $key => $command) {
-                unset($commands[$key]['Command']['id']);
-                unset($commands[$key]['Command']['uuid']);
-                foreach ($commands[$key]['Commandargument'] as $key2 => $commandargument) {
-                    unset($commands[$key]['Commandargument'][$key2]['id']);
-                    unset($commands[$key]['Commandargument'][$key2]['command_id']);
-                    unset($commands[$key]['Commandargument'][$key2]['created']);
-                    unset($commands[$key]['Commandargument'][$key2]['modified']);
-                }
-            }
-
             $datasource = $this->Command->getDataSource();
             try {
                 $datasource->begin();
-                foreach ($this->request->data['Command'] as $newCommand) {
-                    $newCommandArgs = $commands[$newCommand['source']]['Commandargument'];
+                foreach ($this->request->data['Command'] as $sourceCommandId => $newCommand) {
+                    $newCommandArgs = [];
+                    if(!empty($commands[$sourceCommandId]['Commandargument'])){
+                        $newCommandArgs = $commands[$sourceCommandId]['Commandargument'];
+                    }
                     $newCommandData = [
                         'Command'         => [
                             'uuid'         => UUID::v4(),
                             'name'         => $newCommand['name'],
                             'command_line' => $newCommand['command_line'],
-                            'command_type' => $newCommand['command_type'],
+                            'command_type' => $commands[$sourceCommandId]['Command']['command_type'],
                             'description'  => $newCommand['description'],
                         ],
                         'Commandargument' => $newCommandArgs,
-
-
                     ];
+
+                    $this->Command->create();
                     if (!$this->Command->saveAll($newCommandData)) {
                         throw new Exception('Some of the Commands could not be copied');
                     }
@@ -653,3 +659,4 @@ class CommandsController extends AppController
         $this->set('back_url', $this->referer());
     }
 }
+
