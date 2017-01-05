@@ -84,9 +84,9 @@
 			<a href="/login/login" class="btn btn-danger">
 				<i class="fa fa-times"></i> <?php echo __('Cancel'); ?>
 			</a>
-			<?php foreach($openIdButtons as $openIdButton): ?>
-				<a href="<?= $openIdButton['href'] ?>" class="btn btn-primary pull-left">
-					<?= $openIdButton['text'] ?>
+			<?php foreach($ssoButtons as $ssoButton): ?>
+				<a href="<?= $ssoButton['href'] ?>" class="btn btn-primary pull-left">
+					<?= $ssoButton['text'] ?>
 				</a>
 			<?php endforeach; ?>
 		</footer>

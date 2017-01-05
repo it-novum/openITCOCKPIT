@@ -38,7 +38,7 @@ class LoginController extends AppController {
 	}
 
 	public function login($redirectBack = 0){
-		$this->loadModel('OpenidModule.Openid');
+		$this->loadModel('Oauth2Module.Oauth2client');
 		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 		$displayMethod = false;
 		$authMethods = [
@@ -197,11 +197,11 @@ class LoginController extends AppController {
 			}
 		}
 
-		$openIdObj = $this->Openid->getOpenIdConnects(); // in case if login page must be shown in $openIdObj are the buttons to login with OpenID
+		$oauth2Obj = $this->Oauth2client->getConnects();
 		$message = 'Please login';
 		$this->set('message', $message);
 		$this->set('_serialize', ['message']);
-		$this->set('openIdButtons', $openIdObj);
+		$this->set('ssoButtons', $oauth2Obj);
 	}
 
 	public function onetimetoken($id = null, $rememberMe = false){
