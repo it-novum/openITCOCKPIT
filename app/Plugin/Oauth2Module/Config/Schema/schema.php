@@ -48,7 +48,7 @@ class Oauth2ModuleSchema extends CakeSchema
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'client_id'       => ['type' => 'string', 'length' => 255, 'null' => false],
         'client_secret'   => ['type' => 'string', 'length' => 255, 'null' => false],
-        'redirect_uri'    => ['type' => 'string', 'length' => 255, 'null' => false],
+        //'redirect_uri'    => ['type' => 'string', 'length' => 255, 'null' => false],
         'url_authorize'   => ['type' => 'string', 'length' => 255, 'null' => false],
         'url_accessToken' => ['type' => 'string', 'length' => 255, 'null' => false],
         'provider'        => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => 'PingIdentity'],

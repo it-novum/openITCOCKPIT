@@ -53,7 +53,7 @@
             echo $this->Form->input('Oauth2client.provider', ['label' => __('OAuth2 Provider'), 'placeholder' => 'PingIdentity', 'value' => $oauth2Client['Oauth2client']['provider']]);
             echo $this->Form->input('Oauth2client.client_id', ['label' => __('Client ID'), 'placeholder' => 'OAuth2 Client ID', 'value' => $oauth2Client['Oauth2client']['client_id'], 'type' => 'text']);
             echo $this->Form->input('Oauth2client.client_secret', ['label' => __('Client secret'), 'value' => $oauth2Client['Oauth2client']['client_secret']]);
-            echo $this->Form->input('Oauth2client.redirect_uri', ['label' => __('Redirect URI'), 'value' => $oauth2Client['Oauth2client']['redirect_uri']]);
+            echo $this->Form->input('redirect_uri', ['label' => __('Redirect URI'), 'readOnly' => true, 'value' => $returnUrl]);
             echo $this->Form->input('Oauth2client.url_authorize', ['label' => __('URL Authorize'), 'value' => $oauth2Client['Oauth2client']['url_authorize']]);
             echo $this->Form->input('Oauth2client.url_accessToken', ['label' => __('URL Access Token'), 'value' => $oauth2Client['Oauth2client']['url_accessToken']]);
             ?>

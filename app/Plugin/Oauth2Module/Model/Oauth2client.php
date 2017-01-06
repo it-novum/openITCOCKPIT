@@ -48,13 +48,13 @@ class Oauth2client extends Oauth2ModuleAppModel
                 'required' => true,
             ],
         ],
-        'redirect_uri'    => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-            ],
-        ],
+//        'redirect_uri'    => [
+//            'notBlank' => [
+//                'rule'     => 'notBlank',
+//                'message'  => 'This field cannot be left blank.',
+//                'required' => true,
+//            ],
+//        ],
         'url_authorize'   => [
             'notBlank' => [
                 'rule'     => 'notBlank',
@@ -76,13 +76,13 @@ class Oauth2client extends Oauth2ModuleAppModel
                 'required' => true,
             ],
         ],
-        'button_text'     => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-            ],
-        ],
+//        'button_text'     => [
+//            'notBlank' => [
+//                'rule'     => 'notBlank',
+//                'message'  => 'This field cannot be left blank.',
+//                'required' => true,
+//            ],
+//        ],
     ];
 
     /**
@@ -124,5 +124,9 @@ class Oauth2client extends Oauth2ModuleAppModel
 
         return [];
 
+    }
+
+    public function getReturnUrl($id){
+        return Router::url(['plugin' => 'oauth2_module', 'controller' => 'oauth2', 'action' => 'checkAndLogin', 'id' => $id], true );
     }
 }

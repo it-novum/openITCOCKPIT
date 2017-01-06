@@ -32,7 +32,7 @@
 class Oauth2Controller extends Oauth2ModuleAppController
 {
     public $layout = 'Admin.default';
-    public $uses = ['Oauth2client', 'Proxy'];
+    public $uses = ['Oauth2Module.Oauth2client', 'Proxy'];
 
     public function index()
     {
@@ -49,6 +49,7 @@ class Oauth2Controller extends Oauth2ModuleAppController
                 $this->setFlash(__('could not save data'), false);
             }
         }
+        $this->set('returnUrl', __('Return Url will be generated after saving the OAuth2 Client'));
     }
 
     /**
@@ -71,6 +72,7 @@ class Oauth2Controller extends Oauth2ModuleAppController
             }
         }
         $this->set('oauth2Client', $oauth2Client);
+        $this->set('returnUrl', $this->Oauth2client->getReturnUrl($id));
     }
 
     /**
