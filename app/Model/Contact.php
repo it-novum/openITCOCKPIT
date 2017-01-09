@@ -30,30 +30,16 @@ class Contact extends AppModel
         'Container'       => [
             'className'             => 'Container',
             'joinTable'             => 'contacts_to_containers',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'container_id',
             //		'conditions' => ['Container.containertype_id' => [CT_TENANT, CT_GLOBAL]]
         ],
         'HostCommands'    => [
             'className'             => 'Command',
             'joinTable'             => 'contacts_to_hostcommands',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'command_id',
         ],
         'ServiceCommands' => [
             'className'             => 'Command',
             'joinTable'             => 'contacts_to_servicecommands',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'command_id',
-        ],
-
-        'Contactgroup' => [
-            'className'             => 'Contactgroup',
-            'joinTable'             => 'contacts_to_containers',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'container_id',
-            //		'conditions' => ['Contactgroup.containertype_id' => CT_CONTACTGROUP]
-        ],
+        ]
     ];
 
     public $belongsTo = [
