@@ -91,55 +91,18 @@ foreach ($this->params->named as $key => $value) {
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                     class="fa fa-lg fa-table"></i></a>
                         <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="2"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Edit'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="3"><input
-                                            type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="4"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('In downtime'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="5"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Graph'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="6"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Shared'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="6"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Passive'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="7"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hostname'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="8"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('IP-Address'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="9"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('State since'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="10"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last check'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="11"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Output'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="12"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Instance'); ?></a>
-                            </li>
-
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('In downtime'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Graph'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Shared'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Passive'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hostname'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('IP-Address'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="9"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('State since'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="10"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last check'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="11"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Output'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="12"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Instance'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="13"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Edit'); ?></a></li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
