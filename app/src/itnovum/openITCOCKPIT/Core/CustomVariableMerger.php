@@ -30,41 +30,44 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 class CustomVariableMerger extends CustomVariableHelper
 {
 
-	/**
-	 * @var CustomVariablesRepository
-	 */
-	private $hostCustomVariablesRepository;
+    /**
+     * @var CustomVariablesRepository
+     */
+    private $hostCustomVariablesRepository;
 
-	/**
-	 * @var CustomVariablesRepository
-	 */
-	private $hosttemplateCustomVariablesRepository;
+    /**
+     * @var CustomVariablesRepository
+     */
+    private $hosttemplateCustomVariablesRepository;
 
-	/**
-	 * CustomVariableDiffer constructor.
-	 * @param array $hostCustomVariables from CakePHP's find
-	 * @param array $hosttemplateCustomVariables from CakePHP's find
-	 */
-	public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
-	{
-		$this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
-		$this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
-	}
+    /**
+     * CustomVariableDiffer constructor.
+     *
+     * @param array $hostCustomVariables         from CakePHP's find
+     * @param array $hosttemplateCustomVariables from CakePHP's find
+     */
+    public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
+    {
+        $this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
+        $this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
+    }
 
-	/**
-	 * @return CustomVariablesRepository
-	 */
-	public function getCustomVariablesMergedAsRepository(){
-		$hostCustomVariablesRepository = $this->hostCustomVariablesRepository;
-		foreach($hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable){
-			//Delete variables with the same name of the host template
-			$this->hosttemplateCustomVariablesRepository->deleteByVariableName($hostCustomVariable->getName());
-		}
+    /**
+     * @return CustomVariablesRepository
+     */
+    public function getCustomVariablesMergedAsRepository()
+    {
+        $hostCustomVariablesRepository = $this->hostCustomVariablesRepository;
+        foreach ($hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
+            //Delete variables with the same name of the host template
+            $this->hosttemplateCustomVariablesRepository->deleteByVariableName($hostCustomVariable->getName());
+        }
 
-		foreach($this->hosttemplateCustomVariablesRepository->getAllCustomVariables() as $hosttemplateCustomVariable){
-			$hostCustomVariablesRepository->addCustomVariable($hosttemplateCustomVariable);
-		}
-		return $hostCustomVariablesRepository;
-	}
+        foreach ($this->hosttemplateCustomVariablesRepository->getAllCustomVariables() as $hosttemplateCustomVariable) {
+            $hostCustomVariablesRepository->addCustomVariable($hosttemplateCustomVariable);
+        }
+
+        return $hostCustomVariablesRepository;
+    }
 
 }

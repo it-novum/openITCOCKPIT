@@ -51,29 +51,34 @@ class ServicesExtendedLoader
 
     /**
      * ServicesExtendedLoader constructor.
+     *
      * @param \Hostgroup $Hostgroup
-     * @param array $containerIds
-     * @param int $hostgroupId
+     * @param array      $containerIds
+     * @param int        $hostgroupId
      */
-    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId){
+    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId)
+    {
         $this->Hostgroup = $Hostgroup;
         $this->containerIds = $containerIds;
         $this->hostgroupId = $hostgroupId;
     }
 
-    public function setServiceModel(\Service $Service){
+    public function setServiceModel(\Service $Service)
+    {
         $this->Service = $Service;
     }
 
     /**
      * @param int $hostId
+     *
      * @return array
      */
-    public function loadServicesWithStatusByHostId($hostId){
+    public function loadServicesWithStatusByHostId($hostId)
+    {
         $records = $this->Service->find('all', $this->getQueryWithServicestatus($hostId));
         $result = [];
-        foreach($records as $record){
-            if($record['Service']['name'] === null || $record['Service']['name'] === ''){
+        foreach ($records as $record) {
+            if ($record['Service']['name'] === null || $record['Service']['name'] === '') {
                 $record['Service']['name'] = $record['Servicetemplate']['name'];
             }
             $result[] = $record;
@@ -81,41 +86,44 @@ class ServicesExtendedLoader
 
         unset($records);
         $result = \Hash::sort($result, '{n}.Service.name', 'asc');
+
         return $result;
     }
 
-    public function loadServicesCumulated(){
+    public function loadServicesCumulated()
+    {
         return $this->Hostgroup->find('all', $this->getQueryServicestatusCumulated());
     }
 
-    private function getQueryWithServicestatus($hostId){
+    private function getQueryWithServicestatus($hostId)
+    {
         $query = [
-            'recursive' => -1,
-            'contain' => [],
+            'recursive'  => -1,
+            'contain'    => [],
             'conditions' => [
-                'Service.host_id' => $hostId
+                'Service.host_id' => $hostId,
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'servicetemplates',
-                    'type' => 'INNER',
-                    'alias' => 'Servicetemplate',
-                    'conditions' => 'Servicetemplate.id = Service.servicetemplate_id'
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
                 ],
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'Objects',
-                    'conditions' => 'Objects.name2 = Service.uuid'
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.name2 = Service.uuid',
                 ],
                 [
-                    'table' => 'nagios_servicestatus',
-                    'type' => 'INNER',
-                    'alias' => 'Servicestatus',
-                    'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = Objects.object_id',
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -135,71 +143,72 @@ class ServicesExtendedLoader
                 'Servicestatus.next_check',
                 'Servicestatus.active_checks_enabled',
                 'Servicestatus.last_hard_state_change',
-                'Servicestatus.process_performance_data'
-            ]
+                'Servicestatus.process_performance_data',
+            ],
         ];
 
         return $query;
     }
 
-    private function getQueryServicestatusCumulated(){
+    private function getQueryServicestatusCumulated()
+    {
         $query = [
-            'recursive' => -1,
-            'contain' => [],
-            'joins' => [
+            'recursive'  => -1,
+            'contain'    => [],
+            'joins'      => [
                 [
-                    'table' => 'containers',
-                    'type' => 'LEFT',
-                    'alias' => 'Container',
-                    'conditions' => 'Container.id = Hostgroup.container_id'
+                    'table'      => 'containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id',
                 ],
                 [
-                    'table' => 'hosts_to_hostgroups',
-                    'type' => 'LEFT',
-                    'alias' => 'Host2Hostgroups',
-                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id'
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host2Hostgroups',
+                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id',
                 ],
                 [
-                    'table' => 'hosts',
-                    'type' => 'LEFT',
-                    'alias' => 'Host',
-                    'conditions' => 'Host.id = Host2Hostgroups.host_id'
+                    'table'      => 'hosts',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Host2Hostgroups.host_id',
                 ],
                 [
-                    'table' => 'services',
-                    'type' => 'LEFT',
-                    'alias' => 'Service',
-                    'conditions' => 'Service.host_id = Host.id'
+                    'table'      => 'services',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.host_id = Host.id',
                 ],
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'Objects',
-                    'conditions' => 'Objects.name2 = Service.uuid'
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.name2 = Service.uuid',
                 ],
                 [
-                    'table' => 'nagios_servicestatus',
-                    'type' => 'INNER',
-                    'alias' => 'Servicestatus',
-                    'conditions' => 'Servicestatus.service_object_id = Objects.object_id'
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = Objects.object_id',
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'MAX(Servicestatus.current_state) as cumulated',
             ],
-            'order' => [
-                'Container.name' => 'asc'
+            'order'      => [
+                'Container.name' => 'asc',
             ],
             'conditions' => [
                 'Container.id' => $this->containerIds,
             ],
-            'group' => [
-                'Host.id'
-            ]
+            'group'      => [
+                'Host.id',
+            ],
         ];
 
-        if(!$this->hostgroupId !== null){
+        if (!$this->hostgroupId !== null) {
             $query['conditions']['Hostgroup.id'] = $this->hostgroupId;
         }
 

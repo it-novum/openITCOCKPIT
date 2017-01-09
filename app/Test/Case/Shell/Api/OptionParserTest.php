@@ -27,11 +27,12 @@ use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 // run test with: oitc test app Shell/Api/OptionParser
 class OptionParserTest extends CakeTestCase
 {
-    public function testParseNormal(){
+    public function testParseNormal()
+    {
         $parameters = [
-            'model' => 'Systemsettings',
+            'model'  => 'Systemsettings',
             'action' => 'add',
-            'data' => 'This is a test'
+            'data'   => 'This is a test',
         ];
 
         $optionParser = new OptionParser();
@@ -39,10 +40,11 @@ class OptionParserTest extends CakeTestCase
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\OptionParser', $optionParser);
     }
 
-    public function testThrowMissingModel(){
+    public function testThrowMissingModel()
+    {
         $parameters = [
             'action' => 'add',
-            'data' => 'This is a test'
+            'data'   => 'This is a test',
         ];
 
         $optionParser = new OptionParser();
@@ -50,10 +52,11 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testThrowMissingAction(){
+    public function testThrowMissingAction()
+    {
         $parameters = [
             'model' => 'Systemsettings',
-            'data' => 'This is a test'
+            'data'  => 'This is a test',
         ];
 
         $optionParser = new OptionParser();
@@ -61,9 +64,10 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testThrowMissingData(){
+    public function testThrowMissingData()
+    {
         $parameters = [
-            'model' => 'Systemsettings',
+            'model'  => 'Systemsettings',
             'action' => 'add',
         ];
 
@@ -72,12 +76,13 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testGetOptions(){
+    public function testGetOptions()
+    {
         $parameters = [
-            'model' => 'systemsettings',
+            'model'  => 'systemsettings',
             'plugin' => 'Foobar',
             'action' => 'add',
-            'data' => 'This is a test'
+            'data'   => 'This is a test',
         ];
 
         $optionParser = new OptionParser();

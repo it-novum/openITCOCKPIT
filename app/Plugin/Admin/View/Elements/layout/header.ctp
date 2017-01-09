@@ -25,10 +25,10 @@
 
 ?>
 <header id="header">
-		<div id="logo-group">
-		<span id="logo"><?php echo $systemname; ?></span>
-		<?php if($loggedIn): ?>
-			<?php /*
+    <div id="logo-group">
+        <span id="logo"><?php echo $systemname; ?></span>
+        <?php if ($loggedIn): ?>
+        <?php /*
 			<span id="activity" class="activity-dropdown"> <i class="fa fa-bullhorn"></i> <b class="badge"> 21 </b> </span>
 
 
@@ -70,34 +70,51 @@
 				<!-- end footer -->
 
 			</div> */ ?>
-		</div>
+    </div>
 
-		<div class="pull-right">
-			<div class="btn-header pull-right">
-				<span> <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-sign-out"></i></a> </span>
-			</div>
-			<div id="show_shortcuts" class="btn-header pull-right hidden-mobile hidden-tablet" data-toggle="modal" data-target="#ShortcutsHelp">
-				<span> <a href="javascript:void(0);" data-original-title="<?php echo __('Keyboard shortcuts'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-keyboard-o"></i></a> </span>
-			</div>
-			<div id="hide-menu" class="btn-header pull-right">
-				<span> <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-arrow-circle-left"></i></a> </span>
-			</div>
-			<div class="btn-header pull-right">
-				<span> <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet"></i></a></span>
-			</div>
-			<div class="btn-header pull-right hidden-mobile hidden-tablet">
-				<span><a href="javascript:void(0);" id="globalServertime" style="font-weight:normal;" data-render-utc="<?php echo time(); ?>" data-render-servertime="<?php echo date('F d, Y H:i:s'); ?>" server-timezone-offset="<?php $d = new DateTime(); echo $d->getOffset(); ?>" data-original-title="<?php echo __('Server time'); ?>" data-placement="left" rel="tooltip" data-container="body"></a></span>
-			</div>
-			<div class="btn-header pull-right hidden-mobile hidden-tablet" style="display:none;">
-				<?php App::uses('Timezone', 'Lib'); ?>
-				<span><a href="javascript:void(0);" id="localClienttime" user-timezone="<?php echo h($this->Auth->user('timezone')); ?>" timezone-offset="<?php echo h(Timezone::getUserSystemOffset($this->Auth->user('timezone'))); ?>" data-original-title="<?php echo __('Your local time'); ?>" data-placement="left" rel="tooltip" data-container="body"></a></span>
-			</div>
-			<?php
-			if(version_compare($availableVersion, $installedVersion) > 0 && $hasRootPrivileges === true): ?>
-				<div class="btn-header pull-right hidden-mobile hidden-tablet">
-					<span> <a href="/packetmanager/index" data-original-title="<?php echo __('New version available!'); ?>" data-placement="left" rel="tooltip" data-container="body"><i class="txt-color-blue fa fa-fire"></i></a> </span>
-				</div>
-			<?php endif; ?>
-	<?php endif;?>
-	</div>
+    <div class="pull-right">
+        <div class="btn-header pull-right">
+            <span> <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
+                      rel="tooltip" data-container="body"><i class="fa fa-sign-out"></i></a> </span>
+        </div>
+        <div id="show_shortcuts" class="btn-header pull-right hidden-mobile hidden-tablet" data-toggle="modal"
+             data-target="#ShortcutsHelp">
+            <span> <a href="javascript:void(0);" data-original-title="<?php echo __('Keyboard shortcuts'); ?>"
+                      data-placement="left" rel="tooltip" data-container="body"><i
+                            class="fa fa-keyboard-o"></i></a> </span>
+        </div>
+        <div id="hide-menu" class="btn-header pull-right">
+            <span> <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>"
+                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-arrow-circle-left"></i></a> </span>
+        </div>
+        <div class="btn-header pull-right">
+            <span> <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet"></i></a></span>
+        </div>
+        <div class="btn-header pull-right hidden-mobile hidden-tablet">
+            <span><a href="javascript:void(0);" id="globalServertime" style="font-weight:normal;"
+                     data-render-utc="<?php echo time(); ?>"
+                     data-render-servertime="<?php echo date('F d, Y H:i:s'); ?>"
+                     server-timezone-offset="<?php $d = new DateTime();
+                     echo $d->getOffset(); ?>" data-original-title="<?php echo __('Server time'); ?>"
+                     data-placement="left" rel="tooltip" data-container="body"></a></span>
+        </div>
+        <div class="btn-header pull-right hidden-mobile hidden-tablet" style="display:none;">
+            <?php App::uses('Timezone', 'Lib'); ?>
+            <span><a href="javascript:void(0);" id="localClienttime"
+                     user-timezone="<?php echo h($this->Auth->user('timezone')); ?>"
+                     timezone-offset="<?php echo h(Timezone::getUserSystemOffset($this->Auth->user('timezone'))); ?>"
+                     data-original-title="<?php echo __('Your local time'); ?>" data-placement="left" rel="tooltip"
+                     data-container="body"></a></span>
+        </div>
+        <?php
+        if (version_compare($availableVersion, $installedVersion) > 0 && $hasRootPrivileges === true): ?>
+            <div class="btn-header pull-right hidden-mobile hidden-tablet">
+                <span> <a href="/packetmanager/index" data-original-title="<?php echo __('New version available!'); ?>"
+                          data-placement="left" rel="tooltip" data-container="body"><i
+                                class="txt-color-blue fa fa-fire"></i></a> </span>
+            </div>
+        <?php endif; ?>
+        <?php endif; ?>
+    </div>
 </header>

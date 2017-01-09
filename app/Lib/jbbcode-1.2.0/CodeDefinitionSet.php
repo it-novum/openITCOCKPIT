@@ -8,7 +8,6 @@ use JBBCode\CodeDefinition;
 
 /**
  * An interface for sets of code definitons.
- *
  * @author jbowens
  */
 interface CodeDefinitionSet

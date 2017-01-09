@@ -25,26 +25,26 @@
 
 ?>
 <div class="widget-body">
-	<div class="pull-left">
-		<?php
-		if($this->Auth->user('image') != null && $this->Auth->user('image') != ''){
-			if(file_exists(WWW_ROOT . 'userimages' . DS . $this->Auth->user('image'))){
-				echo $this->html->image('/userimages' . DS . $this->Auth->user('image'), ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-			}else{
-				echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-			}
-		}else{
-			echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-		}
-		?>
-	</div>
-	<div class="pull-left col-md-7">
-		<strong><?php echo array_sum($state_array_host); ?></strong> <?php echo __('hosts are monitored'); ?>
-		<br/>
-		<strong><?php echo $state_total = array_sum($state_array_service); ?></strong> <?php echo __('services are monitored'); ?>
-		<br/>
-		<br/>
-		<?php echo __('Your selected Timezone is '); ?><strong><?php echo h($this->Auth->user('timezone')); ?></strong>
-		(<?php echo $this->Time->format(time(), $this->Auth->user('dateformat')); ?>)
-	</div>
+    <div class="pull-left">
+        <?php
+        if ($this->Auth->user('image') != null && $this->Auth->user('image') != '') {
+            if (file_exists(WWW_ROOT.'userimages'.DS.$this->Auth->user('image'))) {
+                echo $this->html->image('/userimages'.DS.$this->Auth->user('image'), ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+            } else {
+                echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+            }
+        } else {
+            echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+        }
+        ?>
+    </div>
+    <div class="pull-left col-md-7">
+        <strong><?php echo array_sum($state_array_host); ?></strong> <?php echo __('hosts are monitored'); ?>
+        <br/>
+        <strong><?php echo $state_total = array_sum($state_array_service); ?></strong> <?php echo __('services are monitored'); ?>
+        <br/>
+        <br/>
+        <?php echo __('Your selected Timezone is '); ?><strong><?php echo h($this->Auth->user('timezone')); ?></strong>
+        (<?php echo $this->Time->format(time(), $this->Auth->user('dateformat')); ?>)
+    </div>
 </div>

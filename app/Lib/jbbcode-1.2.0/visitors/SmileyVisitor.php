@@ -5,16 +5,15 @@ namespace JBBCode\visitors;
 /**
  * This visitor is an example of how to implement smiley parsing on the JBBCode
  * parse graph. It converts :) into image tags pointing to /smiley.png.
- *
  * @author jbowens
- * @since April 2013
+ * @since  April 2013
  */
 class SmileyVisitor implements \JBBCode\NodeVisitor
 {
 
     function visitDocumentElement(\JBBCode\DocumentElement $documentElement)
     {
-        foreach($documentElement->getChildren() as $child) {
+        foreach ($documentElement->getChildren() as $child) {
             $child->accept($this);
         }
     }
@@ -22,9 +21,9 @@ class SmileyVisitor implements \JBBCode\NodeVisitor
     function visitTextNode(\JBBCode\TextNode $textNode)
     {
         /* Convert :) into an image tag. */
-        $textNode->setValue(str_replace(':)', 
-                                        '<img src="/smiley.png" alt=":)" />', 
-                                        $textNode->getValue()));
+        $textNode->setValue(str_replace(':)',
+            '<img src="/smiley.png" alt=":)" />',
+            $textNode->getValue()));
     }
 
     function visitElementNode(\JBBCode\ElementNode $elementNode)

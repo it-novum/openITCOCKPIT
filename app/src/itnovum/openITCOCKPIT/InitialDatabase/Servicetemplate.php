@@ -27,28 +27,26 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Servicetemplate extends Importer
 {
-	/**
-	 * @property \Servicetemplate $Model
-	 */
+    /**
+     * @property \Servicetemplate $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import()
-	{
-		if ($this->isTableEmpty()) {
-			$data = $this->getData();
-			foreach ($data as $record) {
-				$this->Model->create();
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
 
-				$record['Servicetemplate']['Contact'] = $record['Contact'];
-				$record['Servicetemplate']['Contactgroup'] = $record['Contactgroup'];
+                $record['Servicetemplate']['Contact'] = $record['Contact'];
+                $record['Servicetemplate']['Contactgroup'] = $record['Contactgroup'];
 
-				$this->Model->saveAll($record);
-			}
-		}
-		return true;
-	}
+                $this->Model->saveAll($record);
+            }
+        }
 
 	/**
 	 * @return array

@@ -28,24 +28,26 @@ namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 class License
 {
 
-	private $license = '';
+    private $license = '';
 
-	/**
-	 * License constructor.
-	 * @param array $license CakePHP's find result
-	 */
-	public function __construct($license)
-	{
-		$this->license = '';
+    /**
+     * License constructor.
+     *
+     * @param array $license CakePHP's find result
+     */
+    public function __construct($license)
+    {
+        $this->license = '';
 
-		if(!empty($license)){
-			if(isset($license['Register']['license'])){
-				$this->license = $license['Register']['license'];
-			}
-		}
-	}
+        if (!empty($license)) {
+            if (isset($license['Register']['license'])) {
+                $this->license = $license['Register']['license'];
+            }
+        }
+    }
 
-	public function getLicense(){
-		return $this->license;
-	}
+    public function getLicense()
+    {
+        return $this->license;
+    }
 }

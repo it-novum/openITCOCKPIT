@@ -23,63 +23,66 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-	<?php echo $this->Form->create('LoginUser', array(
-		'url' => '/login/login',
-		'class' => 'lockscreen animated flipInY',
-		'inputDefaults' => array(
-			'wrapInput' => false,
-			'label' => false,
-			'div' => false
-		)
-	));
-	
-	/* Information zu einem Benutzer können mit folgendme Aufruf ausgelesen werden:
-		$this->Auth->user('email');
-		
-		Dies funktioniert hier allerdings nicht, da der Benutzer abgemeldet wurde um unerlaubten Zugriff zu verhindern!
-		Deswegen werden alle Daten vom Controller in $user geschrieben und in der View nur ausgegeben.
-	*/
-	
-	?>
-		<div class="logo">
-			<h1 class="semi-bold"><?php echo $this->html->image('itc_logo_ball.png');?> <?php echo $systemname; ?></h1>
-		</div>
-		<div id="lockContainer">
-			<?php
-			if($user['image'] != null && $user['image'] != ''):
-				if(file_exists(WWW_ROOT.'userimages'.DS.$user['image'])):
-					echo $this->html->image('/userimages'.DS.$user['image'], ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-				else:
-					echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-				endif;
-			else:
-				echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
-			endif;
-			?>
-			<div>
-				<h1><i class="fa fa-user fa-3x text-muted air air-top-right hidden-mobile"></i><?php echo $user['full_name']; ?> <small><i class="fa fa-lock text-muted"></i> &nbsp;<?php echo $language['locked']; ?></small></h1>
-				<p class="text-muted">
-					<a href="mailto:<?php echo $user['email']; ?>"><?php echo $user['email']; ?></a>
-				</p>
-				<?php echo $this->Form->hidden('email', array('value' => $user['email'])); ?>
-				<div class="input-group">
-					<?php echo $this->Form->input('password', array('placeholder' => __('Password'), 'tabindex' => '1')); ?>
-					<?php echo $this->Form->input('auth_method', ['type' => 'hidden', 'value' => $authMethod]); ?>
-					<?php echo $this->Form->input('remember_me', ['type' => 'hidden', 'value' => 0]); ?>
-					<div class="input-group-btn">
-						<button class="btn btn-primary" type="submit">
-							<i class="fa fa-key"></i>
-						</button>
-					</div>
-				</div>
-				<p class="no-margin margin-top-5">
-					<a href="/login/logout"><i class="fa fa-mail-forward"></i> Login as someone else? </a>
-				</p>
-			</div>
+<?php echo $this->Form->create('LoginUser', [
+    'url'           => '/login/login',
+    'class'         => 'lockscreen animated flipInY',
+    'inputDefaults' => [
+        'wrapInput' => false,
+        'label'     => false,
+        'div'       => false,
+    ],
+]);
 
-		</div>
-		<p class="font-xs margin-top-5">
-			Copyright <a href="http://it-novum.com" target="_blank" >it-novum GmbH</a> 2005 - <?php echo date('Y'); ?>
-		</p>
-	</form>
-	<?php echo $this->Form->end(); ?>
+/* Information zu einem Benutzer können mit folgendme Aufruf ausgelesen werden:
+    $this->Auth->user('email');
+    
+    Dies funktioniert hier allerdings nicht, da der Benutzer abgemeldet wurde um unerlaubten Zugriff zu verhindern!
+    Deswegen werden alle Daten vom Controller in $user geschrieben und in der View nur ausgegeben.
+*/
+
+?>
+    <div class="logo">
+        <h1 class="semi-bold"><?php echo $this->html->image('itc_logo_ball.png'); ?><?php echo $systemname; ?></h1>
+    </div>
+    <div id="lockContainer">
+        <?php
+        if ($user['image'] != null && $user['image'] != ''):
+            if (file_exists(WWW_ROOT.'userimages'.DS.$user['image'])):
+                echo $this->html->image('/userimages'.DS.$user['image'], ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+            else:
+                echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+            endif;
+        else:
+            echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+        endif;
+        ?>
+        <div>
+            <h1>
+                <i class="fa fa-user fa-3x text-muted air air-top-right hidden-mobile"></i><?php echo $user['full_name']; ?>
+                <small><i class="fa fa-lock text-muted"></i> &nbsp;<?php echo $language['locked']; ?></small>
+            </h1>
+            <p class="text-muted">
+                <a href="mailto:<?php echo $user['email']; ?>"><?php echo $user['email']; ?></a>
+            </p>
+            <?php echo $this->Form->hidden('email', ['value' => $user['email']]); ?>
+            <div class="input-group">
+                <?php echo $this->Form->input('password', ['placeholder' => __('Password'), 'tabindex' => '1']); ?>
+                <?php echo $this->Form->input('auth_method', ['type' => 'hidden', 'value' => $authMethod]); ?>
+                <?php echo $this->Form->input('remember_me', ['type' => 'hidden', 'value' => 0]); ?>
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-key"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="no-margin margin-top-5">
+                <a href="/login/logout"><i class="fa fa-mail-forward"></i> Login as someone else? </a>
+            </p>
+        </div>
+
+    </div>
+    <p class="font-xs margin-top-5">
+        Copyright <a href="http://it-novum.com" target="_blank">it-novum GmbH</a> 2005 - <?php echo date('Y'); ?>
+    </p>
+    </form>
+<?php echo $this->Form->end(); ?>

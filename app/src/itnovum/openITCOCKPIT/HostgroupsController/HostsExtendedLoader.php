@@ -46,11 +46,13 @@ class HostsExtendedLoader
 
     /**
      * HostsExtendedLoader constructor.
+     *
      * @param \Hostgroup $Hostgroup
-     * @param array $containerIds
-     * @param int $hostgroupId
+     * @param array      $containerIds
+     * @param int        $hostgroupId
      */
-    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId){
+    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId)
+    {
         $this->Hostgroup = $Hostgroup;
         $this->containerIds = $containerIds;
         $this->hostgroupId = $hostgroupId;
@@ -59,55 +61,58 @@ class HostsExtendedLoader
     /**
      * @return array|null
      */
-    public function loadHosts(){
+    public function loadHosts()
+    {
         return $this->Hostgroup->find('all', $this->getQueryHostsOnly());
     }
 
     /**
      * @return array|null
      */
-    public function loadHostsWithStatus(){
+    public function loadHostsWithStatus()
+    {
         return $this->Hostgroup->find('all', $this->getQueryWithHoststatus());
 
     }
 
-    private function getQueryWithHoststatus(){
+    private function getQueryWithHoststatus()
+    {
         $query = [
-            'recursive' => -1,
-            'contain' => [],
-            'joins' => [
+            'recursive'  => -1,
+            'contain'    => [],
+            'joins'      => [
                 [
-                    'table' => 'containers',
-                    'type' => 'LEFT',
-                    'alias' => 'Container',
-                    'conditions' => 'Container.id = Hostgroup.container_id'
+                    'table'      => 'containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id',
                 ],
                 [
-                    'table' => 'hosts_to_hostgroups',
-                    'type' => 'LEFT',
-                    'alias' => 'Host2Hostgroups',
-                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id'
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host2Hostgroups',
+                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id',
                 ],
                 [
-                    'table' => 'hosts',
-                    'type' => 'LEFT',
-                    'alias' => 'Host',
-                    'conditions' => 'Host.id = Host2Hostgroups.host_id'
+                    'table'      => 'hosts',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Host2Hostgroups.host_id',
                 ],
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'Objects',
-                    'conditions' => 'Objects.name1 = Host.uuid'
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.name1 = Host.uuid',
                 ],
                 [
-                    'table' => 'nagios_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
-                    'conditions' => 'Hoststatus.host_object_id = Objects.object_id'
-                ]
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = Objects.object_id',
+                ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Hostgroup.id',
                 'Hostgroup.uuid',
                 'Hostgroup.container_id',
@@ -133,55 +138,56 @@ class HostsExtendedLoader
                 'Hoststatus.last_check',
                 'Hoststatus.next_check',
                 'Hoststatus.active_checks_enabled',
-                'Hoststatus.last_hard_state_change'
+                'Hoststatus.last_hard_state_change',
             ],
-            'order' => [
-                'Host.name' => 'asc'
+            'order'      => [
+                'Host.name' => 'asc',
             ],
             'conditions' => [
                 'Container.id' => $this->containerIds,
             ],
         ];
 
-        if(!$this->hostgroupId !== null){
+        if (!$this->hostgroupId !== null) {
             $query['conditions']['Hostgroup.id'] = $this->hostgroupId;
         }
 
         return $query;
     }
 
-    private function getQueryHostsOnly(){
+    private function getQueryHostsOnly()
+    {
         $query = [
             'recursive' => -1,
-            'contain' => [],
-            'joins' => [
+            'contain'   => [],
+            'joins'     => [
                 [
-                    'table' => 'containers',
-                    'type' => 'LEFT',
-                    'alias' => 'Container',
-                    'conditions' => 'Container.id = Hostgroup.container_id'
+                    'table'      => 'containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id',
                 ],
                 [
-                    'table' => 'hosts_to_hostgroups',
-                    'type' => 'LEFT',
-                    'alias' => 'Host2Hostgroups',
-                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id'
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host2Hostgroups',
+                    'conditions' => 'Host2Hostgroups.hostgroup_id = Hostgroup.id',
                 ],
                 [
-                    'table' => 'hosts',
-                    'type' => 'LEFT',
-                    'alias' => 'Host',
-                    'conditions' => 'Host.id = Host2Hostgroups.host_id'
+                    'table'      => 'hosts',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Host2Hostgroups.host_id',
                 ],
             ],
-            'fields' => [
+            'fields'    => [
                 'Host.id',
                 'Host.name',
                 'Host.uuid',
             ],
 
             'order' => [
-                'Host.name' => 'asc'
+                'Host.name' => 'asc',
             ],
 
             'conditions' => [
@@ -189,7 +195,7 @@ class HostsExtendedLoader
             ],
         ];
 
-        if(!$this->hostgroupId !== null){
+        if (!$this->hostgroupId !== null) {
             $query['conditions']['Hostgroup.id'] = $this->hostgroupId;
         }
 

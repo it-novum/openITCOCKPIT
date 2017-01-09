@@ -23,260 +23,274 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MapsController extends MapModuleAppController {
+class MapsController extends MapModuleAppController
+{
 
-	public $layout = 'Admin.default';
-	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler','CustomValidationErrors'];
-	public $helpers = ['CustomValidationErrors', 'ListFilter.ListFilter'];
-	//public $uses = ['Tenant'];
+    public $layout = 'Admin.default';
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'CustomValidationErrors'];
+    public $helpers = ['CustomValidationErrors', 'ListFilter.ListFilter'];
+    //public $uses = ['Tenant'];
 
-	public $listFilters = ['index' => [
-		'fields' => [
-			'Map.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-			'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
-			//'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
-		],
-	]];
+    public $listFilters = ['index' => [
+        'fields' => [
+            'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
+            'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
+            //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
+        ],
+    ]];
 
-	public function index(){
-		$query = [
-			'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
-			'fields' => [
-				'Map.*',
-			],
-			'joins' => [
-				[
-					'table' => 'maps_to_containers',
-					'type' => 'INNER',
-					'alias' => 'MapsToContainers',
-					'conditions' => 'MapsToContainers.map_id = Map.id'
-				]
-			],
-			'order' => [
-				'Map.name' => 'asc'
-			],
-			'contain' => [
-				'Container' => [
-					'fields' => [
-						'Container.id'
-					]
-				]
-			],
-			'group' => 'Map.id'
-		];
+    public function index()
+    {
+        $query = [
+            'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
+            'fields'     => [
+                'Map.*',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
+                    'conditions' => 'MapsToContainers.map_id = Map.id',
+                ],
+            ],
+            'order'      => [
+                'Map.name' => 'asc',
+            ],
+            'contain'    => [
+                'Container' => [
+                    'fields' => [
+                        'Container.id',
+                    ],
+                ],
+            ],
+            'group'      => 'Map.id',
+        ];
 
-		if(!isset($this->Paginator->settings['conditions'])){
-			$this->Paginator->settings['conditions'] = [];
-		}
-		
-		if($this->isApiRequest()){
-			unset($query['limit']);
-			$all_maps = $this->Map->find('all', $query);
-		}else{
-			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-			$all_maps = $this->Paginator->paginate();
-		}
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
 
-		$this->set('all_maps', $all_maps);
-		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-		$this->set('_serialize', ['all_maps']);
-		$this->set('isFilter', false);
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}
-	}
+        if ($this->isApiRequest()) {
+            unset($query['limit']);
+            $all_maps = $this->Map->find('all', $query);
+        } else {
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $all_maps = $this->Paginator->paginate();
+        }
 
-
-	public function add(){
-		$this->loadModel('Container');
-
-		$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-
-		$this->set(compact('container'));
-
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
-
-			if(empty($this->request->data['Map']['refresh_interval'])){
-				$this->request->data['Map']['refresh_interval'] = 90000;
-			}else{
-				if($this->request->data['Map']['refresh_interval'] < 10){
-					$this->request->data['Map']['refresh_interval'] = 10;
-				}
-
-				$this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval']*1000);
-			}
-
-			if($this->Map->saveAll($this->request->data)){
-
-				if($this->request->ext === 'json'){
-					$this->serializeId();
-					return;
-				}
-				$this->setFlash(__('Map properties successfully saved'));
-				$this->redirect(['action' => 'index']);
-			}else{
-				if($this->request->ext === 'json'){
-					$this->serializeErrorMessage();
-					return;
-				}
-				$this->setFlash(__('could not save data'), false);
-			}
-		}
-	}
-
-	public function edit($id = null){
-		if(!$this->Map->exists($id)) {
-			throw new NotFoundException(__('Invalid map'));
-		}
-		$this->loadModel('Tenant');
-		$this->Map->recursive = -1;
-		$this->Map->autoFields = false;
+        $this->set('all_maps', $all_maps);
+        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
+        $this->set('_serialize', ['all_maps']);
+        $this->set('isFilter', false);
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        }
+    }
 
 
-		$this->Map->contain([
-			'Container' => [
-				'fields' => ['id', 'name']
-			]
-		]);
+    public function add()
+    {
+        $this->loadModel('Container');
 
-		$map = $this->Map->findById($id);
+        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
 
-		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+        $this->set(compact('container'));
 
-		if(!$this->allowedByContainerId($containerIdsToCheck)){
-			$this->render403();
-			return;
-		}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
-		//'Tenant.description' <-> Container.name
-		$tenants = Set::combine($this->Tenant->find('all',[
+            if (empty($this->request->data['Map']['refresh_interval'])) {
+                $this->request->data['Map']['refresh_interval'] = 90000;
+            } else {
+                if ($this->request->data['Map']['refresh_interval'] < 10) {
+                    $this->request->data['Map']['refresh_interval'] = 10;
+                }
 
-				'fields' => [
-						'Container.id',
-						'Container.name'
-					],
-					'order' => 'Container.name ASC'
-				]
-			),
-			'{n}.Container.id', '{n}.Container.name'
-		);
-		$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-		$this->set(compact('map', 'container'));
+                $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);
+            }
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Container'] = $this->request->data['Map']['container_id'];
+            if ($this->Map->saveAll($this->request->data)) {
 
-			if(empty($this->request->data['Map']['refresh_interval'])){
-				$this->request->data['Map']['refresh_interval'] = 90000;
-			}else{
-				if($this->request->data['Map']['refresh_interval'] < 10){
-					$this->request->data['Map']['refresh_interval'] = 10;
-				}
+                if ($this->request->ext === 'json') {
+                    $this->serializeId();
 
-				$this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval']*1000);
-			}
+                    return;
+                }
+                $this->setFlash(__('Map properties successfully saved'));
+                $this->redirect(['action' => 'index']);
+            } else {
+                if ($this->request->ext === 'json') {
+                    $this->serializeErrorMessage();
 
-			if($this->Map->saveAll($this->request->data)){
-				if($this->isJsonRequest()){
-					$this->serializeId();
-					return;
-				}
-				$this->setFlash(__('Map properties successfully saved'));
-				$this->redirect(['action' => 'index']);
+                    return;
+                }
+                $this->setFlash(__('could not save data'), false);
+            }
+        }
+    }
 
-			}else{
-				if($this->request->ext === 'json'){
-					$this->serializeErrorMessage();
-					return;
-				}
-				$this->setFlash(__('could not save data'), false);
-			}
-		}
-	}
+    public function edit($id = null)
+    {
+        if (!$this->Map->exists($id)) {
+            throw new NotFoundException(__('Invalid map'));
+        }
+        $this->loadModel('Tenant');
+        $this->Map->recursive = -1;
+        $this->Map->autoFields = false;
 
-	public function delete($id = null){
-		if(!$this->Map->exists($id)){
-			throw new NotFoundException(__('Invalid Map'));
-		}
 
-		$map = $this->Map->findById($id);
-		$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-		if(!$this->allowedByContainerId($containerIdsToCheck)){
-			$this->render403();
-			return;
-		}
+        $this->Map->contain([
+            'Container' => [
+                'fields' => ['id', 'name'],
+            ],
+        ]);
 
-		if(!$this->request->is('post')){
-			throw new MethodNotAllowedException();
-		}
+        $map = $this->Map->findById($id);
 
-		if($this->Map->delete($id, true)){
-			$this->setFlash(__('Map deleted'));
-			$this->redirect(['action' => 'index']);
-		}
+        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
 
-		$this->setFlash(__('Could not delete map'), false);
-		$this->redirect(['action' => 'index']);
-	}
+        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+            $this->render403();
 
-	public function mass_delete(){
-		$userId = $this->Auth->user('id');
-		foreach (func_get_args() as $mapId) {
-			if(!$this->Map->exists($mapId)){
-				throw new NotFoundException(__('Invalid Map'));
-			}
-			$map = $this->Map->find('first',[
-				'recursive' => -1,
-				'conditions' => [
-					'Map.id' => $mapId,
-				],
-				'fields' => [
-					'Map.name',
-				],
-				'contain' => [
-					'Container' => [
-						'fields' => [
-							'Container.id',
-							'Container.parent_id'
-						]
-					]
-				],
-			]);
+            return;
+        }
 
-			$containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-			if(!$this->allowedByContainerId($containerIdsToCheck)){
-				$this->render403();
-				return;
-			}
+        //'Tenant.description' <-> Container.name
+        $tenants = Set::combine($this->Tenant->find('all', [
 
-			if($this->Map->delete($map['Map']['id'], true)){
-			/*	$changelog_data = $this->Changelog->parseDataForChangelog(
-					$this->params['action'],
-					$this->params['controller'],
-					$ids,
-					OBJECT_SERVICEGROUP,
-					$servicegroup['Container']['parent_id'],
-					$userId,
-					$map['Map']['name'],
-					$map
-				);
-				if($changelog_data){
-					CakeLog::write('log', serialize($changelog_data));
-				}
-				*/
-			}
-		}
-		$this->setFlash(__('Maps deleted'));
-		$this->redirect(['action' => 'index']);
-	}
+                'fields' => [
+                    'Container.id',
+                    'Container.name',
+                ],
+                'order'  => 'Container.name ASC',
+            ]
+        ),
+            '{n}.Container.id', '{n}.Container.name'
+        );
+        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
+        $this->set(compact('map', 'container'));
 
-	public function loadUsersForTenant($tenantId = []){
-		return;
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
-		foreach ($tenantId as $key => $value) {
-		//	debug($key);
-		//	debug($value);
-		}
-	}
+            if (empty($this->request->data['Map']['refresh_interval'])) {
+                $this->request->data['Map']['refresh_interval'] = 90000;
+            } else {
+                if ($this->request->data['Map']['refresh_interval'] < 10) {
+                    $this->request->data['Map']['refresh_interval'] = 10;
+                }
+
+                $this->request->data['Map']['refresh_interval'] = ((int)$this->request->data['Map']['refresh_interval'] * 1000);
+            }
+
+            if ($this->Map->saveAll($this->request->data)) {
+                if ($this->isJsonRequest()) {
+                    $this->serializeId();
+
+                    return;
+                }
+                $this->setFlash(__('Map properties successfully saved'));
+                $this->redirect(['action' => 'index']);
+
+            } else {
+                if ($this->request->ext === 'json') {
+                    $this->serializeErrorMessage();
+
+                    return;
+                }
+                $this->setFlash(__('could not save data'), false);
+            }
+        }
+    }
+
+    public function delete($id = null)
+    {
+        if (!$this->Map->exists($id)) {
+            throw new NotFoundException(__('Invalid Map'));
+        }
+
+        $map = $this->Map->findById($id);
+        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+            $this->render403();
+
+            return;
+        }
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->Map->delete($id, true)) {
+            $this->setFlash(__('Map deleted'));
+            $this->redirect(['action' => 'index']);
+        }
+
+        $this->setFlash(__('Could not delete map'), false);
+        $this->redirect(['action' => 'index']);
+    }
+
+    public function mass_delete()
+    {
+        $userId = $this->Auth->user('id');
+        foreach (func_get_args() as $mapId) {
+            if (!$this->Map->exists($mapId)) {
+                throw new NotFoundException(__('Invalid Map'));
+            }
+            $map = $this->Map->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Map.id' => $mapId,
+                ],
+                'fields'     => [
+                    'Map.name',
+                ],
+                'contain'    => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.id',
+                            'Container.parent_id',
+                        ],
+                    ],
+                ],
+            ]);
+
+            $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+            if (!$this->allowedByContainerId($containerIdsToCheck)) {
+                $this->render403();
+
+                return;
+            }
+
+            if ($this->Map->delete($map['Map']['id'], true)) {
+                /*	$changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $ids,
+                        OBJECT_SERVICEGROUP,
+                        $servicegroup['Container']['parent_id'],
+                        $userId,
+                        $map['Map']['name'],
+                        $map
+                    );
+                    if($changelog_data){
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
+                    */
+            }
+        }
+        $this->setFlash(__('Maps deleted'));
+        $this->redirect(['action' => 'index']);
+    }
+
+    public function loadUsersForTenant($tenantId = [])
+    {
+        return;
+
+        foreach ($tenantId as $key => $value) {
+            //	debug($key);
+            //	debug($value);
+        }
+    }
 }

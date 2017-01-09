@@ -19,7 +19,6 @@ use JBBCode\CodeDefinition;
 /**
  * BBCodeParser is the main parser class that constructs and stores the parse tree. Through this class
  * new bbcode definitions can be added, and documents may be parsed and converted to html/bbcode/plaintext, etc.
- *
  * @author jbowens
  */
 class Parser
@@ -39,23 +38,24 @@ class Parser
     public function __construct()
     {
         $this->reset();
-        $this->bbcodes = array();
+        $this->bbcodes = [];
     }
 
     /**
      * Adds a simple (text-replacement only) bbcode definition
      *
-     * @param string  $tagName      the tag name of the code (for example the b in [b])
-     * @param string  $replace      the html to use, with {param} and optionally {option} for replacements
-     * @param boolean $useOption    whether or not this bbcode uses the secondary {option} replacement
-     * @param boolean $parseContent whether or not to parse the content within these elements
-     * @param integer $nestLimit    an optional limit of the number of elements of this kind that can be nested within
-     *                              each other before the parser stops parsing them.
-     * @param InputValidator $optionValidator   the validator to run {option} through
-     * @param BodyValidator  $bodyValidator     the validator to run {param} through (only used if $parseContent == false)
+     * @param string         $tagName         the tag name of the code (for example the b in [b])
+     * @param string         $replace         the html to use, with {param} and optionally {option} for replacements
+     * @param boolean        $useOption       whether or not this bbcode uses the secondary {option} replacement
+     * @param boolean        $parseContent    whether or not to parse the content within these elements
+     * @param integer        $nestLimit       an optional limit of the number of elements of this kind that can be
+     *                                        nested within each other before the parser stops parsing them.
+     * @param InputValidator $optionValidator the validator to run {option} through
+     * @param BodyValidator  $bodyValidator   the validator to run {param} through (only used if $parseContent ==
+     *                                        false)
      */
     public function addBBCode($tagName, $replace, $useOption = false, $parseContent = true, $nestLimit = -1,
-            InputValidator $optionValidator = null, InputValidator $bodyValidator = null)
+                              InputValidator $optionValidator = null, InputValidator $bodyValidator = null)
     {
         $builder = new CodeDefinitionBuilder($tagName, $replace);
 
@@ -80,7 +80,7 @@ class Parser
      *
      * @param CodeDefinition $definition the bbcode definition to add
      */
-    public function addCodeDefinition( CodeDefinition $definition )
+    public function addCodeDefinition(CodeDefinition $definition)
     {
         array_push($this->bbcodes, $definition);
     }
@@ -88,9 +88,10 @@ class Parser
     /**
      * Adds a set of CodeDefinitions.
      *
-     * @param CodeDefinitionSet $set  the set of definitions to add
+     * @param CodeDefinitionSet $set the set of definitions to add
      */
-    public function addCodeDefinitionSet(CodeDefinitionSet $set) {
+    public function addCodeDefinitionSet(CodeDefinitionSet $set)
+    {
         foreach ($set->getCodeDefinitions() as $def) {
             $this->addCodeDefinition($def);
         }
@@ -98,7 +99,6 @@ class Parser
 
     /**
      * Returns the entire parse tree as text. Only {param} content is returned. BBCode markup will be ignored.
-     *
      * @return a text representation of the parse tree
      */
     public function getAsText()
@@ -109,7 +109,6 @@ class Parser
     /**
      * Returns the entire parse tree as bbcode. This will be identical to the inputted string, except unclosed tags
      * will be closed.
-     *
      * @return a bbcode representation of the parse tree
      */
     public function getAsBBCode()
@@ -120,7 +119,6 @@ class Parser
     /**
      * Returns the entire parse tree as HTML. All BBCode replacements will be made. This is generally the method
      * you will want to use to retrieve the parsed bbcode.
-     *
      * @return a parsed html string
      */
     public function getAsHTML()
@@ -137,12 +135,13 @@ class Parser
     {
         $this->treeRoot->accept($nodeVisitor);
     }
+
     /**
      * Constructs the parse tree from a string of bbcode markup.
      *
      * @param string $str the bbcode markup to parse
      */
-    public function parse( $str )
+    public function parse($str)
     {
         /* Set the tree root back to a fresh DocumentElement. */
         $this->reset();
@@ -152,8 +151,9 @@ class Parser
 
         while ($tokenizer->hasNext()) {
             $parent = $this->parseStartState($parent, $tokenizer);
-            if ($parent->getCodeDefinition() && false === 
-                    $parent->getCodeDefinition()->parseContent()) {
+            if ($parent->getCodeDefinition() && false ===
+                $parent->getCodeDefinition()->parseContent()
+            ) {
                 /* We're inside an element that does not allow its contents to be parseable. */
                 $this->parseAsTextUntilClose($parent, $tokenizer);
                 $parent = $parent->getParent();
@@ -167,9 +167,8 @@ class Parser
 
     /**
      * Removes any elements that are nested beyond their nest limit from the parse tree. This
-     * method is now deprecated. In a future release its access privileges will be made 
+     * method is now deprecated. In a future release its access privileges will be made
      * protected.
-     *
      * @deprecated
      */
     public function removeOverNestedElements()
@@ -197,7 +196,7 @@ class Parser
      *
      * @return true if the code exists, false otherwise
      */
-    public function codeExists( $tagName, $usesOption = false )
+    public function codeExists($tagName, $usesOption = false)
     {
         foreach ($this->bbcodes as $code) {
             if (strtolower($tagName) == $code->getTagName() && $usesOption == $code->usesOption()) {
@@ -216,7 +215,7 @@ class Parser
      *
      * @return CodeDefinition if the bbcode exists, null otherwise
      */
-    public function getCode( $tagName, $usesOption = false )
+    public function getCode($tagName, $usesOption = false)
     {
         foreach ($this->bbcodes as $code) {
             if (strtolower($tagName) == $code->getTagName() && $code->usesOption() == $usesOption) {
@@ -229,10 +228,8 @@ class Parser
 
     /**
      * Adds a set of default, standard bbcode definitions commonly used across the web.
-     *
-     * This method is now deprecated. Please use DefaultCodeDefinitionSet and 
+     * This method is now deprecated. Please use DefaultCodeDefinitionSet and
      * addCodeDefinitionSet() instead.
-     *
      * @deprecated
      */
     public function loadDefaultCodes()
@@ -254,6 +251,7 @@ class Parser
         $textNode = new TextNode($string);
         $textNode->setNodeId(++$this->nextNodeid);
         $parent->addChild($textNode);
+
         return $textNode;
     }
 
@@ -263,7 +261,7 @@ class Parser
      * This function handles the beginning parse state when we're not currently in a tag
      * name.
      *
-     * @param $parent  the current parent node we're under
+     * @param $parent     the current parent node we're under
      * @param $tokenizer  the tokenizer we're using
      *
      * @return the new parent we should use for the next iteration.
@@ -276,17 +274,19 @@ class Parser
             return $this->parseTagOpen($parent, $tokenizer);
         } else {
             $this->createTextNode($parent, $next);
+
             /* Drop back into the main parse loop which will call this
              * same method again. */
+
             return $parent;
         }
     }
 
     /**
      * This function handles parsing the beginnings of an open tag. When we see a [
-     * at an appropriate time, this function is entered. 
+     * at an appropriate time, this function is entered.
      *
-     * @param $parent  the current parent node
+     * @param $parent     the current parent node
      * @param $tokenizer  the tokenizer we're using
      *
      * @return the new parent node
@@ -298,6 +298,7 @@ class Parser
             /* The [ that sent us to this state was just a trailing [, not the
              * opening for a new tag. Treat it as such. */
             $this->createTextNode($parent, '[');
+
             return $parent;
         }
 
@@ -313,6 +314,7 @@ class Parser
             $this->createTextNode($parent, '[');
             if (!$tokenizer->hasNext()) {
                 $this->createTextNode($parent, '[');
+
                 return $parent;
             }
             $next = $tokenizer->next();
@@ -322,6 +324,7 @@ class Parser
         if (']' == $next) {
             $this->createTextNode($parent, '[');
             $this->createTextNode($parent, ']');
+
             return $parent;
         } else {
             /* $next is plain text... likely a tag name. */
@@ -333,8 +336,8 @@ class Parser
      * This is the next step in parsing a tag. It's possible for it to still be invalid at this
      * point but many of the basic invalid tag name conditions have already been handled.
      *
-     * @param $parent  the current parent element
-     * @param $tokenizer  the tokenizer we're using
+     * @param $parent      the current parent element
+     * @param $tokenizer   the tokenizer we're using
      * @param $tagContent  the text between the [ and the ], assuming there is actually a ]
      *
      * @return the new parent element
@@ -348,6 +351,7 @@ class Parser
              * is really just plain text. */
             $this->createTextNode($parent, '[');
             $this->createTextNode($parent, $tagContent);
+
             return $parent;
         }
 
@@ -379,6 +383,7 @@ class Parser
                 $this->createTextNode($parent, '[');
                 $this->createTextNode($parent, $tagContent);
                 $this->createTextNode($parent, ']');
+
                 return $parent;
             } else {
                 /* We're closing $elToClose. In order to do that, we just need to return
@@ -394,6 +399,7 @@ class Parser
             $this->createTextNode($parent, '[');
             $this->createTextNode($parent, $tagContent);
             $this->createTextNode($parent, ']');
+
             return $parent;
         }
 
@@ -408,6 +414,7 @@ class Parser
             $el->setAttribute(implode('=', $tagPieces));
         }
         $parent->addChild($el);
+
         return $el;
     }
 
@@ -416,37 +423,40 @@ class Parser
      * contents. This function uses a rolling window of 3 tokens until it finds the
      * appropriate closing tag or reaches the end of the token stream.
      *
-     * @param $parent  the current parent element
+     * @param $parent     the current parent element
      * @param $tokenizer  the tokenizer we're using
      */
     protected function parseAsTextUntilClose(ElementNode $parent, Tokenizer $tokenizer)
     {
         /* $parent's code definition doesn't allow its contents to be parsed. Here we use
          * a sliding of window of three tokens until we find [ /tagname ], signifying the
-         * end of the parent. */ 
+         * end of the parent. */
         if (!$tokenizer->hasNext()) {
             return $parent;
         }
         $prevPrev = $tokenizer->next();
         if (!$tokenizer->hasNext()) {
             $this->createTextNode($parent, $prevPrev);
+
             return $parent;
         }
         $prev = $tokenizer->next();
         if (!$tokenizer->hasNext()) {
             $this->createTextNode($parent, $prevPrev);
             $this->createTextNode($parent, $prev);
+
             return $parent;
         }
         $curr = $tokenizer->next();
         while ('[' != $prevPrev || '/'.$parent->getTagName() != strtolower($prev) ||
-                ']' != $curr) {
+            ']' != $curr) {
             $this->createTextNode($parent, $prevPrev);
             $prevPrev = $prev;
-            $prev = $curr;        
+            $prev = $curr;
             if (!$tokenizer->hasNext()) {
                 $this->createTextNode($parent, $prevPrev);
                 $this->createTextNode($parent, $prev);
+
                 return $parent;
             }
             $curr = $tokenizer->next();

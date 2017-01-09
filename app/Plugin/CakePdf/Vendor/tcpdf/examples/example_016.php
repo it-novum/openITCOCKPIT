@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Document Encryption / Security
- * @author Nicola Asuni
- * @since 2008-03-04
+ * @author   Nicola Asuni
+ * @since    2008-03-04
  */
 
 require_once('../config/lang/eng.php');
@@ -65,7 +65,7 @@ $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
 */
 
-$pdf->SetProtection($permissions=array('print', 'copy'), $user_pass='', $owner_pass=null, $mode=0, $pubkeys=null);
+$pdf->SetProtection($permissions = ['print', 'copy'], $user_pass = '', $owner_pass = null, $mode = 0, $pubkeys = null);
 
 // Example with public-key
 // To open the document you need to install the private key (tcpdf.p12) on the Acrobat Reader. The password is: 1234
@@ -85,8 +85,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 016', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array('helvetica', '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array('helvetica', '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont(['helvetica', '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont(['helvetica', '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -97,7 +97,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);

@@ -25,31 +25,31 @@
 
 ?>
 <div class="widget-body maps-body">
-	<?php
-	if($MapModule){
-		echo $this->Form->create('maps', array(
-			'class' => 'widgetMapsForm clear',
-			'id' => '',
-		));
-		$maps = $this->Html->chosenPlaceholder($allMaps);
-		$options = [
-			'options' => $maps,
-			'label' => __('Select a a map'),
-			'class' => 'chosen selectMap elementInput',
-			'wrapInput' => 'col col-xs-8 selectMap',
-		];
-		echo $this->Form->input('mapSelect', $options);
+    <?php
+    if ($MapModule) {
+        echo $this->Form->create('maps', [
+            'class' => 'widgetMapsForm clear',
+            'id'    => '',
+        ]);
+        $maps = $this->Html->chosenPlaceholder($allMaps);
+        $options = [
+            'options'   => $maps,
+            'label'     => __('Select a a map'),
+            'class'     => 'chosen selectMap elementInput',
+            'wrapInput' => 'col col-xs-8 selectMap',
+        ];
+        echo $this->Form->input('mapSelect', $options);
 
-		$options_button = array(
-			'label' => 'Save',
-			'class' => 'maps_save btn btn-sm btn-primary',
-		);
-		echo $this->Form->end($options_button);
-	}else{
-		echo "Plugin MapModule is missing!";
-	}
+        $options_button = [
+            'label' => 'Save',
+            'class' => 'maps_save btn btn-sm btn-primary',
+        ];
+        echo $this->Form->end($options_button);
+    } else {
+        echo "Plugin MapModule is missing!";
+    }
 
-?>
-	<div class="widget-map-title"><i class="fa fa-cog "></i></div>
-	<div class="widget-map"></div>
+    ?>
+    <div class="widget-map-title"><i class="fa fa-cog "></i></div>
+    <div class="widget-map"></div>
 </div>

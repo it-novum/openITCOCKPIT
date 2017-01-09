@@ -23,53 +23,57 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DefaultNagiosConfigTask extends AppShell {
-	public function execute(){
-		Configure::load('nagios');
-		$this->conf = [
-			'path' => Configure::read('nagios.basepath').Configure::read('nagios.etc').Configure::read('nagios.export.config'),
-			'suffix' => Configure::read('nagios.export.suffix'),
-			'defaults' => 'defaults/'
-		];
-		
-		$this->defaultFiles = [
-			'8147201e91c4dcf7c016ba2ddeac3fd7e72edacc' => 'defaultHost', 
-			'689bfdd01af8a21c4a4706c5117849c2fc2c3f38' => 'defaultService',
-			'59132ffe6197bee769d97779a14140cfb890fd7b' => 'default24x7',
-			'b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75' => 'defaultHostcheck',
-			'69077998d62c4da5de0af5212a1c1df3c2a6e5fb' => 'defaultNone',
-			'12f498cb0b48930be9bdfd598de58974f3f062d5' => 'defaultContact',
-			'358db775dc4b1ecbc4e02a3d448d2f119f515269' => 'defaultNotificationCommand',
-			'474d000935152d9c5a49ff5f2f998c5ce925b1ca' => 'service_perfdata_file_processing_command',
-			'46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8' => 'service_perfdata_command',
-			'2106cf0bf26a82af262c4078e6d9f94eded84d2a' => 'check_fresh',
-			'89fdde0b28373dc4f361cfb810b35342cc2c3232' => 'defaultContactgroup'
-		];
-		
-		if(!is_dir($this->conf['path'].$this->conf['defaults'])){
-			mkdir($this->conf['path'].$this->conf['defaults']);
-		}
-		
-		foreach($this->defaultFiles as $defaultFile => $functionName){
-			$file = new File($this->conf['path'].$this->conf['defaults'].$defaultFile.$this->conf['suffix']);
-			if(!$file->exists()){
-				$file->create();
-				$content = $this->fileHeader();
-				$content.= $this->{$functionName}();
-				$file->write($content);
-				$file->close();
-			}
-		}
-	}
-	
-	public function fileHeader(){
-		return "    ; ! DO NOT DELETE OR MODIFY THIS FILE                         !
+class DefaultNagiosConfigTask extends AppShell
+{
+    public function execute()
+    {
+        Configure::load('nagios');
+        $this->conf = [
+            'path'     => Configure::read('nagios.basepath').Configure::read('nagios.etc').Configure::read('nagios.export.config'),
+            'suffix'   => Configure::read('nagios.export.suffix'),
+            'defaults' => 'defaults/',
+        ];
+
+        $this->defaultFiles = [
+            '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc' => 'defaultHost',
+            '689bfdd01af8a21c4a4706c5117849c2fc2c3f38' => 'defaultService',
+            '59132ffe6197bee769d97779a14140cfb890fd7b' => 'default24x7',
+            'b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75' => 'defaultHostcheck',
+            '69077998d62c4da5de0af5212a1c1df3c2a6e5fb' => 'defaultNone',
+            '12f498cb0b48930be9bdfd598de58974f3f062d5' => 'defaultContact',
+            '358db775dc4b1ecbc4e02a3d448d2f119f515269' => 'defaultNotificationCommand',
+            '474d000935152d9c5a49ff5f2f998c5ce925b1ca' => 'service_perfdata_file_processing_command',
+            '46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8' => 'service_perfdata_command',
+            '2106cf0bf26a82af262c4078e6d9f94eded84d2a' => 'check_fresh',
+            '89fdde0b28373dc4f361cfb810b35342cc2c3232' => 'defaultContactgroup',
+        ];
+
+        if (!is_dir($this->conf['path'].$this->conf['defaults'])) {
+            mkdir($this->conf['path'].$this->conf['defaults']);
+        }
+
+        foreach ($this->defaultFiles as $defaultFile => $functionName) {
+            $file = new File($this->conf['path'].$this->conf['defaults'].$defaultFile.$this->conf['suffix']);
+            if (!$file->exists()) {
+                $file->create();
+                $content = $this->fileHeader();
+                $content .= $this->{$functionName}();
+                $file->write($content);
+                $file->close();
+            }
+        }
+    }
+
+    public function fileHeader()
+    {
+        return "    ; ! DO NOT DELETE OR MODIFY THIS FILE                         !
     ; ! THIS DEFINITION IS A TEMPLATE FOR ALL HOSTS AND SERVICES  !
     ; ! DO NOT DELETE OR MODIFY THIS FILE                         !\n\n\n";
-	}
+    }
 
-	public function defaultHost(){
-	return "
+    public function defaultHost()
+    {
+        return "
 define host{
     name                               8147201e91c4dcf7c016ba2ddeac3fd7e72edacc ;generic-host
     notifications_enabled              1
@@ -91,10 +95,11 @@ define host{
     passive_checks_enabled             1
     initial_state                      u
 }";
-	}
+    }
 
-	public function defaultService(){
-	return "
+    public function defaultService()
+    {
+        return "
 define service{
     name                               689bfdd01af8a21c4a4706c5117849c2fc2c3f38 ;generic-service
     active_checks_enabled              1
@@ -120,10 +125,11 @@ define service{
     register                           0
     initial_state                      u
 }";
-	}
+    }
 
-	public function default24x7(){
-	return "
+    public function default24x7()
+    {
+        return "
 define timeperiod{
     timeperiod_name                    59132ffe6197bee769d97779a14140cfb890fd7b
     alias                              24x7
@@ -135,27 +141,30 @@ define timeperiod{
     friday                             00:00-24:00
     saturday                           00:00-24:00
 }";
-	}
+    }
 
-	public function defaultHostcheck(){
-	return "
+    public function defaultHostcheck()
+    {
+        return "
 define command{
     command_name                       b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75
     command_line                       echo 'No host check defined. This is the fallback host check please check your configuration'
 }
 ";
-	}
+    }
 
-	public function defaultNone(){
-	return "
+    public function defaultNone()
+    {
+        return "
 define timeperiod{
     timeperiod_name                    69077998d62c4da5de0af5212a1c1df3c2a6e5fb
     alias                              none
 }";
-	}
+    }
 
-	public function defaultContact(){
-	return "
+    public function defaultContact()
+    {
+        return "
 define contact{
     contact_name                       12f498cb0b48930be9bdfd598de58974f3f062d5
     alias                              none
@@ -167,46 +176,51 @@ define contact{
     host_notification_commands         358db775dc4b1ecbc4e02a3d448d2f119f515269
     email                              openitcockpit@localhost
 }";
-	}
-	
-	public function defaultNotificationCommand(){
-	return "
+    }
+
+    public function defaultNotificationCommand()
+    {
+        return "
 define command{
     command_name                       358db775dc4b1ecbc4e02a3d448d2f119f515269
     command_line                       /bin/true
 }";
-	}
-	
-	public function service_perfdata_file_processing_command(){
-	return "
+    }
+
+    public function service_perfdata_file_processing_command()
+    {
+        return "
 define command{
     command_name                       474d000935152d9c5a49ff5f2f998c5ce925b1ca
     command_line                       ".Configure::read('nagios.export.service_perfdata_file_processing_command')."
 }";
-	}
-	
-	public function service_perfdata_command(){
-	return "
+    }
+
+    public function service_perfdata_command()
+    {
+        return "
 define command{
     command_name                       46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8
     command_line                       ".Configure::read('nagios.export.service_perfdata_command')."
 }";
-	}
-	
-	public function check_fresh(){
-	return "
+    }
+
+    public function check_fresh()
+    {
+        return "
 define command{
     command_name                       2106cf0bf26a82af262c4078e6d9f94eded84d2a
     command_line                       ".Configure::read('nagios.export.check_fresh')."
 	}";
-	}
-	
-	public function defaultContactgroup(){
-		return "
+    }
+
+    public function defaultContactgroup()
+    {
+        return "
 define contactgroup{
     contactgroup_name                 89fdde0b28373dc4f361cfb810b35342cc2c3232
     alias                             89fdde0b28373dc4f361cfb810b35342cc2c3232
     members                           12f498cb0b48930be9bdfd598de58974f3f062d5
 }";
-	}
+    }
 }

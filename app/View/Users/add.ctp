@@ -24,126 +24,126 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-user fa-fw "></i>
-				<?php echo __('Administration'); ?>
-			<span>>
-				<?php echo __('Manage Users'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-user fa-fw "></i>
+            <?php echo __('Administration'); ?>
+            <span>>
+                <?php echo __('Manage Users'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-user"></i> </span>
-		<h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?> <?php echo __('User'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php echo $this->Utils->backButton() ?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				$readonly = false;
-				$disabled = false;
-				$help = null;
-				if($type == 'ldap'){
-					$readonly = true;
-					$disabled = true;
-					$help = __('This field is not required, due to LDAP');
-				}
+    <header>
+        <span class="widget-icon"> <i class="fa fa-user"></i> </span>
+        <h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?><?php echo __('User'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton() ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            $readonly = false;
+            $disabled = false;
+            $help = null;
+            if ($type == 'ldap') {
+                $readonly = true;
+                $disabled = true;
+                $help = __('This field is not required, due to LDAP');
+            }
 
-				echo $this->Form->create('User', array(
-					'class' => 'form-horizontal clear'
-				));
-				if($this->action == 'edit') {
-					echo $this->Form->input('id');
-				}
+            echo $this->Form->create('User', [
+                'class' => 'form-horizontal clear',
+            ]);
+            if ($this->action == 'edit') {
+                echo $this->Form->input('id');
+            }
 
-				/*echo $this->Form->input('container_id', array(
-					'label' => 'Tenant',
-					'options' => $tenants,
-					'class' => 'select2 chosen',
-					'style' => 'width: 100%'
-				));*/
+            /*echo $this->Form->input('container_id', array(
+                'label' => 'Tenant',
+                'options' => $tenants,
+                'class' => 'select2 chosen',
+                'style' => 'width: 100%'
+            ));*/
 
-				echo $this->Form->input('User.Container', array(
-					'label' => __('Container'),
-					'options' => $containers,
-					'class' => 'select2 chosen',
-					'style' => 'width: 100%',
-					'multiple' => true
-				));?>
-				<div id="rightLevels" class="required col-lg-offset-2 padding-10 hidden">
-				</div>
-				<?php
-				echo $this->Form->input('usergroup_id', array(
-					'label' => 'User role',
-					'options' => $usergroups,
-					'class' => 'select2 chosen',
-					'style' => 'width: 100%'
-				));
-				echo $this->Form->input('status', array(
-					'label' => 'Status',
-					'options' => User::getStates(),
-					'class' => 'select2 chosen',
-					'style' => 'width: 100%'
-				));
+            echo $this->Form->input('User.Container', [
+                'label'    => __('Container'),
+                'options'  => $containers,
+                'class'    => 'select2 chosen',
+                'style'    => 'width: 100%',
+                'multiple' => true,
+            ]); ?>
+            <div id="rightLevels" class="required col-lg-offset-2 padding-10 hidden">
+            </div>
+            <?php
+            echo $this->Form->input('usergroup_id', [
+                'label'   => 'User role',
+                'options' => $usergroups,
+                'class'   => 'select2 chosen',
+                'style'   => 'width: 100%',
+            ]);
+            echo $this->Form->input('status', [
+                'label'   => 'Status',
+                'options' => User::getStates(),
+                'class'   => 'select2 chosen',
+                'style'   => 'width: 100%',
+            ]);
 
-				if($type == 'ldap'):
-					echo $this->Form->input('samaccountname', array(
-						'label' => 'Username',
-						'readonly' => $readonly,
-						'help' => __('This is the username, you need to for the login!')
-					));
-				endif;
+            if ($type == 'ldap'):
+                echo $this->Form->input('samaccountname', [
+                    'label'    => 'Username',
+                    'readonly' => $readonly,
+                    'help'     => __('This is the username, you need to for the login!'),
+                ]);
+            endif;
 
-				echo $this->Form->input('email', array(
-					'label' => 'Email Address',
-					'readonly' => $readonly
-				));
-				echo $this->Form->input('firstname', array(
-					'label' => 'First name',
-					'readonly' => $readonly
-				));
-				echo $this->Form->input('lastname', array(
-					'label' => 'Last name',
-					'readonly' => $readonly
-				));
-				echo $this->Form->input('company', array(
-					'label' => 'Company',
-				));
-				echo $this->Form->input('position', array(
-					'label' => 'Company Position'
-				));
+            echo $this->Form->input('email', [
+                'label'    => 'Email Address',
+                'readonly' => $readonly,
+            ]);
+            echo $this->Form->input('firstname', [
+                'label'    => 'First name',
+                'readonly' => $readonly,
+            ]);
+            echo $this->Form->input('lastname', [
+                'label'    => 'Last name',
+                'readonly' => $readonly,
+            ]);
+            echo $this->Form->input('company', [
+                'label' => 'Company',
+            ]);
+            echo $this->Form->input('position', [
+                'label' => 'Company Position',
+            ]);
 
-				echo $this->Form->input('phone', array(
-					'label' => 'Phone Number',
-				));
-				echo $this->Form->input('linkedin_id', array(
-					'type' => 'text',
-					'label' => 'LinkedIn ID'
-				));
-				echo $this->Form->input('new_password', array(
-					'label' => 'New Password',
-					'type' => 'password',
-					'disabled' => $disabled,
-					'help' => $help
-				));
-				echo $this->Form->input('confirm_new_password', array(
-					'label' => 'Confirm new Password',
-					'type' => 'password',
-					'disabled' => $disabled,
-					'help' => $help
-				));
-				echo $this->Form->formActions(null, array(
-					'delete' => ($this->action == 'edit' ? $this->Form->value('User.id') : null)
-				));
-			?>
-		</div>
-	</div>
+            echo $this->Form->input('phone', [
+                'label' => 'Phone Number',
+            ]);
+            echo $this->Form->input('linkedin_id', [
+                'type'  => 'text',
+                'label' => 'LinkedIn ID',
+            ]);
+            echo $this->Form->input('new_password', [
+                'label'    => 'New Password',
+                'type'     => 'password',
+                'disabled' => $disabled,
+                'help'     => $help,
+            ]);
+            echo $this->Form->input('confirm_new_password', [
+                'label'    => 'Confirm new Password',
+                'type'     => 'password',
+                'disabled' => $disabled,
+                'help'     => $help,
+            ]);
+            echo $this->Form->formActions(null, [
+                'delete' => ($this->action == 'edit' ? $this->Form->value('User.id') : null),
+            ]);
+            ?>
+        </div>
+    </div>
 </div>
 

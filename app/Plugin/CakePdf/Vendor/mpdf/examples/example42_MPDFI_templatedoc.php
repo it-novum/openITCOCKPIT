@@ -2,10 +2,10 @@
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('','','','',15,15,47,16,9,9); 
-$mpdf->SetImportUse();	
+$mpdf = new mPDF('', '', '', '', 15, 15, 47, 16, 9, 9);
+$mpdf->SetImportUse();
 
-$mpdf->SetDocTemplate('sample_logoheader2.pdf',1);	// 1|0 to continue after end of document or not - used on matching page numbers
+$mpdf->SetDocTemplate('sample_logoheader2.pdf', 1);    // 1|0 to continue after end of document or not - used on matching page numbers
 
 //===================================================
 $mpdf->AddPage();

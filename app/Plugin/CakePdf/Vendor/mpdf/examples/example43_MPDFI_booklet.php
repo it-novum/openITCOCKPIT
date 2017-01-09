@@ -34,14 +34,14 @@ $html = '
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('c','A4','','',32,25,27,25,16,13); 
+$mpdf = new mPDF('c', 'A4', '', '', 32, 25, 27, 25, 16, 13);
 
 $mpdf->mirrorMargins = 1;
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 $mpdf->useOnlyCoreFonts = true;
 $mpdf->defaultfooterfontsize = 13;
 $mpdf->AddPage();
-$mpdf->Image('clematis.jpg',0,0,210,297,'jpg','',true, false);	// e.g. the last "false" allows a full page picture
+$mpdf->Image('clematis.jpg', 0, 0, 210, 297, 'jpg', '', true, false);    // e.g. the last "false" allows a full page picture
 $mpdf->y = 70;
 $mpdf->Shaded_box('mPDF Example File', 'Arial', '', 28, '70%', 'DF', 3, '#FFFFFF', '#000044', 10);
 
@@ -50,16 +50,16 @@ $mpdf->SetFooter('{PAGENO}');
 $mpdf->WriteHTML($html);
 
 
-$mpdf->AddPage('','NEXT-EVEN');	
+$mpdf->AddPage('', 'NEXT-EVEN');
 $mpdf->SetFooter();
-$mpdf->SetAlpha(0.5); 
-$mpdf->Image('clematis.jpg',0,0,210,297,'jpg','',true, false);	// e.g. the last "false" allows a full page picture
+$mpdf->SetAlpha(0.5);
+$mpdf->Image('clematis.jpg', 0, 0, 210, 297, 'jpg', '', true, false);    // e.g. the last "false" allows a full page picture
 $mpdf->SetAlpha(1);
- 
-$mpdf->writeBarcode('978-0-9542246-0-8', 1, 130, 230, 1,0, 3,3,4,4);	
+
+$mpdf->writeBarcode('978-0-9542246-0-8', 1, 130, 230, 1, 0, 3, 3, 4, 4);
 
 // Save the pages to a file
-$mpdf->Output('test.pdf','F');
+$mpdf->Output('test.pdf', 'F');
 //==============================================================
 //==============================================================
 //==============================================================
@@ -68,30 +68,33 @@ $mpdf->Output('test.pdf','F');
 //==============================================================
 //==============================================================
 
-function GetBookletPages($np, $backcover=true) {
-	$lastpage = $np;
-	$np = 4*ceil($np/4);
-	$pp = array();
-	for ($i=1; $i<=$np/2; $i++) {
-		$p1 = $np - $i + 1;
-		if ($backcover) {	
-			if ($i == 1) { $p1 = $lastpage; }
-			else if ($p1 >= $lastpage) { $p1 = 0; }
-		}
-		if ($i % 2 == 1) { 
-			$pp[] = array( $p1,  $i ); 
-		}
-		else { 
-			$pp[] = array( $i, $p1 ); 
-		}
-	}
-	return $pp;
+function GetBookletPages($np, $backcover = true)
+{
+    $lastpage = $np;
+    $np = 4 * ceil($np / 4);
+    $pp = [];
+    for ($i = 1; $i <= $np / 2; $i++) {
+        $p1 = $np - $i + 1;
+        if ($backcover) {
+            if ($i == 1) {
+                $p1 = $lastpage;
+            } else if ($p1 >= $lastpage) {
+                $p1 = 0;
+            }
+        }
+        if ($i % 2 == 1) {
+            $pp[] = [$p1, $i];
+        } else {
+            $pp[] = [$i, $p1];
+        }
+    }
+
+    return $pp;
 }
 
 
-
-$mpdf=new mPDF('','A4-L','','',0,0,0,0,0,0); 
-$mpdf->SetImportUse();	
+$mpdf = new mPDF('', 'A4-L', '', '', 0, 0, 0, 0, 0, 0);
+$mpdf->SetImportUse();
 $ow = $mpdf->h;
 $oh = $mpdf->w;
 $pw = $mpdf->w / 2;
@@ -102,16 +105,16 @@ $mpdf->SetDisplayMode('fullpage');
 $pagecount = $mpdf->SetSourceFile('test.pdf');
 $pp = GetBookletPages($pagecount);
 
-foreach($pp AS $v) {
-	$mpdf->AddPage(); 
-	if ($v[0]>0 && $v[0]<=$pagecount) {
-		$tplIdx = $mpdf->ImportPage($v[0], 0,0,$ow,$oh);
-		$mpdf->UseTemplate($tplIdx, 0, 0, $pw, $ph);
-	}
-	if ($v[1]>0 && $v[1]<=$pagecount) {
-		$tplIdx = $mpdf->ImportPage($v[1], 0,0,$ow,$oh);
-		$mpdf->UseTemplate($tplIdx, $pw, 0, $pw, $ph);
-	}
+foreach ($pp AS $v) {
+    $mpdf->AddPage();
+    if ($v[0] > 0 && $v[0] <= $pagecount) {
+        $tplIdx = $mpdf->ImportPage($v[0], 0, 0, $ow, $oh);
+        $mpdf->UseTemplate($tplIdx, 0, 0, $pw, $ph);
+    }
+    if ($v[1] > 0 && $v[1] <= $pagecount) {
+        $tplIdx = $mpdf->ImportPage($v[1], 0, 0, $ow, $oh);
+        $mpdf->UseTemplate($tplIdx, $pw, 0, $pw, $ph);
+    }
 }
 
 $mpdf->Output();

@@ -33,124 +33,129 @@ use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
  * @property Host      $Host
  * @property User      $User
  */
-class HostgroupsController extends AppController{
+class HostgroupsController extends AppController
+{
 
-	public $uses = [
-		'Hostgroup',
-		'Container',
-		'Host',
+    public $uses = [
+        'Hostgroup',
+        'Container',
+        'Host',
         'Service',
-		'User',
-		MONITORING_HOSTSTATUS,
-		MONITORING_SERVICESTATUS,
-		MONITORING_OBJECTS,
-	];
-	public $layout = 'Admin.default';
-	public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-		'RequestHandler',
-	];
-	public $helpers = [
-		'ListFilter.ListFilter',
-		'Status',
-	];
+        'User',
+        MONITORING_HOSTSTATUS,
+        MONITORING_SERVICESTATUS,
+        MONITORING_OBJECTS,
+    ];
+    public $layout = 'Admin.default';
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+    ];
+    public $helpers = [
+        'ListFilter.ListFilter',
+        'Status',
+    ];
 
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Container.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-				'Hostgroup.description' => ['label' => 'Alias', 'searchType' => 'wildcard'],
-			],
-		]
-	];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Container.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Hostgroup.description' => ['label' => 'Alias', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public function index(){
-		if(!isset($this->Paginator->settings['conditions'])){
-			$this->Paginator->settings['conditions'] = array();
-		}
-		$this->Paginator->settings['order'] = array('Container.name' => 'asc');
+    public function index()
+    {
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
+        $this->Paginator->settings['order'] = ['Container.name' => 'asc'];
 
-		$options = [
-			'order' => [
-				'Container.name' => 'asc'
-			],
-			'conditions' => [
-				'Container.parent_id' => $this->MY_RIGHTS
-			],
-		];
-		$query = Hash::merge($this->Paginator->settings, $options);
+        $options = [
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ];
+        $query = Hash::merge($this->Paginator->settings, $options);
 
-		if($this->isApiRequest()){
-			unset($query['limit']);
-			$all_hostgroups = $this->Hostgroup->find('all', $query);
-		}else{
-			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-			$all_hostgroups = $this->Paginator->paginate();
-		}
-
-
-		$this->set('all_hostgroups', $all_hostgroups);
-
-		//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-		$this->set('_serialize', array('all_hostgroups'));
-		$this->set('isFilter', false);
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}
-	}
-
-	public function view($id = null){
-		if(!$this->isApiRequest()){
-			throw new MethodNotAllowedException();
-		}
-		if(!$this->Hostgroup->exists($id)){
-			throw new NotFoundException(__('Invalid Hostgroup'));
-		}
-
-		$hostgroup = $this->Hostgroup->findById($id);
-		if(!$this->allowedByContainerId($hostgroup['Container']['parent_id'])){
-			$this->render403();
-			return;
-		}
-
-		$this->set('hostgroup', $hostgroup);
-		$this->set('_serialize', ['hostgroup']);
-	}
-
-	public function extended($hostgroupId = null){
-		if(!isset($this->Paginator->settings['conditions'])){
-			$this->Paginator->settings['conditions'] = array();
-		}
-		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-		$this->loadModel('Systemsetting');
-		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-		$this->set('hostgroups', $hostgroups);
-		$hostgroup = [];
-		if($hostgroupId === null){
-			//Select first hostgroup out of find result
-			$hostgroupId = key($hostgroups);
-		}
-		if($hostgroupId !== null){
-			if(!$this->Hostgroup->exists($hostgroupId)){
-				throw new NotFoundException(__('Invalid hostgroup'));
-			}
-
-           $hostgroup = $this->Hostgroup->find('first', [
-               'contain' => [
-                   'Container'
-               ],
-               'conditions' => [
-                   'Hostgroup.id' => $hostgroupId
-               ]
-           ]);
+        if ($this->isApiRequest()) {
+            unset($query['limit']);
+            $all_hostgroups = $this->Hostgroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $all_hostgroups = $this->Paginator->paginate();
+        }
 
 
-			$this->Frontend->setJson('hostgroupUuid', $hostgroup['Hostgroup']['uuid']);
+        $this->set('all_hostgroups', $all_hostgroups);
+
+        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
+        $this->set('_serialize', ['all_hostgroups']);
+        $this->set('isFilter', false);
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        }
+    }
+
+    public function view($id = null)
+    {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Hostgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
+        }
+
+        $hostgroup = $this->Hostgroup->findById($id);
+        if (!$this->allowedByContainerId($hostgroup['Container']['parent_id'])) {
+            $this->render403();
+
+            return;
+        }
+
+        $this->set('hostgroup', $hostgroup);
+        $this->set('_serialize', ['hostgroup']);
+    }
+
+    public function extended($hostgroupId = null)
+    {
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
+        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $this->loadModel('Systemsetting');
+        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
+
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $this->set('hostgroups', $hostgroups);
+        $hostgroup = [];
+        if ($hostgroupId === null) {
+            //Select first hostgroup out of find result
+            $hostgroupId = key($hostgroups);
+        }
+        if ($hostgroupId !== null) {
+            if (!$this->Hostgroup->exists($hostgroupId)) {
+                throw new NotFoundException(__('Invalid hostgroup'));
+            }
+
+            $hostgroup = $this->Hostgroup->find('first', [
+                'contain'    => [
+                    'Container',
+                ],
+                'conditions' => [
+                    'Hostgroup.id' => $hostgroupId,
+                ],
+            ]);
+
+
+            $this->Frontend->setJson('hostgroupUuid', $hostgroup['Hostgroup']['uuid']);
             $this->Frontend->setJson('hostgroupId', $hostgroup['Hostgroup']['id']);
             $this->Frontend->setJson('renderTableMessage', __('Render data in browser'));
 
@@ -166,43 +171,45 @@ class HostgroupsController extends AppController{
             $this->set('ServicestatusCollection', $ServicestatusCollection);
 
             $username = $this->Auth->user('full_name');
-			$this->set(compact(['hostgroup', 'username', 'hostgroupId']));
-			//Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-			$this->set('_serialize', array('hostgroup'));
+            $this->set(compact(['hostgroup', 'username', 'hostgroupId']));
+            //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
+            $this->set('_serialize', ['hostgroup']);
 
-		}
+        }
 
-	}
+    }
 
-    public function loadServicesByHostId($hostId = null, $hostgroupId){
-        if(!is_numeric($hostId) || $hostId < 1){
+    public function loadServicesByHostId($hostId = null, $hostgroupId)
+    {
+        if (!is_numeric($hostId) || $hostId < 1) {
             throw new NotFoundException('Invalide host id');
         }
 
-        if(!$this->Host->exists($hostId)){
+        if (!$this->Host->exists($hostId)) {
             throw new NotFoundException('Host not found!');
         }
 
         $host = $this->Host->find('first', [
             'conditions' => [
-                'Host.id' => $hostId
+                'Host.id' => $hostId,
             ],
-            'contain' => [
-                'Container'
+            'contain'    => [
+                'Container',
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
                 'Host.container_id',
-                'Container.*'
-            ]
+                'Container.*',
+            ],
         ]);
 
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $host['Host']['container_id'];
-        if(!$this->allowedByContainerId($containerIdsToCheck)){
+        if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
+
             return;
         }
 
@@ -212,481 +219,492 @@ class HostgroupsController extends AppController{
 
         $hostgroup = $this->Hostgroup->find('first', [
             'conditions' => [
-                'Hostgroup.id' => $hostgroupId
+                'Hostgroup.id' => $hostgroupId,
             ],
-            'contain' => [],
-            'fields' => [
+            'contain'    => [],
+            'fields'     => [
                 'Hostgroup.id',
                 'Hostgroup.uuid',
-            ]
+            ],
         ]);
         $this->set(compact(['host', ['hostgroup', 'services']]));
 
 
     }
 
-	public function edit($id = null){
-		if(!$this->Hostgroup->exists($id)){
-			throw new NotFoundException(__('Invalid hostgroup'));
-		}
-		$userId = $this->Auth->user('id');
-		$hostgroup = $this->Hostgroup->find('first', [
-			'conditions' => [
-				'Hostgroup.id' => $id
-			]
-		]);
+    public function edit($id = null)
+    {
+        if (!$this->Hostgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid hostgroup'));
+        }
+        $userId = $this->Auth->user('id');
+        $hostgroup = $this->Hostgroup->find('first', [
+            'conditions' => [
+                'Hostgroup.id' => $id,
+            ],
+        ]);
 
-		if(!$this->allowedByContainerId($hostgroup['Container']['parent_id'])){
-			$this->render403();
-			return;
-		}
+        if (!$this->allowedByContainerId($hostgroup['Container']['parent_id'])) {
+            $this->render403();
 
-		if($this->hasRootPrivileges === true){
-			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-		}else{
-			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-		}
+            return;
+        }
 
-		$ext_data_for_changelog = [];
-		$containerId = $hostgroup['Container']['parent_id'];
-		if($this->request->is('post') || $this->request->is('put')){
-			$containerId = $this->request->data('Container.parent_id');
-		}
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        }
 
-		$hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-		if($this->request->data('Hostgroup.Host')){
-			foreach($this->request->data['Hostgroup']['Host'] as $host_id){
-				$host = $this->Host->find('first', [
-					'contain' => [],
-					'fields' => [
-						'Host.id',
-						'Host.name'
-					],
-					'conditions' => [
-						'Host.id' => $host_id
-					]
-				]);
-				$ext_data_for_changelog['Host'][] = [
-					'id' => $host_id,
-					'name' => $host['Host']['name']
-				];
-			}
-		}
+        $ext_data_for_changelog = [];
+        $containerId = $hostgroup['Container']['parent_id'];
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $containerId = $this->request->data('Container.parent_id');
+        }
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host')))?$this->request->data('Hostgroup.Host'):[];
-			//Add container id (of the hostgroup container itself) to the request data
-			$this->request->data['Container']['id'] = $hostgroup['Hostgroup']['container_id'];
-			if($this->Hostgroup->saveAll($this->request->data)){
-				$changelog_data = $this->Changelog->parseDataForChangelog(
-					$this->params['action'],
-					$this->params['controller'],
-					$this->Hostgroup->id,
-					OBJECT_HOSTGROUP,
-					$this->request->data('Container.parent_id'),
-					$userId,
-					$this->request->data['Container']['name'],
-					array_merge($this->request->data, $ext_data_for_changelog),
-					$hostgroup
-				);
-				if($changelog_data){
-					CakeLog::write('log', serialize($changelog_data));
-				}
-				$this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-				$this->redirect(['action' => 'index']);
-			}else{
-				$this->setFlash(__('Could not save data'), false);
-			}
-		}else{
-			$hostgroup['Host'] = Hash::extract($hostgroup['Host'], '{n}.id');
-		}
+        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        if ($this->request->data('Hostgroup.Host')) {
+            foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
+                $host = $this->Host->find('first', [
+                    'contain'    => [],
+                    'fields'     => [
+                        'Host.id',
+                        'Host.name',
+                    ],
+                    'conditions' => [
+                        'Host.id' => $host_id,
+                    ],
+                ]);
+                $ext_data_for_changelog['Host'][] = [
+                    'id'   => $host_id,
+                    'name' => $host['Host']['name'],
+                ];
+            }
+        }
 
-		$this->request->data = Hash::merge($hostgroup, $this->request->data);
-		$this->set(compact(['hostgroup', 'hosts', 'containers']));
-	}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host'))) ? $this->request->data('Hostgroup.Host') : [];
+            //Add container id (of the hostgroup container itself) to the request data
+            $this->request->data['Container']['id'] = $hostgroup['Hostgroup']['container_id'];
+            if ($this->Hostgroup->saveAll($this->request->data)) {
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Hostgroup->id,
+                    OBJECT_HOSTGROUP,
+                    $this->request->data('Container.parent_id'),
+                    $userId,
+                    $this->request->data['Container']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog),
+                    $hostgroup
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+                $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
+                $this->redirect(['action' => 'index']);
+            } else {
+                $this->setFlash(__('Could not save data'), false);
+            }
+        } else {
+            $hostgroup['Host'] = Hash::extract($hostgroup['Host'], '{n}.id');
+        }
 
-	public function add(){
-		$userId = $this->Auth->user('id');
+        $this->request->data = Hash::merge($hostgroup, $this->request->data);
+        $this->set(compact(['hostgroup', 'hosts', 'containers']));
+    }
 
-		if($this->hasRootPrivileges === true){
-			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-		}else{
-			$containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-		}
+    public function add()
+    {
+        $userId = $this->Auth->user('id');
 
-
-		$this->Frontend->set('data_placeholder', __('Please choose a host'));
-		$this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
-		if($this->request->is('post') || $this->request->is('put')){
-			$ext_data_for_changelog = [];
-			App::uses('UUID', 'Lib');
-			if($this->request->data('Hostgroup.Host')){
-				foreach($this->request->data['Hostgroup']['Host'] as $host_id){
-					$host = $this->Host->find('first', [
-						'contain' => [],
-						'fields' => [
-							'Host.id',
-							'Host.name'
-						],
-						'conditions' => [
-							'Host.id' => $host_id
-						]
-					]);
-					$ext_data_for_changelog['Host'][] = [
-						'id' => $host_id,
-						'name' => $host['Host']['name']
-					];
-				}
-			}
-
-			$this->request->data['Hostgroup']['uuid'] = UUID::v4();
-			$this->request->data['Container']['containertype_id'] = CT_HOSTGROUP;
-			$this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host')))?$this->request->data('Hostgroup.Host'):[];
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        }
 
 
-			if($this->Hostgroup->saveAll($this->request->data)){
-				$changelog_data = $this->Changelog->parseDataForChangelog(
-					$this->params['action'],
-					$this->params['controller'],
-					$this->Hostgroup->id,
-					OBJECT_HOSTGROUP,
-					$this->request->data('Container.parent_id'),
-					$userId,
-					$this->request->data['Container']['name'],
-					array_merge($this->request->data, $ext_data_for_changelog)
-				);
-				if($changelog_data){
-					CakeLog::write('log', serialize($changelog_data));
-				}
+        $this->Frontend->set('data_placeholder', __('Please choose a host'));
+        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
-				if($this->request->ext == 'json'){
-					$this->serializeId();
-					return;
-				}
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $ext_data_for_changelog = [];
+            App::uses('UUID', 'Lib');
+            if ($this->request->data('Hostgroup.Host')) {
+                foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
+                    $host = $this->Host->find('first', [
+                        'contain'    => [],
+                        'fields'     => [
+                            'Host.id',
+                            'Host.name',
+                        ],
+                        'conditions' => [
+                            'Host.id' => $host_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Host'][] = [
+                        'id'   => $host_id,
+                        'name' => $host['Host']['name'],
+                    ];
+                }
+            }
 
-				$this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-				$this->redirect(['action' => 'index']);
-			}else{
-				if($this->request->ext == 'json'){
-					$this->serializeErrorMessage();
-					return;
-				}
-				$this->setFlash(__('Could not save data'), false);
-			}
-		}
-
-		$hosts = [];
-		if($this->request->is('post') || $this->request->is('put')){
-			$containerId = $this->request->data('Container.parent_id');
-			$containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-			$hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-		}
-
-		$this->set(compact(['containers', 'hosts']));
-		$this->set('_serialize', ['containers', 'hosts']);
-	}
-
-	public function loadHosts($containerId = null){
-		$this->allowOnlyAjaxRequests();
-		$hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER ,$containerId], 'list');
-		$hosts = $this->Host->makeItJavaScriptAble($hosts);
-		$this->set(compact(['hosts']));
-		$this->set('_serialize', ['hosts']);
-	}
-
-	public function delete($id = null){
-		$userId = $this->Auth->user('id');
-		if (!$this->request->is('post')){
-			throw new MethodNotAllowedException();
-		}
-
-		if (!$this->Hostgroup->exists($id)){
-			throw new NotFoundException(__('Invalid hostgroup'));
-		}
-
-		$container = $this->Hostgroup->findById($id);
-
-		if(!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))){
-			$this->render403();
-			return;
-		}
-		if($this->Container->delete($container['Hostgroup']['container_id'], true)){
-			$changelog_data = $this->Changelog->parseDataForChangelog(
-				$this->params['action'],
-				$this->params['controller'],
-				$id,
-				OBJECT_HOSTGROUP,
-				$container['Container']['parent_id'],
-				$userId,
-				$container['Container']['name'],
-				$container
-			);
-			if($changelog_data){
-				CakeLog::write('log', serialize($changelog_data));
-			}
-			$this->setFlash(__('Hostgroup deleted'));
-			$this->redirect(array('action' => 'index'));
-		}
-
-		$this->setFlash(__('Could not delete hostgroup'), false);
-		$this->redirect(array('action' => 'index'));
-
-	}
-
-	public function mass_add($id = null){
-		if($this->request->is('post') || $this->request->is('put')){
-
-			$userId = $this->Auth->user('id');
-
-			if(isset($this->request->data['Hostgroup']['create']) && $this->request->data['Hostgroup']['create'] == 1){
-				if(isset($this->request->data['Hostgroup']['id'])){
-					unset($this->request->data['Hostgroup']['id']);
-				}
-
-				$ext_data_for_changelog = [];
-				App::uses('UUID', 'Lib');
-
-				$this->request->data['Hostgroup']['uuid'] = UUID::v4();
-				$this->request->data['Container']['containertype_id'] = CT_HOSTGROUP;
-
-				//Required for validation
-				foreach($this->request->data('Host.id') as $host_id){
-					$hostgroupMembers[] = $host_id;
-				}
-				$this->request->data['Host'] = $hostgroupMembers;
-				$this->request->data['Hostgroup']['Host'] = $hostgroupMembers;
+            $this->request->data['Hostgroup']['uuid'] = UUID::v4();
+            $this->request->data['Container']['containertype_id'] = CT_HOSTGROUP;
+            $this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host'))) ? $this->request->data('Hostgroup.Host') : [];
 
 
-				$ext_data_for_changelog = [];
-				foreach($hostgroupMembers as $hostId){
-					$host = $this->Host->find('first', [
-						'recursive' => -1,
-						'conditions' => [
-							'Host.id' => $hostId
-						],
-						'fields' => [
-							'Host.id',
-							'Host.name'
-						]
-					]);
-					$ext_data_for_changelog['Host'][] = [
-						'id' => $hostId,
-						'name' => $host['Host']['name']
-					];
-				}
+            if ($this->Hostgroup->saveAll($this->request->data)) {
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Hostgroup->id,
+                    OBJECT_HOSTGROUP,
+                    $this->request->data('Container.parent_id'),
+                    $userId,
+                    $this->request->data['Container']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
 
-				if($this->Hostgroup->saveAll($this->request->data)){
-					$changelog_data = $this->Changelog->parseDataForChangelog(
-						'add',
-						'hostgroups',
-						$this->Hostgroup->id,
-						OBJECT_HOSTGROUP,
-						$this->request->data('Container.parent_id'),
-						$userId,
-						$this->request->data['Container']['name'],
-						array_merge($this->request->data, $ext_data_for_changelog)
-					);
-					if($changelog_data){
-						CakeLog::write('log', serialize($changelog_data));
-					}
+                if ($this->request->ext == 'json') {
+                    $this->serializeId();
 
-					$this->setFlash(_('Hostgroup appended successfully'));
-					$this->redirect(array('action' => 'index'));
-				}else{
-					$this->setFlash(__('Could not save data'), false);
-				}
-			}else{
-				$targetHostgroup = $this->request->data('Hostgroup.id');
-				if($this->Hostgroup->exists($targetHostgroup)){
-					$hostgroup = $this->Hostgroup->findById($targetHostgroup);
-					//Save old hosts from this hostgroup
-					$hostgroupMembers = [];
-					foreach($hostgroup['Host'] as $host){
-						$hostgroupMembers[] = $host['id'];
-					}
-					foreach($this->request->data('Host.id') as $host_id){
-						$hostgroupMembers[] = $host_id;
-					}
-					$hostgroup['Host'] = $hostgroupMembers;
-					$hostgroup['Hostgroup']['Host'] = $hostgroupMembers;
-					if($this->Hostgroup->saveAll($hostgroup)){
-						$this->setFlash(_('Hostgroup appended successfully'));
-						$this->redirect(array('action' => 'index'));
-					}else{
-						$this->setFlash(__('Could not append hostgroup'), false);
-					}
-				}else{
-					$this->setFlash(__('Hostgroup not found'), false);
-				}
-			}
-		}
+                    return;
+                }
 
-		$hostsToAppend = [];
-		foreach(func_get_args() as $host_id){
-			$host = $this->Host->findById($host_id);
-			$hostsToAppend[] = $host;
-		}
+                $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
+                $this->redirect(['action' => 'index']);
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
 
-		if($this->hasRootPrivileges === true){
-			$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-			$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-			$hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-		}else{
-			$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->getWriteContainers());
-			$containers = $this->Tree->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-			$hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
-		}
-		$userContainerId = (isset($this->request->data['Container']['parent_id']))?$this->request->data['Container']['parent_id']:$this->Auth->user('container_id');
+                    return;
+                }
+                $this->setFlash(__('Could not save data'), false);
+            }
+        }
 
-		$this->set([
-			'hostsToAppend' => $hostsToAppend,
-			'hostgroups' => $hostgroups,
-			'containers' => $containers,
-			'user_container_id' => $userContainerId,
-		]);
-		$this->set('back_url', $this->referer());
-	}
+        $hosts = [];
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $containerId = $this->request->data('Container.parent_id');
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        }
 
-	public function mass_delete($id = null){
-		$userId = $this->Auth->user('id');
-		foreach(func_get_args() as $hostgroupId){
-			if($this->Hostgroup->exists($hostgroupId)){
-				$hostgroup = $this->Hostgroup->find('first', [
-					'contain' => [
-						'Container',
-						'Host'
-					],
-					'conditions' => [
-						'Hostgroup.id' => $hostgroupId
-					]
-				]);
-				if($this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))){
-					if($this->Container->delete($hostgroup['Hostgroup']['container_id'], true)){
-						$changelog_data = $this->Changelog->parseDataForChangelog(
-							$this->params['action'],
-							$this->params['controller'],
-							$hostgroupId,
-							OBJECT_HOSTGROUP,
-							$hostgroup['Container']['parent_id'],
-							$userId,
-							$hostgroup['Container']['name'],
-							$hostgroup
-						);
-						if($changelog_data){
-							CakeLog::write('log', serialize($changelog_data));
-						}
-					}
-				}
-			}
-		}
-		$this->setFlash(__('Hostgroups deleted'));
-		$this->redirect(['action' => 'index']);
-	}
+        $this->set(compact(['containers', 'hosts']));
+        $this->set('_serialize', ['containers', 'hosts']);
+    }
 
-	public function listToPdf(){
-		$args = func_get_args();
-		$containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		$conditions = [
-			'Container.parent_id' => $containerIds
-		];
+    public function loadHosts($containerId = null)
+    {
+        $this->allowOnlyAjaxRequests();
+        $hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER, $containerId], 'list');
+        $hosts = $this->Host->makeItJavaScriptAble($hosts);
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
 
-		if(is_array($args) && !empty($args)){
-			if(end($args) == '.pdf' && (sizeof($args) > 1)){
-				$hostgroup_ids = $args;
-				end($hostgroup_ids);
-				$last_key = key($hostgroup_ids);
-				unset($hostgroup_ids[$last_key]);
+    public function delete($id = null)
+    {
+        $userId = $this->Auth->user('id');
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
-				$_conditions = [
-					'Hostgroup.id' => $hostgroup_ids,
-				];
-				$conditions = Hash::merge($conditions, $_conditions);
-			}else{
-				$hostgroup_ids = $args;
+        if (!$this->Hostgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid hostgroup'));
+        }
 
-				$_conditions = [
-					'Hostgroup.id' => $hostgroup_ids,
-				];
-				$conditions = Hash::merge($conditions, $_conditions);
-			}
-		}
+        $container = $this->Hostgroup->findById($id);
 
-		$hostgroups = $this->Hostgroup->find('all', [
-			'conditions' => $conditions,
-			'fields' => [
-				'Hostgroup.description',
-				'Container.name',
-			],
-			'contain' => [
-				'Host' => [
-					'fields' => [
-						'Host.name',
-						'Host.uuid'
-					]
-				],
-				'Container',
-			]
-		]);
+        if (!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))) {
+            $this->render403();
 
-		foreach ($hostgroups as $hgKey => $hostgroup) {
-			$hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
+            return;
+        }
+        if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                $this->params['action'],
+                $this->params['controller'],
+                $id,
+                OBJECT_HOSTGROUP,
+                $container['Container']['parent_id'],
+                $userId,
+                $container['Container']['name'],
+                $container
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+            $this->setFlash(__('Hostgroup deleted'));
+            $this->redirect(['action' => 'index']);
+        }
 
-			foreach ($hostgroupHostUuids as $hKey => $hostgroupHostUuid) {
-				$hoststatus = $this->Objects->find('all',[
-					'recursive' => -1,
-					'conditions' => [
-						'name1' => $hostgroupHostUuid,
-						'objecttype_id' => 1
-					],
-					'fields' => [
-						'Hoststatus.current_state',
-						'Hoststatus.is_flapping',
-						'Hoststatus.problem_has_been_acknowledged',
-						'Hoststatus.scheduled_downtime_depth',
-						'Hoststatus.last_state_change',
-						'Hoststatus.last_check',
-						'Hoststatus.next_check',
-					],
-					'joins' => [
-						[
-							'table' => 'nagios_hoststatus',
-							'type' => 'LEFT OUTER',
-							'alias' => 'Hoststatus',
-							'conditions' => 'Objects.object_id = Hoststatus.host_object_id'
-						]
-					]
-				]);
-				$hostgroups[$hgKey]['Host'][$hKey]['Hoststatus'] = $hoststatus;
-			}
-		}
-		$hostgroupCount = Hash::apply($hostgroups,'{n}.Hostgroup','count');
-		$hostgroupHostCount = Hash::apply($hostgroups,'{n}.Host.{n}','count');
-		$this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
+        $this->setFlash(__('Could not delete hostgroup'), false);
+        $this->redirect(['action' => 'index']);
 
-		$filename = 'Hostgroups_'.strtotime('now').'.pdf';
-		$binary_path = '/usr/bin/wkhtmltopdf';
-		if(file_exists('/usr/local/bin/wkhtmltopdf')){
-			$binary_path = '/usr/local/bin/wkhtmltopdf';
-		}
-		$this->pdfConfig = [
-			'engine' =>'CakePdf.WkHtmlToPdf',
-			'margin' => [
-				'bottom'=>15,
-				'left'=>0,
-				'right'=>0,
-				'top'=>15
-			],
-			'encoding'=>'UTF-8',
-			'download' =>true,
-			'binary' => $binary_path,
-			'orientation' => 'portrait',
-			'filename' => $filename,
-			'no-pdf-compression' => '*',
-			'image-dpi'	=> '900',
-			'background' => true,
-			'no-background' => false,
-		];
-	}
+    }
+
+    public function mass_add($id = null)
+    {
+        if ($this->request->is('post') || $this->request->is('put')) {
+
+            $userId = $this->Auth->user('id');
+
+            if (isset($this->request->data['Hostgroup']['create']) && $this->request->data['Hostgroup']['create'] == 1) {
+                if (isset($this->request->data['Hostgroup']['id'])) {
+                    unset($this->request->data['Hostgroup']['id']);
+                }
+
+                $ext_data_for_changelog = [];
+                App::uses('UUID', 'Lib');
+
+                $this->request->data['Hostgroup']['uuid'] = UUID::v4();
+                $this->request->data['Container']['containertype_id'] = CT_HOSTGROUP;
+
+                //Required for validation
+                foreach ($this->request->data('Host.id') as $host_id) {
+                    $hostgroupMembers[] = $host_id;
+                }
+                $this->request->data['Host'] = $hostgroupMembers;
+                $this->request->data['Hostgroup']['Host'] = $hostgroupMembers;
+
+
+                $ext_data_for_changelog = [];
+                foreach ($hostgroupMembers as $hostId) {
+                    $host = $this->Host->find('first', [
+                        'recursive'  => -1,
+                        'conditions' => [
+                            'Host.id' => $hostId,
+                        ],
+                        'fields'     => [
+                            'Host.id',
+                            'Host.name',
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Host'][] = [
+                        'id'   => $hostId,
+                        'name' => $host['Host']['name'],
+                    ];
+                }
+
+                if ($this->Hostgroup->saveAll($this->request->data)) {
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        'add',
+                        'hostgroups',
+                        $this->Hostgroup->id,
+                        OBJECT_HOSTGROUP,
+                        $this->request->data('Container.parent_id'),
+                        $userId,
+                        $this->request->data['Container']['name'],
+                        array_merge($this->request->data, $ext_data_for_changelog)
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
+
+                    $this->setFlash(_('Hostgroup appended successfully'));
+                    $this->redirect(['action' => 'index']);
+                } else {
+                    $this->setFlash(__('Could not save data'), false);
+                }
+            } else {
+                $targetHostgroup = $this->request->data('Hostgroup.id');
+                if ($this->Hostgroup->exists($targetHostgroup)) {
+                    $hostgroup = $this->Hostgroup->findById($targetHostgroup);
+                    //Save old hosts from this hostgroup
+                    $hostgroupMembers = [];
+                    foreach ($hostgroup['Host'] as $host) {
+                        $hostgroupMembers[] = $host['id'];
+                    }
+                    foreach ($this->request->data('Host.id') as $host_id) {
+                        $hostgroupMembers[] = $host_id;
+                    }
+                    $hostgroup['Host'] = $hostgroupMembers;
+                    $hostgroup['Hostgroup']['Host'] = $hostgroupMembers;
+                    if ($this->Hostgroup->saveAll($hostgroup)) {
+                        $this->setFlash(_('Hostgroup appended successfully'));
+                        $this->redirect(['action' => 'index']);
+                    } else {
+                        $this->setFlash(__('Could not append hostgroup'), false);
+                    }
+                } else {
+                    $this->setFlash(__('Hostgroup not found'), false);
+                }
+            }
+        }
+
+        $hostsToAppend = [];
+        foreach (func_get_args() as $host_id) {
+            $host = $this->Host->findById($host_id);
+            $hostsToAppend[] = $host;
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+        } else {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->getWriteContainers());
+            $containers = $this->Tree->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
+        }
+        $userContainerId = (isset($this->request->data['Container']['parent_id'])) ? $this->request->data['Container']['parent_id'] : $this->Auth->user('container_id');
+
+        $this->set([
+            'hostsToAppend'     => $hostsToAppend,
+            'hostgroups'        => $hostgroups,
+            'containers'        => $containers,
+            'user_container_id' => $userContainerId,
+        ]);
+        $this->set('back_url', $this->referer());
+    }
+
+    public function mass_delete($id = null)
+    {
+        $userId = $this->Auth->user('id');
+        foreach (func_get_args() as $hostgroupId) {
+            if ($this->Hostgroup->exists($hostgroupId)) {
+                $hostgroup = $this->Hostgroup->find('first', [
+                    'contain'    => [
+                        'Container',
+                        'Host',
+                    ],
+                    'conditions' => [
+                        'Hostgroup.id' => $hostgroupId,
+                    ],
+                ]);
+                if ($this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))) {
+                    if ($this->Container->delete($hostgroup['Hostgroup']['container_id'], true)) {
+                        $changelog_data = $this->Changelog->parseDataForChangelog(
+                            $this->params['action'],
+                            $this->params['controller'],
+                            $hostgroupId,
+                            OBJECT_HOSTGROUP,
+                            $hostgroup['Container']['parent_id'],
+                            $userId,
+                            $hostgroup['Container']['name'],
+                            $hostgroup
+                        );
+                        if ($changelog_data) {
+                            CakeLog::write('log', serialize($changelog_data));
+                        }
+                    }
+                }
+            }
+        }
+        $this->setFlash(__('Hostgroups deleted'));
+        $this->redirect(['action' => 'index']);
+    }
+
+    public function listToPdf()
+    {
+        $args = func_get_args();
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $conditions = [
+            'Container.parent_id' => $containerIds,
+        ];
+
+        if (is_array($args) && !empty($args)) {
+            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
+                $hostgroup_ids = $args;
+                end($hostgroup_ids);
+                $last_key = key($hostgroup_ids);
+                unset($hostgroup_ids[$last_key]);
+
+                $_conditions = [
+                    'Hostgroup.id' => $hostgroup_ids,
+                ];
+                $conditions = Hash::merge($conditions, $_conditions);
+            } else {
+                $hostgroup_ids = $args;
+
+                $_conditions = [
+                    'Hostgroup.id' => $hostgroup_ids,
+                ];
+                $conditions = Hash::merge($conditions, $_conditions);
+            }
+        }
+
+        $hostgroups = $this->Hostgroup->find('all', [
+            'conditions' => $conditions,
+            'fields'     => [
+                'Hostgroup.description',
+                'Container.name',
+            ],
+            'contain'    => [
+                'Host' => [
+                    'fields' => [
+                        'Host.name',
+                        'Host.uuid',
+                    ],
+                ],
+                'Container',
+            ],
+        ]);
+
+        foreach ($hostgroups as $hgKey => $hostgroup) {
+            $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
+
+            foreach ($hostgroupHostUuids as $hKey => $hostgroupHostUuid) {
+                $hoststatus = $this->Objects->find('all', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'name1'         => $hostgroupHostUuid,
+                        'objecttype_id' => 1,
+                    ],
+                    'fields'     => [
+                        'Hoststatus.current_state',
+                        'Hoststatus.is_flapping',
+                        'Hoststatus.problem_has_been_acknowledged',
+                        'Hoststatus.scheduled_downtime_depth',
+                        'Hoststatus.last_state_change',
+                        'Hoststatus.last_check',
+                        'Hoststatus.next_check',
+                    ],
+                    'joins'      => [
+                        [
+                            'table'      => 'nagios_hoststatus',
+                            'type'       => 'LEFT OUTER',
+                            'alias'      => 'Hoststatus',
+                            'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
+                        ],
+                    ],
+                ]);
+                $hostgroups[$hgKey]['Host'][$hKey]['Hoststatus'] = $hoststatus;
+            }
+        }
+        $hostgroupCount = Hash::apply($hostgroups, '{n}.Hostgroup', 'count');
+        $hostgroupHostCount = Hash::apply($hostgroups, '{n}.Host.{n}', 'count');
+        $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
+
+        $filename = 'Hostgroups_'.strtotime('now').'.pdf';
+        $binary_path = '/usr/bin/wkhtmltopdf';
+        if (file_exists('/usr/local/bin/wkhtmltopdf')) {
+            $binary_path = '/usr/local/bin/wkhtmltopdf';
+        }
+        $this->pdfConfig = [
+            'engine'             => 'CakePdf.WkHtmlToPdf',
+            'margin'             => [
+                'bottom' => 15,
+                'left'   => 0,
+                'right'  => 0,
+                'top'    => 15,
+            ],
+            'encoding'           => 'UTF-8',
+            'download'           => true,
+            'binary'             => $binary_path,
+            'orientation'        => 'portrait',
+            'filename'           => $filename,
+            'no-pdf-compression' => '*',
+            'image-dpi'          => '900',
+            'background'         => true,
+            'no-background'      => false,
+        ];
+    }
 }

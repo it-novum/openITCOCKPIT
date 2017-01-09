@@ -24,36 +24,40 @@
 //	confirmation.
 
 ?>
-<aside id="left-panel" >
-	<div class="login-info">
-		<?php
-		if($this->Auth->user('image') != null && $this->Auth->user('image') != ''):
-			if(file_exists(WWW_ROOT.'userimages'.DS.$this->Auth->user('image'))):
-				$img = '/userimages'.DS.$this->Auth->user('image');
-			else:
-				$img = '/img/fallback_user.png';
-			endif;
-		else:
-			$img = '/img/fallback_user.png';
-		endif;
-		?>
-		<span>
-			<a data-html="true" data-original-title="<?php echo __('Edit profile'); ?>" data-placement="right" rel="tooltip" href="/profile/edit">
+<aside id="left-panel">
+    <div class="login-info">
+        <?php
+        if ($this->Auth->user('image') != null && $this->Auth->user('image') != ''):
+            if (file_exists(WWW_ROOT.'userimages'.DS.$this->Auth->user('image'))):
+                $img = '/userimages'.DS.$this->Auth->user('image');
+            else:
+                $img = '/img/fallback_user.png';
+            endif;
+        else:
+            $img = '/img/fallback_user.png';
+        endif;
+        ?>
+        <span>
+			<a data-html="true" data-original-title="<?php echo __('Edit profile'); ?>" data-placement="right"
+               rel="tooltip" href="/profile/edit">
 				<img class="online" alt="me" src="<?php echo $img; ?>"> 
 				<span style="max-width: 142px;">
 					<?php echo h($this->Auth->user('full_name')); ?>
 				</span>
 			</a>
-			<?php if($hasRootPrivileges === true): ?>
-				<span class="text-info pull-right" style="margin-top: 11px;">
+            <?php if ($hasRootPrivileges === true): ?>
+                <span class="text-info pull-right" style="margin-top: 11px;">
 					&nbsp;
-					<i class="fa fa-lg fa-trophy" style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)" id="userRootIcon" data-html="true" data-original-title="<?php echo __('Administrator privileges'); ?>" data-placement="right" rel="tooltip"></i>
+					<i class="fa fa-lg fa-trophy"
+                       style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)" id="userRootIcon"
+                       data-html="true" data-original-title="<?php echo __('Administrator privileges'); ?>"
+                       data-placement="right" rel="tooltip"></i>
 				</span>
-			<?php endif; ?>
+            <?php endif; ?>
 		</span>
-	</div>
-	<nav>
-		<?php echo $this->element('Admin.layout/menu'); ?>
-	</nav>
-	<span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+    </div>
+    <nav>
+        <?php echo $this->element('Admin.layout/menu'); ?>
+    </nav>
+    <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </aside>

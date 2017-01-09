@@ -10,14 +10,13 @@ require_once 'validators/UrlValidator.php';
 
 /**
  * Provides a default set of common bbcode definitions.
- *
  * @author jbowens
  */
 class DefaultCodeDefinitionSet implements CodeDefinitionSet
 {
 
     /* The default code definitions in this set. */
-    protected $definitions = array();
+    protected $definitions = [];
 
     /**
      * Constructs the default code definitions.

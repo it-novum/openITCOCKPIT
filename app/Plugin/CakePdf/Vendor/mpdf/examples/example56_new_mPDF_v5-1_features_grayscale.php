@@ -3,9 +3,9 @@
 
 include("../mpdf.php");
 
-$mpdf=new mPDF(''); 
+$mpdf = new mPDF('');
 
-$mpdf->restrictColorSpace = 1;	// forces to grayscale
+$mpdf->restrictColorSpace = 1;    // forces to grayscale
 //==============================================================
 $html = '
 <style>
@@ -469,14 +469,17 @@ Hallo World
 ';
 
 //==============================================================
-if ($_REQUEST['html']) { echo $html; exit; }
-if ($_REQUEST['source']) { 
-	$file = __FILE__;
-	header("Content-Type: text/plain");
-	header("Content-Length: ". filesize($file));
-	header("Content-Disposition: attachment; filename='".$file."'");
-	readfile($file);
-	exit; 
+if ($_REQUEST['html']) {
+    echo $html;
+    exit;
+}
+if ($_REQUEST['source']) {
+    $file = __FILE__;
+    header("Content-Type: text/plain");
+    header("Content-Length: ".filesize($file));
+    header("Content-Disposition: attachment; filename='".$file."'");
+    readfile($file);
+    exit;
 }
 
 //==============================================================
@@ -485,7 +488,8 @@ $mpdf->WriteHTML($html);
 //==============================================================
 //==============================================================
 // OUTPUT
-$mpdf->Output(); exit;
+$mpdf->Output();
+exit;
 
 
 //==============================================================

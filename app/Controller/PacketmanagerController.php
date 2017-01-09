@@ -27,62 +27,66 @@ use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
-class PacketmanagerController extends AppController{
-	public $layout = 'Admin.default';
-	public $components = ['Session'];
-	public $uses = ['Proxy', 'Register'];
-	//public $controllers = array('Proxy');
-	
-	public function index(){
-		//$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
-		//$this->Frontend->setJson('websocket_port', 8081);
-		$this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-		
-		$this->loadModel('Systemsetting');
-		$key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-		$this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-		
-		$this->Frontend->setJson('username', $this->Auth->user('full_name'));
-		
-		Configure::load('version');
-		
-		$openITCVersion = Configure::read('version');
-		$this->set('openITCVersion', $openITCVersion);
+class PacketmanagerController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $components = ['Session'];
+    public $uses = ['Proxy', 'Register'];
 
-		$installedModules = glob(APP . 'Plugin/*', GLOB_ONLYDIR);
-		$installedModules = array_map(function($file){
-			return basename($file);
-		}, $installedModules);
-		$this->set('installedModules', $installedModules);
+    //public $controllers = array('Proxy');
 
-		$License = new License($this->Register->find('first'));
-		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-		$http = new Http(
-			$packagemanagerRequestBuilder->getUrl(),
-			$packagemanagerRequestBuilder->getOptions(),
-			$this->Proxy->getSettings()
-		);
+    public function index()
+    {
+        //$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
+        //$this->Frontend->setJson('websocket_port', 8081);
+        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
 
-		$http->sendRequest();
-		if(!$http->error){
-			if(strlen($http->data) > 0){
-				//Es wurden Daten empfangen. Hoffen wir das es unser Array ist
-				$data = json_decode($http->data);
-				$this->set('data', $data);
-			}
-		}else{
-			$this->setFlash('Error: ' . $http->getLastError()['error'], false);
-		}
-	}
+        $this->loadModel('Systemsetting');
+        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-	/**
-	 * Fake repository for the packages. The purpose of this action is development and/or testing.
-	 */
-	public function getPackets(){
-		$this->layout = 'json';
-		$this->response->type('json');
-		$fixedContent = 
-			'{
+        $this->Frontend->setJson('username', $this->Auth->user('full_name'));
+
+        Configure::load('version');
+
+        $openITCVersion = Configure::read('version');
+        $this->set('openITCVersion', $openITCVersion);
+
+        $installedModules = glob(APP.'Plugin/*', GLOB_ONLYDIR);
+        $installedModules = array_map(function ($file) {
+            return basename($file);
+        }, $installedModules);
+        $this->set('installedModules', $installedModules);
+
+        $License = new License($this->Register->find('first'));
+        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+        $http = new Http(
+            $packagemanagerRequestBuilder->getUrl(),
+            $packagemanagerRequestBuilder->getOptions(),
+            $this->Proxy->getSettings()
+        );
+
+        $http->sendRequest();
+        if (!$http->error) {
+            if (strlen($http->data) > 0) {
+                //Es wurden Daten empfangen. Hoffen wir das es unser Array ist
+                $data = json_decode($http->data);
+                $this->set('data', $data);
+            }
+        } else {
+            $this->setFlash('Error: '.$http->getLastError()['error'], false);
+        }
+    }
+
+    /**
+     * Fake repository for the packages. The purpose of this action is development and/or testing.
+     */
+    public function getPackets()
+    {
+        $this->layout = 'json';
+        $this->response->type('json');
+        $fixedContent =
+            '{
 			   "current_version":"1.2",
 			   "changelog":"<h1>Version: 1.2<\/h1><br \/><ul><li><span class=\"label label-danger\">New:<\/span> Graphtool implemented in JavaScript<\/li><li><span class=\"label label-danger\">New:<\/span> Host- and Servicebrowser<\/li><li>Bugfix: Problem while creating commands<\/li><\/ul><br \/><h1>Version: 0.1<\/h1><br \/><ul><li>openITCOCKPIT V3 first alpha version<\/li><\/ul>",
 			   "modules":[
@@ -148,6 +152,6 @@ class PacketmanagerController extends AppController{
 				  }
 			   ]
 			}';
-		$this->set('json', $fixedContent);
-	}
+        $this->set('json', $fixedContent);
+    }
 }

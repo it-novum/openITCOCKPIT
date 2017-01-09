@@ -24,35 +24,37 @@
 //	confirmation.
 
 
-class ValidationCollection{
-	public static $notBlank = [
-		'notBlank' => [
-			'rule' => 'notBlank',
-			'message' => 'This field cannot be left blank.',
-			'required' => true,
-		],
-	];
+class ValidationCollection
+{
+    public static $notBlank = [
+        'notBlank' => [
+            'rule'     => 'notBlank',
+            'message'  => 'This field cannot be left blank.',
+            'required' => true,
+        ],
+    ];
 
-	public static $numeric = [
-		'numeric' => [
-			'rule' => 'numeric',
-			'message' => 'This field needs to be numeric.',
-		],
-	];
+    public static $numeric = [
+        'numeric' => [
+            'rule'    => 'numeric',
+            'message' => 'This field needs to be numeric.',
+        ],
+    ];
 
-	public static $notZero = [
-		'notZero' => [
-			'rule' => ['comparison', '>', 0],
-			'message' => 'Please enter a number > 0.',
-			'required' => true,
-		],
-	];
+    public static $notZero = [
+        'notZero' => [
+            'rule'     => ['comparison', '>', 0],
+            'message'  => 'Please enter a number > 0.',
+            'required' => true,
+        ],
+    ];
 
-	public static function getIdRule(){
-		return array_merge(
-			self::$notBlank,
-			self::$numeric,
-			self::$notZero
-		);
-	}
+    public static function getIdRule()
+    {
+        return array_merge(
+            self::$notBlank,
+            self::$numeric,
+            self::$notZero
+        );
+    }
 }

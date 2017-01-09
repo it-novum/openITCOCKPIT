@@ -23,72 +23,76 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GraphCollection extends AppModel{
+class GraphCollection extends AppModel
+{
 
-	public $hasAndBelongsToMany = [
-		'GraphgenTmpl' => [
-			'className' => 'GraphgenTmpl',
-			'joinTable' => 'graph_tmpl_to_graph_collection',
-			'foreignKey' => 'graph_collection_id',
-			'associationForeignKey' => 'graphgen_tmpl_id',
-		]
-	];
+    public $hasAndBelongsToMany = [
+        'GraphgenTmpl' => [
+            'className'             => 'GraphgenTmpl',
+            'joinTable'             => 'graph_tmpl_to_graph_collection',
+            'foreignKey'            => 'graph_collection_id',
+            'associationForeignKey' => 'graphgen_tmpl_id',
+        ],
+    ];
 
-	var $validate = [
-		'name' => [
-			'allowEmpty' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank',
-				'required' => true
-			]
-		],
-		'GraphgenTmpl' => [
-			'multiple' => [
-				'rule' => [
-					'multiple', ['min' => 1]
-				],
-				'message' => 'Please select at least 1 template you attend'
-			],
-		]
-	];
+    var $validate = [
+        'name'         => [
+            'allowEmpty' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+        'GraphgenTmpl' => [
+            'multiple' => [
+                'rule'    => [
+                    'multiple', ['min' => 1],
+                ],
+                'message' => 'Please select at least 1 template you attend',
+            ],
+        ],
+    ];
 
-	/**
-	 * Loads an Collection with it's corresponding host and service.
-	 * @param $id
-	 * @return array
-	 */
-	public function loadCollection($id){
-		$collection = $this->find('first', [
-			'conditions' => [
-				'GraphCollection.id' => (int) $id,
-			],
-			'contain' => [
-				'GraphgenTmpl' => [
-					'GraphgenTmplConf' => [
-						'Service' => [
-							'fields' => [
-								'Service.name',
-								'Service.uuid',
-								'Service.id',
-							],
-							'Host' => [
-								'fields' => [
-									'Host.name',
-									'Host.uuid',
-									'Host.id',
-								]
-							],
-							'Servicetemplate' => [
-								'fields' => [
-									'Servicetemplate.name',
-								]
-							]
-						],
-					],
-				],
-			],
-		]);
+    /**
+     * Loads an Collection with it's corresponding host and service.
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    public function loadCollection($id)
+    {
+        $collection = $this->find('first', [
+            'conditions' => [
+                'GraphCollection.id' => (int)$id,
+            ],
+            'contain'    => [
+                'GraphgenTmpl' => [
+                    'GraphgenTmplConf' => [
+                        'Service' => [
+                            'fields'          => [
+                                'Service.name',
+                                'Service.uuid',
+                                'Service.id',
+                            ],
+                            'Host'            => [
+                                'fields' => [
+                                    'Host.name',
+                                    'Host.uuid',
+                                    'Host.id',
+                                ],
+                            ],
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.name',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]);
 
-		return $collection;
-	}
+        return $collection;
+    }
 }

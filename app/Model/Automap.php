@@ -23,97 +23,102 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Automap extends AppModel{
+class Automap extends AppModel
+{
 
-	/*public $belongsTo = [
-		'Container' => [
-			'className' => 'Container',
-			'foreignKey' => 'container_id',
-		]
-	];*/
+    /*public $belongsTo = [
+        'Container' => [
+            'className' => 'Container',
+            'foreignKey' => 'container_id',
+        ]
+    ];*/
 
-	public $validate = [
-		'name' => [
-			'notBlank' => [
-				'rule' => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true,
-			]
-		],
-		'container_id' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs to be numeric.'
-			],
-			'notZero' => [
-				'rule'    => ['comparison', '>', 0],
-				'message' => 'Invalid container.',
-				'required' => true
-			],
-		],
-		'host_regex' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'isRegex' => [
-				'rule'    => ['isRegex', 'host_regex'],
-				'message' => 'Invalid regular expression',
-				'required' => true
-			]
-		],
-		'service_regex' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'isRegex' => [
-				'rule'    => ['isRegex', 'service_regex'],
-				'message' => 'Invalid regular expression',
-				'required' => true
-			]
-		],
-		'show_ok' => [
-			'checkStateOptions' => [
-				'rule'    => ['checkStateOptions'],
-				'message' => 'You need to select at least one option',
-				'required' => false
-			]
-		],
-		'recursive' => [
-			'numeric' => [
-				'rule' => 'numeric',
-				'message' => 'This field needs to be numeric.',
-				'allowEmpty' => true
-			],
-		],
+    public $validate = [
+        'name'          => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'container_id'  => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Invalid container.',
+                'required' => true,
+            ],
+        ],
+        'host_regex'    => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'isRegex'  => [
+                'rule'     => ['isRegex', 'host_regex'],
+                'message'  => 'Invalid regular expression',
+                'required' => true,
+            ],
+        ],
+        'service_regex' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'isRegex'  => [
+                'rule'     => ['isRegex', 'service_regex'],
+                'message'  => 'Invalid regular expression',
+                'required' => true,
+            ],
+        ],
+        'show_ok'       => [
+            'checkStateOptions' => [
+                'rule'     => ['checkStateOptions'],
+                'message'  => 'You need to select at least one option',
+                'required' => false,
+            ],
+        ],
+        'recursive'     => [
+            'numeric' => [
+                'rule'       => 'numeric',
+                'message'    => 'This field needs to be numeric.',
+                'allowEmpty' => true,
+            ],
+        ],
 
-	];
+    ];
 
-	public function isRegex($data, $key){
-		if(isset($data[$key])){
-			if(@preg_match('/'.$data[$key].'/', null) !== false){
-				return true;
-			}
-		}
-		return false;
-	}
+    public function isRegex($data, $key)
+    {
+        if (isset($data[$key])) {
+            if (@preg_match('/'.$data[$key].'/', null) !== false) {
+                return true;
+            }
+        }
 
-	public function checkStateOptions($data){
-		$needles = ['show_acknowledged', 'show_downtime', 'show_unknown', 'show_critical', 'show_warning', 'show_ok'];
-		foreach($needles as $needle){
-			if(isset($this->data['Automap'][$needle]) && $this->data['Automap'][$needle] == 1){
-				return true;
-			}
-		}
-		return false;
-	}
+        return false;
+    }
+
+    public function checkStateOptions($data)
+    {
+        $needles = ['show_acknowledged', 'show_downtime', 'show_unknown', 'show_critical', 'show_warning', 'show_ok'];
+        foreach ($needles as $needle) {
+            if (isset($this->data['Automap'][$needle]) && $this->data['Automap'][$needle] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
 }

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicecommandargumentvalue extends AppModel{
-	public $belongsTo = ['Commandargument'];
+class Servicecommandargumentvalue extends AppModel
+{
+    public $belongsTo = ['Commandargument'];
 }

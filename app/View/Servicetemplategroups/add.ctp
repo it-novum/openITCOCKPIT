@@ -24,43 +24,43 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-cogs fa-fw "></i>
-				<?php echo __('Monitoring'); ?>
-			<span>>
-				<?php echo __('Servicetemplategroup'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-cogs fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Servicetemplategroup'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-		<h2><?php echo __('Add Servicetemplategroup'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php echo $this->Utils->backButton();?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Servicetemplategroup', array(
-					'class' => 'form-horizontal clear'
-				));
-				echo $this->Form->input('Container.parent_id', ['options' => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
-						'SelectionMode' => 'single'
-					]);
-				echo $this->Form->input('Container.name', ['label' => __('Servicetemplategroup name')]);
-				echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen optgroup_show', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Servicetemplates'), 'data-placeholder' => __('Please choose a servicetemplate')]);
-				echo $this->Form->input('Servicetemplategroup.description', ['label' => __('Description')]);
-			?>
-			<br />
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
+        <h2><?php echo __('Add Servicetemplategroup'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton(); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Servicetemplategroup', [
+                'class' => 'form-horizontal clear',
+            ]);
+            echo $this->Form->input('Container.parent_id', ['options'       => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
+                                                            'SelectionMode' => 'single',
+            ]);
+            echo $this->Form->input('Container.name', ['label' => __('Servicetemplategroup name')]);
+            echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen optgroup_show', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Servicetemplates'), 'data-placeholder' => __('Please choose a servicetemplate')]);
+            echo $this->Form->input('Servicetemplategroup.description', ['label' => __('Description')]);
+            ?>
+            <br/>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>

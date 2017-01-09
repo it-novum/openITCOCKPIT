@@ -1,7 +1,6 @@
 <?php
 
 
-
 $html = '
 <html><head>
 <style>
@@ -479,15 +478,15 @@ Border conflict resolution in tables with border-collapse set to "collapse". mPD
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('en-GB-x','A4','','',10,10,10,10,6,3); 
+$mpdf = new mPDF('en-GB-x', 'A4', '', '', 10, 10, 10, 10, 6, 3);
 
 $mpdf->SetDisplayMode('fullpage');
 
-$mpdf->list_indent_first_level = 0;	// 1 or 0 - whether to indent the first level of a list
+$mpdf->list_indent_first_level = 0;    // 1 or 0 - whether to indent the first level of a list
 
 // LOAD a stylesheet
 $stylesheet = file_get_contents('mpdfstyletables.css');
-$mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+$mpdf->WriteHTML($stylesheet, 1);    // The parameter 1 tells that this is css/style only and no body/html/text
 
 $mpdf->WriteHTML($html);
 

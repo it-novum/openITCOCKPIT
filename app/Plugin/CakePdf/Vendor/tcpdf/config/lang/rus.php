@@ -23,15 +23,15 @@
 /**
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
- * @brief TCPDF language file: Russian
- * @author Nicola Asuni
- * @since 2004-03-03
+ * @brief   TCPDF language file: Russian
+ * @author  Nicola Asuni
+ * @since   2004-03-03
  */
 
 // Russian
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

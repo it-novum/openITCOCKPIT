@@ -26,229 +26,256 @@
 App::uses('Model', 'Model');
 
 
-class AppModel extends Model{
-	public $actsAs = ['Containable', 'DynamicAssociations'];
-	protected $lastInsertedIds = [];
-	protected $lastInsertedData = [];
+class AppModel extends Model
+{
+    public $actsAs = ['Containable', 'DynamicAssociations'];
+    protected $lastInsertedIds = [];
+    protected $lastInsertedData = [];
 
-	/**
-	 * Validation: Checks if the field is unique in the model
-	 *
-	 * @param array  $data
-	 * @param string $field
-	 * @param bool   $statusScope
-	 * @return bool
-	 */
-	public function isUniqueInModel($data, $field, $statusScope){
-		$valid = false;
-		if($this->hasField($field)){
-			$valid = $this->isUnique($data);
+    /**
+     * Validation: Checks if the field is unique in the model
+     *
+     * @param array  $data
+     * @param string $field
+     * @param bool   $statusScope
+     *
+     * @return bool
+     */
+    public function isUniqueInModel($data, $field, $statusScope)
+    {
+        $valid = false;
+        if ($this->hasField($field)) {
+            $valid = $this->isUnique($data);
 
-			// if not unique but scope is status
-			if($statusScope && !$valid){
-				$active = $this->find('first', array(
-					'conditions' => array(
-						$this->alias . '.' . $field => $data[$field],
-						$this->alias . '.status' => Status::ACTIVE
-					)
-				));
-				if(empty($active)){
-					$valid = true;
-				}
-			}
-		}
-		return $valid;
-	}
+            // if not unique but scope is status
+            if ($statusScope && !$valid) {
+                $active = $this->find('first', [
+                    'conditions' => [
+                        $this->alias.'.'.$field => $data[$field],
+                        $this->alias.'.status'  => Status::ACTIVE,
+                    ],
+                ]);
+                if (empty($active)) {
+                    $valid = true;
+                }
+            }
+        }
 
-
-	/**
-	 * Retrieves a record by its id.
-	 *
-	 * @param int         $id
-	 * @param array|false $options Additional find options, will set 'contain' => false if false is passed
-	 * @return array|false
-	 */
-	public function get($id, $options = array()){
-		if($options === false){
-			$options = array(
-				'contain' => false
-			);
-		}
-		$options = Set::merge(array(
-			'conditions' => array(
-				$this->alias . '.' . $this->primaryKey => $id
-			)
-		), $options);
-		return $this->find('first', $options);
-	}
+        return $valid;
+    }
 
 
-	/**
-	 * Replacement for Model::saveField() which doesn't change the model state
-	 *
-	 * @param int    $id
-	 * @param string $field
-	 * @param string $value
-	 * @return bool
-	 */
-	public function updateField($id, $field, $value){
-		$this->updateAll(array(
-			$this->alias . '.' . $field => $this->getDataSource()->value($value)
-		), array(
-			$this->alias . '.' . $this->primaryKey => $id
-		));
-	}
+    /**
+     * Retrieves a record by its id.
+     *
+     * @param int         $id
+     * @param array|false $options Additional find options, will set 'contain' => false if false is passed
+     *
+     * @return array|false
+     */
+    public function get($id, $options = [])
+    {
+        if ($options === false) {
+            $options = [
+                'contain' => false,
+            ];
+        }
+        $options = Set::merge([
+            'conditions' => [
+                $this->alias.'.'.$this->primaryKey => $id,
+            ],
+        ], $options);
 
-	public function isCompositeUnique($data, $options = array()){
-		debug($data);
-		debug($this->find('all'));
-	}
-
-	/*
-	 * A plugin is able to extend core models with dynamic associations that only work
-	 * if the plugin exist in current installation
-	 */
-	public function beforeFind($query){
-		if(is_object($this->Behaviors->DynamicAssociations)){
-			$dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociations($this->alias, 'beforeFind');
-			if(!empty($dynamicAssociations) && is_array($dynamicAssociations)){
-				$this->bindModel($dynamicAssociations);
-			}
-		}
-	}
-
-	/*
-	 * A plugin is able to extend core models with dynamic associations that only work
-	 * if the plugin exist in current installation
-	 * If we delete a core object (for example host or service) may be some plugins
-	 * (Check_MK or maps for example) gets to modified as well (delete host out of mkservices table)
-	 */
-	public function beforeDelete($cascade = true){
-		if(is_object($this->Behaviors->DynamicAssociations)){
-			$dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociations($this->alias, 'beforeDelete');
-			//This is not working, but i dont know why!!
-			/*if(!empty($dynamicAssociations) && is_array($dynamicAssociations)){
-				$this->bindModel($dynamicAssociations);
-			}*/
-
-			//This is the --force way, but thi works :)
-			foreach($dynamicAssociations as $associationsName => $associationsConf){
-				$this->{$associationsName} = Hash::merge($this->{$associationsName}, $associationsConf);
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Create an array for Router::redirect() if you want to redirect to a different page
-	 * @param array $params  _controller and _action
-	 * @param array $default controller and action
-	 * @return array
-	 */
-	public function redirect($params = [], $default = []){
-		$redirect = [];
-
-		if(isset($params['named']['_controller'])){
-			$redirect['controller'] = $params['named']['_controller'];
-		}
-
-		if(isset($params['named']['_action'])){
-			$redirect['action'] = $params['named']['_action'];
-		}
-
-		if(isset($params['named']['_plugin'])){
-			$redirect['plugin'] = $params['named']['_plugin'];
-		}
+        return $this->find('first', $options);
+    }
 
 
-		if(!empty($default)){
-			$redirect = Hash::merge($default, $redirect);
-		}
+    /**
+     * Replacement for Model::saveField() which doesn't change the model state
+     *
+     * @param int    $id
+     * @param string $field
+     * @param string $value
+     *
+     * @return bool
+     */
+    public function updateField($id, $field, $value)
+    {
+        $this->updateAll([
+            $this->alias.'.'.$field => $this->getDataSource()->value($value),
+        ], [
+            $this->alias.'.'.$this->primaryKey => $id,
+        ]);
+    }
 
-		return $redirect;
-	}
+    public function isCompositeUnique($data, $options = [])
+    {
+        debug($data);
+        debug($this->find('all'));
+    }
 
-	/**
-	 * Create an array for Router::redirect() if you want to redirect to a different page
-	 * @param array $params  _controller and _action
-	 * @param array $override params
-	 * @return array
-	 */
-	public function flashRedirect($params = [], $override = []){
-		$redirect = [
-			'controller' => $params['controller'],
-			'action' => $params['action'],
-			'plugin' => $params['plugin']
-		];
+    /*
+     * A plugin is able to extend core models with dynamic associations that only work
+     * if the plugin exist in current installation
+     */
+    public function beforeFind($query)
+    {
+        if (is_object($this->Behaviors->DynamicAssociations)) {
+            $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociations($this->alias, 'beforeFind');
+            if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
+                $this->bindModel($dynamicAssociations);
+            }
+        }
+    }
 
-		if(isset($params['named']['_controller'])){
-			$redirect['_controller'] = $params['named']['_controller'];
-		}
+    /*
+     * A plugin is able to extend core models with dynamic associations that only work
+     * if the plugin exist in current installation
+     * If we delete a core object (for example host or service) may be some plugins
+     * (Check_MK or maps for example) gets to modified as well (delete host out of mkservices table)
+     */
+    public function beforeDelete($cascade = true)
+    {
+        if (is_object($this->Behaviors->DynamicAssociations)) {
+            $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociations($this->alias, 'beforeDelete');
+            //This is not working, but i dont know why!!
+            /*if(!empty($dynamicAssociations) && is_array($dynamicAssociations)){
+                $this->bindModel($dynamicAssociations);
+            }*/
 
-		if(isset($params['named']['_action'])){
-			$redirect['_action'] = $params['named']['_action'];
-		}
+            //This is the --force way, but thi works :)
+            foreach ($dynamicAssociations as $associationsName => $associationsConf) {
+                $this->{$associationsName} = Hash::merge($this->{$associationsName}, $associationsConf);
+            }
+        }
 
-		if(isset($params['named']['_plugin'])){
-			$redirect['_plugin'] = $params['named']['_plugin'];
-		}
+        return true;
+    }
+
+    /**
+     * Create an array for Router::redirect() if you want to redirect to a different page
+     *
+     * @param array $params  _controller and _action
+     * @param array $default controller and action
+     *
+     * @return array
+     */
+    public function redirect($params = [], $default = [])
+    {
+        $redirect = [];
+
+        if (isset($params['named']['_controller'])) {
+            $redirect['controller'] = $params['named']['_controller'];
+        }
+
+        if (isset($params['named']['_action'])) {
+            $redirect['action'] = $params['named']['_action'];
+        }
+
+        if (isset($params['named']['_plugin'])) {
+            $redirect['plugin'] = $params['named']['_plugin'];
+        }
 
 
-		if(!empty($override)){
-			$redirect = Hash::merge($redirect, $override);
-		}
+        if (!empty($default)) {
+            $redirect = Hash::merge($default, $redirect);
+        }
 
-		return $redirect;
-	}
+        return $redirect;
+    }
+
+    /**
+     * Create an array for Router::redirect() if you want to redirect to a different page
+     *
+     * @param array $params   _controller and _action
+     * @param array $override params
+     *
+     * @return array
+     */
+    public function flashRedirect($params = [], $override = [])
+    {
+        $redirect = [
+            'controller' => $params['controller'],
+            'action'     => $params['action'],
+            'plugin'     => $params['plugin'],
+        ];
+
+        if (isset($params['named']['_controller'])) {
+            $redirect['_controller'] = $params['named']['_controller'];
+        }
+
+        if (isset($params['named']['_action'])) {
+            $redirect['_action'] = $params['named']['_action'];
+        }
+
+        if (isset($params['named']['_plugin'])) {
+            $redirect['_plugin'] = $params['named']['_plugin'];
+        }
 
 
-	public function afterSave($created, $options = array()){
-		if($created){
-			$this->lastInsertedIds[] = $this->getLastInsertID();
-			$this->lastInsertedData[] = $this->data;
-		}
+        if (!empty($override)) {
+            $redirect = Hash::merge($redirect, $override);
+        }
 
-		return true;
-	}
+        return $redirect;
+    }
 
-	public function getLastInsertedIds(){
-		return $this->lastInsertedIds;
-	}
 
-	/**
-	 * Caution: This function will probably only work correctly when used via the REST API. If called multiple times
-	 * internally, it might return more results as expected.
-	 * @return array
-	 */
-	public function getLastInsertedDataWithId(){
-		return $this->lastInsertedData;
-	}
+    public function afterSave($created, $options = [])
+    {
+        if ($created) {
+            $this->lastInsertedIds[] = $this->getLastInsertID();
+            $this->lastInsertedData[] = $this->data;
+        }
 
-	public function makeItJavaScriptAble($findListResult = []){
-		$return = [];
-		foreach($findListResult as $key => $value){
-			$return[] = [
-				'key' => $key,
-				'value' => $value
-			];
-		}
-		return $return;
-	}
+        return true;
+    }
 
-	/**
-	 * Returns a array with an empty option for jquery chosen placeholder
-	 *
-	 * @param array $select with the options
-	 * @return array $select and key 0 is empty for data-placeholder
-	 */
-	public function chosenPlaceholder($select = []){
-		if(!array_key_exists(0, $select)){
-			//Yes right, php can use the + operator on arrays
-			if(is_array($select)){
-				$select += [0 => ''];
-			}
-			asort($select);
-		}
-		return $select;
-	}
+    public function getLastInsertedIds()
+    {
+        return $this->lastInsertedIds;
+    }
+
+    /**
+     * Caution: This function will probably only work correctly when used via the REST API. If called multiple times
+     * internally, it might return more results as expected.
+     * @return array
+     */
+    public function getLastInsertedDataWithId()
+    {
+        return $this->lastInsertedData;
+    }
+
+    public function makeItJavaScriptAble($findListResult = [])
+    {
+        $return = [];
+        foreach ($findListResult as $key => $value) {
+            $return[] = [
+                'key'   => $key,
+                'value' => $value,
+            ];
+        }
+
+        return $return;
+    }
+
+    /**
+     * Returns a array with an empty option for jquery chosen placeholder
+     *
+     * @param array $select with the options
+     *
+     * @return array $select and key 0 is empty for data-placeholder
+     */
+    public function chosenPlaceholder($select = [])
+    {
+        if (!array_key_exists(0, $select)) {
+            //Yes right, php can use the + operator on arrays
+            if (is_array($select)) {
+                $select += [0 => ''];
+            }
+            asort($select);
+        }
+
+        return $select;
+    }
 }

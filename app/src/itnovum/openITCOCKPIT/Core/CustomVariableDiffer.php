@@ -30,52 +30,54 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 class CustomVariableDiffer extends CustomVariableHelper
 {
 
-	/**
-	 * @var CustomVariablesRepository
-	 */
-	private $hostCustomVariablesRepository;
+    /**
+     * @var CustomVariablesRepository
+     */
+    private $hostCustomVariablesRepository;
 
-	/**
-	 * @var CustomVariablesRepository
-	 */
-	private $hosttemplateCustomVariablesRepository;
+    /**
+     * @var CustomVariablesRepository
+     */
+    private $hosttemplateCustomVariablesRepository;
 
-	/**
-	 * CustomVariableDiffer constructor.
-	 * @param array $hostCustomVariables from CakePHP's find
-	 * @param array $hosttemplateCustomVariables from CakePHP's find
-	 */
-	public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
-	{
-		$this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
-		$this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
-	}
+    /**
+     * CustomVariableDiffer constructor.
+     *
+     * @param array $hostCustomVariables         from CakePHP's find
+     * @param array $hosttemplateCustomVariables from CakePHP's find
+     */
+    public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
+    {
+        $this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
+        $this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
+    }
 
-	/**
-	 * @return CustomVariablesRepository
-	 */
-	public function getCustomVariablesToSaveAsRepository(){
-		$variablesToSaveAsRepository = new CustomVariablesRepository();
+    /**
+     * @return CustomVariablesRepository
+     */
+    public function getCustomVariablesToSaveAsRepository()
+    {
+        $variablesToSaveAsRepository = new CustomVariablesRepository();
 
-		foreach($this->hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
-			//Check if a custom variable with this name exists in host template
-			$hostTemplateCustomVariable = $this->hosttemplateCustomVariablesRepository->getByVariableName($hostCustomVariable->getName());
-			if($hostTemplateCustomVariable !== false){
-				//We found a custom variable in the host template with the same name
+        foreach ($this->hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
+            //Check if a custom variable with this name exists in host template
+            $hostTemplateCustomVariable = $this->hosttemplateCustomVariablesRepository->getByVariableName($hostCustomVariable->getName());
+            if ($hostTemplateCustomVariable !== false) {
+                //We found a custom variable in the host template with the same name
 
-				//Check if the values are the same or not
-				if ($hostCustomVariable->getValue() != $hostTemplateCustomVariable->getValue()) {
-					$variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
-				}
-			}
+                //Check if the values are the same or not
+                if ($hostCustomVariable->getValue() != $hostTemplateCustomVariable->getValue()) {
+                    $variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
+                }
+            }
 
-			if($hostTemplateCustomVariable === false){
-				//This custom variable does not exists on the hosttemplate
-				$variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
-			}
-		}
+            if ($hostTemplateCustomVariable === false) {
+                //This custom variable does not exists on the hosttemplate
+                $variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
+            }
+        }
 
-		return $variablesToSaveAsRepository;
-	}
+        return $variablesToSaveAsRepository;
+    }
 
 }

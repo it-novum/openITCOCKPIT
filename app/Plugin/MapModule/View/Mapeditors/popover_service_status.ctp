@@ -34,59 +34,59 @@
 
 $_servicestatus = $this->Mapstatus->servicestatus($uuid);
 $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
-if(empty($servicestatus)){
-	$hostName = $serviceinfo[0]['Host']['name'];
-	$serviceName = $serviceinfo[0][0]['ServiceName'];
-	$serviceDescr = $serviceinfo[0][0]['ServiceDescription'];
-}else{
-	$hostName = $servicestatus[0]['Host']['name'];
-	$serviceName = $servicestatus[0][0]['ServiceName'];
-	$serviceDescr = $servicestatus[0][0]['ServiceDescription'];
+if (empty($servicestatus)) {
+    $hostName = $serviceinfo[0]['Host']['name'];
+    $serviceName = $serviceinfo[0][0]['ServiceName'];
+    $serviceDescr = $serviceinfo[0][0]['ServiceDescription'];
+} else {
+    $hostName = $servicestatus[0]['Host']['name'];
+    $serviceName = $servicestatus[0][0]['ServiceName'];
+    $serviceDescr = $servicestatus[0][0]['ServiceDescription'];
 }
 
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
-	<tr>
-		<th colspan="2" class="h6"><?php echo __('Service'); ?></th>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $hostName; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Service Name'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $serviceName; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $serviceDescr; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('State'); ?></td>
-		<td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($_servicestatus['state'])['class']; ?> "><?php echo $_servicestatus['human_state']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['output']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['long_output']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['current_check_attempt'].'/'.$servicestatusField['max_check_attempts']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_check']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['next_check']; ?></td>
-	</tr>
-	<tr>
-		<td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
-		<td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_state_change']; ?></td>
-	</tr>
+    <tr>
+        <th colspan="2" class="h6"><?php echo __('Service'); ?></th>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $hostName; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Service Name'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $serviceName; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $serviceDescr; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('State'); ?></td>
+        <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($_servicestatus['state'])['class']; ?> "><?php echo $_servicestatus['human_state']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['output']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['long_output']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['current_check_attempt'].'/'.$servicestatusField['max_check_attempts']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_check']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['next_check']; ?></td>
+    </tr>
+    <tr>
+        <td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_state_change']; ?></td>
+    </tr>
 </table>

@@ -26,69 +26,76 @@ use \itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
-class VersionCheckTask extends AppShell{
+class VersionCheckTask extends AppShell
+{
 
-	public function execute($quiet = false){
-		$this->params['quiet'] = $quiet;
-		$this->stdout->styles('green', ['text' => 'green']);
-		$this->stdout->styles('red',   ['text' => 'red']);
-		$this->out('Checking for new openITCOCKPIT Version', false);
+    public function execute($quiet = false)
+    {
+        $this->params['quiet'] = $quiet;
+        $this->stdout->styles('green', ['text' => 'green']);
+        $this->stdout->styles('red', ['text' => 'red']);
+        $this->out('Checking for new openITCOCKPIT Version', false);
 
 
-		$availableVersion = $this->getNewVersion();
-		$this->saveNewVersion($availableVersion);
+        $availableVersion = $this->getNewVersion();
+        $this->saveNewVersion($availableVersion);
 
-		$this->out('<green>   Ok</green>');
-		$this->hr();
-	}
+        $this->out('<green>   Ok</green>');
+        $this->hr();
+    }
 
-	/**
-	 * @return string new Version as string or null
-	 */
-	public function getNewVersion(){
-		$this->loadModel('Register');
-		$this->loadModel('Proxy');
+    /**
+     * @return string new Version as string or null
+     */
+    public function getNewVersion()
+    {
+        $this->loadModel('Register');
+        $this->loadModel('Proxy');
 
-		$License = new License($this->Register->find('first'));
-		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-		$http = new Http(
-			$packagemanagerRequestBuilder->getUrl(),
-			$packagemanagerRequestBuilder->getOptions(),
-			$this->Proxy->getSettings()
-		);
+        $License = new License($this->Register->find('first'));
+        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+        $http = new Http(
+            $packagemanagerRequestBuilder->getUrl(),
+            $packagemanagerRequestBuilder->getOptions(),
+            $this->Proxy->getSettings()
+        );
 
-		//Send https request
-		$http->sendRequest();
+        //Send https request
+        $http->sendRequest();
 
-		$availableVersion = '???';
+        $availableVersion = '???';
 
-		if(!$http->error){
-			$data = json_decode($http->data);
-			if(property_exists($data, 'version')){
-				$availableVersion = $data->version;
-			}
-		}else{
-			//Force new line
-			$this->out();
-			$this->out('<red>'.$http->getLastError()['error'].'</red>');
-		}
-		return $availableVersion;
-	}
+        if (!$http->error) {
+            $data = json_decode($http->data);
+            if (property_exists($data, 'version')) {
+                $availableVersion = $data->version;
+            }
+        } else {
+            //Force new line
+            $this->out();
+            $this->out('<red>'.$http->getLastError()['error'].'</red>');
+        }
 
-	/**
-	 * @param string $availableVersion
-	 */
-	public function saveNewVersion($availableVersion){
-		$newConfig = sprintf($this->getConfigTemplate(), $availableVersion);
-		$fileName = APP . 'Lib' . DS . 'AvailableVersion.php';
-		file_put_contents($fileName, $newConfig);
-	}
+        return $availableVersion;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getConfigTemplate(){
-		$fileName = APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
-		return file_get_contents($fileName);
-	}
+    /**
+     * @param string $availableVersion
+     */
+    public function saveNewVersion($availableVersion)
+    {
+        $newConfig = sprintf($this->getConfigTemplate(), $availableVersion);
+        $fileName = APP.'Lib'.DS.'AvailableVersion.php';
+        file_put_contents($fileName, $newConfig);
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigTemplate()
+    {
+        $fileName = APP.'src'.DS.'itnovum'.DS.'openITCOCKPIT'.DS.'Core'.DS.'AvailableVersionTemplate.txt';
+
+        return file_get_contents($fileName);
+    }
 }

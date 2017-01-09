@@ -24,63 +24,66 @@
 //	confirmation.
 
 App::import('Model', 'Changelog');
-class Proxy extends AppModel{
-	
-	public $validate = array(
-		'port' => array(
-			'ruleName' => array(
-				'rule' => 'numeric',
-				'message' => 'The Port must be a numeric value',
-				'required' => true
-			),
-			'ruleName2' => array(
-				'rule' => array('maxLength', 5),
-				'message' => 'Port must be no larger than 5 numbers long.'
-			)
-		)
-	);
-	
-	function getSettings(){
-		$proxy = $this->find('first');
-		
-		$settings = array('ipaddress' => '', 'port' => 0, 'enabled' => false);
-		if(isset($proxy['Proxy'])){
-			$settings = Hash::merge($settings, $proxy['Proxy']);
-		}
-	
-		return $settings;
-	}
-	
-	/*
-	public function afterFind($results = array(), $primary = false){
-		$this->afterFind = $results;
-	}
-	
-	public function afterSave($created, $options=array()){
-		$key = '';
-		$changed_data = array();
-		$label = array('port' => __('proxy.port'), 'ipaddress' => __('proxy.address'), 'enabled' => __('proxy.enabled'));
-		foreach($this->afterFind as $source_data){
-			$key = key($source_data);
-			$diff = Set::diff($this->data[$key], $source_data[$key]);
-			if(!empty($diff)){
-				foreach($diff as $field => $value){
-					$changed_data[$field]['before'] = $source_data[$key][$field];
-					$changed_data[$field]['after'] = $this->data[$key][$field];
-					$changed_data[$field]['label'] = $label[$field];
-				}
-			}
-		}
-		
-		//Sofern Änderungen gefunden wurden, diese in das Changelog schreiben
-		if(!empty($changed_data)){
-			$this->Changelog = new Changelog();
-			//debug($this->controller);
-			$this->Changelog->save(array(
-				'controller' => 'Proxy',
-				'action' => 'edit',
-				'data' => json_encode(array('object_name' => '', 'data' => $changed_data)),
-			));
-		}
-	}*/
+
+class Proxy extends AppModel
+{
+
+    public $validate = [
+        'port' => [
+            'ruleName'  => [
+                'rule'     => 'numeric',
+                'message'  => 'The Port must be a numeric value',
+                'required' => true,
+            ],
+            'ruleName2' => [
+                'rule'    => ['maxLength', 5],
+                'message' => 'Port must be no larger than 5 numbers long.',
+            ],
+        ],
+    ];
+
+    function getSettings()
+    {
+        $proxy = $this->find('first');
+
+        $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
+        if (isset($proxy['Proxy'])) {
+            $settings = Hash::merge($settings, $proxy['Proxy']);
+        }
+
+        return $settings;
+    }
+
+    /*
+    public function afterFind($results = array(), $primary = false){
+        $this->afterFind = $results;
+    }
+
+    public function afterSave($created, $options=array()){
+        $key = '';
+        $changed_data = array();
+        $label = array('port' => __('proxy.port'), 'ipaddress' => __('proxy.address'), 'enabled' => __('proxy.enabled'));
+        foreach($this->afterFind as $source_data){
+            $key = key($source_data);
+            $diff = Set::diff($this->data[$key], $source_data[$key]);
+            if(!empty($diff)){
+                foreach($diff as $field => $value){
+                    $changed_data[$field]['before'] = $source_data[$key][$field];
+                    $changed_data[$field]['after'] = $this->data[$key][$field];
+                    $changed_data[$field]['label'] = $label[$field];
+                }
+            }
+        }
+
+        //Sofern Änderungen gefunden wurden, diese in das Changelog schreiben
+        if(!empty($changed_data)){
+            $this->Changelog = new Changelog();
+            //debug($this->controller);
+            $this->Changelog->save(array(
+                'controller' => 'Proxy',
+                'action' => 'edit',
+                'data' => json_encode(array('object_name' => '', 'data' => $changed_data)),
+            ));
+        }
+    }*/
 }

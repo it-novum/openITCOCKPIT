@@ -38,159 +38,167 @@
  *   /usr/share/openitcockpit/app/Console/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Service --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --notificationtype "$NOTIFICATIONTYPE$"
  */
 
-class SmsNotificationShell extends AppShell{
-	public $uses = [
-		'Host',
-		'Service',
-		'Servicetemplate',
-		MONITORING_HOSTSTATUS,
-		MONITORING_SERVICESTATUS,
-	];
-	
-	public function main(){
-		$this->config = [
-			'nrpe' => [
-				'port' => 5666,
-				'timeout' => 120,
-				'check_nrpe' => '/opt/openitc/nagios/libexec/check_nrpe',
-				'command_template_host' => ' -H %s -p %s -t %s -c send_sms -a %s %s %s %s %s "cmd ak %s"',
-				'command_template_service' => ' -H %s -p %s -t %s -c send_sms -a %s %s %s %s %s "cmd ak %s %s"',
-				'date_format' => 'd.m.Y H:i:s'
-			]
-		];
-		
-		$address = $this->params['address'];
-		$method = 'nrpe';
-		if(isset($this->params['method'])){
-			$method = strtolower($this->params['method']);
-		}
-		
-		if(array_key_exists('type', $this->params)){
-			if($this->params['type'] === 'Host' || $this->params['type'] === 'host'){
-				$hostUuid = $this->params['hostname'];
-				$hostname = $this->getHostname($hostUuid);
-				$hoststatus = $this->Hoststatus->byUuid($hostUuid, [
-					'fields' => [
-						'Objects.name1',
-						'Hoststatus.output'
-					]
-				]);
-				switch($method){
-					case 'nrpe':
-						$args = vsprintf($this->config['nrpe']['command_template_host'], [
-							escapeshellarg($address),
-							escapeshellarg($this->config['nrpe']['port']),
-							escapeshellarg($this->config['nrpe']['timeout']),
-							escapeshellarg($this->params['contactpager']),
-							escapeshellarg($this->params['notificationtype']),
-							escapeshellarg($hostname),
-							escapeshellarg($hoststatus[$hostUuid]['Hoststatus']['output']),
-							escapeshellarg(date($this->config['nrpe']['date_format'])),
-							escapeshellarg($hostname),
-						]);
-						
-						$command = $this->config['nrpe']['check_nrpe'] . $args;
-						//debug($command);
-						exec($command);
-						break;
-				}
-			}
-			
-			if($this->params['type'] === 'Service' || $this->params['type'] === 'service'){
-				$hostUuid = $this->params['hostname'];
-				$serviceUuid = $this->params['servicedesc'];
-				$hostname = $this->getHostname($hostUuid);
-				$servicename = $this->getServicename($serviceUuid);
-				$servicestatus = $this->Servicestatus->byUuid($serviceUuid, [
-					'fields' => [
-						'Objects.name2',
-						'Servicestatus.output'
-					]
-				]);
-				switch($method){
-					case 'nrpe':
-						$args = vsprintf($this->config['nrpe']['command_template_service'], [
-							escapeshellarg($address),
-							escapeshellarg($this->config['nrpe']['port']),
-							escapeshellarg($this->config['nrpe']['timeout']),
-							escapeshellarg($this->params['contactpager']),
-							escapeshellarg($this->params['notificationtype']),
-							escapeshellarg($hostname.'/'.$servicename),
-							escapeshellarg($servicestatus[$serviceUuid]['Servicestatus']['output']),
-							escapeshellarg(date($this->config['nrpe']['date_format'])),
-							escapeshellarg($hostname),
-							escapeshellarg($servicename),
-						]);
-						
-						$command = $this->config['nrpe']['check_nrpe'] . $args;
-						//debug($command);
-						exec($command);
-						break;
-				}
-			}
-		}
-	}
-		
-	public function getOptionParser(){
-		$parser = parent::getOptionParser();
-		$parser->addOptions([
-			'address' => ['help' => __d('oitc_console', 'IP address of the SMS gateway')],
-			'type' => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
-			'notificationtype' => ['help' => __d('oitc_console', 'Notification type of monitoring engine')],
-			'method' => ['short' => 'm', 'help' => __d('oitc_console', 'Transport method for example NRPE')],
-			'hostname' => ['help' => __d('oitc_console', 'Host uuid you want to send a notification')],
-			'contactpager' => ['help' => __d('oitc_console', 'recivers mail address')],
-			'servicedesc' => ['help' => __d('oitc_console', 'Service uuid you want to notify')],
-		]);
-		return $parser;
-	}
-	
-	public function getHostname($hostUuid){
-		//$host = $this->Host->findByUuid($hostUuid);
-		$host = $this->Host->find('first', [
-			'recurisve' => -1,
-			'conditions' => [
-				'Host.uuid' => $hostUuid
-			],
-			'fields' => [
-				'Host.id',
-				'Host.name',
-				'Host.uuid'
-			],
-			'contain' => []
-		]);
-	
-		return $host['Host']['name'];
-	}
-	
-	public function getServicename($serviceUuid){
-		$service = $this->Service->find('first', [
-			'recurisve' => -1,
-			'conditions' => [
-				'Service.uuid' => $serviceUuid
-			],
-			'fields' => [
-				'Service.id',
-				'Service.uuid',
-				'Service.name'
-			],
-			'contain' => [
-				'Servicetemplate' => [
-					'fields' => [
-						'Servicetemplate.id',
-						'Servicetemplate.name'
-					]
-				]
-			]
-		]);
-		$serviceName = $service['Service']['name'];
-		if($serviceName === null){
-			$serviceName = $service['Servicetemplate']['name'];
-		}
-		return $serviceName;
-	}
-	
-	public function _welcome(){
-		//Disable CakePHP welcome messages
-	}
+class SmsNotificationShell extends AppShell
+{
+    public $uses = [
+        'Host',
+        'Service',
+        'Servicetemplate',
+        MONITORING_HOSTSTATUS,
+        MONITORING_SERVICESTATUS,
+    ];
+
+    public function main()
+    {
+        $this->config = [
+            'nrpe' => [
+                'port'                     => 5666,
+                'timeout'                  => 120,
+                'check_nrpe'               => '/opt/openitc/nagios/libexec/check_nrpe',
+                'command_template_host'    => ' -H %s -p %s -t %s -c send_sms -a %s %s %s %s %s "cmd ak %s"',
+                'command_template_service' => ' -H %s -p %s -t %s -c send_sms -a %s %s %s %s %s "cmd ak %s %s"',
+                'date_format'              => 'd.m.Y H:i:s',
+            ],
+        ];
+
+        $address = $this->params['address'];
+        $method = 'nrpe';
+        if (isset($this->params['method'])) {
+            $method = strtolower($this->params['method']);
+        }
+
+        if (array_key_exists('type', $this->params)) {
+            if ($this->params['type'] === 'Host' || $this->params['type'] === 'host') {
+                $hostUuid = $this->params['hostname'];
+                $hostname = $this->getHostname($hostUuid);
+                $hoststatus = $this->Hoststatus->byUuid($hostUuid, [
+                    'fields' => [
+                        'Objects.name1',
+                        'Hoststatus.output',
+                    ],
+                ]);
+                switch ($method) {
+                    case 'nrpe':
+                        $args = vsprintf($this->config['nrpe']['command_template_host'], [
+                            escapeshellarg($address),
+                            escapeshellarg($this->config['nrpe']['port']),
+                            escapeshellarg($this->config['nrpe']['timeout']),
+                            escapeshellarg($this->params['contactpager']),
+                            escapeshellarg($this->params['notificationtype']),
+                            escapeshellarg($hostname),
+                            escapeshellarg($hoststatus[$hostUuid]['Hoststatus']['output']),
+                            escapeshellarg(date($this->config['nrpe']['date_format'])),
+                            escapeshellarg($hostname),
+                        ]);
+
+                        $command = $this->config['nrpe']['check_nrpe'].$args;
+                        //debug($command);
+                        exec($command);
+                        break;
+                }
+            }
+
+            if ($this->params['type'] === 'Service' || $this->params['type'] === 'service') {
+                $hostUuid = $this->params['hostname'];
+                $serviceUuid = $this->params['servicedesc'];
+                $hostname = $this->getHostname($hostUuid);
+                $servicename = $this->getServicename($serviceUuid);
+                $servicestatus = $this->Servicestatus->byUuid($serviceUuid, [
+                    'fields' => [
+                        'Objects.name2',
+                        'Servicestatus.output',
+                    ],
+                ]);
+                switch ($method) {
+                    case 'nrpe':
+                        $args = vsprintf($this->config['nrpe']['command_template_service'], [
+                            escapeshellarg($address),
+                            escapeshellarg($this->config['nrpe']['port']),
+                            escapeshellarg($this->config['nrpe']['timeout']),
+                            escapeshellarg($this->params['contactpager']),
+                            escapeshellarg($this->params['notificationtype']),
+                            escapeshellarg($hostname.'/'.$servicename),
+                            escapeshellarg($servicestatus[$serviceUuid]['Servicestatus']['output']),
+                            escapeshellarg(date($this->config['nrpe']['date_format'])),
+                            escapeshellarg($hostname),
+                            escapeshellarg($servicename),
+                        ]);
+
+                        $command = $this->config['nrpe']['check_nrpe'].$args;
+                        //debug($command);
+                        exec($command);
+                        break;
+                }
+            }
+        }
+    }
+
+    public function getOptionParser()
+    {
+        $parser = parent::getOptionParser();
+        $parser->addOptions([
+            'address'          => ['help' => __d('oitc_console', 'IP address of the SMS gateway')],
+            'type'             => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
+            'notificationtype' => ['help' => __d('oitc_console', 'Notification type of monitoring engine')],
+            'method'           => ['short' => 'm', 'help' => __d('oitc_console', 'Transport method for example NRPE')],
+            'hostname'         => ['help' => __d('oitc_console', 'Host uuid you want to send a notification')],
+            'contactpager'     => ['help' => __d('oitc_console', 'recivers mail address')],
+            'servicedesc'      => ['help' => __d('oitc_console', 'Service uuid you want to notify')],
+        ]);
+
+        return $parser;
+    }
+
+    public function getHostname($hostUuid)
+    {
+        //$host = $this->Host->findByUuid($hostUuid);
+        $host = $this->Host->find('first', [
+            'recurisve'  => -1,
+            'conditions' => [
+                'Host.uuid' => $hostUuid,
+            ],
+            'fields'     => [
+                'Host.id',
+                'Host.name',
+                'Host.uuid',
+            ],
+            'contain'    => [],
+        ]);
+
+        return $host['Host']['name'];
+    }
+
+    public function getServicename($serviceUuid)
+    {
+        $service = $this->Service->find('first', [
+            'recurisve'  => -1,
+            'conditions' => [
+                'Service.uuid' => $serviceUuid,
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+            ],
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                    ],
+                ],
+            ],
+        ]);
+        $serviceName = $service['Service']['name'];
+        if ($serviceName === null) {
+            $serviceName = $service['Servicetemplate']['name'];
+        }
+
+        return $serviceName;
+    }
+
+    public function _welcome()
+    {
+        //Disable CakePHP welcome messages
+    }
 }

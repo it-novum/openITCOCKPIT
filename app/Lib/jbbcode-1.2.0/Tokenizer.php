@@ -6,13 +6,12 @@ namespace JBBCode;
  * This Tokenizer is used while constructing the parse tree. The tokenizer
  * handles splitting the input into brackets and miscellaneous text. The
  * parser is then built as a FSM ontop of these possible inputs.
- *
  * @author jbowens
  */
 class Tokenizer
 {
 
-    protected $tokens = array();
+    protected $tokens = [];
     protected $i = -1;
 
     /**
@@ -34,7 +33,7 @@ class Tokenizer
 
                 /* Add the [ or ] to the tokens array. */
                 array_push($this->tokens, $str[$index]);
-                $strStart = $index+1;
+                $strStart = $index + 1;
             }
         }
 

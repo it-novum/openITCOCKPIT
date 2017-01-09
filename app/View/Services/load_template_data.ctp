@@ -31,6 +31,6 @@
  *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
  *      |__/                                    
 */
-if(!empty($servicetemplate)){
-	echo $servicetemplate;
+if (!empty($servicetemplate)) {
+    echo $servicetemplate;
 }

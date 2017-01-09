@@ -23,19 +23,22 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MapviewsController extends MapModuleAppController {
+class MapviewsController extends MapModuleAppController
+{
 
-	public $layout = 'Admin.default';
+    public $layout = 'Admin.default';
 
-	public function index(){
-		//debug('Map views Controller index funzt');
-	}
+    public function index()
+    {
+        //debug('Map views Controller index funzt');
+    }
 
 
-	/*
-		@TODO implement data refreshing of objects which are used on a map
-	 */
-	public function refreshNagiosObjects(){
-		$this->autoRender = false;
-	}
+    /*
+        @TODO implement data refreshing of objects which are used on a map
+     */
+    public function refreshNagiosObjects()
+    {
+        $this->autoRender = false;
+    }
 }

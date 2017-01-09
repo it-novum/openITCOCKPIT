@@ -29,153 +29,161 @@
  * a host belongsTo a container (many to one)
  */
 
-class Hostgroup extends AppModel{
+class Hostgroup extends AppModel
+{
 
-	public $belongsTo = array(
-		'Container' => [
-			'foreignKey' => 'container_id',
-			'className' => 'Container',
-		]);
+    public $belongsTo = [
+        'Container' => [
+            'foreignKey' => 'container_id',
+            'className'  => 'Container',
+        ]];
 
-	public $hasAndBelongsToMany = array(
-		'Host' => [
-			'joinTable' => 'hosts_to_hostgroups',
-			'foreignKey' => 'hostgroup_id',
-			'unique' => true,
-			'dependent'=> true
-		]
-	);
+    public $hasAndBelongsToMany = [
+        'Host' => [
+            'joinTable'  => 'hosts_to_hostgroups',
+            'foreignKey' => 'hostgroup_id',
+            'unique'     => true,
+            'dependent'  => true,
+        ],
+    ];
 
-	public $validate = [
-		'hostgroup_url' => [
-			'rule' => 'url',
-			'allowEmpty' => true,
-			'required' => false,
-			'message' => 'Not a valid URL format'
-		],
-		'Host' => [
-			'rule' => ['multiple',
-				[
-					'min' => 1,
-				]
-			],
-			'message' => 'Please select at least 1 host',
-			'required' => true
-		]
-	];
+    public $validate = [
+        'hostgroup_url' => [
+            'rule'       => 'url',
+            'allowEmpty' => true,
+            'required'   => false,
+            'message'    => 'Not a valid URL format',
+        ],
+        'Host'          => [
+            'rule'     => ['multiple',
+                [
+                    'min' => 1,
+                ],
+            ],
+            'message'  => 'Please select at least 1 host',
+            'required' => true,
+        ],
+    ];
 
-	public function __construct($id = false, $table = null, $ds = null){
-		parent::__construct($id, $table, $ds);
-		$this->Host = ClassRegistry::init('Host');
-	}
+    public function __construct($id = false, $table = null, $ds = null)
+    {
+        parent::__construct($id, $table, $ds);
+        $this->Host = ClassRegistry::init('Host');
+    }
 
-	public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id'){
-		if(!is_array($container_ids)){
-			$container_ids = [$container_ids];
-		}
-		//Lookup for the tenant container of $container_id
-		$this->Container = ClassRegistry::init('Container');
+    public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id')
+    {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
+        //Lookup for the tenant container of $container_id
+        $this->Container = ClassRegistry::init('Container');
 
-		$tenantContainerIds = [];
+        $tenantContainerIds = [];
 
-		foreach($container_ids as $container_id){
-			if($container_id != ROOT_CONTAINER){
+        foreach ($container_ids as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
 
-				// Get contaier id of the tenant container
-				// $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-				$path = $this->Container->getPath($container_id);
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $this->Container->getPath($container_id);
 
-				foreach($path as $containers){
-					if($containers["Container"]["containertype_id"] == CT_HOSTGROUP){
-						$tenantContainerIds[] = $containers["Container"]['parent_id'];
-					}
-				}
-				$tenantContainerIds[] = $path[1]['Container']['id'];
-			}else{
-				$tenantContainerIds[] = ROOT_CONTAINER;
-			}
-		}
-		$tenantContainerIds = array_unique($tenantContainerIds);
+                foreach ($path as $containers) {
+                    if ($containers["Container"]["containertype_id"] == CT_HOSTGROUP) {
+                        $tenantContainerIds[] = $containers["Container"]['parent_id'];
+                    }
+                }
+                $tenantContainerIds[] = $path[1]['Container']['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
 
-		$hostgroupsAsList = [];
+        $hostgroupsAsList = [];
 
-		foreach($tenantContainerIds as $tenantContainerId){
+        foreach ($tenantContainerIds as $tenantContainerId) {
 
-			$children = $this->Container->children($tenantContainerId, true);
-			foreach($children as $child){
-				if($child['Container']['containertype_id'] == CT_HOSTGROUP){
-					$hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
-				}
-			}
-		}
+            $children = $this->Container->children($tenantContainerId, true);
+            foreach ($children as $child) {
+                if ($child['Container']['containertype_id'] == CT_HOSTGROUP) {
+                    $hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
+                }
+            }
+        }
 
-		switch($type){
-			case 'all':
-				return $this->find('all', [
-					'recursive' => -1,
-					'contain' => [
-						'Container' => [
-							'conditions' => [
-								'Container.id' => array_keys($hostgroupsAsList)
-							]
-						]
-					],
-					'order' => [
-						'Container.name' => 'ASC'
-					]
-				]);
+        switch ($type) {
+            case 'all':
+                return $this->find('all', [
+                    'recursive' => -1,
+                    'contain'   => [
+                        'Container' => [
+                            'conditions' => [
+                                'Container.id' => array_keys($hostgroupsAsList),
+                            ],
+                        ],
+                    ],
+                    'order'     => [
+                        'Container.name' => 'ASC',
+                    ],
+                ]);
 
-			default:
-				if($index == 'id'){
-					$result = $this->find('all', [
-						'contain' => [
-							'Container' => [
-								'fields' => [
-									'Container.name'
-								]
-							]
-						],
-						'order' => [
-							'Container.name' => 'ASC'
-						],
-						'fields' => [
-							'Hostgroup.id',
-							'Hostgroup.container_id'
-						],
-						'conditions' => [
-							'Hostgroup.container_id' => array_keys($hostgroupsAsList)
-						]
-					]);
+            default:
+                if ($index == 'id') {
+                    $result = $this->find('all', [
+                        'contain'    => [
+                            'Container' => [
+                                'fields' => [
+                                    'Container.name',
+                                ],
+                            ],
+                        ],
+                        'order'      => [
+                            'Container.name' => 'ASC',
+                        ],
+                        'fields'     => [
+                            'Hostgroup.id',
+                            'Hostgroup.container_id',
+                        ],
+                        'conditions' => [
+                            'Hostgroup.container_id' => array_keys($hostgroupsAsList),
+                        ],
+                    ]);
 
-					$return = [];
-					foreach($result as $hostgroup){
-						$return[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
-					}
-					return $return;
-				}
-				asort($hostgroupsAsList);
-				return $hostgroupsAsList;
-		}
-		return [];
-	}
+                    $return = [];
+                    foreach ($result as $hostgroup) {
+                        $return[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
+                    }
 
-	public function findHostgroups($type = 'all', $options = [], $index = 'id'){
-		if($type == 'all'){
-			return $this->find('all', $options);
-		}
+                    return $return;
+                }
+                asort($hostgroupsAsList);
 
-		if($type == 'list'){
-			$return = [];
-			$results = $this->find('all', $options);
-			foreach($results as $result){
-				$return[$result['Hostgroup'][$index]] = $result['Container']['name'];
-			}
+                return $hostgroupsAsList;
+        }
 
-			return $return;
-		}
-	}
+        return [];
+    }
 
-	public function findList($options = [], $index = 'id'){
-		return $this->findHostgroups('list', $options, $index);
-	}
+    public function findHostgroups($type = 'all', $options = [], $index = 'id')
+    {
+        if ($type == 'all') {
+            return $this->find('all', $options);
+        }
+
+        if ($type == 'list') {
+            $return = [];
+            $results = $this->find('all', $options);
+            foreach ($results as $result) {
+                $return[$result['Hostgroup'][$index]] = $result['Container']['name'];
+            }
+
+            return $return;
+        }
+    }
+
+    public function findList($options = [], $index = 'id')
+    {
+        return $this->findHostgroups('list', $options, $index);
+    }
 }

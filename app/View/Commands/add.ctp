@@ -24,102 +24,105 @@
 //	confirmation.
 ?>
 <div class="row">
-	<div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-		<h1 class="page-title txt-color-blueDark">
-			<i class="fa fa-terminal fa-fw "></i> 
-				<?php echo __('Monitoring'); ?> 
-			<span>> 
-				<?php echo __('Commands'); ?>
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa fa-terminal fa-fw "></i>
+            <?php echo __('Monitoring'); ?>
+            <span>>
+                <?php echo __('Commands'); ?>
 			</span>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-		</h1>
-	</div>
+            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+        </h1>
+    </div>
 </div>
 <div id="error_msg"></div>
 
 <div class="jarviswidget" id="wid-id-0">
-	<header>
-		<span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-		<h2><?php echo __('Add command'); ?></h2>
-		<div class="widget-toolbar" role="menu">
-			<?php if($this->Acl->hasPermission('index', 'macros')): ?>
-				<a href="javascript:void(0);" data-toggle="modal" id="loadMacrosOberview" data-target="#MacrosOverview" class="btn btn-primary btn-xs"><i class="fa fa-usd"></i> <?php echo __('Macros overview'); ?></a>
-			<?php endif; ?>
-			<?php echo $this->Utils->backButton();?>
-		</div>
-	</header>
-	<div>
-		<div class="widget-body">
-			<?php
-				echo $this->Form->create('Command', array(
-					'class' => 'form-horizontal clear'
-				));
-				echo $this->Form->input('command_type', ['options' => $command_types, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Command type')]);
-				echo $this->Form->input('name', ['label' => __('Name')]);
-				echo $this->Form->input('command_line', ['label' => __('Command line')]);
-				?>
-				<span class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></span>
-				<span class="col col-md-10 col-xs-12 text-info"><i class="fa fa-info-circle"></i> <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?></span>
-				<br /><br />
-				<?php echo $this->Form->input('description', ['label' => __('Description')]); ?>
-				<fieldset class=" form-inline required padding-10">
-					<legend class="font-sm">
-						<div>
-							<label><?php echo __('Arguments'); ?>:</label>
-						</div>
-					</legend>
-					<div id="command_args">
-						<!-- empty because we create a new command! -->
-						</div>
-					<div class="col-xs-12 padding-top-10">
-						<a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);">
-							<i class="fa fa-plus"></i>
-							<?php echo __('Add argument'); ?>
-						</a>
-					</div>
-				</fieldset>
-			<?php if($this->Acl->hasPermission('terminal')): ?>
-				<br />
-				<div id="console"></div>
-			<?php endif; ?>
-			<br />
-			<?php echo $this->Form->formActions(); ?>
-		</div>
-	</div>
+    <header>
+        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
+        <h2><?php echo __('Add command'); ?></h2>
+        <div class="widget-toolbar" role="menu">
+            <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
+                <a href="javascript:void(0);" data-toggle="modal" id="loadMacrosOberview" data-target="#MacrosOverview"
+                   class="btn btn-primary btn-xs"><i class="fa fa-usd"></i> <?php echo __('Macros overview'); ?></a>
+            <?php endif; ?>
+            <?php echo $this->Utils->backButton(); ?>
+        </div>
+    </header>
+    <div>
+        <div class="widget-body">
+            <?php
+            echo $this->Form->create('Command', [
+                'class' => 'form-horizontal clear',
+            ]);
+            echo $this->Form->input('command_type', ['options' => $command_types, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Command type')]);
+            echo $this->Form->input('name', ['label' => __('Name')]);
+            echo $this->Form->input('command_line', ['label' => __('Command line')]);
+            ?>
+            <span class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></span>
+            <span class="col col-md-10 col-xs-12 text-info"><i
+                        class="fa fa-info-circle"></i> <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?></span>
+            <br/><br/>
+            <?php echo $this->Form->input('description', ['label' => __('Description')]); ?>
+            <fieldset class=" form-inline required padding-10">
+                <legend class="font-sm">
+                    <div>
+                        <label><?php echo __('Arguments'); ?>:</label>
+                    </div>
+                </legend>
+                <div id="command_args">
+                    <!-- empty because we create a new command! -->
+                </div>
+                <div class="col-xs-12 padding-top-10">
+                    <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);">
+                        <i class="fa fa-plus"></i>
+                        <?php echo __('Add argument'); ?>
+                    </a>
+                </div>
+            </fieldset>
+            <?php if ($this->Acl->hasPermission('terminal')): ?>
+                <br/>
+                <div id="console"></div>
+            <?php endif; ?>
+            <br/>
+            <?php echo $this->Form->formActions(); ?>
+        </div>
+    </div>
 </div>
 
-<?php if($this->Acl->hasPermission('index', 'macros')): ?>
-	<div class="modal fade" id="MacrosOverview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-						&times;
-					</button>
-					<h4 class="modal-title" id="myModalLabel"><?php echo __('User defined macros');?></h4>
-				</div>
-				<div class="modal-body">
+<?php if ($this->Acl->hasPermission('index', 'macros')): ?>
+    <div class="modal fade" id="MacrosOverview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel"><?php echo __('User defined macros'); ?></h4>
+                </div>
+                <div class="modal-body">
 
-					<div class="row">
-						<div class="col-12">
-							<div id="macros_loader">
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="macros_loader">
 								<span class="text-center">
 									<h1>
 										<i class="fa fa-cog fa-lg fa-spin"></i>
 									</h1>
-									<br />
+									<br/>
 								</span>
-							</div>
-							<div id="MacroContent"><!-- content loaded by ajax --></div>
-						</div>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">
-						<?php echo __('Close'); ?>
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+                            </div>
+                            <div id="MacroContent"><!-- content loaded by ajax --></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 <?php endif; ?>

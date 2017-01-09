@@ -23,11 +23,11 @@
 //	confirmation.
 
 App.Controllers.MapsIndexController = Frontend.AppController.extend({
-	components: ['Masschange'],
-	_initialize: function() {
-		this.Masschange.setup({
-			'controller': 'map_module/maps',
-			'checkboxattr': 'mapname',
-		});
-	}
+    components: ['Masschange'],
+    _initialize: function () {
+        this.Masschange.setup({
+            'controller': 'map_module/maps',
+            'checkboxattr': 'mapname',
+        });
+    }
 });

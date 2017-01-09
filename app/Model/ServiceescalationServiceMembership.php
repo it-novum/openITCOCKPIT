@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServiceescalationServiceMembership extends AppModel{
-	public $useTable = 'services_to_serviceescalations';
-	public $belongsTo = [
-		'Serviceescalation' => [
-			'className' => 'Serviceescalation',
-			'foreignKey' => 'serviceescalation_id'
-		],
+class ServiceescalationServiceMembership extends AppModel
+{
+    public $useTable = 'services_to_serviceescalations';
+    public $belongsTo = [
+        'Serviceescalation' => [
+            'className'  => 'Serviceescalation',
+            'foreignKey' => 'serviceescalation_id',
+        ],
 
-		'Service' => [
-			'className' => 'Service',
-			'foreignKey' => 'service_id'
-		]
-	];
+        'Service' => [
+            'className'  => 'Service',
+            'foreignKey' => 'service_id',
+        ],
+    ];
 
 }

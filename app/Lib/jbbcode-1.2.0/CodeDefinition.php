@@ -6,7 +6,6 @@ namespace JBBCode;
  * This class represents a BBCode Definition. You may construct instances of this class directly,
  * usually through the CodeDefinitionBuilder class, to create text replacement bbcodes, or you
  * may subclass it to create more complex bbcode definitions.
- *
  * @author jbowens
  */
 class CodeDefinition
@@ -39,10 +38,10 @@ class CodeDefinition
      * Constructs a new CodeDefinition.
      */
     public static function construct($tagName, $replacementText, $useOption = false,
-            $parseContent = true, $nestLimit = -1, $optionValidator = null,
-            $bodyValidator = null)
+                                     $parseContent = true, $nestLimit = -1, $optionValidator = null,
+                                     $bodyValidator = null)
     {
-        $def = new CodeDefinition();                            
+        $def = new CodeDefinition();
         $def->elCounter = 0;
         $def->setTagName($tagName);
         $def->setReplacementText($replacementText);
@@ -51,15 +50,14 @@ class CodeDefinition
         $def->nestLimit = $nestLimit;
         $def->optionValidator = $optionValidator;
         $def->bodyValidator = $bodyValidator;
+
         return $def;
-     }
+    }
 
     /**
-     * Constructs a new CodeDefinition. 
-     *
+     * Constructs a new CodeDefinition.
      * This constructor is deprecated. You should use the static construct() method or the
      * CodeDefinitionBuilder class to construct a new CodeDefiniton.
-     *
      * @deprecated
      */
     public function __construct()
@@ -79,13 +77,15 @@ class CodeDefinition
      * any validators attached to this CodeDefinition.
      *
      * @param $el  the ElementNode to validate
+     *
      * @return true if the ElementNode's {option} and {param} are OK, false if they're not
      */
     public function hasValidInputs(ElementNode $el)
     {
         if ($this->usesOption() && $this->optionValidator &&
-            !$this->optionValidator->validate($el->getAttribute())) {
-            /* The option argument to $el does not pass the option validator. */    
+            !$this->optionValidator->validate($el->getAttribute())
+        ) {
+            /* The option argument to $el does not pass the option validator. */
             return false;
         }
 
@@ -99,7 +99,7 @@ class CodeDefinition
                 /* The content of the element is not valid. */
                 return false;
             }
-        } 
+        }
 
         return true;
     }
@@ -157,12 +157,12 @@ class CodeDefinition
         $s = "";
         foreach ($el->getChildren() as $child)
             $s .= $child->getAsText();
+
         return $s;
     }
 
     /**
      * Returns the tag name of this code definition
-     *
      * @return this definition's associated tag name
      */
     public function getTagName()
@@ -174,7 +174,6 @@ class CodeDefinition
      * Returns the replacement text of this code definition. This usually has little, if any meaning if the
      * CodeDefinition class was extended. For default, html replacement CodeDefinitions this returns the html
      * markup for the definition.
-     *
      * @return the replacement text of this CodeDefinition
      */
     public function getReplacementText()
@@ -184,7 +183,6 @@ class CodeDefinition
 
     /**
      * Returns whether or not this CodeDefinition uses the optional {option}
-     *
      * @return true if this CodeDefinition uses the option, false otherwise
      */
     public function usesOption()
@@ -195,7 +193,6 @@ class CodeDefinition
     /**
      * Returns whether or not this CodeDefnition parses elements contained within it,
      * or just treats its children as text.
-     *
      * @return true if this CodeDefinition parses elements contained within itself
      */
     public function parseContent()
@@ -216,7 +213,6 @@ class CodeDefinition
 
     /**
      * Sets the tag name of this CodeDefinition
-     *
      * @deprecated
      *
      * @param the new tag name of this definition
@@ -228,7 +224,6 @@ class CodeDefinition
 
     /**
      * Sets the html replacement text of this CodeDefinition
-     *
      * @deprecated
      *
      * @param the new replacement text
@@ -240,7 +235,6 @@ class CodeDefinition
 
     /**
      * Sets whether or not this CodeDefinition uses the {option}
-     *
      * @deprecated
      *
      * @param boolean $bool
@@ -252,7 +246,6 @@ class CodeDefinition
 
     /**
      * Sets whether or not this CodeDefinition allows its children to be parsed as html
-     *
      * @deprecated
      *
      * @param boolean $bool
@@ -264,9 +257,7 @@ class CodeDefinition
 
     /**
      * Increments the element counter. This is used for tracking depth of elements of the same type for next limits.
-     *
      * @deprecated
-     *
      * @return void
      */
     public function incrementCounter()
@@ -276,9 +267,7 @@ class CodeDefinition
 
     /**
      * Decrements the element counter.
-     *
      * @deprecated
-     *
      * @return void
      */
     public function decrementCounter()
@@ -288,7 +277,6 @@ class CodeDefinition
 
     /**
      * Resets the element counter.
-     *
      * @deprecated
      */
     public function resetCounter()
@@ -298,9 +286,7 @@ class CodeDefinition
 
     /**
      * Returns the current value of the element counter.
-     *
      * @deprecated
-     *
      * @return int
      */
     public function getCounter()

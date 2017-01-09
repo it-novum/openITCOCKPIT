@@ -23,62 +23,78 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<a href="<?php echo $this->here; ?>" data-original-title="<?php echo _('Refresh'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
-<?php if($this->Acl->hasPermission('serviceNotification', 'notifications')): ?>
-	<a href="/notifications/serviceNotification/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Notifications'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-envelope fa-lg"></i></a>
-<?php endif;?>
-<?php if($this->Acl->hasPermission('index', 'servicechecks')): ?>
-	<a href="/servicechecks/index/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Check history'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
+    <a href="<?php echo $this->here; ?>" data-original-title="<?php echo _('Refresh'); ?>" data-placement="bottom"
+       rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
+<?php if ($this->Acl->hasPermission('serviceNotification', 'notifications')): ?>
+    <a href="/notifications/serviceNotification/<?php echo $service['Service']['id']; ?>"
+       data-original-title="<?php echo _('Notifications'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-envelope fa-lg"></i></a>
 <?php endif; ?>
-<?php if($this->Acl->hasPermission('service', 'statehistories')): ?>
-	<a href="/statehistories/service/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('State history'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
+<?php if ($this->Acl->hasPermission('index', 'servicechecks')): ?>
+    <a href="/servicechecks/index/<?php echo $service['Service']['id']; ?>"
+       data-original-title="<?php echo _('Check history'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
 <?php endif; ?>
-<?php if($this->Acl->hasPermission('service', 'acknowledgements')): ?>
-	<a href="/acknowledgements/service/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
+<?php if ($this->Acl->hasPermission('service', 'statehistories')): ?>
+    <a href="/statehistories/service/<?php echo $service['Service']['id']; ?>"
+       data-original-title="<?php echo _('State history'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
 <?php endif; ?>
-<?php if($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null):
-	$serviceUrl = $service['Service']['service_url'];
+<?php if ($this->Acl->hasPermission('service', 'acknowledgements')): ?>
+    <a href="/acknowledgements/service/<?php echo $service['Service']['id']; ?>"
+       data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
+<?php endif; ?>
+<?php if ($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null):
+    $serviceUrl = $service['Service']['service_url'];
 
-	$ServiceUrlHostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
-	$serviceUrl = $ServiceUrlHostMacroReplacer->replaceBasicMacros($serviceUrl);
-	$ServiceUrlMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
-	$serviceUrl = $ServiceUrlMacroReplacer->replaceBasicMacros($serviceUrl);
-	?>
-	<a href="<?php echo $serviceUrl; ?>" data-original-title="<?php echo _('External link'); ?>" data-placement="bottom" rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+    $ServiceUrlHostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
+    $serviceUrl = $ServiceUrlHostMacroReplacer->replaceBasicMacros($serviceUrl);
+    $ServiceUrlMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
+    $serviceUrl = $ServiceUrlMacroReplacer->replaceBasicMacros($serviceUrl);
+    ?>
+    <a href="<?php echo $serviceUrl; ?>" data-original-title="<?php echo _('External link'); ?>" data-placement="bottom"
+       rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
 <?php endif; ?>
-<?php if($allowEdit):?>
-	<?php if($this->Acl->hasPermission('edit', 'hosts')): ?>
-		<a href="/hosts/edit/<?php echo $service['Host']['id']; ?>" data-original-title="<?php echo _('Edit host'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
-	<?php endif;?>
-	<?php if($this->Acl->hasPermission('edit', 'services')): ?>
-		<a href="/services/edit/<?php echo $service['Service']['id']; ?>" data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
-	<?php endif; ?>
-<?php endif;?>
+<?php if ($allowEdit): ?>
+    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>" data-original-title="<?php echo _('Edit host'); ?>"
+           data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
+    <?php endif; ?>
+    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+        <a href="/services/edit/<?php echo $service['Service']['id']; ?>"
+           data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip"
+           class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
+    <?php endif; ?>
+<?php endif; ?>
 
-	<div class="btn-group">
-		<a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More');?></a>
-		<a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span class="caret"></span></a>
-		<ul class="dropdown-menu dropdown-menu-right">
-			<?php if($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
-				<li>
-					<a href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i class="fa fa-area-chart"></i> <?php echo __('Grapher'); ?></a>
-				</li>
-			<?php endif;?>
-			<?php if($this->params['controller'] == 'services' && $this->params['action'] == 'browser'): ?>
-				<?php if($this->Acl->hasPermission('index', 'qr')): ?>
-					<li>
-						<a href="javascript:void(0);" data-toggle="modal" data-target="#qrmodal" id="qropen"><i class="fa fa-qrcode"></i> <?php echo __('Scan code'); ?></a>
-					</li>
-			<?php endif; ?>
-			<?php endif;?>
-			<?php if($this->Acl->hasPermission('edit', 'services')):
-				if(!empty($additionalLinksList)):
-					echo '<li class="divider"></li>';
-				endif;// @TODO extend additional links mit service object
-				echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
-			endif; ?>
-		</ul>
-	</div>
+    <div class="btn-group">
+        <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
+        <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span
+                    class="caret"></span></a>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
+                <li>
+                    <a href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i
+                                class="fa fa-area-chart"></i> <?php echo __('Grapher'); ?></a>
+                </li>
+            <?php endif; ?>
+            <?php if ($this->params['controller'] == 'services' && $this->params['action'] == 'browser'): ?>
+                <?php if ($this->Acl->hasPermission('index', 'qr')): ?>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal" data-target="#qrmodal" id="qropen"><i
+                                    class="fa fa-qrcode"></i> <?php echo __('Scan code'); ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endif; ?>
+            <?php if ($this->Acl->hasPermission('edit', 'services')):
+                if (!empty($additionalLinksList)):
+                    echo '<li class="divider"></li>';
+                endif;// @TODO extend additional links mit service object
+                echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
+            endif; ?>
+        </ul>
+    </div>
 
 <?php
 /* old way:

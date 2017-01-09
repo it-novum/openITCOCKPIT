@@ -24,38 +24,43 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Welcome extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-comment';
-	public $element = 'welcome';
-	public $width = 5;
-	public $height = 11;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 1;
-		$this->title = __('Welcome');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostStateArray = $this->QueryCache->hostStateCount();
-		$widgetServiceStateArray = $this->QueryCache->serviceStateCount();
-		$this->Controller->set(compact(['widgetHostStateArray', 'widgetServiceStateArray']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0,
-			'col' => 0,
-			'width' => 5,
-			'height' => 11,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
+class Welcome extends Widget
+{
+    public $isDefault = true;
+    public $icon = 'fa-comment';
+    public $element = 'welcome';
+    public $width = 5;
+    public $height = 11;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 1;
+        $this->title = __('Welcome');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetHostStateArray = $this->QueryCache->hostStateCount();
+        $widgetServiceStateArray = $this->QueryCache->serviceStateCount();
+        $this->Controller->set(compact(['widgetHostStateArray', 'widgetServiceStateArray']));
+    }
+
+    public function getRestoreConfig($tabId)
+    {
+        $restorConfig = [
+            'dashboard_tab_id' => $tabId,
+            'type_id'          => $this->typeId,
+            'row'              => 0,
+            'col'              => 0,
+            'width'            => 5,
+            'height'           => 11,
+            'title'            => $this->title,
+            'color'            => $this->defaultColor,
+        ];
+
+        return $restorConfig;
+    }
+
 }

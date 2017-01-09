@@ -27,47 +27,47 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Container extends Importer
 {
-	/**
-	 * @property \Container $Model
-	 *
+    /**
+     * @property \Container $Model
+     * /**
+     * @return mixed
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
+                $this->Model->saveAll($record, [
+                    'validate' => false,
+                ]);
+            }
+        }
 
-	/**
-	 * @return mixed
-	 */
-	public function import()
-	{
-		if($this->isTableEmpty()){
-			$data = $this->getData();
-			foreach($data as $record) {
-				$this->Model->create();
-				$this->Model->saveAll($record, [
-					'validate' => false
-				]);
-			}
-		}
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data =
-			array(
-				0 =>
-					array(
-						'Container' =>
-							array(
-								'id' => '1',
-								'containertype_id' => '1',
-								'name' => 'root',
-								'parent_id' => NULL,
-								'lft' => '1',
-								'rght' => '2',
-							),
-					)
-			);
-		return $data;
-	}
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data =
+            [
+                0 =>
+                    [
+                        'Container' =>
+                            [
+                                'id'               => '1',
+                                'containertype_id' => '1',
+                                'name'             => 'root',
+                                'parent_id'        => null,
+                                'lft'              => '1',
+                                'rght'             => '2',
+                            ],
+                    ],
+            ];
+
+        return $data;
+    }
 }

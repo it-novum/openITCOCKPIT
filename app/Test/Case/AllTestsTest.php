@@ -22,40 +22,44 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-class AllTestsTest extends PHPUnit_Framework_TestSuite {
+class AllTestsTest extends PHPUnit_Framework_TestSuite
+{
 
-	public static function suite()
-	{
-		$directories = self::getTestDirectories();
+    public static function suite()
+    {
+        $directories = self::getTestDirectories();
 
-		$suite = new CakeTestSuite('All tests');
-		foreach($directories as $directory){
-			$suite->addTestDirectory($directory . DS);
-		}
-		return $suite;
-	}
+        $suite = new CakeTestSuite('All tests');
+        foreach ($directories as $directory) {
+            $suite->addTestDirectory($directory.DS);
+        }
 
-	/**
-	 * @return array
-	 */
-	private static function getTestDirectories(){
-		$baseTestsPath = APP . 'Test' . DS . 'Case' . DS;
+        return $suite;
+    }
 
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator(
-				$baseTestsPath,
-				RecursiveDirectoryIterator::SKIP_DOTS
-			),
-			RecursiveIteratorIterator::SELF_FIRST,
-			RecursiveIteratorIterator::CATCH_GET_CHILD
-		);
+    /**
+     * @return array
+     */
+    private static function getTestDirectories()
+    {
+        $baseTestsPath = APP.'Test'.DS.'Case'.DS;
 
-		$directories = [];
-		foreach($iterator as $path => $directory){
-			if($directory->isDir()){
-				$directories[] = $path;
-			}
-		}
-		return $directories;
-	}
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $baseTestsPath,
+                RecursiveDirectoryIterator::SKIP_DOTS
+            ),
+            RecursiveIteratorIterator::SELF_FIRST,
+            RecursiveIteratorIterator::CATCH_GET_CHILD
+        );
+
+        $directories = [];
+        foreach ($iterator as $path => $directory) {
+            if ($directory->isDir()) {
+                $directories[] = $path;
+            }
+        }
+
+        return $directories;
+    }
 }

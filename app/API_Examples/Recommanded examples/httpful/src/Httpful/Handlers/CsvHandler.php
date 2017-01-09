@@ -10,6 +10,7 @@ class CsvHandler extends MimeHandlerAdapter
 {
     /**
      * @param string $body
+     *
      * @return mixed
      */
     public function parse($body)
@@ -17,27 +18,29 @@ class CsvHandler extends MimeHandlerAdapter
         if (empty($body))
             return null;
 
-        $parsed = array();
-        $fp = fopen('data://text/plain;base64,' . base64_encode($body), 'r');
-        while (($r = fgetcsv($fp)) !== FALSE) {
+        $parsed = [];
+        $fp = fopen('data://text/plain;base64,'.base64_encode($body), 'r');
+        while (($r = fgetcsv($fp)) !== false) {
             $parsed[] = $r;
         }
 
         if (empty($parsed))
             throw new \Exception("Unable to parse response as CSV");
+
         return $parsed;
     }
 
     /**
      * @param mixed $payload
+     *
      * @return string
      */
     public function serialize($payload)
     {
-        $fp = fopen('php://temp/maxmemory:'. (6*1024*1024), 'r+');
+        $fp = fopen('php://temp/maxmemory:'.(6 * 1024 * 1024), 'r+');
         $i = 0;
         foreach ($payload as $fields) {
-            if($i++ == 0) {
+            if ($i++ == 0) {
                 fputcsv($fp, array_keys($fields));
             }
             fputcsv($fp, $fields);
@@ -45,6 +48,7 @@ class CsvHandler extends MimeHandlerAdapter
         rewind($fp);
         $data = stream_get_contents($fp);
         fclose($fp);
+
         return $data;
     }
 }

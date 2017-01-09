@@ -23,18 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class HostdependencyHostMembership extends AppModel{
-	public $useTable = 'hosts_to_hostdependencies';
-	public $belongsTo = [
-		'Hostdependency' => [
-			'className' => 'Hostdependency',
-			'foreignKey' => 'hostdependency_id'
-		],
+class HostdependencyHostMembership extends AppModel
+{
+    public $useTable = 'hosts_to_hostdependencies';
+    public $belongsTo = [
+        'Hostdependency' => [
+            'className'  => 'Hostdependency',
+            'foreignKey' => 'hostdependency_id',
+        ],
 
-		'Host' => [
-			'className' => 'Host',
-			'foreignKey' => 'host_id'
-		]
-	];
+        'Host' => [
+            'className'  => 'Host',
+            'foreignKey' => 'host_id',
+        ],
+    ];
 
 }

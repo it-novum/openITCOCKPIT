@@ -1,11 +1,10 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php');
+require_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php');
 
 /**
  * Test cases testing the ability to parse bbcode and retrieve a
  * plain text representation without any markup.
- *
  * @author jbowens
  */
 class BBCodeToTextTest extends PHPUnit_Framework_TestCase
@@ -22,6 +21,7 @@ class BBCodeToTextTest extends PHPUnit_Framework_TestCase
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse($bbcode);
+
         return $parser->getAsText();
     }
 
@@ -47,13 +47,13 @@ class BBCodeToTextTest extends PHPUnit_Framework_TestCase
     public function testOneTagWithSurroundingText()
     {
         $this->assertTextOutput('buffer text [b]this is bold[/b] buffer text',
-                              'buffer text this is bold buffer text');
+            'buffer text this is bold buffer text');
     }
 
     public function testMultipleTags()
     {
-        $bbcode = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and ' .
-                  'things like [u]that[/u].';
+        $bbcode = 'this is some text with [b]bold tags[/b] and [i]italics[/i] and '.
+            'things like [u]that[/u].';
         $text = 'this is some text with bold tags and italics and things like that.';
         $this->assertTextOutput($bbcode, $text);
     }

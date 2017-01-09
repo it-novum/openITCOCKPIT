@@ -42,13 +42,15 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser){
+    public function setOptionsFromOptionParser(OptionParser $optionParser)
+    {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest(){
-        switch($this->optionParser->getAction()){
+    public function dispatchRequest()
+    {
+        switch ($this->optionParser->getAction()) {
             case 'add':
                 $this->add();
                 break;
@@ -65,15 +67,16 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function add(){
-        if(!$this->exists()){
+    public function add()
+    {
+        if (!$this->exists()) {
             $data = [
-                'key' => $this->getKeyOfData(),
-                'value' => $this->data[1],
-                'info' => $this->data[2],
+                'key'     => $this->getKeyOfData(),
+                'value'   => $this->data[1],
+                'info'    => $this->data[2],
                 'section' => $this->data[3],
             ];
-            if($this->Database->save($data)){
+            if ($this->Database->save($data)) {
                 return true;
             }
             throw new \Exception('Could not save data');
@@ -84,8 +87,9 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function update(){
-        if(!$this->exists()){
+    public function update()
+    {
+        if (!$this->exists()) {
             $this->add();
         }
         $record = $this->getRecordByKey();
@@ -94,7 +98,7 @@ class Api extends CoreApi implements ApiInterface
         $record['Systemsettings']['info'] = $this->data[2];
         $record['Systemsettings']['section'] = $this->data[3];
 
-        if($this->Database->save($record)){
+        if ($this->Database->save($record)) {
             return true;
         }
         throw new \Exception('Could not save data');
@@ -104,12 +108,13 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function delete(){
-        if(!$this->exists()){
+    public function delete()
+    {
+        if (!$this->exists()) {
             throw new RecordExistsExceptions('Record does not exists!');
         }
         $record = $this->getRecordByKey();
-        if($this->Database->delete($record['Systemsettings']['id'])){
+        if ($this->Database->delete($record['Systemsettings']['id'])) {
             return true;
         }
         throw new \Exception('Could not delete data');
@@ -119,26 +124,32 @@ class Api extends CoreApi implements ApiInterface
      * Checks if a record for given key exists
      * @return bool
      */
-    public function exists(){
+    public function exists()
+    {
         $result = $this->getRecordByKey();
+
         return !empty($result);
     }
 
     /**
      * @return string
      */
-    public function getKeyOfData(){
+    public function getKeyOfData()
+    {
         $data = $this->data;
         $key = array_shift($data);
+
         return $key;
     }
 
-    public function getRecordByKey(){
+    public function getRecordByKey()
+    {
         $key = $this->getKeyOfData();
+
         return $this->Database->find('first', [
             'conditions' => [
-                'key' => $key
-            ]
+                'key' => $key,
+            ],
         ]);
     }
 

@@ -27,88 +27,90 @@
 App::uses('Widget', 'Admin.Lib');
 
 
-class WidgetTacho extends WidgetBase{
-	protected $iconname = 'tachometer';
-	protected $bodyClasses = 'tacho-body';
-	protected $viewName = 'Dashboard/widget_tacho';
+class WidgetTacho extends WidgetBase
+{
+    protected $iconname = 'tachometer';
+    protected $bodyClasses = 'tacho-body';
+    protected $viewName = 'Dashboard/widget_tacho';
 
-	public function compileTemplateData(){
-		$state_array_service = [];
-		for($i = 0; $i < 4; $i++){
-			$state_array_service[$i] = $this->Servicestatus->find('count', [
-				'conditions' => [
-					'current_state' => $i
-				],
-			]);
-		}
+    public function compileTemplateData()
+    {
+        $state_array_service = [];
+        for ($i = 0; $i < 4; $i++) {
+            $state_array_service[$i] = $this->Servicestatus->find('count', [
+                'conditions' => [
+                    'current_state' => $i,
+                ],
+            ]);
+        }
 
-		$all_services = $this->Objects->find('all', [
-			'recursive' => -1,
-			'conditions' => [
-				'Servicestatus.perfdata !=' => ''
-			],
-			'fields' => [
-				'Objects.*',
-				'Servicetemplate.name',
-				'Servicetemplate.description',
-				'Servicestatus.*',
-				'Service.name',
-				'Service.description',
-				'Service.uuid',
-				'Service.id',
-				'Host.name',
-			],
-			'joins' => [
-				[
-					'table' => 'services',
-					'alias' => 'Service',
-					'conditions' => [
-						'Objects.name2 = Service.uuid',
-					],
-				], [
-					'table' => 'servicetemplates',
-					'type' => 'INNER',
-					'alias' => 'Servicetemplate',
-					'conditions' => [
-						'Servicetemplate.id = Service.servicetemplate_id',
-					],
-				], [
-					'table' => 'hosts',
-					'type' => 'INNER',
-					'alias' => 'Host',
-					'conditions' => [
-						'Host.id = Service.host_id',
-					]
-				], [
-					'table' => 'nagios_servicestatus',
-					'type' => 'LEFT OUTER',
-					'alias' => 'Servicestatus',
-					'conditions' => 'Objects.object_id = Servicestatus.service_object_id'
-				],
-			],
-			'order' => [
-				'Servicestatus.current_state DESC'
-			],
-		]);
+        $all_services = $this->Objects->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Servicestatus.perfdata !=' => '',
+            ],
+            'fields'     => [
+                'Objects.*',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicestatus.*',
+                'Service.name',
+                'Service.description',
+                'Service.uuid',
+                'Service.id',
+                'Host.name',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'services',
+                    'alias'      => 'Service',
+                    'conditions' => [
+                        'Objects.name2 = Service.uuid',
+                    ],
+                ], [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => [
+                        'Host.id = Service.host_id',
+                    ],
+                ], [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
+                ],
+            ],
+            'order'      => [
+                'Servicestatus.current_state DESC',
+            ],
+        ]);
 
-		$serviceIdsForSelect = [];
-		foreach($all_services as $service){
-			$name = $service['Service']['name'] ? $service['Service']['name'] : $service['Servicetemplate']['name'];
-			$serviceIdsForSelect[$service['Service']['id']] = $service['Host']['name'] . ' | ' . $name;
-		}
+        $serviceIdsForSelect = [];
+        foreach ($all_services as $service) {
+            $name = $service['Service']['name'] ? $service['Service']['name'] : $service['Servicetemplate']['name'];
+            $serviceIdsForSelect[$service['Service']['id']] = $service['Host']['name'].' | '.$name;
+        }
 
-		$templateVariables = [
-			'state_array_service' => $state_array_service,
-			'serviceIdsForSelect' => $serviceIdsForSelect,
-		];
+        $templateVariables = [
+            'state_array_service' => $state_array_service,
+            'serviceIdsForSelect' => $serviceIdsForSelect,
+        ];
 
-		$tachoWidgetData =[
-			'ids' => [
-				'traffic_light' => 0,
-			]
-		];
+        $tachoWidgetData = [
+            'ids' => [
+                'traffic_light' => 0,
+            ],
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-		$this->setFrontedJson('tachoWidgetData', $tachoWidgetData);
-	}
+        $this->setTemplateVariables($templateVariables);
+        $this->setFrontedJson('tachoWidgetData', $tachoWidgetData);
+    }
 }

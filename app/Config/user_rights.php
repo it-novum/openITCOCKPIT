@@ -1,8 +1,8 @@
 <?php
-$config = array(
-	'user_rights' => array(
-		'viewAllServiceStatuses' => array(
-			Types::ROLE_ADMIN
-		)
-	)
-);
+$config = [
+    'user_rights' => [
+        'viewAllServiceStatuses' => [
+            Types::ROLE_ADMIN,
+        ],
+    ],
+];

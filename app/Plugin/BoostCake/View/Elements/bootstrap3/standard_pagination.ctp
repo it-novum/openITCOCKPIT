@@ -1,3 +1,3 @@
-<?php echo $this->Paginator->pagination(array(
-	'ul' => 'pagination'
-)); ?>
+<?php echo $this->Paginator->pagination([
+    'ul' => 'pagination',
+]); ?>

@@ -23,103 +23,113 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require_once APP . 'Vendor' . DS . 'minify' . DS . 'src' . DS . 'Minify.php';
-require_once APP . 'Vendor' . DS . 'minify' . DS . 'src' . DS . 'JS.php';
+require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'Minify.php';
+require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'JS.php';
 
 use MatthiasMullie\Minify;
-class CompressShell extends AppShell{
 
-	//This shell search all javascript files and compress it to one big javascript file
+class CompressShell extends AppShell
+{
 
-	public function main(){
-		App::uses('Folder', 'Utility');
-		App::uses('File', 'Utility');
-		$this->stdout->styles('green', ['text' => 'green']);
+    //This shell search all javascript files and compress it to one big javascript file
 
-		$this->out('Compress JavaScript controller components...    ', false);
-		$components = $this->fetchAllJavaScriptComponents();
-		$this->compressFiles($components, 'compressed_components.js');
-		$this->minifyJsFile('compressed_components.js');
-		$this->out('<green>done</green>');
+    public function main()
+    {
+        App::uses('Folder', 'Utility');
+        App::uses('File', 'Utility');
+        $this->stdout->styles('green', ['text' => 'green']);
 
-		$this->out('Compress JavaScript action controllers...    ', false);
-		$controllers = $this->fetchAllJavaScriptControllers();
-		$this->compressFiles($controllers, 'compressed_controllers.js');
-		$this->minifyJsFile('compressed_controllers.js');
-		$this->out('<green>done</green>');
-	}
+        $this->out('Compress JavaScript controller components...    ', false);
+        $components = $this->fetchAllJavaScriptComponents();
+        $this->compressFiles($components, 'compressed_components.js');
+        $this->minifyJsFile('compressed_components.js');
+        $this->out('<green>done</green>');
 
-	public function fetchAllJavaScriptComponents(){
-		$core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'components');
-		$components = $core->findRecursive('.*\.js');
+        $this->out('Compress JavaScript action controllers...    ', false);
+        $controllers = $this->fetchAllJavaScriptControllers();
+        $this->compressFiles($controllers, 'compressed_controllers.js');
+        $this->minifyJsFile('compressed_controllers.js');
+        $this->out('<green>done</green>');
+    }
 
-		foreach(CakePlugin::loaded() as $pluginName){
-			$plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot'. DS . 'js' . DS . 'app' . DS . 'components');
-			$components = array_merge($components, $plugin->findRecursive('.*\.js'));
-		}
+    public function fetchAllJavaScriptComponents()
+    {
+        $core = new Folder(WWW_ROOT.'js'.DS.'app'.DS.'components');
+        $components = $core->findRecursive('.*\.js');
 
-		//remove ._ controller files
-		$_components = [];
-		foreach($components as $component){
-			if(!strpos($component, '._')){
-				$_components[] = $component;
-			}
-		}
-		return $_components;
-	}
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(APP.'Plugin'.DS.$pluginName.DS.'webroot'.DS.'js'.DS.'app'.DS.'components');
+            $components = array_merge($components, $plugin->findRecursive('.*\.js'));
+        }
 
-	public function fetchAllJavaScriptControllers(){
-		$core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'controllers');
-		$controllers = $core->findRecursive('.*\.js');
+        //remove ._ controller files
+        $_components = [];
+        foreach ($components as $component) {
+            if (!strpos($component, '._')) {
+                $_components[] = $component;
+            }
+        }
 
-		foreach(CakePlugin::loaded() as $pluginName){
-			$plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot'. DS . 'js' . DS . 'app' . DS . 'controllers');
-			$controllers = array_merge($controllers, $plugin->findRecursive('.*\.js'));
-		}
+        return $_components;
+    }
 
-		//remove ._ controller files
-		$_controllers = [];
-		foreach($controllers as $controller){
-			if(!strpos($controller, '._')){
-				$_controllers[] = $controller;
-			}
-		}
-		return $_controllers;
-	}
+    public function fetchAllJavaScriptControllers()
+    {
+        $core = new Folder(WWW_ROOT.'js'.DS.'app'.DS.'controllers');
+        $controllers = $core->findRecursive('.*\.js');
 
-	public function compressFiles($files, $outFileName){
-		$outFile = new File(WWW_ROOT . 'js' . DS . $outFileName);
-		if($outFile->exists()){
-			$outFile->delete();
-		}
-		$outFile->create();
-		$content = '';
-		foreach($files as $file){
-			$fileObject = new File($file);
-			if($fileObject->exists()){
-				//Remove strict because of js issue:
-				//Uncaught SyntaxError: Octal literals are not allowed in strict mode.
-				//Not all JS files are strict compatible
-				$content .= str_replace(["'use strict';", '"use strict";'], '', $fileObject->read());
-			}
-		}
-		$outFile->write($content);
-		$outFile->close();
-	}
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(APP.'Plugin'.DS.$pluginName.DS.'webroot'.DS.'js'.DS.'app'.DS.'controllers');
+            $controllers = array_merge($controllers, $plugin->findRecursive('.*\.js'));
+        }
 
-	public function minifyJsFile($fileName){
-		$minifier = new Minify\JS(WWW_ROOT . 'js' . DS . $fileName);
-		$file = new File(WWW_ROOT . 'js' . DS . $fileName);
-		if($file->exists()){
-			$file->delete();
-		}
-		$file->create();
-		$file->write($minifier->minify());
-		$file->close();
-	}
+        //remove ._ controller files
+        $_controllers = [];
+        foreach ($controllers as $controller) {
+            if (!strpos($controller, '._')) {
+                $_controllers[] = $controller;
+            }
+        }
 
-	public function _welcome(){
-		//Disable CakePHP welcome messages
-	}
+        return $_controllers;
+    }
+
+    public function compressFiles($files, $outFileName)
+    {
+        $outFile = new File(WWW_ROOT.'js'.DS.$outFileName);
+        if ($outFile->exists()) {
+            $outFile->delete();
+        }
+        $outFile->create();
+        $content = '';
+        foreach ($files as $file) {
+            $fileObject = new File($file);
+            if ($fileObject->exists()) {
+                //Remove strict because of js issue:
+                //Uncaught SyntaxError: Octal literals are not allowed in strict mode.
+                //Not all JS files are strict compatible
+                $content .= str_replace(["'use strict';", '"use strict";'], '', $fileObject->read());
+            }
+        }
+        $outFile->write($content);
+        $outFile->close();
+    }
+
+    public function minifyJsFile($fileName)
+    {
+        $minifier = new Minify\JS(WWW_ROOT.'js'.DS.$fileName);
+        $file = new File(WWW_ROOT.'js'.DS.$fileName);
+        if ($file->exists()) {
+            $file->delete();
+        }
+        $file->create();
+        $file->write($minifier->minify());
+        $file->close();
+    }
+
+    public function _welcome()
+    {
+        //Disable CakePHP welcome messages
+    }
 
 }

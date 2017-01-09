@@ -24,37 +24,42 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
-class Hostdowntimes extends Widget{
-	public $isDefault = true;
-	public $icon = 'fa-power-off';
-	public $element = 'host_downtimes';
-	public $width = 5;
-	public $height = 13;
-	
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 5;
-		$this->title = __('Host downtimes');
-	}
-	
-	public function setData($widgetData){
-		//Prefix every widget variable with $widgetFoo
-		$widgetHostDowntimes = $this->QueryCache->hostDowntimes();
-		$this->Controller->set(compact(['widgetHostDowntimes']));
-	}
-	
-	public function getRestoreConfig($tabId){
-		$restorConfig = [
-			'dashboard_tab_id' => $tabId,
-			'type_id' => $this->typeId,
-			'row' => 0, // x
-			'col' => 24, // y
-			'width' => 5,
-			'height' => 13,
-			'title' => $this->title,
-			'color' => $this->defaultColor,
-		];
-		return $restorConfig;
-	}
-	
+class Hostdowntimes extends Widget
+{
+    public $isDefault = true;
+    public $icon = 'fa-power-off';
+    public $element = 'host_downtimes';
+    public $width = 5;
+    public $height = 13;
+
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 5;
+        $this->title = __('Host downtimes');
+    }
+
+    public function setData($widgetData)
+    {
+        //Prefix every widget variable with $widgetFoo
+        $widgetHostDowntimes = $this->QueryCache->hostDowntimes();
+        $this->Controller->set(compact(['widgetHostDowntimes']));
+    }
+
+    public function getRestoreConfig($tabId)
+    {
+        $restorConfig = [
+            'dashboard_tab_id' => $tabId,
+            'type_id'          => $this->typeId,
+            'row'              => 0, // x
+            'col'              => 24, // y
+            'width'            => 5,
+            'height'           => 13,
+            'title'            => $this->title,
+            'color'            => $this->defaultColor,
+        ];
+
+        return $restorConfig;
+    }
+
 }

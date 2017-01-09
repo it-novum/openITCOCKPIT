@@ -37,63 +37,66 @@ App::uses('ServicesStatusList', 'Admin.Lib/Widgets');
 App::uses('HostsStatusList', 'Admin.Lib/Widgets');
 
 
-class WidgetFactory{
-	/**
-	 * @param int               $id
-	 * @param string            $title
-	 * @param string            $color
-	 * @param int               $typeId
-	 * @param Model[]           $models
-	 * @return null|DowntimeHosts|DowntimeServices|ParentOutages|PieChartHosts|PieChartServices|WidgetTacho|TrafficLight|Welcome
-	 */
-	public static function create($id, $title, $color, $typeId, $models){
+class WidgetFactory
+{
+    /**
+     * @param int     $id
+     * @param string  $title
+     * @param string  $color
+     * @param int     $typeId
+     * @param Model[] $models
+     *
+     * @return null|DowntimeHosts|DowntimeServices|ParentOutages|PieChartHosts|PieChartServices|WidgetTacho|TrafficLight|Welcome
+     */
+    public static function create($id, $title, $color, $typeId, $models)
+    {
 
-		/** @var WidgetBase $widget */
-		$widget = null;
+        /** @var WidgetBase $widget */
+        $widget = null;
 
-		switch($typeId){
-			case WidgetBase::WIDGET_DOWNTIMEHOSTS:
-				$widget = new DowntimeHosts($id, $title, $color, $typeId, $models);
-				break;
+        switch ($typeId) {
+            case WidgetBase::WIDGET_DOWNTIMEHOSTS:
+                $widget = new DowntimeHosts($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_PIECHARTHOSTS:
-				$widget =  new PieChartHosts($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_PIECHARTHOSTS:
+                $widget = new PieChartHosts($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_PARENTOUTAGES:
-				$widget =  new ParentOutages($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_PARENTOUTAGES:
+                $widget = new ParentOutages($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_DOWNTIMESERVICES:
-				$widget =  new DowntimeServices($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_DOWNTIMESERVICES:
+                $widget = new DowntimeServices($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_PIECHARTSERVICES:
-				$widget =  new PieChartServices($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_PIECHARTSERVICES:
+                $widget = new PieChartServices($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_TRAFFICLIGHT:
-				$widget =  new TrafficLight($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_TRAFFICLIGHT:
+                $widget = new TrafficLight($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_TACHO:
-				$widget =  new Tacho($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_TACHO:
+                $widget = new Tacho($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_WELCOME:
-				$widget =  new Welcome($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_WELCOME:
+                $widget = new Welcome($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_SERVICESSTATUSLIST:
-				$widget =  new ServicesStatusList($id, $title, $color, $typeId, $models);
-				break;
+            case WidgetBase::WIDGET_SERVICESSTATUSLIST:
+                $widget = new ServicesStatusList($id, $title, $color, $typeId, $models);
+                break;
 
-			case WidgetBase::WIDGET_HOSTSSTATUSLIST:
-				$widget =  new HostsStatusList($id, $title, $color, $typeId, $models);
-				break;
-		}
+            case WidgetBase::WIDGET_HOSTSSTATUSLIST:
+                $widget = new HostsStatusList($id, $title, $color, $typeId, $models);
+                break;
+        }
 
 
-		return $widget;
-	}
+        return $widget;
+    }
 }

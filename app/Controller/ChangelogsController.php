@@ -23,80 +23,82 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ChangelogsController extends AppController{
-	public $layout = 'Admin.default';
-	public $helpers = [
-		'Form',
-		'Html',
-		'Time',
-		'ListFilter.ListFilter',
-		'Changelog'
-	];
-	public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-		'RequestHandler',
-	];
-	public $uses = ['Changelog'];
+class ChangelogsController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $helpers = [
+        'Form',
+        'Html',
+        'Time',
+        'ListFilter.ListFilter',
+        'Changelog',
+    ];
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+    ];
+    public $uses = ['Changelog'];
 
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Changelog.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-			],
-		],
-	];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Changelog.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public function index(){
-		$conditions = [
-				'ChangelogsToContainers.container_id' => $this->MY_RIGHTS,
-		];
-		$conditions = $this->ListFilter->buildConditions([], $conditions);
-		$query = [
-			'recursive' => -1,
-			'fields' => [
-				'DISTINCT Changelog.*', 'User.id', 'User.lastname', 'User.firstname'
-			],
-			'joins' => [
-				[
-					'table' => 'users',
-					'alias' => 'User',
-					'type' => 'INNER',
-					'conditions' => [
-						'User.id = Changelog.user_id',
-					],
-				],
-				[
-					'table' => 'changelogs_to_containers',
-					'alias' => 'ChangelogsToContainers',
-					'type' => 'INNER',
-					'conditions' => [
-						'ChangelogsToContainers.changelog_id = Changelog.id',
-					],
+    public function index()
+    {
+        $conditions = [
+            'ChangelogsToContainers.container_id' => $this->MY_RIGHTS,
+        ];
+        $conditions = $this->ListFilter->buildConditions([], $conditions);
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'DISTINCT Changelog.*', 'User.id', 'User.lastname', 'User.firstname',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'users',
+                    'alias'      => 'User',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'User.id = Changelog.user_id',
+                    ],
+                ],
+                [
+                    'table'      => 'changelogs_to_containers',
+                    'alias'      => 'ChangelogsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'ChangelogsToContainers.changelog_id = Changelog.id',
+                    ],
 
-				]
-			],
-			'conditions' => [
-				$conditions
-			],
-			'order' => [
-				'Changelog.created' => 'DESC'
-			],
-		];
+                ],
+            ],
+            'conditions' => [
+                $conditions,
+            ],
+            'order'      => [
+                'Changelog.created' => 'DESC',
+            ],
+        ];
 
-		$this->Paginator->settings = $query;
-		if($this->isApiRequest()){
-			$this->Paginator->settings['limit'] = 250;
-			$all_changes = $this->Paginator->paginate();
-		}else{
-			$all_changes = $this->Paginator->paginate();
-		}
-		$this->set('_serialize', ['all_changes']);
+        $this->Paginator->settings = $query;
+        if ($this->isApiRequest()) {
+            $this->Paginator->settings['limit'] = 250;
+            $all_changes = $this->Paginator->paginate();
+        } else {
+            $all_changes = $this->Paginator->paginate();
+        }
+        $this->set('_serialize', ['all_changes']);
 
-		$this->set('isFilter', false);
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}
-		$this->set(compact(['all_changes']));
-	}
+        $this->set('isFilter', false);
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        }
+        $this->set(compact(['all_changes']));
+    }
 }

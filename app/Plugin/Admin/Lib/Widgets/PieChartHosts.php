@@ -24,26 +24,28 @@
 //	confirmation.
 
 
-class PieChartHosts extends WidgetBase{
-	protected $iconname = 'pie-chart';
-	protected $bodyClasses = 'padding-10 text-center';
-	protected $viewName = 'Dashboard/widget_piechart_hosts';
+class PieChartHosts extends WidgetBase
+{
+    protected $iconname = 'pie-chart';
+    protected $bodyClasses = 'padding-10 text-center';
+    protected $viewName = 'Dashboard/widget_piechart_hosts';
 
-	public function compileTemplateData(){
-		$hostStates = [];
-		for($i = 0; $i < 3; $i++){
-			$hostStates[$i] = $this->Hoststatus->find('count', [
-				'conditions' => [
-					'current_state' => $i
-				]
-			]);
-		}
+    public function compileTemplateData()
+    {
+        $hostStates = [];
+        for ($i = 0; $i < 3; $i++) {
+            $hostStates[$i] = $this->Hoststatus->find('count', [
+                'conditions' => [
+                    'current_state' => $i,
+                ],
+            ]);
+        }
 
-		$templateVariables = [
-			'state_array_host' => $hostStates,
-		];
+        $templateVariables = [
+            'state_array_host' => $hostStates,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 
 }

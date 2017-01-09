@@ -23,167 +23,172 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class StatehistoriesController extends AppController{
-	/*
-	 * Attention! In this case we load an external Model from the monitoring plugin! The Controller
-	 * use this external model to fetch the required data out of the database
-	 */
-	public $uses = [MONITORING_STATEHISTORY, MONITORING_SERVICESTATUS, MONITORING_HOSTSTATUS, 'Host', 'Service', 'Documentation'];
+class StatehistoriesController extends AppController
+{
+    /*
+     * Attention! In this case we load an external Model from the monitoring plugin! The Controller
+     * use this external model to fetch the required data out of the database
+     */
+    public $uses = [MONITORING_STATEHISTORY, MONITORING_SERVICESTATUS, MONITORING_HOSTSTATUS, 'Host', 'Service', 'Documentation'];
 
 
-	public $components = ['Paginator', 'ListFilter.ListFilter','RequestHandler'];
-	public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
-	public $layout = 'Admin.default';
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $layout = 'Admin.default';
 
-	public $listFilters = [
-		'service' => [
-			'fields' => [
-				'Statehistory.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-			],
-		],
-	];
+    public $listFilters = [
+        'service' => [
+            'fields' => [
+                'Statehistory.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public function service($id = null){
-		if(!$this->Service->exists($id)){
-			throw new NotFoundException(__('invalid service'));
-		}
+    public function service($id = null)
+    {
+        if (!$this->Service->exists($id)) {
+            throw new NotFoundException(__('invalid service'));
+        }
 
-		$service = $this->Service->find('first', [
-			'recursive' => -1,
-			'contain' => [
-				'Host' =>[
-					'Container',
-				],
-				'Servicetemplate' => [
-					'fields' => [
-						'Servicetemplate.id',
-						'Servicetemplate.name'
-					]
-				]
-			],
-			'conditions' => [
-				'Service.id' => $id
-			],
-		]);
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'contain'    => [
+                'Host'            => [
+                    'Container',
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Service.id' => $id,
+            ],
+        ]);
 
-		$containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-		$containerIdsToCheck[] = $service['Host']['container_id'];
+        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $service['Host']['container_id'];
 
-		//Check if user is permitted to see this object
-		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
-			$this->render403();
-			return;
-		}
+        //Check if user is permitted to see this object
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
 
-
-		$allowEdit = false;
-		if($this->allowedByContainerId($containerIdsToCheck)){
-			$allowEdit = true;
-		}
-
-		$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-			'fields' => [
-				'Objects.name2',
-				'Servicestatus.current_state'
-			]
-		]);
+            return;
+        }
 
 
-		$requestSettings = $this->Statehistory->listSettings($this->request, $service['Service']['uuid'], $service['Host']['uuid']);
+        $allowEdit = false;
+        if ($this->allowedByContainerId($containerIdsToCheck)) {
+            $allowEdit = true;
+        }
 
-		if(isset($this->paginate['conditions'])){
-			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-		}else{
-			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-		}
-
-		$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-
-		//SQL Clenup
-		if(isset($this->Paginator->settings['conditions']['Statehistory.state'])){
-			$this->Paginator->settings['conditions']['Statehistory.state'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state']);
-		}
-		if(isset($this->Paginator->settings['conditions']['Statehistory.state_type'])){
-			$this->Paginator->settings['conditions']['Statehistory.state_type'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state_type']);
-		}
-
-		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-
-		$all_statehistories = $this->Paginator->paginate();
-
-		$this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit']));
-		$this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
-
-	public function host($id = null){
-		if(!$this->Host->exists($id)){
-			throw new NotFoundException(__('invalid host'));
-		}
-
-		$host = $this->Host->find('first', [
-			'fields' => [
-				'Host.id',
-				'Host.uuid',
-				'Host.name',
-				'Host.address',
-				'Host.host_url'
-			],
-			'conditions' => [
-				'Host.id' => $id
-			],
-			'contain' => [
-				'Container'
-			]
-		]);
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+            'fields' => [
+                'Objects.name2',
+                'Servicestatus.current_state',
+            ],
+        ]);
 
 
-		$containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-		$containerIdsToCheck[] = $host['Host']['container_id'];
+        $requestSettings = $this->Statehistory->listSettings($this->request, $service['Service']['uuid'], $service['Host']['uuid']);
 
-		//Check if user is permitted to see this object
-		if(!$this->allowedByContainerId($containerIdsToCheck, false)){
-			$this->render403();
-			return;
-		}
+        if (isset($this->paginate['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        } else {
+            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+        }
 
-		$hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-			'fields' => [
-				'Objects.name1',
-				'Hoststatus.current_state'
-			]
-		]);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+
+        //SQL Clenup
+        if (isset($this->Paginator->settings['conditions']['Statehistory.state'])) {
+            $this->Paginator->settings['conditions']['Statehistory.state'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state']);
+        }
+        if (isset($this->Paginator->settings['conditions']['Statehistory.state_type'])) {
+            $this->Paginator->settings['conditions']['Statehistory.state_type'] = array_unique($this->Paginator->settings['conditions']['Statehistory.state_type']);
+        }
+
+        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
+        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
+
+        $all_statehistories = $this->Paginator->paginate();
+
+        $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit']));
+        $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
+
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
+
+    public function host($id = null)
+    {
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('invalid host'));
+        }
+
+        $host = $this->Host->find('first', [
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.host_url',
+            ],
+            'conditions' => [
+                'Host.id' => $id,
+            ],
+            'contain'    => [
+                'Container',
+            ],
+        ]);
 
 
-		$requestSettings = $this->Statehistory->listSettingsHost($this->request, $host['Host']['uuid']);
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
 
-		if(isset($this->paginate['conditions'])){
-			$this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
-		}else{
-			$this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-		}
+        //Check if user is permitted to see this object
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+
+            return;
+        }
+
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+            'fields' => [
+                'Objects.name1',
+                'Hoststatus.current_state',
+            ],
+        ]);
 
 
-		$this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-		$this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
+        $requestSettings = $this->Statehistory->listSettingsHost($this->request, $host['Host']['uuid']);
 
-		$all_statehistories = $this->Paginator->paginate();
+        if (isset($this->paginate['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        } else {
+            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+        }
 
-		$hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
 
-		$this->set(compact(['host', 'all_statehistories', 'hoststatus', 'hostDocuExists']));
-		$this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
+        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
+        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
+        $all_statehistories = $this->Paginator->paginate();
+
+        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+
+        $this->set(compact(['host', 'all_statehistories', 'hoststatus', 'hostDocuExists']));
+        $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
+
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
 }

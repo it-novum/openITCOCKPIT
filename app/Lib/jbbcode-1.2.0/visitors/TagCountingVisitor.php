@@ -5,13 +5,12 @@ namespace JBBCode\visitors;
 /**
  * This visitor traverses parse graph, counting the number of times each
  * tag name occurs.
- *
  * @author jbowens
- * @since January 2013
+ * @since  January 2013
  */
 class TagCountingVisitor implements \JBBcode\NodeVisitor
 {
-    protected $frequencies = array();
+    protected $frequencies = [];
 
     public function visitDocumentElement(\JBBCode\DocumentElement $documentElement)
     {

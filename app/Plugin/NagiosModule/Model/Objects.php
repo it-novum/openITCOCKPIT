@@ -23,51 +23,52 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Objects extends NagiosModuleAppModel{
-	//public $useDbConfig = 'nagios';
-	public $useTable = 'objects';
-	public $tablePrefix = 'nagios_';
-	public $primaryKey = 'object_id';
-/*
-	public $belongsTo = [
-		'Uuidhost' => [
-			'className' => 'Uuidhost',
-			'foreignKey' => 'name1',
-		],
-		'Host' => [
-			'className' => 'Host',
-			'foreignKey' => 'name1',
-			'conditions' => array('Objects.name1 = Host.uuid')
-		],
-	];
+class Objects extends NagiosModuleAppModel
+{
+    //public $useDbConfig = 'nagios';
+    public $useTable = 'objects';
+    public $tablePrefix = 'nagios_';
+    public $primaryKey = 'object_id';
+    /*
+        public $belongsTo = [
+            'Uuidhost' => [
+                'className' => 'Uuidhost',
+                'foreignKey' => 'name1',
+            ],
+            'Host' => [
+                'className' => 'Host',
+                'foreignKey' => 'name1',
+                'conditions' => array('Objects.name1 = Host.uuid')
+            ],
+        ];
+    
+    */
 
-*/
+    public $belongsTo = [
+        'Host' => [
+            'className'  => 'Host',
+            'foreignKey' => false,
+            'conditions' => [
+                'AND' => [
+                    'Objects.name1 = Host.uuid',
+                    'Objects.objecttype_id' => 1,
+                ],
 
-	public $belongsTo = [
-		'Host' => [
-			'className' => 'Host',
-			'foreignKey' => false,
-			'conditions' => [
-				'AND' => [
-					'Objects.name1 = Host.uuid',
-					'Objects.objecttype_id' => 1
-				]
+            ],
+            'type'       => 'INNER',
+        ],
 
-			],
-			'type' => 'INNER'
-		],
-
-		'Service' => [
-			'className' => 'Service',
-			'foreignKey' => false,
-			//'conditions' => array('Objects.name1 = Host.uuid')
-			'conditions' => [
-				'Objects.name2 = Service.uuid',
-				'Objects.objecttype_id' => 2
-			],
+        'Service' => [
+            'className'  => 'Service',
+            'foreignKey' => false,
+            //'conditions' => array('Objects.name1 = Host.uuid')
+            'conditions' => [
+                'Objects.name2 = Service.uuid',
+                'Objects.objecttype_id' => 2,
+            ],
 //			'type' => 'INNER'
-		],
+        ],
 
-	];
+    ];
 
 }

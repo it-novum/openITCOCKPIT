@@ -1,7 +1,6 @@
 <?php
 
 
-
 $html = '
 <h1>mPDF</h1>
 <h2>Annotations</h2>
@@ -17,7 +16,7 @@ Right-click to save file on your computer" icon="Graph" title="Attached File: ti
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('c'); 
+$mpdf = new mPDF('c');
 
 $mpdf->title2annots = true;
 

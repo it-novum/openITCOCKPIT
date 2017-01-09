@@ -1,7 +1,6 @@
 <?php
 
 
-
 $html = '
 <h1>mPDF</h1>
 <h2>Columns</h2>
@@ -22,55 +21,52 @@ $loremH = "<h4>Lectus facilisis</h4>
 ";
 
 
-
 //==============================================================
 //==============================================================
 //==============================================================
 include("../mpdf.php");
 
-$mpdf=new mPDF('en-GB-x','A4','','',32,25,27,25,16,13); 
+$mpdf = new mPDF('en-GB-x', 'A4', '', '', 32, 25, 27, 25, 16, 13);
 
 $mpdf->SetDisplayMode('fullpage');
 
 $stylesheet = file_get_contents('mpdfstyleA4.css');
-$mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+$mpdf->WriteHTML($stylesheet, 1);    // The parameter 1 tells that this is css/style only and no body/html/text
 
 // Bullets in columns are probably best not indented
-$mpdf->list_indent_first_level = 0;	// 1 or 0 - whether to indent the first level of a list
+$mpdf->list_indent_first_level = 0;    // 1 or 0 - whether to indent the first level of a list
 
 $mpdf->max_colH_correction = 1.1;
 
 
-	$mpdf->WriteHTML($html,2);
-	$mpdf->WriteHTML($loremH,2);
+$mpdf->WriteHTML($html, 2);
+$mpdf->WriteHTML($loremH, 2);
 
 
-	// consider reducing lineheight when using columns - especially if vAligned justify
-	$mpdf->SetDefaultBodyCSS('line-height', 1.2);
+// consider reducing lineheight when using columns - especially if vAligned justify
+$mpdf->SetDefaultBodyCSS('line-height', 1.2);
 
 
+$mpdf->SetColumns(3, 'J');
+$mpdf->WriteHTML($loremH, 2);
 
-	$mpdf->SetColumns(3,'J');
-	$mpdf->WriteHTML($loremH,2);
-
-	$mpdf->SetColumns(0);
-	$mpdf->WriteHTML('<hr />');
+$mpdf->SetColumns(0);
+$mpdf->WriteHTML('<hr />');
 
 
-	$mpdf->SetColumns(2,'J');
-	$mpdf->WriteHTML($loremH,2);
-	$mpdf->WriteHTML('<hr />');
-	$mpdf->SetColumns(0);
-	$mpdf->WriteHTML('<hr />');
+$mpdf->SetColumns(2, 'J');
+$mpdf->WriteHTML($loremH, 2);
+$mpdf->WriteHTML('<hr />');
+$mpdf->SetColumns(0);
+$mpdf->WriteHTML('<hr />');
 
-	$mpdf->SetColumns(3,'J');
-	$mpdf->WriteHTML($loremH,2);
+$mpdf->SetColumns(3, 'J');
+$mpdf->WriteHTML($loremH, 2);
 
-	$mpdf->SetColumns(0);
-	$mpdf->WriteHTML('<hr />');
-	$mpdf->SetColumns(2,'J');
-	$mpdf->WriteHTML($loremH,2);
-
+$mpdf->SetColumns(0);
+$mpdf->WriteHTML('<hr />');
+$mpdf->SetColumns(2, 'J');
+$mpdf->WriteHTML($loremH, 2);
 
 
 $mpdf->Output();

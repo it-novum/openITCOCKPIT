@@ -5,12 +5,12 @@
 define("_JPGRAPH_PATH", '../../jpgraph_5/jpgraph/'); // must define this before including mpdf.php file
 $JpgUseSVGFormat = true;
 
-define('_MPDF_URI','../'); 	// must be  a relative or absolute URI - not a file system path
+define('_MPDF_URI', '../');    // must be  a relative or absolute URI - not a file system path
 //==============================================================
 //==============================================================
 
 
-ini_set("memory_limit","64M");
+ini_set("memory_limit", "64M");
 
 $html = '
 <html><head>
@@ -203,13 +203,13 @@ mPDF Example File
 
 <p>The front cover can also be produced like this:</p>
 <!-- EXAMPLE PHP CODE -->
-<div class="phpcode">'. nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
+<div class="phpcode">'.nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
 $mpdf->Image(\'clematis.jpg\',0,0,210,297,\'jpg\',\'\',true, false);
 // the last "false" allows a full page picture
 
 $mpdf->y = 70;
 $mpdf->Shaded_box(\'mPDF Example File\', \'Trebuchet\', \'\', 28, \'70%\', \'DF\', 3, \'#FFFFFF\', \'#000044\', 10);
-')) .'</div>
+')).'</div>
 <!-- END EXAMPLE PHP CODE -->
 
 
@@ -1526,30 +1526,30 @@ Etiam id libero at magna pellentesque aliquet. Nulla sit amet ipsum id enim temp
 
 
 <!-- EXAMPLE PHP CODE -->
-<div class="phpcode">'. nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
+<div class="phpcode">'.nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
 $mpdf->SetAlpha(0.5); 
 $mpdf->Image(\'clematis.jpg\',0,0,210,297,\'jpg\',\'\',true, false);
 // the last "false" allows a full page picture
 $mpdf->SetAlpha(1);
-')) .'</div>
+')).'</div>
 <!-- END EXAMPLE PHP CODE -->
 
 <p>The back cover also has an ISBN barcode</p>
 
 <!-- EXAMPLE PHP CODE -->
-<div class="phpcode">'. nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
+<div class="phpcode">'.nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
 $mpdf->writeBarcode(\'978-0-9542246-0-8\', 1, 130, 230, 1,0, 3,3,4,4);	
-')) .'</div>
+')).'</div>
 <!-- END EXAMPLE PHP CODE -->
 
 <p>But next is inserted the Index, which can also be done like this:</p>
 
 <!-- EXAMPLE PHP CODE -->
-<div class="phpcode">'. nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
+<div class="phpcode">'.nl2br(htmlspecialchars('/* ALTERNATIVE PHP METHOD */
 $mpdf->AddPage(\'\',NEXT-ODD\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',\'\',-1,-1,-1,-1);	
 $mpdf->WriteHTML(\'<h2>Index<bookmark content="Index" /></h2>\');
 $mpdf->WriteHTML(\'<indexinsert cols="2" font="serif" div-font="sans-serif" links="on" />\');
-')) .'</div>
+')).'</div>
 <!-- END EXAMPLE PHP CODE -->
 
 
@@ -1581,18 +1581,18 @@ $mpdf->WriteHTML(\'<indexinsert cols="2" font="serif" div-font="sans-serif" link
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('s','A4','','',25,15,21,22,10,10); 
+$mpdf = new mPDF('s', 'A4', '', '', 25, 15, 21, 22, 10, 10);
 $mpdf->progbar_altHTML = '<html><body>
 	<div style="margin-top: 5em; text-align: center; font-family: Verdana; font-size: 12px;"><img style="vertical-align: middle" src="loading.gif" /> Creating PDF file. Please wait...</div>';
 $mpdf->StartProgressBarOutput();
 
 $mpdf->mirrorMargins = 1;
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 $mpdf->useGraphs = true;
 $mpdf->list_number_suffix = ')';
 $mpdf->hyphenate = true;
 
-$mpdf->debug  = true;
+$mpdf->debug = true;
 
 $mpdf->WriteHTML($html);
 

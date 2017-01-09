@@ -24,25 +24,27 @@
 //	confirmation.
 
 
-class PieChartServices extends WidgetBase{
-	protected $iconname = 'pie-chart';
-	protected $bodyClasses = 'padding-10 text-center';
-	protected $viewName = 'Dashboard/widget_piechart_services';
+class PieChartServices extends WidgetBase
+{
+    protected $iconname = 'pie-chart';
+    protected $bodyClasses = 'padding-10 text-center';
+    protected $viewName = 'Dashboard/widget_piechart_services';
 
-	public function compileTemplateData(){
-		$state_array_service = [];
-		for($i = 0; $i < 4; $i++){
-			$state_array_service[$i] = $this->Servicestatus->find('count', [
-				'conditions' => [
-					'current_state' => $i
-				]
-			]);
-		}
+    public function compileTemplateData()
+    {
+        $state_array_service = [];
+        for ($i = 0; $i < 4; $i++) {
+            $state_array_service[$i] = $this->Servicestatus->find('count', [
+                'conditions' => [
+                    'current_state' => $i,
+                ],
+            ]);
+        }
 
-		$templateVariables = [
-			'state_array_service' => $state_array_service,
-		];
+        $templateVariables = [
+            'state_array_service' => $state_array_service,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 }
