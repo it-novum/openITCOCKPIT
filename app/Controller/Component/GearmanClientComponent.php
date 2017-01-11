@@ -44,9 +44,9 @@ class GearmanClientComponent extends Component
         $payload = serialize($payload);
 
         if ($this->Config['encryption'] === true) {
-            $result = $this->client->do('oitc_gearman', Security::cipher($payload, $this->Config['password']));
+            $result = $this->client->doNormal('oitc_gearman', Security::cipher($payload, $this->Config['password']));
         } else {
-            $result = $this->client->do('oitc_gearman', $payload);
+            $result = $this->client->doNormal('oitc_gearman', $payload);
         }
 
         $result = @unserialize($result);
