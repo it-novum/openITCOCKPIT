@@ -38,7 +38,7 @@ class SetupShell extends AppShell
         if ($this->load === true) {
             App::uses('Folder', 'Utility');
             App::import('Component', 'Auth');
-            $this->Auth = @new AuthComponent(null);
+            $this->Auth = @new AuthComponent(new ComponentCollection());
             $this->load = false;
         }
 

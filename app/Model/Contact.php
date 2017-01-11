@@ -39,6 +39,7 @@ class Contact extends AppModel
             'associationForeignKey' => 'command_id',
             'fields' => [
                 'id',
+                'uuid',
                 'name',
                 'description',
                 'command_line'
@@ -51,6 +52,7 @@ class Contact extends AppModel
             'associationForeignKey' => 'command_id',
             'fields' => [
                 'id',
+                'uuid',
                 'name',
                 'description',
                 'command_line'
