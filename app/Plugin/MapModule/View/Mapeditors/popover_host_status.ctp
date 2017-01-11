@@ -24,12 +24,12 @@
 //	confirmation.
 
 /*
- *         _                    _               
+ *         _                    _
  *   __ _ (_) __ ___  __ __   _(_) _____      __
  *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V / 
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
- *      |__/                                    
+ * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
+ *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
+ *      |__/
 */
 
 $returnedHoststatusfield = $this->Mapstatus->hoststatusField($uuid);
@@ -39,16 +39,22 @@ $returnedServiceStatus = [];
 foreach ($servicestatus as $counter => $servicestate) {
     $returnedServiceStatus[$counter] = $this->Mapstatus->servicestatus($servicestate['Objects']['name2']);
 }
-
 $serviceAmount = count($servicestatus);
-if (isset($returnedServiceStatus) && $serviceAmount > 0) {
-    $stateArr = [];
-    foreach ($returnedServiceStatus as $key => $state) {
-        $stateArr[$key] = $state['state'];
+$stateType = '';
+if($hostStatus['state'] == 0) {
+    $stateType = 'service';
+    if (isset($returnedServiceStatus) && $serviceAmount > 0) {
+        $stateArr = [];
+        foreach ($returnedServiceStatus as $key => $state) {
+            $stateArr[$key] = $state['state'];
+        }
+        $cumulatedState = (int)max($stateArr);
+    } else {
+        $cumulatedState = (int)$hostStatus['state'];
     }
-    $cumulatedState = (int)max($stateArr);
-} else {
-    $cumulatedState = (int)$hostStatus['state'];
+}else{
+    $stateType = 'host';
+    $cumulatedState = $hostStatus['state'];
 }
 ?>
     <table class="table table-bordered popoverTable" style="padding:1px;">
@@ -93,11 +99,15 @@ if (isset($returnedServiceStatus) && $serviceAmount > 0) {
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-            <?php if (isset($returnedServiceStatus) && $serviceAmount > 0): ?>
-                <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['class']; ?>"> <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['human_state']; ?></td>
+            <?php if($stateType == 'host'): ?>
+                <td class="col-md-9 col-xs-9 <?php echo $this->Status->HostStatusColorSimple($cumulatedState)['class']; ?>"> <?php echo $this->Status->HostStatusColorSimple($cumulatedState)['human_state']; ?></td>
             <?php else: ?>
-                <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
-            <?php endif; ?>
+                <?php if (isset($returnedServiceStatus) && $serviceAmount > 0): ?>
+                    <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['class']; ?>"> <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['human_state']; ?></td>
+                <?php else: ?>
+                    <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
+                <?php endif; ?>
+            <?php endif;?>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary Output'); ?></td>
