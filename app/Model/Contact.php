@@ -37,6 +37,7 @@ class Contact extends AppModel
             'joinTable'             => 'contacts_to_hostcommands',
             'fields' => [
                 'id',
+                'uuid',
                 'name',
                 'description',
                 'command_line'
@@ -47,6 +48,7 @@ class Contact extends AppModel
             'joinTable'             => 'contacts_to_servicecommands',
             'fields' => [
                 'id',
+                'uuid',
                 'name',
                 'description',
                 'command_line'
