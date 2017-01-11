@@ -23,16 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MapstatusHelper extends AppHelper
-{
+class MapstatusHelper extends AppHelper {
 
     public $hoststatus = [];
     public $servicestatus = [];
     public $servicegroupstatus = [];
     public $hostgroupstatus = [];
 
-    public function beforeRender($viewFile)
-    {
+    public function beforeRender($viewFile) {
         //fill Hosts
         if (isset($this->_View->viewVars['hoststatus'])) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
@@ -77,9 +75,37 @@ class MapstatusHelper extends AppHelper
         }
     }
 
-    public function hoststatus($uuid)
-    {
-        if (!empty($this->hoststatus[$uuid]['Servicestatus'])) {
+    public function hoststatus($uuid) {
+        $status = [];
+        if (isset($this->hoststatus[$uuid]['current_state'])) {
+            if ($this->hoststatus[$uuid]['problem_has_been_acknowledged'] == 1 && $this->hoststatus[$uuid]['scheduled_downtime_depth'] > 0) {
+                $status = ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host state is acknowledged and the host is in scheduled downtime'), 'image' => 'downtime_ack.png'];
+            }elseif ($this->hoststatus[$uuid]['problem_has_been_acknowledged'] == 1) {
+                $status = ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host state is acknowledged'), 'image' => 'ack.png'];
+            }elseif ($this->hoststatus[$uuid]['scheduled_downtime_depth'] > 0) {
+                $status = ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host is in scheduled downtime'), 'image' => 'downtime.png'];
+            }else{
+                $state = [
+                    0 => [
+                        'human_state' => __('Host is up'),
+                        'image' => 'up.png',
+                    ],
+                    1 => [
+                        'human_state' => __('Host is down'),
+                        'image' => 'down.png',
+                    ],
+                    2 => [
+                        'human_state' => __('Host is unreachable'),
+                        'image' => 'unreachable.png',
+                    ],
+                ];
+                $status = ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => $state[$this->hoststatus[$uuid]['current_state']]['human_state'], 'image' => $state[$this->hoststatus[$uuid]['current_state']]['image']];
+            }
+        }else{
+            $status = ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
+        }
+
+        if (!empty($this->hoststatus[$uuid]['Servicestatus']) && $status['state'] == 0) {
             //take the cumulative service state if the host has at least one service
             $hostServiceStatus = $this->hoststatus[$uuid]['Servicestatus'];
             if (isset($this->servicestatus)) {
@@ -107,43 +133,9 @@ class MapstatusHelper extends AppHelper
             if (sizeof($stateKey) > 0) {
                 $servicestate = $hostServiceStates[$stateKey];
             }
-
-            return $servicestate;
-
-        } else {
-            if (isset($this->hoststatus[$uuid]['current_state'])) {
-                if ($this->hoststatus[$uuid]['problem_has_been_acknowledged'] == 1 && $this->hoststatus[$uuid]['scheduled_downtime_depth'] > 0) {
-                    return ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host state is acknowledged and the host is in scheduled downtime'), 'image' => 'downtime_ack.png'];
-                }
-
-                if ($this->hoststatus[$uuid]['problem_has_been_acknowledged'] == 1) {
-                    return ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host state is acknowledged'), 'image' => 'ack.png'];
-                }
-
-                if ($this->hoststatus[$uuid]['scheduled_downtime_depth'] > 0) {
-                    return ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => __('Host is in scheduled downtime'), 'image' => 'downtime.png'];
-                }
-
-                $state = [
-                    0 => [
-                        'human_state' => __('Host is up'),
-                        'image'       => 'up.png',
-                    ],
-                    1 => [
-                        'human_state' => __('Host is down'),
-                        'image'       => 'down.png',
-                    ],
-                    2 => [
-                        'human_state' => __('Host is unreachable'),
-                        'image'       => 'unreachable.png',
-                    ],
-                ];
-
-                return ['state' => $this->hoststatus[$uuid]['current_state'], 'is_flapping' => $this->hoststatus[$uuid]['is_flapping'], 'human_state' => $state[$this->hoststatus[$uuid]['current_state']]['human_state'], 'image' => $state[$this->hoststatus[$uuid]['current_state']]['image']];
-            }
-
-            return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
+            $status = $servicestate;
         }
+        return $status;
     }
 
 
@@ -156,14 +148,13 @@ class MapstatusHelper extends AppHelper
      * Get a single Value from the Host or return the default value
      * $this->Mapstatus->hoststatusField($item['Host'][0]['uuid'], 'output', 'defaultValue')
      *
-     * @param  String $uuid    the UUID of the host
-     * @param  String $field   the field you want (optional)
-     * @param  null   $default the default value which shall be returned when the value wasnt found
+     * @param  String $uuid the UUID of the host
+     * @param  String $field the field you want (optional)
+     * @param  null $default the default value which shall be returned when the value wasnt found
      *
      * @return array           Array with the Hostinformation
      */
-    public function hoststatusField($uuid, $field = null, $default = null)
-    {
+    public function hoststatusField($uuid, $field = null, $default = null) {
         if ($field === null && isset($this->hoststatus[$uuid])) {
             return $this->hoststatus[$uuid];
         }
@@ -182,8 +173,7 @@ class MapstatusHelper extends AppHelper
      *
      * @return array            Array with the current service state
      */
-    public function servicestatus($uuid)
-    {
+    public function servicestatus($uuid) {
         if (isset($this->servicestatus[$uuid]['current_state'])) {
             if ($this->servicestatus[$uuid]['problem_has_been_acknowledged'] == 1 && $this->servicestatus[$uuid]['scheduled_downtime_depth'] > 0) {
                 return ['state' => $this->servicestatus[$uuid]['current_state'], 'is_flapping' => $this->servicestatus[$uuid]['is_flapping'], 'human_state' => __('Service state is acknowledged and the service is in scheduled downtime'), 'image' => 'downtime_ack.png'];
@@ -200,28 +190,28 @@ class MapstatusHelper extends AppHelper
             $state = [
                 0 => [
                     'human_state' => __('Ok'),
-                    'image'       => 'up.png',
+                    'image' => 'up.png',
                 ],
                 1 => [
                     'human_state' => __('Warning'),
-                    'image'       => 'warning.png',
+                    'image' => 'warning.png',
                 ],
                 2 => [
                     'human_state' => __('Critical'),
-                    'image'       => 'critical.png',
+                    'image' => 'critical.png',
                 ],
                 3 => [
                     'human_state' => __('Unknown'),
-                    'image'       => 'unknown.png',
+                    'image' => 'unknown.png',
                 ],
             ];
 
             return [
-                'state'       => $this->servicestatus[$uuid]['current_state'],
+                'state' => $this->servicestatus[$uuid]['current_state'],
                 'is_flapping' => $this->servicestatus[$uuid]['is_flapping'],
                 'human_state' => $state[$this->servicestatus[$uuid]['current_state']]['human_state'],
-                'image'       => $state[$this->servicestatus[$uuid]['current_state']]['image'],
-                'perfdata'    => $this->servicestatus[$uuid]['perfdata'],
+                'image' => $state[$this->servicestatus[$uuid]['current_state']]['image'],
+                'perfdata' => $this->servicestatus[$uuid]['perfdata'],
             ];
         }
 
@@ -229,8 +219,7 @@ class MapstatusHelper extends AppHelper
     }
 
 
-    public function servicestatusField($uuid, $field = null, $default = null)
-    {
+    public function servicestatusField($uuid, $field = null, $default = null) {
         if ($field === null && isset($this->servicestatus[$uuid])) {
             return $this->servicestatus[$uuid];
         }
@@ -242,8 +231,7 @@ class MapstatusHelper extends AppHelper
     }
 
 
-    public function servicegroupstatus($uuid)
-    {
+    public function servicegroupstatus($uuid) {
         $servicestate = Hash::extract($this->servicegroupstatus[$uuid], '{n}.Servicestatus');
         if (!empty($servicestate)) {
             $cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
@@ -254,155 +242,150 @@ class MapstatusHelper extends AppHelper
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
 
-    public function hostgroupstatus($uuid)
-    {
+    public function hostgroupstatus($uuid) {
         $cumulative_service_state = false;
         if (!empty($this->hostgroupstatus[$uuid])) {
             $cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.{n}.Hoststatus.current_state', 'max');
-
-            foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
-                $currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
-                if (is_array($currentStates) && !empty($currentStates)) {
-                    $current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
-                    if (isset($current_cumulative_service_state)) {
-                        $cumulative_service_states_data[] = $current_cumulative_service_state;
+            if($cumulative_host_state == 0){
+                foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
+                    $currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
+                    if (is_array($currentStates) && !empty($currentStates)) {
+                        $current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
+                        if (isset($current_cumulative_service_state)) {
+                            $cumulative_service_states_data[] = $current_cumulative_service_state;
+                        }
                     }
+
                 }
-
+                if (isset($cumulative_service_states_data)) {
+                    $cumulative_service_state = max($cumulative_service_states_data);
+                }
             }
-            if (isset($cumulative_service_states_data)) {
-                $cumulative_service_state = max($cumulative_service_states_data);
-            }
-
             return (!$cumulative_service_state) ? $this->hostgroupstatusValuesHost($cumulative_host_state) : $this->hostgroupstatusValuesService($cumulative_service_state);
         }
 
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
 
-    public function hostgroupstatusValuesHost($state)
-    {
+    public function hostgroupstatusValuesHost($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ];
 
             return $err;
         }
         $states = [
-            0  => [
+            0 => [
                 'human_state' => __('Hostgroup is up'),
-                'image'       => 'up.png',
-                'state'       => 0,
+                'image' => 'up.png',
+                'state' => 0,
             ],
-            1  => [
+            1 => [
                 'human_state' => __('Hostgroup is down'),
-                'image'       => 'down.png',
-                'state'       => 1,
+                'image' => 'down.png',
+                'state' => 1,
             ],
-            2  => [
+            2 => [
                 'human_state' => __('Hostgroup is unreachable'),
-                'image'       => 'unreachable.png',
-                'state'       => 2,
+                'image' => 'unreachable.png',
+                'state' => 2,
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ],
         ];
 
         return $states[$state];
     }
 
-    public function hostgroupstatusValuesService($state)
-    {
+    public function hostgroupstatusValuesService($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ];
 
             return $err;
         }
         $states = [
-            0  => [
+            0 => [
                 'human_state' => __('Ok'),
-                'image'       => 'up.png',
-                'state'       => 0,
+                'image' => 'up.png',
+                'state' => 0,
             ],
-            1  => [
+            1 => [
                 'human_state' => __('Warning'),
-                'image'       => 'warning.png',
-                'state'       => 1,
+                'image' => 'warning.png',
+                'state' => 1,
             ],
-            2  => [
+            2 => [
                 'human_state' => __('Critical'),
-                'image'       => 'critical.png',
-                'state'       => 2,
+                'image' => 'critical.png',
+                'state' => 2,
             ],
-            3  => [
+            3 => [
                 'human_state' => __('Unreachable'),
-                'image'       => 'unreachable.png',
-                'state'       => 3,
+                'image' => 'unreachable.png',
+                'state' => 3,
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ],
         ];
 
         return $states[$state];
     }
 
-    public function ServicegroupstatusValues($state)
-    {
+    public function ServicegroupstatusValues($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ];
 
             return $err;
         }
         $states = [
-            0  => [
+            0 => [
                 'human_state' => __('Ok'),
-                'image'       => 'up.png',
-                'state'       => 0,
+                'image' => 'up.png',
+                'state' => 0,
             ],
-            1  => [
+            1 => [
                 'human_state' => __('Warning'),
-                'image'       => 'warning.png',
-                'state'       => 1,
+                'image' => 'warning.png',
+                'state' => 1,
             ],
-            2  => [
+            2 => [
                 'human_state' => __('Critical'),
-                'image'       => 'critical.png',
-                'state'       => 2,
+                'image' => 'critical.png',
+                'state' => 2,
             ],
-            3  => [
+            3 => [
                 'human_state' => __('Unknown'),
-                'image'       => 'unknown.png',
-                'state'       => 3,
+                'image' => 'unknown.png',
+                'state' => 3,
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
-                'image'       => 'error.png',
-                'state'       => -1,
+                'image' => 'error.png',
+                'state' => -1,
             ],
         ];
 
         return $states[$state];
     }
 
-    public function mapstatus($id)
-    {
+    public function mapstatus($id) {
         //returns the summary state for a Map
         $mapstatus = $this->mapstatus[$id];
         $cumulative_host_state = [];

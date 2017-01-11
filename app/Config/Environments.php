@@ -61,6 +61,8 @@ class Environments
             $environment = self::DEVELOPMENT;
         } elseif (substr($host, 0, 10) == '172.16.13.') {
             $environment = self::DEVELOPMENT;
+        } elseif (substr($host, 0, 10) == '172.16.92.') {
+            $environment = self::DEVELOPMENT;
         } else {
             $environment = self::PRODUCTION;
         }
