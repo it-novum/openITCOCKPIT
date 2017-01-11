@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($contactgroups, __('contactgroups'), __('contactgroups')); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?> <?php echo $this->Utils->pluralize($contactgroups, __('contactgroups'), __('contactgroups')); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -59,8 +59,6 @@
                             <?php
                             echo $this->Form->input('Contactgroup.'.$key.'.name', ['value' => $contactgroup['Container']['name'], 'label' => __('Contactgroupname'), 'required' => true]);
                             echo $this->Form->input('Contactgroup.'.$key.'.description', ['value' => $contactgroup['Contactgroup']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Contactgroup.'.$key.'.source', ['value' => $contactgroup['Contactgroup']['id'], 'type' => 'hidden']);
-                            echo $this->Form->input('Contactgroup.'.$key.'.parent_id', ['value' => $contactgroup['Container']['parent_id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

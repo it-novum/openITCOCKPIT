@@ -50,16 +50,15 @@
             <?php
             echo $this->Form->create('Timeperiods', [
                 'class' => 'form-horizontal clear',
-            ]); ?>
-            <?php foreach ($timeperiods as $key => $timeperiod): ?>
+            ]);
+            foreach ($timeperiods as $key => $timeperiod): ?>
                 <div class="row">
                     <div class="col-xs-12 col-md-9 col-lg-7">
                         <fieldset>
                             <legend><?php echo $timeperiod['Timeperiod']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Timeperiod.'.$key.'.name', ['value' => $timeperiod['Timeperiod']['name'], 'label' => __('Time Period name'), 'required' => true, 'help' => __('This is the default name for the command')]);
+                            echo $this->Form->input('Timeperiod.'.$key.'.name', ['value' => $timeperiod['Timeperiod']['name'], 'label' => __('Time Period name'), 'required' => true, 'help' => __('This is the default name for the timeperiod')]);
                             echo $this->Form->input('Timeperiod.'.$key.'.description', ['value' => $timeperiod['Timeperiod']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Timeperiod.'.$key.'.source', ['value' => $timeperiod['Timeperiod']['id'], 'type' => 'hidden']);
                             echo $this->Form->input('Timeperiod.'.$key.'.container_id', ['value' => $timeperiod['Timeperiod']['container_id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
