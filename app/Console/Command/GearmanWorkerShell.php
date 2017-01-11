@@ -553,7 +553,7 @@ class GearmanWorkerShell extends AppShell
             ],
         ];
         $response = $this->Export->save($data);
-        $gearmanClient->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
+        $gearmanClient->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
         $this->Export->saveField('finished', 1);
         $this->Export->saveField('successfully', 1);
 

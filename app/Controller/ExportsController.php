@@ -138,7 +138,7 @@ class ExportsController extends AppController
         //$this->allowOnlyAjaxRequests();
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_verify_config']), $this->Config['password']));
         $result = unserialize($result);
         $this->set('result', $result);
         $this->set('_serialize', ['result']);
