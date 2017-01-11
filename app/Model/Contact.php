@@ -35,8 +35,6 @@ class Contact extends AppModel
         'HostCommands'    => [
             'className'             => 'Command',
             'joinTable'             => 'contacts_to_hostcommands',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'command_id',
             'fields' => [
                 'id',
                 'name',
@@ -47,22 +45,12 @@ class Contact extends AppModel
         'ServiceCommands' => [
             'className'             => 'Command',
             'joinTable'             => 'contacts_to_servicecommands',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'command_id',
             'fields' => [
                 'id',
                 'name',
                 'description',
                 'command_line'
             ]
-        ],
-
-        'Contactgroup' => [
-            'className'             => 'Contactgroup',
-            'joinTable'             => 'contacts_to_containers',
-            'foreignKey'            => 'contact_id',
-            'associationForeignKey' => 'container_id',
-            //		'conditions' => ['Contactgroup.containertype_id' => CT_CONTACTGROUP]
         ]
     ];
 
