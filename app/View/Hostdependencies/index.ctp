@@ -57,41 +57,16 @@
                             ?>
                         </div>
                         <div class="widget-toolbar" role="menu">
-                            <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                        class="fa fa-lg fa-table"></i></a>
+                            <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i class="fa fa-lg fa-table"></i></a>
                             <ul class="dropdown-menu arrow-box-up-right pull-right">
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="0"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hosts'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="1"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependent hosts'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="2"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Hostgroups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="3"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependent hostsgroups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="6"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependency period'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="7"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Inherits parent'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="8"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Execution failure criteria'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="9"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Notification failure criteria'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="0"><input type="checkbox" class="pull-left"/><?php echo __('Hosts'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="1"><input type="checkbox" class="pull-left"/><?php echo __('Dependent hosts'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left"/><?php echo __('Hostgroups'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left"/><?php echo __('Dependent hostsgroups'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left"/><?php echo __('Dependency period'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left"/><?php echo __('Inherits parent'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left"/><?php echo __('Execution failure criteria'); ?></a></li>
+                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left"/><?php echo __('Notification failure criteria'); ?></a></li>
                             </ul>
                             <div class="clearfix"></div>
                         </div>

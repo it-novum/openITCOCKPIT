@@ -84,6 +84,13 @@ class ProfileController extends AppController
                 $this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
                 $this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
 
+                if($this->request->data['User']['paginatorlength'] < '0'){
+                    $this->request->data['User']['paginatorlength'] = '1';
+                }
+                if($this->request->data['User']['paginatorlength'] > '1000'){
+                    $this->request->data['User']['paginatorlength'] = '1000';
+                }
+
                 if ($this->User->save($this->request->data)) {
                     $this->setFlash(__('Profile edit successfully'));
                     $sessionUser = $this->Session->read('Auth');

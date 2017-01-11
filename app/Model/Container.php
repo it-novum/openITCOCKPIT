@@ -59,11 +59,7 @@ class Container extends AppModel
             'foreignKey' => 'container_id',
             'dependent'  => true,
         ],
-        'Contact'                 => [
-            'className'  => 'Contact',
-            'foreignKey' => 'id',
-            'dependent'  => true,
-        ],
+
         'Contactgroup'            => [
             'className'  => 'Contactgroup',
             'foreignKey' => 'container_id',
@@ -74,11 +70,6 @@ class Container extends AppModel
             'foreignKey' => 'container_id',
             'dependent'  => true,
         ],
-        /*'Devicegroup' => [
-            'className' => 'Devicegroup',
-            'foreignKey' => 'container_id',
-            'dependent' => true
-        ],*/
         'Hosttemplate'            => [
             'className'  => 'Hosttemplate',
             'foreignKey' => 'container_id',
