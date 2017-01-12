@@ -365,6 +365,7 @@ class SudoMessageInterface implements MessageComponentInterface
                 'LANGUAGE' => 'en_US.UTF-8',
                 'LC_ALL'   => 'C',
                 'PATH'     => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+                'no_proxy' => 'localhost,127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,jenkins.oitc.itn',
             ],
         ];
         $options = Hash::merge($_options, $options);
