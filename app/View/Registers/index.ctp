@@ -58,7 +58,7 @@
             <div class="form-group text-muted">
                 <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
                 <div class="col col-xs-10"><?php echo __('No license key?'); ?><a class="txt-color-blueDark"
-                                                                                  href="http://www.it-novum.com/en/support-openitcockpit-en.html"> <?php echo __('Please visit our homepage to get in contact.'); ?></a>
+                                                                                  href="http://www.it-novum.com/en/it-service-management/openitcockpit/support-openitcockpit/" target="_blank"> <?php echo __('Please visit our homepage to get in contact.'); ?></a>
                 </div>
             </div>
 
