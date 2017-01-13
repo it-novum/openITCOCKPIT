@@ -45,7 +45,7 @@ class BackupsController extends AppController
     public function backup()
     {
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
         $result = unserialize($result);
         if ($result['returncode'] === 0) {
             $this->setFlash(__('Backup successfully created'));
@@ -60,7 +60,7 @@ class BackupsController extends AppController
     {
         $pathForRestore = $this->request->data['Backup']['backupfile'];
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->do("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
         $result = unserialize($result);
         if ($result['returncode'] === 0) {
             $this->setFlash(__('Backup successfully restored'));

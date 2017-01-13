@@ -32,7 +32,7 @@ class SetPermissionsShell extends AppShell
         $this->stdout->styles('green', ['text' => 'green']);
         $this->out('Set new user group permissions...    ', false);
         App::import('Component', 'Acl');
-        $this->Acl = @new AclComponent(null);
+        $this->Acl = @new AclComponent(new ComponentCollection());
 
         /*
         array(

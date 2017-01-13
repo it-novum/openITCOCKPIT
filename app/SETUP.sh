@@ -9,6 +9,7 @@ oitc nagios_export --all
 CODENAME=$(lsb_release -sc)
 if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
     systemctl restart nagios
+    systemctl restart sudo_server
 fi
 
 if [ $CODENAME = "trusty" ]; then
