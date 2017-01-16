@@ -899,7 +899,7 @@ class ServicesController extends AppController
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
         $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', $service['Service']['service_type']);
         $timeperiods = $this->Timeperiod->find('list');
         //container_id = 1 => ROOT
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
