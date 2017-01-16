@@ -96,7 +96,7 @@ class Oauth2client extends Oauth2ModuleAppModel
             if ($login['Oauth2client']['provider'] == 'PingIdentity') {
                 $clientId     = $login['Oauth2client']['client_id'];
                 $clientSecret = $login['Oauth2client']['client_secret'];
-                $redirectUri  = $login['Oauth2client']['redirect_uri'];
+                $redirectUri  = $this->getReturnUrl($login['Oauth2client']['id']);
                 $provider = new PingIdentity(compact('clientId', 'clientSecret', 'redirectUri'));
                 if (empty($_GET['code'])) {
                     // If we don't have an authorization code then get one
