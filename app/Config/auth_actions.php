@@ -6,6 +6,7 @@ $config = [
         'pages'            => '*',
         'packetmanager'    => ['getPackets'],
         'NagiosModule.cmd' => ['submit', 'ack'],
+        'Oauth2Module.oauth2' => ['checkAndLogin']
     ],
     'auth_actions'   => [
         'profile'               => [

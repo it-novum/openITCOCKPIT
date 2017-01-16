@@ -24,6 +24,7 @@
 //	confirmation.
 
 App::uses('Validation', 'Utility');
+<<<<<<< HEAD
 
 class LoginController extends AppController
 {
@@ -145,11 +146,130 @@ class LoginController extends AppController
                 //$hasRootPrivileges = false;
                 //foreach($_user['Container'] as $container){
                 //	$rights[] = (int)$container['id'];
+=======
+class LoginController extends AppController {
+
+	public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container'];
+	public $components = ['Ldap'];
+
+	public function beforeFilter(){
+		$this->Auth->allow();
+	}
+
+	public function index(){
+		$this->redirect('/login/login');
+	}
+
+	public function login($redirectBack = 0){
+		$this->loadModel('Oauth2Module.Oauth2client');
+		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+		$displayMethod = false;
+		$authMethods = [
+			'ldap' => __('LDAP'),
+			'session' => __('Local')
+		];
+
+		$selectedMethod = 'session';
+		if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'){
+			$displayMethod = true;
+			$selectedMethod = 'ldap';
+		}
+
+		$this->set(compact(['authMethods', 'selectedMethod', 'displayMethod']));
+		$this->Frontend->setJson('selectedMethod', $selectedMethod);
+
+		if($redirectBack) {
+			$this->Auth->loginRedirect = $this->request->referer();
+		}
+		if($this->Auth->loggedIn()){
+			$this->redirect($this->Auth->loginRedirect);
+			return;
+		}
+		if(!empty($this->params['url']['redirectUrl'])) {
+			$this->Session->write('Login.redirectUrl', $this->params['url']['redirectUrl']);
+		} else if(($redirectUrl = $this->Auth->redirectUrl()) != '/') {
+			$this->Session->write('Login.redirectUrl', $redirectUrl);
+		}
+
+		if($this->request->referer(true) === '/') {
+			$this->Auth->loginRedirect = array(
+				'controller' => 'dashboards',
+				'action' => 'index'
+			);
+		}
+
+		// Automatic login if Client SSL Certificate is sent
+		if(isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && !empty($_SERVER['SSL_DN'])){
+			$CN = $OU = '';
+			$parameters = explode('/', $_SERVER['SSL_DN']);
+			foreach ($parameters as $eqVal) {
+				$SSLVar = explode('=', $eqVal);
+				if(empty($SSLVar)) continue;
+				if(isset($SSLVar[0]) && $SSLVar[0] === 'CN' && isset($SSLVar[1])){
+					$CN = trim($SSLVar[1]);
+				}elseif(isset($SSLVar[0]) && $SSLVar[0] === 'OU' && isset($SSLVar[1]) && $SSLVar[1] !== 'People'){
+					$OU = strtolower(trim($SSLVar[1]));
+				}
+			}
+			$names = explode(' ', $CN);
+			$firstName = isset($names[0]) ? $names[0] : '';
+			$lastName = isset($names[1]) ? $names[1] : '';
+			$conditions = [];
+			if($firstName !== '' && $lastName !== ''){
+				$conditions = [
+					['firstname' => $firstName, 'lastname' => $lastName]
+				];
+				if($OU !== ''){
+					$conditions[0]['email LIKE'] = '%@'.$OU.'.%';
+				}
+			}
+
+			if(!empty($conditions)){
+				$user = $this->User->find('first', ['conditions' => $conditions]);
+				if(!empty($user) && $this->Auth->login($user)){
+					$this->Session->delete('Message.auth');
+					$this->setFlash(__('login.automatically_logged_in'));
+					$this->redirect($this->Auth->loginRedirect);
+				}
+			}
+
+		}
+
+		if($this->request->is('post') || $this->request->is('put')){
+			$this->Auth->logout();
+			$this->request->data = array('User' => $this->data['LoginUser']);
+
+			// Allow login in with nickname or email address
+			if(!empty($this->data['User']['email']) && !Validation::email($this->data['User']['email'])) {
+				$user = $this->User->findByEmail($this->data['User']['email']);
+				if(!empty($user)) {
+					$this->request->data['User']['email'] = $user['User']['email'];
+				}
+			}
+
+			$__user = null;
+			if(isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap'){
+				$__user = $this->User->findBySamaccountname($this->data['User']['samaccountname']);
+			}
+
+			if(!isset($this->request->data['User']['auth_method'])){
+				$this->request->data['User']['auth_method'] = $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'];
+			}
+
+			if ($this->Auth->login($__user, $this->request->data['User']['auth_method'])){
+				//MOVED TO AppController!!!
+				//$_user = $this->User->findById($this->Auth->user('id'));
+				//$rights = [ROOT_CONTAINER];
+				//$hasRootPrivileges = false;
+				//foreach($_user['Container'] as $container){
+				//	$rights[] = (int)$container['id'];
+>>>>>>> 5cea74ba9e632b57c9d96b28c934f69f9714fa75
                 //
                 //	if((int)$container['id'] === ROOT_CONTAINER){
                 //		$hasRootPrivileges = true;
                 //	}
                 //
+<<<<<<< HEAD
                 //	foreach($this->Container->children($container['id'], true) as $childContainer){
                 //		$rights[] = (int)$childContainer['Container']['id'];
                 //	}
@@ -341,4 +461,195 @@ class LoginController extends AppController
         $this->set('title_for_layout', __('Locked'));
         $this->Auth->logout();
     }
+=======
+				//	foreach($this->Container->children($container['id'], true) as $childContainer){
+				//		$rights[] = (int)$childContainer['Container']['id'];
+				//	}
+				//}
+				//$this->Session->write('MY_RIGHTS', array_unique($rights));
+				//$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
+
+				if(isset($this->data['User']['remember_me']) && $this->data['User']['remember_me'] &&
+					$systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] != 'twofactor'
+				){
+					$this->Auth->addRememberMeCookie();
+				}
+				if($this->Session->check('Login.redirectUrl')) {
+					$this->Auth->loginRedirect = $this->Session->read('Login.redirectUrl');
+					$this->Session->delete('Login.redirectUrl');
+				}
+
+
+				if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'twofactor'){
+					$this->redirect('/login/onetimetoken/'.$this->Auth->user('id').'/'.$this->data['User']['remember_me']);
+
+					return;
+				}else{
+					if($this->request->ext != 'json'){
+						//Only redirect for normal browser POST request, not for rest API
+						$this->setFlash(__('login.login_successful'));
+						$this->redirect($this->Auth->loginRedirect);
+
+						return;
+					}
+					$message = 'Login successful';
+					$this->set('message', $message);
+					$this->set('_serialize', ['message']);
+
+					return;
+				}
+			}else{
+				if($redirectBack) {
+					$this->Session->setFlash(__('login.username_and_password_dont_match'), 'layout/header_auth_flash', array(), 'header_auth');
+					$this->redirect($this->request->referer());
+
+					return;
+				}else{
+					if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'){
+						$this->setFlash(__('Bad username or password'), false);
+					}else{
+						$this->setFlash(__('login.username_and_password_dont_match'), false);
+					}
+				}
+			}
+		}
+
+		$oauth2Obj = $this->Oauth2client->getConnects();
+		$message = 'Please login';
+		$this->set('message', $message);
+		$this->set('_serialize', ['message']);
+		$this->set('ssoButtons', $oauth2Obj);
+	}
+
+	public function onetimetoken($id = null, $rememberMe = false){
+		if(!$this->User->exists($id)){
+			throw new NotFoundException(__('User not found'));
+		}
+		if($this->request->is('post') || $this->request->is('put')){
+			if($this->User->exists($id)){
+				$user = $this->User->findById($id);
+				if($this->request->data('Onetimetoken.onetimetoken') == $user['User']['onetimetoken']){
+					//Restor the session
+					$this->Session->write('Auth', $this->Session->read('_Auth'));
+					$this->Session->delete('_Auth');
+					if($rememberMe == 1 || $rememberMe === true){
+						$this->Auth->addRememberMeCookie([
+							'email'          =>$this->Session->read('Auth.User.email'),
+							'password'       => '',
+							'samaccountname' => '',
+							'sampassword'    => '',
+						]);
+					}
+
+					$this->setFlash(__('login.logout_successfull'));
+					$this->redirect('/login/login');
+				}
+				$this->setFlash(__('Wrong One-time password'), false);
+			}
+		}
+		$this->layout = 'lock';
+		$_user = $this->User->findById($id);
+		$this->_systemsettings = $this->Systemsetting->findAsArray();
+
+		$generateToken = function(){
+			$char = array(0, 1, 2, 3, 4, 5, 6, 7, 8 ,9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+			$size = (sizeof($char)-1);
+			$token = '';
+			for($i = 0; $i < 6; $i++){
+				$token.=$char[rand(0, $size)];
+			}
+			return $token;
+		};
+
+		$onetimetoken = $generateToken();
+
+		App::uses('CakeEmail', 'Network/Email');
+		$Email = new CakeEmail();
+		$Email->config('default');
+		$Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+		$Email->to($_user['User']['email']);
+		$Email->subject(__('Your new One-time password'));
+
+		$Email->emailFormat('both');
+		$Email->template('template-onetimetoken', 'template-onetimetoken')->viewVars(['onetimetoken' => $onetimetoken]);
+
+		$Email->attachments([
+			'logo.png' => [
+				'file' => APP.'webroot/img/oitc_small.png',
+				'mimetype' => 'image/png',
+				'contentId' => '100',
+			]
+		]);
+
+		$user = [];
+		$user['User'] = $_user['User'];
+		$user['User']['onetimetoken'] = $onetimetoken;
+		if(isset($user['User']['id'])){
+			$this->User->id = $user['User']['id'];
+			// Avoid of saving a empty user (otherwise we would may be create a user and only the onetimetoken field is filled)
+			if($this->User->saveField('onetimetoken', $onetimetoken)){
+				$Email->send();
+				// Kick out the user, that he can not browser to /hosts/index for example, witout entering the one time token
+				$this->Session->write('_Auth', $this->Session->read('Auth'));
+				$this->Session->delete('Auth');
+			}
+			$this->set('user_id', $_user['User']['id']);
+		}else{
+			$this->setFlash('No user given or user not found', false);
+		}
+	}
+
+	/**
+	 * Logs the user out of the system
+	 *
+	 * @return void
+	 */
+	public function logout(){
+		$this->setFlash(__('login.logout_successfull'));
+		$this->Auth->logout();
+		$this->redirect(array(
+			'controller' => 'login',
+			'action' => 'login'
+		));
+	}
+
+
+	/**
+	 * Dialog for auth-required actions
+	 *
+	 * @return void
+	 */
+	public function auth_required() {
+		$redirectUrl = isset($this->params['url']['redirectUrl']) ? $this->params['url']['redirectUrl'] : null;
+		$this->set(compact('redirectUrl'));
+	}
+
+	public function lock(){
+
+		if(!$this->Auth->loggedIn()) {
+			$this->redirect($this->Auth->loginRedirect);
+			return;
+		}
+
+		$user = array(
+			'email' => $this->Auth->user('email'),
+			'full_name' => $this->Auth->user('full_name'),
+			'image' => $this->Auth->user('image')
+		);
+
+		$this->set('user', $user);
+		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+		$this->set('authMethod', $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD']);
+
+		//Multilaguage für das Frontend
+		$this->layout = 'lock';
+		$language = array(
+			'password' => __('Password'),
+			'locked' => __('Locked'),
+		);
+		$this->set('language', $language);
+		$this->set('title_for_layout', __('Locked'));
+		$this->Auth->logout();
+	}
+>>>>>>> 5cea74ba9e632b57c9d96b28c934f69f9714fa75
 }

@@ -1,0 +1,8 @@
+{
+    "require": {
+        "league/oauth2-client": "^1.4"
+    },
+    "config": {
+        "vendor-dir": "Vendor"
+    }
+}
