@@ -23,176 +23,211 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Background extends MapModuleAppModel{
-	public $useTable = false;
-	
-	public function findFiles(){
-		
-		App::uses('Folder', 'Utility');
-		
-		$backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds');
-		$itemsFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items');
+class Background extends MapModuleAppModel
+{
+    public $useTable = false;
 
-		$recursiveImages = $itemsFolder->findRecursive();
+    public function findFiles()
+    {
 
-		$directoryFiles = [];
-		foreach ($recursiveImages as $k => $recursiveImage) {
-			preg_match_all("~.*items\/(.*)$~", $recursiveImage, $folderPart);
-			$filename = basename($folderPart[1][0]);
-			$directory = dirname($folderPart[1][0]);
-			$directoryFiles[$k] = [$directory, $filename];
-		}
+        App::uses('Folder', 'Utility');
 
-		$items = [];
-		$directories = [];
-		foreach ($recursiveImages as $key => $recursiveImage) {
-			preg_match_all("~.*items\/(.*)$~", $recursiveImage, $folderPart);
-			$directory = dirname($folderPart[1][0]);
-			//prevent images outside of iconset folder from being displayed in the accordion 
-			//directory key wont be written in the array here
-			if($directory != '.'){
-				$items[$directory] = [];
-			}
-		}
+        $backgroundFolder = new Folder(APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds');
+        $itemsFolder = new Folder(APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items');
 
-		foreach ($directoryFiles as $key => $value) {
-			//prevent images outside of iconset folder from being displayed in the accordion 
-			//icons within the '.' folder wont be written into the array
-			if($value[0] != '.'){
-				$items[$value[0]][] = $value[1];
-			}
-		}
+        $recursiveImages = $itemsFolder->findRecursive();
 
-		$imageDir = DS .'map_module'. DS .'img';
+        $directoryFiles = [];
+        foreach ($recursiveImages as $k => $recursiveImage) {
+            preg_match_all("~.*items\/(.*)$~", $recursiveImage, $folderPart);
+            $filename = basename($folderPart[1][0]);
+            $directory = dirname($folderPart[1][0]);
+            $directoryFiles[$k] = [$directory, $filename];
+        }
 
-		$relativeItemsPath = $imageDir . DS .'items';
-		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
-		$relativeBackgroundThumbPath = $imageDir. DS .'backgrounds'. DS .'thumb';
-		$files = [
-			'items' => [
-			//keep these commented files and folders in array .. may needed for "non-iconsets"
-				'path'=>$relativeItemsPath,
-				/*'files'=>$itemsFolder->find(),*/
-				'files'=>$items,
-			],
-			'backgrounds'=>[
-				'path'=>$relativeBackgroundPath,
-				'thumbPath'=>$relativeBackgroundThumbPath,
-				'files'=>$backgroundFolder->find(),
-			]
-		];
-		return $files;
-	}
-	
-	public function findBackgrounds(){
-		App::uses('Folder', 'Utility');
-		App::uses('MapUpload', 'MapModule.Model');
-		App::uses('TreeComponent', 'Controller');
-		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'backgrounds';
+        $items = [];
+        $directories = [];
+        foreach ($recursiveImages as $key => $recursiveImage) {
+            preg_match_all("~.*items\/(.*)$~", $recursiveImage, $folderPart);
+            $directory = dirname($folderPart[1][0]);
+            //prevent images outside of iconset folder from being displayed in the accordion 
+            //directory key wont be written in the array here
+            if ($directory != '.') {
+                $items[$directory] = [];
+            }
+        }
 
-		$imageDir = DS .'map_module'. DS .'img';
-		$relativeBackgroundPath = $imageDir. DS .'backgrounds';
-		$relativeBackgroundThumbPath = $imageDir. DS .'backgrounds'. DS .'thumb';
+        foreach ($directoryFiles as $key => $value) {
+            //prevent images outside of iconset folder from being displayed in the accordion 
+            //icons within the '.' folder wont be written into the array
+            if ($value[0] != '.') {
+                $items[$value[0]][] = $value[1];
+            }
+        }
 
-		$myTreeComponent = new TreeComponent();
-		$containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		$myMapUpload = new MapUpload();
-		$allBackgrounds = $myMapUpload->find('all', [
-			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds]
-		]);
-		if(empty($allBackgrounds)) {
-			$itemsFolder = scandir($basePath);
-			$backgroundCounter = 0;
-			foreach ($itemsFolder as $name) {
-				if (!in_array($name, ['.', '..']) && file_exists($basePath . DS . 'thumb' . DS . 'thumb_' . $name)) {
-					$backgroundCounter++;
-					$newUpload = new MapUpload();
-					$newUpload->set([
-						'upload_type' => MapUpload::TYPE_BACKGROUND,
-						'upload_name' => 'background_' . $backgroundCounter,
-						'saved_name' => $name,
-						'container_id' => 1
-					]);
-					$newUpload->save();
-				}
-			}
-			$allBackgrounds = $myMapUpload->find('all', [
-				'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds]
-			]);
-		}
+        $imageDir = DS.'map_module'.DS.'img';
 
-		$backgroundSets = [];
-		foreach($allBackgrounds as $backgroundItem){
-			if(file_exists($basePath.DS.$backgroundItem['MapUpload']['saved_name']) && file_exists($basePath.DS.'thumb'.DS.'thumb_'.$backgroundItem['MapUpload']['saved_name'])){
-				$backgroundSets[] = [
-					'id' => $backgroundItem['MapUpload']['id'],
-					'displayName' => $backgroundItem['MapUpload']['upload_name'],
-					'savedName' => $backgroundItem['MapUpload']['saved_name']
-				];
-			}
-		}
+        $relativeItemsPath = $imageDir.DS.'items';
+        $relativeBackgroundPath = $imageDir.DS.'backgrounds';
+        $relativeBackgroundThumbPath = $imageDir.DS.'backgrounds'.DS.'thumb';
+        $files = [
+            'items'       => [
+                //keep these commented files and folders in array .. may needed for "non-iconsets"
+                'path'  => $relativeItemsPath,
+                /*'files'=>$itemsFolder->find(),*/
+                'files' => $items,
+            ],
+            'backgrounds' => [
+                'path'      => $relativeBackgroundPath,
+                'thumbPath' => $relativeBackgroundThumbPath,
+                'files'     => $backgroundFolder->find(),
+            ],
+        ];
 
-		return [
-			'path' => $basePath,
-			'webPath'=>$relativeBackgroundPath,
-			'thumbPath'=>$relativeBackgroundThumbPath,
-			'files'=>$backgroundSets
-		];
-	}
-	
-	public function findIconsets(){
-		App::uses('MapUpload', 'MapModule.Model');
-		App::uses('TreeComponent', 'Controller');
-		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'items';
-		$myTreeComponent = new TreeComponent();
-		$containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-		$myMapUpload = new MapUpload();
-		$allMapsIcons = $myMapUpload->find('all', [
-			'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds]
-		]);
-		$iconSets = [];
-		foreach($allMapsIcons as $mapUploadItem){
-			//check if there is an ok.png icon
-			if(file_exists($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png')){
-				$dimensionArr = getimagesize($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png');
-				$iconSets[] = [
-					'id' => $mapUploadItem['MapUpload']['id'],
-					'displayName' => $mapUploadItem['MapUpload']['upload_name'],
-					'savedName' => $mapUploadItem['MapUpload']['saved_name'],
-					'dimension' => $dimensionArr[0]
-				];
-			}
-		}
+        return $files;
+    }
 
-		return [
-			'items' => [
-				'path' => $basePath,
-				'webPath' => '/map_module/img/items',
-				'iconsets' => $iconSets
-			]
-		];
-	}
+    public function findBackgrounds()
+    {
+        App::uses('Folder', 'Utility');
+        App::uses('MapUpload', 'MapModule.Model');
+        App::uses('TreeComponent', 'Controller');
+        $basePath = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
+        if (!is_dir($basePath)) {
+            mkdir($basePath);
+        }
 
-	public function findIcons(){
-		$basePath = APP .'Plugin'. DS .'MapModule'. DS .'webroot'. DS .'img'. DS .'icons';
-		if(is_dir($basePath)){
-			$iconsFolder = scandir($basePath);
-			$icons = [];
+        $imageDir = DS.'map_module'.DS.'img';
+        $relativeBackgroundPath = $imageDir.DS.'backgrounds';
+        $relativeBackgroundThumbPath = $imageDir.DS.'backgrounds'.DS.'thumb';
 
-			foreach($iconsFolder as $name){
-				if(!in_array($name, ['.', '..'])){
-					$icons[] = $name;
-				}
-			}
+        $myTreeComponent = new TreeComponent();
+        $containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myMapUpload = new MapUpload();
+        $allBackgrounds = $myMapUpload->find('all', [
+            'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds],
+        ]);
+        if (empty($allBackgrounds)) {
+            $itemsFolder = scandir($basePath);
+            $backgroundCounter = 0;
+            foreach ($itemsFolder as $name) {
+                if (!in_array($name, ['.', '..']) && file_exists($basePath.DS.'thumb'.DS.'thumb_'.$name)) {
+                    $backgroundCounter++;
+                    $newUpload = new MapUpload();
+                    $newUpload->set([
+                        'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                        'upload_name'  => 'background_'.$backgroundCounter,
+                        'saved_name'   => $name,
+                        'container_id' => 1,
+                    ]);
+                    $newUpload->save();
+                }
+            }
+            $allBackgrounds = $myMapUpload->find('all', [
+                'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_BACKGROUND, 'MapUpload.container_id' => $containerIds],
+            ]);
+        }
 
-			return [
-				'icons' => [
-					'path' => $basePath,
-					'webPath' => '/map_module/img/icons',
-					'icons' => $icons,
-				]
-			];
-		}
-		
-	}
+        $backgroundSets = [];
+        foreach ($allBackgrounds as $backgroundItem) {
+            if (file_exists($basePath.DS.$backgroundItem['MapUpload']['saved_name']) && file_exists($basePath.DS.'thumb'.DS.'thumb_'.$backgroundItem['MapUpload']['saved_name'])) {
+                $backgroundSets[] = [
+                    'id'          => $backgroundItem['MapUpload']['id'],
+                    'displayName' => $backgroundItem['MapUpload']['upload_name'],
+                    'savedName'   => $backgroundItem['MapUpload']['saved_name'],
+                ];
+            }
+        }
+
+        return [
+            'path'      => $basePath,
+            'webPath'   => $relativeBackgroundPath,
+            'thumbPath' => $relativeBackgroundThumbPath,
+            'files'     => $backgroundSets,
+        ];
+    }
+
+    public function findIconsets()
+    {
+        App::uses('MapUpload', 'MapModule.Model');
+        App::uses('TreeComponent', 'Controller');
+        $basePath = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items';
+        $myTreeComponent = new TreeComponent();
+        $containerIds = $myTreeComponent->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myMapUpload = new MapUpload();
+        $this->importIconsFromFilesToDB();
+        $allMapsIcons = $myMapUpload->find('all', [
+            'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds],
+        ]);
+        $iconSets = [];
+        foreach ($allMapsIcons as $mapUploadItem) {
+            //check if there is an ok.png icon
+            if (file_exists($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png')) {
+                $dimensionArr = getimagesize($basePath.'/'.$mapUploadItem['MapUpload']['saved_name'].'/ok.png');
+                $iconSets[] = [
+                    'id'          => $mapUploadItem['MapUpload']['id'],
+                    'displayName' => $mapUploadItem['MapUpload']['upload_name'],
+                    'savedName'   => $mapUploadItem['MapUpload']['saved_name'],
+                    'dimension'   => $dimensionArr[0],
+                ];
+            }
+        }
+
+        return [
+            'items' => [
+                'path'     => $basePath,
+                'webPath'  => '/map_module/img/items',
+                'iconsets' => $iconSets,
+            ],
+        ];
+    }
+
+    private function importIconsFromFilesToDB()
+    { // all icon sets, user had before updating openITCOCKPIT, must be imported into DB
+        $itemsImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items';
+        $findMapUpload = new MapUpload();
+        $checkMapsIcons = $findMapUpload->find('all', [
+            'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET],
+        ]);
+        if (!empty($checkMapsIcons))
+            return true;
+
+        //if table is empty we perform importing icons into DB
+        foreach (scandir($itemsImgDirectory) as $object) {
+            if ($object != "." && $object != ".." && is_dir($itemsImgDirectory.DS.$object) && file_exists($itemsImgDirectory.DS.$object.DS.'ok.png')) {
+                $myMapUpload = new MapUpload();
+                $myMapUpload->save([
+                    'upload_type'  => MapUpload::TYPE_ICON_SET,
+                    'upload_name'  => $object,
+                    'saved_name'   => $object,
+                    'user_id'      => null,
+                    'container_id' => '1',
+                ]);
+            }
+        }
+    }
+
+    public function findIcons()
+    {
+        $basePath = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'icons';
+        if (is_dir($basePath)) {
+            $iconsFolder = scandir($basePath);
+            $icons = [];
+
+            foreach ($iconsFolder as $name) {
+                if (!in_array($name, ['.', '..'])) {
+                    $icons[] = $name;
+                }
+            }
+
+            return [
+                'icons' => [
+                    'path'    => $basePath,
+                    'webPath' => '/map_module/img/icons',
+                    'icons'   => $icons,
+                ],
+            ];
+        }
+
+    }
 }

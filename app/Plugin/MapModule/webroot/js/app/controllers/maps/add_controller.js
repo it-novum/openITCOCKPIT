@@ -23,31 +23,31 @@
 //	confirmation.
 
 App.Controllers.MapsAddController = Frontend.AppController.extend({
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
-	_initialize: function(){
-		var self = this;
-		this.Ajaxloader.setup();
+    _initialize: function () {
+        var self = this;
+        this.Ajaxloader.setup();
 
-		$('#MapTenantId').change(function(){
-			var $tenantIds = $(this).val();
-			//console.log($tenantIds);
-			//console.log(self);
+        $('#MapTenantId').change(function () {
+            var $tenantIds = $(this).val();
+            //console.log($tenantIds);
+            //console.log(self);
 
-			self.Ajaxloader.show();
-			$.ajax({
-				url: "/map_module/maps/loadUsersForTenant/" + encodeURIComponent($tenantIds),
-				type: "POST",
-				dataType: "json",
-				error: function(){
-				},
-				success: function(){
-				},
-				complete: function(response){
-					console.log(response);
-				}.bind(self)
-			});
-			self.Ajaxloader.hide();
-		});
-	}
+            self.Ajaxloader.show();
+            $.ajax({
+                url: "/map_module/maps/loadUsersForTenant/" + encodeURIComponent($tenantIds),
+                type: "POST",
+                dataType: "json",
+                error: function () {
+                },
+                success: function () {
+                },
+                complete: function (response) {
+                    console.log(response);
+                }.bind(self)
+            });
+            self.Ajaxloader.hide();
+        });
+    }
 });

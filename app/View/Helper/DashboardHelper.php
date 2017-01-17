@@ -23,48 +23,58 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DashboardHelper extends AppHelper{
-	
-	public $helpers = [
-		'Acl',
-	];
-	
-	public function render($widget){
-		$html = $this->_header($widget);
-		$html .= $this->_body($widget);
-		$html .= $this->_end($widget);
-		return $html;
-	}
-	
-	private function _header($widget){
-		$html = '<div data-gs-height="'.h($widget['Widget']['height']).'" data-gs-width="'.h($widget['Widget']['width']).'" data-gs-x="'.h($widget['Widget']['row']).'" data-gs-y="'.h($widget['Widget']['col']).'" data-widget-id="'.h($widget['Widget']['id']).'" data-widget-type-id="'.h($widget['Widget']['type_id']).'" class="grid-stack-item ui-draggable ui-resizable">';
-			$html .= '<div class="grid-stack-item-content">';
-				$html .= '<div id="widget-color-'.h($widget['Widget']['id']).'"" class="jarviswidget '.h($widget['Widget']['color']).'">';
-					$html .= '<header class="ui-draggable-handle" role="heading">';
-						$html .= '<div role="menu" class="jarviswidget-ctrls">';
-							$html .= $this->_headerMenu($widget);
-						$html .= '</div>';
-						$html .= '<h2><i class="fa '.h($widget['Settings']['icon']).'"></i> <span id="widget-title-'.h($widget['Widget']['id']).'">'.h($widget['Widget']['title']).'</span></h2>';
-					$html .= '</header>';
-		return $html;
-	}
-	
-	private function _body($widget){
-		$html = '<div class="widget-body padding-0">';
-			$html .= $this->_View->element($widget['Settings']['element'], ['widget' => $widget]);
-		$html .= '</div>';
-		return $html;
-	}
-	
-	private function _end($widget){
-				$html = '</div>';
-			$html .= '</div>';
-		$html .= '</div>';
-		return $html;
-	}
-	
-	private function _headerMenu($widget){
-		$html = '
+class DashboardHelper extends AppHelper
+{
+
+    public $helpers = [
+        'Acl',
+    ];
+
+    public function render($widget)
+    {
+        $html = $this->_header($widget);
+        $html .= $this->_body($widget);
+        $html .= $this->_end($widget);
+
+        return $html;
+    }
+
+    private function _header($widget)
+    {
+        $html = '<div data-gs-height="'.h($widget['Widget']['height']).'" data-gs-width="'.h($widget['Widget']['width']).'" data-gs-x="'.h($widget['Widget']['row']).'" data-gs-y="'.h($widget['Widget']['col']).'" data-widget-id="'.h($widget['Widget']['id']).'" data-widget-type-id="'.h($widget['Widget']['type_id']).'" class="grid-stack-item ui-draggable ui-resizable">';
+        $html .= '<div class="grid-stack-item-content">';
+        $html .= '<div id="widget-color-'.h($widget['Widget']['id']).'"" class="jarviswidget '.h($widget['Widget']['color']).'">';
+        $html .= '<header class="ui-draggable-handle" role="heading">';
+        $html .= '<div role="menu" class="jarviswidget-ctrls">';
+        $html .= $this->_headerMenu($widget);
+        $html .= '</div>';
+        $html .= '<h2><i class="fa '.h($widget['Settings']['icon']).'"></i> <span id="widget-title-'.h($widget['Widget']['id']).'">'.h($widget['Widget']['title']).'</span></h2>';
+        $html .= '</header>';
+
+        return $html;
+    }
+
+    private function _body($widget)
+    {
+        $html = '<div class="widget-body padding-0">';
+        $html .= $this->_View->element($widget['Settings']['element'], ['widget' => $widget]);
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    private function _end($widget)
+    {
+        $html = '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    private function _headerMenu($widget)
+    {
+        $html = '
 			<a data-original-title="'.__('Edit title').'" data-placement="left" rel="tooltip" class="button-icon jarviswidget-edit-btn changeTitle" href="javascript:void(0);" data-widget-id="'.h($widget['Widget']['id']).'"><i class="fa fa-cog "></i></a>
 			<div class="widget-toolbar pull-left" style="border:0px;" role="menu">
 				<a href="javascript:void(0);" class="dropdown-toggle color-box selector '.h($widget['Widget']['color']).'" style="vertical-align: baseline;" id="currentColor" color="#404040" current-color="'.h($widget['Widget']['color']).'" data-toggle="dropdown" data-widget-id="'.h($widget['Widget']['id']).'"></a>
@@ -93,6 +103,7 @@ class DashboardHelper extends AppHelper{
 				<i class="fa fa-times"></i>
 			</a>
 			';
-		return $html;
-	}
+
+        return $html;
+    }
 }

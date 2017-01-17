@@ -1,6 +1,7 @@
 <?php
 
-class FrontendAppModel extends AppModel {
+class FrontendAppModel extends AppModel
+{
 
 }
 

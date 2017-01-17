@@ -23,89 +23,91 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicetemplategroup extends AppModel{
-	
-	public $belongsTo = array(
-		'Container' => [
-			'dependent' => true,
-			'foreignKey' => 'container_id',
-			'className' => 'Container',
-			'dependent'=> true
-	]);
-	
-	public $hasAndBelongsToMany = [
-		'Servicetemplate' => [
-			'joinTable' => 'servicetemplates_to_servicetemplategroups',
-			'foreignKey' => 'servicetemplategroup_id',
-			'unique' => true,
-			'dependent'=> true
-		]
-	];
-	
-	public $validate = [
-		'Servicetemplate' => [
-			'rule' => ['multiple', [
-				'min' => 1,
-			]],
-			'message' => 'Please select at least 1 servicetemplate',
-			'required' => true
-		]
-	];
-	
-	public function byContainerId($containerIds = ROOT_CONTAINER, $type = 'all' ,$options = [], $id = 'id'){
-		if(!is_array($containerIds)){
-			$containerIds = [$containerIds];
-		}
-		
-		$_options = [
-			'hasRootPrivileges' => false
-		];
-		
-		$options = Hash::merge($_options, $options);
-		
-		$conditions = [];
-		if($options['hasRootPrivileges'] === false){
-			$conditions['Container.'.$id] = $containerIds;
-		}
+class Servicetemplategroup extends AppModel
+{
 
-		switch($type){
-			case 'all':
-				return $this->find('all', [
-					'contain' => [
-						'Container'
-					],
-					'conditions' => $conditions,
-					'order' => [
-						'Container.name' => 'asc'
-					]
-				]);
-				break;
-				
-			case 'list':
-				$results = $this->find('all', [
-					'contain' => [
-						'Container' => [
-							'fields' => [
-								'Container.name'
-							]
-						]
-					],
-					'conditions' => $conditions,
-					'order' => [
-						'Container.name' => 'asc'
-					],
-					'fields' => [
-						'Servicetemplategroup.id'
-					]
-				]);
-				
-				$list = [];
-				foreach($results as $result){
-					$list[$result['Servicetemplategroup']['id']] = $result['Container']['name'];
-				}
-				
-				return $list;
-				break;
-		}
-	}
+    public $belongsTo = [
+        'Container' => [
+            'dependent'  => true,
+            'foreignKey' => 'container_id',
+            'className'  => 'Container',
+            'dependent'  => true,
+        ]];
+
+    public $hasAndBelongsToMany = [
+        'Servicetemplate' => [
+            'joinTable'  => 'servicetemplates_to_servicetemplategroups',
+            'foreignKey' => 'servicetemplategroup_id',
+            'unique'     => true,
+            'dependent'  => true,
+        ],
+    ];
+
+    public $validate = [
+        'Servicetemplate' => [
+            'rule'     => ['multiple', [
+                'min' => 1,
+            ]],
+            'message'  => 'Please select at least 1 servicetemplate',
+            'required' => true,
+        ],
+    ];
+
+    public function byContainerId($containerIds = ROOT_CONTAINER, $type = 'all', $options = [], $id = 'id')
+    {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $_options = [
+            'hasRootPrivileges' => false,
+        ];
+
+        $options = Hash::merge($_options, $options);
+
+        $conditions = [];
+        if ($options['hasRootPrivileges'] === false) {
+            $conditions['Container.'.$id] = $containerIds;
+        }
+
+        switch ($type) {
+            case 'all':
+                return $this->find('all', [
+                    'contain'    => [
+                        'Container',
+                    ],
+                    'conditions' => $conditions,
+                    'order'      => [
+                        'Container.name' => 'asc',
+                    ],
+                ]);
+                break;
+
+            case 'list':
+                $results = $this->find('all', [
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                            ],
+                        ],
+                    ],
+                    'conditions' => $conditions,
+                    'order'      => [
+                        'Container.name' => 'asc',
+                    ],
+                    'fields'     => [
+                        'Servicetemplategroup.id',
+                    ],
+                ]);
+
+                $list = [];
+                foreach ($results as $result) {
+                    $list[$result['Servicetemplategroup']['id']] = $result['Container']['name'];
+                }
+
+                return $list;
+                break;
+        }
+    }
 }

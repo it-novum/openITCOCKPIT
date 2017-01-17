@@ -36,6 +36,7 @@ class MailConfigValue
 
     /**
      * MailConfigValue constructor.
+     *
      * @param String $value
      */
     function __construct($value)
@@ -46,24 +47,28 @@ class MailConfigValue
     /**
      * @return String
      */
-    public function getValue(){
+    public function getValue()
+    {
         return $this->value;
     }
 
     /**
      * @return string
      */
-    public function getValueForConfig(){
-        if($this->isEmpty()){
+    public function getValueForConfig()
+    {
+        if ($this->isEmpty()) {
             return 'null';
         }
+
         return sprintf('"%s"', $this->value);
     }
 
     /**
      * @return bool
      */
-    public function isEmpty(){
+    public function isEmpty()
+    {
         return empty($this->value);
     }
 }

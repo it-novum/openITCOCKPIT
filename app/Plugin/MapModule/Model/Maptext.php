@@ -23,11 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Maptext extends MapModuleAppModel{
-	public $belongsTo = [
-		'Map' => [
-			'className' => 'MapModule.Map',
-			'dependent' => true,
-		]
-	];
+class Maptext extends MapModuleAppModel
+{
+    public $belongsTo = [
+        'Map' => [
+            'className' => 'MapModule.Map',
+            'dependent' => true,
+        ],
+    ];
 }

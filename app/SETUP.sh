@@ -5,5 +5,15 @@ sudo -g www-data /usr/share/openitcockpit/app/Console/cake schema update --conne
 oitc AclExtras.AclExtras aco_sync
 oitc compress
 oitc nagios_export --all
-service nagios restart
+
+CODENAME=$(lsb_release -sc)
+if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
+    systemctl restart nagios
+    systemctl restart sudo_server
+fi
+
+if [ $CODENAME = "trusty" ]; then
+    service nagios restart
+fi
+
 sudo -g www-data /usr/share/openitcockpit/app/Console/cake setup

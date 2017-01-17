@@ -23,40 +23,42 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-	<?php echo $this->Form->create('Onetimetoken', array(
-		'class' => 'lockscreen animated flipInY',
-		'inputDefaults' => array(
-			'wrapInput' => false,
-			'label' => false,
-			'div' => false
-		)
-	));
-	?>
-		<div class="logo">
-			<h1 class="semi-bold"><?php echo $this->html->image('itc_logo_ball.png');?> <?php echo $systemname; ?></h1>
-		</div>
-		<div>
-			<?php //echo $this->html->image('daniel.jpg', array('width' => 120, 'height' => 120));?>
-			<i class="fa fa-unlock-alt pull-left" style="font-size: 150px;"></i>
-			<div>
-				<h1><?php echo __('A One-time password was sent to your email address'); ?></h1>
-				<p class="text-muted">
-					<?php echo __('Please enter the code out of the email'); ?>
-				</p>
-				<?php echo $this->Form->hidden('id', array('value' => $user_id)); ?>
-				<div class="input-group">
-					<?php echo $this->Form->input('onetimetoken', array('placeholder' => __('One-time password'), 'tabindex' => '1')); ?>
-					<div class="input-group-btn">
-						<button class="btn btn-primary" type="submit">
-							<i class="fa fa-key"></i>
-						</button>
-					</div>
-				</div>
-			</div>
+<?php echo $this->Form->create('Onetimetoken', [
+    'class'         => 'lockscreen animated flipInY',
+    'inputDefaults' => [
+        'wrapInput' => false,
+        'label'     => false,
+        'div'       => false,
+    ],
+]);
+?>
+    <div class="logo">
+        <h1 class="semi-bold"><?php echo $this->html->image('itc_logo_ball.png'); ?><?php echo $systemname; ?></h1>
+    </div>
+    <div>
+        <?php //echo $this->html->image('daniel.jpg', array('width' => 120, 'height' => 120));?>
+        <i class="fa fa-unlock-alt pull-left" style="font-size: 150px;"></i>
+        <div>
+            <h1><?php echo __('A One-time password was sent to your email address'); ?></h1>
+            <p class="text-muted">
+                <?php echo __('Please enter the code out of the email'); ?>
+            </p>
+            <?php echo $this->Form->hidden('id', ['value' => $user_id]); ?>
+            <div class="input-group">
+                <?php echo $this->Form->input('onetimetoken', ['placeholder' => __('One-time password'), 'tabindex' => '1']); ?>
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa fa-key"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-		</div>
-		<p class="font-xs margin-top-5">
-			<?php echo __('Copyright'); ?> <a href="http://it-novum.com" target="_blank" ><?php echo __('it-novum GmbH'); ?></a> 2005 - <?php echo date('Y'); ?>
-		</p>
-	</form>
-	<?php echo $this->Form->end(); ?>
+    </div>
+    <p class="font-xs margin-top-5">
+        <?php echo __('Copyright'); ?> <a href="http://it-novum.com"
+                                          target="_blank"><?php echo __('it-novum GmbH'); ?></a> 2005
+        - <?php echo date('Y'); ?>
+    </p>
+    </form>
+<?php echo $this->Form->end(); ?>

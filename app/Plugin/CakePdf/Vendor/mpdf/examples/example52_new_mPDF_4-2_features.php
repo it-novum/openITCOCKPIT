@@ -1,7 +1,7 @@
 <?php
 
 
-ini_set("memory_limit","256M");
+ini_set("memory_limit", "256M");
 
 
 $html = '
@@ -444,43 +444,46 @@ This layout can be used to produce company letters with only the first page on l
 
 
 ';
-if ($_REQUEST['html']) { echo $html; exit; }
+if ($_REQUEST['html']) {
+    echo $html;
+    exit;
+}
 
 
 //==============================================================
 //==============================================================
 //==============================================================
-define('_MPDF_URI','../'); 	// required for the progress bar
+define('_MPDF_URI', '../');    // required for the progress bar
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('','A4','','',15,15,20,20,5,5); 
+$mpdf = new mPDF('', 'A4', '', '', 15, 15, 20, 20, 5, 5);
 
-$mpdf->StartProgressBarOutput(2);	// 2 => advanced mode
+$mpdf->StartProgressBarOutput(2);    // 2 => advanced mode
 
 $mpdf->SetDisplayMode('fullpage');
 
 $mpdf->useSubstitutions = true;
 
 // Dynamically create image in var:smileyface
-	$img = imagecreatetruecolor(200, 200);
-	$white = imagecolorallocate($img, 255, 255, 255);
-	$red   = imagecolorallocate($img, 255,   0,   0);
-	$green = imagecolorallocate($img,   0, 255,   0);
-	$blue  = imagecolorallocate($img,   0,   0, 255);
-	imagearc($img, 100, 100, 200, 200,  0, 360, $white);
-	imagearc($img, 100, 100, 150, 150, 25, 155, $red);
-	imagearc($img,  60,  75,  50,  50,  0, 360, $green);
-	imagearc($img, 140,  75,  50,  50,  0, 360, $blue);
-	ob_start();
-	imagejpeg($img);
-	$mpdf->smileyface = ob_get_clean(); 
-	imagedestroy($img);
+$img = imagecreatetruecolor(200, 200);
+$white = imagecolorallocate($img, 255, 255, 255);
+$red = imagecolorallocate($img, 255, 0, 0);
+$green = imagecolorallocate($img, 0, 255, 0);
+$blue = imagecolorallocate($img, 0, 0, 255);
+imagearc($img, 100, 100, 200, 200, 0, 360, $white);
+imagearc($img, 100, 100, 150, 150, 25, 155, $red);
+imagearc($img, 60, 75, 50, 50, 0, 360, $green);
+imagearc($img, 140, 75, 50, 50, 0, 360, $blue);
+ob_start();
+imagejpeg($img);
+$mpdf->smileyface = ob_get_clean();
+imagedestroy($img);
 
 
 $mpdf->WriteHTML($html);
 
-$mpdf->Output(); 
+$mpdf->Output();
 exit;
 
 //==============================================================

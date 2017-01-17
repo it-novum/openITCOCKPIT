@@ -2,7 +2,6 @@
 /**
  * Mime Type: text/html
  * Mime Type: application/html+xml
- *
  * @author Nathan Good <me@nategood.com>
  */
 

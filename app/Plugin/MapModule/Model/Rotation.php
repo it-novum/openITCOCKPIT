@@ -23,53 +23,55 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Rotation extends MapModuleAppModel{
-	public $hasAndBelongsToMany = [
-		'Map' =>[
-			'className' => 'MapModule.Map',
-			'joinTable' => 'maps_to_rotations',
-			'unique' => true,
-		]
-	];
+class Rotation extends MapModuleAppModel
+{
+    public $hasAndBelongsToMany = [
+        'Map' => [
+            'className' => 'MapModule.Map',
+            'joinTable' => 'maps_to_rotations',
+            'unique'    => true,
+        ],
+    ];
 
-	var $validate = [
-		'name' => [
-			'notBlank' => [
-				'rule'     => 'notBlank',
-				'message'  => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'Map' => [
-			'atLeastOne' => [
-				'rule' => ['atLeastOne'],
-				'message' => 'You must specify at least one map',
-				'required' => true
-			]
-		],
-		'interval' => [
-			'notBlank' => [
-				'rule'     => 'notBlank',
-				'message'  => 'This field cannot be left blank.',
-				'required' => true
-			],
-			'numeric' => [
-				'rule'    => 'numeric',
-				'message' => 'This field needs to be numeric.'
-			],
-			'notZero' => [
-				'rule'     => ['comparison', '>', 0],
-				'message'  => 'Please enter a number > 0.',
-				'required' => true
-			],
-		],
-	];
+    var $validate = [
+        'name'     => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'Map'      => [
+            'atLeastOne' => [
+                'rule'     => ['atLeastOne'],
+                'message'  => 'You must specify at least one map',
+                'required' => true,
+            ],
+        ],
+        'interval' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Please enter a number > 0.',
+                'required' => true,
+            ],
+        ],
+    ];
 
 
-	/*
-	Custom validation rule for map field
-	*/
-	public function atLeastOne($data) {
-		return !empty($this->data[$this->name]['Map']);
-	}
+    /*
+    Custom validation rule for map field
+    */
+    public function atLeastOne($data)
+    {
+        return !empty($this->data[$this->name]['Map']);
+    }
 }

@@ -27,87 +27,88 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Cronjob extends Importer
 {
-	/**
-	 * @property \Cronjob $Model
-	 */
+    /**
+     * @property \Cronjob $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import()
-	{
-		if($this->isTableEmpty()){
-			$data = $this->getData();
-			foreach ($data as $record) {
-				$this->Model->create();
-				$this->Model->saveAll($record);
-			}
-		}
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
+                $this->Model->saveAll($record);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data = array(
-			0 =>
-				array(
-					'Cronjob' =>
-						array(
-							'id' => '1',
-							'task' => 'CleanupTemp',
-							'plugin' => 'Core',
-							'interval' => '10',
-						),
-					'Cronschedule' =>
-						array(
-							'id' => '1',
-							'cronjob_id' => '1',
-							'is_running' => '0',
-							'start_time' => '2016-09-27 11:07:02',
-							'end_time' => '2016-09-27 11:07:02',
-						),
-				),
-			1 =>
-				array(
-					'Cronjob' =>
-						array(
-							'id' => '2',
-							'task' => 'DatabaseCleanup',
-							'plugin' => 'Core',
-							'interval' => '1440',
-						),
-					'Cronschedule' =>
-						array(
-							'id' => '2',
-							'cronjob_id' => '2',
-							'is_running' => '0',
-							'start_time' => '2015-01-16 00:43:01',
-							'end_time' => '2015-01-16 00:43:02',
-						),
-				),
-			2 =>
-				array(
-					'Cronjob' =>
-						array(
-							'id' => '3',
-							'task' => 'RecurringDowntimes',
-							'plugin' => 'Core',
-							'interval' => '10',
-						),
-					'Cronschedule' =>
-						array(
-							'id' => '3',
-							'cronjob_id' => '3',
-							'is_running' => '0',
-							'start_time' => '2015-01-16 00:43:02',
-							'end_time' => '2015-01-16 00:43:02',
-						),
-				),
-		);
-		return $data;
-	}
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data = [
+            0 =>
+                [
+                    'Cronjob'      =>
+                        [
+                            'id'       => '1',
+                            'task'     => 'CleanupTemp',
+                            'plugin'   => 'Core',
+                            'interval' => '10',
+                        ],
+                    'Cronschedule' =>
+                        [
+                            'id'         => '1',
+                            'cronjob_id' => '1',
+                            'is_running' => '0',
+                            'start_time' => '2016-09-27 11:07:02',
+                            'end_time'   => '2016-09-27 11:07:02',
+                        ],
+                ],
+            1 =>
+                [
+                    'Cronjob'      =>
+                        [
+                            'id'       => '2',
+                            'task'     => 'DatabaseCleanup',
+                            'plugin'   => 'Core',
+                            'interval' => '1440',
+                        ],
+                    'Cronschedule' =>
+                        [
+                            'id'         => '2',
+                            'cronjob_id' => '2',
+                            'is_running' => '0',
+                            'start_time' => '2015-01-16 00:43:01',
+                            'end_time'   => '2015-01-16 00:43:02',
+                        ],
+                ],
+            2 =>
+                [
+                    'Cronjob'      =>
+                        [
+                            'id'       => '3',
+                            'task'     => 'RecurringDowntimes',
+                            'plugin'   => 'Core',
+                            'interval' => '10',
+                        ],
+                    'Cronschedule' =>
+                        [
+                            'id'         => '3',
+                            'cronjob_id' => '3',
+                            'is_running' => '0',
+                            'start_time' => '2015-01-16 00:43:02',
+                            'end_time'   => '2015-01-16 00:43:02',
+                        ],
+                ],
+        ];
+
+        return $data;
+    }
 }

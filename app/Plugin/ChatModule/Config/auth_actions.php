@@ -23,12 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = array(
-	'public_actions' => array(
-	),
-	'auth_actions' => array(
-		'ChatModule.chat' => array(
-			'index' => '*'
-		)
-	)
-);
+$config = [
+    'public_actions' => [
+    ],
+    'auth_actions'   => [
+        'ChatModule.chat' => [
+            'index' => '*',
+        ],
+    ],
+];

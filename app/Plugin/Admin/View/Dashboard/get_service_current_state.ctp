@@ -8,6 +8,6 @@
  *      |__/                                    
 */
 ?>
-<?php 
+<?php
 echo $serviceCurrentState;
 ?>

@@ -1,28 +1,32 @@
 <?php
 App::uses('ClassRegistry', 'Utility');
-App::uses('CakeLogInterface','Log');
-class DatabaseLogger implements CakeLogInterface {
+App::uses('CakeLogInterface', 'Log');
 
-	/**
-	* @var SystemLog
-	*/
-	public $SystemLog = null;
+class DatabaseLogger implements CakeLogInterface
+{
 
-	/**
-	* Contruct the model class
-	*/
-	public function __construct($options = array()) {
-		$this->SystemLog = ClassRegistry::init('SystemLog');
-	}
+    /**
+     * @var SystemLog
+     */
+    public $SystemLog = null;
 
-	/**
-	* Write the log to database
-	*/
-	public function write($type, $message) {
-		$this->SystemLog->create();
-		$this->SystemLog->save(array(
-			'type' => $type,
-			'message' => $message
-		));
-	}
+    /**
+     * Contruct the model class
+     */
+    public function __construct($options = [])
+    {
+        $this->SystemLog = ClassRegistry::init('SystemLog');
+    }
+
+    /**
+     * Write the log to database
+     */
+    public function write($type, $message)
+    {
+        $this->SystemLog->create();
+        $this->SystemLog->save([
+            'type'    => $type,
+            'message' => $message,
+        ]);
+    }
 }

@@ -24,37 +24,38 @@
 //	confirmation.
 
 ?>
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<!--[if IE]>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<![endif]-->
-	<?php echo $this->Html->charset(); ?>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script data-pace-options='{ "ajax": false }' src='/smartadmin/js/plugin/pace/pace.min.js'></script>
-	<title>
-		<?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
-	</title>
-	<?php
-		echo $this->Html->meta('icon');
-		echo $this->element('assets');
-	?>
+    <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <![endif]-->
+    <?php echo $this->Html->charset(); ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script data-pace-options='{ "ajax": false }' src='/smartadmin/js/plugin/pace/pace.min.js'></script>
+    <title>
+        <?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
+    </title>
+    <?php
+    echo $this->Html->meta('icon');
+    echo $this->element('assets');
+    ?>
 </head>
 <body class="">
 
-	<div id="uglyDropdownMenuHack"></div>
+<div id="uglyDropdownMenuHack"></div>
 
-		<div id="content" style="opacity: 1;">
-			<div class="controller <?php echo $this->name ?>_<?php echo $this->action ?>">
-				<?php echo $this->Session->flash(); ?>
-				<?php echo $this->Session->flash('auth'); ?>
-				<?php echo $content_for_layout; ?>
-				<?php echo $this->element('Admin.sql_dump'); ?>
-			</div>
-		</div>
-	<?php
-	// Gibt das div der Tastenkombinationen aus
-	echo $this->element('shortcuts');
-	?>
+<div id="content" style="opacity: 1;">
+    <div class="controller <?php echo $this->name ?>_<?php echo $this->action ?>">
+        <?php echo $this->Session->flash(); ?>
+        <?php echo $this->Session->flash('auth'); ?>
+        <?php echo $content_for_layout; ?>
+        <?php echo $this->element('Admin.sql_dump'); ?>
+    </div>
+</div>
+<?php
+// Gibt das div der Tastenkombinationen aus
+echo $this->element('shortcuts');
+?>
 </body>
 </html>

@@ -151,7 +151,8 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 				var hostnames = this.fetchHostnames();
 				var $yes = $('#message_yes');
 				var $no = $('#message_no');
-				$('#deleteAll').click(function(e){
+				$('#deleteAll').off('click').on('click', function(e){
+					SmartMSGboxCount = 0;
 					$.SmartMessageBox({
 						title : "<span class='text-danger'>"+$('#delete_message_h1').val()+"</span>",
 						sound: false,
@@ -165,7 +166,6 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 							$('#MsgBoxBack').fadeOut();
 						}
 					}.bind(this));
-				
 					//e.preventDefault();
 				}.bind(this));
 			}else{
@@ -203,8 +203,8 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 			}.bind(this));
 			
 		}else{
-			$('#deleteAll').attr('href', 'javascript:void(0);');
-			$('#deleteAll').unbind('click');
+			$('#disableAll').attr('href', 'javascript:void(0);');
+			$('#disableAll').unbind('click');
 		}
 	},
 	

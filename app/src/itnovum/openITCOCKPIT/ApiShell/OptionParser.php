@@ -53,25 +53,27 @@ class OptionParser
     /**
      * @param array $parameters
      * @param array $args
+     *
      * @throws MissingParameterExceptions
      */
-    public function parse($parameters, $args = []){
-        if(!array_key_exists('model', $parameters)){
+    public function parse($parameters, $args = [])
+    {
+        if (!array_key_exists('model', $parameters)) {
             throw new MissingParameterExceptions('Paremter --model is missing');
         }
         $this->model = ucfirst(strtolower($parameters['model']));
 
-        if(!array_key_exists('action', $parameters)){
+        if (!array_key_exists('action', $parameters)) {
             throw new MissingParameterExceptions('Paremter --action is missing');
         }
         $this->action = strtolower($parameters['action']);
 
-        if(!array_key_exists('data', $parameters)){
+        if (!array_key_exists('data', $parameters)) {
             throw new MissingParameterExceptions('Paremter --data is missing');
         }
         $this->data = array_merge([$parameters['data']], $args);
 
-        if(array_key_exists('plugin', $parameters)){
+        if (array_key_exists('plugin', $parameters)) {
             $this->plugin = ucfirst(strtolower($parameters['plugin']));
         }
     }
@@ -79,28 +81,32 @@ class OptionParser
     /**
      * @return string
      */
-    public function getModel(){
+    public function getModel()
+    {
         return $this->model;
     }
 
     /**
      * @return string
      */
-    public function getAction(){
+    public function getAction()
+    {
         return $this->action;
     }
 
     /**
      * @return array
      */
-    public function getData(){
+    public function getData()
+    {
         return $this->data;
     }
 
     /**
      * @return string
      */
-    public function getPlugin(){
+    public function getPlugin()
+    {
         return $this->plugin;
     }
 

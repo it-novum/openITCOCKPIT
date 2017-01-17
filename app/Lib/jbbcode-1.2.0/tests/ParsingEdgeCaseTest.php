@@ -1,14 +1,12 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Parser.php');
+require_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Parser.php');
 
 /**
  * A series of test cases for various potential parsing edge cases. This
  * includes a lot of tests using brackets for things besides genuine tag
  * names.
- *
  * @author jbowens
- *
  */
 class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
 {
@@ -24,6 +22,7 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
         $parser = new JBBCode\Parser();
         $parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $parser->parse($bbcode);
+
         return $parser->getAsHtml();
     }
 
@@ -47,7 +46,6 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     /**
      * Tests attempting to use a code that doesn't exist, but this
      * time in a well-formed fashion.
-     *
      * @depends testNonexistentCodeMalformed
      */
     public function testNonexistentCodeWellformed()
@@ -77,7 +75,7 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     public function testRandomBracketsInWellformedCode()
     {
         $this->assertProduces('[b][[][[i]heh[/i][/b]',
-                              '<strong>[[][<em>heh</em></strong>');
+            '<strong>[[][<em>heh</em></strong>');
     }
 
     /**
@@ -86,7 +84,7 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     public function testUnclosedWithinClosed()
     {
         $this->assertProduces('[url=http://jbbcode.com][b]oh yeah[/url]',
-                              '<a href="http://jbbcode.com"><strong>oh yeah</strong></a>');
+            '<a href="http://jbbcode.com"><strong>oh yeah</strong></a>');
     }
 
     /**
@@ -96,7 +94,7 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     {
         $this->assertProduces('[b', '[b');
         $this->assertProduces('wut [url=http://jbbcode.com',
-                              'wut [url=http://jbbcode.com');
+            'wut [url=http://jbbcode.com');
     }
 
     /**
@@ -105,7 +103,7 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     public function testHalfClosingTag()
     {
         $this->assertProduces('[b]this should be bold[/b',
-                              '<strong>this should be bold[/b</strong>');
+            '<strong>this should be bold[/b</strong>');
     }
 
     /**
@@ -115,6 +113,6 @@ class ParsingEdgeCaseTest extends PHPUnit_Framework_TestCase
     public function testLeftBracketsThenTag()
     {
         $this->assertProduces('[[[[[b]bold![/b]',
-                              '[[[[<strong>bold!</strong>');
+            '[[[[<strong>bold!</strong>');
     }
 }

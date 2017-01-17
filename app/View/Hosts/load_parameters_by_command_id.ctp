@@ -32,36 +32,37 @@
  *      |__/                                    
 */
 
-if(!empty($commandarguments)):
-	foreach($commandarguments as $commandargument):
-		echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value',[
-			'label' => [
-				'class' => 'col col-md-2 control-label text-primary',
-				'text' => $commandargument['Commandargument']['human_name']
-			],
-			'div' => [
-				'class' => 'form-group'
-			],
-			'class' => 'form-control',
-			'wrapInput' => 'col col-md-8',
-			'value' => (isset($commandargument['Hosttemplatecommandargumentvalue']['value']) && $commandargument['Hosttemplatecommandargumentvalue']['value'] !== null)?$commandargument['Hosttemplatecommandargumentvalue']['value']:''
-		]);
-		echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id',[
-			'type' => 'hidden',
-			'value' => $commandargument['Commandargument']['id']
-		]);
-		if(isset($commandargument['Hosttemplatecommandargumentvalue']['id']) && $commandargument['Hosttemplatecommandargumentvalue']['id'] !== null):
-			echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id',[
-				'type' => 'hidden',
-				'value' => $commandargument['Hosttemplatecommandargumentvalue']['id']
-			]);
-		endif;
-	endforeach;
+if (!empty($commandarguments)):
+    foreach ($commandarguments as $commandargument):
+        echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+            'label'     => [
+                'class' => 'col col-md-2 control-label text-primary',
+                'text'  => $commandargument['Commandargument']['human_name'],
+            ],
+            'div'       => [
+                'class' => 'form-group',
+            ],
+            'class'     => 'form-control',
+            'wrapInput' => 'col col-md-8',
+            'value'     => (isset($commandargument['Hosttemplatecommandargumentvalue']['value']) && $commandargument['Hosttemplatecommandargumentvalue']['value'] !== null) ? $commandargument['Hosttemplatecommandargumentvalue']['value'] : '',
+        ]);
+        echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+            'type'  => 'hidden',
+            'value' => $commandargument['Commandargument']['id'],
+        ]);
+        if (isset($commandargument['Hosttemplatecommandargumentvalue']['id']) && $commandargument['Hosttemplatecommandargumentvalue']['id'] !== null):
+            echo $this->Form->input('Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+                'type'  => 'hidden',
+                'value' => $commandargument['Hosttemplatecommandargumentvalue']['id'],
+            ]);
+        endif;
+    endforeach;
 else:
-	?>
-	<div class="form-group">
-		<label class="col col-md-2 control-label hidden-mobile hidden-tablet"><!-- spacer for nice layout --></label>
-		<label class="col col-md-8 col-xs-12 text-primary"><i class="fa fa-info-circle"></i> <?php echo __('no parameters for this command defined'); ?></label>
-	</div>
-	<?php
+    ?>
+    <div class="form-group">
+        <label class="col col-md-2 control-label hidden-mobile hidden-tablet"><!-- spacer for nice layout --></label>
+        <label class="col col-md-8 col-xs-12 text-primary"><i
+                    class="fa fa-info-circle"></i> <?php echo __('no parameters for this command defined'); ?></label>
+    </div>
+    <?php
 endif;

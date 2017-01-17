@@ -23,15 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = array(
-	'assets' => array(
-		'css' => array(
-			'/map_module/css/style.css',
-		),
-		'js' => array(
-			'/map_module/js/lib/jquery.lazyload.js',
-			'/map_module/js/lib/jquery.basify.js',
-		),
-		'jsFrontendPluginDependent' => array()
-	)
-);
+$config = [
+    'assets' => [
+        'css'                       => [
+            '/map_module/css/style.css',
+        ],
+        'js'                        => [
+            '/map_module/js/lib/jquery.lazyload.js',
+            '/map_module/js/lib/jquery.basify.js',
+        ],
+        'jsFrontendPluginDependent' => [],
+    ],
+];

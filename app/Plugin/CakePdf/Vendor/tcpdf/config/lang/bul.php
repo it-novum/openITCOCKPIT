@@ -23,15 +23,15 @@
 /**
  * TCPDF language file (contains translated texts).
  * @package com.tecnick.tcpdf
- * @brief TCPDF language file: Bulgarian
- * @author Nicola Asuni
- * @since 2012-03-22
+ * @brief   TCPDF language file: Bulgarian
+ * @author  Nicola Asuni
+ * @since   2012-03-22
  */
- 
+
 // Bulgarian
 
 global $l;
-$l = Array();
+$l = [];
 
 // PAGE META DESCRIPTORS --------------------------------------
 

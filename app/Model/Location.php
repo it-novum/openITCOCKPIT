@@ -23,107 +23,114 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Location extends AppModel{
-	var $belongsTo = [
-		'Container' => [
-			'className' => 'Container',
-			'foreignKey' => 'container_id',
-			'conditions' => ['containertype_id' => CT_LOCATION]
-		]
-	];
-	
-	var $validate = [
-		'latitude' => [
-			'rule' => 'numeric',
-			'message' => 'This value needs to be numeric',
-			'allowEmpty' => true
-		],
-		'longitude' => [
-			'rule' => 'numeric',
-			'message' => 'This value needs to be numeric',
-			'allowEmpty' => true
-		]
-	];
-	
-	public function __delete($location, $userId){
-		if(is_numeric($location)){
-			$locationId = $location;
-			$location = $this->findById($location);
-		}else{
-			$locationId = $location['Location']['id'];
-		}
-		
-		$Container = ClassRegistry::init('Container');
-		$Host = ClassRegistry::init('Host');
-		//CakePHP will delete the device groups for us but we need to cleanup the hosts
-		$nodes = $Container->find('all', [
-			'conditions' => [
-				'Container.parent_id' => $location['Container']['id']
-			]
-		]);
+class Location extends AppModel
+{
+    var $belongsTo = [
+        'Container' => [
+            'className'  => 'Container',
+            'foreignKey' => 'container_id',
+            'conditions' => ['containertype_id' => CT_LOCATION],
+        ],
+    ];
 
-		$hostIds = [];
-		foreach($nodes as $node){
-			$hosts = $Host->find('all', [
-				'conditions' => [
-					'Host.container_id' => $node['Container']['id']
-				]
-			]);
-			$hostIds[] = Hash::extract($hosts,'{n}.Host.id');
-		}
+    var $validate = [
+        'latitude'  => [
+            'rule'       => 'numeric',
+            'message'    => 'This value needs to be numeric',
+            'allowEmpty' => true,
+        ],
+        'longitude' => [
+            'rule'       => 'numeric',
+            'message'    => 'This value needs to be numeric',
+            'allowEmpty' => true,
+        ],
+    ];
 
-		if($this->__allowDelete($hostIds)){
-			foreach ($hostIds as $currentHostIds) {
-				foreach($hosts as $host){
-					$Host->__delete($host, $userId);
-				}
-			}
-			if($Container->delete($location['Container']['id'])){
-				return true;
-			}
-			return false;
-		}
-		return false;
-	}
+    public function __delete($location, $userId)
+    {
+        if (is_numeric($location)) {
+            $locationId = $location;
+            $location = $this->findById($location);
+        } else {
+            $locationId = $location['Location']['id'];
+        }
 
-	public function __allowDelete($hostIds){
-		//check if the hosts are used somwhere
-		if(CakePlugin::loaded('EventcorrelationModule')){
-			$notInUse = true;
-			$result = [];
-			$this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
-			$Service = ClassRegistry::init('Service');
-			foreach ($hostIds as $currentHostIds) {
-				foreach ($currentHostIds as $hostId) {
-					$serviceIds = Hash::extract($Service->find('all',[
-						'recursive' => -1,
-						'conditions' => [
-							'host_id' => $hostId,
-						],
-						'fields' => [
-							'Service.id'
-						]
-					]), '{n}.Service.id');
-					$evcCount = $this->Eventcorrelation->find('count',[
-						'conditions' => [
-							'OR' => [
-								'host_id' => $hostId,
-								'service_id' => $serviceIds
-							]
-							
-						]
-					]);
-					$result[] = $evcCount;
-				}
-			}
+        $Container = ClassRegistry::init('Container');
+        $Host = ClassRegistry::init('Host');
+        //CakePHP will delete the device groups for us but we need to cleanup the hosts
+        $nodes = $Container->find('all', [
+            'conditions' => [
+                'Container.parent_id' => $location['Container']['id'],
+            ],
+        ]);
 
-			foreach ($result as $value) {
-				if($value > 0){
-					$notInUse = false;
-				}
-			}
-			return $notInUse;
-		}
-		return true;
-	}
+        $hostIds = [];
+        foreach ($nodes as $node) {
+            $hosts = $Host->find('all', [
+                'conditions' => [
+                    'Host.container_id' => $node['Container']['id'],
+                ],
+            ]);
+            $hostIds[] = Hash::extract($hosts, '{n}.Host.id');
+        }
+
+        if ($this->__allowDelete($hostIds)) {
+            foreach ($hostIds as $currentHostIds) {
+                foreach ($hosts as $host) {
+                    $Host->__delete($host, $userId);
+                }
+            }
+            if ($Container->delete($location['Container']['id'])) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    public function __allowDelete($hostIds)
+    {
+        //check if the hosts are used somwhere
+        if (CakePlugin::loaded('EventcorrelationModule')) {
+            $notInUse = true;
+            $result = [];
+            $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
+            $Service = ClassRegistry::init('Service');
+            foreach ($hostIds as $currentHostIds) {
+                foreach ($currentHostIds as $hostId) {
+                    $serviceIds = Hash::extract($Service->find('all', [
+                        'recursive'  => -1,
+                        'conditions' => [
+                            'host_id' => $hostId,
+                        ],
+                        'fields'     => [
+                            'Service.id',
+                        ],
+                    ]), '{n}.Service.id');
+                    $evcCount = $this->Eventcorrelation->find('count', [
+                        'conditions' => [
+                            'OR' => [
+                                'host_id'    => $hostId,
+                                'service_id' => $serviceIds,
+                            ],
+
+                        ],
+                    ]);
+                    $result[] = $evcCount;
+                }
+            }
+
+            foreach ($result as $value) {
+                if ($value > 0) {
+                    $notInUse = false;
+                }
+            }
+
+            return $notInUse;
+        }
+
+        return true;
+    }
 }

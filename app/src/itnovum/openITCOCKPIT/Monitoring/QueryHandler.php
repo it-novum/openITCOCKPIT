@@ -44,145 +44,160 @@ use itnovum\openITCOCKPIT\Exceptions\TimeoutException;
 class QueryHandler
 {
 
-	/**
-	 * @var string
-	 */
-	private $queryHandler;
+    /**
+     * @var string
+     */
+    private $queryHandler;
 
-	/**
-	 * @var resource
-	 */
-	private $socket;
+    /**
+     * @var resource
+     */
+    private $socket;
 
-	/**
-	 * @var int
-	 */
-	private $lastErrorNo;
+    /**
+     * @var int
+     */
+    private $lastErrorNo;
 
-	/**
-	 * @var string
-	 */
-	private $lastError;
+    /**
+     * @var string
+     */
+    private $lastError;
 
-	/**
-	 * @var string
-	 */
-	private $query;
+    /**
+     * @var string
+     */
+    private $query;
 
-	/**
-	 * QueryHandler constructor.
-	 * @param string $queryHandler Path to QueryHandler.qh file
-	 */
-	public function __construct($queryHandler)
-	{
-		$this->queryHandler = $queryHandler;
-	}
+    /**
+     * QueryHandler constructor.
+     *
+     * @param string $queryHandler Path to QueryHandler.qh file
+     */
+    public function __construct($queryHandler)
+    {
+        $this->queryHandler = $queryHandler;
+    }
 
-	public function connect(){
-		$this->socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
-		$connectionResult = socket_connect($this->socket, $this->queryHandler);
+    public function connect()
+    {
+        $this->socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
+        $connectionResult = socket_connect($this->socket, $this->queryHandler);
 
-		if($connectionResult === false){
-			$this->lastErrorNo = socket_last_error($this->socket);
-			$this->lastError = socket_strerror($this->lastErrorNo);
-			return false;
-		}
-		socket_set_nonblock($this->socket);
+        if ($connectionResult === false) {
+            $this->lastErrorNo = socket_last_error($this->socket);
+            $this->lastError = socket_strerror($this->lastErrorNo);
 
-		return true;
-	}
+            return false;
+        }
+        socket_set_nonblock($this->socket);
 
-	/**
-	 * @return bool
-	 */
-	public function exists(){
-		return file_exists($this->queryHandler);
-	}
+        return true;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getPath(){
-		return $this->queryHandler;
-	}
+    /**
+     * @return bool
+     */
+    public function exists()
+    {
+        return file_exists($this->queryHandler);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getLastError(){
-		$lastError =  $this->lastError;
-		$this->lastError = '';
-		return $lastError;
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->queryHandler;
+    }
 
-	}
+    /**
+     * @return string
+     */
+    public function getLastError()
+    {
+        $lastError = $this->lastError;
+        $this->lastError = '';
 
-	/**
-	 * @return int
-	 */
-	public function getLastErrorNo(){
-		$lastErrorNo = $this->lastErrorNo;
-		$this->lastErrorNo = null;
-		return $lastErrorNo;
-	}
+        return $lastError;
 
-	/**
-	 * @return bool
-	 */
-	public function ping(){
-		if($this->exists()){
-			$query = '#echo Hi, are you still alive?';
-			$assert = 'Hi, are you still alive?';
-			$result = trim($this->send($query));
-			if($result == $assert){
-				return true;
-			}
-		}
-		return false;
-	}
+    }
 
-	/**
-	 * @param string $query to send to Query Handler
-	 * @param bool $readResult read the result of the query handler
-	 * @param int $timeout in seconds
-	 * @return null|string
-	 * @throws TimeoutException
-	 */
-	public function send($query, $readResult = true, $timeout = 1){
-		$this->query = $query;
-		$this->terminate();
+    /**
+     * @return int
+     */
+    public function getLastErrorNo()
+    {
+        $lastErrorNo = $this->lastErrorNo;
+        $this->lastErrorNo = null;
 
-		socket_write($this->socket, $this->query);
-		if($readResult === false){
-			return null;
-		}
+        return $lastErrorNo;
+    }
 
-		$this->query = '';
+    /**
+     * @return bool
+     */
+    public function ping()
+    {
+        if ($this->exists()) {
+            $query = '#echo Hi, are you still alive?';
+            $assert = 'Hi, are you still alive?';
+            $result = trim($this->send($query));
+            if ($result == $assert) {
+                return true;
+            }
+        }
 
-		$startTime = time();
-		while(true){
-			$read = array($this->socket);
-			$write = NULL;
-			$except = NULL;
-			if(socket_select($read, $write, $except, 0) < 1){
+        return false;
+    }
 
-				//Check timeout
-				if((time() - $startTime) > $timeout){
-					throw new TimeoutException(sprintf('Operation timed out after %s seconds', $timeout));
-				}
+    /**
+     * @param string $query      to send to Query Handler
+     * @param bool   $readResult read the result of the query handler
+     * @param int    $timeout    in seconds
+     *
+     * @return null|string
+     * @throws TimeoutException
+     */
+    public function send($query, $readResult = true, $timeout = 1)
+    {
+        $this->query = $query;
+        $this->terminate();
 
-				continue;
-			}
+        socket_write($this->socket, $this->query);
+        if ($readResult === false) {
+            return null;
+        }
 
-			if(in_array($this->socket, $read)){
-				break;
-			}
-		}
-		$response = trim(socket_read($this->socket, 1024, PHP_NORMAL_READ));
-		return $response;
-	}
+        $this->query = '';
 
-	private function terminate(){
-		$this->query .= "\0";
-	}
+        $startTime = time();
+        while (true) {
+            $read = [$this->socket];
+            $write = null;
+            $except = null;
+            if (socket_select($read, $write, $except, 0) < 1) {
+
+                //Check timeout
+                if ((time() - $startTime) > $timeout) {
+                    throw new TimeoutException(sprintf('Operation timed out after %s seconds', $timeout));
+                }
+
+                continue;
+            }
+
+            if (in_array($this->socket, $read)) {
+                break;
+            }
+        }
+        $response = trim(socket_read($this->socket, 1024, PHP_NORMAL_READ));
+
+        return $response;
+    }
+
+    private function terminate()
+    {
+        $this->query .= "\0";
+    }
 
 }

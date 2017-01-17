@@ -27,316 +27,318 @@ namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 class Service extends Importer
 {
-	/**
-	 * @property \Service $Model
-	 */
+    /**
+     * @property \Service $Model
+     */
 
-	/**
-	 * @return bool
-	 */
-	public function import()
-	{
-		if ($this->isTableEmpty()) {
-			$data = $this->getData();
-			foreach ($data as $record) {
-				$this->Model->create();
+    /**
+     * @return bool
+     */
+    public function import()
+    {
+        if ($this->isTableEmpty()) {
+            $data = $this->getData();
+            foreach ($data as $record) {
+                $this->Model->create();
 
-				$record['Service']['Contact'] = $record['Contact'];
-				$record['Service']['Contactgroup'] = $record['Contactgroup'];
+                $record['Service']['Contact'] = $record['Contact'];
+                $record['Service']['Contactgroup'] = $record['Contactgroup'];
 
-				$this->Model->saveAll($record);
-			}
-		}
-		return true;
-	}
+                $this->Model->saveAll($record);
+            }
+        }
 
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		$data = array(
-			0 =>
-				array(
-					'Service' =>
-						array(
-							'id' => '1',
-							'uuid' => '74fd8f59-1348-4e16-85f0-4a5c57c7dd62',
-							'servicetemplate_id' => '1',
-							'host_id' => '1',
-							'name' => NULL,
-							'description' => NULL,
-							'command_id' => NULL,
-							'check_command_args' => '',
-							'eventhandler_command_id' => NULL,
-							'notify_period_id' => NULL,
-							'check_period_id' => NULL,
-							'check_interval' => NULL,
-							'retry_interval' => NULL,
-							'max_check_attempts' => NULL,
-							'first_notification_delay' => NULL,
-							'notification_interval' => NULL,
-							'notify_on_warning' => NULL,
-							'notify_on_unknown' => NULL,
-							'notify_on_critical' => NULL,
-							'notify_on_recovery' => NULL,
-							'notify_on_flapping' => NULL,
-							'notify_on_downtime' => NULL,
-							'is_volatile' => NULL,
-							'flap_detection_enabled' => NULL,
-							'flap_detection_on_ok' => NULL,
-							'flap_detection_on_warning' => NULL,
-							'flap_detection_on_unknown' => NULL,
-							'flap_detection_on_critical' => NULL,
-							'low_flap_threshold' => NULL,
-							'high_flap_threshold' => NULL,
-							'process_performance_data' => NULL,
-							'freshness_checks_enabled' => NULL,
-							'freshness_threshold' => NULL,
-							'passive_checks_enabled' => NULL,
-							'event_handler_enabled' => NULL,
-							'active_checks_enabled' => NULL,
-							'notifications_enabled' => NULL,
-							'notes' => NULL,
-							'priority' => NULL,
-							'tags' => NULL,
-							'own_contacts' => '0',
-							'own_contactgroups' => '0',
-							'own_customvariables' => '0',
-							'service_url' => NULL,
-							'service_type' => '1',
-							'disabled' => '0',
-							'created' => '2015-01-15 19:26:46',
-							'modified' => '2015-01-15 19:26:46',
-						),
-					'Servicecommandargumentvalue' =>
-						array(),
-					'Serviceeventcommandargumentvalue' =>
-						array(),
-					'ServiceEscalationServiceMembership' =>
-						array(),
-					'ServicedependencyServiceMembership' =>
-						array(),
-					'Customvariable' =>
-						array(),
-					'Contactgroup' =>
-						array(),
-					'Contact' =>
-						array(),
-					'Servicegroup' =>
-						array(),
-				),
-			1 =>
-				array(
-					'Service' =>
-						array(
-							'id' => '2',
-							'uuid' => '74f14950-a58f-4f18-b6c3-5cfa9dffef4e',
-							'servicetemplate_id' => '8',
-							'host_id' => '1',
-							'name' => NULL,
-							'description' => NULL,
-							'command_id' => NULL,
-							'check_command_args' => '',
-							'eventhandler_command_id' => NULL,
-							'notify_period_id' => NULL,
-							'check_period_id' => NULL,
-							'check_interval' => NULL,
-							'retry_interval' => NULL,
-							'max_check_attempts' => NULL,
-							'first_notification_delay' => NULL,
-							'notification_interval' => NULL,
-							'notify_on_warning' => NULL,
-							'notify_on_unknown' => NULL,
-							'notify_on_critical' => NULL,
-							'notify_on_recovery' => NULL,
-							'notify_on_flapping' => NULL,
-							'notify_on_downtime' => NULL,
-							'is_volatile' => NULL,
-							'flap_detection_enabled' => NULL,
-							'flap_detection_on_ok' => NULL,
-							'flap_detection_on_warning' => NULL,
-							'flap_detection_on_unknown' => NULL,
-							'flap_detection_on_critical' => NULL,
-							'low_flap_threshold' => NULL,
-							'high_flap_threshold' => NULL,
-							'process_performance_data' => NULL,
-							'freshness_checks_enabled' => NULL,
-							'freshness_threshold' => NULL,
-							'passive_checks_enabled' => NULL,
-							'event_handler_enabled' => NULL,
-							'active_checks_enabled' => NULL,
-							'notifications_enabled' => NULL,
-							'notes' => NULL,
-							'priority' => NULL,
-							'tags' => NULL,
-							'own_contacts' => '0',
-							'own_contactgroups' => '0',
-							'own_customvariables' => '0',
-							'service_url' => NULL,
-							'service_type' => '1',
-							'disabled' => '0',
-							'created' => '2015-01-16 00:46:39',
-							'modified' => '2015-01-16 00:46:39',
-						),
-					'Servicecommandargumentvalue' =>
-						array(),
-					'Serviceeventcommandargumentvalue' =>
-						array(),
-					'ServiceEscalationServiceMembership' =>
-						array(),
-					'ServicedependencyServiceMembership' =>
-						array(),
-					'Customvariable' =>
-						array(),
-					'Contactgroup' =>
-						array(),
-					'Contact' =>
-						array(),
-					'Servicegroup' =>
-						array(),
-				),
-			2 =>
-				array(
-					'Service' =>
-						array(
-							'id' => '3',
-							'uuid' => '1c045407-5502-4468-aabc-7781f6cf3dec',
-							'servicetemplate_id' => '9',
-							'host_id' => '1',
-							'name' => NULL,
-							'description' => NULL,
-							'command_id' => NULL,
-							'check_command_args' => '',
-							'eventhandler_command_id' => NULL,
-							'notify_period_id' => NULL,
-							'check_period_id' => NULL,
-							'check_interval' => NULL,
-							'retry_interval' => NULL,
-							'max_check_attempts' => NULL,
-							'first_notification_delay' => NULL,
-							'notification_interval' => NULL,
-							'notify_on_warning' => NULL,
-							'notify_on_unknown' => NULL,
-							'notify_on_critical' => NULL,
-							'notify_on_recovery' => NULL,
-							'notify_on_flapping' => NULL,
-							'notify_on_downtime' => NULL,
-							'is_volatile' => NULL,
-							'flap_detection_enabled' => NULL,
-							'flap_detection_on_ok' => NULL,
-							'flap_detection_on_warning' => NULL,
-							'flap_detection_on_unknown' => NULL,
-							'flap_detection_on_critical' => NULL,
-							'low_flap_threshold' => NULL,
-							'high_flap_threshold' => NULL,
-							'process_performance_data' => NULL,
-							'freshness_checks_enabled' => NULL,
-							'freshness_threshold' => NULL,
-							'passive_checks_enabled' => NULL,
-							'event_handler_enabled' => NULL,
-							'active_checks_enabled' => NULL,
-							'notifications_enabled' => NULL,
-							'notes' => NULL,
-							'priority' => NULL,
-							'tags' => NULL,
-							'own_contacts' => '0',
-							'own_contactgroups' => '0',
-							'own_customvariables' => '0',
-							'service_url' => NULL,
-							'service_type' => '1',
-							'disabled' => '0',
-							'created' => '2015-01-16 00:46:52',
-							'modified' => '2015-01-16 00:46:52',
-						),
-					'Servicecommandargumentvalue' =>
-						array(),
-					'Serviceeventcommandargumentvalue' =>
-						array(),
-					'ServiceEscalationServiceMembership' =>
-						array(),
-					'ServicedependencyServiceMembership' =>
-						array(),
-					'Customvariable' =>
-						array(),
-					'Contactgroup' =>
-						array(),
-					'Contact' =>
-						array(),
-					'Servicegroup' =>
-						array(),
-				),
-			3 =>
-				array(
-					'Service' =>
-						array(
-							'id' => '4',
-							'uuid' => '7391f1aa-5e2e-447a-8a9b-b23357b9cd2a',
-							'servicetemplate_id' => '13',
-							'host_id' => '1',
-							'name' => NULL,
-							'description' => NULL,
-							'command_id' => NULL,
-							'check_command_args' => '',
-							'eventhandler_command_id' => NULL,
-							'notify_period_id' => NULL,
-							'check_period_id' => NULL,
-							'check_interval' => NULL,
-							'retry_interval' => NULL,
-							'max_check_attempts' => NULL,
-							'first_notification_delay' => NULL,
-							'notification_interval' => NULL,
-							'notify_on_warning' => NULL,
-							'notify_on_unknown' => NULL,
-							'notify_on_critical' => NULL,
-							'notify_on_recovery' => NULL,
-							'notify_on_flapping' => NULL,
-							'notify_on_downtime' => NULL,
-							'is_volatile' => NULL,
-							'flap_detection_enabled' => NULL,
-							'flap_detection_on_ok' => NULL,
-							'flap_detection_on_warning' => NULL,
-							'flap_detection_on_unknown' => NULL,
-							'flap_detection_on_critical' => NULL,
-							'low_flap_threshold' => NULL,
-							'high_flap_threshold' => NULL,
-							'process_performance_data' => NULL,
-							'freshness_checks_enabled' => NULL,
-							'freshness_threshold' => NULL,
-							'passive_checks_enabled' => NULL,
-							'event_handler_enabled' => NULL,
-							'active_checks_enabled' => NULL,
-							'notifications_enabled' => NULL,
-							'notes' => NULL,
-							'priority' => NULL,
-							'tags' => NULL,
-							'own_contacts' => '0',
-							'own_contactgroups' => '0',
-							'own_customvariables' => '0',
-							'service_url' => NULL,
-							'service_type' => '1',
-							'disabled' => '0',
-							'created' => '2015-01-16 00:47:06',
-							'modified' => '2015-01-16 00:47:06',
-						),
-					'Servicecommandargumentvalue' =>
-						array(),
-					'Serviceeventcommandargumentvalue' =>
-						array(),
-					'ServiceEscalationServiceMembership' =>
-						array(),
-					'ServicedependencyServiceMembership' =>
-						array(),
-					'Customvariable' =>
-						array(),
-					'Contactgroup' =>
-						array(),
-					'Contact' =>
-						array(),
-					'Servicegroup' =>
-						array(),
-				),
-		);
-		return $data;
-	}
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        $data = [
+            0 =>
+                [
+                    'Service'                            =>
+                        [
+                            'id'                         => '1',
+                            'uuid'                       => '74fd8f59-1348-4e16-85f0-4a5c57c7dd62',
+                            'servicetemplate_id'         => '1',
+                            'host_id'                    => '1',
+                            'name'                       => null,
+                            'description'                => null,
+                            'command_id'                 => null,
+                            'check_command_args'         => '',
+                            'eventhandler_command_id'    => null,
+                            'notify_period_id'           => null,
+                            'check_period_id'            => null,
+                            'check_interval'             => null,
+                            'retry_interval'             => null,
+                            'max_check_attempts'         => null,
+                            'first_notification_delay'   => null,
+                            'notification_interval'      => null,
+                            'notify_on_warning'          => null,
+                            'notify_on_unknown'          => null,
+                            'notify_on_critical'         => null,
+                            'notify_on_recovery'         => null,
+                            'notify_on_flapping'         => null,
+                            'notify_on_downtime'         => null,
+                            'is_volatile'                => null,
+                            'flap_detection_enabled'     => null,
+                            'flap_detection_on_ok'       => null,
+                            'flap_detection_on_warning'  => null,
+                            'flap_detection_on_unknown'  => null,
+                            'flap_detection_on_critical' => null,
+                            'low_flap_threshold'         => null,
+                            'high_flap_threshold'        => null,
+                            'process_performance_data'   => null,
+                            'freshness_checks_enabled'   => null,
+                            'freshness_threshold'        => null,
+                            'passive_checks_enabled'     => null,
+                            'event_handler_enabled'      => null,
+                            'active_checks_enabled'      => null,
+                            'notifications_enabled'      => null,
+                            'notes'                      => null,
+                            'priority'                   => null,
+                            'tags'                       => null,
+                            'own_contacts'               => '0',
+                            'own_contactgroups'          => '0',
+                            'own_customvariables'        => '0',
+                            'service_url'                => null,
+                            'service_type'               => '1',
+                            'disabled'                   => '0',
+                            'created'                    => '2015-01-15 19:26:46',
+                            'modified'                   => '2015-01-15 19:26:46',
+                        ],
+                    'Servicecommandargumentvalue'        =>
+                        [],
+                    'Serviceeventcommandargumentvalue'   =>
+                        [],
+                    'ServiceEscalationServiceMembership' =>
+                        [],
+                    'ServicedependencyServiceMembership' =>
+                        [],
+                    'Customvariable'                     =>
+                        [],
+                    'Contactgroup'                       =>
+                        [],
+                    'Contact'                            =>
+                        [],
+                    'Servicegroup'                       =>
+                        [],
+                ],
+            1 =>
+                [
+                    'Service'                            =>
+                        [
+                            'id'                         => '2',
+                            'uuid'                       => '74f14950-a58f-4f18-b6c3-5cfa9dffef4e',
+                            'servicetemplate_id'         => '8',
+                            'host_id'                    => '1',
+                            'name'                       => null,
+                            'description'                => null,
+                            'command_id'                 => null,
+                            'check_command_args'         => '',
+                            'eventhandler_command_id'    => null,
+                            'notify_period_id'           => null,
+                            'check_period_id'            => null,
+                            'check_interval'             => null,
+                            'retry_interval'             => null,
+                            'max_check_attempts'         => null,
+                            'first_notification_delay'   => null,
+                            'notification_interval'      => null,
+                            'notify_on_warning'          => null,
+                            'notify_on_unknown'          => null,
+                            'notify_on_critical'         => null,
+                            'notify_on_recovery'         => null,
+                            'notify_on_flapping'         => null,
+                            'notify_on_downtime'         => null,
+                            'is_volatile'                => null,
+                            'flap_detection_enabled'     => null,
+                            'flap_detection_on_ok'       => null,
+                            'flap_detection_on_warning'  => null,
+                            'flap_detection_on_unknown'  => null,
+                            'flap_detection_on_critical' => null,
+                            'low_flap_threshold'         => null,
+                            'high_flap_threshold'        => null,
+                            'process_performance_data'   => null,
+                            'freshness_checks_enabled'   => null,
+                            'freshness_threshold'        => null,
+                            'passive_checks_enabled'     => null,
+                            'event_handler_enabled'      => null,
+                            'active_checks_enabled'      => null,
+                            'notifications_enabled'      => null,
+                            'notes'                      => null,
+                            'priority'                   => null,
+                            'tags'                       => null,
+                            'own_contacts'               => '0',
+                            'own_contactgroups'          => '0',
+                            'own_customvariables'        => '0',
+                            'service_url'                => null,
+                            'service_type'               => '1',
+                            'disabled'                   => '0',
+                            'created'                    => '2015-01-16 00:46:39',
+                            'modified'                   => '2015-01-16 00:46:39',
+                        ],
+                    'Servicecommandargumentvalue'        =>
+                        [],
+                    'Serviceeventcommandargumentvalue'   =>
+                        [],
+                    'ServiceEscalationServiceMembership' =>
+                        [],
+                    'ServicedependencyServiceMembership' =>
+                        [],
+                    'Customvariable'                     =>
+                        [],
+                    'Contactgroup'                       =>
+                        [],
+                    'Contact'                            =>
+                        [],
+                    'Servicegroup'                       =>
+                        [],
+                ],
+            2 =>
+                [
+                    'Service'                            =>
+                        [
+                            'id'                         => '3',
+                            'uuid'                       => '1c045407-5502-4468-aabc-7781f6cf3dec',
+                            'servicetemplate_id'         => '9',
+                            'host_id'                    => '1',
+                            'name'                       => null,
+                            'description'                => null,
+                            'command_id'                 => null,
+                            'check_command_args'         => '',
+                            'eventhandler_command_id'    => null,
+                            'notify_period_id'           => null,
+                            'check_period_id'            => null,
+                            'check_interval'             => null,
+                            'retry_interval'             => null,
+                            'max_check_attempts'         => null,
+                            'first_notification_delay'   => null,
+                            'notification_interval'      => null,
+                            'notify_on_warning'          => null,
+                            'notify_on_unknown'          => null,
+                            'notify_on_critical'         => null,
+                            'notify_on_recovery'         => null,
+                            'notify_on_flapping'         => null,
+                            'notify_on_downtime'         => null,
+                            'is_volatile'                => null,
+                            'flap_detection_enabled'     => null,
+                            'flap_detection_on_ok'       => null,
+                            'flap_detection_on_warning'  => null,
+                            'flap_detection_on_unknown'  => null,
+                            'flap_detection_on_critical' => null,
+                            'low_flap_threshold'         => null,
+                            'high_flap_threshold'        => null,
+                            'process_performance_data'   => null,
+                            'freshness_checks_enabled'   => null,
+                            'freshness_threshold'        => null,
+                            'passive_checks_enabled'     => null,
+                            'event_handler_enabled'      => null,
+                            'active_checks_enabled'      => null,
+                            'notifications_enabled'      => null,
+                            'notes'                      => null,
+                            'priority'                   => null,
+                            'tags'                       => null,
+                            'own_contacts'               => '0',
+                            'own_contactgroups'          => '0',
+                            'own_customvariables'        => '0',
+                            'service_url'                => null,
+                            'service_type'               => '1',
+                            'disabled'                   => '0',
+                            'created'                    => '2015-01-16 00:46:52',
+                            'modified'                   => '2015-01-16 00:46:52',
+                        ],
+                    'Servicecommandargumentvalue'        =>
+                        [],
+                    'Serviceeventcommandargumentvalue'   =>
+                        [],
+                    'ServiceEscalationServiceMembership' =>
+                        [],
+                    'ServicedependencyServiceMembership' =>
+                        [],
+                    'Customvariable'                     =>
+                        [],
+                    'Contactgroup'                       =>
+                        [],
+                    'Contact'                            =>
+                        [],
+                    'Servicegroup'                       =>
+                        [],
+                ],
+            3 =>
+                [
+                    'Service'                            =>
+                        [
+                            'id'                         => '4',
+                            'uuid'                       => '7391f1aa-5e2e-447a-8a9b-b23357b9cd2a',
+                            'servicetemplate_id'         => '13',
+                            'host_id'                    => '1',
+                            'name'                       => null,
+                            'description'                => null,
+                            'command_id'                 => null,
+                            'check_command_args'         => '',
+                            'eventhandler_command_id'    => null,
+                            'notify_period_id'           => null,
+                            'check_period_id'            => null,
+                            'check_interval'             => null,
+                            'retry_interval'             => null,
+                            'max_check_attempts'         => null,
+                            'first_notification_delay'   => null,
+                            'notification_interval'      => null,
+                            'notify_on_warning'          => null,
+                            'notify_on_unknown'          => null,
+                            'notify_on_critical'         => null,
+                            'notify_on_recovery'         => null,
+                            'notify_on_flapping'         => null,
+                            'notify_on_downtime'         => null,
+                            'is_volatile'                => null,
+                            'flap_detection_enabled'     => null,
+                            'flap_detection_on_ok'       => null,
+                            'flap_detection_on_warning'  => null,
+                            'flap_detection_on_unknown'  => null,
+                            'flap_detection_on_critical' => null,
+                            'low_flap_threshold'         => null,
+                            'high_flap_threshold'        => null,
+                            'process_performance_data'   => null,
+                            'freshness_checks_enabled'   => null,
+                            'freshness_threshold'        => null,
+                            'passive_checks_enabled'     => null,
+                            'event_handler_enabled'      => null,
+                            'active_checks_enabled'      => null,
+                            'notifications_enabled'      => null,
+                            'notes'                      => null,
+                            'priority'                   => null,
+                            'tags'                       => null,
+                            'own_contacts'               => '0',
+                            'own_contactgroups'          => '0',
+                            'own_customvariables'        => '0',
+                            'service_url'                => null,
+                            'service_type'               => '1',
+                            'disabled'                   => '0',
+                            'created'                    => '2015-01-16 00:47:06',
+                            'modified'                   => '2015-01-16 00:47:06',
+                        ],
+                    'Servicecommandargumentvalue'        =>
+                        [],
+                    'Serviceeventcommandargumentvalue'   =>
+                        [],
+                    'ServiceEscalationServiceMembership' =>
+                        [],
+                    'ServicedependencyServiceMembership' =>
+                        [],
+                    'Customvariable'                     =>
+                        [],
+                    'Contactgroup'                       =>
+                        [],
+                    'Contact'                            =>
+                        [],
+                    'Servicegroup'                       =>
+                        [],
+                ],
+        ];
+
+        return $data;
+    }
 }

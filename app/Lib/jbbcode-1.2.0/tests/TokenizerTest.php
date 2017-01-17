@@ -1,11 +1,10 @@
 <?php
 
-require_once(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'Tokenizer.php');
+require_once(dirname(dirname(__FILE__)).DIRECTORY_SEPARATOR.'Tokenizer.php');
 
 /**
  * Test cases testing the functionality of the Tokenizer. The tokenizer
  * is used by the parser to make parsing simpler.
- *
  * @author jbowens
  */
 class TokenizerTest extends PHPUnit_Framework_TestCase

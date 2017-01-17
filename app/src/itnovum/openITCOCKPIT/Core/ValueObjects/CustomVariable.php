@@ -28,86 +28,89 @@ namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 class CustomVariable
 {
 
-	/**
-	 * @var string
-	 */
-	private $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-	/**
-	 * @var string
-	 */
-	private $value;
+    /**
+     * @var string
+     */
+    private $value;
 
-	/**
-	 * @var int
-	 */
-	private $id;
+    /**
+     * @var int
+     */
+    private $id;
 
-	/**
-	 * @var int
-	 */
-	private $objecttype_id;
+    /**
+     * @var int
+     */
+    private $objecttype_id;
 
-	/**
-	 * CustomVariableKeyValue constructor.
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function __construct($name, $value, $id = 0, $objecttype_id = 0)
-	{
-		$this->name = $name;
-		$this->value = $value;
-		$this->id = $id;
-		$this->objecttype_id = $objecttype_id;
-	}
+    /**
+     * CustomVariableKeyValue constructor.
+     *
+     * @param string $key
+     * @param string $value
+     */
+    public function __construct($name, $value, $id = 0, $objecttype_id = 0)
+    {
+        $this->name = $name;
+        $this->value = $value;
+        $this->id = $id;
+        $this->objecttype_id = $objecttype_id;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getValue()
-	{
-		return $this->value;
-	}
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getObjecttypeId()
-	{
-		return $this->objecttype_id;
-	}
+    /**
+     * @return int
+     */
+    public function getObjecttypeId()
+    {
+        return $this->objecttype_id;
+    }
 
-	/**
-	 * @return array
-	 */
-	public function asArray(){
-		$customVariable = [
-			'name' => $this->name,
-			'value' => $this->value
-		];
+    /**
+     * @return array
+     */
+    public function asArray()
+    {
+        $customVariable = [
+            'name'  => $this->name,
+            'value' => $this->value,
+        ];
 
-		if($this->id > 0){
-			$customVariable['id'] = $this->id;
-		}
-		if($this->objecttype_id > 0){
-			$customVariable['objecttype_id'] = $this->objecttype_id;
-		}
-		return $customVariable;
-	}
+        if ($this->id > 0) {
+            $customVariable['id'] = $this->id;
+        }
+        if ($this->objecttype_id > 0) {
+            $customVariable['objecttype_id'] = $this->objecttype_id;
+        }
+
+        return $customVariable;
+    }
 }

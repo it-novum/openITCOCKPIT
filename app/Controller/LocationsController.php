@@ -24,165 +24,175 @@
 //	confirmation.
 
 
-class LocationsController extends AppController{
-	public $uses = ['Location', 'Container'];
-	public $layout = 'Admin.default';
-	public $components = array('Paginator', 'ListFilter.ListFilter', 'RequestHandler');
-	public $helpers = array('ListFilter.ListFilter');
-	public $listFilters = [
-		'index' => [
-			'fields' => [
-				'Container.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-				'Location.description' => ['label' => 'description', 'searchType' => 'wildcard'],
-			]
-		]
-	];
+class LocationsController extends AppController
+{
+    public $uses = ['Location', 'Container'];
+    public $layout = 'Admin.default';
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $helpers = ['ListFilter.ListFilter'];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Container.name'       => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Location.description' => ['label' => 'description', 'searchType' => 'wildcard'],
+            ],
+        ],
+    ];
 
-	public function index(){
+    public function index()
+    {
 
-		if($this->hasRootPrivileges === true){
-			$container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
-		}else{
-			$container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
-		}
-		$options = [
-			'order' => [
-				'Container.name' => 'asc'
-			],
-			'conditions' => [
-				'Container.parent_id' => $this->MY_RIGHTS
-			],
-		];
+        if ($this->hasRootPrivileges === true) {
+            $container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        } else {
+            $container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+        }
+        $options = [
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ];
 
-		$query = Hash::merge($this->Paginator->settings, $options);
+        $query = Hash::merge($this->Paginator->settings, $options);
 
-		if($this->isApiRequest()){
-			unset($query['limit']);
-			$all_locations = $this->Location->find('all', $query);
-		}else{
-			$this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-			$all_locations = $this->Paginator->paginate();
-		}
-		$this->set(compact(['all_locations', 'container']));
-		$this->set('_serialize', ['all_locations']);
-		$this->_isFilter();
-	}
+        if ($this->isApiRequest()) {
+            unset($query['limit']);
+            $all_locations = $this->Location->find('all', $query);
+        } else {
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $all_locations = $this->Paginator->paginate();
+        }
+        $this->set(compact(['all_locations', 'container']));
+        $this->set('_serialize', ['all_locations']);
+        $this->_isFilter();
+    }
 
-	public function view($id = null){
-		if(!$this->isApiRequest()){
-			throw new MethodNotAllowedException();
+    public function view($id = null)
+    {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
 
-		}
-		if(!$this->Location->exists($id)){
-			throw new NotFoundException(__('Invalid location'));
-		}
-		$location = $this->Location->findById($id);
-		if(!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))){
-			$this->render403();
-			return;
-		}
+        }
+        if (!$this->Location->exists($id)) {
+            throw new NotFoundException(__('Invalid location'));
+        }
+        $location = $this->Location->findById($id);
+        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
+            $this->render403();
 
-		$this->set('location', $location);
-		$this->set('_serialize', ['location']);
-	}
+            return;
+        }
 
-	public function add(){
-		if($this->hasRootPrivileges === true){
-			$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
-		}else{
-			$container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
-		}
+        $this->set('location', $location);
+        $this->set('_serialize', ['location']);
+    }
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->Location->create();
-			App::uses('UUID', 'Lib');
-			$this->request->data['Location']['uuid'] = UUID::v4();
-			$this->request->data['Container']['containertype_id'] = CT_LOCATION;
-			if($this->Location->saveAll($this->request->data)){
-				if($this->request->ext == 'json'){
-					$this->serializeId();
+    public function add()
+    {
+        if ($this->hasRootPrivileges === true) {
+            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
+        } else {
+            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
+        }
 
-					return;
-				}else{
-					$this->setFlash(__('Location successfully saved.'));
-					$this->redirect(['action' => 'index']);
-				}
-			}else{
-				if($this->request->ext == 'json'){
-					$this->serializeErrorMessage();
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->Location->create();
+            App::uses('UUID', 'Lib');
+            $this->request->data['Location']['uuid'] = UUID::v4();
+            $this->request->data['Container']['containertype_id'] = CT_LOCATION;
+            if ($this->Location->saveAll($this->request->data)) {
+                if ($this->request->ext == 'json') {
+                    $this->serializeId();
 
-					return;
-				}else{
-					$this->setFlash(__('Could not save data'), false);
-				}
-			}
-		}
+                    return;
+                } else {
+                    $this->setFlash(__('Location successfully saved.'));
+                    $this->redirect(['action' => 'index']);
+                }
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
 
-		$this->set(compact(['container']));
-	}
+                    return;
+                } else {
+                    $this->setFlash(__('Could not save data'), false);
+                }
+            }
+        }
 
-	public function edit($id = null){
-		if(!$this->Location->exists($id)){
-			throw new NotFoundException(__('Invalid location'));
-		}
+        $this->set(compact(['container']));
+    }
 
-		$location = $this->Location->findById($id);
+    public function edit($id = null)
+    {
+        if (!$this->Location->exists($id)) {
+            throw new NotFoundException(__('Invalid location'));
+        }
 
-		if(!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))){
-			$this->render403();
-			return;
-		}
+        $location = $this->Location->findById($id);
 
-		if($this->hasRootPrivileges === true){
-			$container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
-		}else{
-			$container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
-		}
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->request->data['Location']['id'] = $id;
-			$this->request->data['Container']['id'] = $location['Container']['id'];
-			$this->request->data['Container']['containertype_id'] = CT_LOCATION;
-			if($this->Location->saveAll($this->request->data)){
-				$this->setFlash(__('Location successfully saved'));
-				$this->redirect(['action' => 'index']);
-			}else{
-				$this->setFlash(__('Could not save data'), false);
-			}
-		}
-		$this->Frontend->set('latitude', $location['Location']['latitude']);
-		$this->Frontend->set('longitude', $location['Location']['longitude']);
-		$this->set(compact(['location', 'container']));
-	}
+        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
+            $this->render403();
 
-	public function delete($id = null){
-		if(!$this->Location->exists($id)){
-			throw new NotFoundException(__('Invalid location'));
-		}
+            return;
+        }
 
-		if(!$this->request->is('post')){
-			throw new MethodNotAllowedException();
-		}
-		$location = $this->Location->findById($id);
+        if ($this->hasRootPrivileges === true) {
+            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
+        } else {
+            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
+        }
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Location']['id'] = $id;
+            $this->request->data['Container']['id'] = $location['Container']['id'];
+            $this->request->data['Container']['containertype_id'] = CT_LOCATION;
+            if ($this->Location->saveAll($this->request->data)) {
+                $this->setFlash(__('Location successfully saved'));
+                $this->redirect(['action' => 'index']);
+            } else {
+                $this->setFlash(__('Could not save data'), false);
+            }
+        }
+        $this->Frontend->set('latitude', $location['Location']['latitude']);
+        $this->Frontend->set('longitude', $location['Location']['longitude']);
+        $this->set(compact(['location', 'container']));
+    }
 
-		if(!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))){
-			$this->render403();
-			return;
-		}
+    public function delete($id = null)
+    {
+        if (!$this->Location->exists($id)) {
+            throw new NotFoundException(__('Invalid location'));
+        }
 
-		if($this->Location->__delete($location, $this->Auth->user('id'))){
-			$this->setFlash(__('Location successfully deleted'));
-			$this->redirect(['action' => 'index']);
-		}else{
-			$this->setFlash(__('Could not delete data'), false);
-			$this->redirect(['action' => 'index']);
-		}
-	}
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        $location = $this->Location->findById($id);
 
-	private function _isFilter(){
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-	}
+        if (!$this->allowedByContainerId(Hash::extract($location, 'Container.parent_id'))) {
+            $this->render403();
+
+            return;
+        }
+
+        if ($this->Location->__delete($location, $this->Auth->user('id'))) {
+            $this->setFlash(__('Location successfully deleted'));
+            $this->redirect(['action' => 'index']);
+        } else {
+            $this->setFlash(__('Could not delete data'), false);
+            $this->redirect(['action' => 'index']);
+        }
+    }
+
+    private function _isFilter()
+    {
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+    }
 }

@@ -24,52 +24,54 @@
 //	confirmation.
 
 
-class DowntimeServices extends WidgetBase{
-	protected $iconname = 'power-off';
-	protected $createName = 'Create downtime';
-	protected $createLink = '/systemdowntimes/addServicedowntime';
-	protected $bodyStyles = 'height:167px;overflow:auto;';
-	protected $viewName = 'Dashboard/widget_downtime_services';
+class DowntimeServices extends WidgetBase
+{
+    protected $iconname = 'power-off';
+    protected $createName = 'Create downtime';
+    protected $createLink = '/systemdowntimes/addServicedowntime';
+    protected $bodyStyles = 'height:167px;overflow:auto;';
+    protected $viewName = 'Dashboard/widget_downtime_services';
 
-	public function compileTemplateData(){
-		$servicesInDowntime = $this->Servicestatus->find('all', [
-			'recursive' => -1,
-			'fields' => [
-				'Servicestatus.service_object_id',
-				'Objects.name2',
-				'Service.name',
-				'Service.id',
-				'Service.servicetemplate_id',
-				'Servicestatus.scheduled_downtime_depth',
-				'Servicetemplate.id',
-				'Servicetemplate.name',
-			], 'joins' => [[
-				'table' => 'nagios_objects',
-				'type' => 'INNER',
-				'alias' => 'Objects',
-				'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
-			], [
-				'table' => 'services',
-				'type' => 'INNER',
-				'alias' => 'Service',
-				'conditions' => 'Service.uuid = Objects.name2',
-			], [
-				'table' => 'servicetemplates',
-				'type' => 'INNER',
-				'alias' => 'Servicetemplate',
-				'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
-			],
-			], 'conditions' => [
-				'Servicestatus.scheduled_downtime_depth >' => 0,
-			],
-		]);
+    public function compileTemplateData()
+    {
+        $servicesInDowntime = $this->Servicestatus->find('all', [
+            'recursive'     => -1,
+            'fields'        => [
+                'Servicestatus.service_object_id',
+                'Objects.name2',
+                'Service.name',
+                'Service.id',
+                'Service.servicetemplate_id',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicetemplate.id',
+                'Servicetemplate.name',
+            ], 'joins'      => [[
+                'table'      => 'nagios_objects',
+                'type'       => 'INNER',
+                'alias'      => 'Objects',
+                'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
+            ], [
+                'table'      => 'services',
+                'type'       => 'INNER',
+                'alias'      => 'Service',
+                'conditions' => 'Service.uuid = Objects.name2',
+            ], [
+                'table'      => 'servicetemplates',
+                'type'       => 'INNER',
+                'alias'      => 'Servicetemplate',
+                'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
+            ],
+            ], 'conditions' => [
+                'Servicestatus.scheduled_downtime_depth >' => 0,
+            ],
+        ]);
 
 
-		$templateVariables = [
-			'servicesInDowntime' => $servicesInDowntime,
-		];
+        $templateVariables = [
+            'servicesInDowntime' => $servicesInDowntime,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 
 }

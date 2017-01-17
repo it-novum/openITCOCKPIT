@@ -97,14 +97,24 @@ oitc AclExtras.AclExtras aco_sync
 #for always sllowed allowd and dependend ALC action
 oitc set_permissions
 
-service sudo_server stop
-service sudo_server start
+CODENAME=$(lsb_release -sc)
+if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
+    systemctl restart sudo_server
+    systemctl restart oitc_cmd
+    systemctl restart gearman_worker
+    systemctl restart php7.0-fpm
+fi
 
-service oitc_cmd stop
-service oitc_cmd start
+if [ $CODENAME = "trusty" ]; then
+    service sudo_server stop
+    service sudo_server start
 
-service gearman_worker stop
-service gearman_worker start
+    service oitc_cmd stop
+    service oitc_cmd start
 
-service php5-fpm stop
-service php5-fpm start
+    service gearman_worker stop
+    service gearman_worker start
+
+    service php5-fpm stop
+    service php5-fpm start
+fi

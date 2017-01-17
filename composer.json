@@ -1,0 +1,11 @@
+{
+    "require-dev": {
+            "phpunit/phpunit": "5.*",
+            "squizlabs/php_codesniffer": "2.*",
+            "phploc/phploc": "*",
+            "pdepend/pdepend" : "2.*",
+            "phpmd/phpmd" : "@stable",
+            "sebastian/phpcpd": "*",
+            "theseer/phpdox": "*"
+        }
+}

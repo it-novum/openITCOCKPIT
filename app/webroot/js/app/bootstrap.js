@@ -87,6 +87,30 @@ $(document).ready(function(){
 		$('#uglyDropdownMenuHack').html('');
 	});
 
+	//Scroll back to top
+	var scrollTopVisable = false; //Avoid millions of fadeIn actions
+	$(window).scroll(function(){
+		if($(document).scrollTop() > 150){
+			if(scrollTopVisable === false){
+				$('#scroll-top-container').fadeIn();
+				scrollTopVisable = true;
+			}
+		}else{
+			if(scrollTopVisable === true){
+				$('#scroll-top-container').fadeOut();
+				scrollTopVisable = false;
+			}
+		}
+	});
+
+	$('#scroll-top-container').click(function(){
+		$('body').animate({
+			scrollTop: 0
+		}, 800);
+		return false;
+	});
+
+	//Jira Issue
 	if(window.location.href.indexOf('widget:1') == -1) {
 		jQuery.ajax({
 			url: "https://project.it-novum.com/s/2527aba8089321056587b3d39dfb83e1-T/en_US-kerfqg/64026/9/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=c71ccc45",

@@ -24,58 +24,64 @@
 //	confirmation.
 
 namespace Dashboard\Widget;
+
 use CakePlugin;
 
-class Map extends Widget{
-	public $isDefault = false;
-	public $icon = 'fa-globe';
-	public $element = 'map';
-	public $width = 4;
-	public $height = 16;
+class Map extends Widget
+{
+    public $isDefault = false;
+    public $icon = 'fa-globe';
+    public $element = 'map';
+    public $width = 4;
+    public $height = 16;
 
-	public function __construct(\Controller $controller, $QueryCache){
-		parent::__construct($controller, $QueryCache);
-		$this->typeId = 14;
-		$this->title = __('Map');
-	}
+    public function __construct(\Controller $controller, $QueryCache)
+    {
+        parent::__construct($controller, $QueryCache);
+        $this->typeId = 14;
+        $this->title = __('Map');
+    }
 
-	public function setData($widgetData){
-		if(!CakePlugin::loaded('MapModule')){
-			throw new NotFoundException(__('MapModule not loaded'));
-		}
+    public function setData($widgetData)
+    {
+        if (!CakePlugin::loaded('MapModule')) {
+            throw new NotFoundException(__('MapModule not loaded'));
+        }
 
-		$mapsListForWidget = $this->Controller->Map->find('all',[
-			'conditions' => [
-				'MapsToContainers.container_id' => $this->Controller->MY_RIGHTS,
-			],
-			'fields' => [
-				'Map.id',
-				'Map.name',
-				'MapsToContainers.container_id'
-			],
-			'joins' => [
-				[
-					'table' => 'maps_to_containers',
-					'alias' => 'MapsToContainers',
-					'type' => 'LEFT',
-					'conditions' => [
-						'MapsToContainers.map_id = Map.id',
-					]
-				],
-			]
-		]);
+        $mapsListForWidget = $this->Controller->Map->find('all', [
+            'conditions' => [
+                'MapsToContainers.container_id' => $this->Controller->MY_RIGHTS,
+            ],
+            'fields'     => [
+                'Map.id',
+                'Map.name',
+                'MapsToContainers.container_id',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'maps_to_containers',
+                    'alias'      => 'MapsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'MapsToContainers.map_id = Map.id',
+                    ],
+                ],
+            ],
+        ]);
 
-		$this->Controller->viewVars['widgetMaps'][$widgetData['Widget']['id']] = [
-			'Widget' => $widgetData,
-		];
-		$this->Controller->set('mapsListForWidget', $mapsListForWidget);
-	}
+        $this->Controller->viewVars['widgetMaps'][$widgetData['Widget']['id']] = [
+            'Widget' => $widgetData,
+        ];
+        $this->Controller->set('mapsListForWidget', $mapsListForWidget);
+    }
 
-	public function refresh($widget){
-		$this->setData($widget);
-		return [
-			'element' => 'Dashboard'.DS.$this->element
-		];
-	}
+    public function refresh($widget)
+    {
+        $this->setData($widget);
+
+        return [
+            'element' => 'Dashboard'.DS.$this->element,
+        ];
+    }
 
 }

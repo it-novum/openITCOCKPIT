@@ -25,43 +25,50 @@
 
 $widgetData = $widgetTrafficlights[$widget['Widget']['id']];
 $serviceId = null;
-if(!empty($widgetData['Service'])):
-	$serviceId = $widgetData['Service']['Service']['id'];
+if (!empty($widgetData['Service'])):
+    $serviceId = $widgetData['Service']['Service']['id'];
 endif;
 ?>
 <div class="widget-body trafficLight-body">
-	<div class="padding-10">
-		<div style="border:1px solid #c3c3c3;" class="padding-10">
-			<div class="row">
-				<div class="col-xs-12">
-					<select class="chosen trafficLightSelectService" data-widget-id="<?php echo $widget['Widget']['id']; ?>" placeholder="<?php echo __('Please select'); ?>" style="width:100%;">
-						<option></option>
-						<?php foreach($widgetServicesForTrafficlight as $_serviceId => $serviceName):?>
-							<?php
-								$selected = '';
-								if($serviceId !== null && $_serviceId == $serviceId):
-									$selected = 'selected="selected"';
-								endif;
-							?>
-							<option value="<?php echo $_serviceId; ?>" <?php echo $selected; ?>><?php echo h($serviceName); ?></option>
-						<?php endforeach; ?>
-					</select>
-				</div>
-			</div>
-		</div>
-	</div>
-	<center>
-		<div class="trafficLightWrapper">
-			<?php if($serviceId && $this->Acl->hasPermission('browser', 'services')): ?>
-				<a href="/services/browser/<?php echo $widget['Widget']['service_id']; ?>">
-					<div class="trafficlightContainer" data-current-state="<?php echo $widgetData['Service']['Servicestatus']['current_state']; ?>" data-is-flapping="<?php echo $widgetData['Service']['Servicestatus']['is_flapping']; ?>" data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>" data-id-service="<?php echo $serviceId; ?>"></div>
-				</a>
-			<?php else: ?>
-				<div class="trafficlightContainer" data-current-state="3" data-is-flapping="0" data-check-interval="0" data-id-service="0">
-					<?php echo __('No service selected or selected service has been deleted');?>
-				</div>
-			<?php endif; ?>
-		</div>
-	</center>
+    <div class="padding-10">
+        <div style="border:1px solid #c3c3c3;" class="padding-10">
+            <div class="row">
+                <div class="col-xs-12">
+                    <select class="chosen trafficLightSelectService"
+                            data-widget-id="<?php echo $widget['Widget']['id']; ?>"
+                            placeholder="<?php echo __('Please select'); ?>" style="width:100%;">
+                        <option></option>
+                        <?php foreach ($widgetServicesForTrafficlight as $_serviceId => $serviceName): ?>
+                            <?php
+                            $selected = '';
+                            if ($serviceId !== null && $_serviceId == $serviceId):
+                                $selected = 'selected="selected"';
+                            endif;
+                            ?>
+                            <option value="<?php echo $_serviceId; ?>" <?php echo $selected; ?>><?php echo h($serviceName); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <center>
+        <div class="trafficLightWrapper">
+            <?php if ($serviceId && $this->Acl->hasPermission('browser', 'services')): ?>
+                <a href="/services/browser/<?php echo $widget['Widget']['service_id']; ?>">
+                    <div class="trafficlightContainer"
+                         data-current-state="<?php echo $widgetData['Service']['Servicestatus']['current_state']; ?>"
+                         data-is-flapping="<?php echo $widgetData['Service']['Servicestatus']['is_flapping']; ?>"
+                         data-check-interval="<?php echo $widgetData['Service']['Servicestatus']['normal_check_interval']; ?>"
+                         data-id-service="<?php echo $serviceId; ?>"></div>
+                </a>
+            <?php else: ?>
+                <div class="trafficlightContainer" data-current-state="3" data-is-flapping="0" data-check-interval="0"
+                     data-id-service="0">
+                    <?php echo __('No service selected or selected service has been deleted'); ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </center>
 </div>
 

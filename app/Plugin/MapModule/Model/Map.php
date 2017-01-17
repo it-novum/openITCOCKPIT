@@ -24,74 +24,76 @@
 //	confirmation.
 
 
-class Map extends MapModuleAppModel{
+class Map extends MapModuleAppModel
+{
 
-	public $hasAndBelongsToMany = [
-		'Container' =>[
-			'className' => 'Container',
-			'joinTable' => 'maps_to_containers',
-			'dependent' => true
-		],
-		'Rotation' =>[
-			'className' => 'MapModule.Rotation',
-			'joinTable' => 'maps_to_rotations',
-			'unique' => true,
-		]
-	];
+    public $hasAndBelongsToMany = [
+        'Container' => [
+            'className' => 'Container',
+            'joinTable' => 'maps_to_containers',
+            'dependent' => true,
+        ],
+        'Rotation'  => [
+            'className' => 'MapModule.Rotation',
+            'joinTable' => 'maps_to_rotations',
+            'unique'    => true,
+        ],
+    ];
 
-	public $hasMany = [
-		'Mapitem' => [
-			'className' => 'MapModule.Mapitem',
-			'dependent' => true,
-		],
-		'Mapline' => [
-			'className' => 'MapModule.Mapline',
-			'dependent' => true,
-		],
-		'Mapgadget' => [
-			'className' => 'MapModule.Mapgadget',
-			'dependent' => true,
-		],
-		'Mapicon' => [
-			'className' => 'MapModule.Mapicon',
-			'dependent' => true,
-		],
-		'Maptext' => [
-			'className' => 'MapModule.Maptext',
-			'dependent' => true,
-		]
-	];
+    public $hasMany = [
+        'Mapitem'   => [
+            'className' => 'MapModule.Mapitem',
+            'dependent' => true,
+        ],
+        'Mapline'   => [
+            'className' => 'MapModule.Mapline',
+            'dependent' => true,
+        ],
+        'Mapgadget' => [
+            'className' => 'MapModule.Mapgadget',
+            'dependent' => true,
+        ],
+        'Mapicon'   => [
+            'className' => 'MapModule.Mapicon',
+            'dependent' => true,
+        ],
+        'Maptext'   => [
+            'className' => 'MapModule.Maptext',
+            'dependent' => true,
+        ],
+    ];
 
 
-	public $validate = [
-		'name' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'title' => [
-			'notBlank' => [
-				'rule'    => 'notBlank',
-				'message' => 'This field cannot be left blank.',
-				'required' => true
-			],
-		],
-		'container_id' => [
-			'atLeastOne' => [
-				'rule' => ['atLeastOne'],
-				'message' => 'You must specify at least one Container.',
-				'required' => true,
-				'on' => 'create'
-			]
-		]
-	];
+    public $validate = [
+        'name'         => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'title'        => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'container_id' => [
+            'atLeastOne' => [
+                'rule'     => ['atLeastOne'],
+                'message'  => 'You must specify at least one Container.',
+                'required' => true,
+                'on'       => 'create',
+            ],
+        ],
+    ];
 
-	/*
-		Custom validation rule for map field
-	*/
-	public function atLeastOne($data) {
-		return !empty($this->data[$this->name]['container_id']);
-	}
+    /*
+        Custom validation rule for map field
+    */
+    public function atLeastOne($data)
+    {
+        return !empty($this->data[$this->name]['container_id']);
+    }
 }

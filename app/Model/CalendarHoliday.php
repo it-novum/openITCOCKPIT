@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CalendarHoliday extends AppModel{
-	public $belongsTo = 'Calendar';
+class CalendarHoliday extends AppModel
+{
+    public $belongsTo = 'Calendar';
 }

@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Text stretching and spacing (tracking/kerning)
- * @author Nicola Asuni
- * @since 2010-09-29
+ * @author   Nicola Asuni
+ * @since    2010-09-29
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 063', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -77,41 +77,41 @@ $pdf->Ln(5);
 
 // create several cells to display all cases of stretching and kerning combinations.
 
-$fonts = array('times', 'dejavuserif');
-$alignments = array('L' => 'LEFT', 'C' => 'CENTER', 'R' => 'RIGHT', 'J' => 'JUSTIFY');
+$fonts = ['times', 'dejavuserif'];
+$alignments = ['L' => 'LEFT', 'C' => 'CENTER', 'R' => 'RIGHT', 'J' => 'JUSTIFY'];
 
 
 // Test all cases using direct stretching/spacing methods
 foreach ($fonts as $fkey => $font) {
-	$pdf->SetFont($font, '', 14);
-	foreach ($alignments as $align_mode => $align_name) {
-		for ($stretching = 90; $stretching <= 110; $stretching += 10) {
-			for ($spacing = -0.254; $spacing <= 0.254; $spacing += 0.254) {
-				$pdf->setFontStretching($stretching);
-				$pdf->setFontSpacing($spacing);
-				$txt = $align_name.' | Stretching = '.$stretching.'% | Spacing = '.sprintf('%+.3F', $spacing).'mm';
-				$pdf->Cell(0, 0, $txt, 1, 1, $align_mode);
-			}
-		}
-	}
-	$pdf->AddPage();
+    $pdf->SetFont($font, '', 14);
+    foreach ($alignments as $align_mode => $align_name) {
+        for ($stretching = 90; $stretching <= 110; $stretching += 10) {
+            for ($spacing = -0.254; $spacing <= 0.254; $spacing += 0.254) {
+                $pdf->setFontStretching($stretching);
+                $pdf->setFontSpacing($spacing);
+                $txt = $align_name.' | Stretching = '.$stretching.'% | Spacing = '.sprintf('%+.3F', $spacing).'mm';
+                $pdf->Cell(0, 0, $txt, 1, 1, $align_mode);
+            }
+        }
+    }
+    $pdf->AddPage();
 }
 
 
 // Test all cases using CSS stretching/spacing properties
 foreach ($fonts as $fkey => $font) {
-	$pdf->SetFont($font, '', 11);
-	foreach ($alignments as $align_mode => $align_name) {
-		for ($stretching = 90; $stretching <= 110; $stretching += 10) {
-			for ($spacing = -0.254; $spacing <= 0.254; $spacing += 0.254) {
-				$html = '<span style="font-stretch:'.$stretching.'%;letter-spacing:'.$spacing.'mm;"><span style="color:red;">'.$align_name.'</span> | <span style="color:green;">Stretching = '.$stretching.'%</span> | <span style="color:blue;">Spacing = '.sprintf('%+.3F', $spacing).'mm</span><br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue. Sed vel velit erat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</span>';
-				$pdf->writeHTMLCell(0, 0, '', '', $html, 1, 1, false, true, $align_mode, false);
-			}
-		}
-		if (!(($fkey == 1) AND ($align_mode == 'J'))) {
-			$pdf->AddPage();
-		}
-	}
+    $pdf->SetFont($font, '', 11);
+    foreach ($alignments as $align_mode => $align_name) {
+        for ($stretching = 90; $stretching <= 110; $stretching += 10) {
+            for ($spacing = -0.254; $spacing <= 0.254; $spacing += 0.254) {
+                $html = '<span style="font-stretch:'.$stretching.'%;letter-spacing:'.$spacing.'mm;"><span style="color:red;">'.$align_name.'</span> | <span style="color:green;">Stretching = '.$stretching.'%</span> | <span style="color:blue;">Spacing = '.sprintf('%+.3F', $spacing).'mm</span><br />Lorem ipsum dolor sit amet, consectetur adipiscing elit. In sed imperdiet lectus. Phasellus quis velit velit, non condimentum quam. Sed neque urna, ultrices ac volutpat vel, laoreet vitae augue. Sed vel velit erat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</span>';
+                $pdf->writeHTMLCell(0, 0, '', '', $html, 1, 1, false, true, $align_mode, false);
+            }
+        }
+        if (!(($fkey == 1) AND ($align_mode == 'J'))) {
+            $pdf->AddPage();
+        }
+    }
 }
 
 

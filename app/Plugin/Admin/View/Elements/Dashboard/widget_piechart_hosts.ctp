@@ -25,36 +25,36 @@
 
 ?>
 <div class="widget-body pieChartHosts">
-<?php
-$state_total = array_sum($state_array_host);
-if($state_total > 0):
-	$overview_chart =  $this->PieChart->createPieChart($state_array_host);
-	echo $this->Html->image(
-		'/img/charts/'.$overview_chart
-	);
-	$state_colors = [
-		'ok',
-		'critical',
-		'unknown'
-	];?>
-	<div class="col-md-12 text-center padding-bottom-10 font-xs">
-		<?php foreach($state_array_host as $state => $state_count):?>
-			<div class="col-md-4 no-padding">
-				<a href="<?php echo Router::url([
-					'controller' => 'hosts',
-					'action' => 'index',
-					'plugin' => '',
-					'Filter.Hoststatus.current_state['.$state.']' => 1
-				]); ?>">
-					<i class="fa fa-square <?php echo $state_colors[$state]?>"></i>
-					<?php echo $state_count.' ('.round($state_count/$state_total*100, 2).' %)'; ?>
-				</a>
-			</div>
-		<?php endforeach; ?>
-	</div>
-<?php else:?>
-	<div class="text-muted padding-top-20">
-		<?php echo __('No hosts are monitored on your system. Please create first a host'); ?>
-	</div>
-<?php endif; ?>
+    <?php
+    $state_total = array_sum($state_array_host);
+    if ($state_total > 0):
+        $overview_chart = $this->PieChart->createPieChart($state_array_host);
+        echo $this->Html->image(
+            '/img/charts/'.$overview_chart
+        );
+        $state_colors = [
+            'ok',
+            'critical',
+            'unknown',
+        ]; ?>
+        <div class="col-md-12 text-center padding-bottom-10 font-xs">
+            <?php foreach ($state_array_host as $state => $state_count): ?>
+                <div class="col-md-4 no-padding">
+                    <a href="<?php echo Router::url([
+                        'controller'                                  => 'hosts',
+                        'action'                                      => 'index',
+                        'plugin'                                      => '',
+                        'Filter.Hoststatus.current_state['.$state.']' => 1,
+                    ]); ?>">
+                        <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
+                        <?php echo $state_count.' ('.round($state_count / $state_total * 100, 2).' %)'; ?>
+                    </a>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <div class="text-muted padding-top-20">
+            <?php echo __('No hosts are monitored on your system. Please create first a host'); ?>
+        </div>
+    <?php endif; ?>
 </div>

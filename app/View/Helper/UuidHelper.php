@@ -23,63 +23,71 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UuidHelper extends AppHelper{
-	
-	/**
-	 * Initialize the Helper and set the needed variables
-	 *
-	 * @param CakePHP $viewFile
-	 * @return void
-	 * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-	 * @since 3.0
-	 *
-	 */
-	public function beforeRender($viewFile){
-		if(isset($this->_View->viewVars['hostUuids'])){
-			$this->hostUuids = $this->_View->viewVars['hostUuids'];
-		}
-		if(isset($this->_View->viewVars['serviceUuids'])){
-			$this->serviceUuids = $this->_View->viewVars['serviceUuids'];
-		}
-		
-		if(isset($this->_View->viewVars['uuidCache'])){
-			$this->uuidCache = $this->_View->viewVars['uuidCache'];
-		}
-	}
-	
-	public function findHostname($uuid){
-		if(isset($this->hostUuids[$uuid])){
-			return $this->hostUuids[$uuid]['name'];
-		}
-		return __('Could not found hostname');
-	}
-	
-	public function findServicename($uuid){
-		if(isset($this->serviceUuids[$uuid])){
-			return $this->serviceUuids[$uuid]['name'];
-		}
-		return __('Could not found servicename');
-	}
-	
-	public function replaceUuids($string){
-		App::uses('UUID', 'Lib');
-		$string = preg_replace_callback(UUID::regex(), function($matches){
-			foreach($matches as $match){
-				if(isset($this->uuidCache[$match])){
-					//Checking if name exists or if we need to use the container:
-						if(isset($this->uuidCache[$match]['name'])){
-							return '<strong class="text-primary">'.$this->uuidCache[$match]['name'].'</strong>';
-						}elseif(isset($this->uuidCache[$match]['container_name'])){
-							return $this->uuidCache[$match]['container_name']. '<strong class="text-primary">'.$match.'</strong>';
-						}else{
-							return '<strong class="txt-color-red">'.__('Name not found in database').'['.$match.']</strong>';
-						}
-				
-				}
+class UuidHelper extends AppHelper
+{
 
-				return '<strong class="txt-color-red">'.__('Object not found in UUID cache').'['.$match.']</strong>';
-			}
-		}, $string);
-		return $string;
-	}
+    /**
+     * Initialize the Helper and set the needed variables
+     *
+     * @param CakePHP $viewFile
+     *
+     * @return void
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function beforeRender($viewFile)
+    {
+        if (isset($this->_View->viewVars['hostUuids'])) {
+            $this->hostUuids = $this->_View->viewVars['hostUuids'];
+        }
+        if (isset($this->_View->viewVars['serviceUuids'])) {
+            $this->serviceUuids = $this->_View->viewVars['serviceUuids'];
+        }
+
+        if (isset($this->_View->viewVars['uuidCache'])) {
+            $this->uuidCache = $this->_View->viewVars['uuidCache'];
+        }
+    }
+
+    public function findHostname($uuid)
+    {
+        if (isset($this->hostUuids[$uuid])) {
+            return $this->hostUuids[$uuid]['name'];
+        }
+
+        return __('Could not found hostname');
+    }
+
+    public function findServicename($uuid)
+    {
+        if (isset($this->serviceUuids[$uuid])) {
+            return $this->serviceUuids[$uuid]['name'];
+        }
+
+        return __('Could not found servicename');
+    }
+
+    public function replaceUuids($string)
+    {
+        App::uses('UUID', 'Lib');
+        $string = preg_replace_callback(UUID::regex(), function ($matches) {
+            foreach ($matches as $match) {
+                if (isset($this->uuidCache[$match])) {
+                    //Checking if name exists or if we need to use the container:
+                    if (isset($this->uuidCache[$match]['name'])) {
+                        return '<strong class="text-primary">'.$this->uuidCache[$match]['name'].'</strong>';
+                    } elseif (isset($this->uuidCache[$match]['container_name'])) {
+                        return $this->uuidCache[$match]['container_name'].'<strong class="text-primary">'.$match.'</strong>';
+                    } else {
+                        return '<strong class="txt-color-red">'.__('Name not found in database').'['.$match.']</strong>';
+                    }
+
+                }
+
+                return '<strong class="txt-color-red">'.__('Object not found in UUID cache').'['.$match.']</strong>';
+            }
+        }, $string);
+
+        return $string;
+    }
 }

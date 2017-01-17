@@ -26,36 +26,38 @@
 
 App::uses('Widget', 'Admin.Lib');
 
-class Welcome extends WidgetBase{
-	protected $iconname = 'comment';
-	protected $bodyClasses = 'text-left';
-	protected $bodyStyles = 'min-height: 180px;';
-	protected $viewName = 'Dashboard/widget_welcome';
+class Welcome extends WidgetBase
+{
+    protected $iconname = 'comment';
+    protected $bodyClasses = 'text-left';
+    protected $bodyStyles = 'min-height: 180px;';
+    protected $viewName = 'Dashboard/widget_welcome';
 
-	public function compileTemplateData(){
-		$stateArrayHost = [];
-		for($i = 0; $i < 3; $i++){
-			$stateArrayHost[$i] = $this->Hoststatus->find('count', [
-				'conditions' => [
-					'current_state' => $i,
-				]
-			]);
-		}
+    public function compileTemplateData()
+    {
+        $stateArrayHost = [];
+        for ($i = 0; $i < 3; $i++) {
+            $stateArrayHost[$i] = $this->Hoststatus->find('count', [
+                'conditions' => [
+                    'current_state' => $i,
+                ],
+            ]);
+        }
 
-		$stateArrayService = [];
-		for($i = 0; $i < 4; $i++){
-			$stateArrayService[$i] = $this->Servicestatus->find('count', [
-				'conditions' => [
-					'current_state' => $i,
-				]
-			]);
-		}
+        $stateArrayService = [];
+        for ($i = 0; $i < 4; $i++) {
+            $stateArrayService[$i] = $this->Servicestatus->find('count', [
+                'conditions' => [
+                    'current_state' => $i,
+                ],
+            ]);
+        }
 
-		$templateVariables = [
-			'state_array_host' => $stateArrayHost,
-			'state_array_service' => $stateArrayService,
-		];
+        $templateVariables = [
+            'state_array_host'    => $stateArrayHost,
+            'state_array_service' => $stateArrayService,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 }

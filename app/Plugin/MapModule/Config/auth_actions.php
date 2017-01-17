@@ -24,23 +24,23 @@
 //	confirmation.
 
 $config = [
-	'public_actions' => [
-	],
-	'auth_actions' => [
-		'MapModule.maps' => [
-			'*' => '*'
-		],
-		'MapModule.mapviews' => [
-			'*' => '*'
-		],
-		'MapModule.mapeditors' => [
-			'*' => '*'
-		],
-		'MapModule.background_uploads' => [
-			'*' => '*'
-		],
-		'MapModule.rotations' => [
-			'*' => '*'
-		],
-	]
+    'public_actions' => [
+    ],
+    'auth_actions'   => [
+        'MapModule.maps'               => [
+            '*' => '*',
+        ],
+        'MapModule.mapviews'           => [
+            '*' => '*',
+        ],
+        'MapModule.mapeditors'         => [
+            '*' => '*',
+        ],
+        'MapModule.background_uploads' => [
+            '*' => '*',
+        ],
+        'MapModule.rotations'          => [
+            '*' => '*',
+        ],
+    ],
 ];

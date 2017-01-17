@@ -23,20 +23,25 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Timezone{
+class Timezone
+{
 
-	/**
-	 * Liefert die Zeitdifferenz in Sekunden zwischen Benutzerzeitzone und Systemzeitzone am angegebenen Datum zurueck
-	 *
-	 * @param  datetime Datum und Uhrzeit (im Format YYYY-MM-DD [HH:MM:SS]), an dem die Zeitdifferenz ermittelt werden soll (optional, default = now)
-	 * @return int      Zeitdifferenz in Sekunden (die auf Serverzeit addiert werden muss, um Clientzeit zu erhalten)
-	 */
-	public static function getUserSystemOffset($userTimezone, $datetime = 'now'){
-		if(strlen($userTimezone) < 2){
-			//Empty database or empty cookie workaround to avoid completley broken page!
-			$userTimezone = "Europe/Berlin";
-		}
-		$d = new DateTime($userTimezone);
-		return $d->getOffset();
-	}
+    /**
+     * Liefert die Zeitdifferenz in Sekunden zwischen Benutzerzeitzone und Systemzeitzone am angegebenen Datum zurueck
+     *
+     * @param  datetime Datum und Uhrzeit (im Format YYYY-MM-DD [HH:MM:SS]), an dem die Zeitdifferenz ermittelt werden
+     *                        soll (optional, default = now)
+     *
+     * @return int      Zeitdifferenz in Sekunden (die auf Serverzeit addiert werden muss, um Clientzeit zu erhalten)
+     */
+    public static function getUserSystemOffset($userTimezone, $datetime = 'now')
+    {
+        if (strlen($userTimezone) < 2) {
+            //Empty database or empty cookie workaround to avoid completley broken page!
+            $userTimezone = "Europe/Berlin";
+        }
+        $d = new DateTime($userTimezone);
+
+        return $d->getOffset();
+    }
 }

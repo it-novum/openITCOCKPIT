@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Crop marks and color registration bars
- * @author Nicola Asuni
- * @since 2010-03-26
+ * @author   Nicola Asuni
+ * @since    2010-03-26
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 056', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -85,27 +85,27 @@ $pdf->colorRegistrationBar(135, 70, 5, 50, false, false, 'A,W,R,G,B,C,M,Y,K');
 
 // corner crop marks
 
-$pdf->cropMark(50, 70, 10, 10, 'TL', array(0,0,0));
-$pdf->cropMark(140, 70, 10, 10, 'TR', array(0,0,0));
-$pdf->cropMark(50, 120, 10, 10, 'BL', array(0,0,0));
-$pdf->cropMark(140, 120, 10, 10, 'BR', array(0,0,0));
+$pdf->cropMark(50, 70, 10, 10, 'TL', [0, 0, 0]);
+$pdf->cropMark(140, 70, 10, 10, 'TR', [0, 0, 0]);
+$pdf->cropMark(50, 120, 10, 10, 'BL', [0, 0, 0]);
+$pdf->cropMark(140, 120, 10, 10, 'BR', [0, 0, 0]);
 
 // various crop marks
 
-$pdf->cropMark(95, 65, 5, 5, 'LEFT,TOP,RIGHT', array(255,0,0));
-$pdf->cropMark(95, 125, 5, 5, 'LEFT,BOTTOM,RIGHT', array(255,0,0));
+$pdf->cropMark(95, 65, 5, 5, 'LEFT,TOP,RIGHT', [255, 0, 0]);
+$pdf->cropMark(95, 125, 5, 5, 'LEFT,BOTTOM,RIGHT', [255, 0, 0]);
 
-$pdf->cropMark(45, 95, 5, 5, 'TL,BL', array(0,255,0));
-$pdf->cropMark(145, 95, 5, 5, 'TR,BR', array(0,255,0));
+$pdf->cropMark(45, 95, 5, 5, 'TL,BL', [0, 255, 0]);
+$pdf->cropMark(145, 95, 5, 5, 'TR,BR', [0, 255, 0]);
 
-$pdf->cropMark(95, 140, 5, 5, 'A,D', array(0,0,255));
+$pdf->cropMark(95, 140, 5, 5, 'A,D', [0, 0, 255]);
 
 // registration marks
 
-$pdf->registrationMark(40, 60, 5, false, array(0,0,0), array(255,255,255));
-$pdf->registrationMark(150, 60, 5, true, array(0,0,0), array(255,255,0));
-$pdf->registrationMark(40, 130, 5, true, array(0,0,0), array(255,255,0));
-$pdf->registrationMark(150, 130, 5, false, array(0,0,0), array(255,255,255));
+$pdf->registrationMark(40, 60, 5, false, [0, 0, 0], [255, 255, 255]);
+$pdf->registrationMark(150, 60, 5, true, [0, 0, 0], [255, 255, 0]);
+$pdf->registrationMark(40, 130, 5, true, [0, 0, 0], [255, 255, 0]);
+$pdf->registrationMark(150, 130, 5, false, [0, 0, 0], [255, 255, 255]);
 
 // ---------------------------------------------------------
 

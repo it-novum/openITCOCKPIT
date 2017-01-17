@@ -23,24 +23,26 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if(empty($widgetHostDowntimes)): ?>
-	<div class="text-center text-success padding-50">
-		<h5 class="padding-top-50">
-			<i class="fa fa-check"></i>
-			<?php echo __('Currently are no hosts in scheduled downtime');?>
-		</h5>
-	</div>
+if (empty($widgetHostDowntimes)): ?>
+    <div class="text-center text-success padding-50">
+        <h5 class="padding-top-50">
+            <i class="fa fa-check"></i>
+            <?php echo __('Currently are no hosts in scheduled downtime'); ?>
+        </h5>
+    </div>
 <?php else: ?>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped">
-			<tbody>
-				<?php foreach($widgetHostDowntimes as $host): ?>
-					<tr>
-						<td class="dashboard-table"><a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']);?></a></td>
-					</tr>
-				<?php endforeach;?>
-			</tbody>
-		</table>
-	</div>
-<?php
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <tbody>
+            <?php foreach ($widgetHostDowntimes as $host): ?>
+                <tr>
+                    <td class="dashboard-table"><a
+                                href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
 endif;

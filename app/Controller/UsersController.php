@@ -26,148 +26,152 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
-class UsersController extends AppController{
-	public $layout = 'Admin.default';
-	public $uses = [
-		'User',
-		'Systemsetting',
-		'Tenant',
-		'Usergroup',
-		'ContainerUserMembership'
-	];
-	public $components = [
-		'Paginator',
-		'ListFilter.ListFilter',
-		'Ldap'
-	];
+class UsersController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $uses = [
+        'User',
+        'Systemsetting',
+        'Tenant',
+        'Usergroup',
+        'ContainerUserMembership',
+    ];
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'Ldap',
+    ];
 
-	public $helpers = [
-		'ListFilter.ListFilter'
-	];
-
-
-	public $listFilters = array('index' => array('fields' => array(
-		'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-		'User.email' => ['label' => 'Email', 'searchType' => 'wildcard'],
-		'User.company' => ['label' => 'Company', 'searchType' => 'wildcard'],
-		'User.role' => ['label' => 'Role', 'searchType' => 'select', 'type' => 'select'],
-		'User.status' => ['label' => 'Status', 'searchType' => 'select', 'type' => 'select'],
-	)));
+    public $helpers = [
+        'ListFilter.ListFilter',
+    ];
 
 
-	public function index(){
-		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-		if(isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null){
-			$this->set('isFilter', true);
-		}else{
-			$this->set('isFilter', false);
-		}
-		$this->loadModel('Container');
-		$options = [
-			'recursive' => -1,
-			'order' => [
-				'User.full_name' => 'asc'
-			],
-			'joins' => [
-				[
-					'table' => 'users_to_containers',
-					'type' => 'LEFT',
-					'alias' => 'UsersToContainer',
-					'conditions' => 'UsersToContainer.user_id = User.id'
-				],
-				[
-					'table' => 'usergroups',
-					'type' => 'LEFT',
-					'alias' => 'Usergroup',
-					'conditions' => 'Usergroup.id = User.usergroup_id'
-				],
-			],
-			'conditions' => [
-				'UsersToContainer.container_id' => $this->MY_RIGHTS
-			],
-			'fields' => [
-				'User.id',
-				'User.email',
-				'User.company',
-				'User.status',
-				'User.full_name',
-				'User.samaccountname',
-				'Usergroup.id',
-				'Usergroup.name',
-				'UsersToContainer.container_id'
-			],
-			'group' => [
-				'User.id'
-			]
-		];
-		$query = Hash::merge($options, $this->Paginator->settings);
+    public $listFilters = ['index' => ['fields' => [
+        'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+        'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
+        'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
+        'User.role'      => ['label' => 'Role', 'searchType' => 'select', 'type' => 'select'],
+        'User.status'    => ['label' => 'Status', 'searchType' => 'select', 'type' => 'select'],
+    ]]];
 
-		if($this->isApiRequest()){
-			unset($query['limit']);
-			$all_users = $this->User->find('all', $query);
-		}else{
-			$this->Paginator->settings = $query;
-			$all_users = $this->Paginator->paginate();
-		}
 
-		//Get users container ids
-		$userContainerIds = [];
-		foreach($all_users as $user){
-			$_user = $this->User->findById($user['User']['id']);
-			$userContainerIds[$user['User']['id']]['Container'] = Hash::extract($_user['ContainerUserMembership'], '{n}.container_id');
-		}
+    public function index()
+    {
+        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+        $this->loadModel('Container');
+        $options = [
+            'recursive'  => -1,
+            'order'      => [
+                'User.full_name' => 'asc',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+                [
+                    'table'      => 'usergroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Usergroup',
+                    'conditions' => 'Usergroup.id = User.usergroup_id',
+                ],
+            ],
+            'conditions' => [
+                'UsersToContainer.container_id' => $this->MY_RIGHTS,
+            ],
+            'fields'     => [
+                'User.id',
+                'User.email',
+                'User.company',
+                'User.status',
+                'User.full_name',
+                'User.samaccountname',
+                'Usergroup.id',
+                'Usergroup.name',
+                'UsersToContainer.container_id',
+            ],
+            'group'      => [
+                'User.id',
+            ],
+        ];
+        $query = Hash::merge($options, $this->Paginator->settings);
 
-		$this->set('users', $all_users);
-		if($this->isApiRequest()){
-			$this->set('all_users', $all_users);
-			$this->set('_serialize', ['all_users']);
-		}
-		$this->set('userContainerIds', $userContainerIds);
-		$this->set('systemsettings', $systemsettings);
-	}
+        if ($this->isApiRequest()) {
+            unset($query['limit']);
+            $all_users = $this->User->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $all_users = $this->Paginator->paginate();
+        }
 
-	public function view($id = null){
-		if(!$this->isApiRequest()){
-			throw new MethodNotAllowedException();
+        //Get users container ids
+        $userContainerIds = [];
+        foreach ($all_users as $user) {
+            $_user = $this->User->findById($user['User']['id']);
+            $userContainerIds[$user['User']['id']]['Container'] = Hash::extract($_user['ContainerUserMembership'], '{n}.container_id');
+        }
 
-		}
-		if(!$this->User->exists($id)){
-			throw new NotFoundException(__('Invalid user'));
-		}
-		$user = $this->User->findById($id);
-		$permissionsUser = $this->User->find('first', [
-			'joins' => [
-				[
-					'table' => 'users_to_containers',
-					'type' => 'LEFT',
-					'alias' => 'UsersToContainer',
-					'conditions' => 'UsersToContainer.user_id = User.id'
-				],
-			],
-			'conditions' => [
-				'User.id' => $id,
-				'UsersToContainer.container_id' => $this->MY_RIGHTS
-			],
-			'fields' => [
-				'User.id',
-				'User.email',
-				'User.company',
-				'User.status',
-				'User.full_name',
-				'User.samaccountname',
-			],
-			'group' => [
-				'User.id'
-			]
-		]);
+        $this->set('users', $all_users);
+        if ($this->isApiRequest()) {
+            $this->set('all_users', $all_users);
+            $this->set('_serialize', ['all_users']);
+        }
+        $this->set('userContainerIds', $userContainerIds);
+        $this->set('systemsettings', $systemsettings);
+    }
 
-		if(empty($permissionsUser)){
-			$this->render403();
-			return;
-		}
-		$this->set('user', $user);
-		$this->set('_serialize', ['user']);
-	}
+    public function view($id = null)
+    {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+
+        }
+        if (!$this->User->exists($id)) {
+            throw new NotFoundException(__('Invalid user'));
+        }
+        $user = $this->User->findById($id);
+        $permissionsUser = $this->User->find('first', [
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+            ],
+            'conditions' => [
+                'User.id'                       => $id,
+                'UsersToContainer.container_id' => $this->MY_RIGHTS,
+            ],
+            'fields'     => [
+                'User.id',
+                'User.email',
+                'User.company',
+                'User.status',
+                'User.full_name',
+                'User.samaccountname',
+            ],
+            'group'      => [
+                'User.id',
+            ],
+        ]);
+
+        if (empty($permissionsUser)) {
+            $this->render403();
+
+            return;
+        }
+        $this->set('user', $user);
+        $this->set('_serialize', ['user']);
+    }
 
 //	public function view($id = null){
 //		if (!$this->User->exists($id)){
@@ -177,300 +181,310 @@ class UsersController extends AppController{
 //		$this->set('user', $this->User->get($id));
 //	}
 
-	/**
-	 * delete method
-	 *
-	 * @throws MethodNotAllowedException
-	 * @throws NotFoundException
-	 * @param int $id
-	 * @return void
-	 */
-	/**
-	 * delete overwrite for soft delete
-	 *
-	 * @param  int  $id
-	 * @param  boolean $cascade
-	 * @return bool
-	 */
+    /**
+     * delete method
+     * @throws MethodNotAllowedException
+     * @throws NotFoundException
+     *
+     * @param int $id
+     *
+     * @return void
+     */
+    /**
+     * delete overwrite for soft delete
+     *
+     * @param  int     $id
+     * @param  boolean $cascade
+     *
+     * @return bool
+     */
 
-	public function delete($id = null){
-		if (!$this->request->is('post')){
-			throw new MethodNotAllowedException();
-		}
-		if (!$this->User->exists($id)){
-			throw new NotFoundException(__('user'));
-		}
-		$user = $this->User->findById($id);
-		if(!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))){
-			$this->render403();
-			return;
-		}
+    public function delete($id = null)
+    {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->User->exists($id)) {
+            throw new NotFoundException(__('user'));
+        }
+        $user = $this->User->findById($id);
+        if (!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))) {
+            $this->render403();
 
-		if($this->User->__delete($id, $this->Auth->user('id'))){
-			$this->setFlash(__('User deleted'));
-			$this->redirect(array('action' => 'index'));
-		}else{
-			$this->setFlash(__('Could not delete user'), false);
-			$this->redirect(['action' => 'index']);
-		}
-	}
+            return;
+        }
 
-	public function add($type = 'local'){
-		$usergroups = $this->Usergroup->find('list');
-		// Activate "Show Stats in Menu" by default for New Users
-		$this->request->data['User']['showstatsinmenu'] = 0;
-		if(isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true){
-			$type = 'ldap';
-			$samaccountname = '';
-			if(isset($this->request->params['named']['samaccountname'])){
-				$samaccountname = $this->request->params['named']['samaccountname'];
-			}
-		}
-		if($this->request->data('ContainerUserMembership')){
-			$this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-			$this->request->data['ContainerUserMembership'] = array_map(
-				function($container_id, $permission_level){
-					return [
-						'container_id' => $container_id,
-						'permission_level' => $permission_level
-					];
-				},
-				array_keys($this->request->data['ContainerUserMembership']),
-				$this->request->data['ContainerUserMembership']
-			);
-		}
-		if($type == 'ldap'){
-			if($this->Ldap->userExists($samaccountname)){
-				$ldapUser = $this->Ldap->userInfo($samaccountname);
-				// Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
-				$this->request->data['User']['email'] = $ldapUser['mail'];
-				$this->request->data['User']['firstname'] = $ldapUser['givenname'];
-				$this->request->data['User']['lastname'] = $ldapUser['sn'];
-				$this->request->data['User']['samaccountname'] = $ldapUser['samaccountname'];
-			}
-		}
+        if ($this->User->__delete($id, $this->Auth->user('id'))) {
+            $this->setFlash(__('User deleted'));
+            $this->redirect(['action' => 'index']);
+        } else {
+            $this->setFlash(__('Could not delete user'), false);
+            $this->redirect(['action' => 'index']);
+        }
+    }
 
-		if($this->request->is('post') || $this->request->is('put')){
-			$this->User->create();
-			$isJsonRequest = $this->request->ext == 'json';
-			if($this->User->saveAll($this->request->data)){
-				if($isJsonRequest){
-					$this->serializeId();
-				}else{
-					$this->setFlash('User saved successfully');
-					$this->redirect(array('action' => 'index'));
-				}
-			}else{
-				if($isJsonRequest){
-					$this->serializeErrorMessage();
-				}else{
-					$this->setFlash(__('Could not save user'), false);
-				}
-			}
-		}
+    public function add($type = 'local')
+    {
+        $usergroups = $this->Usergroup->find('list');
+        // Activate "Show Stats in Menu" by default for New Users
+        $this->request->data['User']['showstatsinmenu'] = 0;
+        if (isset($this->request->params['named']['ldap']) && $this->request->params['named']['ldap'] == true) {
+            $type = 'ldap';
+            $samaccountname = '';
+            if (isset($this->request->params['named']['samaccountname'])) {
+                $samaccountname = $this->request->params['named']['samaccountname'];
+            }
+        }
+        if ($this->request->data('ContainerUserMembership')) {
+            $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
+            $this->request->data['ContainerUserMembership'] = array_map(
+                function ($container_id, $permission_level) {
+                    return [
+                        'container_id'     => $container_id,
+                        'permission_level' => $permission_level,
+                    ];
+                },
+                array_keys($this->request->data['ContainerUserMembership']),
+                $this->request->data['ContainerUserMembership']
+            );
+        }
+        if ($type == 'ldap') {
+            if ($this->Ldap->userExists($samaccountname)) {
+                $ldapUser = $this->Ldap->userInfo($samaccountname);
+                // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
+                $this->request->data['User']['email'] = $ldapUser['mail'];
+                $this->request->data['User']['firstname'] = $ldapUser['givenname'];
+                $this->request->data['User']['lastname'] = $ldapUser['sn'];
+                $this->request->data['User']['samaccountname'] = $ldapUser['samaccountname'];
+            }
+        }
 
-		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-		$this->set(compact(['containers', 'usergroups']));
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->User->create();
+            $isJsonRequest = $this->request->ext == 'json';
+            if ($this->User->saveAll($this->request->data)) {
+                if ($isJsonRequest) {
+                    $this->serializeId();
+                } else {
+                    $this->setFlash('User saved successfully');
+                    $this->redirect(['action' => 'index']);
+                }
+            } else {
+                if ($isJsonRequest) {
+                    $this->serializeErrorMessage();
+                } else {
+                    $this->setFlash(__('Could not save user'), false);
+                }
+            }
+        }
 
-		$this->set('type', $type);
-	}
+        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
+        $this->set(compact(['containers', 'usergroups']));
 
-
-	public function edit($id = null){
-		if (!$this->User->exists($id)){
-			throw new NotFoundException(__('Invalide user'));
-		}
-		$permissionsUser = $this->User->find('first', [
-			'joins' => [
-				[
-					'table' => 'users_to_containers',
-					'type' => 'LEFT',
-					'alias' => 'UsersToContainer',
-					'conditions' => 'UsersToContainer.user_id = User.id'
-				],
-			],
-			'conditions' => [
-				'User.id' => $id,
-				'UsersToContainer.container_id' => $this->MY_RIGHTS
-			],
-			'fields' => [
-				'User.id',
-				'User.email',
-				'User.company',
-				'User.status',
-				'User.full_name',
-				'User.samaccountname',
-			],
-			'group' => [
-				'User.id'
-			]
-		]);
-
-		if(isset($permissionsUser['ContainerUserMembership'])){
-			$this->Frontend->setJson('rights',
-				Hash::combine(
-					$permissionsUser['ContainerUserMembership'],
-					'{n}.container_id',
-					'{n}.permission_level'
-				)
-			);
-		}
-
-		if(empty($permissionsUser)){
-			$this->render403();
-			return;
-		}
-
-		if($this->request->is('post') || $this->request->is('put')){
-			if($this->request->data('ContainerUserMembership')){
-				$this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
-				$this->request->data['ContainerUserMembership'] = array_map(
-					function($container_id, $permission_level){
-						return [
-							'container_id' => $container_id,
-							'permission_level' => $permission_level
-						];
-					},
-					array_keys($this->request->data['ContainerUserMembership']),
-					$this->request->data['ContainerUserMembership']
-				);
-			}
-			$this->User->set($this->request->data);
-			if($this->User->validates()){
-				$this->ContainerUserMembership->deleteAll(
-					[
-						'user_id' => $id
-					]
-				);
-				if($this->User->saveAll($this->request->data)){
-					$this->setFlash(__('User saved successfully'));
-					$this->redirect(array('action' => 'index'));
-
-					return;
-				}
-			}else{
-				$this->setFlash(__('Could not save user'), false);
-			}
-		}
-		$usergroups = $this->Usergroup->find('list');
-		$options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-		$this->request->data = $this->User->find('first', $options);
-		$containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
-		$selectedContainers = ($this->request->data('Container'))?Hash::extract($this->request->data['Container'], '{n}.id'):Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
-		$this->set(compact(['containers', 'selectedContainers']));
-		$this->request->data['User']['password'] = '';
-
-		$type = 'local';
-		if(strlen($this->request->data['User']['samaccountname']) > 0){
-			$type = 'ldap';
-		}
-		$this->set(compact(['type', 'usergroups']));
-	}
-
-	public function addFromLdap(){
-		if($this->request->is('post') || $this->request->is('put')){
-			if($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))){
-				$this->redirect([
-					'controller' => 'users',
-					'action' => 'add',
-					'ldap' => 1,
-					'samaccountname' => $this->request->data('Ldap.samaccountname'),
-					//Fixing usernames like jon.doe
-					'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
-				]);
-				//$this->redirect('/admin/users/add/ldap/'.rawurlencode($this->request->data('Ldap.samaccountname')));
-			}
-			$this->setFlash(__('User does not exists in LDAP'), false);
-		}
-
-		$users = [];
-		$requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
+        $this->set('type', $type);
+    }
 
 
-		$allLdapUsers = $this->Ldap->findAllUser();
-		foreach($allLdapUsers as $samAccountName){
-			$ldapUser = $this->Ldap->userInfo($samAccountName);
-			$ableToImport = true;
-			foreach($requiredFilds as $requiredFild){
-				if(!isset($ldapUser[$requiredFild])){
-					$ableToImport = false;
-				}
-			}
+    public function edit($id = null)
+    {
+        if (!$this->User->exists($id)) {
+            throw new NotFoundException(__('Invalide user'));
+        }
+        $permissionsUser = $this->User->find('first', [
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+            ],
+            'conditions' => [
+                'User.id'                       => $id,
+                'UsersToContainer.container_id' => $this->MY_RIGHTS,
+            ],
+            'fields'     => [
+                'User.id',
+                'User.email',
+                'User.company',
+                'User.status',
+                'User.full_name',
+                'User.samaccountname',
+            ],
+            'group'      => [
+                'User.id',
+            ],
+        ]);
 
-			if($ableToImport === true){
-				$users[] = $ldapUser;
-			}
-		}
+        if (isset($permissionsUser['ContainerUserMembership'])) {
+            $this->Frontend->setJson('rights',
+                Hash::combine(
+                    $permissionsUser['ContainerUserMembership'],
+                    '{n}.container_id',
+                    '{n}.permission_level'
+                )
+            );
+        }
 
-		$usersForSelect = [];
-		foreach($users as $user){
-			$usersForSelect[$user['samaccountname']] = $user['displayname'] . ' ('.$user['samaccountname'].')';
-		}
+        if (empty($permissionsUser)) {
+            $this->render403();
 
-		$systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-		$this->set(compact(['usersForSelect', 'systemsettings']));
-	}
+            return;
+        }
 
-	public function resetPassword($id = null){
-		$this->autoRender = false;
-		if(!$this->User->exists($id)){
-			$this->setFlash(__('Invalide user'), false);
-			$this->redirect(['action' => 'index']);
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($this->request->data('ContainerUserMembership')) {
+                $this->Frontend->setJson('rights', $this->request->data('ContainerUserMembership'));
+                $this->request->data['ContainerUserMembership'] = array_map(
+                    function ($container_id, $permission_level) {
+                        return [
+                            'container_id'     => $container_id,
+                            'permission_level' => $permission_level,
+                        ];
+                    },
+                    array_keys($this->request->data['ContainerUserMembership']),
+                    $this->request->data['ContainerUserMembership']
+                );
+            }
+            $this->User->set($this->request->data);
+            if ($this->User->validates()) {
+                $this->ContainerUserMembership->deleteAll(
+                    [
+                        'user_id' => $id,
+                    ]
+                );
+                if ($this->User->saveAll($this->request->data)) {
+                    $this->setFlash(__('User saved successfully'));
+                    $this->redirect(['action' => 'index']);
 
-			return;
-		}
+                    return;
+                }
+            } else {
+                $this->setFlash(__('Could not save user'), false);
+            }
+        }
+        $usergroups = $this->Usergroup->find('list');
+        $options = ['conditions' => ['User.'.$this->User->primaryKey => $id]];
+        $this->request->data = $this->User->find('first', $options);
+        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
+        $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
+        $this->set(compact(['containers', 'selectedContainers']));
+        $this->request->data['User']['password'] = '';
 
-		$user = $this->User->findById($id);
-		$generatePassword = function(){
-			$char = array(0, 1, 2, 3, 4, 5, 6, 7, 8 ,9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
-			$size = (sizeof($char)-1);
-			$token = '';
-			for($i = 0; $i < 7; $i++){
-				$token.=$char[rand(0, $size)];
-			}
-			$token = $token.rand(0,9);
-			return $token;
-		};
+        $type = 'local';
+        if (strlen($this->request->data['User']['samaccountname']) > 0) {
+            $type = 'ldap';
+        }
+        $this->set(compact(['type', 'usergroups']));
+    }
 
-		$newPassword = $generatePassword();
-		$this->_systemsettings = $this->Systemsetting->findAsArray();
+    public function addFromLdap()
+    {
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if ($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))) {
+                $this->redirect([
+                    'controller'     => 'users',
+                    'action'         => 'add',
+                    'ldap'           => 1,
+                    'samaccountname' => $this->request->data('Ldap.samaccountname'),
+                    //Fixing usernames like jon.doe
+                    'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+                ]);
+                //$this->redirect('/admin/users/add/ldap/'.rawurlencode($this->request->data('Ldap.samaccountname')));
+            }
+            $this->setFlash(__('User does not exists in LDAP'), false);
+        }
 
-		App::uses('CakeEmail', 'Network/Email');
-		$Email = new CakeEmail();
-		$Email->config('default');
-		$Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-		$Email->to($user['User']['email']);
-		$Email->subject(__('Password reset'));
+        $users = [];
+        $requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
 
-		$Email->emailFormat('both');
-		$Email->template('template-resetpassword', 'template-resetpassword')->viewVars(['newPassword' => $newPassword]);
 
-		$Email->attachments([
-			'logo.png' => [
-				'file' => APP.'webroot/img/oitc_small.png',
-				'mimetype' => 'image/png',
-				'contentId' => '100',
-			]
-		]);
+        $allLdapUsers = $this->Ldap->findAllUser();
+        foreach ($allLdapUsers as $samAccountName) {
+            $ldapUser = $this->Ldap->userInfo($samAccountName);
+            $ableToImport = true;
+            foreach ($requiredFilds as $requiredFild) {
+                if (!isset($ldapUser[$requiredFild])) {
+                    $ableToImport = false;
+                }
+            }
 
-		$user['User']['new_password'] = $newPassword;
-		$user['User']['confirm_new_password'] = $newPassword;
-		unset($user['User']['password']);
-		unset($user['Usergroup']);
-		foreach($user['ContainerUserMembership'] as $key => $container) {
-			$user['User']['Container'][] = $container['container_id'];
-		}
-		unset($user['ContainerUserMembership']);
-		if($this->User->saveAll($user)){
-			$Email->send();
-			$this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>'.$user['User']['email'].'</b>'));
-			$this->redirect(['action' => 'index']);
+            if ($ableToImport === true) {
+                $users[] = $ldapUser;
+            }
+        }
 
-			return;
-		}
-		$this->setFlash(__('Could not reset password'), false);
-		$this->redirect(['action' => 'index']);
+        $usersForSelect = [];
+        foreach ($users as $user) {
+            $usersForSelect[$user['samaccountname']] = $user['displayname'].' ('.$user['samaccountname'].')';
+        }
 
-		return;
-	}
+        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        $this->set(compact(['usersForSelect', 'systemsettings']));
+    }
+
+    public function resetPassword($id = null)
+    {
+        $this->autoRender = false;
+        if (!$this->User->exists($id)) {
+            $this->setFlash(__('Invalide user'), false);
+            $this->redirect(['action' => 'index']);
+
+            return;
+        }
+
+        $user = $this->User->findById($id);
+        $generatePassword = function () {
+            $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            $size = (sizeof($char) - 1);
+            $token = '';
+            for ($i = 0; $i < 7; $i++) {
+                $token .= $char[rand(0, $size)];
+            }
+            $token = $token.rand(0, 9);
+
+            return $token;
+        };
+
+        $newPassword = $generatePassword();
+        $this->_systemsettings = $this->Systemsetting->findAsArray();
+
+        App::uses('CakeEmail', 'Network/Email');
+        $Email = new CakeEmail();
+        $Email->config('default');
+        $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+        $Email->to($user['User']['email']);
+        $Email->subject(__('Password reset'));
+
+        $Email->emailFormat('both');
+        $Email->template('template-resetpassword', 'template-resetpassword')->viewVars(['newPassword' => $newPassword]);
+
+        $Email->attachments([
+            'logo.png' => [
+                'file'      => APP.'webroot/img/oitc_small.png',
+                'mimetype'  => 'image/png',
+                'contentId' => '100',
+            ],
+        ]);
+
+        $user['User']['new_password'] = $newPassword;
+        $user['User']['confirm_new_password'] = $newPassword;
+        unset($user['User']['password']);
+        unset($user['Usergroup']);
+        foreach ($user['ContainerUserMembership'] as $key => $container) {
+            $user['User']['Container'][] = $container['container_id'];
+        }
+        unset($user['ContainerUserMembership']);
+        if ($this->User->saveAll($user)) {
+            $Email->send();
+            $this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>'.$user['User']['email'].'</b>'));
+            $this->redirect(['action' => 'index']);
+
+            return;
+        }
+        $this->setFlash(__('Could not reset password'), false);
+        $this->redirect(['action' => 'index']);
+
+        return;
+    }
 }

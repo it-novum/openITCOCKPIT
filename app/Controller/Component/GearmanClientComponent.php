@@ -23,52 +23,56 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GearmanClientComponent extends Component{
-	
-	public $client = null;
-	
-	public function initialize(Controller $controller) {
-		$this->Controller = $controller;
-		Configure::load('gearman');
-		$this->Config = Configure::read('gearman');
-		
-		$this->client = new GearmanClient();
-		$this->client->addServer($this->Config['address'], $this->Config['port']);
-	}
-	
-	public function send($task, $payload = []){
-		$payload['task'] = $task;
-		$payload = serialize($payload);
-		
-		if($this->Config['encryption'] === true){
-			$result = $this->client->do('oitc_gearman', Security::cipher($payload, $this->Config['password']));
-		}else{
-			$result = $this->client->do('oitc_gearman', $payload);
-		}
-		
-		$result = @unserialize($result);
-		if(!is_array($result)){
-			return 'Corrupt data';
-		}
-		
-		return $result;
-	}
-	
-	public function sendBackground($task, $payload = []){
-		$payload['task'] = $task;
-		$payload = serialize($payload);
-		
-		if($this->Config['encryption'] === true){
-			$result = $this->client->doBackground('oitc_gearman', Security::cipher($payload, $this->Config['password']));
-		}else{
-			$result = $this->client->doBackground('oitc_gearman', $payload);
-		}
-		
-		$result = @unserialize($result);
-		if(!is_array($result)){
-			return 'Corrupt data';
-		}
-		
-		return $result;
-	}
+class GearmanClientComponent extends Component
+{
+
+    public $client = null;
+
+    public function initialize(Controller $controller)
+    {
+        $this->Controller = $controller;
+        Configure::load('gearman');
+        $this->Config = Configure::read('gearman');
+
+        $this->client = new GearmanClient();
+        $this->client->addServer($this->Config['address'], $this->Config['port']);
+    }
+
+    public function send($task, $payload = [])
+    {
+        $payload['task'] = $task;
+        $payload = serialize($payload);
+
+        if ($this->Config['encryption'] === true) {
+            $result = $this->client->doNormal('oitc_gearman', Security::cipher($payload, $this->Config['password']));
+        } else {
+            $result = $this->client->doNormal('oitc_gearman', $payload);
+        }
+
+        $result = @unserialize($result);
+        if (!is_array($result)) {
+            return 'Corrupt data';
+        }
+
+        return $result;
+    }
+
+    public function sendBackground($task, $payload = [])
+    {
+        $payload['task'] = $task;
+        $payload = serialize($payload);
+
+        if ($this->Config['encryption'] === true) {
+            $result = $this->client->doBackground('oitc_gearman', Security::cipher($payload, $this->Config['password']));
+        } else {
+            $result = $this->client->doBackground('oitc_gearman', $payload);
+        }
+
+        $result = @unserialize($result);
+        if (!is_array($result)) {
+            return 'Corrupt data';
+        }
+
+        return $result;
+    }
 }

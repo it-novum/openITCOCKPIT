@@ -24,45 +24,47 @@
 //	confirmation.
 
 
-class DowntimeHosts extends WidgetBase{
-	protected $iconname = 'power-off';
-	protected $createName = 'Create downtime';
-	protected $createLink = '/systemdowntimes/addHostdowntime';
-	protected $bodyStyles = 'height:167px;overflow:auto;';
-	protected $viewName = 'Dashboard/widget_downtime_hosts';
+class DowntimeHosts extends WidgetBase
+{
+    protected $iconname = 'power-off';
+    protected $createName = 'Create downtime';
+    protected $createLink = '/systemdowntimes/addHostdowntime';
+    protected $bodyStyles = 'height:167px;overflow:auto;';
+    protected $viewName = 'Dashboard/widget_downtime_hosts';
 
-	public function compileTemplateData(){
-		$hostsInDowntime = $this->Hoststatus->find('all', [
-			'recursive' => -1,
-			'fields' => [
-				'Hoststatus.host_object_id',
-				'Objects.name1',
-				'Host.name',
-				'Host.id',
-				'Hoststatus.scheduled_downtime_depth',
-			],
-			'joins' => [
-				[
-					'table' => 'nagios_objects',
-					'type' => 'INNER',
-					'alias' => 'Objects',
-					'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-				], [
-					'table' => 'hosts',
-					'type' => 'INNER',
-					'alias' => 'Host',
-					'conditions' => 'Host.uuid = Objects.name1',
-				],
-			],
-			'conditions' => [
-				'Hoststatus.scheduled_downtime_depth >' => 0,
-			],
-		]);
+    public function compileTemplateData()
+    {
+        $hostsInDowntime = $this->Hoststatus->find('all', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Hoststatus.host_object_id',
+                'Objects.name1',
+                'Host.name',
+                'Host.id',
+                'Hoststatus.scheduled_downtime_depth',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Objects.name1',
+                ],
+            ],
+            'conditions' => [
+                'Hoststatus.scheduled_downtime_depth >' => 0,
+            ],
+        ]);
 
-		$templateVariables = [
-			'hostsInDowntime' => $hostsInDowntime,
-		];
+        $templateVariables = [
+            'hostsInDowntime' => $hostsInDowntime,
+        ];
 
-		$this->setTemplateVariables($templateVariables);
-	}
+        $this->setTemplateVariables($templateVariables);
+    }
 }

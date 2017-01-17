@@ -23,25 +23,26 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Currentstatereport extends AppModel{
+class Currentstatereport extends AppModel
+{
 
-	public $name = 'Currentstatereport';
-	public $useTable = false;
+    public $name = 'Currentstatereport';
+    public $useTable = false;
 
-	public $validate = [
-		'Service' => [
-			'multiple' => [
-				'rule' => ['multiple', ['min' => 1]],
-				'message' => 'Please select at least 1 service',
-				'required' => true
-			]
-		],
-		'current_state' => [
-			'multiple' => [
-				'rule' => ['multiple', ['min' => 1]],
-				'message' => 'You have to choose at least one option',
-				'required' => true
-			]
-		],
-	];
+    public $validate = [
+        'Service'       => [
+            'multiple' => [
+                'rule'     => ['multiple', ['min' => 1]],
+                'message'  => 'Please select at least 1 service',
+                'required' => true,
+            ],
+        ],
+        'current_state' => [
+            'multiple' => [
+                'rule'     => ['multiple', ['min' => 1]],
+                'message'  => 'You have to choose at least one option',
+                'required' => true,
+            ],
+        ],
+    ];
 }

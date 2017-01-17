@@ -32,184 +32,190 @@ App::uses('Html', 'Helper');
  * Creates additional menu entries for different locations. These can be configured outside of this
  * class in the "Config" folder. Therefore, the file "additional_links.php" needs to be in that
  * directory.
- *
  * @author Patrick Nawracay <patrick.nawracay@it-novum.com>
  */
-class AdditionalLinksComponent extends Component{
-	public $additionalLinks = [];
+class AdditionalLinksComponent extends Component
+{
+    public $additionalLinks = [];
 
-	/**
-	 * Constructor
-	 *
-	 * @param ComponentCollection $collection A ComponentCollection this component can use to lazy load its components
-	 * @param array $settings Array of configuration settings.
-	 */
-	public function __construct(ComponentCollection $collection, $settings = array()) {
-		parent::__construct($collection, $settings);
-		$this->additionalLinks = $this->_loadAdditionalLinksConfiguration();
-		$this->additionalContent = $this->_loadAdditionalContentConfiguration();
-	}
+    /**
+     * Constructor
+     *
+     * @param ComponentCollection $collection A ComponentCollection this component can use to lazy load its components
+     * @param array               $settings   Array of configuration settings.
+     */
+    public function __construct(ComponentCollection $collection, $settings = [])
+    {
+        parent::__construct($collection, $settings);
+        $this->additionalLinks = $this->_loadAdditionalLinksConfiguration();
+        $this->additionalContent = $this->_loadAdditionalContentConfiguration();
+    }
 
-	protected function _loadAdditionalLinksConfiguration(){
-		$menuName = 'additional_links';
+    protected function _loadAdditionalLinksConfiguration()
+    {
+        $menuName = 'additional_links';
 
-		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
-			return strpos($value, 'Module') !== false;
-		});
-		foreach($modulePlugins as $pluginName){
-			Configure::load($pluginName . '.' . $menuName, 'silent', 'false');
-		}
+        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+        foreach ($modulePlugins as $pluginName) {
+            Configure::load($pluginName.'.'.$menuName, 'silent', 'false');
+        }
 
-		$additionalLinks = Configure::read($menuName);
-		if(!is_array($additionalLinks)){
-			return [];
-		}
-		usort($additionalLinks, [$this, 'linkSort']);
+        $additionalLinks = Configure::read($menuName);
+        if (!is_array($additionalLinks)) {
+            return [];
+        }
+        usort($additionalLinks, [$this, 'linkSort']);
 
-		return $additionalLinks;
-	}
-	
-	protected function _loadAdditionalContentConfiguration(){
-		$menuName = 'additional_content';
+        return $additionalLinks;
+    }
 
-		$modulePlugins = array_filter(CakePlugin::loaded(), function($value){
-			return strpos($value, 'Module') !== false;
-		});
-		foreach($modulePlugins as $pluginName){
-			Configure::load($pluginName . '.' . $menuName, 'silent', 'false');
-		}
+    protected function _loadAdditionalContentConfiguration()
+    {
+        $menuName = 'additional_content';
 
-		$additionalLinks = Configure::read($menuName);
-		if(!is_array($additionalLinks)){
-			return [];
-		}
-		usort($additionalLinks, [$this, 'linkSort']);
+        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+        foreach ($modulePlugins as $pluginName) {
+            Configure::load($pluginName.'.'.$menuName, 'silent', 'false');
+        }
 
-		return $additionalLinks;
-	}
+        $additionalLinks = Configure::read($menuName);
+        if (!is_array($additionalLinks)) {
+            return [];
+        }
+        usort($additionalLinks, [$this, 'linkSort']);
 
-	/**
-	 * Fetches the data out of the configuration array and returns the sorted link elements
-	 * as array.
-	 *
-	 * @param String $controller
-	 * @param String $action
-	 * @param String|String[] $viewPosition
-	 *
-	 * @return String[] The menu entries
-	 */
-	public function fetchLinkData($controller, $action, $viewPosition){
-		$result = [];
+        return $additionalLinks;
+    }
 
-		foreach($this->additionalLinks as $link){
-			$linkPosition = $link['positioning'];
+    /**
+     * Fetches the data out of the configuration array and returns the sorted link elements
+     * as array.
+     *
+     * @param String          $controller
+     * @param String          $action
+     * @param String|String[] $viewPosition
+     *
+     * @return String[] The menu entries
+     */
+    public function fetchLinkData($controller, $action, $viewPosition)
+    {
+        $result = [];
 
-			$hasTitle = isset($link['link']['title']);
-			$controllerMatches = $linkPosition['controller'] === $controller;
-			$actionMatches = $linkPosition['action'] === $action;
-			if(!$hasTitle || !$controllerMatches || !$actionMatches){
-				continue;
-			}
+        foreach ($this->additionalLinks as $link) {
+            $linkPosition = $link['positioning'];
 
-			$_defaults = [
-				'url' => null,
-				'options' => [],
-				'confirmMessage' => false,
-			];
-			$linkData = Hash::merge($_defaults, $link['link']);
+            $hasTitle = isset($link['link']['title']);
+            $controllerMatches = $linkPosition['controller'] === $controller;
+            $actionMatches = $linkPosition['action'] === $action;
+            if (!$hasTitle || !$controllerMatches || !$actionMatches) {
+                continue;
+            }
 
-			if(is_string($viewPosition) && $linkPosition['viewPosition'] === $viewPosition){
-				$result[] = $linkData;
-			}elseif(is_array($viewPosition) && in_array($linkPosition['viewPosition'], $viewPosition)){
-				if (!isset($result[$linkPosition['viewPosition']]) || !is_array($result[$linkPosition['viewPosition']])){
-					$result[$linkPosition['viewPosition']] = [];
-				}
-				$result[$linkPosition['viewPosition']][] = $linkData;
-			}else{
-				continue;
-			}
-		}
+            $_defaults = [
+                'url'            => null,
+                'options'        => [],
+                'confirmMessage' => false,
+            ];
+            $linkData = Hash::merge($_defaults, $link['link']);
 
-		if(is_array($viewPosition)){
-			foreach($viewPosition as $position){
-				if(!isset($result[$position])){
-					$result[$position] = []; // Set the key, even if there is no value
-				}
-			}
-		}
+            if (is_string($viewPosition) && $linkPosition['viewPosition'] === $viewPosition) {
+                $result[] = $linkData;
+            } elseif (is_array($viewPosition) && in_array($linkPosition['viewPosition'], $viewPosition)) {
+                if (!isset($result[$linkPosition['viewPosition']]) || !is_array($result[$linkPosition['viewPosition']])) {
+                    $result[$linkPosition['viewPosition']] = [];
+                }
+                $result[$linkPosition['viewPosition']][] = $linkData;
+            } else {
+                continue;
+            }
+        }
 
-		return $result;
-	}
-	
-	/**
-	 * Fetches the data out of the configuration array and returns the sorted link elements
-	 * as array.
-	 *
-	 * @param String $controller
-	 * @param String $action
-	 * @param String|String[] $viewPosition
-	 *
-	 * @return String[] The menu entries
-	 */
-	public function fetchContentData($controller, $action, $viewPosition){
-		$result = [];
+        if (is_array($viewPosition)) {
+            foreach ($viewPosition as $position) {
+                if (!isset($result[$position])) {
+                    $result[$position] = []; // Set the key, even if there is no value
+                }
+            }
+        }
 
-		foreach($this->additionalContent as $elementArray){
-			$linkPosition = $elementArray['positioning'];
+        return $result;
+    }
 
-			$controllerMatches = $linkPosition['controller'] === $controller;
-			$actionMatches = $linkPosition['action'] === $action;
-			if(!$controllerMatches || !$actionMatches){
-				continue;
-			}
+    /**
+     * Fetches the data out of the configuration array and returns the sorted link elements
+     * as array.
+     *
+     * @param String          $controller
+     * @param String          $action
+     * @param String|String[] $viewPosition
+     *
+     * @return String[] The menu entries
+     */
+    public function fetchContentData($controller, $action, $viewPosition)
+    {
+        $result = [];
 
-			$element =  $elementArray['element'];
+        foreach ($this->additionalContent as $elementArray) {
+            $linkPosition = $elementArray['positioning'];
 
-			if(is_string($viewPosition) && $linkPosition['viewPosition'] === $viewPosition){
-				$result[] = $element;
-			}elseif(is_array($viewPosition) && in_array($linkPosition['viewPosition'], $viewPosition)){
-				if (!isset($result[$linkPosition['viewPosition']]) || !is_array($result[$linkPosition['viewPosition']])){
-					$result[$linkPosition['viewPosition']] = [];
-				}
-				$result[$linkPosition['viewPosition']][] = $element;
-			}else{
-				continue;
-			}
-		}
+            $controllerMatches = $linkPosition['controller'] === $controller;
+            $actionMatches = $linkPosition['action'] === $action;
+            if (!$controllerMatches || !$actionMatches) {
+                continue;
+            }
 
-		if(is_array($viewPosition)){
-			foreach($viewPosition as $position){
-				if(!isset($result[$position])){
-					$result[$position] = []; // Set the key, even if there is no value
-				}
-			}
-		}
+            $element = $elementArray['element'];
 
-		return $result;
-	}
+            if (is_string($viewPosition) && $linkPosition['viewPosition'] === $viewPosition) {
+                $result[] = $element;
+            } elseif (is_array($viewPosition) && in_array($linkPosition['viewPosition'], $viewPosition)) {
+                if (!isset($result[$linkPosition['viewPosition']]) || !is_array($result[$linkPosition['viewPosition']])) {
+                    $result[$linkPosition['viewPosition']] = [];
+                }
+                $result[$linkPosition['viewPosition']][] = $element;
+            } else {
+                continue;
+            }
+        }
 
-	protected function linkSort($a, $b){
-		// First sort by controller
-		if($a['positioning']['controller'] > $b['positioning']['controller']){
-			return 1;
-		}elseif($a['positioning']['controller'] < $b['positioning']['controller']){
-			return -1;
-		}
+        if (is_array($viewPosition)) {
+            foreach ($viewPosition as $position) {
+                if (!isset($result[$position])) {
+                    $result[$position] = []; // Set the key, even if there is no value
+                }
+            }
+        }
 
-		// Then sort by action
-		if($a['positioning']['action'] > $b['positioning']['action']){
-			return 1;
-		}elseif($a['positioning']['action'] < $b['positioning']['action']){
-			return -1;
-		}
+        return $result;
+    }
 
-		// At last sort by the value from the 'sorting' field
-		if($a['positioning']['sorting'] > $b['positioning']['sorting']){
-			return 1;
-		}elseif($a['positioning']['sorting'] < $b['positioning']['sorting']){
-			return -1;
-		}
+    protected function linkSort($a, $b)
+    {
+        // First sort by controller
+        if ($a['positioning']['controller'] > $b['positioning']['controller']) {
+            return 1;
+        } elseif ($a['positioning']['controller'] < $b['positioning']['controller']) {
+            return -1;
+        }
 
-		return 0;
-	}
+        // Then sort by action
+        if ($a['positioning']['action'] > $b['positioning']['action']) {
+            return 1;
+        } elseif ($a['positioning']['action'] < $b['positioning']['action']) {
+            return -1;
+        }
+
+        // At last sort by the value from the 'sorting' field
+        if ($a['positioning']['sorting'] > $b['positioning']['sorting']) {
+            return 1;
+        } elseif ($a['positioning']['sorting'] < $b['positioning']['sorting']) {
+            return -1;
+        }
+
+        return 0;
+    }
 }

@@ -27,76 +27,79 @@ use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
-class RegistersController extends AppController{
-	public $layout = 'Admin.register';
-	public $components = ['GearmanClient'];
-	public $uses = ['Register', 'Proxy'];
+class RegistersController extends AppController
+{
+    public $layout = 'Admin.register';
+    public $components = ['GearmanClient'];
+    public $uses = ['Register', 'Proxy'];
 
-	public function index(){
-		if($this->request->is('post')){
-			$this->request->data['Register']['id'] = 1;
-			if($this->Register->save($this->request->data)){
-				//$this->setFlash('License added successfully');
-				$this->redirect(array('action' => 'check'));
-			}else{
-				$this->setFlash('Could not add license', false);
-			}
-		}
+    public function index()
+    {
+        if ($this->request->is('post')) {
+            $this->request->data['Register']['id'] = 1;
+            if ($this->Register->save($this->request->data)) {
+                //$this->setFlash('License added successfully');
+                $this->redirect(['action' => 'check']);
+            } else {
+                $this->setFlash('Could not add license', false);
+            }
+        }
 
-		$license = $this->Register->find('first');
+        $license = $this->Register->find('first');
 
-		if(!empty($license)){
-			//$this->redirect(array('action' => 'check'));
-		}
-		$this->set('licence', $license);
-	}
+        if (!empty($license)) {
+            //$this->redirect(array('action' => 'check'));
+        }
+        $this->set('licence', $license);
+    }
 
-	public function check(){
-		$license = $this->Register->find('first');
-		if(empty($license)){
-			$this->setFlash('Please enter a license key', false);
-			$this->redirect(array('action' => 'index'));
-		}
+    public function check()
+    {
+        $license = $this->Register->find('first');
+        if (empty($license)) {
+            $this->setFlash('Please enter a license key', false);
+            $this->redirect(['action' => 'index']);
+        }
 
-		$License = new License($this->Register->find('first'));
-		$packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-		$http = new Http(
-			$packagemanagerRequestBuilder->getUrlForLicenseCheck(),
-			$packagemanagerRequestBuilder->getOptions(),
-			$this->Proxy->getSettings()
-		);
+        $License = new License($this->Register->find('first'));
+        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
+        $http = new Http(
+            $packagemanagerRequestBuilder->getUrlForLicenseCheck(),
+            $packagemanagerRequestBuilder->getOptions(),
+            $this->Proxy->getSettings()
+        );
 
-		$http->sendRequest();
-		$error = $http->getLastError();
-		$response = json_decode($http->data);
+        $http->sendRequest();
+        $error = $http->getLastError();
+        $response = json_decode($http->data);
 
-		$isValide = false;
-		$licence = null;
+        $isValide = false;
+        $licence = null;
 
-		if(is_object($response)){
-			if(property_exists($response, 'licence')){
-				if(property_exists($response, 'licence')){
-					if(!empty($response->licence) && property_exists($response->licence, 'Licence')){
-						if(strtotime($response->licence->Licence->expire) > time()){
-							$isValide = true;
-							$licence = $response->licence->Licence;
-							if($license['Register']['apt'] == 0){
-								$this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['Register']['license']]);
-								$license['Register']['apt'] = 1;
-								$this->Register->save($license);
-							}
-						}
-					}
-				}
-			}
-		}
-		if($isValide == false){
-			//The lincense is invalide, so we delete it again out of the database
-			if(isset($license['Register']['id'])){
-				$this->Register->delete($license['Register']['id']);
-			}
-		}
+        if (is_object($response)) {
+            if (property_exists($response, 'licence')) {
+                if (property_exists($response, 'licence')) {
+                    if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
+                        if (strtotime($response->licence->Licence->expire) > time()) {
+                            $isValide = true;
+                            $licence = $response->licence->Licence;
+                            if ($license['Register']['apt'] == 0) {
+                                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['Register']['license']]);
+                                $license['Register']['apt'] = 1;
+                                $this->Register->save($license);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if ($isValide == false) {
+            //The lincense is invalide, so we delete it again out of the database
+            if (isset($license['Register']['id'])) {
+                $this->Register->delete($license['Register']['id']);
+            }
+        }
 
-		$this->set(compact('isValide', 'licence', 'error'));
-	}
+        $this->set(compact('isValide', 'licence', 'error'));
+    }
 }

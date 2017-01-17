@@ -24,44 +24,48 @@
 //	confirmation.
 
 App::uses('ExceptionRenderer', 'Error');
-class AppExceptionRenderer extends ExceptionRenderer {
-/**
- * Handling special cases
- *
- * @return void
- */	
-	public function render() {
-		if($this->controller->request->is('ajax')) {
-			$this->method = 'renderAjaxError';
-		}
-		if(isset($this->controller->request->params['widget']) && $this->controller->request->params['widget']) {
-			$this->method = 'renderAjaxError';
-		}
-		parent::render();
-	}
 
-/**
- * Render a ajax request exception
- *
- * @param Exception $error
- * @return void
- */
-	public function renderAjaxError($error) {
-		$message = $error->getMessage();
-		if (!Configure::read('debug') && $error instanceof CakeException) {
-			$message = __d('cake', 'Not Found');
-		}
-		
-		
-		$response = array(
-			'code' => Types::CODE_EXCEPTION,
-			'data' => array(
-				'message' => $error->getMessage()
-			)
-		);
-		$this->controller->response = new ServiceResponse($response);
+class AppExceptionRenderer extends ExceptionRenderer
+{
+    /**
+     * Handling special cases
+     * @return void
+     */
+    public function render()
+    {
+        if ($this->controller->request->is('ajax')) {
+            $this->method = 'renderAjaxError';
+        }
+        if (isset($this->controller->request->params['widget']) && $this->controller->request->params['widget']) {
+            $this->method = 'renderAjaxError';
+        }
+        parent::render();
+    }
 
-		$this->controller->response->statusCode($error->getCode());
-		$this->controller->response->send();
-	}
+    /**
+     * Render a ajax request exception
+     *
+     * @param Exception $error
+     *
+     * @return void
+     */
+    public function renderAjaxError($error)
+    {
+        $message = $error->getMessage();
+        if (!Configure::read('debug') && $error instanceof CakeException) {
+            $message = __d('cake', 'Not Found');
+        }
+
+
+        $response = [
+            'code' => Types::CODE_EXCEPTION,
+            'data' => [
+                'message' => $error->getMessage(),
+            ],
+        ];
+        $this->controller->response = new ServiceResponse($response);
+
+        $this->controller->response->statusCode($error->getCode());
+        $this->controller->response->send();
+    }
 }

@@ -24,12 +24,12 @@
 //	confirmation.
 
 $config = [
-	'gearman' => [
-		'address'=> '127.0.0.1',
-		'port' => 4730,
-		'encryption' => true,
-		'password' => '3c3b0be215c95321c30de1ab908364dfbf0ed440',
-		'pidfile' => '/var/run/oitc_gearmanworker.pid',
-		'worker' => 5
-	]
+    'gearman' => [
+        'address'    => '127.0.0.1',
+        'port'       => 4730,
+        'encryption' => true,
+        'password'   => '3c3b0be215c95321c30de1ab908364dfbf0ed440',
+        'pidfile'    => '/var/run/oitc_gearmanworker.pid',
+        'worker'     => 5,
+    ],
 ];

@@ -23,9 +23,9 @@ $html = '
 include("../mpdf.php");
 
 
-$mpdf=new mPDF('c','A4','','',42,15,67,67,20,15); 
+$mpdf = new mPDF('c', 'A4', '', '', 42, 15, 67, 67, 20, 15);
 
-$mpdf->SetDisplayMode('fullpage','two');
+$mpdf->SetDisplayMode('fullpage', 'two');
 
 $mpdf->mirrorMargins = 1;
 
@@ -67,20 +67,20 @@ $shortheaderE = '<div align="center" style="color:green;font-family:mono;font-si
 
 
 $mpdf->SetHTMLHeader($header);
-$mpdf->SetHTMLHeader($headerE,'E');
-$mpdf->setFooter('{PAGENO} of {nbpg} pages||{PAGENO} of {nbpg} pages') ;
+$mpdf->SetHTMLHeader($headerE, 'E');
+$mpdf->setFooter('{PAGENO} of {nbpg} pages||{PAGENO} of {nbpg} pages');
 
 
 $mpdf->WriteHTML($html);
 
 
-$mpdf->setHeader();	// Clear headers before adding page
-$mpdf->AddPage('L','','','','',25,25,55,45,18,12);
+$mpdf->setHeader();    // Clear headers before adding page
+$mpdf->AddPage('L', '', '', '', '', 25, 25, 55, 45, 18, 12);
 
-$mpdf->SetHTMLHeader($shortheader,'',true);	// New parameter in v1.4 to add the header to the new page
-$mpdf->SetHTMLHeader($shortheaderE,'E',true);
+$mpdf->SetHTMLHeader($shortheader, '', true);    // New parameter in v1.4 to add the header to the new page
+$mpdf->SetHTMLHeader($shortheaderE, 'E', true);
 $mpdf->SetHTMLFooter($longfooter);
-$mpdf->SetHTMLFooter($longfooterE,'E');
+$mpdf->SetHTMLFooter($longfooterE, 'E');
 
 
 $mpdf->WriteHTML($html);
@@ -88,24 +88,23 @@ $mpdf->WriteHTML($html);
 $mpdf->WriteHTML($html);
 
 
-
-$mpdf->setHeader('{PAGENO} of {nbpg} pages||{PAGENO} of {nbpg} pages') ;
+$mpdf->setHeader('{PAGENO} of {nbpg} pages||{PAGENO} of {nbpg} pages');
 $mpdf->SetHTMLFooter($footer);
-$mpdf->SetHTMLFooter($footerE,'E');
+$mpdf->SetHTMLFooter($footerE, 'E');
 
 
 $mpdf->WriteHTML($html);
 $mpdf->WriteHTML($html);
 
 
-$mpdf->setHeader();	// Clear headers before adding page
-$mpdf->AddPage('','','','','',42,15,67,67,20,15);	// Default is Portrait (because that was the document default)
+$mpdf->setHeader();    // Clear headers before adding page
+$mpdf->AddPage('', '', '', '', '', 42, 15, 67, 67, 20, 15);    // Default is Portrait (because that was the document default)
 
 
-$mpdf->SetHTMLHeader($shortheader,'',true);	// New parameter in v1.4 to add the header to the new page
-$mpdf->SetHTMLHeader($shortheaderE,'E',true);
+$mpdf->SetHTMLHeader($shortheader, '', true);    // New parameter in v1.4 to add the header to the new page
+$mpdf->SetHTMLHeader($shortheaderE, 'E', true);
 $mpdf->SetHTMLFooter($longfooter);
-$mpdf->SetHTMLFooter($longfooterE,'E');
+$mpdf->SetHTMLFooter($longfooterE, 'E');
 
 
 $mpdf->WriteHTML($html);
@@ -113,16 +112,16 @@ $mpdf->WriteHTML($html);
 
 
 $mpdf->SetHTMLHeader($header);
-$mpdf->SetHTMLHeader($headerE,'E');
+$mpdf->SetHTMLHeader($headerE, 'E');
 $mpdf->SetHTMLFooter($footer);
-$mpdf->SetHTMLFooter($footerE,'E');
+$mpdf->SetHTMLFooter($footerE, 'E');
 
 
 $mpdf->WriteHTML($html);
 $mpdf->WriteHTML($html);
 
 
-$mpdf->Output('mpdf.pdf','I');
+$mpdf->Output('mpdf.pdf', 'I');
 exit;
 //==============================================================
 //==============================================================

@@ -21,10 +21,10 @@
 
 /**
  * Creates an example PDF TEST document using TCPDF
- * @package com.tecnick.tcpdf
+ * @package  com.tecnick.tcpdf
  * @abstract TCPDF - Example: Set PDF viewer display preferences.
- * @author Nicola Asuni
- * @since 2008-06-09
+ * @author   Nicola Asuni
+ * @since    2008-06-09
  */
 
 require_once('../config/lang/eng.php');
@@ -44,8 +44,8 @@ $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 029', PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -56,7 +56,7 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 //set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 //set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
@@ -67,24 +67,24 @@ $pdf->setLanguageArray($l);
 // ---------------------------------------------------------
 
 // set array for viewer preferences
-$preferences = array(
-	'HideToolbar' => true,
-	'HideMenubar' => true,
-	'HideWindowUI' => true,
-	'FitWindow' => true,
-	'CenterWindow' => true,
-	'DisplayDocTitle' => true,
-	'NonFullScreenPageMode' => 'UseNone', // UseNone, UseOutlines, UseThumbs, UseOC
-	'ViewArea' => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
-	'ViewClip' => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
-	'PrintArea' => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
-	'PrintClip' => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
-	'PrintScaling' => 'AppDefault', // None, AppDefault
-	'Duplex' => 'DuplexFlipLongEdge', // Simplex, DuplexFlipShortEdge, DuplexFlipLongEdge
-	'PickTrayByPDFSize' => true,
-	'PrintPageRange' => array(1,1,2,3),
-	'NumCopies' => 2
-);
+$preferences = [
+    'HideToolbar'           => true,
+    'HideMenubar'           => true,
+    'HideWindowUI'          => true,
+    'FitWindow'             => true,
+    'CenterWindow'          => true,
+    'DisplayDocTitle'       => true,
+    'NonFullScreenPageMode' => 'UseNone', // UseNone, UseOutlines, UseThumbs, UseOC
+    'ViewArea'              => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
+    'ViewClip'              => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
+    'PrintArea'             => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
+    'PrintClip'             => 'CropBox', // CropBox, BleedBox, TrimBox, ArtBox
+    'PrintScaling'          => 'AppDefault', // None, AppDefault
+    'Duplex'                => 'DuplexFlipLongEdge', // Simplex, DuplexFlipShortEdge, DuplexFlipLongEdge
+    'PickTrayByPDFSize'     => true,
+    'PrintPageRange'        => [1, 1, 2, 3],
+    'NumCopies'             => 2,
+];
 
 // Check the example n. 60 for advanced page settings
 

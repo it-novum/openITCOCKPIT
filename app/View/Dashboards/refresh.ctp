@@ -23,6 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if(!empty($widget)):
-	echo $this->element($element, ['widget' => $widget]);
+if (!empty($widget)):
+    echo $this->element($element, ['widget' => $widget]);
 endif;

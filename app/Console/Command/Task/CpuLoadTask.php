@@ -23,42 +23,44 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CpuLoadTask extends AppShell{
-	
-	function execute($quiet = false){
-		$this->params['quiet'] = $quiet;
-		if(file_exists('/proc/loadavg')){
-			$this->stdout->styles('green', ['text' => 'green']);
-			$this->out('Fetch current CPU load...', false);
-			$load = file('/proc/loadavg');
-			$records = [];
-			if(file_exists(TMP.'loadavg')){
-				$records = file(TMP.'loadavg');
-			}
-	
-			$newLoad = [];
-			if(sizeof($records) > 15){
-				//Truncate file if more that 15 entries
-				$records = array_reverse($records);
-				for($i = 0; $i < 15; $i++){
-					$newLoad[] = $records[$i];
-				}
-				$newLoad = array_reverse($newLoad);
-			}else{
-				$newLoad = $records;
-			}
-	
-			$newLoad[] = time().' '.$load[0];
-	
-			unset($records);
-			$file = fopen(TMP.'loadavg', 'w+');
-			foreach($newLoad as $line){
-				fwrite($file, $line);
-			}
-			fclose($file);
-			$this->out('<green>   Ok</green>');
-			$this->hr();
-		}
-	}
-	
+class CpuLoadTask extends AppShell
+{
+
+    function execute($quiet = false)
+    {
+        $this->params['quiet'] = $quiet;
+        if (file_exists('/proc/loadavg')) {
+            $this->stdout->styles('green', ['text' => 'green']);
+            $this->out('Fetch current CPU load...', false);
+            $load = file('/proc/loadavg');
+            $records = [];
+            if (file_exists(TMP.'loadavg')) {
+                $records = file(TMP.'loadavg');
+            }
+
+            $newLoad = [];
+            if (sizeof($records) > 15) {
+                //Truncate file if more that 15 entries
+                $records = array_reverse($records);
+                for ($i = 0; $i < 15; $i++) {
+                    $newLoad[] = $records[$i];
+                }
+                $newLoad = array_reverse($newLoad);
+            } else {
+                $newLoad = $records;
+            }
+
+            $newLoad[] = time().' '.$load[0];
+
+            unset($records);
+            $file = fopen(TMP.'loadavg', 'w+');
+            foreach ($newLoad as $line) {
+                fwrite($file, $line);
+            }
+            fclose($file);
+            $this->out('<green>   Ok</green>');
+            $this->hr();
+        }
+    }
+
 }

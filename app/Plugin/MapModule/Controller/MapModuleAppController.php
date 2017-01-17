@@ -26,6 +26,7 @@
 
 App::uses('AppController', 'Controller');
 
-class MapModuleAppController extends AppController {
+class MapModuleAppController extends AppController
+{
 
 }

@@ -3,8 +3,8 @@
  */
 var Frontend = {};
 var App = {
-	Controllers: {},
-	Components: {}
+    Controllers: {},
+    Components: {}
 };
 
 /**
@@ -12,134 +12,136 @@ var App = {
  *
  */
 if (!Function.prototype.bind) {
-	Function.prototype.bind = function(){  
-		var fn = this, args = Array.prototype.slice.call(arguments),
-		object = args.shift(); 
-		return function(){ 
-			return fn.apply(object, 
-				args.concat(Array.prototype.slice.call(arguments))
-			); 
-		};
-	};
+    Function.prototype.bind = function () {
+        var fn = this, args = Array.prototype.slice.call(arguments),
+            object = args.shift();
+        return function () {
+            return fn.apply(object,
+                args.concat(Array.prototype.slice.call(arguments))
+            );
+        };
+    };
 }
 
-function is_scalar(expr){
-	return (typeof expr === 'number' || typeof expr === 'string' || typeof expr === 'boolean');
+function is_scalar(expr) {
+    return (typeof expr === 'number' || typeof expr === 'string' || typeof expr === 'boolean');
 }
 
 function is_array(mixed_var) {
-  //  discuss at: http://phpjs.org/functions/is_array/
-  // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: Legaev Andrey
-  // improved by: Onno Marsman
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // improved by: Nathan Sepulveda
-  // improved by: Brett Zamir (http://brett-zamir.me)
-  // bugfixed by: Cord
-  // bugfixed by: Manish
-  // bugfixed by: Brett Zamir (http://brett-zamir.me)
-  //        note: In php.js, javascript objects are like php associative arrays, thus JavaScript objects will also
-  //        note: return true in this function (except for objects which inherit properties, being thus used as objects),
-  //        note: unless you do ini_set('phpjs.objectsAsArrays', 0), in which case only genuine JavaScript arrays
-  //        note: will return true
-  //   example 1: is_array(['Kevin', 'van', 'Zonneveld']);
-  //   returns 1: true
-  //   example 2: is_array('Kevin van Zonneveld');
-  //   returns 2: false
-  //   example 3: is_array({0: 'Kevin', 1: 'van', 2: 'Zonneveld'});
-  //   returns 3: true
-  //   example 4: is_array(function tmp_a(){this.name = 'Kevin'});
-  //   returns 4: false
+    //  discuss at: http://phpjs.org/functions/is_array/
+    // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // improved by: Legaev Andrey
+    // improved by: Onno Marsman
+    // improved by: Brett Zamir (http://brett-zamir.me)
+    // improved by: Nathan Sepulveda
+    // improved by: Brett Zamir (http://brett-zamir.me)
+    // bugfixed by: Cord
+    // bugfixed by: Manish
+    // bugfixed by: Brett Zamir (http://brett-zamir.me)
+    //        note: In php.js, javascript objects are like php associative arrays, thus JavaScript objects will also
+    //        note: return true in this function (except for objects which inherit properties, being thus used as objects),
+    //        note: unless you do ini_set('phpjs.objectsAsArrays', 0), in which case only genuine JavaScript arrays
+    //        note: will return true
+    //   example 1: is_array(['Kevin', 'van', 'Zonneveld']);
+    //   returns 1: true
+    //   example 2: is_array('Kevin van Zonneveld');
+    //   returns 2: false
+    //   example 3: is_array({0: 'Kevin', 1: 'van', 2: 'Zonneveld'});
+    //   returns 3: true
+    //   example 4: is_array(function tmp_a(){this.name = 'Kevin'});
+    //   returns 4: false
 
-  var ini,
-    _getFuncName = function (fn) {
-      var name = (/\W*function\s+([\w\$]+)\s*\(/)
-        .exec(fn);
-      if (!name) {
-        return '(Anonymous)';
-      }
-      return name[1];
+    var ini,
+        _getFuncName = function (fn) {
+            var name = (/\W*function\s+([\w\$]+)\s*\(/)
+                .exec(fn);
+            if (!name) {
+                return '(Anonymous)';
+            }
+            return name[1];
+        };
+    _isArray = function (mixed_var) {
+        // return Object.prototype.toString.call(mixed_var) === '[object Array]';
+        // The above works, but let's do the even more stringent approach: (since Object.prototype.toString could be overridden)
+        // Null, Not an object, no length property so couldn't be an Array (or String)
+        if (!mixed_var || typeof mixed_var !== 'object' || typeof mixed_var.length !== 'number') {
+            return false;
+        }
+        var len = mixed_var.length;
+        mixed_var[mixed_var.length] = 'bogus';
+        // The only way I can think of to get around this (or where there would be trouble) would be to have an object defined
+        // with a custom "length" getter which changed behavior on each call (or a setter to mess up the following below) or a custom
+        // setter for numeric properties, but even that would need to listen for specific indexes; but there should be no false negatives
+        // and such a false positive would need to rely on later JavaScript innovations like __defineSetter__
+        if (len !== mixed_var.length) {
+            // We know it's an array since length auto-changed with the addition of a
+            // numeric property at its length end, so safely get rid of our bogus element
+            mixed_var.length -= 1;
+            return true;
+        }
+        // Get rid of the property we added onto a non-array object; only possible
+        // side-effect is if the user adds back the property later, it will iterate
+        // this property in the older order placement in IE (an order which should not
+        // be depended on anyways)
+        delete mixed_var[mixed_var.length];
+        return false;
     };
-  _isArray = function (mixed_var) {
-    // return Object.prototype.toString.call(mixed_var) === '[object Array]';
-    // The above works, but let's do the even more stringent approach: (since Object.prototype.toString could be overridden)
-    // Null, Not an object, no length property so couldn't be an Array (or String)
-    if (!mixed_var || typeof mixed_var !== 'object' || typeof mixed_var.length !== 'number') {
-      return false;
+
+    if (!mixed_var || typeof mixed_var !== 'object') {
+        return false;
     }
-    var len = mixed_var.length;
-    mixed_var[mixed_var.length] = 'bogus';
-    // The only way I can think of to get around this (or where there would be trouble) would be to have an object defined
-    // with a custom "length" getter which changed behavior on each call (or a setter to mess up the following below) or a custom
-    // setter for numeric properties, but even that would need to listen for specific indexes; but there should be no false negatives
-    // and such a false positive would need to rely on later JavaScript innovations like __defineSetter__
-    if (len !== mixed_var.length) {
-      // We know it's an array since length auto-changed with the addition of a
-      // numeric property at its length end, so safely get rid of our bogus element
-      mixed_var.length -= 1;
-      return true;
+
+    // BEGIN REDUNDANT
+    this.php_js = this.php_js || {};
+    this.php_js.ini = this.php_js.ini || {};
+    // END REDUNDANT
+
+    ini = this.php_js.ini['phpjs.objectsAsArrays'];
+
+    return _isArray(mixed_var) ||
+        // Allow returning true unless user has called
+        // ini_set('phpjs.objectsAsArrays', 0) to disallow objects as arrays
+        ((!ini || ( // if it's not set to 0 and it's not 'off', check for objects as arrays
+            (parseInt(ini.local_value, 10) !== 0 && (!ini.local_value.toLowerCase || ini.local_value.toLowerCase() !==
+            'off')))) && (
+            Object.prototype.toString.call(mixed_var) === '[object Object]' && _getFuncName(mixed_var.constructor) ===
+            'Object' // Most likely a literal and intended as assoc. array
+        ));
+}
+
+function is_array_equal(arr1, arr2) {
+    return $(arr1).not(arr2).length == 0 &&
+        $(arr2).not(arr1).length == 0;
+}
+
+function getObjectKeyByValue(object, value) {
+    for (var key in object) {
+        if (object.hasOwnProperty(key) && object[key] === value) {
+            return key;
+        }
     }
-    // Get rid of the property we added onto a non-array object; only possible
-    // side-effect is if the user adds back the property later, it will iterate
-    // this property in the older order placement in IE (an order which should not
-    // be depended on anyways)
-    delete mixed_var[mixed_var.length];
-    return false;
-  };
-
-  if (!mixed_var || typeof mixed_var !== 'object') {
-    return false;
-  }
-
-  // BEGIN REDUNDANT
-  this.php_js = this.php_js || {};
-  this.php_js.ini = this.php_js.ini || {};
-  // END REDUNDANT
-
-  ini = this.php_js.ini['phpjs.objectsAsArrays'];
-
-  return _isArray(mixed_var) ||
-  // Allow returning true unless user has called
-  // ini_set('phpjs.objectsAsArrays', 0) to disallow objects as arrays
-  ((!ini || ( // if it's not set to 0 and it's not 'off', check for objects as arrays
-    (parseInt(ini.local_value, 10) !== 0 && (!ini.local_value.toLowerCase || ini.local_value.toLowerCase() !==
-      'off')))) && (
-    Object.prototype.toString.call(mixed_var) === '[object Object]' && _getFuncName(mixed_var.constructor) ===
-    'Object' // Most likely a literal and intended as assoc. array
-  ));
 }
 
-function is_array_equal(arr1, arr2){
-	return $(arr1).not(arr2).length == 0 &&
-		$(arr2).not(arr1).length == 0;
+function ucfirst(str) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   bugfixed by: Onno Marsman
+    // +   improved by: Brett Zamir (http://brett-zamir.me)
+    // *     example 1: ucfirst('kevin van zonneveld');
+    // *     returns 1: 'Kevin van zonneveld'
+    str += '';
+    var f = str.charAt(0).toUpperCase();
+    return f + str.substr(1);
 }
 
-function getObjectKeyByValue(object, value){
-	for(var key in object){
-		if(object.hasOwnProperty(key) && object[key] === value){
-			return key;
-		}
-	}
-}
-
-function ucfirst (str) {
-	// http://kevin.vanzonneveld.net
-	// +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-	// +   bugfixed by: Onno Marsman
-	// +   improved by: Brett Zamir (http://brett-zamir.me)
-	// *     example 1: ucfirst('kevin van zonneveld');
-	// *     returns 1: 'Kevin van zonneveld'
-	str += '';
-	var f = str.charAt(0).toUpperCase();
-	return f + str.substr(1);
-}
-
-function stringUnderscore(str){
-	var res = str.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
-	if(res.substr(0, 1) == '_') {
-		res = res.substr(1);
-	}
-	return res;
+function stringUnderscore(str) {
+    var res = str.replace(/([A-Z])/g, function ($1) {
+        return "_" + $1.toLowerCase();
+    });
+    if (res.substr(0, 1) == '_') {
+        res = res.substr(1);
+    }
+    return res;
 }
 
 /**
@@ -148,18 +150,18 @@ function stringUnderscore(str){
  * @return string
  */
 function camelCase(str) {
-	if(typeof str != 'string') {
-		return str;
-	}
-	var parts = str.split('_');
-	var res = '';
-	for(var i in parts) {
-		res += ucfirst(parts[i]);
-	}
-	return res;
+    if (typeof str != 'string') {
+        return str;
+    }
+    var parts = str.split('_');
+    var res = '';
+    for (var i in parts) {
+        res += ucfirst(parts[i]);
+    }
+    return res;
 }
 
-function trim (str, charlist) {
+function trim(str, charlist) {
     // http://kevin.vanzonneveld.net
     // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
     // +   improved by: mdsjack (http://www.mdsjack.bo.it)
@@ -208,7 +210,7 @@ function trim (str, charlist) {
     return whitespace.indexOf(str.charAt(0)) === -1 ? str : '';
 }
 
-function count (mixed_var, mode) {
+function count(mixed_var, mode) {
     // http://kevin.vanzonneveld.net
     // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
     // +      input by: Waldo Malqui Silva
@@ -248,25 +250,25 @@ function count (mixed_var, mode) {
 }
 
 function getObjectKeys(obj) {
-	var keys = [];
-	for(var key in obj) {
-		keys.push(key);
-	}
-	return keys;
+    var keys = [];
+    for (var key in obj) {
+        keys.push(key);
+    }
+    return keys;
 }
 
 function getFormValues($form) {
-	var paramObj = {};
-	$.each($form.serializeArray(), function(_, kv) {
-		if (paramObj.hasOwnProperty(kv.name)) {
-			paramObj[kv.name] = $.makeArray(paramObj[kv.name]);
-			paramObj[kv.name].push(kv.value);
-		}
-		else {
-			paramObj[kv.name] = kv.value;
-		}
-	});
-	return paramObj;
+    var paramObj = {};
+    $.each($form.serializeArray(), function (_, kv) {
+        if (paramObj.hasOwnProperty(kv.name)) {
+            paramObj[kv.name] = $.makeArray(paramObj[kv.name]);
+            paramObj[kv.name].push(kv.value);
+        }
+        else {
+            paramObj[kv.name] = kv.value;
+        }
+    });
+    return paramObj;
 }
 
 /**
@@ -280,38 +282,37 @@ function getFormValues($form) {
  * array/hash/object that is given.
  * Docs: http://www.openjs.com/scripts/others/dump_function_php_print_r.php
  */
-function dump(arr,level) {
-	var dumped_text = "";
-	if(!level) level = 0;
-	
-	//The padding given at the beginning of the line.
-	var level_padding = "";
-	for(var j=0;j<level+1;j++) level_padding += "    ";
-	
-	if(typeof(arr) == 'object') { //Array/Hashes/Objects 
-		for(var item in arr) {
-			var value = arr[item];
-			
-			if(typeof(value) == 'object') { //If it is an array,
-				dumped_text += level_padding + "'" + item + "' ...\n";
-				dumped_text += dump(value,level+1);
-			} else {
-				dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
-			}
-		}
-	} else { //Stings/Chars/Numbers etc.
-		dumped_text = "===>"+arr+"<===("+typeof(arr)+")";
-	}
-	return dumped_text;
+function dump(arr, level) {
+    var dumped_text = "";
+    if (!level) level = 0;
+
+    //The padding given at the beginning of the line.
+    var level_padding = "";
+    for (var j = 0; j < level + 1; j++) level_padding += "    ";
+
+    if (typeof(arr) == 'object') { //Array/Hashes/Objects 
+        for (var item in arr) {
+            var value = arr[item];
+
+            if (typeof(value) == 'object') { //If it is an array,
+                dumped_text += level_padding + "'" + item + "' ...\n";
+                dumped_text += dump(value, level + 1);
+            } else {
+                dumped_text += level_padding + "'" + item + "' => \"" + value + "\"\n";
+            }
+        }
+    } else { //Stings/Chars/Numbers etc.
+        dumped_text = "===>" + arr + "<===(" + typeof(arr) + ")";
+    }
+    return dumped_text;
 }
 
 function sortSelect($select) {
     var cl = $select.get(0);
     var clTexts = new Array();
 
-    for(i = 2; i < cl.length; i++)
-    {
-        clTexts[i-2] =
+    for (i = 2; i < cl.length; i++) {
+        clTexts[i - 2] =
             cl.options[i].text.toUpperCase() + "," +
             cl.options[i].text + "," +
             cl.options[i].value;
@@ -319,15 +320,14 @@ function sortSelect($select) {
 
     clTexts.sort();
 
-    for(i = 2; i < cl.length; i++)
-    {
-        var parts = clTexts[i-2].split(',');
-        
+    for (i = 2; i < cl.length; i++) {
+        var parts = clTexts[i - 2].split(',');
+
         cl.options[i].text = parts[1];
         cl.options[i].value = parts[2];
     }
 }
-function urldecode (str) {
+function urldecode(str) {
     // http://kevin.vanzonneveld.net
     // +   original by: Philip Peterson
     // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -364,14 +364,14 @@ function urldecode (str) {
 }
 
 
-
 if (!window.console) {
-	var names = ["log", "debug", "info", "warn", "error",
-	"assert", "dir", "dirxml", "group",
-	"groupEnd", "time", "timeEnd", "count",
-	"trace", "profile", "profileEnd"];
+    var names = ["log", "debug", "info", "warn", "error",
+        "assert", "dir", "dirxml", "group",
+        "groupEnd", "time", "timeEnd", "count",
+        "trace", "profile", "profileEnd"];
 
-	window.console = {};
-	for (var i = 0; i < names.length; ++i)
-	window.console[names[i]] = function() {}
+    window.console = {};
+    for (var i = 0; i < names.length; ++i)
+        window.console[names[i]] = function () {
+        }
 }

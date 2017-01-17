@@ -33,6 +33,6 @@
  *      |__/                                    
 */
 ?>
-<?php 
+<?php
 echo $service['Host']['id'];
 ?>

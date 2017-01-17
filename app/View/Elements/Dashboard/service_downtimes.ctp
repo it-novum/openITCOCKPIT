@@ -23,33 +23,33 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if(empty($widgetServiceDowntimes)): ?>
-	<div class="text-center text-success padding-50">
-		<h5 class="padding-top-50">
-			<i class="fa fa-check"></i>
-			<?php echo __('Currently are no services in scheduled downtime');?>
-		</h5>
-	</div>
+if (empty($widgetServiceDowntimes)): ?>
+    <div class="text-center text-success padding-50">
+        <h5 class="padding-top-50">
+            <i class="fa fa-check"></i>
+            <?php echo __('Currently are no services in scheduled downtime'); ?>
+        </h5>
+    </div>
 <?php else: ?>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped">
-			<tbody>
-				<?php foreach($widgetServiceDowntimes as $service): ?>
-					<tr>
-						<td class="dashboard-table"><a href="/services/browser/<?php echo $service['Service']['id']; ?>">
-							<?php
-							echo $service['Host']['name'].DS;
-							if($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
-								echo h($service['Service']['name']);
-							else:
-								echo h($service['Servicetemplate']['name']);
-							endif;
-							?>
-						</a></td>
-					</tr>
-				<?php endforeach;?>
-			</tbody>
-		</table>
-	</div>
-<?php
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <tbody>
+            <?php foreach ($widgetServiceDowntimes as $service): ?>
+                <tr>
+                    <td class="dashboard-table"><a href="/services/browser/<?php echo $service['Service']['id']; ?>">
+                            <?php
+                            echo $service['Host']['name'].DS;
+                            if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
+                                echo h($service['Service']['name']);
+                            else:
+                                echo h($service['Servicetemplate']['name']);
+                            endif;
+                            ?>
+                        </a></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
 endif;

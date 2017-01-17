@@ -25,93 +25,93 @@
 
 ?>
 <div class="widget-body tacho-body">
-	<?php
+    <?php
 
-	echo $this->Form->create('tachometer', array(
-		'class' => 'tacho_form clear',
-		'id' => '',
-	));
+    echo $this->Form->create('tachometer', [
+        'class' => 'tacho_form clear',
+        'id'    => '',
+    ]);
 
-	$services = $this->Html->chosenPlaceholder($service_ids_for_select);
-	$options = [
-		'options' => $services,
-		'label' => __('Select a service to monitor'),
-		'class' => 'chosen tacho-select-box selectTachoService elementInput',
-		'wrapInput' => 'col col-xs-8 selectTachoService',
-	];
-	echo $this->Form->input('ServiceSelect_uuid', $options);
+    $services = $this->Html->chosenPlaceholder($service_ids_for_select);
+    $options = [
+        'options'   => $services,
+        'label'     => __('Select a service to monitor'),
+        'class'     => 'chosen tacho-select-box selectTachoService elementInput',
+        'wrapInput' => 'col col-xs-8 selectTachoService',
+    ];
+    echo $this->Form->input('ServiceSelect_uuid', $options);
 
-	$datasource = $this->Html->chosenPlaceholder();
-	$options = [
-		'options' => '',
-		'label' => __('Select a data source'),
-		'class' => 'chosen data-source-select-box selectTachoService elementInput',
-		'wrapInput' => 'col col-xs-8 selectTachoService',
-		'div' => [
-			'class' => 'form-group data-source-select',
-		]
-	];
-	echo $this->Form->input('DataSource_select', $options);
+    $datasource = $this->Html->chosenPlaceholder();
+    $options = [
+        'options'   => '',
+        'label'     => __('Select a data source'),
+        'class'     => 'chosen data-source-select-box selectTachoService elementInput',
+        'wrapInput' => 'col col-xs-8 selectTachoService',
+        'div'       => [
+            'class' => 'form-group data-source-select',
+        ],
+    ];
+    echo $this->Form->input('DataSource_select', $options);
 
-	echo $this->Form->inputs(array(
-		'legend' => 'Scale',
-		'fieldset' => 'dataSourceValues',
-		'min' => [
-			'label' => 'Minimum',
-			'class' => 'min',
-			'div' => [
-				'class' => 'form-group DataSourceValuesFields',
-			]
-		],
-		'max' => [
-			'label' => 'Maximum',
-			'class' => 'max',
-			'div' => [
-				'class' => 'form-group DataSourceValuesFields',
-			]
-		],
-		'warning' => [
-			'label' => 'Warning',
-			'class' => 'warn',
-			'div' => [
-				'class' => 'form-group DataSourceValuesFields',
-			]
-		],
-		'crit' => [
-			'label' => 'Critical',
-			'class' => 'crit',
-			'div' => [
-				'class' => 'form-group DataSourceValuesFields',
-			]
-		]
-	));
+    echo $this->Form->inputs([
+        'legend'   => 'Scale',
+        'fieldset' => 'dataSourceValues',
+        'min'      => [
+            'label' => 'Minimum',
+            'class' => 'min',
+            'div'   => [
+                'class' => 'form-group DataSourceValuesFields',
+            ],
+        ],
+        'max'      => [
+            'label' => 'Maximum',
+            'class' => 'max',
+            'div'   => [
+                'class' => 'form-group DataSourceValuesFields',
+            ],
+        ],
+        'warning'  => [
+            'label' => 'Warning',
+            'class' => 'warn',
+            'div'   => [
+                'class' => 'form-group DataSourceValuesFields',
+            ],
+        ],
+        'crit'     => [
+            'label' => 'Critical',
+            'class' => 'crit',
+            'div'   => [
+                'class' => 'form-group DataSourceValuesFields',
+            ],
+        ],
+    ]);
 
-	$options = [
-		'options' => '',
-		'class' => 'current'
-	];
-	echo $this->Form->hidden('DataSource_current', $options);
+    $options = [
+        'options' => '',
+        'class'   => 'current',
+    ];
+    echo $this->Form->hidden('DataSource_current', $options);
 
-	$options = [
-		'options' => '',
-		'class' => 'unit'
-	];
-	echo $this->Form->hidden('DataSource_unit', $options);
-	?>
-	<div class="tacho_preview">Toggle<br/> Preview</div>
-	<div class="tacho_preview_canvas">
-		<canvas></canvas>
-	</div>
-	<?php
-	$options_button = array(
-		'label' => 'Save',
-		'class' => 'tacho_save btn btn-primary',
-	);
-	echo $this->Form->end($options_button);
+    $options = [
+        'options' => '',
+        'class'   => 'unit',
+    ];
+    echo $this->Form->hidden('DataSource_unit', $options);
+    ?>
+    <div class="tacho_preview">Toggle<br/> Preview</div>
+    <div class="tacho_preview_canvas">
+        <canvas></canvas>
+    </div>
+    <?php
+    $options_button = [
+        'label' => 'Save',
+        'class' => 'tacho_save btn btn-primary',
+    ];
+    echo $this->Form->end($options_button);
 
-	?>
-	<div class="service-title-tacho"><i class="fa fa-cog "></i></div>
-	<div class="tacho">
-		<canvas></canvas>
-	</div>
+    ?>
+    <div class="service-title-tacho"><i class="fa fa-cog "></i></div>
+    <div class="tacho">
+        <canvas></canvas>
+    </div>
 </div>

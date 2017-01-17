@@ -26,6 +26,7 @@
 
 App::uses('AppModel', 'Model');
 
-class NagiosModuleAppModel extends AppModel {
+class NagiosModuleAppModel extends AppModel
+{
 
 }

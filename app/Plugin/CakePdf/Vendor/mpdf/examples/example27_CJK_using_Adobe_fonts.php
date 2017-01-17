@@ -1,6 +1,6 @@
 <?php
 
-ini_set("memory_limit","256M");
+ini_set("memory_limit", "256M");
 
 
 $html = "
@@ -69,7 +69,7 @@ td { text-align: justify; }
 
 include("../mpdf.php");
 
-$mpdf=new mPDF('+aCJK','A4','','',32,25,27,25,16,13); 
+$mpdf = new mPDF('+aCJK', 'A4', '', '', 32, 25, 27, 25, 16, 13);
 $mpdf->SetDisplayMode('fullpage');
 
 $mpdf->SetTitle($utxt['zh-CN']);
@@ -77,7 +77,7 @@ $mpdf->SetAuthor($utxt['zh-CN']);
 
 // LOAD a stylesheet
 $stylesheet = file_get_contents('mpdfstyleA4.css');
-$mpdf->WriteHTML($stylesheet,1);	// The parameter 1 tells that this is css/style only and no body/html/text
+$mpdf->WriteHTML($stylesheet, 1);    // The parameter 1 tells that this is css/style only and no body/html/text
 
 $mpdf->WriteHTML($html);
 

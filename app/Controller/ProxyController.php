@@ -24,44 +24,49 @@
 //	confirmation.
 
 
-class ProxyController extends AppController {
-	public $layout = 'Admin.default';
-	public $components = array('RequestHandler');
-	
-	function index(){
-		$proxy = $this->Proxy->find('all');
-		$this->set('proxy', $proxy);
-		//_serialize wird fir das json und XML randering benötigt
-		$this->set('_serialize', array('proxy'));
-	}
-	
-	function edit(){
-		$proxy = $this->Proxy->find('all');
-		$this->set('proxy', $proxy);
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if(!isset($this->request->data['Proxy']['enabled'])){
-				$this->request->data['Proxy']['enabled'] = false;
-			}
-			//$this->Proxy->save($this->request->data)
-			if ($this->Proxy->save($this->request->data)) {
-				$this->setFlash('Data saved successfully');
-				$this->redirect(array('action' => 'index'));
-			}else{
-				$this->setFlash(__('Proxy data invalid'), false);
-			}
-		}
-	}
-	
-	function getSettings(){
-		$proxy = $this->Proxy->find('first');
-		$settings = array('ipaddress' => '', 'port' => 0, 'enabled' => false);
-		if(!empty($proxy)){
-			$settings = array(
-				'ipaddress' => $proxy['Proxy']['ipaddress'],
-				'port' => $proxy['Proxy']['port'],
-				'enabled' => $proxy['Proxy']['enabled']
-			);
-		}
-		return $settings;
-	}
+class ProxyController extends AppController
+{
+    public $layout = 'Admin.default';
+    public $components = ['RequestHandler'];
+
+    function index()
+    {
+        $proxy = $this->Proxy->find('all');
+        $this->set('proxy', $proxy);
+        //_serialize wird fir das json und XML randering benötigt
+        $this->set('_serialize', ['proxy']);
+    }
+
+    function edit()
+    {
+        $proxy = $this->Proxy->find('all');
+        $this->set('proxy', $proxy);
+        if ($this->request->is('post') || $this->request->is('put')) {
+            if (!isset($this->request->data['Proxy']['enabled'])) {
+                $this->request->data['Proxy']['enabled'] = false;
+            }
+            //$this->Proxy->save($this->request->data)
+            if ($this->Proxy->save($this->request->data)) {
+                $this->setFlash('Data saved successfully');
+                $this->redirect(['action' => 'index']);
+            } else {
+                $this->setFlash(__('Proxy data invalid'), false);
+            }
+        }
+    }
+
+    function getSettings()
+    {
+        $proxy = $this->Proxy->find('first');
+        $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
+        if (!empty($proxy)) {
+            $settings = [
+                'ipaddress' => $proxy['Proxy']['ipaddress'],
+                'port'      => $proxy['Proxy']['port'],
+                'enabled'   => $proxy['Proxy']['enabled'],
+            ];
+        }
+
+        return $settings;
+    }
 }

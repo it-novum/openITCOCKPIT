@@ -23,9 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if(!empty($widget)):
-	//We call the same function than index will call with n widgets. so we need tto iterate through $widget
-	foreach($widget as $_widget):
-		echo $this->Dashboard->render($_widget);
-	endforeach;
+if (!empty($widget)):
+    //We call the same function than index will call with n widgets. so we need tto iterate through $widget
+    foreach ($widget as $_widget):
+        echo $this->Dashboard->render($_widget);
+    endforeach;
 endif;
