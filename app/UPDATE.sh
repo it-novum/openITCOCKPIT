@@ -102,7 +102,14 @@ if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
     systemctl restart sudo_server
     systemctl restart oitc_cmd
     systemctl restart gearman_worker
+fi
+
+if [ $CODENAME = "xenial" ]; then
     systemctl restart php7.0-fpm
+fi
+
+if [ $CODENAME = "jessie" ]; then
+    systemctl restart php5-fpm
 fi
 
 if [ $CODENAME = "trusty" ]; then
