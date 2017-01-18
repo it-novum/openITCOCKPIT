@@ -77,8 +77,23 @@
 }
 
 @keyframes animateBorder {
-    to {
-        outline-color: #EA3556;
-        box-shadow: 0 0 0 1px red;
+    0%{
+        box-shadow: 0 0 0 1px rgba(169,3,41, 0);
+        -webkit-transition-timing-function: ease-in;
+        -moz-transition-timing-function: ease-in;
+        -ms-transition-timing-function: ease-in;
+        -o-transition-timing-function: ease-in;
+        transition-timing-function: ease-in;
+    }
+    50% {
+        box-shadow: 0 0 0 1px rgba(169,3,41, 1);
+    }
+    100%{
+        box-shadow: 0 0 0 1px rgba(169,3,41, 0);
+        -webkit-transition-timing-function: ease-out;
+        -moz-transition-timing-function: ease-out;
+        -ms-transition-timing-function: ease-out;
+        -o-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
     }
 }
