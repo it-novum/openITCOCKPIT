@@ -28,5 +28,5 @@
 App::uses('Command', 'Model');
 
 class CommandTest extends CakeTestCase {
-    public $fixtures = array('app.commandd');
+    public $fixtures = array('app.command');
 }
