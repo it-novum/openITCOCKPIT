@@ -41,3 +41,4 @@ app/Plugin/MkModule
 app/Plugin/SAPModule
 app/Plugin/MaximoModule
 app/Lib/AvailableVersion.php
+tests

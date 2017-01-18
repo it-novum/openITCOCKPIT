@@ -1,9 +1,5 @@
 <?php
 class ContactFixture extends CakeTestFixture {
-    public $import = [
-        'model' => 'Contact'
-    ];
-
     public $fields = [
         'id'                            => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -34,8 +30,7 @@ class ContactFixture extends CakeTestFixture {
         'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public function init() {
-        $this->records = array(
+    public $records = array(
             array(
                 'id' => 1,
                 'uuid' => 'f70418ac-d646-47b1-a037-7d5a66478421',
@@ -67,6 +62,4 @@ class ContactFixture extends CakeTestFixture {
                 'service_timeperiod_id' => '1'
             )
         );
-        parent::init();
-    }
 }

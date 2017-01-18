@@ -57,9 +57,9 @@ class Command extends AppModel
         ],
     ];
 
-    function __construct()
+    public function __construct($id = false, $table = null, $ds = null)
     {
-        parent::__construct();
+        parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
     }
 

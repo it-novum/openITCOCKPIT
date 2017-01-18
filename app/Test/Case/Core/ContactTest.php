@@ -38,7 +38,6 @@ class ContactTest extends CakeTestCase {
         'app.contactgroup',
         'app.timeperiod'
     ];
-    public $autoFixtures = true;
 
     public function setUp() {
         parent::setUp();
@@ -46,7 +45,6 @@ class ContactTest extends CakeTestCase {
     }
 
     public function testContactsByContainerId() {
-        $this->Contact = ClassRegistry::init('Contact');
         $this->Contact->unbindModel([
 
             'belongsTo' => [
@@ -83,7 +81,8 @@ class ContactTest extends CakeTestCase {
                     'notify_host_down' => '0',
                     'notify_host_unreachable' => '0',
                     'notify_host_flapping' => '0',
-                    'notify_host_downtime' => '0'
+                    'notify_host_downtime' => '0',
+                    'can_submit_commands' => '0'
                 ),
                 'Container' => array(
                     0 => array(
