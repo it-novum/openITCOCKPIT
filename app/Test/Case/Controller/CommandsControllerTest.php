@@ -24,6 +24,8 @@
 
 //run test: oitc test app Controller/CommandsController
 
+App::uses('AppController', 'Controller');
+
 class CommandsControllerTest extends ControllerTestCase {
     public $fixtures = [
         'app.command',
@@ -33,13 +35,7 @@ class CommandsControllerTest extends ControllerTestCase {
         'app.host',
         'app.systemsetting',
         'app.servicetemplate',
-        'app.servicetemplategroup',
         'app.hosttemplate',
-        'app.hostgroup',
-        'app.container',
-        'app.timeperiod',
-        'app.customvariable',
-        'app.contactgroup',
         'app.servicecommandargumentvalue',
         'app.hostcommandargumentvalue',
         'app.servicetemplatecommandargumentvalue',
@@ -48,25 +44,6 @@ class CommandsControllerTest extends ControllerTestCase {
         'app.contactsServicecommand',
         'app.contactsHostcommand',
         'app.contactsServicetemplate',
-        'app.contactsHosttemplate',
-        'app.contactgroupsServicetemplate',
-        'app.contactgroupsHosttemplate',
-        'app.servicetemplatesServicetemplategroup',
-        'app.hostsHostescalation',
-        'app.hostsHostdependency',
-        'app.hostsContainer',
-        'app.contactgroupsHost',
-        'app.contactsHost',
-        'app.hostsParenthost',
-        'app.hostsHostgroup',
-        'app.serviceeventcommandargumentvalue',
-        'app.servicesServiceescalation',
-        'app.servicesServicedependency',
-        'app.widget',
-        'app.contactgroupsService',
-        'app.contactsService',
-        'app.servicesServicegroup',
-        'app.servicegroup',
         'app.Macro'
     ];
 
@@ -288,10 +265,10 @@ class CommandsControllerTest extends ControllerTestCase {
         $this->assertEquals($expectedCommand, $myCommand);
     }
 
-//    public function testAddCommandArg() {
-//        $this->testAction('/commands/addCommandArg/1', ['method' => 'post', 'return' => 'vars']);
-//        $this->assertEquals([], []);
-//    }
+    public function testAddCommandArg() {
+        $this->setExpectedException(MethodNotAllowedException::class);
+        $this->testAction('/commands/addCommandArg/1', ['method' => 'post']);
+    }
 
     public function testLoadMacros() {
         $this->testAction('/commands/loadMacros', ['method' => 'post']);
