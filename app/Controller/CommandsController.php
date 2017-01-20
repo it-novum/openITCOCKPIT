@@ -303,7 +303,6 @@ class CommandsController extends AppController
         }
 
         $command = $this->Command->findById($id);
-
         if ($this->__allowDelete($command)) {
             if ($this->Command->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -400,6 +399,7 @@ class CommandsController extends AppController
         //Check if the command is used somewere, if yes we can not delete it!
         $this->loadModel('__ContactsToServicecommands');
         $contactCount = $this->__ContactsToServicecommands->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 '__ContactsToServicecommands.command_id' => $command['Command']['id'],
             ],
@@ -410,6 +410,7 @@ class CommandsController extends AppController
 
         $this->loadModel('__ContactsToHostcommands');
         $contactCount = $this->__ContactsToHostcommands->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 '__ContactsToHostcommands.command_id' => $command['Command']['id'],
             ],
@@ -420,6 +421,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Hosttemplate');
         $hostCount = $this->Hosttemplate->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 'Hosttemplate.command_id' => $command['Command']['id'],
             ],
@@ -430,6 +432,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Servicetemplate');
         $serviceCount = $this->Servicetemplate->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 'Servicetemplate.command_id' => $command['Command']['id'],
             ],
@@ -440,6 +443,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Host');
         $hostCount = $this->Host->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 'Host.command_id' => $command['Command']['id'],
             ],
@@ -450,6 +454,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Service');
         $serviceCount = $this->Service->find('count', [
+            'recursive' => -1,
             'conditions' => [
                 'Service.command_id' => $command['Command']['id'],
             ],
