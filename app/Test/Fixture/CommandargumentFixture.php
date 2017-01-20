@@ -45,6 +45,30 @@ class CommandargumentFixture extends CakeTestFixture {
 			'created' => '2017-01-17 14:24:02',
 			'modified' => '2017-01-17 14:24:02'
 		),
+		array(
+			'id' => 3,
+			'command_id' => 2,
+			'name' => 'My name 3',
+			'human_name' => 'My human_name 3',
+			'created' => '2017-01-17 14:24:01',
+			'modified' => '2017-01-17 14:24:01'
+		),
+		array(
+			'id' => 4,
+			'command_id' => 2,
+			'name' => 'My name 4',
+			'human_name' => 'My human_name 4',
+			'created' => '2017-01-17 14:24:02',
+			'modified' => '2017-01-17 14:24:02'
+		),
+		array(
+			'id' => 5,
+			'command_id' => 2,
+			'name' => 'My name 5',
+			'human_name' => 'My human_name 5',
+			'created' => '2017-01-17 14:24:02',
+			'modified' => '2017-01-17 14:24:02'
+		),
 	);
 
 }

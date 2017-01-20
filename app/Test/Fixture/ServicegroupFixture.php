@@ -1,8 +1,8 @@
 <?php
 /**
- * Contactgroup Fixture
+ * Servicegroup Fixture
  */
-class ContactgroupFixture extends CakeTestFixture {
+class ServicegroupFixture extends CakeTestFixture {
 
 /**
  * Fields
@@ -12,8 +12,9 @@ class ContactgroupFixture extends CakeTestFixture {
 	public $fields = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 		'uuid' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'container_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'container_id' => array('type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false),
 		'description' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
+		'servicegroup_url' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'uuid' => array('column' => 'uuid', 'unique' => 1)
@@ -31,7 +32,8 @@ class ContactgroupFixture extends CakeTestFixture {
 			'id' => 1,
 			'uuid' => 'Lorem ipsum dolor sit amet',
 			'container_id' => 1,
-			'description' => 'Lorem ipsum dolor sit amet'
+			'description' => 'Lorem ipsum dolor sit amet',
+			'servicegroup_url' => 'Lorem ipsum dolor sit amet'
 		),
 	);
 
