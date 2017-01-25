@@ -243,55 +243,46 @@ class ContainersController extends AppController
                         //Check hosts to delete
                         $Host = ClassRegistry::init('Host');
                         $hostsToDelete = $Host->find('all', [
-                            'recursive'  => -1,
-                            'joins'      => [
-                                [
-                                    'table'      => 'hosts_to_containers',
-                                    'alias'      => 'HostsToContainers',
-                                    'type'       => 'LEFT',
-                                    'conditions' => [
-                                        'HostsToContainers.host_id = Host.id',
-                                    ],
-                                ],
-                            ],
+                            'recursive' => -1,
                             'conditions' => [
-                                'HostsToContainers.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Host.id',
-                                'Host.name',
-                                'Host.uuid',
-                                'Host.hosttemplate_id',
-                                'Host.description',
-                                'Host.container_id',
-                            ],
+                                'Host.container_id' => $containerIds
+                            ]
                         ]);
                         $hostIds = Hash::extract($hostsToDelete, '{n}.Host.id');
                         $allowDelete = $this->Container->__allowDelete($hostIds);
                         $allowDeleteRoot = $allowDelete;
+                        $usersToDelete = [];
 
                         //Check users to delete
                         $User = ClassRegistry::init('User');
-                        $usersToDelete = $this->User->find('all', [
-                            'recursive'  => -1,
-                            'joins'      => [
-                                [
-                                    'table'      => 'users_to_containers',
-                                    'type'       => 'LEFT',
-                                    'alias'      => 'UsersToContainer',
-                                    'conditions' => 'UsersToContainer.user_id = User.id',
+                        $usersByContainerId = $this->User->usersByContainerId($containerIds, 'list');
+                        if(!empty($usersByContainerId)){
+                            $usersToDelete = $this->User->find('all', [
+                                'recursive' => -1,
+                                'conditions'=> [
+                                    'User.id' => array_keys($usersByContainerId)
                                 ],
-                            ],
-                            'conditions' => [
-                                'UsersToContainer.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'User.id',
-                            ],
-                        ]);
-                        if ($allowDelete) {
-                            foreach ($usersToDelete as $user) {
-                                $User->__delete($user, $userId);
+                                'contain' => [
+                                    'ContainerUserMembership' => [
+                                        'conditions' => [
+                                            'NOT' => [
+                                                'ContainerUserMembership.container_id' => $containerIds
+                                            ]
+                                        ]
+                                    ]
+                                ],
+                                'fields' => [
+                                    'User.id'
+                                ]
+                            ]);
+                        }
+
+                        $usersToDelete = Hash::combine($usersToDelete, '{n}.User.id', '{n}.ContainerUserMembership');
+                        if($allowDelete){
+                            foreach($usersByContainerId as $user => $username){
+                                if(empty($usersToDelete[$user])){
+                                    $User->__delete($user, $userId);
+                                }
                             }
                         }
 

@@ -62,8 +62,15 @@ class LogentriesController extends AppController
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
+
+        if(!empty($requestSettings['paginator']['limit']) && $requestSettings['paginator']['limit'] > 100){
+            $this->Paginator->settings['maxLimit'] = $requestSettings['paginator']['limit'];
+        }
+
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
+
         $paginatorLimit = $this->Paginator->settings['limit'];
+
 
         $this->Uuid->buildCache();
         $this->set('uuidCache', $this->Uuid->getCache());
