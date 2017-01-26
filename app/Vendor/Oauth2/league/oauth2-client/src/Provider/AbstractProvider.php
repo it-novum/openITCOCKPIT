@@ -95,6 +95,12 @@ abstract class AbstractProvider
      */
     protected $randomFactory;
 
+    protected $accessToken;
+    protected $authEndpoint;
+    protected $tokenEndpoint;
+    protected $userEndpoint;
+    protected $code;
+    
     /**
      * Constructs an OAuth 2.0 service provider.
      *
@@ -548,7 +554,7 @@ abstract class AbstractProvider
     public function getAccessToken($grant, array $options = [])
     {
         $grant = $this->verifyGrant($grant);
-
+        $this->code = isset($options['code']) ? $options['code'] : '';
         $params = [
             'client_id'     => $this->clientId,
             'client_secret' => $this->clientSecret,
@@ -557,11 +563,14 @@ abstract class AbstractProvider
 
         $params   = $grant->prepareRequestParameters($params, $options);
         $request  = $this->getAccessTokenRequest($params);
-        $response = $this->getResponse($request);
-        $prepared = $this->prepareAccessTokenResponse($response);
+        $responseArr = $this->getResponse($request);
+        if(!$responseArr[0]){
+            return $responseArr;
+        }
+        $prepared = $this->prepareAccessTokenResponse($responseArr[1]);
         $token    = $this->createAccessToken($prepared, $grant);
 
-        return $token;
+        return [true, $token];
     }
 
 
@@ -623,11 +632,22 @@ abstract class AbstractProvider
     protected function sendRequest(RequestInterface $request)
     {
         try {
-            $response = $this->getHttpClient()->send($request);
+            if(!empty($this->code) && empty($this->accessToken)){
+                $response = $this->getHttpClient()->request('POST', $this->tokenEndpoint.'?grant_type=authorization_code&code='.$this->code.
+                    '&redirect_uri='.$this->redirectUri.
+                    '&client_id='.$this->clientId.
+                    '&client_secret='.$this->clientSecret);
+            }elseif(!empty($this->accessToken)){
+                $response = $this->getHttpClient()->request('POST', $this->userEndpoint.'?client_id='.$this->clientId.
+                    '&client_secret='.$this->clientSecret.
+                    '&access_token='.$this->accessToken);
+            }else{
+                $response = $this->getHttpClient()->send($request);
+            }
         } catch (BadResponseException $e) {
-            $response = $e->getResponse();
+		    return [false, $response = $e->getMessage()];
         }
-        return $response;
+        return [true, $response];
     }
 
     /**
@@ -638,12 +658,15 @@ abstract class AbstractProvider
      */
     public function getResponse(RequestInterface $request)
     {
-        $response = $this->sendRequest($request);
-        $parsed = $this->parseResponse($response);
+        $responseArr = $this->sendRequest($request);
+        if(!$responseArr[0]){
+            return $responseArr;
+        }
+        $parsed = $this->parseResponse($responseArr[1]);
 
-        $this->checkResponse($response, $parsed);
+        $this->checkResponse($responseArr[1], $parsed);
 
-        return $parsed;
+        return [true, $parsed];
     }
 
 
@@ -652,6 +675,7 @@ abstract class AbstractProvider
      *
      * @param  string $content JSON content from response body
      * @return array Parsed JSON data
+     * @throws UnexpectedValueException if the content could not be parsed
      * @throws UnexpectedValueException if the content could not be parsed
      */
     protected function parseJson($content)
@@ -773,9 +797,11 @@ abstract class AbstractProvider
      */
     public function getResourceOwner(AccessToken $token)
     {
-        $response = $this->fetchResourceOwnerDetails($token);
-
-        return $this->createResourceOwner($response, $token);
+        $responseArr = $this->fetchResourceOwnerDetails($token);
+        if(!$responseArr[0]){
+            return $responseArr;
+        }
+        return [true, $this->createResourceOwner($responseArr[1], $token)];
     }
 
     /**
@@ -787,7 +813,7 @@ abstract class AbstractProvider
     protected function fetchResourceOwnerDetails(AccessToken $token)
     {
         $url = $this->getResourceOwnerDetailsUrl($token);
-
+	    $this->accessToken = $token;
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
 
         return $this->getResponse($request);

@@ -363,7 +363,63 @@
                 "section": "FRONTEND",
                 "created": "0000-00-00 00:00:00",
                 "modified": "2015-11-12 08:03:06"
-            }
+            },
+            {
+                "id": "68",
+                "key": "FRONTEND.SSO.CLIENT_ID",
+                "info": "Client id generated in SSO Server",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "69",
+                "key": "FRONTEND.SSO.CLIENT_SECRET",
+                "info": "Client secret generated in SSO Server",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "70",
+                "key": "FRONTEND.SSO.AUTH_ENDPOINT",
+                "info": "Authorization endpoint of SSO Server",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "71",
+                "key": "FRONTEND.SSO.TOKEN_ENDPOINT",
+                "info": "Token endpoint of SSO Server",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "72",
+                "key": "FRONTEND.SSO.USER_ENDPOINT",
+                "info": "User info endpoint of SSO Server",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "73",
+                "key": "FRONTEND.SSO.NO_EMAIL_MESSAGE",
+                "info": "The error message that appears when provided E-mail address was not found in openITCOCKPIT",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
+            {
+                "id": "74",
+                "key": "FRONTEND.SSO.LOG_OFF_LINK",
+                "info": "SSO Server log out link",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
         ],
         "CHECK_MK": [
             {
@@ -487,7 +543,7 @@
                 "created": "2016-06-13 00:00:00",
                 "modified": "2016-06-13 00:00:01"
             }
-        ]
+        ],
     }
 }
 		</pre>

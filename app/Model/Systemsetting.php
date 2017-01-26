@@ -67,7 +67,6 @@ class Systemsetting extends AppModel
                 $return[$key][$value['key']] = $value['value'];
             }
         }
-
         return $return;
     }
 }

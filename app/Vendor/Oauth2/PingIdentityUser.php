@@ -24,7 +24,7 @@
  * //	License agreement and license key will be shipped with the order
  * //	confirmation.
  */
-
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 /**
  * Class PingIdentityUser
  */

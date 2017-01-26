@@ -25,14 +25,14 @@
  * //	confirmation.
  */
 
-require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__.'/autoload.php';
+require_once __DIR__.'/PingIdentityUser.php';
 
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
-
 /**
  * Class PingIdentity
  */
@@ -77,7 +77,7 @@ class PingIdentity extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return 'https://accounts.google.com/o/oauth2/auth';
+        return $this->authEndpoint;
     }
 
     /**
@@ -87,7 +87,7 @@ class PingIdentity extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://accounts.google.com/o/oauth2/token';
+        return $this->tokenEndpoint;
     }
 
     /**
@@ -97,11 +97,7 @@ class PingIdentity extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        $fields = array_merge($this->defaultUserFields, $this->userFields);
-        return 'https://www.googleapis.com/plus/v1/people/me?' . http_build_query([
-                'fields' => implode(',', $fields),
-                'alt'    => 'json',
-            ]);
+        return $this->userEndpoint;
     }
 
     /**
@@ -129,7 +125,6 @@ class PingIdentity extends AbstractProvider
     protected function getDefaultScopes()
     {
         return [
-            'email',
             'openid',
             'profile',
         ];

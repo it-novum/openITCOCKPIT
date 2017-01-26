@@ -67,6 +67,13 @@ Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard you
 * **LDAP.PASSWORD** - The password that the system will use to connect to your LDAP server
 * **LDAP.SUFFIX** - The Suffix of your domain
 * **LDAP.USE_TLS** - If PHP should upgrade the security of a plain connection to a TLS encrypted connection
+* **SSO.CLIENT_ID** - Client id generated in SSO Server
+* **SSO.CLIENT_SECRET** - Client secret generated in SSO Server
+* **SSO.AUTH_ENDPOINT** - Authorization endpoint of SSO Server
+* **SSO.TOKEN_ENDPOINT** - Token endpoint of SSO Server
+* **SSO.USER_ENDPOINT** - User info endpoint of SSO Server
+* **SSO.NO_EMAIL_MESSAGE** - The error message that appears when provided E-mail address was not found in openITCOCKPIT
+* **SSO.LOG_OFF_LINK** - SSO Server log out link
 
 ###### CHECK_MK
 * **BIN** - Path to check_mk binary
