@@ -845,6 +845,17 @@ class Systemsetting extends Importer
                     'modified' => '2015-01-16 00:41:41',
                 ],
             ],
+            (int)72 => [
+                'Systemsetting' => [
+                    'id'       => '72',
+                    'key'      => 'FRONTEND.CERT.DEFAULT_USER_EMAIL',
+                    'value'    => 'default.user@email.de',
+                    'info'     => 'Default user E-mail address to be used if no E-mail address was found during the login with certificate',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
         ];
 
         return $data;
