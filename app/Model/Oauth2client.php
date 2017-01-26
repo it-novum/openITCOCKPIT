@@ -80,7 +80,6 @@ class Oauth2client
     }
 
     public function getReturnUrl(){
-        return 'https://192.168.189.140/login/login';
         return Router::url(['controller' => 'login', 'action' => 'login'], true );
     }
     
