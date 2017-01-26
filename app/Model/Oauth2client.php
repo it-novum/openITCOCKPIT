@@ -83,7 +83,11 @@ class Oauth2client
         return Router::url(['controller' => 'login', 'action' => 'login'], true );
     }
     
-    public function getPostErrorMessage(){
-        return '<br>You can also <a href="'.Router::url(['controller' => 'login', 'action' => 'login']).'">retry to login</a>.';
+    public function getPostErrorMessage($SsoLogOff){
+        $preText = '<br />Please, ';
+        if(!empty($SsoLogOff)){
+            $preText = '<br />Please perform <a href="'.$SsoLogOff.'" target="_blank">log off from SSO Server</a>. And then ';
+        }
+        return $preText.'<a href="'.Router::url(['controller' => 'login', 'action' => 'login']).'">retry to login</a>.';
     }
 }

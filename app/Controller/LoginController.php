@@ -48,12 +48,12 @@ class LoginController extends AppController
 
         if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso'){
             $result = $this->Oauth2client->connectToSSO();
-            $errorPostMess = $this->Oauth2client->getPostErrorMessage();
+            $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
             if(isset($result['redirect'])){
                 $this->redirect($result['redirect']);
             }
             if(($result['success'])) {
-                $user = $this->User->find('first', ['conditions' => ['email' => $result['email']]]);
+                $user = $this->User->find('first', ['conditions' => ['email' => $result['email'], 'status' => 1]]);
                 if(empty($user)){
                     echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'].$errorPostMess;exit;
                 }
@@ -124,7 +124,7 @@ class LoginController extends AppController
             $conditions = [];
             if ($firstName !== '' && $lastName !== '') {
                 $conditions = [
-                    ['firstname' => $firstName, 'lastname' => $lastName],
+                    ['firstname' => $firstName, 'lastname' => $lastName, 'status' => 1],
                 ];
                 if ($OU !== '') {
                     $conditions[0]['email LIKE'] = '%@'.$OU.'.%';
@@ -320,10 +320,11 @@ class LoginController extends AppController
     public function logout()
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-        $this->setFlash(__('login.logout_successfull'));
         $this->Auth->logout();
         if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])){
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
+        }else{
+            $this->setFlash(__('login.logout_successfull'));
         }
         $this->redirect([
             'controller' => 'login',
