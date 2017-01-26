@@ -133,6 +133,12 @@ class LoginController extends AppController
 
             if (!empty($conditions)) {
                 $user = $this->User->find('first', ['conditions' => $conditions]);
+                if (empty($user)) {
+                    $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
+                    if (!empty($viewerEmail)) {
+                        $user = $this->User->find('first', ['conditions' => ['email' => $viewerEmail, 'status' => 1]]);
+                    }
+                }
                 if (!empty($user) && $this->Auth->login($user)) {
                     $this->Session->delete('Message.auth');
                     $this->setFlash(__('login.automatically_logged_in'));
