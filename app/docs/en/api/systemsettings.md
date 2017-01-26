@@ -420,6 +420,14 @@
                 "created": "0000-00-00 00:00:00",
                 "modified": "2015-11-12 08:03:06"
             },
+            {
+                "id": "75",
+                "key": "FRONTEND.CERT.DEFAULT_USER_EMAIL",
+                "info": "Default user E-mail address to be used if no E-mail address was found during the login with certificate",
+                "section": "FRONTEND",
+                "created": "0000-00-00 00:00:00",
+                "modified": "2015-11-12 08:03:06"
+            },
         ],
         "CHECK_MK": [
             {

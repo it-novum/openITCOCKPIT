@@ -74,6 +74,7 @@ Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard you
 * **SSO.USER_ENDPOINT** - User info endpoint of SSO Server
 * **SSO.NO_EMAIL_MESSAGE** - The error message that appears when provided E-mail address was not found in openITCOCKPIT
 * **SSO.LOG_OFF_LINK** - SSO Server log out link
+* **CERT.DEFAULT_USER_EMAIL** - Default user E-mail address to be used if no E-mail address was found during the login with certificate
 
 ###### CHECK_MK
 * **BIN** - Path to check_mk binary
