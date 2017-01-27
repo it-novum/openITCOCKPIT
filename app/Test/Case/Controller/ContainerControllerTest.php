@@ -5,6 +5,63 @@ App::uses('ContainerController', 'Controller');
  * ContainerController Test Case
  * Console/cake bake test Controller Container
  */
-class ContainerControllerTest extends ControllerTestCase {
 
+
+//run test: oitc test app Controller/ContainerController
+
+App::uses('AppController', 'Controller');
+
+class ContainerControllerTest extends ControllerTestCase {
+    public $fixtures = [
+        'app.container',
+        'app.systemsetting',
+        'app.tenant',
+        'app.contactgroup',
+        'app.location',
+        'app.hosttemplate',
+        'app.hostgroup',
+        'app.servicegroup'
+    ];
+
+    public function setUp() {
+        parent::setUp();
+        $this->Command = ClassRegistry::init('Container');
+    }
+
+    public function testIndex() {
+        $this->testAction('/containers/index', ['method' => 'get']);
+        $expectedContainers = [
+            [
+                'Container' => [
+                    'id' => 1,
+                    'containertype_id' => CT_GLOBAL,
+                    'name' => 'ROOT',
+                    'parent_id' => NULL,
+                    'lft' => '1',
+                    'rght' => '12',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 2,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantA',
+                    'parent_id' => 1,
+                    'lft' => '2',
+                    'rght' => '3',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 3,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantB',
+                    'parent_id' => 1,
+                    'lft' => '4',
+                    'rght' => '5',
+                ]
+            ]
+        ];
+        $this->assertEquals($expectedContainers, $this->vars['all_containers']);
+    }
 }

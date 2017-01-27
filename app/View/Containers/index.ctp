@@ -30,7 +30,7 @@
             <?php echo __('System'); ?>
             <span>>
                 <?php echo __('Nodes'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -47,21 +47,25 @@
         <div class="widget-body">
             <?php
 
+            echo $this->Form->create('Container', [
+                'class' => 'form-horizontal clear',
+                'url' => 'index',
+            ]);
 
-            echo $this->Form->input('tenats', [
-                'options'  => $tenants,
-                'class'    => 'select2 select_tenant',
-                'selected' => $selected_tenant,
-                'label'    => 'Tenants',
+            echo $this->Form->input('id', [
+                'label'     => ['text' => __('Tenants'), 'class' => 'col-xs-12 col-md-12 col-lg-12'],
+                'options'   => $tenants,
+                'class'     => 'select2 select_tenant',
+                'wrapInput' => 'col col-xs-12 col-md-12 col-lg-12',
             ]); ?>
             <br/>
             <div>
-				<span class="ajax_loader text-center">
-					<h1>
-						<i class="fa fa-cog fa-lg fa-spin"></i>
-					</h1>
-					<br/>
-				</span>
+                <span class="ajax_loader text-center">
+                    <h1>
+                        <i class="fa fa-cog fa-lg fa-spin"></i>
+                    </h1>
+                    <br/>
+                </span>
             </div>
             <div class="row">
                 <div class="col-sm-12 col-lg-6">
@@ -86,18 +90,8 @@
                         <div>
                             <div class="widget-body">
                                 <?php
-                                echo $this->Form->create('Container', [
-                                    'class' => 'form-horizontal clear',
-                                    'url'   => 'index',
-                                ]);
-                                echo $this->Form->input('selected_tenant', [
-                                    'type'  => 'hidden',
-                                    'value' => $selected_tenant,
-                                ]);
-                                echo $this->Form->input('containertype_id', [
-                                    'type'  => 'hidden',
-                                    'value' => CT_NODE,
-                                ]);
+
+
                                 ?>
                                 <div id="ajax_parent_nodes"></div>
                                 <?php
@@ -106,13 +100,15 @@
                                     $options = ['value' => false];
                                 endif;
                                 echo $this->Form->input('name', $options);
-                                echo $this->Form->formActions();
                                 ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <?php
+            echo $this->Form->formActions();
+            ?>
         </div>
     </div>
 </div>

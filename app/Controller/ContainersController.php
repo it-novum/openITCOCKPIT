@@ -28,61 +28,33 @@
  * Class ContainersController
  * @property Container $Container
  */
-class ContainersController extends AppController
-{
+class ContainersController extends AppController {
     public $layout = 'Admin.default';
-    //public $components = array('Paginator', 'ListFilter.ListFilter','RequestHandler');
     public $helpers = ['Nest'];
 
-    public function index()
-    {
-        if ($this->isApiRequest()) {
-            $all_container = $this->Container->find('all', [
-                'recursive' => -1,
-            ]);
-            $this->set('all_container', $all_container);
-            $this->set('_serialize', ['all_container']);
-            $this->render();
-        }
-
+    public function index() {
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_NODE;
-            if ($this->Container->save($this->request->data)) {
+            $this->Container->create();
+            if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
                 $this->setFlash(__('new node created successfully'));
             } else {
                 $this->setFlash(__('error while saving data'), false);
             }
         }
+        $this->Paginator->settings = [
+            'recursive' => -1
+        ];
         $all_containers = $this->Paginator->paginate();
-        $this->set(compact(['all_containers']));
-        $this->set('_serialize', ['all_containers']);
+        $tenants = Hash::combine(Hash::extract($all_containers, '{n}.Container[containertype_id=' . CT_TENANT . ']'), '{n}.id', '{n}.name');
 
-        $tenants = $this->Container->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'containertype_id' => CT_TENANT,
-            ],
-            'order'      => ['name ASC'],
-            'fields'     => ['id', 'containertype_id', 'name', 'parent_id'],
-        ]);
-        $tenants_select = [];
-        foreach ($tenants as $tenant) {
-            $tenants_select[$tenant['Container']['id']] = $tenant['Container']['name'];
-        }
-        $tenants = $tenants_select;
-        unset($tenants_select);
-        $this->set(compact(['tenants']));
-
-        $selected_tenant = null;
-        if (isset($this->request->data['Container']['selected_tenant'])) {
-            $selected_tenant = $this->request->data['Container']['selected_tenant'];
-        }
         $this->set('validationError', (!empty($this->Container->validationErrors) ? true : false));
-        $this->set('selected_tenant', $selected_tenant);
+
+        $this->set(compact(['all_containers', 'tenants']));
+        $this->set('_serialize', ['all_container']);
     }
 
-    public function nest()
-    {
+    public function nest() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -94,8 +66,7 @@ class ContainersController extends AppController
         $this->set('_serialize', ['all_container']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -112,13 +83,11 @@ class ContainersController extends AppController
         $this->set('_serialize', ['container']);
     }
 
-    protected function tree($id = 0)
-    {
+    protected function tree($id = 0) {
         debug($this->Container->generateTreeList());
     }
 
-    public function add()
-    {
+    public function add() {
         if (!$this->request->is('post') && !$this->request->is('put') && $this->request->ext == 'json') {
             return;
         }
@@ -150,8 +119,7 @@ class ContainersController extends AppController
      * @link  http://book.cakephp.org/2.0/en/core-libraries/behaviors/tree.html#TreeBehavior::recover
      * @since 3.0
      */
-    protected function recover($mode = 'parent', $missingParentAction = null)
-    {
+    protected function recover($mode = 'parent', $missingParentAction = null) {
         $this->Container->recover($mode, $missingParentAction);
     }
 
@@ -163,14 +131,13 @@ class ContainersController extends AppController
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function byTenant($id = null)
-    {
+    public function byTenant($id = null) {
         $this->allowOnlyAjaxRequests();
         if (!$this->Container->hasAny()) {
             throw new NotFoundException(__('tenant.notfound'));
         }
         $parent = $this->Container->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'id' => $id,
             ],
@@ -185,21 +152,19 @@ class ContainersController extends AppController
      * ### Options
      * Please check at Tree->easyPath()
      *
-     * @param int   $id      of the tenant
+     * @param int $id of the tenant
      * @param array $options Array of options and HTML attributes.
      *
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function byTenantForSelect($id = null, $options = [])
-    {
+    public function byTenantForSelect($id = null, $options = []) {
         $this->allowOnlyAjaxRequests();
 
         $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Container->exists($id)) {
             throw new NotFoundException(__('Invalid container'));
@@ -212,18 +177,18 @@ class ContainersController extends AppController
         });
 
         $rootContainer = $this->Container->find('first', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Container.id' => $id,
             ],
         ]);
         $childElements = $this->Container->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'AND' => [
-                    'Container.lft BETWEEN ? AND ?'  => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
+                    'Container.lft BETWEEN ? AND ?' => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
                     'Container.rght BETWEEN ? AND ?' => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
-                    'Container.containertype_id'     => [
+                    'Container.containertype_id' => [
                         CT_LOCATION,
                         CT_NODE,
                         CT_HOSTGROUP,
@@ -256,10 +221,10 @@ class ContainersController extends AppController
                         //Check users to delete
                         $User = ClassRegistry::init('User');
                         $usersByContainerId = $this->User->usersByContainerId($containerIds, 'list');
-                        if(!empty($usersByContainerId)){
+                        if (!empty($usersByContainerId)) {
                             $usersToDelete = $this->User->find('all', [
                                 'recursive' => -1,
-                                'conditions'=> [
+                                'conditions' => [
                                     'User.id' => array_keys($usersByContainerId)
                                 ],
                                 'contain' => [
@@ -278,9 +243,9 @@ class ContainersController extends AppController
                         }
 
                         $usersToDelete = Hash::combine($usersToDelete, '{n}.User.id', '{n}.ContainerUserMembership');
-                        if($allowDelete){
-                            foreach($usersByContainerId as $user => $username){
-                                if(empty($usersToDelete[$user])){
+                        if ($allowDelete) {
+                            foreach ($usersByContainerId as $user => $username) {
+                                if (empty($usersToDelete[$user])) {
                                     $User->__delete($user, $userId);
                                 }
                             }
@@ -290,12 +255,12 @@ class ContainersController extends AppController
                         if (in_array('DistributeModule', $modulePlugins)) {
                             $Satellite = ClassRegistry::init('DistributeModule.Satellite');
                             $satellitesToDelete = $Satellite->find('all', [
-                                'recursive'  => -1,
-                                'joins'      => [
+                                'recursive' => -1,
+                                'joins' => [
                                     [
-                                        'table'      => 'containers',
-                                        'alias'      => 'Container',
-                                        'type'       => 'INNER',
+                                        'table' => 'containers',
+                                        'alias' => 'Container',
+                                        'type' => 'INNER',
                                         'conditions' => [
                                             'Container.id = Satellite.container_id',
                                         ],
@@ -327,12 +292,12 @@ class ContainersController extends AppController
                         //Check locations to delete
                         $Location = ClassRegistry::init('Location');
                         $locationsToDelete = $Location->find('all', [
-                            'recursive'  => -1,
-                            'joins'      => [
+                            'recursive' => -1,
+                            'joins' => [
                                 [
-                                    'table'      => 'containers',
-                                    'alias'      => 'Container',
-                                    'type'       => 'INNER',
+                                    'table' => 'containers',
+                                    'alias' => 'Container',
+                                    'type' => 'INNER',
                                     'conditions' => [
                                         'Container.id = Location.container_id',
                                     ],
@@ -341,7 +306,7 @@ class ContainersController extends AppController
                             'conditions' => [
                                 'Location.container_id' => $containerIds,
                             ],
-                            'fields'     => [
+                            'fields' => [
                                 'Location.id',
                                 'Container.id',
                             ],
@@ -354,8 +319,8 @@ class ContainersController extends AppController
                         //Check host groups to delete
                         $Hostgroup = ClassRegistry::init('Hostgroup');
                         $hostgroupsToDelete = $Hostgroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
+                            'recursive' => -1,
+                            'contain' => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -365,7 +330,7 @@ class ContainersController extends AppController
                             'conditions' => [
                                 'Hostgroup.container_id' => $containerIds,
                             ],
-                            'fields'     => [
+                            'fields' => [
                                 'Hostgroup.id',
                             ],
                         ]);
@@ -377,8 +342,8 @@ class ContainersController extends AppController
                         //Check service groups to delete
                         $Servicegroup = ClassRegistry::init('Servicegroup');
                         $servicegroupsToDelete = $Servicegroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
+                            'recursive' => -1,
+                            'contain' => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -388,7 +353,7 @@ class ContainersController extends AppController
                             'conditions' => [
                                 'Servicegroup.container_id' => $containerIds,
                             ],
-                            'fields'     => [
+                            'fields' => [
                                 'Servicegroup.id',
                             ],
                         ]);
@@ -400,8 +365,8 @@ class ContainersController extends AppController
                         //Check contact groups to delete
                         $Contactgroup = ClassRegistry::init('Contactgroup');
                         $contactgroupsToDelete = $Contactgroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
+                            'recursive' => -1,
+                            'contain' => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -411,7 +376,7 @@ class ContainersController extends AppController
                             'conditions' => [
                                 'Contactgroup.container_id' => $containerIds,
                             ],
-                            'fields'     => [
+                            'fields' => [
                                 'Contactgroup.id',
                             ],
                         ]);
