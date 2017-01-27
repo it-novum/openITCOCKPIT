@@ -38,6 +38,9 @@ class Systemsetting extends Importer
     {
         $data = $this->getData();
         foreach ($data as $record) {
+            if(isset($record['Systemsetting']['id'])){
+                unset($record['Systemsetting']['id']);
+            }
             if (!$this->exists($record['Systemsetting']['key'])) {
                 $this->Model->create();
                 $this->Model->save($record);
