@@ -20,12 +20,18 @@ class ContainerControllerTest extends ControllerTestCase {
         'app.location',
         'app.hosttemplate',
         'app.hostgroup',
-        'app.servicegroup'
+        'app.servicegroup',
+        'app.calendar',
+        'app.usersToContainer',
+        'app.host',
+        'app.timeperiod',
+        'app.autoreport',
+        'app.mapsContainer',
     ];
 
     public function setUp() {
         parent::setUp();
-        $this->Command = ClassRegistry::init('Container');
+        $this->Container = ClassRegistry::init('Container');
     }
 
     public function testIndex() {
@@ -38,7 +44,7 @@ class ContainerControllerTest extends ControllerTestCase {
                     'name' => 'ROOT',
                     'parent_id' => NULL,
                     'lft' => '1',
-                    'rght' => '12',
+                    'rght' => '6',
                 ]
             ],
             [
@@ -64,4 +70,35 @@ class ContainerControllerTest extends ControllerTestCase {
         ];
         $this->assertEquals($expectedContainers, $this->vars['all_containers']);
     }
+
+    public function testDelete(){
+        $this->testAction('/containers/delete/3', ['method' => 'post']);
+        $result = $this->Container->find('all', [
+            'recursive' => -1
+        ]);
+        $expectedContainers = [
+            [
+                'Container' => [
+                    'id' => 1,
+                    'containertype_id' => CT_GLOBAL,
+                    'name' => 'ROOT',
+                    'parent_id' => NULL,
+                    'lft' => '1',
+                    'rght' => '4',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 2,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantA',
+                    'parent_id' => 1,
+                    'lft' => '2',
+                    'rght' => '3',
+                ]
+            ],
+        ];
+        $this->assertEquals($expectedContainers, $result);
+    }
 }
+

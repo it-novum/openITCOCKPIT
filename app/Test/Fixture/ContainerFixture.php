@@ -37,7 +37,7 @@ class ContainerFixture extends CakeTestFixture {
                 'name' => 'ROOT',
                 'parent_id' => NULL,
                 'lft' => '1',
-                'rght' => '12',
+                'rght' => '6',
             ),
             array(
                 'id' => 2,

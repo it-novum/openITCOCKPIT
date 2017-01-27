@@ -9,6 +9,6 @@ class UsersToContainerFixture extends CakeTestFixture {
  *
  * @var array
  */
-	public $import = array('model' => 'UsersToContainer', 'records' => true);
+	public $import = array('model' => 'ContainerUserMembership', 'records' => true);
 
 }

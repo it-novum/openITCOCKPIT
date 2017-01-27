@@ -334,8 +334,8 @@ class ContainersController extends AppController {
                                 'Hostgroup.id',
                             ],
                         ]);
-                        foreach ($hostgroupsToDelete as $container) {
-                            $this->Container->__delete($container, $userId);
+                        foreach ($hostgroupsToDelete as $containerId) {
+                            $this->Container->__delete($containerId);
                         }
                         break;
                     case CT_SERVICEGROUP:
@@ -357,8 +357,8 @@ class ContainersController extends AppController {
                                 'Servicegroup.id',
                             ],
                         ]);
-                        foreach ($servicegroupsToDelete as $container) {
-                            $this->Container->__delete($container, $userId);
+                        foreach ($servicegroupsToDelete as $containerId) {
+                            $this->Container->__delete($containerId);
                         }
                         break;
                     case CT_CONTACTGROUP:
@@ -380,15 +380,15 @@ class ContainersController extends AppController {
                                 'Contactgroup.id',
                             ],
                         ]);
-                        foreach ($contactgroupsToDelete as $container) {
-                            $this->Container->__delete($container, $userId);
+                        foreach ($contactgroupsToDelete as $containerId) {
+                            $this->Container->__delete($containerId);
                         }
                         break;
                 }
             }
         }
         if ($allowDeleteRoot) {
-            if ($this->Container->__delete($rootContainer, $userId)) {
+            if ($this->Container->__delete($id)) {
                 $this->setFlash(__('Container deleted'));
                 $this->redirect(['action' => 'index']);
             } else {
