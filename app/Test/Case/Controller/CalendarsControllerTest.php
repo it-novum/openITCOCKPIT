@@ -26,10 +26,15 @@
 
 App::uses('AppController', 'Controller');
 
-class CommandsControllerTest extends ControllerTestCase {
+class CalendarsControllerTest extends ControllerTestCase {
     public $fixtures = [
         'app.calendar',
+        'app.calendarHoliday',
         'app.systemsetting',
+        'app.tenant',
+        'app.user',
+        'app.usergroup',
+        'app.usersToContainer',
         'app.container'
     ];
 
@@ -54,5 +59,87 @@ class CommandsControllerTest extends ControllerTestCase {
             ]
         ];
         $this->assertEquals($expectedCalendars, $this->vars['calendars']);
+    }
+
+    public function testAdd(){
+        $data = [
+            [
+                'Calendar' => [
+                    'id' => '2',
+                    'name' => 'My second calendar',
+                    'description' => 'My second calendar decription',
+                    'container_id' => '1'
+                ],
+                'Container' => [
+                    'id' => '1'
+                ]
+            ]
+        ];
+        $this->testAction('/calendars/add', ['data' => $data, 'method' => 'post']);
+
+        $myCalendar = $this->Calendar->find('first', [
+            'fields'     => [
+                'Calendar.id',
+                'Calendar.name',
+                'Calendar.description',
+                'Calendar.container_id',
+                'Container.id',
+            ],
+            'order' => ['Calendar.id' => 'desc']
+        ]);
+
+        $expectedCalendar = [
+            'Calendar' => [
+                'id' => '2',
+                'name' => 'My second calendar',
+                'description' => 'My second calendar decription',
+                'container_id' => '1'
+            ],
+            'Container' => [
+                'id' => '1'
+            ],
+            'CalendarHoliday' => [
+
+            ]
+        ];
+        $this->assertEquals($expectedCalendar, $myCalendar);
+    }
+
+    public function testGetEdit() {
+        $data = array();
+        $data['LoginUser']['email'] = 'admin@it-novum.com';
+        $data['LoginUser']['password'] = 'asdf12';
+
+        //test login action
+        $this->testAction('/login/login', array(
+                "method" => "post",
+                "return" => "contents",
+                "data" => $data
+            )
+        );
+        debug($this->vars);
+        $this->testAction('/calendars/edit/1', ['method' => 'get']);
+        $expectedCalendar = [
+            'Calendar' => [
+                'id' => '1',
+                'name' => 'My first calendar',
+                'description' => 'My first calendar decription',
+                'container_id' => '1'
+            ],
+            'Container' => [
+                'id' => '1',
+                'containertype_id' => '1',
+                'name' => 'ROOT',
+                'parent_id' => null,
+                'lft' => '1',
+                'rght' => '12'
+            ],
+            'CalendarHoliday' => [
+
+            ]
+        ];
+        unset($this->vars['calendar']['Calendar']['created']);
+        unset($this->vars['calendar']['Calendar']['modified']);
+        $this->assertEquals($expectedCalendar, $this->vars['calendar']);
     }
 }
