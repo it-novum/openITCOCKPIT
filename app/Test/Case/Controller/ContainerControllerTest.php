@@ -28,7 +28,10 @@ class ContainerControllerTest extends ControllerTestCase {
         'app.autoreport',
         'app.mapsContainer',
         'app.user',
-        'app.usergroup'
+        'app.usergroup',
+        'app.contact',
+        'app.contactsContainer',
+        'app.command'
     ];
 
     public function setUp() {
@@ -99,6 +102,63 @@ class ContainerControllerTest extends ControllerTestCase {
                     'rght' => '3',
                 ]
             ],
+        ];
+        $this->assertEquals($expectedContainers, $result);
+    }
+
+    public function testAdd(){
+        $this->testAction('/containers/add/', [
+            'method' => 'post',
+            'data' => [
+                'name' => 'TenantC',
+                'parent_id' => 1,
+                'containertype_id' => CT_TENANT
+            ]
+        ]);
+        $result = $this->Container->find('all', [
+            'recursive' => -1
+        ]);
+        $expectedContainers = [
+            [
+                'Container' => [
+                    'id' => 1,
+                    'containertype_id' => CT_GLOBAL,
+                    'name' => 'ROOT',
+                    'parent_id' => NULL,
+                    'lft' => '1',
+                    'rght' => '8',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 2,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantA',
+                    'parent_id' => 1,
+                    'lft' => '2',
+                    'rght' => '3',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 3,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantB',
+                    'parent_id' => 1,
+                    'lft' => '4',
+                    'rght' => '5',
+                ]
+            ],
+            [
+                'Container' => [
+                    'id' => 4,
+                    'containertype_id' => CT_TENANT,
+                    'name' => 'TenantC',
+                    'parent_id' => 1,
+                    'lft' => '6',
+                    'rght' => '7',
+                ]
+            ]
         ];
         $this->assertEquals($expectedContainers, $result);
     }
