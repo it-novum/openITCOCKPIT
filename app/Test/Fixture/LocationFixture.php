@@ -40,8 +40,8 @@ class LocationFixture extends CakeTestFixture {
 			'latitude' => 1,
 			'longitude' => 1,
 			'timezone' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-26 14:23:47',
-			'modified' => '2017-01-26 14:23:47'
+			'created' => '2017-01-27 15:56:25',
+			'modified' => '2017-01-27 15:56:25'
 		),
 	);
 

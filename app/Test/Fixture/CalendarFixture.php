@@ -34,8 +34,8 @@ class CalendarFixture extends CakeTestFixture {
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
 			'container_id' => 1,
-			'created' => '2017-01-27 14:23:32',
-			'modified' => '2017-01-27 14:23:32'
+			'created' => '2017-01-27 15:38:25',
+			'modified' => '2017-01-27 15:38:25'
 		),
 	);
 

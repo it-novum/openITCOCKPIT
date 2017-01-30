@@ -27,6 +27,8 @@ class ContainerControllerTest extends ControllerTestCase {
         'app.timeperiod',
         'app.autoreport',
         'app.mapsContainer',
+        'app.user',
+        'app.usergroup'
     ];
 
     public function setUp() {

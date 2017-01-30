@@ -55,7 +55,7 @@ class AutoreportFixture extends CakeTestFixture {
 			'report_interval' => 'Lorem ipsum dolor ',
 			'report_send_interval' => 'Lorem ipsum dolor ',
 			'consider_downtimes' => 1,
-			'last_send_date' => '2017-01-27 14:53:21',
+			'last_send_date' => '2017-01-27 15:38:20',
 			'min_availability_percent' => 1,
 			'min_availability' => 1,
 			'check_hard_state' => 1,
@@ -69,8 +69,8 @@ class AutoreportFixture extends CakeTestFixture {
 			'consider_holidays' => 1,
 			'calendar_id' => 1,
 			'max_number_of_outages' => 1,
-			'created' => '2017-01-27 14:53:21',
-			'modified' => '2017-01-27 14:53:21'
+			'created' => '2017-01-27 15:38:20',
+			'modified' => '2017-01-27 15:38:20'
 		),
 	);
 

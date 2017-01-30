@@ -45,7 +45,7 @@ class TenantFixture extends CakeTestFixture {
 			'container_id' => 1,
 			'description' => 'Lorem ipsum dolor sit amet',
 			'is_active' => 1,
-			'date' => '2017-01-26',
+			'date' => '2017-01-27',
 			'number_users' => 1,
 			'max_users' => 1,
 			'number_hosts' => 1,
@@ -57,8 +57,8 @@ class TenantFixture extends CakeTestFixture {
 			'street' => 'Lorem ipsum dolor sit amet',
 			'zipcode' => 1,
 			'city' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-26 14:21:30',
-			'modified' => '2017-01-26 14:21:30'
+			'created' => '2017-01-27 18:18:12',
+			'modified' => '2017-01-27 18:18:12'
 		),
 	);
 

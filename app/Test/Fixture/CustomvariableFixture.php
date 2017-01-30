@@ -35,8 +35,8 @@ class CustomvariableFixture extends CakeTestFixture {
 			'objecttype_id' => 1,
 			'name' => 'Lorem ipsum dolor sit amet',
 			'value' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-19 17:23:53',
-			'modified' => '2017-01-19 17:23:53'
+			'created' => '2017-01-27 15:41:53',
+			'modified' => '2017-01-27 15:41:53'
 		),
 	);
 
