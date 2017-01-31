@@ -158,6 +158,14 @@ class AppController extends Controller {
         } else {
             $this->__getUserRights();
         }
+
+        if(ENVIRONMENT === 'development_test'){
+            $autoLoginUserAdmin = $this->User->find('first');
+            if (!empty($autoLoginUserAdmin)){
+                $this->Auth->login($autoLoginUserAdmin);
+                $this->MY_RIGHTS = [1];
+            }
+        }
     }
 
     protected function __getUserRights() {

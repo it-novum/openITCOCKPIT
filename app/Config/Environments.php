@@ -17,7 +17,9 @@ class Environments
      */
     public static function detect()
     {
-        if (PHP_SAPI == 'cli') {
+        if(file_exists(__DIR__.'/../tmp/testing.txt')){
+            $environment = self::DEVELOPMENT_TEST;
+        } elseif (PHP_SAPI == 'cli') {
             $environment = Environments::_detectCli();
         } else {
             $environment = Environments::_detectHttp();
