@@ -25,10 +25,11 @@
 
 App::uses('Validation', 'Utility');
 
+
 class LoginController extends AppController
 {
 
-    public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container'];
+    public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];
     public $components = ['Ldap'];
 
     public function beforeFilter()
@@ -44,6 +45,30 @@ class LoginController extends AppController
     public function login($redirectBack = 0)
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+
+        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso'){
+            $result = $this->Oauth2client->connectToSSO();
+            $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
+            if(isset($result['redirect'])){
+                $this->redirect($result['redirect']);
+            }
+            if(($result['success'])) {
+                $user = $this->User->find('first', ['conditions' => ['email' => $result['email'], 'status' => 1]]);
+                if(empty($user)){
+                    echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'].$errorPostMess;exit;
+                }
+                if (!$this->Auth->login($user)) {
+                    echo 'Cannot log in user: '.$result['email'].$errorPostMess;exit;
+                }
+
+                $this->Session->delete('Message.auth');
+                $this->setFlash(__('login.automatically_logged_in'));
+                $this->redirect($this->Auth->loginRedirect);
+            }else{
+                echo $result['message'].$errorPostMess;exit;
+            }
+        }
+
         $displayMethod = false;
         $authMethods = [
             'ldap'    => __('LDAP'),
@@ -99,7 +124,7 @@ class LoginController extends AppController
             $conditions = [];
             if ($firstName !== '' && $lastName !== '') {
                 $conditions = [
-                    ['firstname' => $firstName, 'lastname' => $lastName],
+                    ['firstname' => $firstName, 'lastname' => $lastName, 'status' => 1],
                 ];
                 if ($OU !== '') {
                     $conditions[0]['email LIKE'] = '%@'.$OU.'.%';
@@ -108,6 +133,12 @@ class LoginController extends AppController
 
             if (!empty($conditions)) {
                 $user = $this->User->find('first', ['conditions' => $conditions]);
+                if (empty($user)) {
+                    $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
+                    if (!empty($viewerEmail)) {
+                        $user = $this->User->find('first', ['conditions' => ['email' => $viewerEmail, 'status' => 1]]);
+                    }
+                }
                 if (!empty($user) && $this->Auth->login($user)) {
                     $this->Session->delete('Message.auth');
                     $this->setFlash(__('login.automatically_logged_in'));
@@ -145,6 +176,7 @@ class LoginController extends AppController
                 //$hasRootPrivileges = false;
                 //foreach($_user['Container'] as $container){
                 //	$rights[] = (int)$container['id'];
+
                 //
                 //	if((int)$container['id'] === ROOT_CONTAINER){
                 //		$hasRootPrivileges = true;
@@ -293,8 +325,13 @@ class LoginController extends AppController
      */
     public function logout()
     {
-        $this->setFlash(__('login.logout_successfull'));
+        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $this->Auth->logout();
+        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])){
+            $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
+        }else{
+            $this->setFlash(__('login.logout_successfull'));
+        }
         $this->redirect([
             'controller' => 'login',
             'action'     => 'login',

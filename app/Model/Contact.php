@@ -266,7 +266,9 @@ class Contact extends AppModel
                 $path = Cache::remember('ContactContactsByContainerId:'.$container_id, function () use ($container_id) {
                     return $this->Container->getPath($container_id);
                 }, 'migration');
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                if(isset($path[1])){
+                    $tenantContainerIds[] = $path[1]['Container']['id'];
+                }
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }

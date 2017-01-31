@@ -38,6 +38,9 @@ class Systemsetting extends Importer
     {
         $data = $this->getData();
         foreach ($data as $record) {
+            if(isset($record['Systemsetting']['id'])){
+                unset($record['Systemsetting']['id']);
+            }
             if (!$this->exists($record['Systemsetting']['key'])) {
                 $this->Model->create();
                 $this->Model->save($record);
@@ -520,7 +523,7 @@ class Systemsetting extends Importer
                     'id'       => '42',
                     'key'      => 'FRONTEND.LDAP.USE_TLS',
                     'value'    => '1',
-                    'info'     => 'If PHP shoud upgrade the security of a plain connection to a TLS encrypted connection',
+                    'info'     => 'If PHP should upgrade the security of a plain connection to a TLS encrypted connection',
                     'section'  => 'FRONTEND',
                     'created'  => '1970-01-01 00:00:00',
                     'modified' => '2015-01-16 00:41:41',
@@ -766,6 +769,94 @@ class Systemsetting extends Importer
                     'section'  => 'MONITORING',
                     'created'  => '2016-06-13 11:47:47',
                     'modified' => '2016-06-13 11:47:47',
+                ],
+            ],
+            (int)64 => [
+                'Systemsetting' => [
+                    'id'       => '65',
+                    'key'      => 'FRONTEND.SSO.CLIENT_ID',
+                    'value'    => '1',
+                    'info'     => 'Client id generated in SSO Server',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)65 => [
+                'Systemsetting' => [
+                    'id'       => '66',
+                    'key'      => 'FRONTEND.SSO.CLIENT_SECRET',
+                    'value'    => '1',
+                    'info'     => 'Client secret generated in SSO Server',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)66 => [
+                'Systemsetting' => [
+                    'id'       => '67',
+                    'key'      => 'FRONTEND.SSO.AUTH_ENDPOINT',
+                    'value'    => '1',
+                    'info'     => 'Authorization endpoint of SSO Server',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)67 => [
+                'Systemsetting' => [
+                    'id'       => '68',
+                    'key'      => 'FRONTEND.SSO.TOKEN_ENDPOINT',
+                    'value'    => '1',
+                    'info'     => 'Token endpoint of SSO Server',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)68 => [
+                'Systemsetting' => [
+                    'id'       => '69',
+                    'key'      => 'FRONTEND.SSO.USER_ENDPOINT',
+                    'value'    => '1',
+                    'info'     => 'User info endpoint of SSO Server',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)69 => [
+                'Systemsetting' => [
+                    'id'       => '70',
+                    'key'      => 'FRONTEND.SSO.NO_EMAIL_MESSAGE',
+                    'value'    => '1',
+                    'info'     => 'The error message that appears when provided E-mail address was not found in openITCOCKPIT',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)71 => [
+                'Systemsetting' => [
+                    'id'       => '71',
+                    'key'      => 'FRONTEND.SSO.LOG_OFF_LINK',
+                    'value'    => '1',
+                    'info'     => 'SSO Server log out link',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
+                ],
+            ],
+            (int)72 => [
+                'Systemsetting' => [
+                    'id'       => '72',
+                    'key'      => 'FRONTEND.CERT.DEFAULT_USER_EMAIL',
+                    'value'    => 'default.user@email.de',
+                    'info'     => 'Default user E-mail address to be used if no E-mail address was found during the login with certificate',
+                    'section'  => 'FRONTEND',
+                    'created'  => '1970-01-01 00:00:00',
+                    'modified' => '2015-01-16 00:41:41',
                 ],
             ],
         ];

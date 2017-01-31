@@ -34,8 +34,8 @@ class ServicetemplategroupFixture extends CakeTestFixture {
 			'uuid' => 'Lorem ipsum dolor sit amet',
 			'container_id' => 1,
 			'description' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-19 17:53:56',
-			'modified' => '2017-01-19 17:53:56'
+			'created' => '2017-01-27 18:05:55',
+			'modified' => '2017-01-27 18:05:55'
 		),
 	);
 

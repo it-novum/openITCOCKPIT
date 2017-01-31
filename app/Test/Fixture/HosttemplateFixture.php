@@ -60,6 +60,57 @@ class HosttemplateFixture extends CakeTestFixture {
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
 	);
 
-
+/**
+ * Records
+ *
+ * @var array
+ */
+	public $records = array(
+		array(
+			'id' => 1,
+			'uuid' => 'Lorem ipsum dolor sit amet',
+			'name' => 'Lorem ipsum dolor sit amet',
+			'description' => 'Lorem ipsum dolor sit amet',
+			'hosttemplatetype_id' => 1,
+			'command_id' => 1,
+			'check_command_args' => 'Lorem ipsum dolor sit amet',
+			'eventhandler_command_id' => 1,
+			'timeperiod_id' => 1,
+			'check_interval' => 1,
+			'retry_interval' => 1,
+			'max_check_attempts' => 1,
+			'first_notification_delay' => 1,
+			'notification_interval' => 1,
+			'notify_on_down' => 1,
+			'notify_on_unreachable' => 1,
+			'notify_on_recovery' => 1,
+			'notify_on_flapping' => 1,
+			'notify_on_downtime' => 1,
+			'flap_detection_enabled' => 1,
+			'flap_detection_on_up' => 1,
+			'flap_detection_on_down' => 1,
+			'flap_detection_on_unreachable' => 1,
+			'low_flap_threshold' => 1,
+			'high_flap_threshold' => 1,
+			'process_performance_data' => 1,
+			'freshness_checks_enabled' => 1,
+			'freshness_threshold' => 1,
+			'passive_checks_enabled' => 1,
+			'event_handler_enabled' => 1,
+			'active_checks_enabled' => 1,
+			'retain_status_information' => 1,
+			'retain_nonstatus_information' => 1,
+			'notifications_enabled' => 1,
+			'notes' => 'Lorem ipsum dolor sit amet',
+			'priority' => 1,
+			'check_period_id' => 1,
+			'notify_period_id' => 1,
+			'tags' => 'Lorem ipsum dolor sit amet',
+			'container_id' => 1,
+			'host_url' => 'Lorem ipsum dolor sit amet',
+			'created' => '2017-01-27 15:53:05',
+			'modified' => '2017-01-27 15:53:05'
+		),
+	);
 
 }
