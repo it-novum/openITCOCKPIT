@@ -51,7 +51,7 @@ class ContainersController extends AppController {
         $this->set('validationError', (!empty($this->Container->validationErrors) ? true : false));
 
         $this->set(compact(['all_containers', 'tenants']));
-        $this->set('_serialize', ['all_container']);
+        $this->set('_serialize', ['all_containers']);
     }
 
     public function nest() {
