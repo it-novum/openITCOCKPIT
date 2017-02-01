@@ -42,16 +42,15 @@ class ContainersController extends AppController {
                 $this->setFlash(__('error while saving data'), false);
             }
         }
-        $this->Paginator->settings = [
-            'recursive' => -1
-        ];
-        $all_containers = $this->Paginator->paginate();
+        $all_containers = $this->Container->find('all', [
+            'recursive' => -1,
+        ]);
         $tenants = Hash::combine(Hash::extract($all_containers, '{n}.Container[containertype_id=' . CT_TENANT . ']'), '{n}.id', '{n}.name');
 
         $this->set('validationError', (!empty($this->Container->validationErrors) ? true : false));
 
         $this->set(compact(['all_containers', 'tenants']));
-        $this->set('_serialize', ['all_container']);
+        $this->set('_serialize', ['all_containers']);
     }
 
     public function nest() {
