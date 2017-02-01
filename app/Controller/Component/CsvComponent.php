@@ -7,6 +7,7 @@ class CsvComponent extends Component
     var $filename = 'Export.csv';
     var $line = [];
     var $buffer;
+    var $error;
 
     function CsvComponent()
     {
@@ -36,13 +37,14 @@ class CsvComponent extends Component
             $zip->addFile($file, basename($file));
         }
         $zip->close();
+
         foreach ($files as $file) {
             unlink($file);
         }
         if ($render) {
 
-            $zipName = basename($zipPath);
-
+            $basename = basename($zipPath, '.zip');
+            $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename).'.zip';
             header("Content-Type: application/zip");
             header("Content-Disposition: attachment; filename=$zipName");
             header("Content-Length: ".filesize($zipPath));
