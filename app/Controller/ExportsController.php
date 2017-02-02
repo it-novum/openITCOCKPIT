@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ExportsController extends AppController
-{
+class ExportsController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
@@ -38,8 +37,7 @@ class ExportsController extends AppController
         'ListFilter.ListFilter',
     ];
 
-    public function index()
-    {
+    public function index() {
         App::uses('UUID', 'Lib');
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
@@ -60,33 +58,33 @@ class ExportsController extends AppController
         $this->loadModel('Systemsetting');
         $this->set('gearmanReachable', $gearmanReachable);
         $this->set('exportRunning', $exportRunning);
+        $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->Frontend->setJson('exportRunning', $exportRunning);
         $this->Frontend->setJson('uuidRegEx', UUID::JSregex());
     }
 
-    public function broadcast()
-    {
+    public function broadcast() {
         $this->allowOnlyAjaxRequests();
         $_exportRecords = $this->Export->find('all');
 
         $exportRecords = [];
 
         $exportFinished = [
-            'finished'     => false,
+            'finished' => false,
             'successfully' => false,
         ];
 
         foreach ($_exportRecords as $exportRecord) {
             $exportRecords[$exportRecord['Export']['id']] = [
-                'task'         => $exportRecord['Export']['task'],
-                'text'         => h($exportRecord['Export']['text']),
-                'finished'     => $exportRecord['Export']['finished'],
+                'task' => $exportRecord['Export']['task'],
+                'text' => h($exportRecord['Export']['text']),
+                'finished' => $exportRecord['Export']['finished'],
                 'successfully' => $exportRecord['Export']['successfully'],
             ];
 
             if ($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1) {
                 $exportFinished = [
-                    'finished'     => true,
+                    'finished' => true,
                     'successfully' => (bool)$exportRecord['Export']['successfully'],
                 ];
             }
@@ -96,11 +94,21 @@ class ExportsController extends AppController
         $this->set('_serialize', ['exportRecords', 'exportFinished']);
     }
 
-    public function launchExport($createBackup = 1)
-    {
+    public function launchExport($createBackup = 1) {
+
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
+
+        if (isset($this->request->query['instances'])) {
+            $instancesToExport = $this->request->query['instances'];
+            if (is_dir(APP.'Plugin'.DS.'DistributeModule')) {
+                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+                $SatelliteModel->disableAllInstanceConfigSyncs();
+                $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
+            }
+        }
+
         //session_write_close();
 
         $exportRunning = true;
@@ -133,8 +141,25 @@ class ExportsController extends AppController
         $this->set('_serialize', ['export']);
     }
 
-    public function verifyConfig()
-    {
+    public function saveInstanceConfigSyncSelection(){
+        if (!$this->request->is('ajax')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (isset($this->request->query['instances'])) {
+            $instancesToExport = $this->request->query['instances'];
+            if (is_dir(APP.'Plugin'.DS.'DistributeModule')) {
+                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+                $SatelliteModel->disableAllInstanceConfigSyncs();
+                $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
+            }
+        }
+
+        $result = true;
+        $this->set('_serialize', ['result']);
+    }
+
+    public function verifyConfig() {
         //$this->allowOnlyAjaxRequests();
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');

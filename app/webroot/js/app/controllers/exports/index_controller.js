@@ -23,146 +23,187 @@
 //	confirmation.
 
 App.Controllers.ExportsIndexController = Frontend.AppController.extend({
-	$exportLog: null,
-	worker: null,
+    $exportLog: null,
+    worker: null,
 
-	//components: ['WebsocketSudo'],
+    //components: ['WebsocketSudo'],
 
-	_initialize: function(){
+    _initialize: function () {
 
-		this.worker = function(){
-			var self = this;
-			$.ajax({
-				url: '/exports/broadcast.json',
-				cache: false,
-				type: "GET",
-				success: function(response){
-					//console.log(response);
-					var $exportLog = $('#exportLog');
-					for(var key in response.exportRecords){
-						var $exportLogEntry = $exportLog.children('#'+key);
-						//console.log($exportLogEntry.length);
-						if($exportLogEntry.length == 0){
-							//Record does not exists, we need to create it
-							if(response.exportRecords[key].finished == 0){
-								var html = '<div id="'+key+'" data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span></div>';
-							}else{
-								if(response.exportRecords[key].successfully == 1){
-									var html = '<div id="'+key+'" data-finished="1"><i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span></div>';
-								}else{
-									var html = '<div id="'+key+'" data-finished="1"><i class="fa fa-times text-danger"></i> <span>'+response.exportRecords[key].text+'</span></div>';
-								}
-							}
-							$exportLog.append(html);
-						}else{
-							//Record exists, lets update it
-							if(response.exportRecords[key].finished == 0){
-								//If we overwrite existing records, the spin animation will flapp
-								if($exportLogEntry.data('finished') != 0){
-									var html = '<i class="fa fa-spin fa-refresh"></i> <span>'+response.exportRecords[key].text+'</span>';
-									$exportLogEntry.html(html);
-								}
-							}else{
-								if(response.exportRecords[key].successfully == 1){
-									var html = '<i class="fa fa-check text-success"></i> <span>'+response.exportRecords[key].text+'</span>';
-								}else{
-									var html = '<i class="fa fa-times text-danger"></i> <span>'+response.exportRecords[key].text+'</span>';
-								}
-								$exportLogEntry.html(html);
-							}
-						}
-					}
+        var _self = this;
 
-					if(response.exportFinished.finished == true){
-						if(response.exportFinished.successfully == true){
-							$('#exportSuccessfully').show();
-						}
+        $('#saveInstacesForSync').click(function(){
+            _self.saveInstacesForSync();
+        });
 
-						if(response.exportFinished.successfully == false){
-							$('#exportError').show();
+        this.worker = function () {
+            var self = this;
+            $.ajax({
+                url: '/exports/broadcast.json',
+                cache: false,
+                type: "GET",
+                success: function (response) {
+                    //console.log(response);
+                    var $exportLog = $('#exportLog');
+                    for (var key in response.exportRecords) {
+                        var $exportLogEntry = $exportLog.children('#' + key);
+                        //console.log($exportLogEntry.length);
+                        if ($exportLogEntry.length == 0) {
+                            //Record does not exists, we need to create it
+                            if (response.exportRecords[key].finished == 0) {
+                                var html = '<div id="' + key + '" data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + response.exportRecords[key].text + '</span></div>';
+                            } else {
+                                if (response.exportRecords[key].successfully == 1) {
+                                    var html = '<div id="' + key + '" data-finished="1"><i class="fa fa-check text-success"></i> <span>' + response.exportRecords[key].text + '</span></div>';
+                                } else {
+                                    var html = '<div id="' + key + '" data-finished="1"><i class="fa fa-times text-danger"></i> <span>' + response.exportRecords[key].text + '</span></div>';
+                                }
+                            }
+                            $exportLog.append(html);
+                        } else {
+                            //Record exists, lets update it
+                            if (response.exportRecords[key].finished == 0) {
+                                //If we overwrite existing records, the spin animation will flapp
+                                if ($exportLogEntry.data('finished') != 0) {
+                                    var html = '<i class="fa fa-spin fa-refresh"></i> <span>' + response.exportRecords[key].text + '</span>';
+                                    $exportLogEntry.html(html);
+                                }
+                            } else {
+                                if (response.exportRecords[key].successfully == 1) {
+                                    var html = '<i class="fa fa-check text-success"></i> <span>' + response.exportRecords[key].text + '</span>';
+                                } else {
+                                    var html = '<i class="fa fa-times text-danger"></i> <span>' + response.exportRecords[key].text + '</span>';
+                                }
+                                $exportLogEntry.html(html);
+                            }
+                        }
+                    }
 
-							//Query monitoring validation error if any
-							for(var key in response.exportRecords){
-								if(response.exportRecords[key].task == 'export_verify_new_configuration'){
-									if(response.exportRecords[key].finished == 1 && response.exportRecords[key].successfully == 0){
-										self.verify();
-									}
-								}
-							}
-						}
-					}
-				},
-				complete: function(response){
-					// Schedule the next request when the current one's complete
-					if(response.responseJSON.exportFinished.finished == false){
-						setTimeout(self.worker, 1000);
-					}
-				}
-			});
-		}.bind(this);
+                    if (response.exportFinished.finished == true) {
+                        if (response.exportFinished.successfully == true) {
+                            $('#exportSuccessfully').show();
+                        }
 
-		//Export running?
-		if(this.getVar('exportRunning') == true){
-			$('#exportInfo').show();
-			this.worker();
-		}
+                        if (response.exportFinished.successfully == false) {
+                            $('#exportError').show();
 
-		$('#launchExport').click(function(){
-			var self = this;
-			$('#exportInfo').show();
-			$('#launchExport').parents('.formactions').remove();
+                            //Query monitoring validation error if any
+                            for (var key in response.exportRecords) {
+                                if (response.exportRecords[key].task == 'export_verify_new_configuration') {
+                                    if (response.exportRecords[key].finished == 1 && response.exportRecords[key].successfully == 0) {
+                                        self.verify();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                complete: function (response) {
+                    // Schedule the next request when the current one's complete
+                    if (response.responseJSON.exportFinished.finished == false) {
+                        setTimeout(self.worker, 1000);
+                    }
+                }
+            });
+        }.bind(this);
 
-			var createBackup = 1;
-			if($('#CreateBackup').prop('checked') == false || $('#CreateBackup').prop('checked') == null){
-				createBackup = 0;
-			}
-			$.ajax({
-				url: '/exports/launchExport/'+createBackup+'.json',
-				cache: false,
-				type: "GET",
-				success: function(response){
-					if(response.export.exportRunning == true){
-						$('#exportRunning').show();
-						$('#exportInfo').show();
-						$('#launchExport').parents('.formactions').remove();
-					}
-					self.worker();
-				},
-				complete: function() {
+        //Export running?
+        if (this.getVar('exportRunning') == true) {
+            $('#exportInfo').show();
+            this.worker();
+        }
 
-				}
-			});
-		}.bind(this));
-	},
+        $('#launchExport').click(function () {
+            var self = this;
+            $('#exportInfo').show();
+            $('#launchExport').parents('.formactions').remove();
 
-	verify: function(){
-		var $verifyOutput = $('#verifyOutput');
-		var RegExObject = new RegExp('('+this.getVar('uuidRegEx')+')', 'g');
-		$('#verifyError').show();
-		$.ajax({
-			url: '/exports/verifyConfig.json',
-			cache: false,
-			type: "GET",
-			success: function(response){
-				for(var key in response.result.output){
-					var line = response.result.output[key];
+            var createBackup = 1;
+            if ($('#CreateBackup').prop('checked') == false || $('#CreateBackup').prop('checked') == null) {
+                createBackup = 0;
+            }
 
-					//Replace UUID with links to forwarder
-					line = line.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
+            var instacesToExport = [];
+            $('.sync_instance').each(function (key, obj) {
+                if ($(obj).prop('checked')) {
+                    instacesToExport.push($(obj).attr('instance'));
+                }
+            });
 
-					var _class='txt-color-blueDark';
-					if(line.match('Warning')){
-						_class = 'txt-color-orangeDark';
-					}
+            $.ajax({
+                url: '/exports/launchExport/' + createBackup + '.json',
+                cache: false,
+                type: "GET",
+                data: {
+                    instances: instacesToExport
+                },
+                success: function (response) {
+                    if (response.export.exportRunning == true) {
+                        $('#exportRunning').show();
+                        $('#exportInfo').show();
+                        $('#launchExport').parents('.formactions').remove();
+                    }
+                    self.worker();
+                },
+                complete: function () {
 
-					if(line.match('Error')){
-						_class = 'txt-color-red';
-					}
-					$verifyOutput.append('<div class="'+_class+'">'+line+'</div>');
-				}
-			},
-			complete: function(){
-			}
-		});
-	}
+                }
+            });
+        }.bind(this));
+    },
+
+    verify: function () {
+        var $verifyOutput = $('#verifyOutput');
+        var RegExObject = new RegExp('(' + this.getVar('uuidRegEx') + ')', 'g');
+        $('#verifyError').show();
+        $.ajax({
+            url: '/exports/verifyConfig.json',
+            cache: false,
+            type: "GET",
+            success: function (response) {
+                for (var key in response.result.output) {
+                    var line = response.result.output[key];
+
+                    //Replace UUID with links to forwarder
+                    line = line.replace(RegExObject, '<a href="/forward/index/uuid:$1/action:edit">$1</a>');
+
+                    var _class = 'txt-color-blueDark';
+                    if (line.match('Warning')) {
+                        _class = 'txt-color-orangeDark';
+                    }
+
+                    if (line.match('Error')) {
+                        _class = 'txt-color-red';
+                    }
+                    $verifyOutput.append('<div class="' + _class + '">' + line + '</div>');
+                }
+            },
+            complete: function () {
+            }
+        });
+    },
+
+    saveInstacesForSync: function(){
+        var instacesToExport = [];
+        $('.sync_instance').each(function (key, obj) {
+            if ($(obj).prop('checked')) {
+                instacesToExport.push($(obj).attr('instance'));
+            }
+        });
+
+        $.ajax({
+            url: '/exports/saveInstanceConfigSyncSelection.json',
+            cache: false,
+            type: "GET",
+            data: {
+                instances: instacesToExport
+            },
+            success: function (response) {
+
+            },
+            complete: function () {
+
+            }
+        });
+    }
 });

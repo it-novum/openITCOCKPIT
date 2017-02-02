@@ -66,7 +66,7 @@
                             <label class="col col-md-3 control-label text-left" for="CreateBackup"><i
                                         class="fa fa-hdd-o"></i> <?php echo __('Create backup of current configuration?'); ?>
                             </label>
-                            <div class="col col-md-1">
+                            <div class="col col-md-9">
                                 <div class="">
                                     <span class="onoffswitch">
                                             <input type="hidden" value="0" id="CreateBackup_"
@@ -84,6 +84,9 @@
                                 </div>
                             </div>
                         </div>
+
+
+                        <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
 
                         <div class="row">
                             <?php $style = 'display:none;'; ?>
