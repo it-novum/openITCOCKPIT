@@ -78,7 +78,6 @@ class CalendarsController extends AppController
 
     public function add()
     {
-        debug($this->MY_RIGHTS);
         if ($this->hasRootPrivileges === true) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
@@ -114,7 +113,6 @@ class CalendarsController extends AppController
 
     public function edit($id = null)
     {
-        debug($this->MY_RIGHTS);
         if (!$this->Calendar->exists($id)) {
             throw new NotFoundException(__('Invalid calendar'));
         }
@@ -128,6 +126,7 @@ class CalendarsController extends AppController
             //exit;
         }
         $calendar = $this->Calendar->findById($id);
+
         if (!$this->allowedByContainerId($calendar['Calendar']['container_id'])) {
             $this->render403();
 
@@ -156,6 +155,7 @@ class CalendarsController extends AppController
                 $this->setFlash(__('Could not save data'), false);
             }
         }
+
         $data = [
             'tenants'  => $tenants,
             'calendar' => $calendar,

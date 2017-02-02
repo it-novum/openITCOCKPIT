@@ -50,7 +50,18 @@ class CalendarsControllerTest extends ControllerTestCase {
                 'Calendar' => [
                     'id' => '1',
                     'name' => 'My first calendar',
-                    'description' => 'My first calendar decription',
+                    'description' => 'My first calendar description',
+                    'container_id' => '1'
+                ],
+                'Container' => [
+                    'id' => '1'
+                ]
+            ],
+            [
+                'Calendar' => [
+                    'id' => '2',
+                    'name' => 'My second calendar',
+                    'description' => 'My second calendar description',
                     'container_id' => '1'
                 ],
                 'Container' => [
@@ -65,9 +76,9 @@ class CalendarsControllerTest extends ControllerTestCase {
         $data = [
             [
                 'Calendar' => [
-                    'id' => '2',
-                    'name' => 'My second calendar',
-                    'description' => 'My second calendar decription',
+                    'id' => '3',
+                    'name' => 'My third calendar',
+                    'description' => 'My third calendar description',
                     'container_id' => '1'
                 ],
                 'Container' => [
@@ -90,9 +101,9 @@ class CalendarsControllerTest extends ControllerTestCase {
 
         $expectedCalendar = [
             'Calendar' => [
-                'id' => '2',
-                'name' => 'My second calendar',
-                'description' => 'My second calendar decription',
+                'id' => '3',
+                'name' => 'My third calendar',
+                'description' => 'My third calendar description',
                 'container_id' => '1'
             ],
             'Container' => [
@@ -106,24 +117,47 @@ class CalendarsControllerTest extends ControllerTestCase {
     }
 
     public function testGetEdit() {
-        $data = array();
-        $data['LoginUser']['email'] = 'admin@it-novum.com';
-        $data['LoginUser']['password'] = 'asdf12';
-
-        //test login action
-        $this->testAction('/login/login', array(
-                "method" => "post",
-                "return" => "contents",
-                "data" => $data
-            )
-        );
-        debug($this->vars);
         $this->testAction('/calendars/edit/1', ['method' => 'get']);
         $expectedCalendar = [
             'Calendar' => [
                 'id' => '1',
                 'name' => 'My first calendar',
-                'description' => 'My first calendar decription',
+                'description' => 'My first calendar description',
+                'container_id' => '1',
+                'created' => '2017-01-26 16:19:36',
+                'modified' => '2017-01-26 16:19:36'
+            ],
+            'Container' => [
+                'id' => '1',
+                'containertype_id' => '1',
+                'name' => 'ROOT',
+                'parent_id' => null,
+                'lft' => '1',
+                'rght' => '12'
+            ],
+            'CalendarHoliday' => [
+
+            ]
+        ];
+        $this->assertEquals($expectedCalendar, $this->vars['calendar']);
+    }
+
+    public function testPostEdit() {
+        $data = [
+            'Calendar' => [
+                'id' => '1',
+                'name' => 'Changed My first calendar',
+                'description' => 'Changed My first calendar decription',
+                'container_id' => '1'
+            ]
+        ];
+        $this->testAction('/calendars/edit/1', ['data' => $data, 'method' => 'post']);
+
+        $expectedCalendar = [
+            'Calendar' => [
+                'id' => '1',
+                'name' => 'Changed My first calendar',
+                'description' => 'Changed My first calendar decription',
                 'container_id' => '1'
             ],
             'Container' => [
@@ -138,8 +172,33 @@ class CalendarsControllerTest extends ControllerTestCase {
 
             ]
         ];
-        unset($this->vars['calendar']['Calendar']['created']);
-        unset($this->vars['calendar']['Calendar']['modified']);
-        $this->assertEquals($expectedCalendar, $this->vars['calendar']);
+        $changedCalendar = $this->Calendar->find('first', [
+            'conditions' => ['Calendar.id' => '1']
+        ]);
+        unset($changedCalendar['Calendar']['created']);
+        unset($changedCalendar['Calendar']['modified']);
+        $this->assertEquals($expectedCalendar, $changedCalendar);
     }
+
+    public function testDelete() {
+        $this->testAction('/calendars/delete/1', ['method' => 'post']);
+        $myCalendar = $this->Calendar->find('first', [
+            'conditions' => ['Calendar.id' => '1']
+        ]);
+        $this->assertEquals([], $myCalendar);
+    }
+
+    public function testMassDelete() {
+        $data = [
+            'Calendar' => [
+                'delete' => [1, 2]
+            ]
+        ];
+        $this->testAction('/calendars/mass_delete/1/2', ['data' => $data, 'method' => 'post']);
+        $myCalendars = $this->Calendar->find('first', [
+            'conditions' => ['Calendar.id' => [1, 2]]
+        ]);
+        $this->assertEquals([], $myCalendars);
+    }
+
 }
