@@ -35,6 +35,7 @@ class ApiExtensionLoader
         'Systemsettings',
         'Containers',
         'Cronjob',
+        'Commands',
     ];
 
     /**

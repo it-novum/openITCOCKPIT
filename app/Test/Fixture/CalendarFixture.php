@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Calendar Fixture
  */
 class CalendarFixture extends CakeTestFixture {
-
     /**
      * Fields
      *

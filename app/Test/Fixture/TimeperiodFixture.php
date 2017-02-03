@@ -36,8 +36,8 @@ class TimeperiodFixture extends CakeTestFixture {
 			'container_id' => 1,
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-11 15:21:56',
-			'modified' => '2017-01-11 15:21:56'
+			'created' => '2017-01-27 18:22:21',
+			'modified' => '2017-01-27 18:22:21'
 		),
 	);
 

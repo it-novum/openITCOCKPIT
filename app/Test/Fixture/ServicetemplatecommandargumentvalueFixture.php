@@ -33,8 +33,8 @@ class ServicetemplatecommandargumentvalueFixture extends CakeTestFixture {
 			'commandargument_id' => 1,
 			'servicetemplate_id' => 1,
 			'value' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-19 17:44:57',
-			'modified' => '2017-01-19 17:44:57'
+			'created' => '2017-01-27 18:01:41',
+			'modified' => '2017-01-27 18:01:41'
 		),
 	);
 

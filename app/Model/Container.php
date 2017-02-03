@@ -28,82 +28,81 @@
  * Class Container
  * @mixin TreeBehavior
  */
-class Container extends AppModel
-{
+class Container extends AppModel {
     public $actsAs = ['Tree'];
 
     var $validate = [
-        'name'      => [
+        'name' => [
             'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
+                'rule' => 'notBlank',
+                'message' => 'This field cannot be left blank.',
                 'required' => true,
             ],
             'isUnique' => [
-                'rule'    => ['isUniqueByObject'],
+                'rule' => ['isUniqueByObject'],
                 // Do not change this message without changing the Migration script as well! Otherwise it breaks it's
                 // compatibility.
                 'message' => 'This name already exists.',
             ],
         ],
         'parent_id' => [
-            'rule'     => 'notBlank',
-            'message'  => 'This field cannot be left blank.',
+            'rule' => 'notBlank',
+            'message' => 'This field cannot be left blank.',
             'required' => true,
         ],
     ];
 
     var $hasMany = [
-        'Tenant'                  => [
-            'className'  => 'Tenant',
+        'Tenant' => [
+            'className' => 'Tenant',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
 
-        'Contactgroup'            => [
-            'className'  => 'Contactgroup',
+        'Contactgroup' => [
+            'className' => 'Contactgroup',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Location'                => [
-            'className'  => 'Location',
+        'Location' => [
+            'className' => 'Location',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Hosttemplate'            => [
-            'className'  => 'Hosttemplate',
+        'Hosttemplate' => [
+            'className' => 'Hosttemplate',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Hostgroup'               => [
-            'className'  => 'Hostgroup',
+        'Hostgroup' => [
+            'className' => 'Hostgroup',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Servicegroup'            => [
-            'className'  => 'Servicegroup',
+        'Servicegroup' => [
+            'className' => 'Servicegroup',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Calendar'                => [
-            'className'  => 'Calendar',
+        'Calendar' => [
+            'className' => 'Calendar',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
         'ContainerUserMembership' => [
-            'className'  => 'ContainerUserMembership',
+            'className' => 'ContainerUserMembership',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Host'                    => [
-            'className'  => 'Host',
+        'Host' => [
+            'className' => 'Host',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
-        'Timeperiod'              => [
-            'className'  => 'Timeperiod',
+        'Timeperiod' => [
+            'className' => 'Timeperiod',
             'foreignKey' => 'container_id',
-            'dependent'  => true,
+            'dependent' => true,
         ],
 
     ];
@@ -130,17 +129,16 @@ class Container extends AppModel
      *
      * @return array with all path [$tenant_contaier_id] => $tenant_name
      */
-    public function getTenantByContainer($containerId)
-    {
-        $exists = Cache::remember('ContainerExists:'.$containerId, function () use ($containerId) {
+    public function getTenantByContainer($containerId) {
+        $exists = Cache::remember('ContainerExists:' . $containerId, function () use ($containerId) {
             return $this->exists($containerId);
         }, 'migration');
         if (!$exists) {
             return null;
         }
-        $container = Cache::remember('ContainerGetTenantByContainer:'.$containerId, function () use ($containerId) {
+        $container = Cache::remember('ContainerGetTenantByContainer:' . $containerId, function () use ($containerId) {
             return $this->find('first', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'id' => $containerId,
                 ],
@@ -149,7 +147,7 @@ class Container extends AppModel
 
         $possibleContainerTypes = [CT_GLOBAL, CT_TENANT];
         while (!in_array($container['Container']['containertype_id'], $possibleContainerTypes)) {
-            $container = Cache::remember('ContainerGetTenantByContainerParentNode:'.md5(json_encode($container)), function () use ($container) {
+            $container = Cache::remember('ContainerGetTenantByContainerParentNode:' . md5(json_encode($container)), function () use ($container) {
                 return $this->getParentNode($container['Container']['id']);
             }, 'migration');
         }
@@ -157,21 +155,19 @@ class Container extends AppModel
         return [$container['Container']['id'] => $container['Container']['name']];
     }
 
-    public function findTenantByContainer($container_id)
-    {
+    public function findTenantByContainer($container_id) {
         return $this->getTenantByContainer($container_id);
     }
 
 
-    public function isUniqueByObject()
-    {
+    public function isUniqueByObject() {
         if (isset($this->data['Container']['containertype_id']) && in_array($this->data['Container']['containertype_id'], [CT_TENANT])) {
             //return $this->isUnique('name');
 
             $result = $this->find('count', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
-                    'name'             => $this->data['Container']['name'],
+                    'name' => $this->data['Container']['name'],
                     'containertype_id' => [CT_TENANT],
                 ],
             ]);
@@ -186,11 +182,11 @@ class Container extends AppModel
                 // No we need to check, if this is a tenant with the same name,
                 // or just our own racord that we want to update...
                 if ($this->find('count', [
-                        'recursive'  => -1,
+                        'recursive' => -1,
                         'conditions' => [
-                            'name'             => $this->data['Container']['name'],
+                            'name' => $this->data['Container']['name'],
                             'containertype_id' => [CT_TENANT],
-                            'id'               => $this->data['Container']['id'],
+                            'id' => $this->data['Container']['id'],
                         ],
                     ]) === 1
                 ) {
@@ -214,8 +210,7 @@ class Container extends AppModel
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function findContactgroup($type = 'all')
-    {
+    public function findContactgroup($type = 'all') {
         return $this->find($type, [
             'conditions' => [
                 'containertype_id' => CT_CONTACTGROUP,
@@ -223,23 +218,11 @@ class Container extends AppModel
         ]);
     }
 
-    public function __delete($container, $userId)
-    {
-        if (is_numeric($container)) {
-            $containerId = $container;
-            $container = $this->findById($container);
-        } else {
-            $containerId = $container['Container']['id'];
-        }
-        if ($this->delete($container['Container']['id'], true)) {
-            return true;
-        }
-
-        return false;
+    public function __delete($id) {
+        return $this->delete($id, true);
     }
 
-    public function __allowDelete($hostIds)
-    {
+    public function __allowDelete($hostIds) {
         if (empty($hostIds)) {
             return true;
         }
@@ -248,18 +231,18 @@ class Container extends AppModel
             $Service = ClassRegistry::init('Service');
             $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
             $serviceIds = Hash::extract($Service->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'host_id' => $hostIds,
                 ],
-                'fields'     => [
+                'fields' => [
                     'Service.id',
                 ],
             ]), '{n}.Service.id');
             $evcCount = $this->Eventcorrelation->find('count', [
                 'conditions' => [
                     'OR' => [
-                        'Eventcorrelation.host_id'    => $hostIds,
+                        'Eventcorrelation.host_id' => $hostIds,
                         'Eventcorrelation.service_id' => $serviceIds,
                     ],
 

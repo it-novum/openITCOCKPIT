@@ -57,7 +57,6 @@ class ContactTest extends CakeTestCase {
             ]
         ], true);
         $result = $this->Contact->contactsByContainerId([1]);
-
         $expected = array(
             array(
                 'Contact' => array(
@@ -91,7 +90,7 @@ class ContactTest extends CakeTestCase {
                         'name' => 'ROOT',
                         'parent_id' => null,
                         'lft' => '1',
-                        'rght' => '12',
+                        'rght' => '6',
                         'ContactsToContainer' => array(
                             'id' => '1',
                             'contact_id' => '1',

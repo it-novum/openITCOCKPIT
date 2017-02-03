@@ -33,8 +33,8 @@ class HosttemplatecommandargumentvalueFixture extends CakeTestFixture {
 			'commandargument_id' => 1,
 			'hosttemplate_id' => 1,
 			'value' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-19 17:25:06',
-			'modified' => '2017-01-19 17:25:06'
+			'created' => '2017-01-27 15:52:33',
+			'modified' => '2017-01-27 15:52:33'
 		),
 	);
 
