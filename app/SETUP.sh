@@ -17,3 +17,5 @@ if [ $CODENAME = "trusty" ]; then
 fi
 
 sudo -g www-data /usr/share/openitcockpit/app/Console/cake setup
+
+oitc docu_generator

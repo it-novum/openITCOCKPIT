@@ -118,6 +118,7 @@
 
 
                                                             case 'FRONTEND.LDAP.PASSWORD':
+                                                            case 'MONITORING.FROM_PASSWORD':
                                                             case 'FRONTEND.SSO.CLIENT_SECRET':
                                                                 ?><input type="password" id="SystemsettingValue"
                                                                          value="<?php echo h($value['value']); ?>"
