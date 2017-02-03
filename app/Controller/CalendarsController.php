@@ -122,8 +122,6 @@ class CalendarsController extends AppController
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');
-            //debug($tenants);
-            //exit;
         }
         $calendar = $this->Calendar->findById($id);
 
