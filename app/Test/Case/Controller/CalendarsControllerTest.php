@@ -201,4 +201,8 @@ class CalendarsControllerTest extends ControllerTestCase {
         $this->assertEquals([], $myCalendars);
     }
 
+    public function testloadHolidays() {
+        //function not getting used....
+    }
+
 }
