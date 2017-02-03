@@ -57,8 +57,8 @@ class TenantFixture extends CakeTestFixture {
 			'street' => 'Lorem ipsum dolor sit amet',
 			'zipcode' => 1,
 			'city' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-27 18:18:12',
-			'modified' => '2017-01-27 18:18:12'
+			'created' => '2017-01-27 14:13:37',
+			'modified' => '2017-01-27 14:13:37'
 		),
 	);
 

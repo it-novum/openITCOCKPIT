@@ -31,8 +31,8 @@ class UsergroupFixture extends CakeTestFixture {
 			'id' => 1,
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-27 18:24:22',
-			'modified' => '2017-01-27 18:24:22'
+			'created' => '2017-01-30 09:22:47',
+			'modified' => '2017-01-30 09:22:47'
 		),
 	);
 
