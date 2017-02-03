@@ -26,11 +26,13 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
     $exportLog: null,
     worker: null,
 
-    //components: ['WebsocketSudo'],
+    components: ['Ajaxloader'],
 
     _initialize: function () {
+        this.Ajaxloader.setup();
 
         var _self = this;
+
 
         $('#saveInstacesForSync').click(function(){
             _self.saveInstacesForSync();
@@ -184,6 +186,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
     },
 
     saveInstacesForSync: function(){
+        this.Ajaxloader.show();
         var instacesToExport = [];
         $('.sync_instance').each(function (key, obj) {
             if ($(obj).prop('checked')) {
@@ -191,6 +194,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
             }
         });
 
+        var self = this;
         $.ajax({
             url: '/exports/saveInstanceConfigSyncSelection.json',
             cache: false,
@@ -199,7 +203,7 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
                 instances: instacesToExport
             },
             success: function (response) {
-
+                self.Ajaxloader.hide();
             },
             complete: function () {
 

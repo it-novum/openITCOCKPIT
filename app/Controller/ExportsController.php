@@ -102,7 +102,7 @@ class ExportsController extends AppController {
 
         if (isset($this->request->query['instances'])) {
             $instancesToExport = $this->request->query['instances'];
-            if (is_dir(APP.'Plugin'.DS.'DistributeModule')) {
+            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
                 $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
                 $SatelliteModel->disableAllInstanceConfigSyncs();
                 $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
@@ -141,20 +141,19 @@ class ExportsController extends AppController {
         $this->set('_serialize', ['export']);
     }
 
-    public function saveInstanceConfigSyncSelection(){
+    public function saveInstanceConfigSyncSelection() {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
 
-        if (isset($this->request->query['instances'])) {
-            $instancesToExport = $this->request->query['instances'];
-            if (is_dir(APP.'Plugin'.DS.'DistributeModule')) {
-                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-                $SatelliteModel->disableAllInstanceConfigSyncs();
+        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+            $SatelliteModel->disableAllInstanceConfigSyncs();
+            if (isset($this->request->query['instances'])) {
+                $instancesToExport = $this->request->query['instances'];
                 $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
             }
         }
-
         $result = true;
         $this->set('_serialize', ['result']);
     }

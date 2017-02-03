@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GearmanWorkerShell extends AppShell
-{
+class GearmanWorkerShell extends AppShell {
 
     public $uses = [
         'Systemsetting',
@@ -38,8 +37,7 @@ class GearmanWorkerShell extends AppShell
         'DefaultNagiosConfig',
     ];
 
-    public function main()
-    {
+    public function main() {
         $this->stdout->styles('red', ['text' => 'red']);
         $this->stdout->styles('green', ['text' => 'green']);
         Configure::load('gearman');
@@ -102,31 +100,28 @@ class GearmanWorkerShell extends AppShell
         }
     }
 
-    public function _welcome()
-    {
+    public function _welcome() {
         //Disable CakePHP welcome messages
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'daemon'       => ['short' => 'd', 'help' => __d('oitc_console', 'Starts GearmanWorker in forground mode and fork worker processes')],
-            'start'        => ['help' => __d('oitc_console', 'Start GearmanWorker in daemon mode and and fork the process in the background the daemon')],
-            'stop'         => ['short' => 'k', 'help' => __d('oitc_console', 'Stops the daemon')],
-            'restart'      => ['help' => __d('oitc_console', 'Restart the daemon')],
-            'try-restart'  => ['help' => __d('oitc_console', 'Restart the daemon')],
-            'reload'       => ['help' => __d('oitc_console', 'Restart the daemon')],
+            'daemon' => ['short' => 'd', 'help' => __d('oitc_console', 'Starts GearmanWorker in forground mode and fork worker processes')],
+            'start' => ['help' => __d('oitc_console', 'Start GearmanWorker in daemon mode and and fork the process in the background the daemon')],
+            'stop' => ['short' => 'k', 'help' => __d('oitc_console', 'Stops the daemon')],
+            'restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+            'try-restart' => ['help' => __d('oitc_console', 'Restart the daemon')],
+            'reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
             'force-reload' => ['help' => __d('oitc_console', 'Restart the daemon')],
-            'status'       => ['short' => 's', 'help' => __d('oitc_console', 'Resturn the status of the daemon')],
-            'probe'        => ['short' => 'p', 'help' => __d('oitc_console', 'Pacemaker likes this, but we dont know why :) (it\'s recommended to use with -q e.g.: gearman_worker -p -q)')],
+            'status' => ['short' => 's', 'help' => __d('oitc_console', 'Resturn the status of the daemon')],
+            'probe' => ['short' => 'p', 'help' => __d('oitc_console', 'Pacemaker likes this, but we dont know why :) (it\'s recommended to use with -q e.g.: gearman_worker -p -q)')],
         ]);
 
         return $parser;
     }
 
-    public function start()
-    {
+    public function start() {
         if ($this->status()) {
             $this->out("<info>Notice: oITC GearmanWorker is allready running!</info>");
             exit(0);
@@ -143,10 +138,9 @@ class GearmanWorkerShell extends AppShell
         exit(0);
     }
 
-    public function daemonizing()
-    {
+    public function daemonizing() {
         if (file_exists(Configure::read('gearman.pidfile'))) {
-            $this->out('Pid file '.Configure::read('gearman.pidfile').' allready exists');
+            $this->out('Pid file ' . Configure::read('gearman.pidfile') . ' allready exists');
             exit(3);
         }
 
@@ -173,8 +167,7 @@ class GearmanWorkerShell extends AppShell
         $this->work();
     }
 
-    public function work()
-    {
+    public function work() {
         $worker = new GearmanWorker();
         $worker->addServer($this->Config['address'], $this->Config['port']);
 
@@ -199,8 +192,7 @@ class GearmanWorkerShell extends AppShell
         }
     }
 
-    public function runTask($job)
-    {
+    public function runTask($job) {
         $this->jobIdelCounter = 0;
 
         $payload = $job->workload();
@@ -230,36 +222,36 @@ class GearmanWorkerShell extends AppShell
                 if ($payload['snmp_version'] < 3) {
                     //SNMP V1 and V2
                     $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
-                        'for_snmp_scan'  => true,
-                        'host_address'   => $payload['host_address'],
-                        'snmp_version'   => $payload['snmp_version'],
+                        'for_snmp_scan' => true,
+                        'host_address' => $payload['host_address'],
+                        'snmp_version' => $payload['snmp_version'],
                         'snmp_community' => $payload['snmp_community'],
                     ]);
                 } else {
                     //SNMP V3
                     $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
                         'for_snmp_scan' => true,
-                        'host_address'  => $payload['host_address'],
-                        'snmp_version'  => $payload['snmp_version'],
-                        'v3'            => [
-                            'security_level'       => $payload['v3']['security_level'],
-                            'hash_algorithm'       => $payload['v3']['hash_algorithm'],
-                            'username'             => $payload['v3']['username'],
-                            'password'             => $payload['v3']['password'],
+                        'host_address' => $payload['host_address'],
+                        'snmp_version' => $payload['snmp_version'],
+                        'v3' => [
+                            'security_level' => $payload['v3']['security_level'],
+                            'hash_algorithm' => $payload['v3']['hash_algorithm'],
+                            'username' => $payload['v3']['username'],
+                            'password' => $payload['v3']['password'],
                             'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
-                            'encryption_password'  => $payload['v3']['encryption_password'],
+                            'encryption_password' => $payload['v3']['encryption_password'],
                         ],
                     ]);
                 }
 
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -II -v '.escapeshellarg($payload['hostuuid']), $output, $returncode);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                 $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -D '.escapeshellarg($payload['hostuuid']), $output, $returncode);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                 $return = $output;
                 break;
 
             case 'CheckMKListChecks':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -L', $output);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
                 $return = $output;
                 break;
 
@@ -271,31 +263,31 @@ class GearmanWorkerShell extends AppShell
                 $MkNagiosExportTask->init();
                 $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
                     'for_snmp_scan' => true, //Hacky but works -.-
-                    'host_address'  => $payload['hostaddress'],
+                    'host_address' => $payload['hostaddress'],
                 ]);
 
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -II -v '.escapeshellarg($payload['hostUuid']), $output, $returncode);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                 $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -D '.escapeshellarg($payload['hostUuid']), $output, $returncode);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                 $return = $output;
                 unset($output);
                 break;
 
             case 'CheckMKListChecks':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -L', $output, $returncode);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output, $returncode);
                 $return = $output;
                 unset($output);
                 break;
 
             case 'CheckMKProcesses':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -d '.escapeshellarg($payload['hostaddress']), $output);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostaddress']), $output);
                 $return = $output;
                 unset($output);
                 break;
 
             case 'create_apt_config':
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
-                fwrite($file, 'deb https://secret:'.$payload['key'].'@apt.open-itcockpit.com trusty  main'.PHP_EOL);
+                fwrite($file, 'deb https://secret:' . $payload['key'] . '@apt.open-itcockpit.com trusty  main' . PHP_EOL);
                 //fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com nightly  main'.PHP_EOL);
                 fclose($file);
                 unset($payload);
@@ -303,7 +295,7 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'deleteServiceConfiguration':
-                $file = Configure::read('nagios.export.path').Configure::read('nagios.export.services').$payload['serviceUuid'].Configure::read('nagios.export.suffix');
+                $file = Configure::read('nagios.export.path') . Configure::read('nagios.export.services') . $payload['serviceUuid'] . Configure::read('nagios.export.suffix');
                 if (file_exists($file)) {
                     unlink($file);
                 }
@@ -411,7 +403,7 @@ class GearmanWorkerShell extends AppShell
                 $command = $this->NagiosExport->returnVerifyCommand();
                 exec($command, $output, $returncode);
                 $return = [
-                    'output'     => $output,
+                    'output' => $output,
                     'returncode' => $returncode,
                 ];
                 break;
@@ -427,7 +419,7 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'make_sql_backup':
-                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/');
+                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
                 break;
 
             case 'restore_sql_backup':
@@ -439,48 +431,48 @@ class GearmanWorkerShell extends AppShell
                 $errorRedirect = ' 2> /dev/null';
 
                 $state = [
-                    'isNagiosRunning'       => false,
-                    'isNdoRunning'          => false,
+                    'isNagiosRunning' => false,
+                    'isNdoRunning' => false,
                     'isStatusengineRunning' => false,
-                    'isNpcdRunning'         => false,
-                    'isOitcCmdRunning'      => false,
-                    'isSudoServerRunning'   => false,
-                    'isPhpNstaRunning'      => false,
+                    'isNpcdRunning' => false,
+                    'isOitcCmdRunning' => false,
+                    'isSudoServerRunning' => false,
+                    'isPhpNstaRunning' => false,
 
                     'isGearmanWorkerRunning' => true,
                 ];
 
-                exec($systemsetting['MONITORING']['MONITORING.STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isNagiosRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.NDO_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.NDO_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isNdoRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.STATUSENIGNE_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isStatusengineRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.NPCD_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.NPCD_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isNpcdRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.OITC_CMD_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isOitcCmdRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.SUDO_SERVER_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isSudoServerRunning'] = true;
                 }
 
-                exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'].$errorRedirect, $output, $returncode);
+                exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isPhpNstaRunning'] = true;
                 }
@@ -492,8 +484,7 @@ class GearmanWorkerShell extends AppShell
         return serialize($return);
     }
 
-    public function launchExport($createBackup = 1)
-    {
+    public function launchExport($createBackup = 1) {
         //We do the export in on of our workers, to avoid max_execution_time errors
         $this->NagiosExport->init();
         $successfully = true;
@@ -520,7 +511,7 @@ class GearmanWorkerShell extends AppShell
             App::uses('Folder', 'Utility');
             $folder1 = new Folder(Configure::read('nagios.export.backupSource'));
 
-            $backupTarget = Configure::read('nagios.export.backupTarget').'/'.date('d-m-Y_H-i-s');
+            $backupTarget = Configure::read('nagios.export.backupTarget') . '/' . date('d-m-Y_H-i-s');
 
             if (!is_dir(Configure::read('nagios.export.backupTarget'))) {
                 mkdir(Configure::read('nagios.export.backupTarget'));
@@ -532,7 +523,7 @@ class GearmanWorkerShell extends AppShell
             $folder1->copy($backupTarget);
 
             //Hier muss ddie neue Backupfunktion rein
-            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/');
+            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
 
             $this->Export->saveField('finished', 1);
             $this->Export->saveField('successfully', 1);
@@ -575,32 +566,32 @@ class GearmanWorkerShell extends AppShell
             'export_create_default_config' => [
                 'text' => __('Create default configuration'),
             ],
-            'export_hosttemplates'         => [
+            'export_hosttemplates' => [
                 'text' => __('Create hosttemplate configuration'),
             ],
 
             /* @FIXME */
-            'export_hosts'                 => [
+            'export_hosts' => [
                 'text' => __('Create host configuration'),
             ],
 
 
-            'export_commands'         => [
+            'export_commands' => [
                 'text' => __('Create command configuration'),
             ],
-            'export_contacts'         => [
+            'export_contacts' => [
                 'text' => __('Create contact configuration'),
             ],
-            'export_contactgroups'    => [
+            'export_contactgroups' => [
                 'text' => __('Create contact group configuration'),
             ],
-            'export_timeperiods'      => [
+            'export_timeperiods' => [
                 'text' => __('Create timeperiod configuration'),
             ],
-            'export_hostgroups'       => [
+            'export_hostgroups' => [
                 'text' => __('Create host group configuration'),
             ],
-            'export_hostescalations'  => [
+            'export_hostescalations' => [
                 'text' => __('Create host escalation configuration'),
             ],
             'export_servicetemplates' => [
@@ -608,24 +599,24 @@ class GearmanWorkerShell extends AppShell
             ],
 
             /* @FIXME */
-            'export_services'         => [
+            'export_services' => [
                 'text' => __('Create service configuration'),
             ],
 
 
-            'export_serviceescalations'  => [
+            'export_serviceescalations' => [
                 'text' => __('Create service escalation configuration'),
             ],
-            'export_servicegroups'       => [
+            'export_servicegroups' => [
                 'text' => __('Create service group configuration'),
             ],
-            'export_hostdependencies'    => [
+            'export_hostdependencies' => [
                 'text' => __('Create host dependency configuration'),
             ],
             'export_servicedependencies' => [
                 'text' => __('Create service dependency configuration'),
             ],
-            'export_userdefinedmacros'   => [
+            'export_userdefinedmacros' => [
                 'text' => __('Export user defined macros'),
             ],
         ];
@@ -766,9 +757,9 @@ class GearmanWorkerShell extends AppShell
         $this->Export->create();
         $data = [
             'Export' => [
-                'task'         => 'export_finished',
-                'text'         => __('Refresh finished'),
-                'finished'     => 1,
+                'task' => 'export_finished',
+                'text' => __('Refresh finished'),
+                'finished' => 1,
                 'successfully' => $successfully,
             ],
         ];
@@ -777,10 +768,18 @@ class GearmanWorkerShell extends AppShell
         $exportStarted['Export']['finished'] = 1;
         $exportStarted['Export']['successfully'] = $successfully;
         $this->Export->save($exportStarted);
+
+        if ($successfully) {
+            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+                //Unmark all SAT-Systems
+                $SatelliteModel->disableAllInstanceConfigSyncs();
+            }
+        }
+
     }
 
-    public function exportCallback($task)
-    {
+    public function exportCallback($task) {
         $result = unserialize($task->data());
         if ($result['task'] !== 'export_sync_sat_config') {
             $exportRecord = $this->Export->findByTask($result['task']);
@@ -792,8 +791,7 @@ class GearmanWorkerShell extends AppShell
         }
     }
 
-    public function distributedMonitoringAfterExportCommand()
-    {
+    public function distributedMonitoringAfterExportCommand() {
         //Loading distributed Monitoring support, if plugin is loaded/installed
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
@@ -802,7 +800,12 @@ class GearmanWorkerShell extends AppShell
         if (in_array('DistributeModule', $modulePlugins)) {
             //DistributeModule is loaded and installed...
             $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-            $satellites = $this->Satellite->find('all');
+            $satellites = $this->Satellite->find('all', [
+                'recursive' => -1,
+                'conditions' => [
+                    'Satellite.sync_instance' => 1,
+                ]
+            ]);
 
             $gearmanClient = new GearmanClient();
             $gearmanClient->addServer($this->Config['address'], $this->Config['port']);
@@ -817,10 +820,12 @@ class GearmanWorkerShell extends AppShell
                 ],
             ];
             $result = $this->Export->save($data);
-            foreach ($satellites as $satellite) {
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $data['Export']['task'], 'Satellite' => $satellite]), $this->Config['password']));
+            if (!empty($satellites)) {
+                foreach ($satellites as $satellite) {
+                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $data['Export']['task'], 'Satellite' => $satellite]), $this->Config['password']));
+                }
+                $gearmanClient->runTasks();
             }
-            $gearmanClient->runTasks();
             // Avoid "MySQL server has gone away"
             $this->Systemsetting->getDatasource()->reconnect();
 
@@ -840,8 +845,7 @@ class GearmanWorkerShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function sig_handler($signo)
-    {
+    public function sig_handler($signo) {
         switch ($signo) {
             case SIGTERM:
             case SIGINT:
@@ -885,16 +889,14 @@ class GearmanWorkerShell extends AppShell
     /*
     * Pacemaker likes this function, we dont know why :)
     */
-    public function probe()
-    {
+    public function probe() {
         echo "restart\n";
         exit(0);
     }
 
-    public function status()
-    {
+    public function status() {
         foreach ($this->_getPid() as $pid) {
-            exec('ps -eaf |grep '.escapeshellarg($pid).' |grep -v grep', $output);
+            exec('ps -eaf |grep ' . escapeshellarg($pid) . ' |grep -v grep', $output);
             foreach ($output as $line) {
                 if (preg_match('#.*app/Console/cake.php -working .*/app gearman_worker (-d|--daemon|--start)#', $line)) {
                     return true;
@@ -909,16 +911,14 @@ class GearmanWorkerShell extends AppShell
         return false;
     }
 
-    public function restart()
-    {
+    public function restart() {
         if ($this->stop(false)) {
             sleep(1);
             $this->start();
         }
     }
 
-    public function stop($exit = true)
-    {
+    public function stop($exit = true) {
         if (!$this->status()) {
             $this->out("<info>Notice: oITC GearmanWorker isn't running!</info>");
             if ($exit) {
@@ -941,8 +941,7 @@ class GearmanWorkerShell extends AppShell
         return true;
     }
 
-    private function _getPid()
-    {
+    private function _getPid() {
         $return = [];
         if (file_exists(Configure::read('gearman.pidfile'))) {
             $pids = file(Configure::read('gearman.pidfile'));

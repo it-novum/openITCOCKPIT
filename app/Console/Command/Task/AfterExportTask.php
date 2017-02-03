@@ -45,7 +45,12 @@ class AfterExportTask extends AppShell
 
     public function execute()
     {
-        $satellites = $this->Satellite->find('all');
+        $satellites = $this->Satellite->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Satellite.sync_instance' => 1,
+            ]
+        ]);
         foreach ($satellites as $satellite) {
             $this->copy($satellite);
             $this->hr();
