@@ -41,4 +41,6 @@ app/Plugin/MkModule
 app/Plugin/SAPModule
 app/Plugin/MaximoModule
 app/Lib/AvailableVersion.php
+app/docs/en/administration/systemsettings.md
+app/docs/en/api/systemsettings.md
 tests
