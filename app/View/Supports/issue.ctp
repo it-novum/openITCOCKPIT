@@ -144,7 +144,7 @@
                                     </button>
                                 </div>
                                 <div class="col-xs-12 col-md-6">
-                                    <a href="https://github.com/it-novum/openITCOCKPIT/issues"
+                                    <a href="https://github.com/it-novum/openITCOCKPIT/issues" target="_blank"
                                        class="btn btn-default btn-block" role="button">
                                         <i class="fa fa-github"></i> Create an issue
                                     </a>

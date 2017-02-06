@@ -104,7 +104,7 @@ $(document).ready(function(){
 	});
 
 	$('#scroll-top-container').click(function(){
-		$('body').animate({
+        $('body,html').animate({
 			scrollTop: 0
 		}, 800);
 		return false;
