@@ -554,7 +554,6 @@
                             ACK_STATE: <?php echo h($parameters['hoststate']);
                             echo PHP_EOL; ?>
                             ACK_NOTIFICATIONTYPE: HOST
-                            ACK_COMMAND_NUMBER: 33
                             --- END ACK INFORMATION ---
                         </td>
                     </tr>
@@ -618,6 +617,5 @@ ACK_SERVICEUUID:
 ACK_STATE: <?php echo h($parameters['hoststate']);
 echo PHP_EOL; ?>
 ACK_NOTIFICATIONTYPE: HOST
-ACK_COMMAND_NUMBER: 33
 --- END ACK2 INFORMATION ---
 -->

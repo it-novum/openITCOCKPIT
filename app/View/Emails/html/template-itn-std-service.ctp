@@ -553,6 +553,20 @@
                                     </tr>
                                 <?php endforeach; ?>
                             </table>
+                            <br/><br/>
+                            --- BEGIN ACK INFORMATION ---
+                            ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+                            echo PHP_EOL; ?>
+                            ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+                            echo PHP_EOL; ?>
+                            ACK_SERVICEDESC: <?php echo $parameters['servicedesc'];
+                            echo PHP_EOL; ?>
+                            ACK_SERVICEUUID: <?php echo $parameters['serviceUuid'];
+                            echo PHP_EOL; ?>
+                            ACK_STATE: <?php echo h($parameters['servicestate']);
+                            echo PHP_EOL; ?>
+                            ACK_NOTIFICATIONTYPE: SERVICE
+                            --- END ACK INFORMATION ---
                         </td>
                     </tr>
                 </table>
@@ -606,4 +620,21 @@ echo PHP_EOL; ?>
 TICKET_NOTIFICATIONTYPE: SERVICE
 TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
+
+--- BEGIN ACK2 INFORMATION ---
+ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+echo PHP_EOL; ?>
+ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+echo PHP_EOL; ?>
+ACK_SERVICEDESC: <?php echo $parameters['servicedesc'];
+echo PHP_EOL; ?>
+ACK_SERVICEUUID: <?php echo $parameters['serviceUuid'];
+echo PHP_EOL; ?>
+ACK_STATE: <?php echo h($parameters['servicestate']);
+echo PHP_EOL; ?>
+ACK_NOTIFICATIONTYPE: SERVICE
+--- END ACK2 INFORMATION ---
+
 -->
+
+

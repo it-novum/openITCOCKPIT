@@ -47,6 +47,9 @@ class NagiosNotificationTask extends AppShell
         $Email->config('default');
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->to($parameters['contactmail']);
+        if(!empty($this->_systemsettings['MONITORING']['MONITORING.RECEIVER_ADDRESS'])){
+            $Email->replyTo = $this->_systemsettings['MONITORING']['MONITORING.RECEIVER_ADDRESS'];
+        }
 
         //$Email->from('localhost@testv3.com');
         $prefix = '';
@@ -87,7 +90,9 @@ class NagiosNotificationTask extends AppShell
         //$Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => ['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->to($parameters['contactmail']);
-
+        if(!empty($this->_systemsettings['MONITORING']['MONITORING.RECEIVER_ADDRESS'])){
+            $Email->replyTo = $this->_systemsettings['MONITORING']['MONITORING.RECEIVER_ADDRESS'];
+        }
         //$Email->from('localhost@testv3.com');
         $prefix = '';
         if ($parameters['notificationtype'] == 'RECOVERY') {

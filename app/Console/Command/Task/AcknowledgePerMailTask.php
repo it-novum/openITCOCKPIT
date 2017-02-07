@@ -22,37 +22,95 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+App::import('Vendor', 'Imap/Imap');
 
-//class AcknowledgePerMailTask extends AppShell
-//{
-//
-//    public function execute($quiet = false)
-//    {
-//        $this->params['quiet'] = $quiet;
-//        $this->stdout->styles('green', ['text' => 'green']);
-//        $this->stdout->styles('red', ['text' => 'red']);
-//        $this->out('Checking inbox mails', false);
-//
-//        $availableMails = $this->getInboxMails();
-//
-//        $this->out('<green>   Ok</green>');
-//        $this->hr();
-//    }
-//
-//    /**
-//     * @return string all unseen messages from inbox
-//     */
-//    public function getInboxMails()
-//    {
-        $hostname = '{imap.gmail.com:993/ssl}INBOX';
-        $username = 'www.mail.ru89@gmail.com';
-        $password = 'Eaytyflj!89';
+class AcknowledgePerMailTask extends AppShell
+{
+    public $uses = ['NagiosModule.Externalcommand'];
 
-        /* try to connect */
-        $inbox = imap_open($hostname,$username,$password) or die('Cannot connect to Gmail: ' . imap_last_error());
+    public function execute($quiet = false){
 
-        /* grab emails */
-        $emails = imap_search($inbox,'ALL');
-        var_dump($emails);
-//    }
-//}
+        $this->params['quiet'] = $quiet;
+        $this->stdout->styles('green', ['text' => 'green']);
+        $this->stdout->styles('red', ['text' => 'red']);
+        $this->out('Checking inbox mails...', false);
+
+        $ackHostsAndServices = $this->ackHostsAndServices();
+
+        $this->out($ackHostsAndServices['success']);
+        $this->hr();
+        foreach($ackHostsAndServices['acks'] as $ackInfo){
+            $this->out($ackInfo);
+            $this->hr();
+        }
+    }
+
+    /**
+     * @return string all unseen messages from inbox
+     */
+    private function ackHostsAndServices(){
+        $mailbox = new \JJG\Imap('imap.gmail.com', 'www.mail.ru89@gmail.com', 'Eaytyflj!89', 993, true, 'INBOX');
+        $myEmails = $mailbox->searchForEmails('SINCE "1 Februrary 2017"');
+        $acks = [];
+        $success = '    <green>Ok</green>'; // or $success = 'Error';
+        foreach($myEmails as $myEmailId){
+            $messArr = $mailbox->getMessage($myEmailId);
+            $parsedValues = $this->parseAckInformation($messArr['body']);
+            if(empty($parsedValues)) continue;
+
+            if(empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])){
+                $this->Externalcommand->setHostAck([
+                    'hostUuid' => $parsedValues['ACK_HOSTUUID'],
+                    'author' => $messArr['sender'],
+                    'comment' => __('Acknowledged per mail'),
+                    'sticky' => 1,
+                    'type' => 'hostOnly'
+                ]);
+                $acks[] = 'Host '.$parsedValues['ACK_HOSTUUID'].' <green>acknowledged</green>';
+            }elseif(!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])){
+                $this->Externalcommand->setServiceAck([
+                    'hostUuid' => $parsedValues['ACK_HOSTUUID'],
+                    'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
+                    'author' => $messArr['sender'],
+                    'comment' => __('Acknowledged per mail'),
+                    'sticky' => 1
+                ]);
+                $acks[] = 'Service '.$parsedValues['ACK_SERVICEUUID'].' <green>acknowledged</green>';
+            }
+        }
+        $mailbox->disconnect();
+        return ['success' => $success, 'acks' => $acks];
+    }
+
+    private function getStringBetween($string, $start, $end){
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0) return '';
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
+    }
+
+    private function parseAckInformation($ackString){
+        $myString = $this->getStringBetween($ackString, '--- BEGIN ACK INFORMATION ---', '--- END ACK INFORMATION ---');
+        if(empty($myString)){
+            $myString = $this->getStringBetween($ackString, '--- BEGIN ACK2 INFORMATION ---', '--- END ACK2 INFORMATION ---');
+        }
+        if(empty($myString)) return [];
+
+        $firstExplode = explode(':', $myString);
+        $currentIndex = trim($firstExplode[0]);
+        $returnArr = [];
+        for($i = 1; $i<count($firstExplode); $i++){
+            $nextExplose = explode('ACK_', $firstExplode[$i]);
+            $returnArr[$currentIndex] = trim($nextExplose[0]);
+            $currentIndex = isset($nextExplose[1]) ? ('ACK_'.trim($nextExplose[1])) : null;
+        }
+        if(!isset($returnArr['ACK_HOSTUUID']) || empty($returnArr['ACK_HOSTUUID']) || !isset($returnArr['ACK_SERVICEUUID'])) {
+            return [];
+        }
+
+        return $returnArr;
+    }
+
+}
