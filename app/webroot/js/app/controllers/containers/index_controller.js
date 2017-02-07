@@ -23,97 +23,82 @@
 //	confirmation.
 
 App.Controllers.ContainersIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
-	_initialize: function() {
-		this.Ajaxloader.setup();
-		/*
-		 * We need to submit the selectbox the laod the data ob the selected tenant
-		 */
-		$(function(){
-			$('.select_tenant').trigger('change');
-		});
+    _initialize: function() {
+        this.Ajaxloader.setup();
+        /*
+         * We need to submit the selectbox the laod the data ob the selected tenant
+         */
+        $(function(){
+            $('.select_tenant').trigger('change');
+        });
 
 
 
-		/*
-		 * Loading jQuery Select2 Plugin
-		 */
-		this.runSelect();
+        /*
+         * Loading jQuery Select2 Plugin
+         */
+        this.runSelect();
 
-		/*
-		 * Binding events
-		 */
-		var _this = this;
-		$('.select_tenant').on('change', function(e){
-			_this.Ajaxloader.show();
-			var $self = $(this);
-			var selectedId = $self.val();
-			if(selectedId != '' && selectedId > 0){
-				$('#ContainerSelectedTenant').val(selectedId);
-				ret = $.ajax({
-						url: "/containers/byTenant/"+encodeURIComponent(selectedId),
-						type: "POST",
-						cache: false,
-						error: function(){},
-						success: function(){},
-						complete: function(response){
-							var __this = _this;
-							$('#ajax_result').html(response.responseText);
-							$.ajax({
-								url: "/containers/byTenantForSelect/"+encodeURIComponent(selectedId),
-								type: "POST",
-								error: function(){},
-								success: function(){},
-								complete: function(response){
-									$('#ajax_parent_nodes').html(response.responseText);
-									$('.select_path').chosen({
-										width: '100%',
-									});
-									__this.Ajaxloader.hide();
-								}
-							});
-							$('#nestable').nestable({
-								noDragClass: 'dd-nodrag',
-							});
-					/*
-							$('[data-action=remove]').click(function(){
-								console.log($(this).val());
-								$.ajax({
-									url: "/containers/delete/"+encodeURIComponent($(this).val()),
-									type: "POST",
-									error: function(){},
-									success: function(){},
-									complete: function(response){
-										__this.Ajaxloader.hide();
-										location.reload();
-									}
-								});
-							});
-					*/
-						}
-				});
-			}
-		});
-	},
+        /*
+         * Binding events
+         */
+        var _this = this;
+        $('.select_tenant').on('change', function(e){
+            _this.Ajaxloader.show();
+            var $self = $(this);
+            var selectedId = $self.val();
+            if(selectedId != '' && selectedId > 0){
+                $('#ContainerSelectedTenant').val(selectedId);
+                ret = $.ajax({
+                    url: "/containers/byTenant/"+encodeURIComponent(selectedId),
+                    type: "POST",
+                    cache: false,
+                    error: function(){},
+                    success: function(){},
+                    complete: function(response){
+                        var __this = _this;
+                        $('#ajax_result').html(response.responseText);
+                        $.ajax({
+                            url: "/containers/byTenantForSelect/"+encodeURIComponent(selectedId),
+                            type: "POST",
+                            error: function(){},
+                            success: function(){},
+                            complete: function(response){
+                                $('#ajax_parent_nodes').html(response.responseText);
+                                $('.select_path').chosen({
+                                    width: '100%',
+                                });
+                                __this.Ajaxloader.hide();
+                            }
+                        });
+                        $('#nestable').nestable({
+                            noDragClass: 'dd-nodrag',
+                    });
+                    }
+                });
+            }
+        });
+    },
 
-	runSelect: function(){
-		if ($.fn.select2) {
-			$('.select2').each(function() {
-				$this = $(this);
-				var width = $this.attr('data-select-width') || '100%';
-				$this.select2({
-					allowClear : true,
-					width : width,
-					placeholder: 'Please select'
-				})
-			})
-		}
-	}
+    runSelect: function(){
+        if ($.fn.select2) {
+            $('.select2').each(function() {
+                $this = $(this);
+                var width = $this.attr('data-select-width') || '100%';
+                $this.select2({
+                    allowClear : true,
+                    width : width,
+                    placeholder: 'Please select'
+                })
+            })
+        }
+    }
 });

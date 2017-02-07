@@ -365,5 +365,28 @@ $config = [
             'icon'  => 'book',
             'order' => 6,
         ],
+
+        'support' => [
+            'url'   => ['controller' => 'documentations', 'action' => 'wiki', 'plugin' => ''],
+            'title' => 'Support',
+            'icon'  => 'book',
+            'order' => 999,
+        ],
+
+        'support'     => [
+            'url'      => ['controller' => 'supports', 'action' => 'index', 'plugin' => ''],
+            'title'    => 'Support',
+            'icon'     => 'life-ring',
+            'order'    => 999,
+            'children' => [
+                'issue_collector'      => [
+                    'url'               => ['controller' => 'supports', 'action' => 'issue'],
+                    'title'             => 'Report an issue',
+                    'icon'              => 'bug',
+                    'parent_controller' => 'reporting',
+                ],
+            ],
+        ],
+
     ],
 ];

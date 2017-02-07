@@ -104,20 +104,11 @@ $(document).ready(function(){
 	});
 
 	$('#scroll-top-container').click(function(){
-		$('body').animate({
+        $('body,html').animate({
 			scrollTop: 0
 		}, 800);
 		return false;
 	});
 
-	//Jira Issue
-	if(window.location.href.indexOf('widget:1') == -1) {
-		jQuery.ajax({
-			url: "https://project.it-novum.com/s/2527aba8089321056587b3d39dfb83e1-T/en_US-kerfqg/64026/9/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector-embededjs.js?locale=en-US&collectorId=c71ccc45",
-			type: "get",
-			cache: false,
-			dataType: "script"
-		});
-	}
 
 });
