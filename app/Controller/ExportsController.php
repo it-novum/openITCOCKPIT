@@ -56,7 +56,11 @@ class ExportsController extends AppController {
         }
 
         $this->loadModel('Systemsetting');
+
+        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+
         $this->set('gearmanReachable', $gearmanReachable);
+        $this->set('monitoringSystemsettings', $monitoringSystemsettings);
         $this->set('exportRunning', $exportRunning);
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->Frontend->setJson('exportRunning', $exportRunning);
