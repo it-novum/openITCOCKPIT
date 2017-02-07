@@ -31,7 +31,7 @@
             <?php echo __('Administration') ?>
             <span>>
                 <?php echo __('refresh monitoring configuration'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -66,24 +66,27 @@
                             <label class="col col-md-3 control-label text-left" for="CreateBackup"><i
                                         class="fa fa-hdd-o"></i> <?php echo __('Create backup of current configuration?'); ?>
                             </label>
-                            <div class="col col-md-1">
+                            <div class="col col-md-9">
                                 <div class="">
-										<span class="onoffswitch">
-											<input type="hidden" value="0" id="CreateBackup_"
+                                    <span class="onoffswitch">
+                                            <input type="hidden" value="0" id="CreateBackup_"
                                                    name="data[Export][create_backup]">
-											<input type="checkbox" id="CreateBackup" showlabel="1" value="1"
+                                                <input type="checkbox" id="CreateBackup" showlabel="1" value="1"
                                                    checked="checked" class="onoffswitch-checkbox notification_control"
                                                    name="data[Export][create_backup]">
-												<label class="onoffswitch-label" for="CreateBackup">
-													<span class="onoffswitch-inner"
+                                                <label class="onoffswitch-label" for="CreateBackup">
+                                                    <span class="onoffswitch-inner"
                                                           data-swchon-text="<?php echo __('Yes'); ?>"
                                                           data-swchoff-text="<?php echo __('No'); ?>"></span>
-													<span class="onoffswitch-switch"></span>
-												</label>
-										</span>
+                                                    <span class="onoffswitch-switch"></span>
+                                                </label>
+                                        </span>
                                 </div>
                             </div>
                         </div>
+
+
+                        <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
 
                         <div class="row">
                             <?php $style = 'display:none;'; ?>

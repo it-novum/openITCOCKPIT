@@ -92,7 +92,7 @@
                                                                     'd' => 'Down',
                                                                     'u' => 'Unreachable',
                                                                 ];
-                                                                echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
                                                             case 'MONITORING.SERVICE.INITSTATE':
@@ -102,18 +102,18 @@
                                                                     'c' => 'Critical',
                                                                     'u' => 'Unknown',
                                                                 ];
-                                                                echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
 
                                                             case 'FRONTEND.AUTH_METHOD':
                                                                 $options = [
-                                                                    'session'   => 'PHP session',
+                                                                    'session' => 'PHP session',
                                                                     'twofactor' => 'Two factor authentication (PHP session based)',
-                                                                    'ldap'      => 'PHP LDAP',
-                                                                    'sso'       => 'SSO'
+                                                                    'ldap' => 'PHP LDAP',
+                                                                    'sso' => 'SSO'
                                                                 ];
-                                                                echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
 
@@ -128,11 +128,12 @@
 
 
                                                             case 'FRONTEND.LDAP.USE_TLS':
+                                                            case 'MONITORING.SINGLE_INSTANCE_SYNC':
                                                                 $options = [
                                                                     0 => 'False',
                                                                     1 => 'True',
                                                                 ];
-                                                                echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
                                                             case 'ARCHIVE.AGE.SERVICECHECKS':
@@ -146,7 +147,7 @@
                                                                 for ($k = 1; $k < 107; $k++) {
                                                                     $options[$k] = $k;
                                                                 }
-                                                                echo $this->Html->createSelect($options, 'data['.$i.'][Systemsetting][value]', $value['value']);
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
 

@@ -248,7 +248,7 @@ $config = [
                 'debug' => ['testMail'],
             ],
             'Exports'               => [
-                'index' => ['broadcast', 'launchExport', 'verifyConfig'],
+                'index' => ['broadcast', 'launchExport', 'verifyConfig', 'saveInstanceConfigSyncSelection'],
             ],
             'Containers'            => [
                 'index' => ['view', 'nest'],

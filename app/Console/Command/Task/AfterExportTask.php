@@ -28,6 +28,7 @@ class AfterExportTask extends AppShell
 
     public $uses = [
         'DistributeModule.Satellite',
+        'Systemsetting'
     ];
 
     public function init()
@@ -45,7 +46,20 @@ class AfterExportTask extends AppShell
 
     public function execute()
     {
-        $satellites = $this->Satellite->find('all');
+
+        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        if($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1){
+            $satellites = $this->Satellite->find('all', [
+                'recursive' => -1,
+                'conditions' => [
+                    'Satellite.sync_instance' => 1,
+                ]
+            ]);
+        }else{
+            $satellites = $this->Satellite->find('all', [
+                'recursive' => -1,
+            ]);
+        }
         foreach ($satellites as $satellite) {
             $this->copy($satellite);
             $this->hr();
@@ -95,7 +109,7 @@ class AfterExportTask extends AppShell
                             $satellite['Satellite']['address'],
                             $this->conf['REMOTE']['path'],
                         ];
-                        $commandTemplate = "rsync -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
+                        $commandTemplate = "rsync -z -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
                         $command = vsprintf($commandTemplate, $commandArgs);
                         exec($command, $output, $returnCode);
                         if ($returnCode == 0) {
