@@ -26,6 +26,8 @@
 
 namespace JJG;
 
+use Ratchet\Wamp\Exception;
+
 class Imap {
 
     private $host;
@@ -38,6 +40,8 @@ class Imap {
     private $baseAddress;
     private $address;
     private $mailbox;
+
+    public $error;
 
     /**
      * Called when the Imap object is created.
@@ -118,12 +122,21 @@ class Imap {
         // Set the new address and the base address.
         $this->baseAddress = $baseAddress;
         $this->address = $address;
-
-        // Open new IMAP connection
-        if ($mailbox = imap_open($address, $user, $pass)) {
-            $this->mailbox = $mailbox;
-        } else {
-            throw new \Exception("Error: " . imap_last_error());
+        try {
+            // Open new IMAP connection
+            $this->mailbox = imap_open($address, $user, $pass);
+            if(!$this->mailbox){
+                throw new \Exception(imap_last_error());
+            }
+            imap_errors();
+            imap_alerts();
+//            if ($mailbox = imap_open($address, $user, $pass)) {
+//                $this->mailbox = $mailbox;
+//            } else {
+//                throw new \Exception("Error: " . imap_last_error());
+//            }
+        }catch (\Exception $ex){
+            $this->error = $ex->getMessage();
         }
     }
 

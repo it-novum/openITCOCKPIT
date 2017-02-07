@@ -181,22 +181,6 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'MONITORING.FROM_ADDRESS_USERNAME',
-                    'value'    => '',
-                    'info'     => 'Username for sender notification mail',
-                    'section'  => 'MONITORING'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'MONITORING.FROM_ADDRESS_PASSWORD',
-                    'value'    => '',
-                    'info'     => 'Password for sender notification mail',
-                    'section'  => 'MONITORING'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'      => 'MONITORING.FROM_NAME',
                     'value'    => 'openITCOCKPIT Notification',
                     'info'     => 'The name we should display in your mail client',
@@ -208,6 +192,38 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.MESSAGE_HEADER',
                     'value'    => '**** openITCOCKPIT notification by it-novum GmbH ****',
                     'info'     => 'The header in the plain text mail',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_PROTOCOL',
+                    'value'    => 'imap',
+                    'info'     => 'Protocol to connect to receiver\'s address inbox.',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_SERVER',
+                    'value'    => 'imap.gmail.com:993/imap/ssl',
+                    'info'     => 'Email server to connect. Must be provided in following format: server.com:port/protocol/ssl',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_ADDRESS',
+                    'value'    => 'my_email@gmail.com',
+                    'info'     => 'Username for sender notification mail',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_PASSWORD',
+                    'value'    => 'my_password',
+                    'info'     => 'Password for sender notification mail',
                     'section'  => 'MONITORING'
                 ],
             ],
@@ -382,7 +398,6 @@ class Systemsetting extends Importer
                     'value'    => 'session',
                     'info'     => 'The authentication method that shoud be used for login',
                     'section'  => 'FRONTEND',
-                    'created'  => 'NOW('
                 ],
             ],
             [
