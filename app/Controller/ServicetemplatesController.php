@@ -72,7 +72,8 @@ class ServicetemplatesController extends AppController
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
-        'Servicecommandargumentvalue'
+        'Servicecommandargumentvalue',
+        'Serviceeventcommandargumentvalue'
     ];
 
     public function index()
@@ -190,6 +191,7 @@ class ServicetemplatesController extends AppController
 
 
         $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
+        $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
 
         $commands = $this->Command->serviceCommands('list');
         $eventHandlers = $this->Command->eventhandlerCommands('list');
@@ -477,6 +479,41 @@ class ServicetemplatesController extends AppController
                         }
                     }
                 }
+
+                if(oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']){
+                    //Event handler command of service template was changed
+                    //Delete all custom event handler command arguments of services
+                    //if eventhandler_command_id from Service is NULL
+                    $serviceEventHandlerCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.eventhandler_command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceEventHandlerCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceEventHandlerCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Serviceeventcommandargumentvalue->deleteAll([
+                                'Serviceeventcommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
+                }
+
 
                 if ($isJson) {
                     $this->serializeId();
