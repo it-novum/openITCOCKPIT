@@ -554,6 +554,10 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	padding: 80px;
 }
 
+.margin-horizontal-15{
+	margin: 0px 15px;
+}
+
 .config_editor {
 	border: 1px solid black;
 	background: #EDEEEE;
@@ -1451,4 +1455,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	padding: 1em;
 	border-radius: 8px;
 	display:none;
+}
+
+.text-transform-none{
+	text-transform: none!important;
 }

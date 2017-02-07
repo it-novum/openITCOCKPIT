@@ -35,5 +35,4 @@ class UsersToContainerFixture extends CakeTestFixture {
 			'permission_level' => 1
 		),
 	);
-
 }

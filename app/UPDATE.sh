@@ -125,3 +125,5 @@ if [ $CODENAME = "trusty" ]; then
     service php5-fpm stop
     service php5-fpm start
 fi
+
+oitc docu_generator

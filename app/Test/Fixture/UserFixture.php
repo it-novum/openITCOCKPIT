@@ -63,8 +63,8 @@ class UserFixture extends CakeTestFixture {
 			'showstatsinmenu' => 1,
 			'dashboard_tab_rotation' => 1,
 			'paginatorlength' => 1,
-			'created' => '2017-01-27 18:26:39',
-			'modified' => '2017-01-27 18:26:39'
+			'created' => '2017-01-30 09:22:17',
+			'modified' => '2017-01-30 09:22:17'
 		),
 	);
 
