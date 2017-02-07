@@ -1452,3 +1452,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	border-radius: 8px;
 	display:none;
 }
+
+.text-transform-none{
+	text-transform: none!important;
+}
