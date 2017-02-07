@@ -800,12 +800,21 @@ class GearmanWorkerShell extends AppShell {
         if (in_array('DistributeModule', $modulePlugins)) {
             //DistributeModule is loaded and installed...
             $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-            $satellites = $this->Satellite->find('all', [
-                'recursive' => -1,
-                'conditions' => [
-                    'Satellite.sync_instance' => 1,
-                ]
-            ]);
+
+            $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+            if($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1){
+                $satellites = $this->Satellite->find('all', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Satellite.sync_instance' => 1,
+                    ]
+                ]);
+            }else{
+                $satellites = $this->Satellite->find('all', [
+                    'recursive' => -1,
+                ]);
+            }
+
 
             $gearmanClient = new GearmanClient();
             $gearmanClient->addServer($this->Config['address'], $this->Config['port']);

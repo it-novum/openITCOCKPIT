@@ -312,6 +312,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'MONITORING.SINGLE_INSTANCE_SYNC',
+                    'value'    => '0',
+                    'info'     => 'If enabled, you can select which openITCOCKPIT instance you like to push the new configuration to. If disabled all instances will be synchronized',
+                    'section'  => 'MONITORING',
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'MONITORING.QUERY_HANDLER',
                     'value'    => '/opt/openitc/nagios/var/rw/nagios.qh',
                     'info'     => 'Path to the query handler of your monitoring engine',

@@ -28,6 +28,7 @@ class AfterExportTask extends AppShell
 
     public $uses = [
         'DistributeModule.Satellite',
+        'Systemsetting'
     ];
 
     public function init()
@@ -45,12 +46,20 @@ class AfterExportTask extends AppShell
 
     public function execute()
     {
-        $satellites = $this->Satellite->find('all', [
-            'recursive' => -1,
-            'conditions' => [
-                'Satellite.sync_instance' => 1,
-            ]
-        ]);
+
+        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        if($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1){
+            $satellites = $this->Satellite->find('all', [
+                'recursive' => -1,
+                'conditions' => [
+                    'Satellite.sync_instance' => 1,
+                ]
+            ]);
+        }else{
+            $satellites = $this->Satellite->find('all', [
+                'recursive' => -1,
+            ]);
+        }
         foreach ($satellites as $satellite) {
             $this->copy($satellite);
             $this->hr();
