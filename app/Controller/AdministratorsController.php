@@ -258,23 +258,28 @@ class AdministratorsController extends AppController
 
     public function testMail()
     {
-        $this->loadModel('Systemsetting');
-        $recipientAddress = $this->Auth->user('email');
-        $_systemsettings = $this->Systemsetting->findAsArray();
+        try {
+            $this->loadModel('Systemsetting');
+            $recipientAddress = $this->Auth->user('email');
+            $_systemsettings = $this->Systemsetting->findAsArray();
 
-        $Email = new CakeEmail();
-        $Email->config('default');
-        $Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
-        $Email->to($recipientAddress);
-        $Email->subject(__('System test mail'));
+            $Email = new CakeEmail();
+            $Email->config('default');
+            $Email->from([$_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
+            $Email->to($recipientAddress);
+            $Email->subject(__('System test mail'));
 
-        $Email->emailFormat('both');
-        $Email->template('template-testmail', 'template-testmail');
+            $Email->emailFormat('both');
+            $Email->template('template-testmail', 'template-testmail');
 
-        $Email->send();
-        $this->setFlash(__('Test mail send to: %s', $recipientAddress));
+            $Email->send();
+            $this->setFlash(__('Test mail send to: %s', $recipientAddress));
 
-        return $this->redirect(['action' => 'debug']);
+            return $this->redirect(['action' => 'debug']);
+        } catch (Exception $ex) {
+            $this->setFlash(__('An error occured while sending test mail: %s', $ex->getMessage()), false);
+            return $this->redirect(['action' => 'debug']);
+        }
     }
 }
 
