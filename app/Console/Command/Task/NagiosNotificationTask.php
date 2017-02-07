@@ -154,13 +154,12 @@ class NagiosNotificationTask extends AppShell
             $mailgraph_files = $hosttmpdir->find('.*\.png', true);
             //print_r($mailgraph_files);
 
-            // debug($attachments);
-            // send attachments
-            $Email->attachments($attachments);
         } else {
             $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
-            $Email->attachments($attachments);
         }
+        // debug($attachments);
+        // send attachments
+        $Email->attachments($attachments);
 
 
         $Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings, 'contentIDs' => $contentIDs]);

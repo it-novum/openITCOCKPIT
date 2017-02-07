@@ -490,9 +490,9 @@
                     <tr>
                         <td>
                             <h5>&nbsp;<?php echo __('Host'); ?> <span><a
-                                            href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host'
-                                            style="text-decoration:none"
-                                            class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span>
+                                        href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host'
+                                        style="text-decoration:none"
+                                        class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span>
                             </h5>
                             <hr noshade width="560" size="3" align="left">
                             <br>
@@ -543,6 +543,19 @@
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
                             <p class="lead"> <?php echo h($parameters['hostoutput']); ?> </p>
+                            <br/><br/>
+                            --- BEGIN ACK INFORMATION ---
+                            ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+                            echo PHP_EOL; ?>
+                            ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+                            echo PHP_EOL; ?>
+                            ACK_SERVICEDESC:
+                            ACK_SERVICEUUID:
+                            ACK_STATE: <?php echo h($parameters['hoststate']);
+                            echo PHP_EOL; ?>
+                            ACK_NOTIFICATIONTYPE: HOST
+                            ACK_COMMAND_NUMBER: 33
+                            --- END ACK INFORMATION ---
                         </td>
                     </tr>
                 </table>
@@ -594,5 +607,17 @@ echo PHP_EOL; ?>
 TICKET_NOTIFICATIONTYPE: HOST
 TICKET_COMMAND_NUMBER: 33
 --- END TICKET SYSTEM INFORMATION ---
--->
 
+--- BEGIN ACK2 INFORMATION ---
+ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+echo PHP_EOL; ?>
+ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+echo PHP_EOL; ?>
+ACK_SERVICEDESC:
+ACK_SERVICEUUID:
+ACK_STATE: <?php echo h($parameters['hoststate']);
+echo PHP_EOL; ?>
+ACK_NOTIFICATIONTYPE: HOST
+ACK_COMMAND_NUMBER: 33
+--- END ACK2 INFORMATION ---
+-->
