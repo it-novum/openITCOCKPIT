@@ -46,7 +46,7 @@ $notification_settings = [
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Servicetemplate'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -290,6 +290,7 @@ $notification_settings = [
                                 'label'            => ['text' => '<a href="/commands/edit/'.$this->request->data['Servicetemplate']['command_id'].'"><i class="fa fa-cog"></i> </a>'.__('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'help'             => __('Warning: If you change the check command, all service custom arguments will be reset to default!')
                             ]);
                             ?>
                             <!-- Command arguments -->

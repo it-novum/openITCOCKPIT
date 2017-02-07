@@ -72,6 +72,7 @@ class ServicetemplatesController extends AppController
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
+        'Servicecommandargumentvalue'
     ];
 
     public function index()
@@ -187,6 +188,8 @@ class ServicetemplatesController extends AppController
 
         $servicetemplate_for_changelog = $serviceTemplate;
 
+
+        $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
 
         $commands = $this->Command->serviceCommands('list');
         $eventHandlers = $this->Command->eventhandlerCommands('list');
@@ -439,6 +442,40 @@ class ServicetemplatesController extends AppController
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if($oldServicetemplateCheckCommandId != $this->request->data['Servicetemplate']['command_id']){
+                    //Check command of service template was changed
+                    //Delete all custom command arguments of services
+                    //if command_id from Service is NULL
+                    $serviceCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Servicecommandargumentvalue->deleteAll([
+                                'Servicecommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
                 }
 
                 if ($isJson) {
