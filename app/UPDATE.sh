@@ -73,11 +73,11 @@ mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --
 > $BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 
-sudo -g www-data "${APPDIR}/Console/cake" schema update --connection default --file schema_itcockpit.php -s 26
+sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --file schema_itcockpit.php -s 26
 
 for PLUGIN in $(ls -1 "${APPDIR}/Plugin"); do
 	if [ -f "${APPDIR}/Plugin/${PLUGIN}/Config/Schema/schema.php" ]; then
-		sudo -g www-data "${APPDIR}/Console/cake" schema update --connection default --plugin "$PLUGIN" --file schema.php
+		sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --plugin "$PLUGIN" --file schema.php
 	fi
 done
 
