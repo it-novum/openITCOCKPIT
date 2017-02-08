@@ -85,7 +85,7 @@ class AcknowledgePerMailTask extends AppShell
             $this->out('Received ' . (count($myEmails)) . ' email(s)...   ');
             foreach ($myEmails as $myEmailId) {
                 $messArr = $mailbox->getMessage($myEmailId);
-                $this->out('Parsing email from '.$messArr['sender']);
+                $this->out('Parsing email from '.((isset($messArr['sender']) && !empty($messArr['sender']))?$messArr['sender']:$messArr['from']));
                 $parsedValues = $this->parseAckInformation($messArr['body']);
                 $mailbox->deleteMessage($myEmailId);
                 if (empty($parsedValues)) continue;

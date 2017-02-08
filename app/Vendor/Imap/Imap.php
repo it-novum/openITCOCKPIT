@@ -206,7 +206,7 @@ class Imap {
                 'cc' => isset($details->ccaddress) ? $details->ccaddress : '',
                 'bcc' => isset($details->bccaddress) ? $details->bccaddress : '',
                 'reply_to' => isset($details->reply_toaddress) ? $details->reply_toaddress : '',
-                'sender' => $details->senderaddress,
+                'sender' => isset($details->senderaddress) ? $details->senderaddress : '',
                 'date_sent' => $details->date,
                 'subject' => $details->subject,
                 'deleted' => $deleted,
