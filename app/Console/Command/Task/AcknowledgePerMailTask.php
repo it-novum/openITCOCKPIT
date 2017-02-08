@@ -51,40 +51,45 @@ class AcknowledgePerMailTask extends AppShell
     private function ackHostsAndServices(){
         $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
         if(empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']) ||
-            empty($this->_systemsettings['MONITORING']['MONITORING.ACK_PROTOCOL']) ||
             empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS']) ||
             empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'])){
             return ['success' => '<red>Error</red>', 'messages' => ['Some of ACK_ values were not provided in system settings']];
         }
-        if($this->_systemsettings['MONITORING']['MONITORING.ACK_PROTOCOL'] !== 'imap'){
-            return ['success' => '<red>Error</red>', 'messages' => ['Only imap protocol is supported for now']];
-        }
         $serverParts = explode('/', $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']);
-        if(count($serverParts) < 3){
+        if(count($serverParts) < 2){
             return ['success' => '<red>Error</red>', 'messages' => ['ACK_RECEIVER_SERVER has wrong format']];
         }
         $serverAndPort = explode(':', $serverParts[0]);
         if(count($serverAndPort) < 2){
             return ['success' => '<red>Error</red>', 'messages' => ['ACK_RECEIVER_SERVER has wrong format. Either connection URL is wrong or port was not provided.']];
         }
+
         $serverURL = trim($serverAndPort[0]);
         $serverPort = trim($serverAndPort[1]);
-        $serverProtocol =trim($serverParts[1]); // not used yet, because we provide only IMAP protocol for now
-        $serverSSL = trim($serverParts[2]) === 'ssl';
-        $mailbox = new \JJG\Imap($serverURL, $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'], $serverPort, $serverSSL, 'INBOX');
+        $serverProtocol =trim($serverParts[1]);
+        $serverSSL = (isset($serverParts[2]) && trim($serverParts[2]) === 'ssl');
+
+        if($serverProtocol != 'imap'){
+            return ['success' => '<red>Error</red>', 'messages' => ['Only IMAP protocol is supported.']];
+        }
+
+        $mailbox = new \JJG\Imap($serverURL, $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'], $serverPort, $serverProtocol, $serverSSL, 'INBOX');
         if(!empty($mailbox->error)){
             return ['success' => '<red>Error</red>', 'messages' => [$mailbox->error]];
         }
-        $myEmails = $mailbox->searchForEmails('UNSEEN');
+        $myEmails = $mailbox->searchForEmails();
         $acks = [];
-        $success = '<green>Ok</green>'; // or $success = 'Error';
+        $success = '<green>Ok</green>';
+        $acknowledged = 0;
         if($myEmails !== false) {
-            $this->out('Received '.(count($myEmails)).' emails...   ');
+            $this->out('Received ' . (count($myEmails)) . ' email(s)...   ');
             foreach ($myEmails as $myEmailId) {
                 $messArr = $mailbox->getMessage($myEmailId);
+                $this->out('Parsing email from '.$messArr['sender']);
                 $parsedValues = $this->parseAckInformation($messArr['body']);
+                $mailbox->deleteMessage($myEmailId);
                 if (empty($parsedValues)) continue;
-
+                $acknowledged++;
                 if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
                     $this->Externalcommand->setHostAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
@@ -93,7 +98,7 @@ class AcknowledgePerMailTask extends AppShell
                         'sticky' => 1,
                         'type' => 'hostOnly'
                     ]);
-                    $acks[] = 'Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>';
+                    $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
                 } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
                     $this->Externalcommand->setServiceAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
@@ -102,10 +107,12 @@ class AcknowledgePerMailTask extends AppShell
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1
                     ]);
-                    $acks[] = 'Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>';
+                    $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
                 }
             }
-        }else{
+        }
+
+        if($acknowledged == 0){
             $acks = ['No hosts and services were acknowledged'];
         }
         $mailbox->disconnect();

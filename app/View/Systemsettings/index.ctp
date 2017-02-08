@@ -116,14 +116,6 @@
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
-
-                                                            case 'MONITORING.ACK_PROTOCOL':
-                                                                $options = [
-                                                                    'imap' => 'IMAP',
-                                                                ];
-                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
-                                                                break;
-
                                                             case 'FRONTEND.LDAP.PASSWORD':
                                                             case 'MONITORING.ACK_RECEIVER_PASSWORD':
                                                             case 'FRONTEND.SSO.CLIENT_SECRET':

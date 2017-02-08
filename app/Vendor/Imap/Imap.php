@@ -34,6 +34,7 @@ class Imap {
     private $user;
     private $pass;
     private $port;
+    private $protocol;
     private $folder;
     private $ssl;
 
@@ -64,8 +65,8 @@ class Imap {
      *
      * @return (empty)
      */
-    public function __construct($host, $user, $pass, $port, $ssl = true, $folder = 'INBOX') {
-        if ((!isset($host)) || (!isset($user)) || (!isset($pass)) || (!isset($port))) {
+    public function __construct($host, $user, $pass, $port, $protocol = 'imap', $ssl = true, $folder = 'INBOX') {
+        if ((!isset($host)) || (!isset($user)) || (!isset($pass)) || (!isset($protocol)) || (!isset($port))) {
             throw new \Exception("Error: All Constructor values require a non NULL input.");
         }
 
@@ -73,10 +74,11 @@ class Imap {
         $this->user = $user;
         $this->pass = $pass;
         $this->port = $port;
+        $this->protocol = $protocol;
         $this->folder = $folder;
         $this->ssl = $ssl;
 
-        $this->changeLoginInfo($host, $user, $pass, $port, $ssl, $folder);
+        $this->changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $folder);
     }
 
     /**
@@ -88,13 +90,7 @@ class Imap {
      * @return (empty)
      */
     public function changeFolder($folderName) {
-        if ($this->ssl) {
-            $address = '{' . $this->host . ':' . $this->port . '/imap/ssl}' . $folderName;
-        } else {
-            $address = '{' . $this->host . ':' . $this->port . '/imap}' . $folderName;
-        }
-
-        $this->address = $address;
+        $this->address = '{' . $this->host . ':' . $this->port . '/'.$this->protocol.($this->ssl?'/ssl':'').'}' . $folderName;
         $this->reconnect();
     }
 
@@ -110,14 +106,9 @@ class Imap {
      *
      * @throws Exception when IMAP can't connect.
      */
-    public function changeLoginInfo($host, $user, $pass, $port, $ssl, $folder) {
-        if ($ssl) {
-            $baseAddress = '{' . $host . ':' . $port . '/imap/ssl}';
-            $address = $baseAddress . $folder;
-        } else {
-            $baseAddress = '{' . $host . ':' . $port . '/imap}';
-            $address = $baseAddress . $folder;
-        }
+    public function changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $folder) {
+        $baseAddress = '{' . $host . ':' . $port . '/'.$protocol.($ssl?'/ssl':'').'}';
+        $address = $baseAddress . $folder;
 
         // Set the new address and the base address.
         $this->baseAddress = $baseAddress;
@@ -169,7 +160,7 @@ class Imap {
      */
     public function getMessage($messageId) {
         $this->tickle();
-
+        $messageId = imap_msgno($this->mailbox, $messageId);
         // Get message details.
         $details = imap_headerinfo($this->mailbox, $messageId);
         if ($details) {
@@ -252,7 +243,7 @@ class Imap {
         $this->tickle();
 
         // Mark message for deletion.
-        if (!imap_delete($this->mailbox, $messageId)) {
+        if (!imap_delete($this->mailbox, $messageId, FT_UID)) {
             throw new \Exception("Message could not be deleted: " . imap_last_error());
         }
 
@@ -694,8 +685,12 @@ class Imap {
         return false;
     }
 
-    public function searchForEmails($criteria){
-        return imap_search($this->mailbox, $criteria);
+    public function searchForEmails(){
+        return imap_search($this->mailbox, 'ALL', SE_UID);
+    }
+
+    public function getHeaders(){
+        return imap_headers($this->mailbox);
     }
 
 }
