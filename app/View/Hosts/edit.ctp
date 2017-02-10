@@ -26,16 +26,16 @@
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
 $flapDetection_settings = [
-    'flap_detection_on_up'          => 'fa-square txt-color-greenLight',
-    'flap_detection_on_down'        => 'fa-square txt-color-redLight',
+    'flap_detection_on_up' => 'fa-square txt-color-greenLight',
+    'flap_detection_on_down' => 'fa-square txt-color-redLight',
     'flap_detection_on_unreachable' => 'fa-square txt-color-blueDark',
 ];
 $notification_settings = [
-    'notify_on_recovery'    => 'fa-square txt-color-greenLight',
-    'notify_on_down'        => 'fa-square txt-color-redLight',
+    'notify_on_recovery' => 'fa-square txt-color-greenLight',
+    'notify_on_down' => 'fa-square txt-color-redLight',
     'notify_on_unreachable' => 'fa-square txt-color-blueDark',
-    'notify_on_flapping'    => 'fa-random',
-    'notify_on_downtime'    => 'fa-clock-o',
+    'notify_on_flapping' => 'fa-random',
+    'notify_on_downtime' => 'fa-clock-o',
 ];
 $hostSharingPermissions = new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $_host['Container'], $MY_RIGHTS);
 $allowSharing = $hostSharingPermissions->allowSharing();
@@ -47,7 +47,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Host'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -111,39 +111,51 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <span class="note"><?php echo __('Basic configuration'); ?>:</span>
                             <?php
                             echo $this->Form->input('Host.id', [
-                                    'type'      => 'hidden',
-                                    'value'     => $host['Host']['id'],
+                                    'type' => 'hidden',
+                                    'value' => $host['Host']['id'],
                                     'wrapInput' => 'col col-xs-8',
                                 ]
                             );
 
                             if ($hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
-                                        'options'   => $containers,
-                                        'oldValue'  => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
-                                        'multiple'  => false,
-                                        'selected'  => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
-                                        'class'     => 'chosen',
-                                        'style'     => 'width: 100%',
-                                        'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                        'options' => $containers,
+                                        'oldValue' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+                                        'multiple' => false,
+                                        'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+                                        'class' => 'chosen',
+                                        'style' => 'width: 100%',
+                                        'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                    ]
+                                );
+                            elseif (!$hasRootPrivileges && in_array($host['Host']['container_id'], $MY_WRITABLE_CONTAINERS)):
+                                echo $this->Form->input('container_id', [
+                                        'options' => $containers,
+                                        'oldValue' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+                                        'multiple' => false,
+                                        'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+                                        'class' => 'chosen',
+                                        'style' => 'width: 100%',
+                                        'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                     ]
                                 );
                             elseif (!$hasRootPrivileges && $host['Host']['container_id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
-                                        'options'   => $containers,
-                                        'multiple'  => false,
-                                        'selected'  => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
-                                        'class'     => 'chosen',
-                                        'style'     => 'width: 100%',
-                                        'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                        'options' => $containers,
+                                        'multiple' => false,
+                                        'selected' => $this->Html->getParameter('Host.container_id', $host['Host']['container_id']),
+                                        'class' => 'chosen',
+                                        'style' => 'width: 100%',
+                                        'label' => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                        'disabled'  => true,
+                                        'disabled' => true,
                                     ]
                                 );
                                 echo $this->Form->input('container_id', [
                                         'value' => $host['Host']['container_id'],
-                                        'type'  => 'hidden',
+                                        'type' => 'hidden',
                                     ]
                                 );
                             else:
@@ -160,46 +172,46 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 <?php
                                 echo $this->Form->input('container_id', [
                                         'value' => $host['Host']['container_id'],
-                                        'type'  => 'hidden',
+                                        'type' => 'hidden',
                                     ]
                                 );
                             endif;
                             if ($this->Acl->hasPermission('sharing') && $allowSharing) {
                                 echo $this->Form->input('shared_container', [
-                                        'options'   => $this->Html->chosenPlaceholder($sharingContainers),
-                                        'multiple'  => true,
-                                        'selected'  => $sharedContainers,
-                                        'class'     => 'chosen',
-                                        'style'     => 'width: 100%',
-                                        'label'     => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                        'options' => $this->Html->chosenPlaceholder($sharingContainers),
+                                        'multiple' => true,
+                                        'selected' => $sharedContainers,
+                                        'class' => 'chosen',
+                                        'style' => 'width: 100%',
+                                        'label' => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                     ]
                                 );
                             } else {
                                 echo $this->Form->input('shared_container', [
                                         'value' => serialize($sharedContainers),
-                                        'type'  => 'hidden',
+                                        'type' => 'hidden',
                                     ]
                                 );
                             }
 
                             echo $this->Form->input('hosttemplate_id', [
-                                    'label'            => [
-                                        'text'  => '<a href="/hosttemplates/edit/'.$host['Host']['hosttemplate_id'].'"><i class="fa fa-cog"></i> </a>'.__('Hosttemplate'),
+                                    'label' => [
+                                        'text' => '<a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Hosttemplate'),
                                         'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'options'          => $this->Html->chosenPlaceholder($_hosttemplates),
+                                    'options' => $this->Html->chosenPlaceholder($_hosttemplates),
                                     'data-placeholder' => __('Please select...'),
-                                    'class'            => 'chosen',
-                                    'style'            => 'width:100%;',
-                                    'selected'         => $this->Html->getParameter('Host.hosttemplate_id', $host['Host']['hosttemplate_id']),
-                                    'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                    'class' => 'chosen',
+                                    'style' => 'width:100%;',
+                                    'selected' => $this->Html->getParameter('Host.hosttemplate_id', $host['Host']['hosttemplate_id']),
+                                    'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input(
                                 'name',
                                 [
-                                    'label'     => ['text' => __('Hostname'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $host['Host']['name'],
+                                    'label' => ['text' => __('Hostname'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => $host['Host']['name'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
@@ -210,55 +222,55 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             }
                             echo $this->Form->input('description',
                                 [
-                                    'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $value,
+                                    'label' => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => $value,
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input('address',
                                 [
-                                    'label'     => ['text' => __('Address'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $host['Host']['address'],
+                                    'label' => ['text' => __('Address'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => $host['Host']['address'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input(
                                 'Host.Hostgroup',
                                 [
-                                    'options'   => $_hostgroups,
-                                    'multiple'  => true,
-                                    'class'     => 'chosen',
-                                    'style'     => 'width:100%;',
-                                    'label'     => ['text' => __('Hostgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'selected'  => $this->Html->getParameter('Host.Hostgroup', $host['Hostgroup']),
+                                    'options' => $_hostgroups,
+                                    'multiple' => true,
+                                    'class' => 'chosen',
+                                    'style' => 'width:100%;',
+                                    'label' => ['text' => __('Hostgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'selected' => $this->Html->getParameter('Host.Hostgroup', $host['Hostgroup']),
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input(
                                 'Host.Parenthost',
                                 [
-                                    'options'   => $_parenthosts,
-                                    'multiple'  => true,
-                                    'class'     => 'chosen',
-                                    'style'     => 'width:100%;',
-                                    'label'     => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'selected'  => $this->Html->getParameter('Host.Parenthost', $host['Parenthost']),
+                                    'options' => $_parenthosts,
+                                    'multiple' => true,
+                                    'class' => 'chosen',
+                                    'style' => 'width:100%;',
+                                    'label' => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'selected' => $this->Html->getParameter('Host.Parenthost', $host['Parenthost']),
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input('notes',
                                 [
-                                    'label'     => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $host['Host']['notes'],
+                                    'label' => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => $host['Host']['notes'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
                             echo $this->Form->input('host_url',
                                 [
-                                    'label'     => ['text' => __('Host URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $host['Host']['host_url'],
+                                    'label' => ['text' => __('Host URL'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => $host['Host']['host_url'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                    'help'      => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'),
+                                    'help' => __('The macros $HOSTNAME$, $HOSTDISPLAYNAME$ and $HOSTADDRESS$ will be replaced'),
                                 ]
                             );
                             ?>
@@ -286,10 +298,10 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <!-- key words -->
                             <?php echo $this->Form->input(
                                 'tags', [
-                                    'label'     => ['text' => __('Label'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'class'     => 'form-control tagsinput',
+                                    'label' => ['text' => __('Label'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'class' => 'form-control tagsinput',
                                     'data-role' => 'tagsinput',
-                                    'value'     => $host['Host']['tags'],
+                                    'value' => $host['Host']['tags'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
@@ -302,10 +314,10 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <?php echo $this->Form->input(
                                 'Host.notify_period_id',
                                 [
-                                    'options'   => $_timeperiods,
-                                    'label'     => ['text' => __('Notification Period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'class'     => 'chosen col col-xs-12',
-                                    'selected'  => $this->Html->getParameter('Host.notify_period_id', $host['Host']['notify_period_id'] === null ? $host['Hosttemplate']['notify_period_id'] : $host['Host']['notify_period_id']),
+                                    'options' => $_timeperiods,
+                                    'label' => ['text' => __('Notification Period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'class' => 'chosen col col-xs-12',
+                                    'selected' => $this->Html->getParameter('Host.notify_period_id', $host['Host']['notify_period_id'] === null ? $host['Hosttemplate']['notify_period_id'] : $host['Host']['notify_period_id']),
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
@@ -353,12 +365,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 foreach ($notification_settings as $notification_setting => $icon):?>
                                     <div class="form-group no-padding">
                                         <?php echo $this->Form->fancyCheckbox($notification_setting, [
-                                            'caption'          => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
+                                            'caption' => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
                                             'captionGridClass' => 'col col-xs-2 col-md-2 col-lg-2',
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
-                                            'class'            => 'onoffswitch-checkbox notification_control',
-                                            'checked'          => (boolean)$saved_notify_settings[$notification_setting],
-                                            'wrapGridClass'    => 'col col-xs-1',
+                                            'icon' => '<i class="fa ' . $icon . '"></i> ',
+                                            'class' => 'onoffswitch-checkbox notification_control',
+                                            'checked' => (boolean)$saved_notify_settings[$notification_setting],
+                                            'wrapGridClass' => 'col col-xs-1',
                                         ]); ?>
                                     </div>
                                 <?php endforeach; ?>
@@ -367,12 +379,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
 
                             <div class="form-group padding-left-20">
                                 <?php echo $this->Form->fancyCheckbox('active_checks_enabled', [
-                                    'caption'          => __('Enable active checks'),
-                                    'wrapGridClass'    => 'col col-xs-1',
+                                    'caption' => __('Enable active checks'),
+                                    'wrapGridClass' => 'col col-xs-1',
                                     'captionGridClass' => 'col col-xs-2 col-md-2 col-lg-2 no-padding',
-                                    'captionClass'     => 'control-label text-left no-padding',
-                                    'checked'          => (boolean)$host['Host']['active_checks_enabled'],
-                                    'icon'             => '<i class="fa fa-sign-in"></i> ',
+                                    'captionClass' => 'control-label text-left no-padding',
+                                    'checked' => (boolean)$host['Host']['active_checks_enabled'],
+                                    'icon' => '<i class="fa fa-sign-in"></i> ',
                                 ]); ?>
                             </div>
 
@@ -384,7 +396,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             if ($ContactsInherited['inherit'] === true):
                                 $source = '???';
                                 if ($ContactsInherited['source'] == 'Hosttemplate'):
-                                    $source = __('Host').' <i class="fa fa-arrow-right"></i> <strong><a href="/hosttemplates/edit/'.$host['Host']['hosttemplate_id'].'">'.__('Hosttemplate').'</a></strong>';
+                                    $source = __('Host') . ' <i class="fa fa-arrow-right"></i> <strong><a href="/hosttemplates/edit/' . $host['Host']['hosttemplate_id'] . '">' . __('Hosttemplate') . '</a></strong>';
                                 endif; ?>
                                 <span class="text-info"><i
                                             class="fa fa-info-circle"></i> <?php echo __('Contacts and Contactgroups are inherited in the following order:'); ?></span>
@@ -410,12 +422,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'Host.Contact',
                                     Hash::merge($contactOptions,
                                         [
-                                            'options'   => $_contacts,
-                                            'multiple'  => true,
-                                            'class'     => 'chosen',
-                                            'style'     => 'width:100%;',
-                                            'label'     => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                            'selected'  => $this->Html->getParameter('Host.Contact', $host['Contact']),
+                                            'options' => $_contacts,
+                                            'multiple' => true,
+                                            'class' => 'chosen',
+                                            'style' => 'width:100%;',
+                                            'label' => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'selected' => $this->Html->getParameter('Host.Contact', $host['Contact']),
                                             'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                         ]
                                     ));
@@ -425,12 +437,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'Host.Contactgroup',
                                     Hash::merge($contactGroupOptions,
                                         [
-                                            'options'   => $_contactgroups,
-                                            'multiple'  => true,
-                                            'class'     => 'chosen',
-                                            'style'     => 'width:100%;',
-                                            'label'     => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                            'selected'  => $this->Html->getParameter('Host.Contactgroup', $host['Contactgroup']),
+                                            'options' => $_contactgroups,
+                                            'multiple' => true,
+                                            'class' => 'chosen',
+                                            'style' => 'width:100%;',
+                                            'label' => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'selected' => $this->Html->getParameter('Host.Contactgroup', $host['Contactgroup']),
                                             'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                         ]
                                     ));
@@ -444,12 +456,12 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <br class="clearfix"/>
                             <?php echo $this->Form->input(
                                 'Host.command_id', [
-                                'options'          => $this->Html->chosenPlaceholder($commands),
+                                'options' => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
-                                'label'            => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'class'            => 'chosen col col-xs-12',
-                                'selected'         => ($host['CheckCommand']['id'] === null) ? $host['Hosttemplate']['command_id'] : $host['Host']['command_id'],
-                                'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'class' => 'chosen col col-xs-12',
+                                'selected' => ($host['CheckCommand']['id'] === null) ? $host['Hosttemplate']['command_id'] : $host['Host']['command_id'],
+                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
                             ?>
                             <!-- Command arguments -->
@@ -459,30 +471,30 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     $hostcommandargumentvalues = Hash::combine($host['Hostcommandargumentvalue'], '{n}.commandargument_id', '{n}');
                                     foreach ($commandarguments as $key => $commandargument):
                                         echo $this->Form->input(
-                                            'Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value',
+                                            'Hostcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value',
                                             [
-                                                'label'     => [
+                                                'label' => [
                                                     'class' => 'col col-xs-1 col-md-1 col-lg-1 control-label text-primary',
-                                                    'text'  => $commandargument['Commandargument']['human_name'],
+                                                    'text' => $commandargument['Commandargument']['human_name'],
                                                 ],
-                                                'value'     => (array_key_exists($commandargument['Commandargument']['id'], $hostcommandargumentvalues)) ? $hostcommandargumentvalues[$commandargument['Commandargument']['id']]['value'] : '',
+                                                'value' => (array_key_exists($commandargument['Commandargument']['id'], $hostcommandargumentvalues)) ? $hostcommandargumentvalues[$commandargument['Commandargument']['id']]['value'] : '',
                                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                             ]
                                         );
                                         echo $this->Form->input(
-                                            'Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id',
+                                            'Hostcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id',
                                             [
-                                                'type'      => 'hidden',
-                                                'value'     => $commandargument['Commandargument']['id'],
+                                                'type' => 'hidden',
+                                                'value' => $commandargument['Commandargument']['id'],
                                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                             ]
                                         );
                                         if ((array_key_exists($commandargument['Commandargument']['id'], $hostcommandargumentvalues) && isset($hostcommandargumentvalues[$commandargument['Commandargument']['id']]['id']))):
                                             echo $this->Form->input(
-                                                'Hostcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id',
+                                                'Hostcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id',
                                                 [
-                                                    'type'      => 'hidden',
-                                                    'value'     => $hostcommandargumentvalues[$commandargument['Commandargument']['id']]['id'],
+                                                    'type' => 'hidden',
+                                                    'value' => $hostcommandargumentvalues[$commandargument['Commandargument']['id']]['id'],
                                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                                 ]
                                             );
@@ -502,10 +514,10 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             echo $this->Form->input(
                                 'Host.check_period_id',
                                 [
-                                    'options'   => $_timeperiods,
-                                    'label'     => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'class'     => 'chosen col col-xs-12',
-                                    'selected'  => $this->Html->getParameter('Host.check_period_id', ($host['Host']['check_period_id'] === null) ? $host['Hosttemplate']['check_period_id'] : $host['Host']['check_period_id']),
+                                    'options' => $_timeperiods,
+                                    'label' => ['text' => __('Check period'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'class' => 'chosen col col-xs-12',
+                                    'selected' => $this->Html->getParameter('Host.check_period_id', ($host['Host']['check_period_id'] === null) ? $host['Hosttemplate']['check_period_id'] : $host['Host']['check_period_id']),
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
@@ -513,10 +525,10 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <?php echo $this->Form->input(
                                 'Host.max_check_attempts',
                                 [
-                                    'label'     => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => ($host['Host']['max_check_attempts'] === null) ? $host['Hosttemplate']['max_check_attempts'] : $host['Host']['max_check_attempts'],
+                                    'label' => ['text' => __('Max. number of check attempts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'value' => ($host['Host']['max_check_attempts'] === null) ? $host['Hosttemplate']['max_check_attempts'] : $host['Host']['max_check_attempts'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                    'min'       => 0,
+                                    'min' => 0,
                                 ]
                             ); ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
@@ -582,11 +594,11 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 <?php
                                 $flap_detection_enabled = ($host['Host']['flap_detection_enabled'] === null) ? $host['Hosttemplate']['flap_detection_enabled'] : $host['Host']['flap_detection_enabled'];
                                 echo $this->Form->fancyCheckbox('flap_detection_enabled', [
-                                    'caption'          => __('Flap detection'),
-                                    'wrapGridClass'    => 'col col-xs-2',
+                                    'caption' => __('Flap detection'),
+                                    'wrapGridClass' => 'col col-xs-2',
                                     'captionGridClass' => 'col col-xs-2 text-left',
-                                    'captionClass'     => 'control-label',
-                                    'checked'          => $this->CustomValidationErrors->refill('flap_detection_enabled', ($host['Host']['flap_detection_enabled'] !== null) ? $host['Host']['flap_detection_enabled'] : $host['Hosttemplate']['flap_detection_enabled']),
+                                    'captionClass' => 'control-label',
+                                    'checked' => $this->CustomValidationErrors->refill('flap_detection_enabled', ($host['Host']['flap_detection_enabled'] !== null) ? $host['Host']['flap_detection_enabled'] : $host['Hosttemplate']['flap_detection_enabled']),
                                 ]); ?>
                             </div>
 
@@ -607,11 +619,11 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 foreach ($flapDetection_settings as $flapDetection_setting => $icon):?>
                                     <div class="form-group no-padding">
                                         <?php echo $this->Form->fancyCheckbox($flapDetection_setting, [
-                                            'caption'          => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
-                                            'class'            => 'onoffswitch-checkbox flapdetection_control',
-                                            'checked'          => (boolean)$saved_flapping_settings[$flapDetection_setting],
-                                            'wrapGridClass'    => 'col col-xs-2',
+                                            'caption' => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
+                                            'icon' => '<i class="fa ' . $icon . '"></i> ',
+                                            'class' => 'onoffswitch-checkbox flapdetection_control',
+                                            'checked' => (boolean)$saved_flapping_settings[$flapDetection_setting],
+                                            'wrapGridClass' => 'col col-xs-2',
                                             'captionGridClass' => 'col col-xs-2',
                                         ]); ?>
                                     </div>

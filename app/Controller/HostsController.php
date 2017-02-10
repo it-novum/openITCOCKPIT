@@ -441,6 +441,7 @@ class HostsController extends AppController
     public function edit($id = null)
     {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
+        $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
         $userId = $this->Auth->user('id');
 
         if (!$this->Host->exists($id)) {
