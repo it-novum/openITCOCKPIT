@@ -119,13 +119,6 @@ class Servicetemplate extends AppModel
                 'required' => true,
             ],
         ],
-        'description'                => [
-            'allowEmpty' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank',
-                'required' => true,
-            ],
-        ],
         'command_id'                 => [
             'allowEmpty' => [
                 'rule'     => 'notBlank',
