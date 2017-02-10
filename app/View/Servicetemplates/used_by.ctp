@@ -50,7 +50,7 @@
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
                     <h2><?php echo __('Servicetemplate'); ?>
-                        <strong><?php echo h($servicetemplate['Servicetemplate']['name']); ?></strong> <?php echo __('is used by the following'); ?> <?php echo $this->Utils->pluralize($all_hosts, __('host'), __('hosts')); ?>
+                        <strong><?php echo h($servicetemplate['Servicetemplate']['template_name']); ?></strong> <?php echo __('is used by the following'); ?> <?php echo $this->Utils->pluralize($all_hosts, __('host'), __('hosts')); ?>
                         (<?php echo sizeof($all_hosts); ?>):</h2>
 
                 </header>
@@ -104,7 +104,7 @@
                                         if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
                                             $service_name = h($service['Service']['name']);
                                         else:
-                                            $service_name = h($service['Servicetemplate']['name']);
+                                            $service_name = h($service['Servicetemplate']['template_name']);
                                         endif;
                                         ?>
                                         <td class="text-center" style="width: 15px;">

@@ -127,3 +127,5 @@ if [ $CODENAME = "trusty" ]; then
 fi
 
 oitc docu_generator
+
+oitc copy_servicename

@@ -12,6 +12,7 @@ class DocuGeneratorShell extends AppShell
 {
 
     public function main(){
+        $this->stdout->styles('green', ['text' => 'green']);
         $mySytemsettings = new itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
         $myData = $mySytemsettings->getData();
 
@@ -48,7 +49,7 @@ class DocuGeneratorShell extends AppShell
 
         $systemSettingsNew->write($this->getApiPostText(), 'a');
         $systemSettingsNew->close();
-        $this->out('done');
+        $this->out('<green>done</green>');
 
         // generating administration/systemsettings
         $this->out('generating administration/systemsettings.md...    ', false);
@@ -70,7 +71,7 @@ class DocuGeneratorShell extends AppShell
 
 
         $systemSettingsNew->close();
-        $this->out('done');
+        $this->out('<green>done</green>');
     }
 
     public function _welcome(){

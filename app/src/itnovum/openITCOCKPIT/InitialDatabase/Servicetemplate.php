@@ -58,6 +58,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '1',
                             'uuid' => '3eb9db30-c9cf-4c25-9c69-0c3c01dc2256',
+                            'template_name' => 'Ping',
                             'name' => 'Ping',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -174,6 +175,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '2',
                             'uuid' => 'fd250454-4065-4218-8e8e-4b0325eddf13',
+                            'template_name' => 'CHECK_SSH',
                             'name' => 'CHECK_SSH',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -271,6 +273,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '3',
                             'uuid' => 'cd5f7e0a-3682-4734-806d-455f1b296888',
+                            'template_name' => 'CHECK_BY_SSH',
                             'name' => 'CHECK_BY_SSH',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -387,6 +390,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '4',
                             'uuid' => 'eec01955-9aee-4763-b205-f3021480eee5',
+                            'template_name' => 'CHECK_DHCP',
                             'name' => 'CHECK_DHCP',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -484,6 +488,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '5',
                             'uuid' => '632cbb02-4046-4406-8bcc-4cfe0befbc0c',
+                            'template_name' => 'CHECK_FTP',
                             'name' => 'CHECK_FTP',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -581,6 +586,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '6',
                             'uuid' => 'b987e6c0-135d-4034-987a-18c65b111fae',
+                            'template_name' => 'CHECK_HTTP',
                             'name' => 'CHECK_HTTP',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -706,6 +712,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '7',
                             'uuid' => 'b12e5fcd-eccc-43f9-8c84-921329e56c92',
+                            'template_name' => 'CHECK_HTTPS',
                             'name' => 'CHECK_HTTPS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -831,6 +838,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '8',
                             'uuid' => '354c1e0e-bd09-48e0-bbbe-eb98a4059454',
+                            'template_name' => 'CHECK_LOCAL_DISK',
                             'name' => 'CHECK_LOCAL_DISK',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -956,6 +964,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '9',
                             'uuid' => 'c673cc09-c46a-4916-8e42-85cb0e68f1e6',
+                            'template_name' => 'CHECK_LOCAL_LOAD',
                             'name' => 'CHECK_LOCAL_LOAD',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1072,6 +1081,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '10',
                             'uuid' => '90aefb61-c818-4bd6-818c-c9e6174b3e13',
+                            'template_name' => 'CHECK_LOCAL_MAILQ',
                             'name' => 'CHECK_LOCAL_MAILQ',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1188,6 +1198,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '11',
                             'uuid' => '91bc9075-64b2-4054-a39d-c2981cd6bd01',
+                            'template_name' => 'CHECK_LOCAL_PROC',
                             'name' => 'CHECK_LOCAL_PROC',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1313,6 +1324,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '12',
                             'uuid' => 'b7e5c7a7-ed33-465f-ab8e-45059cb679fe',
+                            'template_name' => 'CHECK_LOCAL_PROCS_TOTAL',
                             'name' => 'CHECK_LOCAL_PROCS_TOTAL',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1429,6 +1441,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '13',
                             'uuid' => '5b0b27c4-6e70-454b-a778-b7b050910abb',
+                            'template_name' => 'CHECK_LOCAL_USERS',
                             'name' => 'CHECK_LOCAL_USERS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1545,6 +1558,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '14',
                             'uuid' => 'a4773ab9-ed5f-4395-b0c7-bb98bb975b06',
+                            'template_name' => 'CHECK_TCP',
                             'name' => 'CHECK_TCP',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1652,6 +1666,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '15',
                             'uuid' => '70ef8cb7-b253-4b81-9515-335e0ade1d8f',
+                            'template_name' => 'CHECK_TELNET',
                             'name' => 'CHECK_TELNET',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1749,6 +1764,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '16',
                             'uuid' => '52ac5010-4014-41c2-ba3a-74bc765e442d',
+                            'template_name' => 'CHECK_SMTP',
                             'name' => 'CHECK_SMTP',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1865,6 +1881,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '17',
                             'uuid' => 'b80db4b7-3148-4c39-9337-d89d367b9669',
+                            'template_name' => 'CHECK_NTP_PEER',
                             'name' => 'CHECK_NTP_PEER',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -1981,6 +1998,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '18',
                             'uuid' => '9babe8f0-9012-47a8-8580-f82246365dd8',
+                            'template_name' => 'CHECK_NTP_TIME',
                             'name' => 'CHECK_NTP_TIME',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '1',
@@ -2097,6 +2115,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '19',
                             'uuid' => '3634eec0-a006-46ff-88cb-5355517232eb',
+                            'template_name' => 'CHECK_MK_ACTIVE',
                             'name' => 'CHECK_MK_ACTIVE',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2194,6 +2213,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '20',
                             'uuid' => '331cb374-df79-4b72-9c51-2edb7fbb1e79',
+                            'template_name' => 'CHECK_MK_MEM_USED',
                             'name' => 'CHECK_MK_MEM_USED',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2270,6 +2290,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '21',
                             'uuid' => '5bd24dbf-6b88-4736-8860-a546d281de77',
+                            'template_name' => 'CHECK_MK_MEM_VMALLOC',
                             'name' => 'CHECK_MK_MEM_VMALLOC',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2346,6 +2367,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '22',
                             'uuid' => '3bafc389-c87e-43fb-86d3-e91471492e9b',
+                            'template_name' => 'CHECK_MK_MOUNTS',
                             'name' => 'CHECK_MK_MOUNTS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2422,6 +2444,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '23',
                             'uuid' => '8a7bd583-9764-43c6-9989-4ffa927b19ab',
+                            'template_name' => 'CHECK_MK_NETCTR_COMBINED',
                             'name' => 'CHECK_MK_NETCTR_COMBINED',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2498,6 +2521,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '24',
                             'uuid' => '3b388dc5-cc3c-4348-a2fa-0de4c3d6605a',
+                            'template_name' => 'CHECK_MK_NETIF_LINK',
                             'name' => 'CHECK_MK_NETIF_LINK',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2574,6 +2598,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '25',
                             'uuid' => '633a9e82-a9a0-4097-8107-43d5c0ce3709',
+                            'template_name' => 'CHECK_MK_NETIF_PARAMS',
                             'name' => 'CHECK_MK_NETIF_PARAMS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2650,6 +2675,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '26',
                             'uuid' => '40824c10-ef1d-4625-9a5d-519ca641e403',
+                            'template_name' => 'CHECK_MK_NFSMOUNTS',
                             'name' => 'CHECK_MK_NFSMOUNTS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2726,6 +2752,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '27',
                             'uuid' => 'eccfc508-68a3-483e-95b7-8b57e532ae81',
+                            'template_name' => 'CHECK_MK_NTP_TIME',
                             'name' => 'CHECK_MK_NTP_TIME',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2802,6 +2829,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '28',
                             'uuid' => '4c234f5b-111d-413c-9181-1dc2bbaf0441',
+                            'template_name' => 'CHECK_MK_POSTFIX_MAILQ',
                             'name' => 'CHECK_MK_POSTFIX_MAILQ',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2878,6 +2906,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '29',
                             'uuid' => 'a6a9cc08-225e-4066-8c6d-ba4f45b26e07',
+                            'template_name' => 'CHECK_MK_PS',
                             'name' => 'CHECK_MK_PS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -2954,6 +2983,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '30',
                             'uuid' => '59ef450a-5240-46dd-a441-953371abef95',
+                            'template_name' => 'CHECK_MK_SERVICE',
                             'name' => 'CHECK_MK_SERVICE',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3030,6 +3060,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '31',
                             'uuid' => 'f9728a8d-be9b-4879-ae5e-e5f2377e4c56',
+                            'template_name' => 'CHECK_MK_UPTIME',
                             'name' => 'CHECK_MK_UPTIME',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3106,6 +3137,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '32',
                             'uuid' => '6ad6a6a8-0a1e-4c94-add5-eacdef149356',
+                            'template_name' => 'CHECK_MK_WINPERF_CPUUSAGE',
                             'name' => 'CHECK_MK_WINPERF_CPUUSAGE',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3182,6 +3214,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '33',
                             'uuid' => '0afbf35e-ac90-407a-bd4b-0e6ed6450e5b',
+                            'template_name' => 'CHECK_MK_WINPERF_DISKSTAT',
                             'name' => 'CHECK_MK_WINPERF_DISKSTAT',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3258,6 +3291,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '34',
                             'uuid' => 'bcca054b-f9e3-4d77-8010-b950acc7651a',
+                            'template_name' => 'CHECK_MK_CPU_LOADS',
                             'name' => 'CHECK_MK_CPU_LOADS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3334,6 +3368,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '35',
                             'uuid' => 'e2376f24-36d3-48ea-a5ac-e972d6b81a85',
+                            'template_name' => 'CHECK_MK_CPU_THREADS',
                             'name' => 'CHECK_MK_CPU_THREADS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3410,6 +3445,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '36',
                             'uuid' => '77bce4e3-4535-49f0-ba96-b5879e0023e6',
+                            'template_name' => 'CHECK_MK_DF',
                             'name' => 'CHECK_MK_DF',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3486,6 +3522,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '37',
                             'uuid' => 'e819a5a5-ad93-4c50-971a-132abccb26d2',
+                            'template_name' => 'CHECK_MK_DISKSTAT',
                             'name' => 'CHECK_MK_DISKSTAT',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3562,6 +3599,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '38',
                             'uuid' => '5e6721e7-34b6-492b-b5f7-83396e7766c7',
+                            'template_name' => 'CHECK_MK_KERNEL',
                             'name' => 'CHECK_MK_KERNEL',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3638,6 +3676,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '39',
                             'uuid' => '50650487-c48f-4af0-810a-887a4c1ff447',
+                            'template_name' => 'CHECK_MK_KERNEL_UTIL',
                             'name' => 'CHECK_MK_KERNEL_UTIL',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3714,6 +3753,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '40',
                             'uuid' => '2ecf4324-437c-4fd5-85fe-b8fd07be1a96',
+                            'template_name' => 'CHECK_MK_LOGWATCH',
                             'name' => 'CHECK_MK_LOGWATCH',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3790,6 +3830,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '41',
                             'uuid' => '0fb9cee0-b3be-4ac1-8917-3fc5d2984d76',
+                            'template_name' => 'CHECK_MK_WINPERF_PROCESSOR_UTIL',
                             'name' => 'CHECK_MK_WINPERF_PROCESSOR_UTIL',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3856,6 +3897,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '42',
                             'uuid' => 'c6e07b02-bd67-4109-822e-6d23f9f157d6',
+                            'template_name' => 'CHECK_MK_ORACLE_TABLESPACES',
                             'name' => 'CHECK_MK_ORACLE_TABLESPACES',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3922,6 +3964,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '43',
                             'uuid' => '02e0eaaf-c4bb-4d36-a3e8-0ca809bc3665',
+                            'template_name' => 'CHECK_MK_MEM_WIN',
                             'name' => 'CHECK_MK_MEM_WIN',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -3998,6 +4041,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '44',
                             'uuid' => 'ca552795-e698-4821-ac78-f22f31653d25',
+                            'template_name' => 'CHECK_MK_WINPERF_IF',
                             'name' => 'CHECK_MK_WINPERF_IF',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -4074,6 +4118,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '45',
                             'uuid' => '92dd4fc1-06e5-441c-8342-89cd64b9e13e',
+                            'template_name' => 'CHECK_MK_SYSTEMTIME',
                             'name' => 'CHECK_MK_SYSTEMTIME',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -4150,6 +4195,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '46',
                             'uuid' => 'f43bebf4-ad50-4477-aa4f-968ac204829c',
+                            'template_name' => 'CHECK_MK_SERVICES_SUMMARY',
                             'name' => 'CHECK_MK_SERVICES_SUMMARY',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -4226,6 +4272,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '47',
                             'uuid' => 'e753c9ec-60e5-41c8-a4fd-a3567094c392',
+                            'template_name' => 'CHECK_MK_LNX_IF',
                             'name' => 'CHECK_MK_LNX_IF',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
@@ -4302,6 +4349,7 @@ class Servicetemplate extends Importer {
                         [
                             'id' => '48',
                             'uuid' => 'f54f914b-0215-4681-bbb1-173ba1b46d06',
+                            'template_name' => 'CHECK_MK_TCP_CONN_STATS',
                             'name' => 'CHECK_MK_TCP_CONN_STATS',
                             'container_id' => '1',
                             'servicetemplatetype_id' => '8',
