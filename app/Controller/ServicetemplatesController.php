@@ -55,7 +55,8 @@ class ServicetemplatesController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Servicetemplate.name'        => ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.template_name'=> ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.name'        => ['label' => 'Service name', 'searchType' => 'wildcard'],
                 'Servicetemplate.description' => ['label' => 'Template description', 'searchType' => 'wildcard'],
             ],
         ],
@@ -91,6 +92,7 @@ class ServicetemplatesController extends AppController
             'fields'     => [
                 'Servicetemplate.id',
                 'Servicetemplate.uuid',
+                'Servicetemplate.template_name',
                 'Servicetemplate.name',
                 'Servicetemplate.container_id',
                 'Servicetemplate.description',
@@ -1050,6 +1052,7 @@ class ServicetemplatesController extends AppController
                     $newServicetemplateData = [
                         'Servicetemplate'                          => [
                             'uuid'        => $this->Servicetemplate->createUUID(),
+                            'template_name'=> $newServicetemplate['template_name'],
                             'name'        => $newServicetemplate['name'],
                             'description' => $newServicetemplate['description'],
                         ],
@@ -1245,7 +1248,7 @@ class ServicetemplatesController extends AppController
                 'Service.servicetemplate_id'     => $id,
             ],
             'fields'     => [
-                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.name', 'HostsToContainers.container_id',
+                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.template_name', 'HostsToContainers.container_id',
             ],
             'order'      => [
                 'Host.name' => 'asc',
