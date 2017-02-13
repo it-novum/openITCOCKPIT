@@ -116,9 +116,8 @@
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
-
                                                             case 'FRONTEND.LDAP.PASSWORD':
-                                                            case 'MONITORING.FROM_PASSWORD':
+                                                            case 'MONITORING.ACK_RECEIVER_PASSWORD':
                                                             case 'FRONTEND.SSO.CLIENT_SECRET':
                                                                 ?><input type="password" id="SystemsettingValue"
                                                                          value="<?php echo h($value['value']); ?>"
