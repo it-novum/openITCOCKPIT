@@ -105,14 +105,14 @@ class Servicetemplate extends AppModel
                 'required' => true,
             ],
         ],
-        'name'                       => [
+        'template_name'              => [
             'allowEmpty' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank',
                 'required' => true,
             ],
         ],
-        'description'                => [
+        'name'                       => [
             'allowEmpty' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank',
@@ -399,8 +399,12 @@ class Servicetemplate extends AppModel
         return $this->find($type, [
             'conditions' => $conditions,
             'order'      => [
-                'Servicetemplate.name' => 'ASC',
+                'Servicetemplate.template_name' => 'ASC',
             ],
+            'fields' => [
+                'Servicetemplate.id',
+                'Servicetemplate.template_name'
+            ]
         ]);
     }
 

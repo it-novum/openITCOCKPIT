@@ -131,3 +131,5 @@ else
     fi
 fi
 
+oitc docu_generator
+oitc copy_servicename

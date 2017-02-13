@@ -73,6 +73,7 @@ class Hosttemplate extends AppModel
             'dependent'  => true,
         ],
         'Hosttemplatecommandargumentvalue',
+        'Host'
     ];
 
     var $validate = [

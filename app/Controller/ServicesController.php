@@ -1772,7 +1772,7 @@ class ServicesController extends AppController
         }
 
         $ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
-//			debug($service);
+
         $service['Host'] = $_service['Host'];
         $service['NotifyPeriod'] = $_service['NotifyPeriod'];
         $service['CheckPeriod'] = $_service['CheckPeriod'];
