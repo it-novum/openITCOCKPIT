@@ -130,6 +130,8 @@ class AdministratorsController extends AppController
             }
         }
 
+        /*
+         * Uncommented because of reading memory parameters from /proc/meminfo instead
         $output = null;
         exec('LANG=C free -m', $output, $returncode);
         $memory = [];
@@ -139,15 +141,16 @@ class AdministratorsController extends AppController
                 if ($value[0] == 'Mem:') {
                     $memory['Memory'] = [
                         'total'   => $value[1],
+                        'used'    => $value[2],
                         'free'    => $value[3],
                         'buffers' => $value[5],
                         'cached'  => $value[6],
                     ];
                 }
 
-                if ($value[0] == '-/+') {
-                    $memory['Memory']['used'] = $value[2];
-                }
+                //if ($value[0] == '-/+') {
+                //    $memory['Memory']['used'] = $value[2];
+                //}
 
                 if ($value[0] == 'Swap:') {
                     $memory['Swap'] = [
@@ -158,6 +161,30 @@ class AdministratorsController extends AppController
                 }
             }
         }
+        */
+
+        $data = explode("\n", file_get_contents("/proc/meminfo"));
+        $meminfo = array();
+        foreach ($data as $line) {
+            $temp = explode(":", $line);
+            if (isset($temp[1])) {
+                $meminfo[$temp[0]] = intval(trim(substr($temp[1],0, strpos($temp[1], "kB")))/1000);
+            }
+        }
+
+        $memory['Memory'] = [
+            'total'   => $meminfo['MemTotal'],
+            'used'    => $meminfo['Active'],
+            'free'    => $meminfo['MemFree'],
+            'buffers' => $meminfo['Buffers'],
+            'cached'  => $meminfo['Cached'],
+        ];
+
+        $memory['Swap'] = [
+            'total' => $meminfo['SwapTotal'],
+            'used'  => $meminfo['SwapTotal'] - $meminfo['SwapFree'],
+            'free'  => $meminfo['SwapFree'],
+        ];
 
         $osVersion = PHP_OS;
         if (file_exists('/etc/os-release')) {
