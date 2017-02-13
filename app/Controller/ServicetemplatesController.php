@@ -480,7 +480,7 @@ class ServicetemplatesController extends AppController
                     }
                 }
 
-                if(oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']){
+                if($oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']){
                     //Event handler command of service template was changed
                     //Delete all custom event handler command arguments of services
                     //if eventhandler_command_id from Service is NULL
