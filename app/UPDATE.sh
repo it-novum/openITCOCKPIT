@@ -99,6 +99,7 @@ oitc set_permissions
 
 #Generate documentation
 oitc docu_generator
+oitc copy_servicename
 
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then
@@ -130,6 +131,3 @@ else
         service php5-fpm start
     fi
 fi
-
-oitc docu_generator
-oitc copy_servicename
