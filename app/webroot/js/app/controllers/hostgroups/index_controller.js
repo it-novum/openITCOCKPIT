@@ -23,51 +23,58 @@
 //	confirmation.
 
 App.Controllers.HostgroupsIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function() {
-		var self = this;
-		this.Masschange.setup({
-			'controller': 'hostgroups',
-			'checkboxattr': 'hostgroupname'
-		});
-		$('.select_datatable').click(function(){
-			self.fnShowHide($(this).attr('my-column'), $(this).children());
-		});
+    _initialize: function () {
+        var self = this;
+        this.Masschange.setup({
+            'controller': 'hostgroups',
+            'checkboxattr': 'hostgroupname'
+        });
+        $('.select_datatable').click(function () {
+            self.fnShowHide($(this).attr('my-column'), $(this).children());
+        });
 
-		$('#hostgroup_list').dataTable({
-			"bPaginate": false,
-			"bFilter": false,
-			"bInfo": false,
-			"bStateSave": true,
-			"aoColumnDefs" : [ {
-				"bSortable" : false,
-				"aTargets" : [ "no-sort" ]
-			}]
-		});
+        $('#hostgroup_list').dataTable({
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bStateSave": true,
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": ["no-sort"]
+            }]
+        });
 
-		this.$table = $('#hostgroup_list');
+        this.$table = $('#hostgroup_list');
 
-		//Checkboxen aktivieren
-		$('.select_datatable').find('input').prop('checked', true);
+        //Checkboxen aktivieren
+        $('.select_datatable').find('input').each(function () {
+            $(this).prop('checked', false);
+            var myCol = ($(this).parent().attr('my-column'));
+            var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
+            if (isVisible == true) {
+                $(this).prop('checked', true);
+            }
+        })
 
-	},
-	fnShowHide: function( iCol, inputObject){
-		/* Get the DataTables object again - this is not a recreation, just a get of the object */
-		var oTable = this.$table.dataTable();
+    },
+    fnShowHide: function (iCol, inputObject) {
+        /* Get the DataTables object again - this is not a recreation, just a get of the object */
+        var oTable = this.$table.dataTable();
+        var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
 
-		var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
-		if(bVis == true){
-			inputObject.prop('checked', false);
-		}else{
-			inputObject.prop('checked', true);
-		}
-		oTable.fnSetColumnVis( iCol, bVis ? false : true );
-	}
+        if (bVis == true) {
+            inputObject.prop('checked', false);
+        } else {
+            inputObject.prop('checked', true);
+        }
+        oTable.fnSetColumnVis(iCol, bVis ? false : true);
+    }
 });
