@@ -1087,4 +1087,22 @@ class Service extends AppModel
 
         return true;
     }
+
+    public function checkUsageFlag($serviceId, $moduleValue){
+        $result = $this->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $serviceId,
+                'Service.usage_flag &'.$moduleValue
+            ],
+            'fields' => [
+                'Service.id'
+            ]
+        ]);
+
+        if(empty($result)){
+            return false;
+        }
+        return true;
+    }
 }
