@@ -110,7 +110,7 @@
             <!-- Button Upload icons set -->
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#UploadIconsModal"
                     id="icons-upload-btn">
-                <?php echo __('Upload Icons set'); ?>
+                <?php echo __('Upload Items set'); ?>
             </button>
 
             <!-- Button Options -->
