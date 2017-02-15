@@ -44,6 +44,7 @@ class MapsControllerTest extends ControllerTestCase{
         'app.usergroup',
         'app.usersToContainer',
         'app.rotation',
+        'app.tenant',
     ];
 
     public function setUp(){
@@ -121,5 +122,39 @@ class MapsControllerTest extends ControllerTestCase{
         ];
         $this->assertEquals($expectedMap, $myMap);
     }
-    
+
+    public function testGetEdit() {
+        $this->testAction('/map_module/maps/edit/1', ['method' => 'get']);
+        var_dump($this->vars);
+        $expectedCommand = [
+            'Command' => [
+                'id' => 1,
+                'name' => 'My first command',
+                'command_line' => 'My first command_line',
+                'command_type' => 1,
+                'human_args' => 'My first human_args',
+                'uuid' => '1234567890',
+                'description' => 'My first human_args'
+            ],
+            'Commandargument' => [
+                [
+                    'id' => 1,
+                    'command_id' => 1,
+                    'name' => 'My name',
+                    'human_name' => 'My human_name',
+                    'created' => '2017-01-17 14:24:01',
+                    'modified' => '2017-01-17 14:24:01'
+                ],
+                [
+                    'id' => 2,
+                    'command_id' => 1,
+                    'name' => 'My name 2',
+                    'human_name' => 'My human_name 2',
+                    'created' => '2017-01-17 14:24:02',
+                    'modified' => '2017-01-17 14:24:02'
+                ]
+            ]
+        ];
+        $this->assertEquals($expectedCommand, $this->vars['command']);
+    }
 }

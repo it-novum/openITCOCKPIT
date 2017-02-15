@@ -164,6 +164,7 @@ class AppController extends Controller {
             if (!empty($autoLoginUserAdmin)){
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
+                $this->MY_RIGHTS_LEVEL = [1, 2];
             }
         }
     }
