@@ -73,11 +73,11 @@ mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --
 > $BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 
-sudo -g www-data "${APPDIR}/Console/cake" schema update --connection default --file schema_itcockpit.php -s 26
+sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --file schema_itcockpit.php -s 26
 
 for PLUGIN in $(ls -1 "${APPDIR}/Plugin"); do
 	if [ -f "${APPDIR}/Plugin/${PLUGIN}/Config/Schema/schema.php" ]; then
-		sudo -g www-data "${APPDIR}/Console/cake" schema update --connection default --plugin "$PLUGIN" --file schema.php
+		sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --plugin "$PLUGIN" --file schema.php
 	fi
 done
 
@@ -97,31 +97,37 @@ oitc AclExtras.AclExtras aco_sync
 #for always sllowed allowd and dependend ALC action
 oitc set_permissions
 
+#Generate documentation
+oitc docu_generator
+oitc copy_servicename
+
 CODENAME=$(lsb_release -sc)
-if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
-    systemctl restart sudo_server
-    systemctl restart oitc_cmd
-    systemctl restart gearman_worker
-fi
+if [ "$1" = "install" ]; then
+    echo "Update successfully finished"
+else
 
-if [ $CODENAME = "xenial" ]; then
-    systemctl restart php7.0-fpm
-fi
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
+        systemctl restart oitc_cmd
+        systemctl restart gearman_worker
+    fi
 
-if [ $CODENAME = "jessie" ]; then
-    systemctl restart php5-fpm
-fi
+    if [ $CODENAME = "xenial" ]; then
+        systemctl restart php7.0-fpm
+    fi
 
-if [ $CODENAME = "trusty" ]; then
-    service sudo_server stop
-    service sudo_server start
+    if [ $CODENAME = "jessie" ]; then
+        systemctl restart php5-fpm
+    fi
 
-    service oitc_cmd stop
-    service oitc_cmd start
 
-    service gearman_worker stop
-    service gearman_worker start
+    if [ $CODENAME = "trusty" ]; then
+        service oitc_cmd stop
+        service oitc_cmd start
 
-    service php5-fpm stop
-    service php5-fpm start
+        service gearman_worker stop
+        service gearman_worker start
+
+        service php5-fpm stop
+        service php5-fpm start
+    fi
 fi

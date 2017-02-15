@@ -30,7 +30,7 @@
             <?php echo __('System'); ?>
             <span>>
                 <?php echo __('Registration'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>

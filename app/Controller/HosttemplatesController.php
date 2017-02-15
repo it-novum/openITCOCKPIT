@@ -46,6 +46,7 @@ class HosttemplatesController extends AppController {
         'Customvariable',
         'Commandargument',
         'Hosttemplatecommandargumentvalue',
+        'Hostcommandargumentvalue'
     ];
     public $layout = 'Admin.default';
 
@@ -176,6 +177,9 @@ class HosttemplatesController extends AppController {
                 'Hosttemplatecommandargumentvalue' => ['Commandargument'],
             ],
         ]);
+
+        $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
+
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
             $this->render403();
 
@@ -390,6 +394,40 @@ class HosttemplatesController extends AppController {
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if($oldHosttemplateCheckCommandId != $this->request->data['Hosttemplate']['command_id']){
+                    //Check command of host template was changed
+                    //Delete all custom command arguments of hosts
+                    //if command_id from Host is NULL
+                    $HostCommandArgumentValuesToDelete = $this->Hosttemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Host' => [
+                                'conditions' => [
+                                    'Host.command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Host.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Hosttemplate.id' => $this->Hosttemplate->id
+                        ],
+                        'fields' => [
+                            'Hosttemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($HostCommandArgumentValuesToDelete['Host'])){
+                        $hostIds = Hash::extract($HostCommandArgumentValuesToDelete['Host'], '{n}.id');
+                        if(!empty($hostIds)){
+                            $this->Hostcommandargumentvalue->deleteAll([
+                                'Hostcommandargumentvalue.host_id' => $hostIds
+                            ]);
+                        }
+                    }
                 }
 
                 $this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));

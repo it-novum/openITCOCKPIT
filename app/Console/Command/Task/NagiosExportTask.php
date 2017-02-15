@@ -2892,6 +2892,7 @@ class NagiosExportTask extends AppShell
         $output = [];
         $returncode = 0;
         exec("mysql --host=$host --user=$user --password=$pwd -v $dbc_dbname < $dumpFile", $output, $returncode);
+        exec("mysql --host=$host --user=$user --password=$pwd -e 'truncate openitcockpit.exports'");
         $return = [
             'output'     => $output,
             'returncode' => $returncode,

@@ -41,7 +41,7 @@
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
             <a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i
-                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete servicetemplates'); ?></a>
+                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete service templates'); ?></a>
         <?php endif; ?>
     </div>
     <div class="col-xs-12 col-md-2">
@@ -54,7 +54,7 @@
                     <li>
                         <a id="allocate-servicet" href="javascript:void(0);" class="copyAll-too"
                            data-action="assignGroup">
-                            <i class="fa fa-lg fa-download fa-rotate-270"></i> <?= __('Allocate to Servicetemplategroup'); ?>
+                            <i class="fa fa-lg fa-download fa-rotate-270"></i> <?= __('Allocate to service template group'); ?>
                         </a>
                     </li>
 
