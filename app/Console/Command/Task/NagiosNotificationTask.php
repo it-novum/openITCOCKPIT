@@ -47,6 +47,10 @@ class NagiosNotificationTask extends AppShell
         $Email->config('default');
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->to($parameters['contactmail']);
+        $replyToVal = $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'];
+        if(!empty($replyToVal)){
+            $Email->replyTo([$replyToVal => $replyToVal]);
+        }
 
         //$Email->from('localhost@testv3.com');
         $prefix = '';
@@ -87,7 +91,10 @@ class NagiosNotificationTask extends AppShell
         //$Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => ['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
         $Email->to($parameters['contactmail']);
-
+        $replyToVal = $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'];
+        if(!empty($replyToVal)){
+            $Email->replyTo([$replyToVal => $replyToVal]);
+        }
         //$Email->from('localhost@testv3.com');
         $prefix = '';
         if ($parameters['notificationtype'] == 'RECOVERY') {
@@ -154,13 +161,12 @@ class NagiosNotificationTask extends AppShell
             $mailgraph_files = $hosttmpdir->find('.*\.png', true);
             //print_r($mailgraph_files);
 
-            // debug($attachments);
-            // send attachments
-            $Email->attachments($attachments);
         } else {
             $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
-            $Email->attachments($attachments);
         }
+        // debug($attachments);
+        // send attachments
+        $Email->attachments($attachments);
 
 
         $Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings, 'contentIDs' => $contentIDs]);

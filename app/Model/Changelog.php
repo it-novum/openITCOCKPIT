@@ -79,7 +79,7 @@ class Changelog extends AppModel
                 'Contactgroup'                     => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicetemplate' => [
-                'Servicetemplate'                          => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
+                'Servicetemplate'                          => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
                 'CheckPeriod'                              => '{(id|name)}',
                 'NotifyPeriod'                             => '{(id|name)}',
                 'CheckCommand'                             => '{(id|name)}',

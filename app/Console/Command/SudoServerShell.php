@@ -145,7 +145,7 @@ class SudoServerShell extends AppShell
         foreach ($this->_getPid() as $pid) {
             exec('ps -eaf |grep '.escapeshellarg($pid).' |grep -v grep', $output);
             foreach ($output as $line) {
-                if (preg_match('#.*app/Console/cake.php -working .*/app sudo_server (-d|--daemon)#', $line)) {
+                if (preg_match('#.*app/Console/cake.php -working .*/app sudo_server (-d|--daemon|--restart)#', $line)) {
                     return true;
                 }
             }
@@ -220,6 +220,7 @@ class SudoServerShell extends AppShell
         if ($exit) {
             exit(0);
         }
+        return true;
     }
 
     public function restart()
@@ -265,7 +266,7 @@ class SudoServerShell extends AppShell
 
     private function _bootstrap()
     {
-
+        $this->Systemsetting->getDataSource()->reconnect();
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
         $this->socket = $this->createSocket();

@@ -69,10 +69,7 @@
         <br/>
         <br/>
         <br/>
-        <br/>
-        <br/>
-        <br/>
-        <p><?php echo $this->html->image('logos/openITCOCKPIT.png'); ?></p>
+        <p><?php echo $this->html->image('logos/openITCOCKPIT.png', ['width' => '500']); ?></p>
 
     </div>
     <div class="clearfix"></div>

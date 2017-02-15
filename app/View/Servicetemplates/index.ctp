@@ -69,9 +69,11 @@
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
                                         <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                        <th class="no-sort col-xs-3 col-sm-3 col-md-3 col-lg-4"><?php echo $this->Utils->getDirection($order, 'name');
-                                            echo $this->Paginator->sort('name', __('Name')); ?></th>
-                                        <th class="no-sort col-xs-5 col-sm-5 col-md-5 col-lg-5"><?php echo $this->Utils->getDirection($order, 'description');
+                                        <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-2"><?php echo $this->Utils->getDirection($order, 'template_name');
+                                            echo $this->Paginator->sort('template_name', __('Servicetemplate name')); ?></th>
+                                        <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-3"><?php echo $this->Utils->getDirection($order, 'name');
+                                            echo $this->Paginator->sort('name', __('Service name')); ?></th>
+                                        <th class="no-sort col-xs-4 col-sm-4 col-md-4 col-lg-4"><?php echo $this->Utils->getDirection($order, 'description');
                                             echo $this->Paginator->sort('description', __('Description')); ?></th>
                                         <th class="no-sort col-xs-1 col-sm-1 col-md-1 col-lg-2"><?php echo __('Container'); ?></th>
                                         <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i>
@@ -91,6 +93,7 @@
                                                            uuid="<?= $servicetemplate['Servicetemplate']['uuid']; ?>">
                                                 <?php endif; ?>
                                             </td>
+                                            <td><?php echo $servicetemplate['Servicetemplate']['template_name']; ?></td>
                                             <td><?php echo $servicetemplate['Servicetemplate']['name']; ?></td>
                                             <td><?php echo $servicetemplate['Servicetemplate']['description']; ?></td>
                                             <td><?php echo isset($resolvedContainerNames[$servicetemplate['Container']['id']]) ? $resolvedContainerNames[$servicetemplate['Container']['id']] : $servicetemplate['Container']['name']; ?></td>

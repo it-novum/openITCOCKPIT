@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MapsController extends MapModuleAppController
-{
+class MapsController extends MapModuleAppController {
 
     public $layout = 'Admin.default';
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'CustomValidationErrors'];
@@ -33,49 +32,47 @@ class MapsController extends MapModuleAppController
 
     public $listFilters = ['index' => [
         'fields' => [
-            'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
+            'Map.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
             'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
             //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
         ],
     ]];
 
-    public function index()
-    {
+    public function index() {
         $query = [
             'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
-            'fields'     => [
+            'fields' => [
                 'Map.*',
             ],
-            'joins'      => [
+            'joins' => [
                 [
-                    'table'      => 'maps_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'MapsToContainers',
+                    'table' => 'maps_to_containers',
+                    'type' => 'INNER',
+                    'alias' => 'MapsToContainers',
                     'conditions' => 'MapsToContainers.map_id = Map.id',
                 ],
             ],
-            'order'      => [
+            'order' => [
                 'Map.name' => 'asc',
             ],
-            'contain'    => [
+            'contain' => [
                 'Container' => [
                     'fields' => [
                         'Container.id',
                     ],
                 ],
             ],
-            'group'      => 'Map.id',
+            'group' => 'Map.id',
         ];
 
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-
         if ($this->isApiRequest()) {
             unset($query['limit']);
             $all_maps = $this->Map->find('all', $query);
         } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $this->Paginator->settings = array_merge_recursive($this->Paginator->settings, $query);
             $all_maps = $this->Paginator->paginate();
         }
 
@@ -89,8 +86,7 @@ class MapsController extends MapModuleAppController
     }
 
 
-    public function add()
-    {
+    public function add() {
         $this->loadModel('Container');
 
         $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
@@ -130,8 +126,7 @@ class MapsController extends MapModuleAppController
         }
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid map'));
         }
@@ -163,7 +158,7 @@ class MapsController extends MapModuleAppController
                     'Container.id',
                     'Container.name',
                 ],
-                'order'  => 'Container.name ASC',
+                'order' => 'Container.name ASC',
             ]
         ),
             '{n}.Container.id', '{n}.Container.name'
@@ -204,8 +199,7 @@ class MapsController extends MapModuleAppController
         }
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid Map'));
         }
@@ -231,22 +225,21 @@ class MapsController extends MapModuleAppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_delete()
-    {
+    public function mass_delete() {
         $userId = $this->Auth->user('id');
         foreach (func_get_args() as $mapId) {
             if (!$this->Map->exists($mapId)) {
                 throw new NotFoundException(__('Invalid Map'));
             }
             $map = $this->Map->find('first', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Map.id' => $mapId,
                 ],
-                'fields'     => [
+                'fields' => [
                     'Map.name',
                 ],
-                'contain'    => [
+                'contain' => [
                     'Container' => [
                         'fields' => [
                             'Container.id',
@@ -284,8 +277,7 @@ class MapsController extends MapModuleAppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadUsersForTenant($tenantId = [])
-    {
+    public function loadUsersForTenant($tenantId = []) {
         return;
 
         foreach ($tenantId as $key => $value) {

@@ -40,7 +40,7 @@
     <div>
         <div class="widget-body">
             <?php
-            echo $this->Form->create('Backup', ['url' => 'restore']);
+            echo $this->Form->create('Backup', ['url' => 'restore', 'onsubmit' => 'return confirm("Do you really want restore the selected backup?");']);
 
             echo $this->Form->input('backupfile', [
                     'options'   => $backupfiles,
@@ -65,6 +65,7 @@
                 echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
                 echo $this->Form->button('Start Restore', $options_restore);
                 echo "</div>";
+                echo $this->Form->end();
                 ?>
             </div>
         </div>
@@ -73,14 +74,15 @@
     <div class="widget-body">
         <label class="col col-xs-2 col-md-2 col-lg-2" for="CreateBackup">Create new Backup</label>
         <?php
+        echo $this->Form->create('Backup', ['url' => 'backup']);
         $options_backup = [
             'class'      => 'btn btn-primary',
-            'formaction' => Router::url(['controller' => 'backups', 'action' => 'backup']),
         ];
         echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
         echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
         echo $this->Form->button('Start Backup', $options_backup);
         echo "</div>";
+        echo $this->Form->end();
         ?>
     </div>
 </div>
