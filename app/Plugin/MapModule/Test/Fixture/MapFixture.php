@@ -38,6 +38,24 @@ class MapFixture extends CakeTestFixture {
 			'created' => '2017-01-30 09:37:53',
 			'modified' => '2017-01-30 09:37:53'
 		),
+		array(
+			'id' => 2,
+			'name' => 'Lorem ipsum dolor sit 2',
+			'title' => 'Lorem ipsum dolor sit 2',
+			'background' => 'Lorem ipsum dolor sit 2',
+			'refresh_interval' => 1,
+			'created' => '2017-01-30 09:37:53',
+			'modified' => '2017-01-30 09:37:53'
+		),
+		array(
+			'id' => 3,
+			'name' => 'Lorem ipsum dolor sit 3',
+			'title' => 'Lorem ipsum dolor sit 3',
+			'background' => 'Lorem ipsum dolor sit 3',
+			'refresh_interval' => 3,
+			'created' => '2017-01-30 09:37:53',
+			'modified' => '2017-01-30 09:37:53'
+		),
 	);
 
 }

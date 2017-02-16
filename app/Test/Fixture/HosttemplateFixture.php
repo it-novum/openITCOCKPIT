@@ -72,7 +72,7 @@ class HosttemplateFixture extends CakeTestFixture {
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
 			'hosttemplatetype_id' => 1,
-			'command_id' => 1,
+			'command_id' => 3,
 			'check_command_args' => 'Lorem ipsum dolor sit amet',
 			'eventhandler_command_id' => 1,
 			'timeperiod_id' => 1,

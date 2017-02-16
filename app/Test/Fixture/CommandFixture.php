@@ -47,6 +47,15 @@ class CommandFixture extends CakeTestFixture {
 			'uuid' => '0987654321',
 			'description' => 'My second human_args'
 		),
+		array(
+			'id' => 3,
+			'name' => 'My third command',
+			'command_line' => 'My third command_line',
+			'command_type' => 3,
+			'human_args' => 'My third human_args',
+			'uuid' => '1234444444',
+			'description' => 'My third human_args'
+		),
 	);
 
 }

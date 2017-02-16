@@ -4,40 +4,6 @@
  */
 class SystemsettingFixture extends CakeTestFixture {
 
-/**
- * Fields
- *
- * @var array
- */
-	public $fields = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'value' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'info' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 1500, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'section' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'),
-		'created' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'modified' => array('type' => 'datetime', 'null' => false, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB')
-	);
-
-/**
- * Records
- *
- * @var array
- */
-	public $records = array(
-		array(
-			'id' => 1,
-			'key' => 'Lorem ipsum dolor sit amet',
-			'value' => 'Lorem ipsum dolor sit amet',
-			'info' => 'Lorem ipsum dolor sit amet',
-			'section' => 'Lorem ipsum dolor sit amet',
-			'created' => '2017-01-27 18:16:04',
-			'modified' => '2017-01-27 18:16:04'
-		),
-	);
+	public $import = array('model' => 'Systemsetting', 'records' => true);
 
 }

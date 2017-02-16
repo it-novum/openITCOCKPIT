@@ -21,6 +21,16 @@ class MapsToContainerFixture extends CakeTestFixture {
             'map_id' => '1',
             'container_id' => '1'
         ),
+        array(
+            'id' => 2,
+            'map_id' => '2',
+            'container_id' => '1'
+        ),
+        array(
+            'id' => 3,
+            'map_id' => '3',
+            'container_id' => '1'
+        ),
     );
 
 }

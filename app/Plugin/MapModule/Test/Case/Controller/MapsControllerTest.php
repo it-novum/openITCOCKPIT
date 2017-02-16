@@ -57,7 +57,49 @@ class MapsControllerTest extends ControllerTestCase{
         $expectedMaps = [
             [
                 'Map' => [
-                    'id' => 1,
+                    'id' => '2',
+                    'name' => 'Lorem ipsum dolor sit 2',
+                    'title' => 'Lorem ipsum dolor sit 2',
+                    'background' => 'Lorem ipsum dolor sit 2',
+                    'refresh_interval' => '1',
+                    'created' => '2017-01-30 09:37:53',
+                    'modified' => '2017-01-30 09:37:53'
+                ],
+                'Container' => [
+                    [
+                        'id' => '1',
+                        'MapsToContainer' => [
+                            'id' => '2',
+                            'map_id' => '2',
+                            'container_id' => '1'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'Map' => [
+                    'id' => '3',
+                    'name' => 'Lorem ipsum dolor sit 3',
+                    'title' => 'Lorem ipsum dolor sit 3',
+                    'background' => 'Lorem ipsum dolor sit 3',
+                    'refresh_interval' => '3',
+                    'created' => '2017-01-30 09:37:53',
+                    'modified' => '2017-01-30 09:37:53'
+                ],
+                'Container' => [
+                    [
+                        'id' => '1',
+                        'MapsToContainer' => [
+                            'id' => '3',
+                            'map_id' => '3',
+                            'container_id' => '1'
+                        ]
+                    ]
+                ]
+            ],
+            [
+                'Map' => [
+                    'id' => '1',
                     'name' => 'Lorem ipsum dolor sit amet',
                     'title' => 'Lorem ipsum dolor sit amet',
                     'background' => 'Lorem ipsum dolor sit amet',
@@ -113,7 +155,7 @@ class MapsControllerTest extends ControllerTestCase{
                     'name' => 'ROOT',
                     'parent_id' => null,
                     'lft' => '1',
-                    'rght' => '12',
+                    'rght' => '6',
                     'MapsToContainer' => [
                         'container_id' => '1'
                     ]
@@ -125,36 +167,73 @@ class MapsControllerTest extends ControllerTestCase{
 
     public function testGetEdit() {
         $this->testAction('/map_module/maps/edit/1', ['method' => 'get']);
-        var_dump($this->vars);
-        $expectedCommand = [
-            'Command' => [
+        $expectedMap = [
+            'Map' => [
                 'id' => 1,
-                'name' => 'My first command',
-                'command_line' => 'My first command_line',
-                'command_type' => 1,
-                'human_args' => 'My first human_args',
-                'uuid' => '1234567890',
-                'description' => 'My first human_args'
+                'name' => 'Lorem ipsum dolor sit amet',
+                'title' => 'Lorem ipsum dolor sit amet',
+                'background' => 'Lorem ipsum dolor sit amet',
+                'refresh_interval' => 1,
+                'created' => '2017-01-30 09:37:53',
+                'modified' => '2017-01-30 09:37:53'
             ],
-            'Commandargument' => [
+            'Container' => [
                 [
-                    'id' => 1,
-                    'command_id' => 1,
-                    'name' => 'My name',
-                    'human_name' => 'My human_name',
-                    'created' => '2017-01-17 14:24:01',
-                    'modified' => '2017-01-17 14:24:01'
-                ],
-                [
-                    'id' => 2,
-                    'command_id' => 1,
-                    'name' => 'My name 2',
-                    'human_name' => 'My human_name 2',
-                    'created' => '2017-01-17 14:24:02',
-                    'modified' => '2017-01-17 14:24:02'
+                    'id' => '1',
+                    'name' => 'ROOT',
+                    'MapsToContainer' => [
+                        'id' => '1',
+                        'map_id' => '1',
+                        'container_id' => '1'
+                    ]
                 ]
             ]
         ];
-        $this->assertEquals($expectedCommand, $this->vars['command']);
+        $this->assertEquals($expectedMap, $this->vars['map']);
+    }
+
+    public function testPostEdit() {
+        $data = [
+            'Map' => [
+                'id' => '1',
+                'container_id' => ['1'],
+                'name' => 'New map 1',
+                'title' => 'New map title 1',
+                'refresh_interval' => '90'
+            ]
+        ];
+        $this->testAction('/map_module/maps/edit/1', ['data' => $data, 'method' => 'post']);
+        $expectedMap = [
+            'Map' => [
+                'id' => '1',
+                'name' => 'New map 1',
+                'title' => 'New map title 1',
+                'background' => 'Lorem ipsum dolor sit amet',
+                'refresh_interval' => '90000',
+                'created' => '2017-01-30 09:37:53',
+            ]
+        ];
+        $changedMap = $this->Map->find('first', [
+            'conditions' => ['id' => '1'],
+            'recursive' => -1
+        ]);
+        unset($changedMap['Map']['modified']);
+        $this->assertEquals($expectedMap, $changedMap);
+    }
+
+    public function testDelete() {
+        $this->testAction('/map_module/maps/delete/1', ['method' => 'post']);
+        $myMap = $this->Map->find('first', [
+            'conditions' => ['id' => '1']
+        ]);
+        $this->assertEquals([], $myMap);
+    }
+
+    public function testMassDelete() {
+        $this->testAction('/map_module/maps/mass_delete/1/2', ['method' => 'post']);
+        $myMaps = $this->Map->find('all', [
+            'conditions' => ['id' => [1, 2]]
+        ]);
+        $this->assertEquals([], $myMaps);
     }
 }

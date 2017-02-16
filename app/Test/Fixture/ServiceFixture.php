@@ -80,7 +80,7 @@ class ServiceFixture extends CakeTestFixture {
 			'host_id' => 1,
 			'name' => 'Lorem ipsum dolor sit amet',
 			'description' => 'Lorem ipsum dolor sit amet',
-			'command_id' => 1,
+			'command_id' => 3,
 			'check_command_args' => 'Lorem ipsum dolor sit amet',
 			'eventhandler_command_id' => 1,
 			'notify_period_id' => 1,

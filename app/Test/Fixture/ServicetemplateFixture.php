@@ -80,7 +80,7 @@ class ServicetemplateFixture extends CakeTestFixture {
 			'check_period_id' => 1,
 			'notify_period_id' => 1,
 			'description' => 'Lorem ipsum dolor sit amet',
-			'command_id' => 1,
+			'command_id' => 3,
 			'check_command_args' => 'Lorem ipsum dolor sit amet',
 			'checkcommand_info' => 'Lorem ipsum dolor sit amet',
 			'eventhandler_command_id' => 1,

@@ -44,13 +44,14 @@ class CommandsControllerTest extends ControllerTestCase {
         'app.contactsServicecommand',
         'app.contactsHostcommand',
         'app.contactsServicetemplate',
-        'app.Macro'
+        'app.macro',
+        'app.user',
+        'app.usergroup',
+        'app.usersToContainer'
     ];
 
     public function setUp() {
         parent::setUp();
-//        $user = $this->User->find('first', ['conditions' => $conditions]);
-//        $this->Auth->login($user)
         $this->Command = ClassRegistry::init('Command');
     }
 
@@ -87,7 +88,7 @@ class CommandsControllerTest extends ControllerTestCase {
             ]
         ];
         $this->testAction('/commands/mass_delete/1/2', ['data' => $data, 'method' => 'post']);
-        $myCommands = $this->Command->find('first', [
+        $myCommands = $this->Command->find('all', [
             'conditions' => ['id' => [1, 2]]
         ]);
         $this->assertEquals([], $myCommands);

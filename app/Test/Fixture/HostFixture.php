@@ -80,7 +80,7 @@ class HostFixture extends CakeTestFixture {
 			'description' => 'Lorem ipsum dolor sit amet',
 			'hosttemplate_id' => 1,
 			'address' => 'Lorem ipsum dolor sit amet',
-			'command_id' => 1,
+			'command_id' => 3,
 			'eventhandler_command_id' => 1,
 			'timeperiod_id' => 1,
 			'check_interval' => 1,

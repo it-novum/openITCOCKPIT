@@ -31,12 +31,12 @@ class MacroFixture extends CakeTestFixture {
 	public $records = array(
 		array(
 			'id' => 1,
-			'name' => 'Lorem ip',
-			'value' => 'Lorem ipsum dolor sit amet',
-			'description' => 'Lorem ipsum dolor sit amet',
+			'name' => 'Macro name',
+			'value' => 'Macro value',
+			'description' => 'Macro description',
 			'password' => 1,
-			'created' => '2017-01-27 15:57:00',
-			'modified' => '2017-01-27 15:57:00'
+			'created' => '2017-01-20 14:44:47',
+			'modified' => '2017-01-20 14:44:47'
 		),
 	);
 
