@@ -422,12 +422,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             acceptedFiles: 'image/*', //mimetypes
             paramName: "file",
             success: function (obj) {
+                $('#backgrounds-upload-success').show().append(obj.name + ': Successfully uploaded<br />');
                 self.refreshBackgroundThumbnails();
             },
             error: function (error, errorMessage, xhr) {
-                console.log(error);
-                console.log(errorMessage);
-                console.log(xhr);
+                if (typeof errorMessage === 'string') {
+                    $('#backgrounds-upload-error').show().append(error.name + ': ' + errorMessage + '<br />');
+                } else {
+                    $('#backgrounds-upload-error').show().append(errorMessage.data.message + '<br />');
+                }
             },
         };
 
@@ -459,6 +462,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         $('.icons-dropzone').dropzone(dropzoneIconsOptObj);
 
         $('#background-upload-btn').click(function () {
+            $('#backgrounds-upload-success').hide().html('');
+            $('#backgrounds-upload-error').hide().html('');
             Dropzone.forElement(".background-dropzone").removeAllFiles(true);
         });
 
