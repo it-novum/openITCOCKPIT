@@ -67,8 +67,11 @@ if ($sideMenuClosed) {
         <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
             <div class="pull-right" style="padding-right: 25px;">
                 <ol class="menustats">
-                    <li><i class="fa fa-hdd-o fa-lg" data-original-title="<?php echo __('Host status'); ?>"
-                           data-placement="bottom" rel="tooltip"></i></li>
+                    <li><a href="/hosts/index/Filter.Hoststatus.current_state[1]:1/Filter.Hoststatus.current_state[2]:1/q:1" style="color:#bbb;">
+                            <i class="fa fa-hdd-o fa-lg" data-original-title="<?php echo __('Host status'); ?>"
+                           data-placement="bottom" rel="tooltip"></i>
+                        </a>
+                    </li>
                     <li>
                         <a style="padding:0; padding-left:5px; padding-right:5px;" class="btn btn-danger btn-xs"
                            href="/hosts/index/Filter.Hoststatus.current_state[1]:1"><?php echo $hoststatusCount[1]; ?></a>
@@ -79,8 +82,12 @@ if ($sideMenuClosed) {
                     </li>
                 </ol>
                 <ol class="menustats">
-                    <li><i class="fa fa-cog fa-lg" data-original-title="<?php echo __('Service status'); ?>"
-                           data-placement="bottom" rel="tooltip"></i></li>
+                    <li><a href="/services/index/Filter.Servicestatus.current_state[1]:1/Filter.Servicestatus.current_state[2]:1/Filter.Servicestatus.current_state[3]:1/q:1" style="color:#bbb;">
+                            <i class="fa fa-cog fa-lg" data-original-title="<?php echo __('Service status'); ?>"
+                            data-placement="bottom" rel="tooltip">
+                            </i>
+                        </a>
+                    </li>
                     <li>
                         <a style="padding:0; padding-left:5px; padding-right:5px;" class="btn btn-warning btn-xs "
                            href="/services/index/Filter.Servicestatus.current_state[1]:1"><?php echo $servicestatusCount[1]; ?></a>
