@@ -39,22 +39,18 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
                 url: "/backups/checkBackupFinished.json",
                 success: function (response) {
                     var $backupLog = $('#backupLog');
-                    console.log(response);
                     if (response.backupFinished.finished == false) {
-                        console.log("Running");
                         setTimeout(self.worker, 1000);
                         var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
                         $backupLog.html(html);
                         finish = false;
                     } else if (response.backupFinished.error == true) {
-                        console.log("Error");
                         var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' has caused an error</span>';
                         $backupLog.html(html);
                         $('#errorMessage').html(content+" was not successfully finished");
                         $('#backupError').show();
                         finish = true;
                     } else {
-                        console.log("Finish");
                         var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>'+content+' is finished</span>';
                         $backupLog.html(html);
                         $('#successMessage').html(content+" successfully done.");
@@ -71,20 +67,17 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
                 complete: function (response) {
                     var $backupLog = $('#backupLog');
                     if (response.backupFinished.finished == false) {
-                        console.log("Running");
                         setTimeout(self.worker, 1000);
                         var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
                         $backupLog.html(html);
                         finish = false;
                     } else if (response.backupFinished.error == true) {
-                        console.log("Error");
                         var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' has caused an error</span>';
                         $backupLog.html(html);
                         $('#errorMessage').html(content+" was not successfully finished");
                         $('#backupError').show();
                         finish = true;
                     } else {
-                        console.log("Finish");
                         var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>'+content+' is finished</span>';
                         $backupLog.html(html);
                         $('#successMessage').html(content+" successfully done.");
