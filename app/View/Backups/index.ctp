@@ -31,19 +31,31 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
-
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <h2><?php echo __('Backupmanagement'); ?></h2>
     </header>
     <div>
         <div class="widget-body">
+            <div class="row">
+                <div id="backupSuccessfully" class="col-xs-10 padding-top-20" style="display:none;">
+                    <div class="alert alert-success alert-block">
+                        <h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Success'); ?>
+                        </h4>
+                        <div id="successMessage"></div>
+                    </div>
+                </div>
+                <div id="backupError" class="col-xs-10 padding-top-20" style="display:none;">
+                    <div class="alert alert-danger alert-block">
+                        <h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Error'); ?>
+                        </h4>
+                        <div id="errorMessage"></div>
+                    </div>
+                </div>
+            </div>
             <?php
-            echo $this->Form->create('Backup', ['url' => 'restore', 'onsubmit' => 'return confirm("Do you really want restore the selected backup?");']);
-
             echo $this->Form->input('backupfile', [
-                    'options'   => $backupfiles,
+                    'options'   => $backup_files,
                     'multiple'  => false,
                     'class'     => 'chosen',
                     'style'     => 'width: 80%',
@@ -57,33 +69,45 @@
             <div class="row">
                 <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
                 <?php
-                $options_restore = [
-                    'class' => 'btn btn-primary',
-                    'style' => 'submit',
-                ];
                 echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
                 echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-                echo $this->Form->button('Start Restore', $options_restore);
-                echo "</div>";
-                echo $this->Form->end();
                 ?>
+                <a href="javascript:void(0);" id="delete" class="btn btn-primary"><?php echo __('Delete file'); ?></a>
+                <a href="javascript:void(0);" id="restore" class="btn btn-primary"><?php echo __('Start Restore'); ?></a>
+                </div>
             </div>
         </div>
     </div>
     <hr>
     <div class="widget-body">
-        <label class="col col-xs-2 col-md-2 col-lg-2" for="CreateBackup">Create new Backup</label>
         <?php
-        echo $this->Form->create('Backup', ['url' => 'backup']);
-        $options_backup = [
-            'class'      => 'btn btn-primary',
-        ];
-        echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
-        echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-        echo $this->Form->button('Start Backup', $options_backup);
-        echo "</div>";
-        echo $this->Form->end();
+        echo $this->Form->input('filenameForBackup', [
+                'label'     => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+                'style'     => 'width: 100%',
+                'value'     => 'mysql_oitc_bkp',
+                'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
+            ]
+        );
         ?>
+        <br><br>
+        <div class="row">
+            <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
+            <?php
+
+            echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
+            echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
+            ?>
+            <a href="javascript:void(0);" id="backup" class="btn btn-primary"><?php echo __('Start Backup'); ?></a>
+        </div>
     </div>
+
+    <br><br><hr>
+    <div class="col-xs-2">
+        State of choosen Action
+    </div>
+    <div class="col-xs-8">
+        <div class="well" id="backupLog"></div>
+    </div>
+    <br><br><br><br>
 </div>
 </div>
