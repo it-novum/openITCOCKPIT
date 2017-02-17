@@ -1011,7 +1011,7 @@ class Externalcommand extends NagiosModuleAppModel
     public function runCmdCommand($payload)
     {
         $payload['parameters'] = (array)$payload['parameters'];
-        $this->_write($payload['command'].';'.implode(';', $payload['parameters']));
+        $this->_write($payload['command'].';'.implode(';', $payload['parameters']), isset($payload['satelliteId']) ? $payload['satelliteId'] : 0);
     }
 
 

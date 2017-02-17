@@ -30,7 +30,7 @@ class CmdController extends AppController
 {
 
     public $layout = 'Admin.default';
-    public $uses = ['Systemsetting'];
+    public $uses = ['Systemsetting', 'Host'];
     public $components = ['GearmanClient'];
 
     /*
@@ -75,9 +75,16 @@ class CmdController extends AppController
         unset($this->request->params['named']['api_key']);
         //Hash::merge retunrs us the parameters in the right direction witch is great <3
         $parameters = Hash::merge($commands[$externalCommand], $this->request->params['named']);
-
+        $satelliteId = 0;
+        if(isset($parameters['hostUuid'])){
+            $myHost = $this->Host->find('first', [
+                'conditions' => ['uuid' => $parameters['hostUuid']],
+                'recursive' => -1
+                ]);
+            $satelliteId = isset($myHost['Host']['satellite_id']) ? $myHost['Host']['satellite_id'] : 0;
+        }
         //Command is now ready to submit to sudo_server
-        $this->GearmanClient->sendBackground('cmd_external_command', ['command' => $externalCommand, 'parameters' => $parameters]);
+        $this->GearmanClient->sendBackground('cmd_external_command', ['command' => $externalCommand, 'parameters' => $parameters, 'satelliteId' => $satelliteId]);
         echo '200 OK';
     }
 
