@@ -419,11 +419,17 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'make_sql_backup':
-                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
+                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/'.$payload['filename']);
+                exec('touch /opt/openitc/nagios/backup/finishBackup.txt');
                 break;
 
             case 'restore_sql_backup':
                 $return = $this->NagiosExport->restoreSQLBackup($payload['path']);
+                exec('touch /opt/openitc/nagios/backup/finishRestore.txt');
+                break;
+
+            case 'delete_sql_backup':
+                $return = unlink($payload['path']);
                 break;
 
             case 'check_background_processes':

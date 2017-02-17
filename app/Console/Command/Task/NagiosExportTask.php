@@ -2862,9 +2862,8 @@ class NagiosExportTask extends AppShell
     }
 
 
-    public function makeSQLBackup($path)
+    public function makeSQLBackup($pathForBackup)
     {
-        $pathForBackup = $path."mysql_oitc_bkp_".date("Y-m-d_His").".sql";
         $connection = ConnectionManager::sourceList();
         $connectionList = ConnectionManager::enumConnectionObjects();
         $usedConnectionDetails = $connectionList[$connection[0]];
@@ -2876,7 +2875,6 @@ class NagiosExportTask extends AppShell
             'output'     => $output,
             'returncode' => $returncode,
         ];
-
         return $return;
     }
 

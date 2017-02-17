@@ -31,43 +31,111 @@ class BackupsController extends AppController
 
     public function index()
     {
-        $backupfiles = [];
-        $files = scandir("/opt/openitc/nagios/backup/");
-        foreach ($files as $file) {
-            if (strstr($file, "mysql_oitc_bkp_")) {
-                $backupfiles["/opt/openitc/nagios/backup/".$file] = $file;
-            }
-        }
-        $this->set(compact('backupfiles'));
-        $this->set('_serialize', ['backupfiles']);
+        $backup_files = $this->getBackupFiles();
+
+        $this->set(compact('backup_files'));
+        $this->set('_serialize', ['backup_files']);
     }
 
     public function backup()
     {
-        $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup']), $this->Config['password']));
-        $result = unserialize($result);
-        if ($result['returncode'] === 0) {
-            $this->setFlash(__('Backup successfully created'));
+        $filenameForBackup = $this->request->query['filename']."_".date("Y-m-d_His").".sql";
+        if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->query['filename'])) {
+            $error = false;
+            $backupRunning = true;
         } else {
-            $this->setFlash(__(var_dump($result['output'])), false);
+            $error = true;
+            $backupRunning = false;
         }
 
-        return $this->redirect(['action' => 'index']);
+        if (!$error) {
+            Configure::load('gearman');
+            $this->Config = Configure::read('gearman');
+            $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'make_sql_backup', 'filename' => $filenameForBackup]), $this->Config['password']));
+        }
+
+        $backup = [
+            'backupRunning' => $backupRunning,
+            'error'         => $error,
+        ];
+
+        $this->set('backup', $backup);
+        $this->set('_serialize', ['backup']);
     }
 
     public function restore()
     {
-        $pathForRestore = $this->request->data['Backup']['backupfile'];
+        $pathForRestore = $this->request->query['backupfile'];
+        Configure::load('gearman');
         $this->Config = Configure::read('gearman');
-        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
-        $result = unserialize($result);
-        if ($result['returncode'] === 0) {
-            $this->setFlash(__('Backup successfully restored'));
+        $this->GearmanClient->client->doBackground("oitc_gearman", Security::cipher(serialize(['task' => 'restore_sql_backup', 'path' => $pathForRestore]), $this->Config['password']));
+        $backup = [
+            'backupRunning' => true,
+        ];
+        $this->set('backup', $backup);
+        $this->set('_serialize', ['backup']);
+    }
+
+    public function checkBackupFinished() {
+        $this->allowOnlyAjaxRequests();
+        $backup_files = $this->getBackupFiles();
+        $backupFinished = [];
+        $finished = false;
+        $error = false;
+        $fileBackup = "/opt/openitc/nagios/backup/finishBackup.txt";
+        $fileRestore = "/opt/openitc/nagios/backup/finishRestore.txt";
+        if (file_exists($fileBackup)){
+            $finished = true;
+            $error = false;
+            $this->Config = Configure::read('gearman');
+            $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileBackup]), $this->Config['password']));
+        } elseif (file_exists($fileRestore)) {
+            $finished = true;
+            $error = false;
+            $this->Config = Configure::read('gearman');
+            $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileRestore]), $this->Config['password']));
         } else {
-            $this->setFlash(__(var_dump($result['output'])), false);
+            $finished = false;
+            $error = false;
         }
 
-        return $this->redirect(['action' => 'index']);
+        $backupFinished = [
+            'finished' => $finished,
+            'error' => $error,
+            'backup_files' => $backup_files,
+        ];
+
+        $this->set('backupFinished', $backupFinished);
+        $this->set('_serialize', ['backupFinished']);
+    }
+
+    public function deleteBackupFile() {
+        $fileToDelete = $this->request->query['fileToDelete'];
+
+        $this->Config = Configure::read('gearman');
+        $result = $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileToDelete]), $this->Config['password']));
+
+        $result = unserialize($result);
+        $backup_files = $this->getBackupFiles();
+
+        $success = [
+            'result' => $result,
+            'backup_files' => $backup_files,
+        ];
+
+
+        $this->set('success', $success);
+        $this->set('_serialize', ['success']);
+    }
+
+    private function getBackupFiles(){
+        $backup_files = [];
+        $files = scandir("/opt/openitc/nagios/backup/");
+        foreach ($files as $file) {
+            if (strstr($file, ".sql")) {
+                $backup_files["/opt/openitc/nagios/backup/".$file] = $file;
+            }
+        }
+        return $backup_files;
     }
 }
