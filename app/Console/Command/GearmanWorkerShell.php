@@ -286,8 +286,21 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'create_apt_config':
+                exec('lsb_release -sc', $output);
+                $repo = '';
+                switch($output[0]) {
+                    case 'trusty':
+                        $repo = 'packages.openitcockpit.com/repositories/trusty trusty';
+                        break;
+                    case 'xenial':
+                        $repo = 'packages.openitcockpit.com/repositories/xenial xenial';
+                        break;
+                    case 'jessie':
+                        $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
+                        break;
+                }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
-                fwrite($file, 'deb https://secret:' . $payload['key'] . '@apt.open-itcockpit.com trusty  main' . PHP_EOL);
+                fwrite($file, 'deb https://secret:' . $payload['key'] . '@'.$repo.'  main' . PHP_EOL);
                 //fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com nightly  main'.PHP_EOL);
                 fclose($file);
                 unset($payload);
