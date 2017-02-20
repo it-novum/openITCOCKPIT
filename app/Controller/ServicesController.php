@@ -2083,7 +2083,6 @@ class ServicesController extends AppController
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-debug($services);
         $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services']));
     }
 

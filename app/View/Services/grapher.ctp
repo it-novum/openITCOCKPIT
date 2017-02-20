@@ -163,29 +163,46 @@ foreach ($graphs as $graph):
                         </table>
                     </div>
                     <div class="clearfix"></div>
-                    <div stlye="padding-bottom: 13px;"><!-- padding spacer --></div>
+                    <div style="padding-bottom: 13px;"><!-- padding spacer --></div>
                 </div>
             </div>
         </div>
     <?php endforeach; ?>
 <?php endforeach; ?>
 </article>
+
 <article class="col-lg-3 col-md-3">
     <div class="jarviswidget" id="wid-id-1">
         <header>
-            <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
+            <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
             <div class="widget-toolbar" role="menu" style="display:none">
 
             </div>
         </header>
         <div>
             <div class="widget-body">
-                <?php echo $service['Host']['name'];
-                foreach ($services as $service):
-
+                <ul class="list-unstyled">
+                    <li class="bold">
+                        <i class="fa fa-desktop"></i> Host
+                    </li>
+                    <li>
+                        <a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?></a>
+                    </li>
+                    <li class="divider"></li>
+                </ul>
+                <ul class="list-unstyled">
+                    <li class="bold">
+                        <i class="fa fa-cog"></i> Service
+                    </li>
+                <?php
+                foreach ($services as $currentService): ?>
+                    <li>
+                        <a href="/services/grapher/<?php echo $currentService['Service']['id']; ?>"><?php echo $currentService[0]['ServiceName']; ?></a>
+                    </li>
+                <?php
                 endforeach;
                 ?>
-
+                </ul>
             </div>
         </div>
     </div>
