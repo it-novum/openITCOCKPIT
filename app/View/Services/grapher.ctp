@@ -53,6 +53,7 @@
     </div>
 </div>
 
+<article class="col-lg-9 col-md-9">
 <?php
 
 $graphs = [
@@ -168,3 +169,25 @@ foreach ($graphs as $graph):
         </div>
     <?php endforeach; ?>
 <?php endforeach; ?>
+</article>
+<article class="col-lg-3 col-md-3">
+    <div class="jarviswidget" id="wid-id-1">
+        <header>
+            <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
+            <div class="widget-toolbar" role="menu" style="display:none">
+
+            </div>
+        </header>
+        <div>
+            <div class="widget-body">
+                <?php echo $service['Host']['name'];
+                foreach ($services as $service):
+
+                endforeach;
+                ?>
+
+            </div>
+        </div>
+    </div>
+</article>
+
