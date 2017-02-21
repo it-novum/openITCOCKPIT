@@ -431,7 +431,7 @@ class GearmanWorkerShell extends AppShell {
                 $return = ['task' => $payload['task']];
                 break;
 
-            case 'make_sql_backup':
+            case 'make_sql_backup':;
                 $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/'.$payload['filename']);
                 exec('touch /opt/openitc/nagios/backup/finishBackup.txt');
                 break;
@@ -541,8 +541,8 @@ class GearmanWorkerShell extends AppShell {
             }
             $folder1->copy($backupTarget);
 
-            //Hier muss ddie neue Backupfunktion rein
-            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
+            $filename = "export_oitc_bkp_".date("Y-m-d_His").".sql";
+            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/'.$filename);
 
             $this->Export->saveField('finished', 1);
             $this->Export->saveField('successfully', 1);

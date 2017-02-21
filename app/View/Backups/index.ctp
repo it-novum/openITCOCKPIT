@@ -33,7 +33,7 @@
 </div>
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <h2><?php echo __('Backupmanagement'); ?></h2>
+        <h2><?php echo __('Backup management'); ?></h2>
     </header>
     <div>
         <div class="widget-body">
@@ -47,9 +47,16 @@
                 </div>
                 <div id="backupError" class="col-xs-10 padding-top-20" style="display:none;">
                     <div class="alert alert-danger alert-block">
-                        <h4 class="alert-heading"><i class="fa fa-check"></i> <?php echo __('Error'); ?>
+                        <h4 class="alert-heading"><i class="fa fa-close"></i> <?php echo __('Error'); ?>
                         </h4>
                         <div id="errorMessage"></div>
+                    </div>
+                </div>
+                <div id="backupWarning" class="col-xs-10 padding-top-20" style="display:none;">
+                    <div class="alert alert-warning alert-block">
+                        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Warning'); ?>
+                        </h4>
+                        <div id="warningMessage"></div>
                     </div>
                 </div>
             </div>

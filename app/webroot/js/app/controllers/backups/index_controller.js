@@ -32,76 +32,98 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
         var content = "";
         var finish = true;
         var self = this;
+        var error = false;
         self.worker = function () {
             $.ajax({
                 type: "GET",
                 cache: false,
                 url: "/backups/checkBackupFinished.json",
                 success: function (response) {
-                    var $backupLog = $('#backupLog');
-                    if (response.backupFinished.finished == false) {
-                        setTimeout(self.worker, 1000);
-                        var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
-                        $backupLog.html(html);
-                        finish = false;
-                    } else if (response.backupFinished.error == true) {
-                        var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' has caused an error</span>';
-                        $backupLog.html(html);
-                        $('#errorMessage').html(content+" was not successfully finished");
-                        $('#backupError').show();
-                        finish = true;
+                    if (jQuery.type(response) === "string") {
+                        $('#warningMessage').html("You have been restored an old Backup. You have to run openitcockpit-update and set the user rights correctly.");
+                        $('#backupWarning').show();
                     } else {
-                        var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>'+content+' is finished</span>';
-                        $backupLog.html(html);
-                        $('#successMessage').html(content+" successfully done.");
-                        $('#backupSuccessfully').show();
-                        var backupfiles = $('#backupfile');
-                        backupfiles.find('option').remove();
-                        $.each(response.backupFinished.backup_files, function(val, text) {
-                            backupfiles.append("<option value="+ val + ">" + text + "</option>");
-                        });
-                        finish = true;
-                        backupfiles.trigger("chosen:updated");
+                        var $backupLog = $('#backupLog');
+                        if (response.backupFinished.finished == false && error == false) {
+                            setTimeout(self.worker, 1000);
+                            var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
+                            $backupLog.html(html);
+                            finish = false;
+                        } else if (response.backupFinished.error == true) {
+                            var html = '<div data-finished="0"><i class="fa fa-close text-danger"></i> <span>' + content + ' has caused an error</span>';
+                            $backupLog.html(html);
+                            $('#errorMessage').html(content + " was not successfully finished");
+                            $('#backupError').show();
+                            finish = true;
+                        } else if (error == true) {
+                            var html = '<div data-finished="0"><i class="fa fa-close text-danger"></i> <span>' + content + ' has caused an error</span>';
+                            $backupLog.html(html);
+                            finish = true;
+                        } else {
+                            var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>' + content + ' is finished</span>';
+                            $backupLog.html(html);
+                            $('#successMessage').html(content + " successfully done.");
+                            $('#backupSuccessfully').show();
+                            var backupfiles = $('#backupfile');
+                            backupfiles.find('option').remove();
+                            $.each(response.backupFinished.backup_files, function (val, text) {
+                                backupfiles.append("<option value=" + val + ">" + text + "</option>");
+                            });
+                            finish = true;
+                            backupfiles.trigger("chosen:updated");
+                        }
                     }
                 },
                 complete: function (response) {
                     var $backupLog = $('#backupLog');
-                    if (response.backupFinished.finished == false) {
-                        setTimeout(self.worker, 1000);
-                        var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
+                    if (jQuery.type(response) === "string") {
+                        var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>' + content + ' is finished</span>';
                         $backupLog.html(html);
-                        finish = false;
-                    } else if (response.backupFinished.error == true) {
-                        var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' has caused an error</span>';
-                        $backupLog.html(html);
-                        $('#errorMessage').html(content+" was not successfully finished");
-                        $('#backupError').show();
-                        finish = true;
+                        $('#warningMessage').html("You have been restored an old Backup. You have to run openitcockpit-update and set the user rights correctly.");
+                        $('#backupWarning').show();
                     } else {
-                        var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>'+content+' is finished</span>';
-                        $backupLog.html(html);
-                        $('#successMessage').html(content+" successfully done.");
-                        $('#backupSuccessfully').show();
-                        var backupfiles = $('#backupfile');
-                        backupfiles.find('option').remove();
-                        $.each(response.backupFinished.backup_files, function(val, text) {
-                            backupfiles.append("<option value="+ val + ">" + text + "</option>");
-                        });
-                        finish = true;
-                        backupfiles.trigger("chosen:updated");
+                        if (response.backupFinished.finished == false && error == false) {
+                            setTimeout(self.worker, 1000);
+                            var html = '<div data-finished="0"><i class="fa fa-spin fa-refresh"></i> <span>' + content + ' is running</span>';
+                            $backupLog.html(html);
+                            finish = false;
+                        } else if (response.backupFinished.error == true) {
+                            var html = '<div data-finished="0"><i class="fa fa-close text-danger"></i> <span>' + content + ' has caused an error</span>';
+                            $backupLog.html(html);
+                            $('#errorMessage').html(content + " was not successfully finished");
+                            $('#backupError').show();
+                            finish = true;
+                        } else if (error == true) {
+                            var html = '<div data-finished="0"><i class="fa fa-close text-danger"></i> <span>' + content + ' has caused an error</span>';
+                            $backupLog.html(html);
+                            finish = true;
+                        } else {
+                            var html = '<div data-finished="1"><i class="fa fa-check text-success"></i> <span>' + content + ' is finished</span>';
+                            $backupLog.html(html);
+                            $('#successMessage').html(content + " successfully done.");
+                            $('#backupSuccessfully').show();
+                            var backupfiles = $('#backupfile');
+                            backupfiles.find('option').remove();
+                            $.each(response.backupFinished.backup_files, function (val, text) {
+                                backupfiles.append("<option value=" + val + ">" + text + "</option>");
+                            });
+                            finish = true;
+                            backupfiles.trigger("chosen:updated");
+                        }
                     }
                 }
             });
         }.bind(this);
 
         //Backup beendet?
-        if (finish == false) {
+        if (finish == false && error == false) {
             self.worker();
         }
 
         $('#backup').click(function () {
             $('#backupSuccessfully').hide();
             $('#backupError').hide();
+            $('#backupWarning').hide();
             $('#backupLog').empty();
             var fileForBackup = $('#filenameForBackup').val();
             content = "Backup";
@@ -115,10 +137,13 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
                 },
                 success: function (response) {
                     if (response.backup.error == true) {
+                        error = true;
+                        finish = true;
                         $('#errorMessage').html("Backup was not successful. Your filename is invalid.");
                         $('#backupError').show();
+                    } else {
+                        self.worker();
                     }
-                    self.worker();
                 },
                 complete: function () {
 
@@ -129,6 +154,7 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
         $('#restore').click(function () {
             $('#backupSuccessfully').hide();
             $('#backupError').hide();
+            $('#backupWarning').hide();
             $('#backupLog').empty();
             var fileForBackup = $('#backupfile').val();
             var filenameParts = fileForBackup.split("/");
@@ -156,6 +182,7 @@ App.Controllers.BackupsIndexController = Frontend.AppController.extend({
         $('#delete').click(function () {
             $('#backupSuccessfully').hide();
             $('#backupError').hide();
+            $('#backupWarning').hide();
             $('#backupLog').empty();
             var fileToDelete = $('#backupfile').val();
             var filenameParts = fileToDelete.split("/");
