@@ -429,9 +429,15 @@ class HosttemplatesController extends AppController {
                         }
                     }
                 }
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+                $flashHref[] = $this->Hosttemplate->id;
+                $flashHref[] = $hosttemplatetype_id;
 
-                $this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('<a href="'.Router::url($flashHref).'">Hosttemplate</a> successfully saved.'));
+
+                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+                $this->redirect($redirect);
+
             } else {
                 $this->setFlash(__('Could not save data'), false);
                 $this->CustomValidationErrors->loadModel($this->Hosttemplate);
@@ -653,7 +659,10 @@ class HosttemplatesController extends AppController {
 
                     return;
                 }
-                $this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'add']);
+                $flashHref[] = $this->Hosttemplate->id;
+                $flashHref[] = $hosttemplatetype_id;
+                $this->setFlash(__('<a href="'.Router::url($flashHref).'">Hosttemplate</a> successfully saved.'));
                 $this->redirect(['action' => 'index']);
             } else {
 
@@ -705,14 +714,26 @@ class HosttemplatesController extends AppController {
         }
 
         $this->Hosttemplate->id = $id;
-        $hosttemplate = $this->Hosttemplate->findById($id);
+        $hosttemplate = $this->Hosttemplate->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Hosttemplate.id' => $id,
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
             $this->render403();
-
             return;
         }
+        $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+        $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
+        $flashHref[] = $this->Hosttemplate->id;
+        $flashHref[] = $hosttemplate['Hosttemplate']['hosttemplatetype_id'];
 
+        $this->setFlash(__('<a href="'.Router::url($flashHref).'">Servicetemplate</a> successfully saved.'));
         if ($this->Hosttemplate->__allowDelete($id)) {
             if ($this->Hosttemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -741,14 +762,14 @@ class HosttemplatesController extends AppController {
                 }
 
                 $this->setFlash(__('Hosttemplate deleted'));
-                $this->redirect(['action' => 'index']);
+
+                $this->redirect($redirect);
             }
             $this->setFlash(__('Could not delete hosttemplate'), false);
-            $this->redirect(['action' => 'index']);
+            $this->redirect($redirect);
         }
-        $this->setFlash(__('Could not delete hosttemplate'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->setFlash(__('Could not delete hosttemplate: <a href="'.Router::url($flashHref).'">').$hosttemplate['Hosttemplate']['name'].'</a>', false);
+        $this->redirect($redirect);
     }
 
     public function mass_delete($id = null) {
@@ -960,21 +981,12 @@ class HosttemplatesController extends AppController {
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'), false)) {
             $this->render403();
-
             return;
         }
 
         $this->loadModel('Host');
         $all_hosts = $this->Host->find('all', [
             'recursive' => -1,
-            'contain' => [
-                //'Hosttemplate' => [
-                //	'fields' => [
-                //		'id', 'name'
-                //	]
-                //],
-                //'Container'
-            ],
             'order' => [
                 'Host.name' => 'ASC',
             ],
@@ -998,6 +1010,7 @@ class HosttemplatesController extends AppController {
                 'Host.name',
                 'Host.address',
             ],
+            'group' => 'Host.id'
         ]);
 
         $this->set(compact(['all_hosts', 'hosttemplate']));

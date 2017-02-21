@@ -805,7 +805,7 @@ class ServicetemplatesController extends AppController
                 if ($isJson) {
                     $this->serializeId();
                 } else {
-                    $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+                    $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'add']);
                     $flashHref[] = $this->Servicetemplate->id;
                     $flashHref[] = $servicetemplatetype_id;
 
