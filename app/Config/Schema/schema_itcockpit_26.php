@@ -858,6 +858,7 @@ class AppSchema extends CakeSchema
         'satellite_id'                  => ['type' => 'integer', 'default' => 0],
         'host_type'                     => ['type' => 'integer', 'null' => false, 'default' => 1],
         'disabled'                      => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
+        'usage_flag'                    => ['type' => 'integer', 'null' => false, 'default' => null],
         'created'                       => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                      => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                       => [
@@ -1024,6 +1025,7 @@ class AppSchema extends CakeSchema
         'service_url'                => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'service_type'               => ['type' => 'integer', 'null' => false, 'default' => 1],
         'disabled'                   => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
+        'usage_flag'                 => ['type' => 'integer', 'null' => false, 'default' => null],
         'created'                    => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                   => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                    => [
