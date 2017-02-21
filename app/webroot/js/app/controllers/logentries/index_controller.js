@@ -75,6 +75,7 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
                     $checkbox.prop('checked', true);
                 }
             }
+            event.stopPropagation();
         });
 
         /*
