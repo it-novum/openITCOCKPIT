@@ -40,15 +40,15 @@ openITCOCKPIT uses Nginx as webserver and will generate the configuration for ph
 apt-get install apt-transport-https
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
 ````
-*Ubuntu 14.04 - Trusty*
+Ubuntu 14.04 - Trusty
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-*Ubuntu 16.04 - Xenial*
+Ubuntu 16.04 - Xenial
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-*Debian 8 - Jessie*
+Debian 8 - Jessie
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
@@ -63,15 +63,15 @@ apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
 apt-get install apt-transport-https
 apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
 ````
-*Ubuntu 14.04 - Trusty*
+Ubuntu 14.04 - Trusty
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-*Ubuntu 16.04 - Xenial*
+Ubuntu 16.04 - Xenial
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-*Debian 8 - Jessie*
+Debian 8 - Jessie
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
