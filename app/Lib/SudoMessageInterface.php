@@ -389,7 +389,7 @@ class SudoMessageInterface implements MessageComponentInterface
     }
 
 
-    public function readSocket($len = 4096)
+    public function readSocket($len = 8192)
     {
         $buf = "";
         socket_recv($this->Cake->socket, $buf, $len, MSG_DONTWAIT);
