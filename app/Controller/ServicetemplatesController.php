@@ -805,7 +805,7 @@ class ServicetemplatesController extends AppController
                 if ($isJson) {
                     $this->serializeId();
                 } else {
-                    $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'add']);
+                    $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'edit']);
                     $flashHref[] = $this->Servicetemplate->id;
                     $flashHref[] = $servicetemplatetype_id;
 
@@ -863,15 +863,27 @@ class ServicetemplatesController extends AppController
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $servicetemplate = $this->Servicetemplate->findById($id);
+        $servicetemplate = $this->Servicetemplate->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Servicetemplate.id' => $id,
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
             $this->render403();
-
             return;
         }
 
         $this->Servicetemplate->id = $id;
+        $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
+        $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
+        $flashHref[] = $this->Servicetemplate->id;
+        $flashHref[] = $servicetemplate['Servicetemplate']['servicetemplatetype_id'];
+
         if ($this->Servicetemplate->__allowDelete($id)) {
             if ($this->Servicetemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -898,15 +910,14 @@ class ServicetemplatesController extends AppController
                 foreach ($services as $service) {
                     $this->Service->__delete($service, $this->Auth->user('id'));
                 }
-                $this->setFlash(__('Servicetemplate deleted.'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('Servicetemplate deleted'));
+                $this->redirect($redirect);
             }
             $this->setFlash(__('Could not delete servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
+            $this->redirect($redirect);
         }
-        $this->setFlash(__('Could not delete servicetemplate'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->setFlash(__('Could not delete servicetemplate: <a href="'.Router::url($flashHref).'">').$servicetemplate['Servicetemplate']['template_name'].'</a>', false);
+        $this->redirect($redirect);
     }
 
     public function mass_delete($id = null)

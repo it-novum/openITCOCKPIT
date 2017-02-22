@@ -733,7 +733,6 @@ class HosttemplatesController extends AppController {
         $flashHref[] = $this->Hosttemplate->id;
         $flashHref[] = $hosttemplate['Hosttemplate']['hosttemplatetype_id'];
 
-        $this->setFlash(__('<a href="'.Router::url($flashHref).'">Servicetemplate</a> successfully saved.'));
         if ($this->Hosttemplate->__allowDelete($id)) {
             if ($this->Hosttemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
