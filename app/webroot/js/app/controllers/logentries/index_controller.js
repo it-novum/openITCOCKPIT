@@ -81,21 +81,23 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
         /*
          * Bind click event for .tick_all
          */
-        $('.tick_all').click(function () {
+        $('.tick_all').click(function (event) {
             $checkboxes = $(this).parent().parent().find(':checkbox');
             $checkboxes.each(function (intIndex, checkboxObject) {
                 $(checkboxObject).prop('checked', true);
             });
+            event.stopPropagation();
         });
 
         /*
          * Bind click event for .untick_all
          */
-        $('.untick_all').click(function () {
+        $('.untick_all').click(function (event) {
             $checkboxes = $(this).parent().parent().find(':checkbox');
             $checkboxes.each(function (intIndex, checkboxObject) {
                 $(checkboxObject).prop('checked', false);
             });
+            event.stopPropagation();
         });
 
     },
