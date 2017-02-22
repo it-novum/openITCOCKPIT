@@ -51,7 +51,8 @@ echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > 
 *Debian 8 - Jessie*
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
-
+````
+````
 apt-get update
 apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
@@ -73,6 +74,8 @@ echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > 
 *Debian 8 - Jessie*
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+````
 apt-get update
 apt-get install openitcockpit{,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
