@@ -78,33 +78,34 @@ class UsageFlagShell extends AppShell {
      */
     protected $usageFlagMapping = [];
 
+
     public function main() {
         //create Object instances
         $this->Host = new Host();
         $this->Service = new Service();
-
         $this->createModuleInstances($this->modules);
-
 
         $this->getModuleHostAndServices($this->modules);
         $this->assignUsageFlagValue($this->moduleElements);
-        debug($this->moduleElements);
         $this->saveUsageFlag($this->moduleElements);
     }
+
 
     /**
      * Creates module instances on the fly
      * @param $modules
      */
-    protected function createModuleInstances($modules){
-        try{
-            foreach ($this->modules as $module){
+    protected function createModuleInstances($modules) {
+        try {
+            foreach ($this->modules as $module) {
+                $this->out('<info>Create Instance of ' . $module . '</info>');
                 if (!class_exists($module)) {
                     throw new Exception('Class ' . $module . ' could not be found');
                 }
                 $this->moduleInstances[$module] = new $module();
+                $this->out('<success>done!</success>');
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
@@ -113,94 +114,112 @@ class UsageFlagShell extends AppShell {
     /**
      * save the usage_flag for every host and service which is contained in $this->moduleElements
      * if something went wrong by saving the usage_flag nothing will be written into the database
-     * exception will be thrown at which module the error occoured
+     * exception will be thrown at which module the error occured
      * @param array $elements
      */
-    protected function saveUsageFlag($elements = []){
-        try{
-            if(empty($elements)){
+    protected function saveUsageFlag($elements = []) {
+        try {
+            if (empty($elements)) {
                 throw new Exception('No Data To save');
             }
 
-            //@TODO THIS IS NOT CORRECT! we must instaciate the host and service model, not the module models!
-            foreach ($elements as $moduleName => $data){
-                $datasource = $this->moduleInstances[$moduleName]->getDatasource();
-                $datasource->begin();
-                $result = [];
-                foreach ($data as $modelName => $elementIds){
-                    foreach ($elementIds as $elementId){
+            foreach ($elements as $moduleName => $data) {
+                foreach ($data as $modelName => $elementIds) {
+                    $this->out('<info>Save usage flags for ' . $modelName . '</info>');
+                    $datasource = $this->{$modelName}->getDatasource();
+                    $datasource->begin();
+                    $result = [];
+                    foreach ($elementIds as $elementId) {
                         $this->{$modelName}->id = $elementId;
                         $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
                     }
-                }
-                //check if something could not be saved
-                if(!in_array(false, $result)){
-                    $datasource->commit();
-                }else{
-                    throw new Exception('something could not be saved while processing '.$moduleName.' keep calm - Nothing has been written into the Database!');
-                    $datasource->rollback();
+                    //check if something could not be saved
+                    if (!in_array(false, $result)) {
+                        $datasource->commit();
+                        $this->out('<success>done!</success>');
+                    } else {
+                        throw new Exception('something could not be saved while processing ' . Inflector::pluralize($modelName) . '. Keep calm - nothing has been written into the Database for ' . Inflector::pluralize($modelName) . '!');
+                        $datasource->rollback();
+                    }
                 }
             }
-        }catch (Exception $e){
+            $this->out('<success>Saving usage flags successfully finished!</success>');
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
 
 
-    protected function assignUsageFlagValue($elements){
-        //vergleiche host und service ids von $moduleElements miteinander (von den Modul keys der ersten ebene) wenn
-        //übereinstimmungen dabei sind muss der wert den diese id bekommt demensprechend mit der konstante hochgerechnet werden
-
-
+    /**
+     * Map the usage flags for every host and service
+     * calculates the usage flags so eg. if a service or a host is in use by two modules the bit value of the
+     * constants will be summed.
+     * @param $elements
+     */
+    protected function assignUsageFlagValue($elements) {
         /** BEGIN TEST DATA */
-    /*    $testData = [
-            'Eventcorrelation' => [
-                'Host' => [
-                    '7',
-                    '1',//HIT
-                    '4',//HIT
-                    '43',
-                    '15',
-                ],
-                'Service' => [
-                    '10',
-                    '11',
-                    '21',//HIT
-                    '342',
-                    '23',//HIT
-                    '65',
-                    '324567',
-                ]
-            ]
-        ];
-        $elements = array_merge($elements, $testData); */
+        /*  $testData = [
+              'Eventcorrelation' => [
+                  'Host' => [
+                      '7',
+                      '1',//HIT
+                      '4',//HIT
+                      '43',
+                      '15',
+                  ],
+                  'Service' => [
+                      '10',
+                      '11',
+                      '21',//HIT
+                      '342',
+                      '23',//HIT
+                      '65',
+                      '324567',
+                  ]
+              ]
+          ];
+          $elements = array_merge($elements, $testData); */
         /** END TEST DATA */
-
-        foreach ($elements as $moduleName => $data){
-            $tmpElements = $elements;
-            foreach ($data as $modelName => $elementIds){
-                foreach ($elementIds as $elementId){
-                    if(isset($this->usageFlagMapping[$modelName][$elementId])){
-                        $currentElement = $this->usageFlagMapping[$modelName][$elementId];
-                        //has already an usage_flag but its also in use by an other module
-                        //so we have to sum it with the value of this module
-                        $this->usageFlagMapping[$modelName][$elementId] = $currentElement + constant(strtoupper($moduleName).'_MODULE');
-                    }else{
-                        //no usage_flag set yet
-                        $this->usageFlagMapping[$modelName][$elementId] = constant(strtoupper($moduleName).'_MODULE');
+        try {
+            foreach ($elements as $moduleName => $data) {
+                foreach ($data as $modelName => $elementIds) {
+                    $this->out('<info>Map usage flags for ' . $modelName . '</info>');
+                    if (empty(constant(strtoupper($moduleName) . '_MODULE'))) {
+                        throw new Exception('The Constant for ' . $moduleName . ' could not be found! Mapping cannot be processed - Exit');
                     }
+                    foreach ($elementIds as $elementId) {
+                        if (isset($this->usageFlagMapping[$modelName][$elementId])) {
+                            $currentElement = $this->usageFlagMapping[$modelName][$elementId];
+                            //has already an usage_flag but its also in use by an other module
+                            //so we have to sum it with the value of this module
+                            $this->usageFlagMapping[$modelName][$elementId] = $currentElement + constant(strtoupper($moduleName) . '_MODULE');
+                        } else {
+                            //no usage_flag set yet
+                            $this->usageFlagMapping[$modelName][$elementId] = constant(strtoupper($moduleName) . '_MODULE');
+                        }
+                    }
+                    $this->out('<success>done!</success>');
                 }
             }
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
     }
 
+    
+    /**
+     * get all host and service ids from the modules which are defined in $this->modules
+     * this functions requires a getHost() and getService() Method in each committed module!
+     * @param array $modules
+     */
     protected function getModuleHostAndServices($modules = []) {
         try {
             if (empty($modules)) {
-                throw new Exception('There is no Module given');
+                throw new Exception('There are no Modules given');
             }
 
             foreach ($modules as $module) {
+                $this->out('<info>Get host and services from model ' . $module . '</info>');
                 //check if the needed classes exists
                 $currentModel = $this->moduleInstances[$module];
                 if (method_exists($currentModel, 'getHosts') && method_exists($currentModel, 'getServices')) {
@@ -210,6 +229,7 @@ class UsageFlagShell extends AppShell {
                         'Host' => $hosts,
                         'Service' => $services
                     ];
+                    $this->out('<success>done!</success>');
                 } else {
                     $this->out('<info>There are no getHosts() and getServices() methods found for Module ' . $module . ' -> skip</info>');
                     continue;
@@ -219,5 +239,4 @@ class UsageFlagShell extends AppShell {
             $this->error($e->getMessage());
         }
     }
-
 }
