@@ -28,6 +28,8 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class RightsShell extends AppShell {
 
+    public $uses = ['Systemsetting'];
+
     public function main(){
         $directories = [
             '/usr/share/openitcockpit/',
@@ -39,8 +41,9 @@ class RightsShell extends AppShell {
 
     private function setRights($dirs = []){
         try{
-            $user = 'www-data';
-            $group = $user;
+            $systemsettings = $this->Systemsetting->findAsArray();
+            $user = $systemsettings['WEBSERVER']['WEBSERVER.USER'];
+            $group = $systemsettings['WEBSERVER']['WEBSERVER.GROUP'];
 
             $fs = new Filesystem();
             foreach ($dirs as $dir){
