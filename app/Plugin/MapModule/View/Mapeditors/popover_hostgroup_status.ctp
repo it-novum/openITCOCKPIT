@@ -97,14 +97,23 @@ $serviceAmount = array_sum($serviceAmountperHost);
     </table>
 
 <?php if (isset($hostgroups[0]['Host']) && $hostAmount > 0) : ?>
-    <table class="table table-bordered popoverListTable">
+    <table class="table table-bordered popoverListTable popoverBreakWord">
         <tr>
-            <th class="col-md-4 col-xs-3 h6"><?php echo __('Host Name'); ?></th>
-            <th class="col-md-1 col-xs-1 h6"><?php echo __('State'); ?></th>
-            <th class="col-md-7 col-xs-8 h6"><?php echo __('Output'); ?></th>
+            <th class="col-md-3 col-xs-3 h6"><?php echo __('Host Name'); ?></th>
+            <th class="col-md-3 col-xs-3 h6"><?php echo __('State'); ?></th>
+            <th class="col-md-6 col-xs-6 h6"><?php echo __('Output'); ?></th>
         </tr>
         <?php
-        foreach ($hostgroups[0]['Host'] as $key => $host) : ?>
+        $i = 0;
+        foreach ($hostgroups[0]['Host'] as $key => $host) :
+            if($i == 10): ?>
+                <tr>
+                    <td colspan="3"><?php echo __('Showing '.$i. ' of '.$hostAmount. ' Hosts. Click on the icon to see all') ?></td>
+                </tr>
+                <?php
+                break;
+            endif;
+            ?>
             <?php $key = $host['uuid']; ?>
             <tr>
                 <!-- Hostname -->
@@ -120,10 +129,12 @@ $serviceAmount = array_sum($serviceAmountperHost);
                     <td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
                 <?php endif; ?>
                 <!-- Output -->
-                <td title="<?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>"><?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>
+                <td title="<?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>" class="cropText"><?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>
                     . There are <?php echo $serviceAmountperHost[$key]; ?> Services
                 </td>
             </tr>
-        <?php endforeach; ?>
+        <?php
+        $i++;
+        endforeach; ?>
     </table>
 <?php endif; ?>
