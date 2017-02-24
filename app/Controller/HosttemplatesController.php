@@ -659,16 +659,16 @@ class HosttemplatesController extends AppController {
 
                     return;
                 }
-                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'add']);
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
                 $flashHref[] = $this->Hosttemplate->id;
                 $flashHref[] = $hosttemplatetype_id;
+                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
                 $this->setFlash(__('<a href="'.Router::url($flashHref).'">Hosttemplate</a> successfully saved.'));
-                $this->redirect(['action' => 'index']);
+                $this->redirect($redirect);
             } else {
 
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('Could not save data'), false);
