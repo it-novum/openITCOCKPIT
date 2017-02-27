@@ -1809,6 +1809,29 @@ class HostsController extends AppController
             'recursive'  => -1,
             'conditions' => [
                 'Service.host_id' => $id,
+                'Service.disabled' => 0,
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Servicetemplate.name',
+                'Service.disabled',
+                'Host.uuid',
+            ],
+            'contain'    => [
+                'Host',
+                'Servicetemplate',
+            ],
+            'order'      => 'Service.name',
+        ]);
+
+        //Get all disabled services
+        $disabled_services = $this->Service->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.host_id' => $id,
+                'Service.disabled' => 1,
             ],
             'fields'     => [
                 'Service.id',
@@ -1873,13 +1896,16 @@ class HostsController extends AppController
             'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
         ]);
 
-        $servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
+        $monitored_servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
+        $disabled_servicestatus = $this->Servicestatus->byUuid(Hash::extract($disabled_services, '{n}.Service.uuid'));
+        $servicestatus = Hash::merge($monitored_servicestatus, $disabled_servicestatus);
         $username = $this->Auth->user('full_name');
         $this->set(compact([
                 'host',
                 'hoststatus',
                 'servicestatus',
                 'services',
+                'disabled_services',
                 'username',
                 'path',
                 'commandarguments',
