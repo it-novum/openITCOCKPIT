@@ -1825,6 +1825,7 @@ class HostsController extends AppController
             'order'      => 'Service.name',
         ]);
 
+
         $commandarguments = [];
         if (!empty($_host['Hostcommandargumentvalue'])) {
             //The service has own command argument values
