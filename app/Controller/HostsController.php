@@ -546,7 +546,7 @@ class HostsController extends AppController
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
 
-        $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+        $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $_parenthosts = $this->Host->hostsByContainerIdExcludeHostId($containerIds, 'list', $id);
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -1815,7 +1815,9 @@ class HostsController extends AppController
                 'Service.uuid',
                 'Service.name',
                 'Servicetemplate.name',
+                'Servicetemplate.active_checks_enabled',
                 'Service.disabled',
+                'Service.active_checks_enabled',
                 'Host.uuid',
             ],
             'contain'    => [
@@ -1824,6 +1826,7 @@ class HostsController extends AppController
             ],
             'order'      => 'Service.name',
         ]);
+
 
         $commandarguments = [];
         if (!empty($_host['Hostcommandargumentvalue'])) {
@@ -2521,6 +2524,7 @@ class HostsController extends AppController
 
     public function loadElementsByContainerId($container_id = null, $host_id = 0)
     {
+        $hosttemplate_type = GENERIC_HOST;
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2529,9 +2533,21 @@ class HostsController extends AppController
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
+        if($host_id != 0){
+            $host = $this->Host->find('first',[
+                'recursive' => -1,
+                'conditions' => [
+                    'Host.id' => $host_id
+                ]
+            ]);
+            if(!empty($host)){
+                $hosttemplate_type = $host['Host']['host_type'];
+            }
+        }
+
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
 
-        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
         $hosttemplates = $this->Hosttemplate->chosenPlaceholder($hosttemplates);
         $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
 

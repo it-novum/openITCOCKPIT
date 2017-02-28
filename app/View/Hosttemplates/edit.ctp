@@ -50,14 +50,13 @@ $notification_settings = [
     </div>
 </div>
 <div id="error_msg"></div>
-
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit Hosttemplate'); ?></h2>
         <div class="widget-toolbar pull-right" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $hosttemplate['Hosttemplate']['id']); ?>
+                <?php echo $this->Utils->deleteButton(null, Hash::merge([$hosttemplate['Hosttemplate']['id']] ,$this->params['named'])); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>

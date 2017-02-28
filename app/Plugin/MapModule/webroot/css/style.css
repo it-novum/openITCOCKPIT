@@ -34,6 +34,18 @@
     color: rgba(150, 150, 150, 1);
 }
 
+.cropText {
+    width: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popoverBreakWord{
+    table-layout: fixed;
+    word-wrap:break-word;
+}
+
 .popoverListTable > tbody > tr > td {
     font-size: 11px;
     padding: 1px !important;

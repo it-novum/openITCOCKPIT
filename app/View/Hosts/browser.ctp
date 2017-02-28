@@ -89,7 +89,8 @@
                         </li>
                     <?php endif; ?>
                 </ul>
-                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+            </header>
             <!-- widget div-->
             <div role="content">
                 <!-- widget edit box -->
@@ -449,126 +450,246 @@
             <div id="wid-id-0" class="jarviswidget jarviswidget-sortable" role="widget">
                 <header role="heading">
                     <h2><strong><?php echo __('Services'); ?>:</strong></h2>
-                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
+                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                    <ul class="nav nav-tabs pull-right" id="widget-tab-2">
+                        <li class="active">
+                            <a href="#tab-monitored" data-toggle="tab"> <i class="fa fa-lg fa-stethoscope"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a href="#tab-disabled" data-toggle="tab"> <i class="fa fa-lg fa-plug"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
+                        </li>
+                    </ul>
+                    <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                </header>
                 <!-- widget div-->
                 <div role="content">
                     <!-- widget edit box -->
                     <div class="jarviswidget-editbox">
                         <!-- This area used as dropdown edit box -->
-                        <input type="text" class="form-control">
-                        <span class="note"><i
-                                    class="fa fa-check text-success"></i> <?php echo __('Change title to update and save instantly!'); ?></span>
                     </div>
                     <!-- end widget edit box -->
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <div class="custom-scroll">
-                            <?php if (!empty($services)): ?>
-                                <table class="table table-bordered" id="host_browser_service_table">
-                                    <thead>
-                                    <tr>
-                                        <?php $order = $this->Paginator->param('order'); ?>
-                                        <th><?php echo __('Servicestatus'); ?></th>
-                                        <th class="text-center"><i class="fa fa-user"
-                                                                   title="<?php echo __('Acknowledgedment'); ?>"></i>
-                                        </th>
-                                        <th class="text-center"><i class="fa fa-power-off"
-                                                                   title="<?php echo __('in Downtime'); ?>"></i></th>
-                                        <th class="text-center"><i class="fa fa fa-area-chart fa-lg"
-                                                                   title="<?php echo __('Grapher'); ?>"></i></th>
-                                        <th class="text-center"><strong
-                                                    title="<?php echo __('Passively transferred service'); ?>">P</strong>
-                                        </th>
-                                        <th class="text-center" title="<?php echo __('Disabled Service'); ?>"><i
-                                                    class="fa fa fa-plug"></i></th>
-                                        <th><?php echo __('Name'); ?></th>
-                                        <th title="<?php echo __('Hardstate'); ?>"><?php echo __('Last state change'); ?></th>
-                                        <th><?php echo __('Service output'); ?></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($services as $service): ?>
-                                        <tr>
-                                            <td class="text-center width-90">
-                                                <?php
-                                                if ($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
-                                                    echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
-                                                else:
-                                                    $currentState = -1;
-                                                    if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'])) {
-                                                        $currentState = $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'];
-                                                    }
-                                                    echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $currentState, 'color: transparent;')['html_icon'];
-                                                endif;
-                                                ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))): ?>
-                                                    <?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
-                                                        <i class="fa fa-user"
-                                                           title="<?php echo __('Acknowledgedment'); ?>"></i>
-                                                    <?php else: ?>
-                                                        <i class="fa fa-user-o"
-                                                           title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
-                                                    <?php endif; ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($this->Monitoring->checkForDowntime($this->Status->sget($service['Service']['uuid'], 'scheduled_downtime_depth'))): ?>
-                                                    <i class="fa fa-power-off"></i>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
-                                                    <a class="txt-color-blueDark"
-                                                       href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i
-                                                                class="fa fa-area-chart fa-lg popupGraph"
-                                                                host-uuid="<?php echo $service['Host']['uuid']; ?>"
-                                                                service-uuid="<?php echo $service['Service']['uuid']; ?>"></i></a>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if (($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
-                                                    <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($service['Service']['disabled'] == 1): ?>
-                                                    <i class="fa fa fa-plug fa-lg"></i>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <?php
-                                                $serviceName = $service['Service']['name'];
-                                                if ($serviceName === null || $serviceName === ''):
-                                                    $serviceName = $service['Servicetemplate']['name'];
-                                                endif;
-                                                ?>
-                                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                    <a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
-                                                <?php else: ?>
-                                                    <?php echo h($serviceName); ?>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td data-original-title="<?php echo h($this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
-                                                data-placement="bottom" rel="tooltip" data-container="body">
-                                                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change')))); ?>
-                                            </td>
-                                            <td><?php echo h($this->Status->sget($service['Service']['uuid'], 'output')); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php else: ?>
-                                <div class="padding-top-10">
-                                    <center><span
-                                                class="txt-color-red italic"><?php echo __('No services associated with this host!'); ?></span>
-                                    </center>
+                        <!-- widget body text-->
+                        <div class="tab-content">
+                            <div id="tab-monitored" class="tab-pane fade active in">
+                                <div role="content">
+                                    <!-- widget edit box -->
+                                    <div class="jarviswidget-editbox">
+                                        <!-- This area used as dropdown edit box -->
+                                        <input type="text" class="form-control">
+                                        <span class="note"><i
+                                                    class="fa fa-check text-success"></i> <?php echo __('Change title to update and save instantly!'); ?></span>
+                                    </div>
+                                    <!-- end widget edit box -->
+                                    <!-- widget content -->
+                                    <div class="widget-body">
+                                        <div class="custom-scroll">
+                                            <?php if (!empty($services)): ?>
+                                                <table class="table table-bordered" id="host_browser_service_table">
+                                                    <thead>
+                                                    <tr>
+                                                        <?php $order = $this->Paginator->param('order'); ?>
+                                                        <th><?php echo __('Servicestatus'); ?></th>
+                                                        <th class="text-center"><i class="fa fa-user"
+                                                                                   title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                                        </th>
+                                                        <th class="text-center"><i class="fa fa-power-off"
+                                                                                   title="<?php echo __('in Downtime'); ?>"></i></th>
+                                                        <th class="text-center"><i class="fa fa fa-area-chart fa-lg"
+                                                                                   title="<?php echo __('Grapher'); ?>"></i></th>
+                                                        <th class="text-center"><strong
+                                                                    title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                                        </th>
+                                                        <th><?php echo __('Name'); ?></th>
+                                                        <th title="<?php echo __('Hardstate'); ?>"><?php echo __('Last state change'); ?></th>
+                                                        <th><?php echo __('Service output'); ?></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <?php foreach ($services as $service):
+                                                        if($service['Service']['disabled'] == 0):?>
+                                                        <tr>
+                                                            <td class="text-center width-90">
+                                                                <?php
+                                                                if ($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
+                                                                    echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
+                                                                else:
+                                                                    $currentState = -1;
+                                                                    if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'])) {
+                                                                        $currentState = $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'];
+                                                                    }
+                                                                    echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $currentState, 'color: transparent;')['html_icon'];
+                                                                endif;
+                                                                ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if ($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))): ?>
+                                                                    <?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
+                                                                        <i class="fa fa-user"
+                                                                           title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                                                    <?php else: ?>
+                                                                        <i class="fa fa-user-o"
+                                                                           title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                                                                    <?php endif; ?>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if ($this->Monitoring->checkForDowntime($this->Status->sget($service['Service']['uuid'], 'scheduled_downtime_depth'))): ?>
+                                                                    <i class="fa fa-power-off"></i>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
+                                                                    <a class="txt-color-blueDark"
+                                                                       href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i
+                                                                                class="fa fa-area-chart fa-lg popupGraph"
+                                                                                host-uuid="<?php echo $service['Host']['uuid']; ?>"
+                                                                                service-uuid="<?php echo $service['Service']['uuid']; ?>"></i></a>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if (($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                                                    <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                $serviceName = $service['Service']['name'];
+                                                                if ($serviceName === null || $serviceName === ''):
+                                                                    $serviceName = $service['Servicetemplate']['name'];
+                                                                endif;
+                                                                ?>
+                                                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                                    <a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
+                                                                <?php else: ?>
+                                                                    <?php echo h($serviceName); ?>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td data-original-title="<?php echo h($this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                                                data-placement="bottom" rel="tooltip" data-container="body">
+                                                                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change')))); ?>
+                                                            </td>
+                                                            <td><?php echo h($this->Status->sget($service['Service']['uuid'], 'output')); ?></td>
+                                                        </tr>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            <?php else: ?>
+                                                <div class="padding-top-10">
+                                                    <center><span
+                                                                class="txt-color-red italic"><?php echo __('No services associated with this host!'); ?></span>
+                                                    </center>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <!-- end widget content -->
                                 </div>
-                            <?php endif; ?>
+                            </div>
+                            <div id="tab-disabled" class="tab-pane fade">
+                                <div role="content">
+                                    <!-- widget edit box -->
+                                    <div class="jarviswidget-editbox">
+                                        <!-- This area used as dropdown edit box -->
+                                        <input type="text" class="form-control">
+                                        <span class="note"><i
+                                                    class="fa fa-check text-success"></i> <?php echo __('Change title to update and save instantly!'); ?></span>
+                                    </div>
+                                    <!-- end widget edit box -->
+                                    <!-- widget content -->
+                                    <div class="widget-body">
+                                        <div class="custom-scroll">
+                                            <?php if (!empty($services)):;?>
+                                                <table class="table table-bordered" id="host_browser_disabled_service_table">
+                                                    <thead>
+                                                    <tr>
+                                                        <?php $order = $this->Paginator->param('order'); ?>
+                                                        <th><?php echo __('Servicestatus'); ?></th>
+                                                        <th class="text-center"><i class="fa fa-user"
+                                                                                   title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                                        </th>
+                                                        <th class="text-center"><i class="fa fa-power-off"
+                                                                                   title="<?php echo __('in Downtime'); ?>"></i></th>
+                                                        <th class="text-center"><i class="fa fa fa-area-chart fa-lg"
+                                                                                   title="<?php echo __('Grapher'); ?>"></i></th>
+                                                        <th class="text-center"><strong
+                                                                    title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                                        </th>
+                                                        <th><?php echo __('Name'); ?></th>
+                                                        <th title="<?php echo __('Hardstate'); ?>"><?php echo __('Last state change'); ?></th>
+                                                        <th><?php echo __('Service output'); ?></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <?php foreach ($services as $service):
+                                                        if($service['Service']['disabled'] == 1):?>
+                                                        <tr>
+                                                            <td class="text-center width-90">
+                                                                <?php
+                                                                $href = 'javascript:void(0);';
+                                                                if ($this->Acl->hasPermission('browser')):
+                                                                    $href = '/services/browser/'.$service['Service']['id'];
+                                                                endif;
+                                                                echo $this->Status->humanServiceStatus($service['Service']['uuid'], $href)['html_icon'];
+                                                                ?>
+                                                            </td>
+                                                            <td class="text-center"></td>
+                                                            <td class="text-center"></td>
+                                                            <td class="text-center">
+                                                                <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
+                                                                    <a class="txt-color-blueDark"
+                                                                       href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i
+                                                                                class="fa fa-area-chart fa-lg popupGraph"
+                                                                                host-uuid="<?php echo $service['Host']['uuid']; ?>"
+                                                                                service-uuid="<?php echo $service['Service']['uuid']; ?>"></i></a>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <?php if ($service['Service']['active_checks_enabled'] === '0' || $service['Servicetemplate']['active_checks_enabled'] === '0' || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                                                    <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td>
+                                                                <?php
+                                                                $serviceName = $service['Service']['name'];
+                                                                if ($serviceName === null || $serviceName === ''):
+                                                                    $serviceName = $service['Servicetemplate']['name'];
+                                                                endif;
+                                                                ?>
+                                                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                                    <a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
+                                                                <?php else: ?>
+                                                                    <?php echo h($serviceName); ?>
+                                                                <?php endif; ?>
+                                                            </td>
+                                                            <td class="text-center"><?php echo __('n/a'); ?>
+                                                            </td>
+                                                            <td class="text-center"><?php echo __('n/a'); ?></td>
+                                                        </tr>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                    </tbody>
+                                                </table>
+                                            <?php else: ?>
+                                                <div class="padding-top-10">
+                                                    <center><span
+                                                                class="txt-color-red italic"><?php echo __('No services associated with this host!'); ?></span>
+                                                    </center>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <!-- end widget content -->
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <!-- end widget content -->
+
+
                 </div>
                 <!-- end widget div -->
             </div>

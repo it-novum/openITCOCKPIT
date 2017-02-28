@@ -165,16 +165,18 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 );
                             endif;
                             if ($this->Acl->hasPermission('sharing') && $allowSharing) {
-                                echo $this->Form->input('shared_container', [
-                                        'options'   => $this->Html->chosenPlaceholder($sharingContainers),
-                                        'multiple'  => true,
-                                        'selected'  => $sharedContainers,
-                                        'class'     => 'chosen',
-                                        'style'     => 'width: 100%',
-                                        'label'     => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                    ]
-                                );
+                                if($host['Host']['host_type'] === GENERIC_HOST){
+                                    echo $this->Form->input('shared_container', [
+                                            'options'   => $this->Html->chosenPlaceholder($sharingContainers),
+                                            'multiple'  => true,
+                                            'selected'  => $sharedContainers,
+                                            'class'     => 'chosen',
+                                            'style'     => 'width: 100%',
+                                            'label'     => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                        ]
+                                    );
+                                }
                             } else {
                                 echo $this->Form->input('shared_container', [
                                         'value' => serialize($sharedContainers),
