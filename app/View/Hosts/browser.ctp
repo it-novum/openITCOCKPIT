@@ -650,7 +650,7 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center">
-                                                                <?php if (($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                                                <?php if ($service['Service']['active_checks_enabled'] === '0' || $service['Servicetemplate']['active_checks_enabled'] === '0' || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
                                                                     <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                                                 <?php endif; ?>
                                                             </td>
