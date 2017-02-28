@@ -1815,7 +1815,9 @@ class HostsController extends AppController
                 'Service.uuid',
                 'Service.name',
                 'Servicetemplate.name',
+                'Servicetemplate.active_checks_enabled',
                 'Service.disabled',
+                'Service.active_checks_enabled',
                 'Host.uuid',
             ],
             'contain'    => [
