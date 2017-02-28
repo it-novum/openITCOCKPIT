@@ -797,6 +797,7 @@ class Service extends AppModel
                 'IF((Service.description IS NULL OR Service.description = ""), Servicetemplate.description, Service.description) AS ServiceDescr',
                 'Service.uuid',
                 'Service.service_type',
+                'Service.disabled'
             ],
             'order'      => [
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',

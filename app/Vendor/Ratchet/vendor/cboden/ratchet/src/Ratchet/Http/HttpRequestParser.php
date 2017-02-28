@@ -17,7 +17,7 @@ class HttpRequestParser implements MessageInterface {
      * This is a security measure to prevent attacks
      * @var int
      */
-    public $maxSize = 4096;
+    public $maxSize = 8192;
 
     /**
      * @param \Ratchet\ConnectionInterface $context

@@ -46,8 +46,10 @@ class LogentriesController extends AppController
 
     public function index()
     {
-        $requestSettings = $this->Logentry->listSettings($this->request->data);
-
+        $requestSettings = $this->Logentry->listSettings($this->request->params['named']);
+        if($this->request->is('post')){
+            $requestSettings = $this->Logentry->listSettings($this->request->data);
+        }
         if (!is_array($this->Paginator->settings)) {
             $this->Paginator->settings = [];
         }
@@ -80,6 +82,7 @@ class LogentriesController extends AppController
         $this->set(compact(['all_logentries', 'paginatorLimit']));
         $this->set('LogentiresListsettings', $requestSettings['Listsettings']);
         $this->set('logentry_types', $this->Logentry->types());
+
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);

@@ -266,7 +266,13 @@ class UtilsHelper extends AppHelper
             $title = __('Delete');
         }
         if (is_numeric($url) || is_string($url) || (is_array($url) && !isset($url['action']))) {
-            $url = ['action' => 'delete', $url];
+            if(is_array($url)){
+                $url = Hash::merge($url, ['action' => 'delete']);
+            }else{
+                $url = ['action' => 'delete', $url];
+
+            }
+
         }
         $options = Set::merge([
             'class'  => 'btn btn-danger btn-xs',

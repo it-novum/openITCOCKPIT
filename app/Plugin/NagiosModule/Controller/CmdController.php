@@ -30,7 +30,7 @@ class CmdController extends AppController
 {
 
     public $layout = 'Admin.default';
-    public $uses = ['Systemsetting'];
+    public $uses = ['Systemsetting', 'Host'];
     public $components = ['GearmanClient'];
 
     /*
@@ -75,9 +75,16 @@ class CmdController extends AppController
         unset($this->request->params['named']['api_key']);
         //Hash::merge retunrs us the parameters in the right direction witch is great <3
         $parameters = Hash::merge($commands[$externalCommand], $this->request->params['named']);
-
+        $satelliteId = 0;
+        if(isset($parameters['hostUuid'])){
+            $myHost = $this->Host->find('first', [
+                'conditions' => ['uuid' => $parameters['hostUuid']],
+                'recursive' => -1
+                ]);
+            $satelliteId = isset($myHost['Host']['satellite_id']) ? $myHost['Host']['satellite_id'] : 0;
+        }
         //Command is now ready to submit to sudo_server
-        $this->GearmanClient->sendBackground('cmd_external_command', ['command' => $externalCommand, 'parameters' => $parameters]);
+        $this->GearmanClient->sendBackground('cmd_external_command', ['command' => $externalCommand, 'parameters' => $parameters, 'satelliteId' => $satelliteId]);
         echo '200 OK';
     }
 
@@ -119,42 +126,28 @@ class CmdController extends AppController
             throw new ForbiddenException(__('API key mismatch!'));
         }
 
-        switch ($this->request->params['named']['cmdType']) {
-            case Acknowledged::ACKNOWLEDGE_HOST_PROBLEM:
-                //Ack for hosts
-
-                $this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_HOST_PROBLEM', 'parameters' => [
-                    'hostUuid'   => $this->request->params['named']['hostUuid'],
-                    'sticky'     => $this->request->params['named']['sticky'],
-                    'notify'     => $this->request->params['named']['notify'],
-                    'persistent' => $this->request->params['named']['persistent'],
-                    'author'     => $this->request->params['named']['author'],
-                    'comment'    => $this->request->params['named']['comment'],
-                    'com_data'   => $this->request->params['named']['com_data'],
-                ]]);
-                break;
-
-            case Acknowledged::ACKNOWLEDGE_SVC_PROBLEM:
-                //Ack for services
-                if (!isset($this->request->params['named']['serviceUuid'])) {
-                    throw new NotFoundException(__('serviceUuid missing missing!'));
-                }
-
-                $this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_SVC_PROBLEM', 'parameters' => [
-                    'hostUuid'    => $this->request->params['named']['hostUuid'],
-                    'serviceUuid' => $this->request->params['named']['serviceUuid'],
-                    'sticky'      => $this->request->params['named']['sticky'],
-                    'notify'      => $this->request->params['named']['notify'],
-                    'persistent'  => $this->request->params['named']['persistent'],
-                    'author'      => $this->request->params['named']['author'],
-                    'comment'     => $this->request->params['named']['comment'],
-                    'com_data'    => $this->request->params['named']['com_data'],
-                ]]);
-                break;
-
-            default:
-                throw new NotFoundException(__('cmdType not suported yet!'));
-                break;
+        //If serviceUUID isn't set it's an ACK for Hosts
+        if ($this->request->params['named']['serviceUuid'] == '') {
+            $this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_HOST_PROBLEM', 'parameters' => [
+                'hostUuid' => $this->request->params['named']['hostUuid'],
+                'sticky' => $this->request->params['named']['sticky'],
+                'notify' => $this->request->params['named']['notify'],
+                'persistent' => $this->request->params['named']['persistent'],
+                'author' => $this->request->params['named']['author'],
+                'comment' => $this->request->params['named']['comment'],
+                'com_data' => $this->request->params['named']['com_data'],
+            ]]);
+        } else {
+            $this->GearmanClient->sendBackground('cmd_external_command', ['command' => 'ACKNOWLEDGE_SVC_PROBLEM', 'parameters' => [
+                'hostUuid'    => $this->request->params['named']['hostUuid'],
+                'serviceUuid' => $this->request->params['named']['serviceUuid'],
+                'sticky'      => $this->request->params['named']['sticky'],
+                'notify'      => $this->request->params['named']['notify'],
+                'persistent'  => $this->request->params['named']['persistent'],
+                'author'      => $this->request->params['named']['author'],
+                'comment'     => $this->request->params['named']['comment'],
+                'com_data'    => $this->request->params['named']['com_data'],
+            ]]);
         }
         echo '200 OK';
     }

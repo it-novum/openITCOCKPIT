@@ -35,7 +35,7 @@ $widgetData = $WidgetServiceStatusList[$widget['Widget']['id']];
         <th class="text-center"><i class="fa fa-power-off fa-lg "></i></th>
         <th><?php echo __('Host name'); ?></th>
         <th><?php echo __('Service name'); ?></th>
-        <th><?php echo __('State since'); ?></th>
+        <th title="<?php echo __('Hardstate'); ?>"><?php echo __('Last state change'); ?></th>
     </tr>
     </thead>
     <tbody>
