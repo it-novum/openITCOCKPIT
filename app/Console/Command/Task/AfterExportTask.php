@@ -68,6 +68,7 @@ class AfterExportTask extends AppShell
 
     public function copy($satellite)
     {
+        $return = false;
         if ($this->checkPort($satellite['Satellite']['address'])) {
             $this->out('Connect to '.$satellite['Satellite']['name'].' ('.$satellite['Satellite']['address'].')', false);
             $sshConnection = ssh2_connect($satellite['Satellite']['address'], $this->conf['SSH']['port']);
@@ -100,6 +101,7 @@ class AfterExportTask extends AppShell
                             'recursive' => true,
                         ]);
                         $this->out('<green> ok</green>');
+                        $return = true;
                     } else {
                         $this->out(' using rsync', false);
                         $commandArgs = [
@@ -114,6 +116,7 @@ class AfterExportTask extends AppShell
                         exec($command, $output, $returnCode);
                         if ($returnCode == 0) {
                             $this->out('<green> ok</green>');
+                            $return = true;
                         } else {
                             $this->out('<red> error</red>');
                         }
@@ -136,7 +139,7 @@ class AfterExportTask extends AppShell
                 $this->out('<red>Login failed!</red>');
             }
         }
-
+        return $return;
     }
 
 
