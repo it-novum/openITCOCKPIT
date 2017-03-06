@@ -1447,14 +1447,14 @@ class HostsController extends AppController
 
 
         /*$activeHostCount = $this->Host->find('count', [
-			'conditions' => ['Host.disabled' => 0]
-		]);
+            'conditions' => ['Host.disabled' => 0]
+        ]);
 
-		$disabledHostCount = $this->Host->find('count', [
-			'conditions' => ['Host.disabled' => 1]
-		]);
+        $disabledHostCount = $this->Host->find('count', [
+            'conditions' => ['Host.disabled' => 1]
+        ]);
 
-		$deletedHostCount = $this->DeletedHost->find('count');*/
+        $deletedHostCount = $this->DeletedHost->find('count');*/
         $this->set(compact(['disabledHosts']));
         $this->set('_serialize', ['disabledHosts']);
 
@@ -1579,10 +1579,10 @@ class HostsController extends AppController
     }
 
     /*
-	 * Delete one or more hosts
-	 * Call: mass_delete(1,5,10,15);
-	 * Or as HTML URL: /hosts/mass_delete/3/6/5/4/8/2/1/9
-	 */
+     * Delete one or more hosts
+     * Call: mass_delete(1,5,10,15);
+     * Or as HTML URL: /hosts/mass_delete/3/6/5/4/8/2/1/9
+     */
     public function mass_delete($id = null)
     {
         $deleteAllowedValues = [];
@@ -1620,6 +1620,7 @@ class HostsController extends AppController
 
     public function copy($id = null)
     {
+        $userId = $this->Auth->user('id');
         $validationErrors = [];
         if ($this->request->is('post') || $this->request->is('put')) {
             $validationError = false;
@@ -1714,24 +1715,24 @@ class HostsController extends AppController
                     $this->Host->validationErrors = $validationErrors['Host'];
                     $this->setFlash(__('Could not copy host/s'), false);
                     /*
-					For multiple "line" validation errors the array we gibe the view needs to look like this
-	:
-					array(
-						(int) 0 => array(
-							'name' => array(
-								(int) 0 => 'This field cannot be left blank.'
-							),
-							'address' => array(
-								(int) 0 => 'This field cannot be left blank.'
-							)
-						),
-						(int) 1 => array(
-							'address' => array(
-								(int) 0 => 'This field cannot be left blank.'
-							)
-						)
-					)
-					*/
+                    For multiple "line" validation errors the array we gibe the view needs to look like this
+    :
+                    array(
+                        (int) 0 => array(
+                            'name' => array(
+                                (int) 0 => 'This field cannot be left blank.'
+                            ),
+                            'address' => array(
+                                (int) 0 => 'This field cannot be left blank.'
+                            )
+                        ),
+                        (int) 1 => array(
+                            'address' => array(
+                                (int) 0 => 'This field cannot be left blank.'
+                            )
+                        )
+                    )
+                    */
                 }
             }
         }
@@ -1935,8 +1936,8 @@ class HostsController extends AppController
     }
 
     /* !!!!!
-	 * NEVER EVER CALL THIS FUNCTION !!!!!!!!
-	 */
+     * NEVER EVER CALL THIS FUNCTION !!!!!!!!
+     */
     protected function resetAllUUID()
     {
         throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
@@ -2171,39 +2172,39 @@ class HostsController extends AppController
     }
 
     /*
-	* Compare two arrays with each other
-	* @param host Array
-	* @param hosttemplate Array
-	* @return $diff_array
-	*
-	* *************** Contact and contactgroups check ************
-	debug(Set::classicExtract($host, '{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}'))); 	//Host
-	debug(Set::classicExtract($hosttemplate, '{(Contact|Contactgroup)}.{n}.id'));					//Hosttemplate
-	array(
-		'Contact' => array(
-			'Contact' => array(
-				(int) 0 => '26'
-			)
-		),
-		'Contactgroup' => array(
-			'Contactgroup' => array(
-				(int) 0 => '131',
-				(int) 1 => '132'
-			)
-		)
-	)
-	*************** Single fields in hosttemplate and host *************
-	debug(Set::classicExtract($host, 'Host.{('.implode('|', array_values(Hash::merge($fields,['name', 'description', 'address']))).')}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Hosttemplate.{('.implode('|', array_values($fields)).')}')));	//Hosttemplate
+    * Compare two arrays with each other
+    * @param host Array
+    * @param hosttemplate Array
+    * @return $diff_array
+    *
+    * *************** Contact and contactgroups check ************
+    debug(Set::classicExtract($host, '{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}'))); 	//Host
+    debug(Set::classicExtract($hosttemplate, '{(Contact|Contactgroup)}.{n}.id'));					//Hosttemplate
+    array(
+        'Contact' => array(
+            'Contact' => array(
+                (int) 0 => '26'
+            )
+        ),
+        'Contactgroup' => array(
+            'Contactgroup' => array(
+                (int) 0 => '131',
+                (int) 1 => '132'
+            )
+        )
+    )
+    *************** Single fields in hosttemplate and host *************
+    debug(Set::classicExtract($host, 'Host.{('.implode('|', array_values(Hash::merge($fields,['name', 'description', 'address']))).')}'));	//Host
+    debug(Set::classicExtract($hosttemplate, 'Hosttemplate.{('.implode('|', array_values($fields)).')}')));	//Hosttemplate
 
-	**************** Command arguments check *************
-	debug(Set::classicExtract($host, 'Hostcommandargumentvalue.{n}.{(commandargument_id|value)}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}')));	//Hostemplate
+    **************** Command arguments check *************
+    debug(Set::classicExtract($host, 'Hostcommandargumentvalue.{n}.{(commandargument_id|value)}'));	//Host
+    debug(Set::classicExtract($hosttemplate, 'Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}')));	//Hostemplate
 
-	**************** Custom variables check *************
-	debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
-	debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
-	*/
+    **************** Custom variables check *************
+    debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
+    debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
+    */
 
     private function _diffWithTemplate($host, $hosttemplate)
     {
@@ -2382,9 +2383,9 @@ class HostsController extends AppController
 
 
     /*
-	 * $host is from prepareForView() but ther are no names in the service contact, only ids
-	 * $_host is from $this->Host->findById, because of contact names
-	 */
+     * $host is from prepareForView() but ther are no names in the service contact, only ids
+     * $_host is from $this->Host->findById, because of contact names
+     */
     protected function __inheritContactsAndContactgroups($host, $_host = [])
     {
         $diffExists = 0;

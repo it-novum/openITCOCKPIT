@@ -118,6 +118,7 @@ class Changelog extends AppModel
                 'Servicegroup'                => '{n}.{(id|name)}',
                 'Customvariable'              => '{n}.{(id|name|value)}',
                 'Servicecommandargumentvalue' => '{n}.{(id|value)}',
+                'Serviceeventcommandargumentvalue' => '{n}.{(id|value)}',
                 'Contact'                     => '{n}.{(id|name)}',
                 'Contactgroup'                => '{n}.{(id|name)}',
             ],
@@ -136,6 +137,7 @@ class Changelog extends AppModel
         $compareRules = $this->getCompareRules();
         switch ($action) {
             case 'add':
+            case 'copy':
                 foreach ($compareRules[strtolower(Inflector::singularize($controller))] as $key => $fields) {
                     if (is_array($fields)) {
                         $fields = $fields['fields'];
