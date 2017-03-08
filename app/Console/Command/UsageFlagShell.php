@@ -23,6 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * This shell set the usage flag for every module given in the $modules array
+ * Every NEW module must contain in the main Model (for Autoreports the Autoreport.php,
+ * Eventcorrelation -> Eventcorrelation.php) two functions named getHosts() and getServices()
+ * which return the pure Service and Host ids (try Hash::extract() ;))
+ */
+
 App::import('Model', 'Host');
 App::import('Model', 'Service');
 App::import('Model', 'AutoreportModule.Autoreport');
@@ -63,7 +70,7 @@ class UsageFlagShell extends AppShell {
      */
     protected $modules = [
         'Autoreport',
-        // 'Eventcorrelation',
+        'Eventcorrelation',
     ];
 
     /**
@@ -83,7 +90,7 @@ class UsageFlagShell extends AppShell {
         //create Object instances
         $this->Host = new Host();
         $this->Service = new Service();
-        $this->createModuleInstances($this->modules);
+        $this->createModuleInstances();
 
         $this->getModuleHostAndServices($this->modules);
         $this->assignUsageFlagValue($this->moduleElements);
@@ -93,10 +100,12 @@ class UsageFlagShell extends AppShell {
 
     /**
      * Creates module instances on the fly
-     * @param $modules
      */
-    protected function createModuleInstances($modules) {
+    protected function createModuleInstances() {
         try {
+            if(empty($this->modules)){
+                throw new Exception('No Modules given! Exit');
+            }
             foreach ($this->modules as $module) {
                 $this->out('<info>Create Instance of ' . $module . '</info>');
                 if (!class_exists($module)) {
@@ -157,35 +166,12 @@ class UsageFlagShell extends AppShell {
      * @param $elements
      */
     protected function assignUsageFlagValue($elements) {
-        /** BEGIN TEST DATA */
-        /*  $testData = [
-              'Eventcorrelation' => [
-                  'Host' => [
-                      '7',
-                      '1',//HIT
-                      '4',//HIT
-                      '43',
-                      '15',
-                  ],
-                  'Service' => [
-                      '10',
-                      '11',
-                      '21',//HIT
-                      '342',
-                      '23',//HIT
-                      '65',
-                      '324567',
-                  ]
-              ]
-          ];
-          $elements = array_merge($elements, $testData); */
-        /** END TEST DATA */
         try {
             foreach ($elements as $moduleName => $data) {
                 foreach ($data as $modelName => $elementIds) {
                     $this->out('<info>Map usage flags for ' . $modelName . '</info>');
                     if (empty(constant(strtoupper($moduleName) . '_MODULE'))) {
-                        throw new Exception('The Constant for ' . $moduleName . ' could not be found! Mapping cannot be processed - Exit');
+                        throw new Exception('The Constant for ' . $moduleName . ' cannot not be found! Mapping cannot be processed - Exit');
                     }
                     foreach ($elementIds as $elementId) {
                         if (isset($this->usageFlagMapping[$modelName][$elementId])) {
@@ -206,7 +192,7 @@ class UsageFlagShell extends AppShell {
         }
     }
 
-    
+
     /**
      * get all host and service ids from the modules which are defined in $this->modules
      * this functions requires a getHost() and getService() Method in each committed module!
