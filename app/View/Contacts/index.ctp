@@ -31,7 +31,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Contacts'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -164,18 +164,18 @@
                                                 <div>
                                                     <i class="fa fa-envelope-o"></i><?php echo __('Notifications enabled:'); ?>
                                                     <span class="onoffswitch">
-															<input type="checkbox"
+                                                            <input type="checkbox"
                                                                    id="<?php echo $contact['Contact']['id'].$key; ?>NotificationsEnabled" <?php echo ($contact['Contact'][$key.'_notifications_enabled']) ? ' checked="checked" ' : ''; ?>
                                                                    class="onoffswitch-checkbox" name="onoffswitch"
                                                                    disabled="disabled">
-															<label for="<?php echo $contact['Contact']['id'].$key; ?>NotificationsEnabled"
+                                                            <label for="<?php echo $contact['Contact']['id'].$key; ?>NotificationsEnabled"
                                                                    class="onoffswitch-label" style="cursor:default;">
-																<span data-swchoff-text="<?php echo __('Off'); ?>"
+                                                                <span data-swchoff-text="<?php echo __('Off'); ?>"
                                                                       data-swchon-text="<?php echo __('On'); ?>"
                                                                       class="onoffswitch-inner"></span>
-																<span class="onoffswitch-switch"></span>
-															</label>
-														</span>
+                                                                <span class="onoffswitch-switch"></span>
+                                                            </label>
+                                                    </span>
                                                 </div>
                                                 <div style="margin-top:10px;">
                                                     <?php foreach ($notification_settings_arr as $notification_setting): ?>
