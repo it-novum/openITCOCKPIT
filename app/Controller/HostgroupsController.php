@@ -74,6 +74,16 @@ class HostgroupsController extends AppController
         $this->Paginator->settings['order'] = ['Container.name' => 'asc'];
 
         $options = [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ]
+            ],
             'order'      => [
                 'Container.name' => 'asc',
             ],
