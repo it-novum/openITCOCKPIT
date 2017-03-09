@@ -165,7 +165,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 );
                             endif;
                             if ($this->Acl->hasPermission('sharing') && $allowSharing) {
-                                if($host['Host']['host_type'] === GENERIC_HOST){
+                                if($host['Host']['host_type'] == GENERIC_HOST){
                                     echo $this->Form->input('shared_container', [
                                             'options'   => $this->Html->chosenPlaceholder($sharingContainers),
                                             'multiple'  => true,
