@@ -68,11 +68,11 @@ class Oauth2client
                 'code' => $_GET['code'],
             ]);
             if(!$tokenArr[0]){
-                return ['success' => false, 'message' => 'Can not get token: '.$tokenArr[1]];
+                return ['success' => false, 'message' => 'Can not get token. '.(ENVIRONMENT === 'production' ? '' : $tokenArr[1])];
             }
             $userDataArr = $provider->getResourceOwner($tokenArr[1]);
             if(!$userDataArr[0]){
-                return ['success' => false, 'message' => 'Can not get user data: '.$userDataArr[1]];
+                return ['success' => false, 'message' => 'Can not get user data: '.(ENVIRONMENT === 'production' ? '' : $userDataArr[1])];
             }
             $userArray = $userDataArr[1]->toArray();
             return ['success' => true, 'email' => $userArray['mail']];
