@@ -46,7 +46,7 @@ $notification_settings = [
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Servicetemplate'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -59,7 +59,7 @@ $notification_settings = [
         <h2><?php echo __('Edit Servicetemplate'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $servicetemplate['Servicetemplate']['id'], [], true, __('All attached services will be deleted too.')); ?>
+                <?php echo $this->Utils->deleteButton(null, Hash::merge([$servicetemplate['Servicetemplate']['id']] ,$this->params['named']), [], true, __('All attached services will be deleted too.')); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -135,9 +135,15 @@ $notification_settings = [
                                 'type'  => 'hidden',
                                 'value' => $servicetemplate['Servicetemplate']['id'],
                             ]);
+                            echo $this->Form->input('template_name', [
+                                'value'     => $this->request->data['Servicetemplate']['template_name'],
+                                'label'     => ['text' => __('Template name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'help'      => __('Servicetemplate name'),
+                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                            ]);
                             echo $this->Form->input('name', [
                                 'value'     => $this->request->data['Servicetemplate']['name'],
-                                'label'     => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'     => ['text' => __('Service name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'help'      => __('This is the default name for the service if you create it out of the template'),
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
@@ -290,6 +296,7 @@ $notification_settings = [
                                 'label'            => ['text' => '<a href="/commands/edit/'.$this->request->data['Servicetemplate']['command_id'].'"><i class="fa fa-cog"></i> </a>'.__('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'help'             => '<span class="text-danger">'.__('Warning: If you change the check command, all service custom arguments will be reset to service template default!').'</span>'
                             ]);
                             ?>
                             <!-- Command arguments -->
@@ -491,6 +498,7 @@ $notification_settings = [
                                 'label'            => ['text' => __('Eventhandler'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'help'             => '<span class="text-danger">'.__('Warning: If you change the event handler command, all service custom arguments will be reset to service template default!').'</span>'
                             ]); ?>
                             <div id="EventhandlerCommandArgs"></div>
                             <br>

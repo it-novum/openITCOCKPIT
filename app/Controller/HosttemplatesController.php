@@ -46,6 +46,7 @@ class HosttemplatesController extends AppController {
         'Customvariable',
         'Commandargument',
         'Hosttemplatecommandargumentvalue',
+        'Hostcommandargumentvalue'
     ];
     public $layout = 'Admin.default';
 
@@ -176,6 +177,9 @@ class HosttemplatesController extends AppController {
                 'Hosttemplatecommandargumentvalue' => ['Commandargument'],
             ],
         ]);
+
+        $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
+
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
             $this->render403();
 
@@ -392,8 +396,48 @@ class HosttemplatesController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                $this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
-                $this->redirect(['action' => 'index']);
+                if($oldHosttemplateCheckCommandId != $this->request->data['Hosttemplate']['command_id']){
+                    //Check command of host template was changed
+                    //Delete all custom command arguments of hosts
+                    //if command_id from Host is NULL
+                    $HostCommandArgumentValuesToDelete = $this->Hosttemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Host' => [
+                                'conditions' => [
+                                    'Host.command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Host.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Hosttemplate.id' => $this->Hosttemplate->id
+                        ],
+                        'fields' => [
+                            'Hosttemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($HostCommandArgumentValuesToDelete['Host'])){
+                        $hostIds = Hash::extract($HostCommandArgumentValuesToDelete['Host'], '{n}.id');
+                        if(!empty($hostIds)){
+                            $this->Hostcommandargumentvalue->deleteAll([
+                                'Hostcommandargumentvalue.host_id' => $hostIds
+                            ]);
+                        }
+                    }
+                }
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+                $flashHref[] = $this->Hosttemplate->id;
+                $flashHref[] = $hosttemplatetype_id;
+
+                $this->setFlash(__('<a href="'.Router::url($flashHref).'">Hosttemplate</a> successfully saved.'));
+
+                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+                $this->redirect($redirect);
+
             } else {
                 $this->setFlash(__('Could not save data'), false);
                 $this->CustomValidationErrors->loadModel($this->Hosttemplate);
@@ -615,13 +659,16 @@ class HosttemplatesController extends AppController {
 
                     return;
                 }
-                $this->setFlash(__('<a href="/hosttemplates/edit/%s">Hosttemplate</a> successfully saved', $this->Hosttemplate->id));
-                $this->redirect(['action' => 'index']);
+                $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'edit']);
+                $flashHref[] = $this->Hosttemplate->id;
+                $flashHref[] = $hosttemplatetype_id;
+                $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+                $this->setFlash(__('<a href="'.Router::url($flashHref).'">Hosttemplate</a> successfully saved.'));
+                $this->redirect($redirect);
             } else {
 
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('Could not save data'), false);
@@ -667,13 +714,24 @@ class HosttemplatesController extends AppController {
         }
 
         $this->Hosttemplate->id = $id;
-        $hosttemplate = $this->Hosttemplate->findById($id);
+        $hosttemplate = $this->Hosttemplate->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Hosttemplate.id' => $id,
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
             $this->render403();
-
             return;
         }
+        $redirect = $this->Hosttemplate->redirect($this->request->params, ['action' => 'index']);
+        $flashHref = $this->Hosttemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
+        $flashHref[] = $this->Hosttemplate->id;
+        $flashHref[] = $hosttemplate['Hosttemplate']['hosttemplatetype_id'];
 
         if ($this->Hosttemplate->__allowDelete($id)) {
             if ($this->Hosttemplate->delete()) {
@@ -703,14 +761,14 @@ class HosttemplatesController extends AppController {
                 }
 
                 $this->setFlash(__('Hosttemplate deleted'));
-                $this->redirect(['action' => 'index']);
+
+                $this->redirect($redirect);
             }
             $this->setFlash(__('Could not delete hosttemplate'), false);
-            $this->redirect(['action' => 'index']);
+            $this->redirect($redirect);
         }
-        $this->setFlash(__('Could not delete hosttemplate'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->setFlash(__('Could not delete hosttemplate: <a href="'.Router::url($flashHref).'">').$hosttemplate['Hosttemplate']['name'].'</a>', false);
+        $this->redirect($redirect);
     }
 
     public function mass_delete($id = null) {
@@ -922,21 +980,12 @@ class HosttemplatesController extends AppController {
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'), false)) {
             $this->render403();
-
             return;
         }
 
         $this->loadModel('Host');
         $all_hosts = $this->Host->find('all', [
             'recursive' => -1,
-            'contain' => [
-                //'Hosttemplate' => [
-                //	'fields' => [
-                //		'id', 'name'
-                //	]
-                //],
-                //'Container'
-            ],
             'order' => [
                 'Host.name' => 'ASC',
             ],
@@ -960,6 +1009,7 @@ class HosttemplatesController extends AppController {
                 'Host.name',
                 'Host.address',
             ],
+            'group' => 'Host.id'
         ]);
 
         $this->set(compact(['all_hosts', 'hosttemplate']));

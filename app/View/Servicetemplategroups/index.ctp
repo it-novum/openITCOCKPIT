@@ -107,14 +107,14 @@
                                                         <?php if ($this->Acl->hasPermission('allocateToHostgroup')): ?>
                                                             <li>
                                                                 <a href="/<?php echo $this->params['controller']; ?>/allocateToHostgroup/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i
-                                                                            class="fa fa-external-link"></i> <?php echo __('Allocate hostgroup'); ?>
+                                                                            class="fa fa-external-link"></i> <?php echo __('Allocate host group'); ?>
                                                                 </a>
                                                             </li>
                                                         <?php endif; ?>
                                                         <?php if ($this->Acl->hasPermission('allocateToMatchingHostgroup')): ?>
                                                             <li>
                                                                 <a href="/<?php echo $this->params['controller']; ?>/allocateToMatchingHostgroup/<?php echo $servicetemplategroup['Servicetemplategroup']['id']; ?>"><i
-                                                                            class="fa fa-external-link"></i> <?php echo __('Allocate matching hostgroup'); ?>
+                                                                            class="fa fa-external-link"></i> <?php echo __('Allocate matching host group'); ?>
                                                                 </a>
                                                             </li>
                                                         <?php endif; ?>

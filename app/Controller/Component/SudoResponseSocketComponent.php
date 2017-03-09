@@ -54,7 +54,7 @@ class SudoResponseSocketComponent extends Component
         };
     }
 
-    public function read($len = 4096)
+    public function read($len = 8192)
     {
         $buf = "";
         socket_recv($this->socket, $buf, $len, MSG_DONTWAIT);

@@ -1772,7 +1772,7 @@ class ServicesController extends AppController
         }
 
         $ContactsInherited = $this->__inheritContactsAndContactgroups($service, $_service);
-//			debug($service);
+
         $service['Host'] = $_service['Host'];
         $service['NotifyPeriod'] = $_service['NotifyPeriod'];
         $service['CheckPeriod'] = $_service['CheckPeriod'];
@@ -2062,6 +2062,20 @@ class ServicesController extends AppController
         $service = $this->Service->findById($id);
         $hostContainerId = $service['Host']['container_id'];
 
+        $services = $this->Service->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $service['Host']['id']
+            ],
+            'contain' => [
+                'Servicetemplate'
+            ],
+            'fields' => [
+                'Service.id',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+            ]
+        ]);
+
         $allowEdit = false;
         if ($this->allowedByContainerId($hostContainerId)) {
             $allowEdit = true;
@@ -2069,8 +2083,7 @@ class ServicesController extends AppController
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-
-        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit']));
+        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services']));
     }
 
     public function grapherTemplate($id)

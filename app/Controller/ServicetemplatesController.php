@@ -55,7 +55,8 @@ class ServicetemplatesController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Servicetemplate.name'        => ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.template_name'=> ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.name'        => ['label' => 'Service name', 'searchType' => 'wildcard'],
                 'Servicetemplate.description' => ['label' => 'Template description', 'searchType' => 'wildcard'],
             ],
         ],
@@ -72,6 +73,8 @@ class ServicetemplatesController extends AppController
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
+        'Servicecommandargumentvalue',
+        'Serviceeventcommandargumentvalue'
     ];
 
     public function index()
@@ -89,6 +92,7 @@ class ServicetemplatesController extends AppController
             'fields'     => [
                 'Servicetemplate.id',
                 'Servicetemplate.uuid',
+                'Servicetemplate.template_name',
                 'Servicetemplate.name',
                 'Servicetemplate.container_id',
                 'Servicetemplate.description',
@@ -187,6 +191,9 @@ class ServicetemplatesController extends AppController
 
         $servicetemplate_for_changelog = $serviceTemplate;
 
+
+        $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
+        $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
 
         $commands = $this->Command->serviceCommands('list');
         $eventHandlers = $this->Command->eventhandlerCommands('list');
@@ -440,6 +447,75 @@ class ServicetemplatesController extends AppController
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
+
+                if($oldServicetemplateCheckCommandId != $this->request->data['Servicetemplate']['command_id']){
+                    //Check command of service template was changed
+                    //Delete all custom command arguments of services
+                    //if command_id from Service is NULL
+                    $serviceCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Servicecommandargumentvalue->deleteAll([
+                                'Servicecommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
+                }
+
+                if($oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']){
+                    //Event handler command of service template was changed
+                    //Delete all custom event handler command arguments of services
+                    //if eventhandler_command_id from Service is NULL
+                    $serviceEventHandlerCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.eventhandler_command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceEventHandlerCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceEventHandlerCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Serviceeventcommandargumentvalue->deleteAll([
+                                'Serviceeventcommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
+                }
+
 
                 if ($isJson) {
                     $this->serializeId();
@@ -787,15 +863,27 @@ class ServicetemplatesController extends AppController
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $servicetemplate = $this->Servicetemplate->findById($id);
+        $servicetemplate = $this->Servicetemplate->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Servicetemplate.id' => $id,
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
             $this->render403();
-
             return;
         }
 
         $this->Servicetemplate->id = $id;
+        $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
+        $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
+        $flashHref[] = $this->Servicetemplate->id;
+        $flashHref[] = $servicetemplate['Servicetemplate']['servicetemplatetype_id'];
+
         if ($this->Servicetemplate->__allowDelete($id)) {
             if ($this->Servicetemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -822,15 +910,14 @@ class ServicetemplatesController extends AppController
                 foreach ($services as $service) {
                     $this->Service->__delete($service, $this->Auth->user('id'));
                 }
-                $this->setFlash(__('Servicetemplate deleted.'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('Servicetemplate deleted'));
+                $this->redirect($redirect);
             }
             $this->setFlash(__('Could not delete servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
+            $this->redirect($redirect);
         }
-        $this->setFlash(__('Could not delete servicetemplate'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->setFlash(__('Could not delete servicetemplate: <a href="'.Router::url($flashHref).'">').$servicetemplate['Servicetemplate']['template_name'].'</a>', false);
+        $this->redirect($redirect);
     }
 
     public function mass_delete($id = null)
@@ -976,6 +1063,7 @@ class ServicetemplatesController extends AppController
                     $newServicetemplateData = [
                         'Servicetemplate'                          => [
                             'uuid'        => $this->Servicetemplate->createUUID(),
+                            'template_name'=> $newServicetemplate['template_name'],
                             'name'        => $newServicetemplate['name'],
                             'description' => $newServicetemplate['description'],
                         ],
@@ -1171,7 +1259,7 @@ class ServicetemplatesController extends AppController
                 'Service.servicetemplate_id'     => $id,
             ],
             'fields'     => [
-                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.name', 'HostsToContainers.container_id',
+                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.template_name', 'HostsToContainers.container_id',
             ],
             'order'      => [
                 'Host.name' => 'asc',

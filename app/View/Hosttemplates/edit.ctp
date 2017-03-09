@@ -44,20 +44,19 @@ $notification_settings = [
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Hosttemplate'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
 </div>
 <div id="error_msg"></div>
-
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit Hosttemplate'); ?></h2>
         <div class="widget-toolbar pull-right" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $hosttemplate['Hosttemplate']['id']); ?>
+                <?php echo $this->Utils->deleteButton(null, Hash::merge([$hosttemplate['Hosttemplate']['id']] ,$this->params['named'])); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -289,6 +288,7 @@ $notification_settings = [
                                 'class'     => 'chosen col col-xs-12',
                                 'label'     => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                'help'             => '<span class="text-danger">'.__('Warning: If you change the check command, all host custom arguments will be reset to host template default!').'</span>'
                             ]);
                             ?>
                             <!-- Command arguments -->

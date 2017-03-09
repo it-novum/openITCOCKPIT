@@ -181,22 +181,6 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'MONITORING.FROM_ADDRESS_USERNAME',
-                    'value'    => '',
-                    'info'     => 'Username for sender notification mail',
-                    'section'  => 'MONITORING'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'MONITORING.FROM_ADDRESS_PASSWORD',
-                    'value'    => '',
-                    'info'     => 'Password for sender notification mail',
-                    'section'  => 'MONITORING'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'      => 'MONITORING.FROM_NAME',
                     'value'    => 'openITCOCKPIT Notification',
                     'info'     => 'The name we should display in your mail client',
@@ -208,6 +192,30 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.MESSAGE_HEADER',
                     'value'    => '**** openITCOCKPIT notification by it-novum GmbH ****',
                     'info'     => 'The header in the plain text mail',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_SERVER',
+                    'value'    => 'imap.gmail.com:993/imap/ssl',
+                    'info'     => 'Email server to connect. Must be provided in following format: server.com:port/imap[/ssl]',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_ADDRESS',
+                    'value'    => 'my_email@gmail.com',
+                    'info'     => 'Username for sender notification mail',
+                    'section'  => 'MONITORING'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.ACK_RECEIVER_PASSWORD',
+                    'value'    => 'my_password',
+                    'info'     => 'Password for sender notification mail',
                     'section'  => 'MONITORING'
                 ],
             ],
@@ -272,8 +280,7 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.STATUS',
                     'value'    => 'service nagios status',
                     'info'     => 'Command to query the status of your monitoring software',
-                    'section'  => 'MONITORING',
-                    'created'  => '2016-12-05 11:29:04',
+                    'section'  => 'MONITORING'
                 ],
             ],
             [
@@ -297,8 +304,7 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.FRESHNESS_THRESHOLD_ADDITION',
                     'value'    => '300',
                     'info'     => 'Value in seconds that get added to the service check interval for passive services, before the monitoring system will fire up the freshness check',
-                    'section'  => 'MONITORING',
-                    'created'  => '2014-12-23 11:45:31',
+                    'section'  => 'MONITORING'
                 ],
             ],
             [
@@ -306,8 +312,7 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.AFTER_EXPORT',
                     'value'    => '#echo 1',
                     'info'     => 'A command that get executed on each export (Notice: this command runs as root, so be careful)',
-                    'section'  => 'MONITORING',
-                    'created'  => '2014-12-23 11:45:31',
+                    'section'  => 'MONITORING'
                 ],
             ],
             [
@@ -323,8 +328,7 @@ class Systemsetting extends Importer
                     'key'      => 'MONITORING.QUERY_HANDLER',
                     'value'    => '/opt/openitc/nagios/var/rw/nagios.qh',
                     'info'     => 'Path to the query handler of your monitoring engine',
-                    'section'  => 'MONITORING',
-                    'created'  => '2016-06-13 11:47:47',
+                    'section'  => 'MONITORING'
                 ],
             ],
             [
@@ -348,8 +352,7 @@ class Systemsetting extends Importer
                     'key'      => 'CRONJOB.CLENUP_TEMPFILES',
                     'value'    => '10',
                     'info'     => 'Deletes tmp files',
-                    'section'  => 'CRONJOB',
-                    'created'  => '2014-12-23 11:45:31',
+                    'section'  => 'CRONJOB'
                 ],
             ],
             [
@@ -382,7 +385,6 @@ class Systemsetting extends Importer
                     'value'    => 'session',
                     'info'     => 'The authentication method that shoud be used for login',
                     'section'  => 'FRONTEND',
-                    'created'  => 'NOW('
                 ],
             ],
             [
@@ -444,7 +446,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.CLIENT_ID',
-                    'value'    => '1',
+                    'value'    => 'my_client_id',
                     'info'     => 'Client id generated in SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -452,7 +454,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.CLIENT_SECRET',
-                    'value'    => '1',
+                    'value'    => 'some_client_password',
                     'info'     => 'Client secret generated in SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -460,7 +462,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.AUTH_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/authorization.oauth2',
                     'info'     => 'Authorization endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -468,7 +470,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.TOKEN_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/token.oauth2',
                     'info'     => 'Token endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -476,7 +478,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.USER_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/userinfo.oauth2',
                     'info'     => 'User info endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -484,7 +486,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.NO_EMAIL_MESSAGE',
-                    'value'    => '1',
+                    'value'    => 'Email address not found. Please contact your <a href="mailto:admin@my.com">administrator</a>',
                     'info'     => 'The error message that appears when provided E-mail address was not found in openITCOCKPIT',
                     'section'  => 'FRONTEND'
                 ],
@@ -492,7 +494,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.LOG_OFF_LINK',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/sso/logoff',
                     'info'     => 'SSO Server log out link',
                     'section'  => 'FRONTEND'
                 ],
@@ -582,8 +584,7 @@ class Systemsetting extends Importer
                     'key'      => 'ARCHIVE.AGE.NOTIFICATIONS',
                     'value'    => '2',
                     'info'     => 'Time in weeks how long notifications will be stored (keep eq to CONTACTNOTIFICATIONS AND CONTACTNOTIFICATIONMETHODS)',
-                    'section'  => 'ARCHIVE',
-                    'created'  => '2014-12-23 10:32:55',
+                    'section'  => 'ARCHIVE'
                 ],
             ],
             [
@@ -671,8 +672,7 @@ class Systemsetting extends Importer
                     'key'      => 'TICKET_SYSTEM.URL',
                     'value'    => '',
                     'info'     => 'Link to the ticket system',
-                    'section'  => 'TICKET_SYSTEM',
-                    'created'  => '2016-06-13 11:47:47',
+                    'section'  => 'TICKET_SYSTEM'
                 ],
             ],
         ];

@@ -162,7 +162,7 @@ class SudoMessageInterface implements MessageComponentInterface
                 break;
 
             case 'd41d8cd98f00b204e9800998ecf8427e':
-                $this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please run the command openitcockpit-update on the console.\n\nAfter that please check your User Roles for possible new settings.\n"', [
+                $this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please check your User Roles for possible new settings.\n"', [
                     'task' => 'd41d8cd98f00b204e9800998ecf8427e',
                 ]);
                 break;
@@ -389,7 +389,7 @@ class SudoMessageInterface implements MessageComponentInterface
     }
 
 
-    public function readSocket($len = 4096)
+    public function readSocket($len = 8192)
     {
         $buf = "";
         socket_recv($this->Cake->socket, $buf, $len, MSG_DONTWAIT);

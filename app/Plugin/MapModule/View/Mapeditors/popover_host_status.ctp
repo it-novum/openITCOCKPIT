@@ -118,14 +118,23 @@ if($hostStatus['state'] == 0) {
     </table>
 
 <?php if (isset($returnedServiceStatus) && $serviceAmount > 0) : ?>
-    <table class="table table-bordered popoverListTable">
+    <table class="table table-bordered popoverListTable popoverBreakWord" >
         <tr>
-            <th class="col-md-4 col-xs-3 h6"><?php echo __('Service Name'); ?></th>
-            <th class="col-md-1 col-xs-1 h6"><?php echo __('State'); ?></th>
-            <th class="col-md-7 col-xs-8 h6"><?php echo __('Output'); ?></th>
+            <th class="col-md-3 col-xs-3 h6"><?php echo __('Service Name'); ?></th>
+            <th class="col-md-2 col-xs-2 h6"><?php echo __('State'); ?></th>
+            <th class="col-md-7 col-xs-7 h6"><?php echo __('Output'); ?></th>
         </tr>
         <?php
-        foreach ($servicestatus as $counter => $service) : ?>
+        $i = 0;
+        foreach ($servicestatus as $counter => $service) :
+            if($i == 10): ?>
+                <tr>
+                    <td colspan="3"><?php echo __('Showing '.$i. ' of '.$serviceAmount. ' Services. Click on the icon to see all') ?></td>
+                </tr>
+            <?php
+                break;
+            endif;
+            ?>
             <tr>
                 <td title="<?php
                 if (isset($service['Service']['name']) && $service['Service']['name'] != '') {
@@ -143,8 +152,10 @@ if($hostStatus['state'] == 0) {
                     ?>
                 </td>
                 <td class="<?php echo $this->Status->ServiceStatusColorSimple($returnedServiceStatus[$counter]['state'])['class']; ?>"><?php echo $returnedServiceStatus[$counter]['human_state']; ?></td>
-                <td title="<?php echo $service['Servicestatus']['output']; ?>"><?php echo $service['Servicestatus']['output']; ?></td>
+                <td title="<?php echo $service['Servicestatus']['output']; ?>" class="cropText"><?php echo $service['Servicestatus']['output']; ?></td>
             </tr>
-        <?php endforeach; ?>
+        <?php
+        $i++;
+        endforeach; ?>
     </table>
 <?php endif; ?>

@@ -41,51 +41,44 @@ class BackgroundUploadsController extends MapModuleAppController
 
     public function upload()
     {
-        if (!empty($_FILES)) {
+        if (empty($_FILES)) {
+            throw new ForbiddenException(__('There is no file to store'));
+        }
 
-            //define background image directory
-            $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
-
+        //define background image directory
+        $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
+        $backgroundFolder = new Folder($backgroundImgDirectory);
+        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+        $saveFilename = UUID::v4();
+        $fullFilePath = $backgroundFolder->path.DS.$saveFilename.'.'.$fileExtension;
+        try{
             //check if upload folder exist
             if (!is_dir($backgroundImgDirectory)) {
                 mkdir($backgroundImgDirectory);
             }
-
-            $backgroundFolder = new Folder($backgroundImgDirectory);
-
-            //this name should be also stored in the Database
-            //-> displayed name when you choose the background
-            // must be unique
-            //$_FILES['file']['name'];
-
-            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-            $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-            $saveFilename = UUID::v4();
-            $fullFilePath = $backgroundFolder->path.DS.$saveFilename.'.'.$fileExtension;
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
-                echo 'successfull';
-                $obj = [
-                    'fullPath'       => $fullFilePath,
-                    'uuidFilename'   => $saveFilename,
-                    'fileExtension'  => $fileExtension,
-                    'folderInstance' => $backgroundFolder,
-                ];
-                $this->createThumbnailsFromBackgrounds($obj);
-                $this->MapUpload->save([
-                    'upload_type'  => MapUpload::TYPE_BACKGROUND,
-                    'upload_name'  => $uploadFilename.'.'.$fileExtension,
-                    'saved_name'   => $saveFilename.'.'.$fileExtension,
-                    'user_id'      => $this->Auth->user('id'),
-                    'container_id' => '1',
-                ]);
-
-                return true;
-            } else {
-                return false;
+            
+            if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
+                throw new Exception(__('Cannot move uploaded file'));
             }
 
-        } else {
-            echo 'there is no file to store';
+            $obj = [
+                'fullPath'       => $fullFilePath,
+                'uuidFilename'   => $saveFilename,
+                'fileExtension'  => $fileExtension,
+                'folderInstance' => $backgroundFolder,
+            ];
+            $this->createThumbnailsFromBackgrounds($obj);
+            $this->MapUpload->save([
+                'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                'upload_name'  => $uploadFilename.'.'.$fileExtension,
+                'saved_name'   => $saveFilename.'.'.$fileExtension,
+                'user_id'      => $this->Auth->user('id'),
+                'container_id' => '1',
+            ]);
+            echo 'Upload successful';
+        } catch (Exception $e) {
+            throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
         }
     }
 
@@ -164,7 +157,7 @@ class BackgroundUploadsController extends MapModuleAppController
                 'user_id'      => $this->Auth->user('id'),
                 'container_id' => '1',
             ]);
-
+            echo 'Upload successful';
         } catch (Exception $e) {
             if (is_dir($itemsImgDirectory.DS.$saveFilename) && $e->getCode() !== 13) {
                 $this->removeDirectory($itemsImgDirectory.DS.$saveFilename);

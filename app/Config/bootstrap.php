@@ -57,8 +57,14 @@ if (isset($_GET['cdbg']) || env('HTTP_CKDBG') !== null) {
 // Localization settings
 Configure::write('Config.language', 'en-us');
 setlocale(LC_ALL, 'en_US');
-date_default_timezone_set('Europe/Berlin');
-Configure::write('Config.timezone', 'Europe/Berlin');
+
+$defaultTimeZone = 'Europe/Berlin';
+if($dateDefaultTimeZone = date_default_timezone_get()){
+    $defaultTimeZone = $dateDefaultTimeZone;
+}
+
+date_default_timezone_set($defaultTimeZone);
+Configure::write('Config.timezone', $defaultTimeZone);
 
 // Add a new option for the reader which does not throw an Exception if the file does not exist.
 // Anything else is exactly the same!

@@ -922,6 +922,7 @@ class AppSchema extends CakeSchema
     public $servicetemplates = [
         'id'                           => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'template_name'                => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'name'                         => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'container_id'                 => ['type' => 'integer', 'null' => true, 'default' => null],
         'servicetemplatetype_id'       => ['type' => 'integer', 'null' => false, 'default' => 1],
