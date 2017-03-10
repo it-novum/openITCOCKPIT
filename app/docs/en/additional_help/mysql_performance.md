@@ -88,36 +88,6 @@ MySQL should store 1 hour of data inside of the **InnoDB log files** so you shou
 
 After you changed the value of *innodb_log_file_size* you need to delete the files **ib_logfile0** and **ib_logfile1**
 
-Here you can find the original post: 'https://www.percona.com/blog/2008/11/21/how-to-calculate-a-good-innodb-log-file-size/'
-To get the optimal logfile size, you have to calculate the number of data written per minute in your environment. 
-The following is an example of the calculation.
-
-Run these queries at your server's peak usage time:
-````
-	mysql> pager grep sequence
-	PAGER set to 'grep sequence'
-	mysql> show engine innodb statusG select sleep(60); show engine innodb statusG
-	Log sequence number 84 3836410803
-	1 row in set (0.06 sec)
-	1 row in set (1 min 0.00 sec)
-	Log sequence number 84 3838334638
-	1 row in set (0.05 sec)
-````
-The log sequence number is the total number of bytes written to the transaction log. 
-In the following calculation you can see how many MB have been written to the log in one minute:
-````
-	mysql> select (3838334638 - 3836410803) / 1024 / 1024 as MB_per_min;
-	+------------+
-	| MB_per_min |
-	+------------+
-	| 1.83471203 |
-	+------------+
-````
-As a rule of thumb you should make the log size as big as it can hold log data about one hour.
-At this rate, this server could use about 110 MB of logs (1.83471203 x 60), total. Round it up to 128 for good measure. 
-Because there are two log files by default, divide that in half. Finally you can set innodb_log_file_size to 64 M.
-In bigger environments with about 6000 service checks per minute, this value could be up to 1 GB. 
-
 
 #### innodb_log_buffer_size
 This parameter defines the size of the buffer that InnoDB uses for transaction caching. Default is 8MB. 
@@ -205,7 +175,6 @@ To update the Query Cache your MySQL process requests a [Mutex](https://en.wikip
 
 #### Binary Log
 Usually you will not need MySQL binary logs on your openITCOCKPIT server
-
 
 #### Update your my.cnf
 First of all you need to stop your MySQL server
