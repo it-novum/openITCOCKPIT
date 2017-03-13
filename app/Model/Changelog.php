@@ -66,6 +66,7 @@ class Changelog extends AppModel
                 'Hostgroup' => '{(description|hostgroup_url)}',
                 'Container' => '{(name)}',
                 'Host'      => '{n}.{(id|name)}',
+                'Hosttemplate'      => '{n}.{(id|name)}',
             ],
             'hosttemplate'    => [
                 'Hosttemplate'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',

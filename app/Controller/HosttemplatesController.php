@@ -927,6 +927,11 @@ class HosttemplatesController extends AppController {
                         'Contactgroup.id',
                     ],
                 ],
+                'Hostgroup' => [
+                    'fields' => [
+                        'Hostgroup.id',
+                    ],
+                ],
             ],
         ]);
 
@@ -947,6 +952,7 @@ class HosttemplatesController extends AppController {
                 foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
                     $contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Contact.{n}.id');
                     $contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Contactgroup.{n}.id');
+                    $hostgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Hostgroup.{n}.id');
 
                     $newHosttemplateData = [
                         'Hosttemplate' => [
@@ -955,13 +961,16 @@ class HosttemplatesController extends AppController {
                             'description' => $newHosttemplate['description'],
                             'Contact' => $contactIds,
                             'Contactgroup' => $contactgroupIds,
+                            'Hostgroup' => $hostgroupIds,
                         ],
                         'Contact' => $contactIds,
                         'Contactgroup' => $contactgroupIds,
+                        'Hostgroup' => $hostgroupIds
                     ];
 
                     unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contact']);
                     unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contactgroup']);
+                    unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Hostgroup']);
 
                     $dataToSave = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']], $newHosttemplateData);
                     if (!$this->Hosttemplate->saveAll($dataToSave)) {
