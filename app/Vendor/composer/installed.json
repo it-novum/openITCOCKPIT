@@ -1,17 +1,17 @@
 [
     {
         "name": "adldap/adldap",
-        "version": "5.0.0.x-dev",
-        "version_normalized": "5.0.0.9999999-dev",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/adldap/adLDAP.git",
-            "reference": "b814cd5ab63c10519a8758702e067543a5549bcf"
+            "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/adldap/adLDAP/zipball/b814cd5ab63c10519a8758702e067543a5549bcf",
-            "reference": "b814cd5ab63c10519a8758702e067543a5549bcf",
+            "url": "https://api.github.com/repos/adldap/adLDAP/zipball/63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
+            "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
             "shasum": ""
         },
         "require": {
@@ -22,7 +22,7 @@
             "mockery/mockery": "0.9.*",
             "phpunit/phpunit": "4.6.*"
         },
-        "time": "2015-06-16 12:32:39",
+        "time": "2015-06-16 12:41:10",
         "type": "library",
         "installation-source": "source",
         "autoload": {

@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "edccc2dc2c6700f43680deb1bf3f40a8",
-    "content-hash": "91375908f0747e0d9c00b027e351216c",
+    "hash": "c1aea1c5bda252480e6263b9cee50cbc",
+    "content-hash": "f0c3dd2deca669bae290ab5a2d09d90d",
     "packages": [
         {
             "name": "adldap/adldap",
-            "version": "5.0.0.x-dev",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adldap/adLDAP.git",
-                "reference": "b814cd5ab63c10519a8758702e067543a5549bcf"
+                "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adldap/adLDAP/zipball/b814cd5ab63c10519a8758702e067543a5549bcf",
-                "reference": "b814cd5ab63c10519a8758702e067543a5549bcf",
+                "url": "https://api.github.com/repos/adldap/adLDAP/zipball/63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
+                "reference": "63fd63e4f680e521bdf6cba23e0e524a2c34c0d5",
                 "shasum": ""
             },
             "require": {
@@ -62,13 +62,15 @@
                 "ldap",
                 "windows"
             ],
-            "time": "2015-06-16 12:32:39"
+            "time": "2015-06-16 12:41:10"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "adldap/adldap": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],

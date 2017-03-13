@@ -372,34 +372,7 @@ class ContactsController extends AppController {
             $this->setFlash(__('Contact does not exists in LDAP'), false);
         }
 
-        $users = [];
-        $requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
-
-
-<<<<<<< Updated upstream
-        $allLdapUsers = $this->Ldap->findAllUser();
-        foreach ($allLdapUsers as $samAccountName) {
-            $ldapUser = $this->Ldap->userInfo($samAccountName);
-            $ableToImport = true;
-            foreach ($requiredFilds as $requiredFild) {
-                if (!isset($ldapUser[$requiredFild])) {
-                    $ableToImport = false;
-                }
-            }
-
-            if ($ableToImport === true) {
-                $users[] = $ldapUser;
-            }
-        }
-
-        $usersForSelect = [];
-        foreach ($users as $user) {
-            $usersForSelect[$user['samaccountname']] = $user['displayname'] . ' (' . $user['samaccountname'] . ')';
-        }
-
-=======
         $usersForSelect = $this->Ldap->findAllUser();
->>>>>>> Stashed changes
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
         $this->set(compact(['usersForSelect', 'systemsettings']));
