@@ -357,8 +357,8 @@ class ContactsController extends AppController {
 
     public function addFromLdap(){
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))) {
-                $ldapUser = $this->Ldap->findUser($this->request->data('Ldap.samaccountname'));
+            $ldapUser = $this->Ldap->userInfo($this->request->data('Ldap.samaccountname'));
+            if(!is_null($ldapUser)) {
                 $this->redirect([
                     'controller' => 'contacts',
                     'action' => 'add',
@@ -376,6 +376,7 @@ class ContactsController extends AppController {
         $requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
 
 
+<<<<<<< Updated upstream
         $allLdapUsers = $this->Ldap->findAllUser();
         foreach ($allLdapUsers as $samAccountName) {
             $ldapUser = $this->Ldap->userInfo($samAccountName);
@@ -396,7 +397,11 @@ class ContactsController extends AppController {
             $usersForSelect[$user['samaccountname']] = $user['displayname'] . ' (' . $user['samaccountname'] . ')';
         }
 
+=======
+        $usersForSelect = $this->Ldap->findAllUser();
+>>>>>>> Stashed changes
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+
         $this->set(compact(['usersForSelect', 'systemsettings']));
     }
 

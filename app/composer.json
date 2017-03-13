@@ -19,6 +19,11 @@
 
   "config": {
     "vendor-dir": "Vendor"
-  }
+  },
 
+  "minimum-stability" : "dev",
+  "prefer-stable": true,
+  "require": {
+    "adldap/adldap": "5.0.*"
+  }
 }
