@@ -53,20 +53,25 @@ class BrowsersController extends AppController
     {
         $top_node = $this->Container->findById(ROOT_CONTAINER);
         $parents = $this->Container->getPath($top_node['Container']['parent_id']);
-        $browser = Hash::extract($this->Container->children($top_node['Container']['id'], true), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_NODE.')$/]');
 
         $tenants = $this->__getTenants();
-        $query = $this->Browser->hostsQuery(ROOT_CONTAINER);
 
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $hosts = $this->Paginator->paginate('Host');
-//		$hosts = $this->Host->find('all', $query);
-        $query = $this->Browser->serviceQuery(ROOT_CONTAINER);
-        $services = $this->Service->find('all', $query);
+        $recursive = true;
+
+        $hostQuery = $this->Browser->hostsQuery(ROOT_CONTAINER);
+        $serviceQuery = $this->Browser->serviceQuery(ROOT_CONTAINER);
+        if($recursive){
+            $hostQuery = $this->Browser->hostsQuery($this->MY_RIGHTS);
+            $serviceQuery = $this->Browser->serviceQuery($this->MY_RIGHTS);
+        }
+
+        $hosts = $this->Host->find('all', $hostQuery);
+        $services = $this->Service->find('all', $serviceQuery);
+
         $state_array_host = $this->Browser->countHoststate($hosts);
         $state_array_service = $this->Browser->countServicestate($services);
+
         $this->set(compact([
-            'browser',
             'parents',
             'top_node',
             'state_array_host',
@@ -83,6 +88,7 @@ class BrowsersController extends AppController
             throw new NotFoundException(__('Invalid container'));
         }
         $MY_RIGHTS_WITH_TENANT = array_merge($this->MY_RIGHTS, array_keys($this->__getTenants()));
+
         if (!$this->hasRootPrivileges) {
             if (!in_array($id, $MY_RIGHTS_WITH_TENANT)) {
                 $this->render403();
@@ -106,13 +112,34 @@ class BrowsersController extends AppController
             }
         }
 
+        $recursive = true;
         $hosts = $services = [];
         if (in_array($id, $this->MY_RIGHTS)) {
-            $query = $this->Browser->hostsQuery($id);
+            $lookupIds = $id;
+            if($recursive){
+                if($this->hasRootPrivileges === true){
+                    //root user
+                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_NODE.')$/].id');
+                    $lookupIds = array_merge($lookupIds, [$id]);
+                }else{
+                    //non root user
+                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.CT_NODE.')$/].id');
+                    $lookupIds = array_merge($lookupIds, [$id]);
+                    if(is_array($lookupIds) && !empty($lookupIds)){
+                        foreach($lookupIds as $key => $currentId){
+                            if(!in_array($currentId, $this->MY_RIGHTS)){
+                                unset($lookupIds[$key]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            $query = $this->Browser->hostsQuery($lookupIds);
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $hosts = $this->Paginator->paginate('Host');
             //$hosts = $this->Host->find('all', $query);
-            $query = $this->Browser->serviceQuery($id);
+            $query = $this->Browser->serviceQuery($lookupIds);
             $services = $this->Service->find('all', $query);
         }
         $state_array_host = $this->Browser->countHoststate($hosts);
