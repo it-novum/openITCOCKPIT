@@ -27,8 +27,8 @@ class NagiosExportTask extends AppShell
 {
 
     /*
-	 * This code gets executed by the sudo_server!
-	 */
+     * This code gets executed by the sudo_server!
+     */
 
     public $uses = [
         'Hosttemplate',
@@ -68,10 +68,10 @@ class NagiosExportTask extends AppShell
     }
 
     /*
-	 * SudoServer naomaly runs 24/7 so we need to refresh
-	 * class cariables for each export, may be some thing changed in
-	 * Systemsettings, Satelliteconfig, or in on of the config files
-	 */
+     * SudoServer naomaly runs 24/7 so we need to refresh
+     * class cariables for each export, may be some thing changed in
+     * Systemsettings, Satelliteconfig, or in on of the config files
+     */
     public function init()
     {
         App::uses('Component', 'Controller');
@@ -406,7 +406,11 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('notification_interval', 1, $hosttemplate['Hosttemplate']['notification_interval']);
             $content .= $this->addContent('notification_period', 1, $hosttemplate['NotifyPeriod']['uuid']);
-            $content .= $this->addContent('notification_options', 1, $this->hostNotificationString($hosttemplate['Hosttemplate']));
+
+            $hostNotificationString = $this->hostNotificationString($hosttemplate['Hosttemplate']);
+            if(!empty($hostNotificationString)){
+                $content .= $this->addContent('notification_options', 1, $hostNotificationString);
+            }
 
             $content .= $this->nl();
             $content .= $this->addContent(';Flap detection settings:', 1);
@@ -672,13 +676,13 @@ class NagiosExportTask extends AppShell
                 }
             } else {
                 /*
-				 * NOTICE:
-				 * At the moment the host has no freshness_checks_enabled and freshness_threshold field.
-				 * This will be available in one of the next versions...
-				 *
-				 * So this is a little workaround!!!
-				 * We only add the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
-				 */
+                 * NOTICE:
+                 * At the moment the host has no freshness_checks_enabled and freshness_threshold field.
+                 * This will be available in one of the next versions...
+                 *
+                 * So this is a little workaround!!!
+                 * We only add the freshness for hosts on SAT-Systems! Normal hosts cant have this option at the moment!
+                 */
                 if ($host['Host']['satellite_id'] > 0) {
                     $content .= $this->addContent('check_freshness', 1, 1);
                     if ($checkInterrval == 0) {
@@ -771,9 +775,9 @@ class NagiosExportTask extends AppShell
                 $this->exportSatHost($host, $host['Host']['satellite_id'], $commandarguments);
 
                 /*
-				 * May be not all hosts in hostgroup 'foo' are available on SAT system 'bar', so we create an array
-				 * with all hosts from system 'bar' in hostgroup 'foo' for each SAT system
-				 */
+                 * May be not all hosts in hostgroup 'foo' are available on SAT system 'bar', so we create an array
+                 * with all hosts from system 'bar' in hostgroup 'foo' for each SAT system
+                 */
                 if (!empty($host['Hostgroup'])) {
                     foreach ($host['Hostgroup'] as $hostgroup) {
                         $this->dmConfig[$host['Host']['satellite_id']]['Hostgroup'][$hostgroup['uuid']][] = $host['Host']['uuid'];
@@ -909,14 +913,9 @@ class NagiosExportTask extends AppShell
         if ($host['NotifyPeriod']['uuid'] !== null && $host['NotifyPeriod']['uuid'] !== '')
             $content .= $this->addContent('notification_period', 1, $host['NotifyPeriod']['uuid']);
 
-        if (
-            ($host['Host']['notify_on_down'] === '1' || $host['Host']['notify_on_down'] === '0') ||
-            ($host['Host']['notify_on_unreachable'] === '1' || $host['Host']['notify_on_unreachable'] === '0') ||
-            ($host['Host']['notify_on_recovery'] === '1' || $host['Host']['notify_on_recovery'] === '0') ||
-            ($host['Host']['notify_on_flapping'] === '1' || $host['Host']['notify_on_flapping'] === '0') ||
-            ($host['Host']['notify_on_downtime'] === '1' || $host['Host']['notify_on_downtime'] === '0')
-        ) {
-            $content .= $this->addContent('notification_options', 1, $this->hostNotificationString($host['Host']));
+        $hostNotificationString = $this->hostNotificationString($host['Host']);
+        if(!empty($hostNotificationString)){
+            $content .= $this->addContent('notification_options', 1, $hostNotificationString);
         }
 
         $content .= $this->nl();
@@ -1072,7 +1071,11 @@ class NagiosExportTask extends AppShell
             if ($servicetemplates['NotifyPeriod']['uuid'] !== null && $servicetemplates['NotifyPeriod']['uuid'] !== '') {
                 $content .= $this->addContent('notification_period', 1, $servicetemplates['NotifyPeriod']['uuid']);
             }
-            $content .= $this->addContent('notification_options', 1, $this->serviceNotificationString($servicetemplates['Servicetemplate']));
+
+            $serviceNotificationString = $this->serviceNotificationString($servicetemplates['Servicetemplate']);
+            if(!empty($serviceNotificationString)) {
+                $content .= $this->addContent('notification_options', 1, $serviceNotificationString);
+            }
 
             $content .= $this->nl();
             $content .= $this->addContent(';Flap detection settings:', 1);
@@ -1320,9 +1323,9 @@ class NagiosExportTask extends AppShell
                         if (!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null) {
                             if (isset($eventarguments) && !empty($eventarguments)) {
                                 /*We have an event handler, but the same like the template uses.
-								 * So this was set to null by Service::prepareForSave()
-								 * We need to select the uuid of the event handler command to generate the config
-								 */
+                                 * So this was set to null by Service::prepareForSave()
+                                 * We need to select the uuid of the event handler command to generate the config
+                                 */
                                 $_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
                                 $service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
                                 unset($_command);
@@ -1351,23 +1354,23 @@ class NagiosExportTask extends AppShell
                 }
 
                 /*
-				if($service['Host']['satellite_id'] == 0){
-					if(isset($commandarguments) && !empty($commandarguments)){
-						$servicecommandUuid = $service['CheckCommand']['uuid'];
-						if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
-							//The user changed the parameters, but not the check command its self
-							$command = $this->Command->findById($service['Servicetemplate']['command_id']);
-							$servicecommandUuid = $command['Command']['uuid'];
-						}
-						$content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-						unset($commandarguments);
-					}else{
-						if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
-							$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
-					}
-				}else{
-					$content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
-				}*/
+                if($service['Host']['satellite_id'] == 0){
+                    if(isset($commandarguments) && !empty($commandarguments)){
+                        $servicecommandUuid = $service['CheckCommand']['uuid'];
+                        if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
+                            //The user changed the parameters, but not the check command its self
+                            $command = $this->Command->findById($service['Servicetemplate']['command_id']);
+                            $servicecommandUuid = $command['Command']['uuid'];
+                        }
+                        $content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+                        unset($commandarguments);
+                    }else{
+                        if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
+                            $content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
+                    }
+                }else{
+                    $content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
+                }*/
 
                 if ($service['Service']['check_period_id'] !== null && $service['Service']['check_period_id'] !== '')
                     $content .= $this->addContent('check_period', 1, $service['CheckPeriod']['uuid']);
@@ -1493,9 +1496,9 @@ class NagiosExportTask extends AppShell
                     $this->exportSatService($service, $host, $commandarguments, $eventarguments);
 
                     /*
-					 * May be not all services in servicegroup 'foo' are available on SAT system 'bar', so we create an array
-					 * with all services from system 'bar' in servicegroup 'foo' for each SAT system
-					 */
+                     * May be not all services in servicegroup 'foo' are available on SAT system 'bar', so we create an array
+                     * with all services from system 'bar' in servicegroup 'foo' for each SAT system
+                     */
                     if (!empty($service['Servicegroup'])) {
                         foreach ($service['Servicegroup'] as $servicegroup) {
                             $this->dmConfig[$host['Host']['satellite_id']]['Servicegroup'][$servicegroup['uuid']][] = $host['Host']['uuid'].','.$service['Service']['uuid'];
@@ -1598,9 +1601,9 @@ class NagiosExportTask extends AppShell
             if (!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null) {
                 if (isset($eventarguments) && !empty($eventarguments)) {
                     /*We have an event handler, but the same like the template uses.
-					 * So this was set to null by Service::prepareForSave()
-					 * We need to select the uuid of the event handler command to generate the config
-					 */
+                     * So this was set to null by Service::prepareForSave()
+                     * We need to select the uuid of the event handler command to generate the config
+                     */
                     $_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
                     $service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
                     unset($_command);
@@ -1624,19 +1627,19 @@ class NagiosExportTask extends AppShell
         }
 
         /*
-		if(isset($commandarguments) && !empty($commandarguments)){
-			$servicecommandUuid = $service['CheckCommand']['uuid'];
-			if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
-				//The user changed the parameters, but not the check command its self
-				$command = $this->Command->findById($service['Servicetemplate']['command_id']);
-				$servicecommandUuid = $command['Command']['uuid'];
-			}
-			$content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-			unset($commandarguments);
-		}else{
-			if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
-				$content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
-		}*/
+        if(isset($commandarguments) && !empty($commandarguments)){
+            $servicecommandUuid = $service['CheckCommand']['uuid'];
+            if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
+                //The user changed the parameters, but not the check command its self
+                $command = $this->Command->findById($service['Servicetemplate']['command_id']);
+                $servicecommandUuid = $command['Command']['uuid'];
+            }
+            $content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+            unset($commandarguments);
+        }else{
+            if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
+                $content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
+        }*/
 
 
         if ($service['Service']['check_period_id'] !== null && $service['Service']['check_period_id'] !== '')
@@ -1862,9 +1865,9 @@ class NagiosExportTask extends AppShell
                 $content .= $this->addContent('alias', 1, $servicegroup['Servicegroup']['description']);
 
                 /*
-				 * Nagios syntax is a little ugly at this point, may be you found a better solution for this :-)
-				 * mebers=<host1>,<service1>,<host2>,<service2>,...,<hostn>,<servicen>
-				 */
+                 * Nagios syntax is a little ugly at this point, may be you found a better solution for this :-)
+                 * mebers=<host1>,<service1>,<host2>,<service2>,...,<hostn>,<servicen>
+                 */
 
                 $members = [];
                 $hostCache = [];
@@ -2456,8 +2459,8 @@ class NagiosExportTask extends AppShell
     }
 
     /*
-	 * This function load export tasks from external modules
-	 */
+     * This function load export tasks from external modules
+     */
     protected function __loadExternTasks()
     {
         $this->externalTasks = [];
@@ -2805,7 +2808,7 @@ class NagiosExportTask extends AppShell
     ;Weblinks:
     ;http://nagios.sourceforge.net/docs/nagioscore/4/en/objectdefinitions.html
     ;http://nagios.sourceforge.net/docs/nagioscore/4/en/objecttricks.html
-	\n";
+    \n";
         if (is_resource($file)) {
             fwrite($file, $header);
         } else {
