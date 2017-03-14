@@ -7,5 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'itnovum\\openITCOCKPIT\\' => array($baseDir . '/src/itnovum/openITCOCKPIT'),
-    'Adldap\\' => array($vendorDir . '/adldap/adldap/src'),
+    'Adldap\\' => array($vendorDir . '/adldap_v5/adldap/src'),
 );

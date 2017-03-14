@@ -22,8 +22,5 @@
   },
 
   "minimum-stability" : "dev",
-  "prefer-stable": true,
-  "require": {
-    "adldap/adldap": "dev-master"
-  }
+  "prefer-stable": true
 }

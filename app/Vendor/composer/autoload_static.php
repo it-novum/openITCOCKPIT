@@ -24,7 +24,7 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         ),
         'Adldap\\' => 
         array (
-            0 => __DIR__ . '/..' . '/adldap/adldap/src',
+            0 => __DIR__ . '/..' . '/adldap_v5/adldap/src',
         ),
     );
 
