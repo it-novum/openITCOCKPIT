@@ -380,7 +380,9 @@
                             <br/>
                             <br/>
                             <strong><?php echo __('UUID') ?>:</strong>
-                            <code><?php echo $service['Service']['uuid']; ?></code><br/>
+                            <code><?php echo $service['Service']['uuid']; ?></code>&nbsp;
+                            <span class="btn btn-default btn-xs" iconcolor="white" onclick="$('#service-uuid-copy').show().select();document.execCommand('copy');$('#service-uuid-copy').hide();"><?php echo __('Copy to clipboard'); ?></span>
+                            <input style="display:none;" type="text" id="service-uuid-copy" value="<?php echo $service['Service']['uuid']; ?>"><br/>
                             <strong><?php echo __('Description'); ?>:</strong><br/>
                             <i class="txt-color-blue"><?php echo h($service['Service']['description']); ?></i><br>
                             <strong><?php echo __('Notes'); ?>:</strong><br/>
