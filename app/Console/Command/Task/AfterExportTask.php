@@ -68,8 +68,11 @@ class AfterExportTask extends AppShell
 
     public function copy($satellite)
     {
-        $return = false;
-        if ($this->checkPort($satellite['Satellite']['address'])) {
+        try{
+            if (!$this->checkPort($satellite['Satellite']['address'])) {
+                throw new Exception('Checking port failed!');
+            }
+
             $this->out('Connect to '.$satellite['Satellite']['name'].' ('.$satellite['Satellite']['address'].')', false);
             $sshConnection = ssh2_connect($satellite['Satellite']['address'], $this->conf['SSH']['port']);
             $loggedIn = ssh2_auth_pubkey_file(
@@ -78,68 +81,71 @@ class AfterExportTask extends AppShell
                 $this->conf['SSH']['public_key'],
                 $this->conf['SSH']['private_key']
             );
-            if ($loggedIn === true) {
-                $this->out('<green> ok</green>');
-                //Creat SFTP Ressource
-                if (is_dir(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'])) {
-                    $folder = new Folder(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']);
-
-                    //Delete target on remote host
-                    $this->out('Delete old monitoring configuration', false);
-                    $result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
-                    $this->out('<green> ok</green>');
-
-                    //Copy new files
-                    $this->out('Copy new configuration', false);
-                    if ($this->conf['SSH']['use_rsync'] === false) {
-                        $this->out(' using PHP', false);
-                        $sftp = ssh2_sftp($sshConnection);
-                        @$folder->copy([
-                            'to'        => 'ssh2.sftp://'.$sftp.$this->conf['REMOTE']['path'],
-                            'from'      => Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
-                            //'mode' => 0644,
-                            'recursive' => true,
-                        ]);
-                        $this->out('<green> ok</green>');
-                        $return = true;
-                    } else {
-                        $this->out(' using rsync', false);
-                        $commandArgs = [
-                            $this->conf['SSH']['private_key'],
-                            Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
-                            $this->conf['SSH']['username'],
-                            $satellite['Satellite']['address'],
-                            $this->conf['REMOTE']['path'],
-                        ];
-                        $commandTemplate = "rsync -z -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
-                        $command = vsprintf($commandTemplate, $commandArgs);
-                        exec($command, $output, $returnCode);
-                        if ($returnCode == 0) {
-                            $this->out('<green> ok</green>');
-                            $return = true;
-                        } else {
-                            $this->out('<red> error</red>');
-                        }
-                    }
-
-
-                    //Restart remote monitoring engine
-                    $this->out('Restart remote monitoring engine', false);
-                    $result = $this->execOverSsh($sshConnection, "/bin/bash -c '".$this->conf['SSH']['restart_command']."'");
-                    $this->out('<green> ok</green>');
-
-                    //Execute remote commands - if any
-                    foreach ($this->conf['SSH']['remote_command'] as $remoteCommand) {
-                        $this->out('Execute external command '.$remoteCommand, false);
-                        $result = $this->execOverSsh($sshConnection, $remoteCommand);
-                        $this->out('<green> ok</green>');
-                    }
-                }
-            } else {
-                $this->out('<red>Login failed!</red>');
+            if ($loggedIn !== true){
+                throw new Exception('Login failed!');
             }
+            $this->out('<green> ok</green>');
+
+            //Creat SFTP Ressource
+            if (!is_dir(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'])) {
+                throw new Exception('No derectory in nagios.export.satellite_path was found!');
+            }
+            $folder = new Folder(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']);
+
+            //Delete target on remote host
+            $this->out('Delete old monitoring configuration', false);
+            $result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
+            $this->out('<green> ok</green>');
+
+            //Copy new files
+            $this->out('Copy new configuration', false);
+            if ($this->conf['SSH']['use_rsync'] === false) {
+                $this->out(' using PHP', false);
+                $sftp = ssh2_sftp($sshConnection);
+                @$folder->copy([
+                    'to'        => 'ssh2.sftp://'.$sftp.$this->conf['REMOTE']['path'],
+                    'from'      => Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
+                    //'mode' => 0644,
+                    'recursive' => true,
+                ]);
+                $this->out('<green> ok</green>');
+            } else {
+                $this->out(' using rsync', false);
+                $commandArgs = [
+                    $this->conf['SSH']['private_key'],
+                    Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
+                    $this->conf['SSH']['username'],
+                    $satellite['Satellite']['address'],
+                    $this->conf['REMOTE']['path'],
+                ];
+                $commandTemplate = "rsync -z -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
+                $command = vsprintf($commandTemplate, $commandArgs);
+                exec($command, $output, $returnCode);
+                if ($returnCode != 0) {
+                    throw new Exception('Failed executing rsync -z -e \'ssh -ax -i %s -o StrictHostKeyChecking=no\' -avzm --timeout=10 --delete %s/* %s@%s:%s');
+                }
+                $this->out('<green> ok</green>');
+            }
+
+
+            //Restart remote monitoring engine
+            $this->out('Restart remote monitoring engine', false);
+            $result = $this->execOverSsh($sshConnection, "/bin/bash -c '".$this->conf['SSH']['restart_command']."'");
+            $this->out('<green> ok</green>');
+
+            //Execute remote commands - if any
+            foreach ($this->conf['SSH']['remote_command'] as $remoteCommand) {
+                $this->out('Execute external command '.$remoteCommand, false);
+                $result = $this->execOverSsh($sshConnection, $remoteCommand);
+                $this->out('<green> ok</green>');
+            }
+
+            return true;
+        }catch (Exception $ex){
+            error_log('Rsync failed for Satellite '.$satellite['Satellite']['address'].': '.$ex->getMessage()."\n", 3, '/var/log/nginx/cake/error.log');
+            $this->out('<red> '.$ex->getMessage().'</red>');
+            return false;
         }
-        return $return;
     }
 
 
