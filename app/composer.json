@@ -19,6 +19,8 @@
 
   "config": {
     "vendor-dir": "Vendor"
-  }
+  },
 
+  "minimum-stability" : "dev",
+  "prefer-stable": true
 }
