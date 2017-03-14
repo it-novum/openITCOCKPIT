@@ -578,8 +578,8 @@ class HosttemplatesController extends AppController {
             ];
             if ($this->request->data('Hosttemplate.Contact')) {
                 if ($contactsForChangelog = $this->Contact->find('list', [
+                    'recursive' => -1,
                     'conditions' => [
-                        'recursive' => -1,
                         'Contact.id' => $this->request->data['Hosttemplate']['Contact'],
                     ],
                 ])
