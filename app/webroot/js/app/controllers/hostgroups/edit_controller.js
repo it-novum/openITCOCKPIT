@@ -44,6 +44,15 @@ App.Controllers.HostgroupsEditController = Frontend.AppController.extend({
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
 			dataPlaceholder: self.getVar('data_placeholder')
 		});
+        this.ContainerSelectbox.addContainerEventListener({
+            selectBoxSelector: '#ContainerParentId',
+            ajaxUrl: '/hostgroups/loadHosttemplates/:selectBoxValue:' + '.json',
+            fieldTypes: {
+                hosttemplates: '#HostgroupHosttemplate',
+            },
+            dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+            dataPlaceholder: self.getVar('data_placeholder')
+        });
 	},
 });
 

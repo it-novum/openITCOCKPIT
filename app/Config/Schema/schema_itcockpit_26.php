@@ -810,6 +810,18 @@ class AppSchema extends CakeSchema
         'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $hosttemplates_to_hostgroups = [
+        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'hosttemplate_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'hostgroup_id'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'           => [
+                'PRIMARY'       => ['column' => 'id', 'unique' => 1],
+                'host_id'       => ['column' => 'hosttemplate_id', 'unique' => 0],
+                'hostgroup_id'  => ['column' => 'hostgroup_id', 'unique' => 0],
+            ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
     public $hosts = [
         'id'                            => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
