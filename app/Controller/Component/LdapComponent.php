@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use Adldap\Adldap;
+use Model\Adldap;
 
 class LdapComponent extends Component
 {
@@ -36,7 +36,7 @@ class LdapComponent extends Component
         parent::__construct($collection, $settings);
 
         //Load external lib
-        require_once APP.'Vendor'.DS.'adldap_v5'.DS.'adldap'.DS.'src'.DS.'Adldap.php';
+        require_once APP.'Model'.DS.'Adldap.php';
 
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
