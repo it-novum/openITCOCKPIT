@@ -66,6 +66,7 @@ class Changelog extends AppModel
                 'Hostgroup' => '{(description|hostgroup_url)}',
                 'Container' => '{(name)}',
                 'Host'      => '{n}.{(id|name)}',
+                'Hosttemplate'      => '{n}.{(id|name)}',
             ],
             'hosttemplate'    => [
                 'Hosttemplate'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
@@ -77,6 +78,7 @@ class Changelog extends AppModel
                 //			'Hosttemplatecommandargumentvalue' => ['prepareFields' => ['{n}.{(id|name|value)}', 'Commandargument.{(human_name)}'], 'fields' => '{n}.{(id|name|human_name)}'],
                 'Contact'                          => '{n}.{(id|name)}',
                 'Contactgroup'                     => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Hostgroup'                        => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicetemplate' => [
                 'Servicetemplate'                          => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',

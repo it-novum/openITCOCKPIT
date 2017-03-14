@@ -67,6 +67,8 @@ class Host extends AppModel
             'joinTable'             => 'hosts_to_hostgroups',
             'foreignKey'            => 'host_id',
             'associationForeignKey' => 'hostgroup_id',
+            'unique'                => true,
+            'dependent'             => true,
         ],
     ];
 
@@ -351,17 +353,27 @@ class Host extends AppModel
 
     public function prepareForCompare($prepare_array = [], $prepare = false)
     {
+        $keysForArraySort = ['Contact', 'Contactgroup', 'Hostgroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare) {
+            $currentKey = key($prepare_array);
+            if(!in_array($currentKey, $keysForArraySort)){
+                return $prepare_array;
+            }
+            if(is_array($prepare_array[$currentKey][$currentKey])){
+                sort($prepare_array[$currentKey][$currentKey]);
+            }
             return $prepare_array;
         }
         $new_array = [];
         if (is_array($prepare_array)) {
             foreach ($prepare_array as $key => $data) {
+                if(is_array($data)){
+                    sort($data);
+                }
                 $new_array[$key][$key] = $data;
             }
         }
-
         return $new_array;
     }
 
@@ -503,6 +515,7 @@ class Host extends AppModel
         if (empty($requestData['Host']['Contact'])) {
             $requestData['Host']['Contact'] = [];
         }
+
         $diff_array = Hash::merge($diff_array, [
             'Host'       => [
                 'hosttemplate_id' => $hostTemplateId,
@@ -511,16 +524,12 @@ class Host extends AppModel
                 'Contact'         => $requestData['Host']['Contact'],
                 'Contactgroup'    => $requestData['Host']['Contactgroup'],
                 'Parenthost'      => $requestData['Parenthost']['Parenthost'],
-                'Hostgroup'       => $requestData['Hostgroup']['Hostgroup'],
             ],
             'Container'  => [
                 'Container' => $containerIds,
             ],
             'Parenthost' => [
                 'Parenthost' => $requestData['Parenthost']['Parenthost'],
-            ],
-            'Hostgroup'  => [
-                'Hostgroup' => $requestData['Hostgroup']['Hostgroup'],
             ],
         ]);
         if (empty($diff_array['Hostcommandargumentvalue'])) {
@@ -614,6 +623,14 @@ class Host extends AppModel
                             'fields' => ['human_name'],
                         ],
                     ],
+                    'Hostgroup'                     => [
+                        'fields'    => ['id'],
+                        'Container' => [
+                            'fields' => [
+                                'name',
+                            ],
+                        ],
+                    ],
                 ],
                 'Contact'                  => [
                     'fields' => [
@@ -663,7 +680,6 @@ class Host extends AppModel
         if (empty($host['Host']['hosttemplate_id']) || $host['Host']['hosttemplate_id'] == 0) {
             return $host;
         }
-
         $hostcommandargumentvalue = [];
         if (!empty($host['Hostcommandargumentvalue'])) {
             $hostcommandargumentvalue = $host['Hostcommandargumentvalue'];
@@ -671,6 +687,13 @@ class Host extends AppModel
             if ($host['Host']['command_id'] === $host['Hosttemplate']['command_id'] || $host['Host']['command_id'] === null) {
                 $hostcommandargumentvalue = $host['Hosttemplate']['Hosttemplatecommandargumentvalue'];
             }
+        }
+
+        $hostgroups = [];
+        if(!empty($host['Hostgroup'])){
+            $hostgroups = Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id');
+        }elseif(empty($host['Hostgroup']) && !(empty($host['Hosttemplate']['Hostgroup']))){
+            $hostgroups = Hash::combine($host['Hosttemplate']['Hostgroup'], '{n}.id', '{n}.id');
         }
 
         $host = [
@@ -682,7 +705,7 @@ class Host extends AppModel
             'Customvariable'           => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
             'Hostcommandargumentvalue' => $hostcommandargumentvalue,
             'Hosttemplate'             => $host['Hosttemplate'],
-            'Hostgroup'                => Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id'),
+            'Hostgroup'                => $hostgroups,
             'CheckCommand'             => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
             'CheckPeriod'              => (!is_null($host['Host']['check_period_id'])) ? $host['CheckPeriod'] : $host['Hosttemplate']['CheckPeriod'],
             'NotifyPeriod'             => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],

@@ -45,6 +45,12 @@ class Hostgroup extends AppModel
             'unique'     => true,
             'dependent'  => true,
         ],
+        'Hosttemplate' => [
+            'joinTable'  => 'hosttemplates_to_hostgroups',
+            'foreignKey' => 'hostgroup_id',
+            'unique'     => true,
+            'dependent'  => true,
+        ],
     ];
 
     public $validate = [
@@ -53,15 +59,6 @@ class Hostgroup extends AppModel
             'allowEmpty' => true,
             'required'   => false,
             'message'    => 'Not a valid URL format',
-        ],
-        'Host'          => [
-            'rule'     => ['multiple',
-                [
-                    'min' => 1,
-                ],
-            ],
-            'message'  => 'Please select at least 1 host',
-            'required' => true,
         ],
     ];
 
@@ -131,6 +128,7 @@ class Hostgroup extends AppModel
             default:
                 if ($index == 'id') {
                     $result = $this->find('all', [
+                        'recursive' => -1,
                         'contain'    => [
                             'Container' => [
                                 'fields' => [

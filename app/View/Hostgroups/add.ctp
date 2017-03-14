@@ -51,14 +51,32 @@
             echo $this->Form->create('Hostgroup', [
                 'class' => 'form-horizontal clear',
             ]);
-            echo $this->Form->input('Container.parent_id', ['options' => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
-
-                                                            'SelectionMode' => 'single',
+            echo $this->Form->input('Container.parent_id', [
+                'options' => $this->Html->chosenPlaceholder($containers),
+                'class' => 'chosen',
+                'style' => 'width: 100%;',
+                'label' => __('Container'),
+                'SelectionMode' => 'single',
             ]);
             echo $this->Form->input('Container.name', ['label' => __('Hostgroup name')]);
             echo $this->Form->input('Hostgroup.description', ['label' => __('Description')]);
             echo $this->Form->input('hostgroup_url', ['label' => __('Hostgroup URL')]);
-            echo $this->Form->input('Hostgroup.Host', ['options' => $hosts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Hosts'), 'data-placeholder' => __('Please choose a host')]);
+            echo $this->Form->input('Hostgroup.Host', [
+                'options' => $hosts,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Hosts'),
+                'data-placeholder' => __('Please choose a host')
+            ]);
+            echo $this->Form->input('Hostgroup.Hosttemplate', [
+                'options' => $hosttemplates,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Host templates'),
+                'data-placeholder' => __('Please choose a host template')
+            ]);
             ?>
             <br/>
             <br/>
