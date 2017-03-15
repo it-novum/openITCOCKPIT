@@ -697,7 +697,6 @@ class Adldap
         // Set the LDAP options
         $this->ldapConnection->setOption(LDAP_OPT_PROTOCOL_VERSION, 3);
         $this->ldapConnection->setOption(LDAP_OPT_REFERRALS, $this->followReferrals);
-        $this->ldapConnection->setOption(LDAP_OPT_NETWORK_TIMEOUT, 25); // added by it-novum
 
         // Authenticate to the server
         return $this->authenticate($this->getAdminUsername(), $this->getAdminPassword(), true);

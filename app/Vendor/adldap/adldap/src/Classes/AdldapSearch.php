@@ -143,7 +143,8 @@ class AdldapSearch extends AbstractAdldapBase
         do {
             $this->connection->controlPagedResult($perPage, $isCritical, $cookie);
 
-            $results = $this->connection->search($this->adldap->getBaseDn(), "(&(objectClass=user)(samaccounttype=" . adLDAP::ADLDAP_NORMAL_ACCOUNT .")(objectCategory=person)(cn=*))", $this->getSelects());
+            $results = $this->connection->search($this->adldap->getBaseDn(), $this->getQuery(), $this->getSelects());
+
             if ($results) {
                 $this->connection->controlPagedResultResponse($results, $cookie);
 
@@ -457,15 +458,14 @@ class AdldapSearch extends AbstractAdldapBase
      */
     private function processPaginatedResults($pages, $perPage = 50, $currentPage = 0)
     {
-
         // Make sure we have at least one page of results
         if (count($pages) > 0) {
             $objects = [];
 
             // Go through each page
-//            foreach ($pages as $results) {
+            foreach ($pages as $results) {
                 // Get the entries for each page
-                $entries = $this->connection->getEntries($pages[$currentPage]);
+                $entries = $this->connection->getEntries($results);
 
                 /*
                  * If we've retrieved entries, we'll go through
@@ -479,19 +479,18 @@ class AdldapSearch extends AbstractAdldapBase
                         $objects[] = $entry->getAttributes();
                     }
                 }
-//            }
-            return [count($pages), $objects];
+            }
 
             /*
              * If we're sorting, we'll process all of
              * our results so it's sorted correctly
              */
-//            if (!empty($this->sortByField)) {
-//                $objects = $this->processSortBy($objects);
-//            }
+            if (!empty($this->sortByField)) {
+                $objects = $this->processSortBy($objects);
+            }
 
             // Return a new Paginator instance
-//            return $this->newPaginator($objects, $perPage, $currentPage, count($pages));
+            return $this->newPaginator($objects, $perPage, $currentPage, count($pages));
         }
 
         // Looks like we don't have any results, return false
