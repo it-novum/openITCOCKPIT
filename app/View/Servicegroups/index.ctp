@@ -67,6 +67,9 @@
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         my-column="3"><input type="checkbox" class="pull-left"/>
                                     &nbsp; <?php echo __('Services'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        my-column="4"><input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Service templates'); ?></a></li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -91,6 +94,7 @@
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicegroup.description');
                                         echo $this->Paginator->sort('Servicegroup.description', __('Description')); ?></th>
                                     <th class="no-sort"><?php echo __('Services'); ?></th>
+                                    <th class="no-sort"><?php echo __('Service templates'); ?></th>
                                     <th class="no-sort"></th>
                                 </tr>
                                 </thead>
@@ -111,9 +115,9 @@
                                         <td>
                                             <ul class="list-unstyled">
                                                 <?php
-                                                foreach (Hash::extract($servicegroup, '{n}') as $service):
+                                                foreach ($servicegroup['Service'] as $service):
                                                     echo '<li>';
-                                                    $serviceName = $service['Service']['name'];
+                                                    $serviceName = $service['name'];
                                                     if ($serviceName === null || $serviceName === ''):
                                                         $serviceName = $service['Servicetemplate']['name'];
                                                     endif;
@@ -125,10 +129,26 @@
                                                     endif;
                                                     echo "/";
                                                     if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                        <a href="<?php echo Router::url(['controller' => 'services', 'action' => 'edit', $service['Service']['id']]); ?>"><?php echo h($serviceName); ?></a>
+                                                        <a href="<?php echo Router::url(['controller' => 'services', 'action' => 'edit', $service['id']]); ?>"><?php echo h($serviceName); ?></a>
                                                         <?php
                                                     else:
                                                         echo h($serviceName);
+                                                    endif;
+                                                    echo '</li>';
+                                                endforeach;
+                                                ?>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="list-unstyled">
+                                                <?php
+                                                foreach ($servicegroup['Servicetemplate'] as $servicetemplate):
+                                                    echo '<li>';
+                                                    if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                        <a href="<?php echo Router::url(['controller' => 'servicetemplates', 'action' => 'edit', $servicetemplate['id']]); ?>"><?php echo h($servicetemplate['template_name'].' ('.$servicetemplate['name'].')'); ?></a>
+                                                        <?php
+                                                    else:
+                                                        echo h($servicetemplate['name']);
                                                     endif;
                                                     echo '</li>';
                                                 endforeach;

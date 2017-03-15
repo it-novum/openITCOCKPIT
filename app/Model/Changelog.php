@@ -93,9 +93,10 @@ class Changelog extends AppModel
                 'Contactgroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicegroup'    => [
-                'Servicegroup' => '{(description|servicegroup_url)}',
-                'Container'    => '{(name)}',
-                'Service'      => '{n}.{(id|name)}',
+                'Servicegroup'      => '{(description|servicegroup_url)}',
+                'Container'         => '{(name)}',
+                'Service'           => '{n}.{(id|name)}',
+                'Servicetemplate'   => '{n}.{(id|name)}',
             ],
             'host'            => [
                 'Host'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',

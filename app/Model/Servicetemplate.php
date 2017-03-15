@@ -48,6 +48,14 @@ class Servicetemplate extends AppModel
             'unique'     => true,
             'dependent'  => true,
         ],
+        'Servicegroup'    => [
+            'className'             => 'Servicegroup',
+            'joinTable'             => 'servicetemplates_to_servicegroups',
+            'foreignKey'            => 'servicetemplate_id',
+            'associationForeignKey' => 'servicegroup_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
     ];
 
 
