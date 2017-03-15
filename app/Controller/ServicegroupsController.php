@@ -211,7 +211,7 @@ class ServicegroupsController extends AppController
         $serviceIds = $this->Tree->resolveChildrenOfContainerIds($serviceIds);
         array_unshift($serviceIds, ROOT_CONTAINER);
         $_services = $this->Service->servicesByHostContainerIds($serviceIds);
-
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($serviceIds, 'list');
         //Fix that duplicate hostnames dont overwrite the array key!!
         foreach ($_services as $service) {
             $hostId = $service['Host']['id'];
@@ -240,7 +240,7 @@ class ServicegroupsController extends AppController
             }
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Hosttemplate->find('first', [
+                    $servicetemplate = $this->Servicetemplate->find('first', [
                         'recursive' => -1,
                         'contain'    => [],
                         'fields'     => [
@@ -292,8 +292,8 @@ class ServicegroupsController extends AppController
         }
 
         $this->request->data = Hash::merge($servicegroup, $this->request->data);
-        $this->set(compact(['servicegroup', 'containers', 'services']));
-        $this->set('_serialize', ['servicegroup', 'containers', 'services']);
+        $this->set(compact(['servicegroup', 'containers', 'services', 'servicetemplates']));
+        $this->set('_serialize', ['servicegroup', 'containers', 'services', 'servicetemplates']);
     }
 
     public function add()
