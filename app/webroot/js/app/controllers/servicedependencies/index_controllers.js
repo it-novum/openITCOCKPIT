@@ -31,6 +31,22 @@ App.Controllers.ServicedependenciesIndexController = Frontend.AppController.exte
 			self.fnShowHide($(this).attr('my-column'), $(this).children());
 		});
 
+		var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+		for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+			pageUrl = localStorage.key(i);
+			dataTableValue = localStorage.getItem(pageUrl);
+			if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+			dataTableValueParsed = JSON.parse(dataTableValue);
+			if(pageUrl.indexOf('DataTables_servicedependency_list_/servicedependencies') !== -1){
+				if(dataTableValueParsed.time > highestTime){
+					highestTime = dataTableValueParsed.time;
+					highestValue = dataTableValue;
+				}
+			}
+		}
+
+		self.setDataTableFilter(highestValue);
+
 		$('#servicedependency_list').dataTable({
 			"bPaginate": false,
 			"bFilter": false,
@@ -45,7 +61,14 @@ App.Controllers.ServicedependenciesIndexController = Frontend.AppController.exte
 		this.$table = $('#servicedependency_list');
 
 		//Checkboxen aktivieren
-		$('.select_datatable').find('input').prop('checked', true);
+		$('.select_datatable').find('input').each(function () {
+			$(this).prop('checked', false);
+			var myCol = ($(this).parent().attr('my-column'));
+			var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
+			if (isVisible == true) {
+				$(this).prop('checked', true);
+			}
+		})
 
 	},
 	fnShowHide: function( iCol, inputObject){
@@ -60,5 +83,10 @@ App.Controllers.ServicedependenciesIndexController = Frontend.AppController.exte
 		}
 		oTable.fnSetColumnVis( iCol, bVis ? false : true );
 
+	},
+	setDataTableFilter: function(storageValue){
+		var currentURL = window.location.href;
+		var postTextURL = currentURL.substring(currentURL.indexOf('servicedependencies') + 19);
+		localStorage.setItem('DataTables_servicedependency_list_/servicedependencies'+postTextURL, storageValue);
 	}
 });
