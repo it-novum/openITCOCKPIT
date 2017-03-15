@@ -45,6 +45,7 @@ App.Controllers.HostgroupsIndexController = Frontend.AppController.extend({
         for ( var i = 0, len = localStorage.length; i < len; ++i ) {
             pageUrl = localStorage.key(i);
             dataTableValue = localStorage.getItem(pageUrl);
+            if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
             dataTableValueParsed = JSON.parse(dataTableValue);
             if(pageUrl.indexOf('DataTables_hostgroup_list_/hostgroups') !== -1){
                 if(dataTableValueParsed.time > highestTime){
