@@ -209,8 +209,8 @@ $config = [
             ],
             'Servicegroups'         => [
                 'index'  => ['listToPdf', 'view'],
-                'add'    => ['loadServices', 'mass_add'],
-                'edit'   => ['loadServices'],
+                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
+                'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
             ],
             'Services'              => [
