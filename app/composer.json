@@ -22,6 +22,6 @@
   "prefer-stable": true,
   "require": {
     "symfony/filesystem": "^3.2",
-    "adldap/adldap": "dev-master"
+    "adldap/adldap": "dev-master",
   }
 }
