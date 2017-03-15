@@ -357,7 +357,7 @@ class Host extends AppModel
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare) {
             $currentKey = key($prepare_array);
-            if(!in_array($currentKey, $keysForArraySort)){
+            if(!in_array($currentKey, $keysForArraySort, true)){
                 return $prepare_array;
             }
             if(is_array($prepare_array[$currentKey][$currentKey])){

@@ -394,17 +394,27 @@ class Service extends AppModel
 
     public function prepareForCompare($prepare_array = [], $prepare = false)
     {
+        $keysForArraySort = ['Contact', 'Contactgroup', 'Servicegroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare) {
+            $currentKey = key($prepare_array);
+            if(!in_array($currentKey, $keysForArraySort, true)){
+                return $prepare_array;
+            }
+            if(is_array($prepare_array[$currentKey][$currentKey])){
+                sort($prepare_array[$currentKey][$currentKey]);
+            }
             return $prepare_array;
         }
         $new_array = [];
         if (is_array($prepare_array)) {
             foreach ($prepare_array as $key => $data) {
+                if(is_array($data)){
+                    sort($data);
+                }
                 $new_array[$key][$key] = $data;
             }
         }
-
         return $new_array;
     }
 
@@ -579,128 +589,153 @@ class Service extends AppModel
             'conditions' => [
                 'Service.id' => $id,
             ],
-            'contain'    => ['Servicetemplate'                  => [
-                'Contact'                                  => [
-                    'fields' => [
-                        'id', 'name',
+            'contain'    => [
+                'Servicetemplate' => [
+                    'Contact' => [
+                        'fields' => [
+                            'id', 'name',
+                        ],
+                    ],
+                    'Contactgroup' => [
+                        'fields'    => ['id'],
+                        'Container' => [
+                            'fields' => [
+                                'name',
+                            ],
+                        ],
+                    ],
+                    'Servicegroup' => [
+                        'fields'    => [
+                            'id'
+                        ],
+                        'Container' => [
+                            'fields' => [
+                                'name',
+                            ],
+                        ],
+                    ],
+                    'CheckCommand',
+                    'CheckPeriod',
+                    'NotifyPeriod',
+                    'Customvariable'                           => [
+                        'fields' => [
+                            'id', 'name', 'value', 'objecttype_id',
+                        ],
+                    ],
+                    'Servicetemplatecommandargumentvalue'      => [
+                        'fields'          => [
+                            'commandargument_id', 'value',
+                        ],
+                        'Commandargument' => [
+                            'fields' => ['human_name', 'command_id'],
+                        ],
+                    ],
+                    'Servicetemplateeventcommandargumentvalue' => [
+                        'fields'          => [
+                            'commandargument_id', 'value',
+                        ],
+                        'Commandargument' => [
+                            'fields' => ['human_name', 'command_id'],
+                        ],
                     ],
                 ],
-                'Contactgroup'                             => [
-                    'fields'    => ['id'],
+                'Host' => [
+                     'fields'       => [
+                         'id', 'name',
+                     ],
+                     'Contact'      => [
+                         'fields' => [
+                             'id', 'name',
+                         ],
+                     ],
+                     'Contactgroup' => [
+                         'Container' => [
+                             'fields' => [
+                                 'Container.name',
+                             ],
+                         ],
+                         'fields'    => [
+                             'Contactgroup.id',
+                         ],
+                     ],
+                     'Hosttemplate' => [
+                         'Contact'      => [
+                             'fields' => [
+                                 'id', 'name',
+                             ],
+                         ],
+                         'Contactgroup' => [
+                             'Container' => [
+                                 'fields' => [
+                                     'Container.name',
+                                 ],
+                             ],
+                             'fields'    => [
+                                 'Contactgroup.id',
+                             ],
+                         ],
+                     ],
+                ],
+                'Contact' => [
+                    'fields' => [
+                        'id',
+                        'name',
+                    ],
+                ],
+                'Contactgroup' => [
+                    'fields'    => [
+                        'id'
+                    ],
                     'Container' => [
                         'fields' => [
                             'name',
                         ],
                     ],
                 ],
-                'CheckCommand',
-                'CheckPeriod',
-                'NotifyPeriod',
-                'Customvariable'                           => [
+                'Servicegroup' => [
+                    'fields'    => [
+                        'id'
+                    ],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                        ],
+                    ],
+                ],
+                'Customvariable' => [
                     'fields' => [
-                        'id', 'name', 'value', 'objecttype_id',
+                        'id',
+                        'name',
+                        'value',
+                        'objecttype_id',
                     ],
                 ],
-                'Servicetemplatecommandargumentvalue'      => [
+                'Servicecommandargumentvalue' => [
                     'fields'          => [
-                        'commandargument_id', 'value',
+                        'id',
+                        'commandargument_id',
+                        'value',
                     ],
                     'Commandargument' => [
-                        'fields' => ['human_name', 'command_id'],
+                        'fields' => [
+                            'id',
+                            'human_name',
+                        ],
                     ],
                 ],
-                'Servicetemplateeventcommandargumentvalue' => [
-                    'fields'          => [
-                        'commandargument_id', 'value',
-                    ],
-                    'Commandargument' => [
-                        'fields' => ['human_name', 'command_id'],
+                'Serviceeventcommandargumentvalue' => [
+                    'fields' => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                ],
+                'Commandargument' => [
+                    'fields' => [
+                        'id',
+                        'human_name',
                     ],
                 ],
-            ],
-                             'Host'                             => [
-                                 'fields'       => [
-                                     'id', 'name',
-                                 ],
-                                 'Contact'      => [
-                                     'fields' => [
-                                         'id', 'name',
-                                     ],
-                                 ],
-                                 'Contactgroup' => [
-                                     'Container' => [
-                                         'fields' => [
-                                             'Container.name',
-                                         ],
-                                     ],
-                                     'fields'    => [
-                                         'Contactgroup.id',
-                                     ],
-                                 ],
-                                 'Hosttemplate' => [
-                                     'Contact'      => [
-                                         'fields' => [
-                                             'id', 'name',
-                                         ],
-                                     ],
-                                     'Contactgroup' => [
-                                         'Container' => [
-                                             'fields' => [
-                                                 'Container.name',
-                                             ],
-                                         ],
-                                         'fields'    => [
-                                             'Contactgroup.id',
-                                         ],
-                                     ],
-                                 ],
-                             ],
-                             'Contact'                          => [
-                                 'fields' => [
-                                     'id', 'name',
-                                 ],
-                             ],
-                             'Contactgroup'                     => [
-                                 'fields'    => ['id'],
-                                 'Container' => [
-                                     'fields' => [
-                                         'name',
-                                     ],
-                                 ],
-                             ],
-                             'Servicegroup'                     => [
-                                 'fields'    => ['id'],
-                                 'Container' => [
-                                     'fields' => [
-                                         'name',
-                                     ],
-                                 ],
-                             ],
-                             'Customvariable'                   => [
-                                 'fields' => [
-                                     'id', 'name', 'value', 'objecttype_id',
-                                 ],
-                             ],
-                             'Servicecommandargumentvalue'      => [
-                                 'fields'          => [
-                                     'id', 'commandargument_id', 'value',
-                                 ],
-                                 'Commandargument' => [
-                                     'fields' => [
-                                         'id', 'human_name',
-                                     ],
-                                 ],
-                             ],
-                             'Serviceeventcommandargumentvalue' => [
-                                 'fields'          => [
-                                     'id', 'commandargument_id', 'value',
-                                 ],
-                                 'Commandargument' => [
-                                     'fields' => [
-                                         'id', 'human_name',
-                                     ],
-                                 ],
-                             ],
+                ],
                 'CheckCommand',
                 'CheckPeriod',
                 'NotifyPeriod',
@@ -730,6 +765,12 @@ class Service extends AppModel
             }
         }
 
+        $servicegroups = [];
+        if(!empty($service['Servicegroup'])){
+            $servicegroups = Hash::combine($service['Servicegroup'], '{n}.id', '{n}.id');
+        }elseif(empty($service['Servicegroup']) && !(empty($service['Servicetemplate']['Servicegroup']))){
+            $servicegroups = Hash::combine($service['Servicetemplate']['Servicegroup'], '{n}.id', '{n}.id');
+        }
 
         $service = [
             'Service'                          => Hash::merge(Hash::filter($service['Service'], ['Service', 'filterNullValues']), Set::classicExtract($service['Servicetemplate'], '{('.implode('|', array_keys(Hash::diff($service['Service'], Hash::filter($service['Service'], ['Service', 'filterNullValues'])))).')}')),
@@ -739,7 +780,7 @@ class Service extends AppModel
             'Servicecommandargumentvalue'      => $servicecommandargumentvalue,
             'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
             'Servicetemplate'                  => $service['Servicetemplate'],
-            'Servicegroup'                     => $service['Servicegroup'],
+            'Servicegroup'                     => $servicegroups,
             'Host'                             => $service['Host'],
             'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $service['Servicetemplate']['CheckPeriod'] : $service['CheckPeriod'],
             'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $service['Servicetemplate']['NotifyPeriod'] : $service['NotifyPeriod'],
@@ -785,10 +826,17 @@ class Service extends AppModel
             'recursive'  => -1,
             'contain'    => [
                 'Servicetemplate' => [
-                    'fields' => ['Servicetemplate.name'],
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
                 ],
                 'Host'            => [
-                    'fields' => ['Host.name', 'Host.uuid', 'Host.address', 'Host.description'],
+                    'fields' => [
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address',
+                        'Host.description'
+                    ],
                 ],
             ],
             'fields'     => [
@@ -857,13 +905,17 @@ class Service extends AppModel
         $compare_array = [
             'Service'         => [
                 ['Service.{('.implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))).')}', false],
-                ['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
+                ['{^Contact$}.{^Contact$}.{n}', false],
+                ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
+                ['{^Servicegroup$}.{^Servicegroup$}.{n}', false],
                 ['Servicecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
                 ['Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
             ],
             'Servicetemplate' => [
                 ['Servicetemplate.{('.implode('|', array_values($fields)).')}', false],
-                ['{(Contact|Contactgroup)}.{n}.id', true],
+                ['{^Contact$}.{n}.id', true],
+                ['{^Contactgroup$}.{n}.id', true],
+                ['{^Servicegroup$}.{n}.id', true],
                 ['Servicetemplatecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
                 ['Servicetemplateeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
             ],
