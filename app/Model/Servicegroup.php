@@ -45,16 +45,15 @@ class Servicegroup extends AppModel
             'unique'     => true,
             'dependent'  => true,
         ],
+        'Servicetemplate' => [
+            'joinTable'  => 'servicetemplates_to_servicegroups',
+            'foreignKey' => 'servicegroup_id',
+            'unique'     => true,
+            'dependent'  => true,
+        ],
     ];
 
     public $validate = [
-        'Service'          => [
-            'rule'     => ['multiple', [
-                'min' => 1,
-            ]],
-            'message'  => 'Please select at least 1 service',
-            'required' => true,
-        ],
         'servicegroup_url' => [
             'rule'       => 'url',
             'allowEmpty' => true,

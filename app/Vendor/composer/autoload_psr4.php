@@ -7,4 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'itnovum\\openITCOCKPIT\\' => array($baseDir . '/src/itnovum/openITCOCKPIT'),
+    'Symfony\\Component\\Filesystem\\' => array($vendorDir . '/symfony/filesystem'),
+    'Adldap\\' => array($vendorDir . '/adldap/adldap/src'),
 );

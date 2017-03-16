@@ -28,10 +28,11 @@ use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
 
 /**
- * @property Hostgroup $Hostgroup
- * @property Container $Container
- * @property Host      $Host
- * @property User      $User
+ * @property Hostgroup      $Hostgroup
+ * @property Container      $Container
+ * @property Host           $Host
+ * @property Hosttemplate   $Hosttemplate
+ * @property User           $User
  */
 class HostgroupsController extends AppController
 {
@@ -40,6 +41,7 @@ class HostgroupsController extends AppController
         'Hostgroup',
         'Container',
         'Host',
+        'Hosttemplate',
         'Service',
         'User',
         MONITORING_HOSTSTATUS,
@@ -74,6 +76,22 @@ class HostgroupsController extends AppController
         $this->Paginator->settings['order'] = ['Container.name' => 'asc'];
 
         $options = [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ]
+            ],
             'order'      => [
                 'Container.name' => 'asc',
             ],
@@ -239,11 +257,26 @@ class HostgroupsController extends AppController
         }
         $userId = $this->Auth->user('id');
         $hostgroup = $this->Hostgroup->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ],
+                'Container'
+            ],
             'conditions' => [
                 'Hostgroup.id' => $id,
             ],
         ]);
-
         if (!$this->allowedByContainerId($hostgroup['Container']['parent_id'])) {
             $this->render403();
 
@@ -264,6 +297,7 @@ class HostgroupsController extends AppController
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
 
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         if ($this->request->data('Hostgroup.Host')) {
             foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
                 $host = $this->Host->find('first', [
@@ -282,11 +316,30 @@ class HostgroupsController extends AppController
                 ];
             }
         }
+        if ($this->request->data('Hostgroup.Hosttemplate')) {
+            foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
+                $hosttemplate = $this->Hosttemplate->find('first', [
+                    'contain'    => [],
+                    'fields'     => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name',
+                    ],
+                    'conditions' => [
+                        'Hosttemplate.id' => $hosttemplate_id,
+                    ],
+                ]);
+                $ext_data_for_changelog['Hosttemplate'][] = [
+                    'id'   => $hosttemplate_id,
+                    'name' => $hosttemplate['Hosttemplate']['name'],
+                ];
+            }
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host'))) ? $this->request->data('Hostgroup.Host') : [];
             //Add container id (of the hostgroup container itself) to the request data
             $this->request->data['Container']['id'] = $hostgroup['Hostgroup']['container_id'];
+            $this->request->data['Hosttemplate'] = (!empty($this->request->data('Hostgroup.Hosttemplate'))) ? $this->request->data('Hostgroup.Hosttemplate') : [];
             if ($this->Hostgroup->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -312,7 +365,7 @@ class HostgroupsController extends AppController
         }
 
         $this->request->data = Hash::merge($hostgroup, $this->request->data);
-        $this->set(compact(['hostgroup', 'hosts', 'containers']));
+        $this->set(compact(['hostgroup', 'hosts', 'containers', 'hosttemplates']));
     }
 
     public function add()
@@ -350,10 +403,29 @@ class HostgroupsController extends AppController
                     ];
                 }
             }
+            if ($this->request->data('Hostgroup.Hosttemplate')) {
+                foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
+                    $hosttemplate = $this->Hosttemplate->find('first', [
+                        'contain'    => [],
+                        'fields'     => [
+                            'Hosttemplate.id',
+                            'Hosttemplate.name',
+                        ],
+                        'conditions' => [
+                            'Hosttemplate.id' => $hosttemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Hosttemplate'][] = [
+                        'id'   => $hosttemplate_id,
+                        'name' => $hosttemplate['Hosttemplate']['name'],
+                    ];
+                }
+            }
 
             $this->request->data['Hostgroup']['uuid'] = UUID::v4();
             $this->request->data['Container']['containertype_id'] = CT_HOSTGROUP;
             $this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host'))) ? $this->request->data('Hostgroup.Host') : [];
+            $this->request->data['Hosttemplate'] = (!empty($this->request->data('Hostgroup.Hosttemplate'))) ? $this->request->data('Hostgroup.Hosttemplate') : [];
 
 
             if ($this->Hostgroup->saveAll($this->request->data)) {
@@ -390,14 +462,15 @@ class HostgroupsController extends AppController
         }
 
         $hosts = [];
+        $hosttemplates = [];
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Container.parent_id');
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
             $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         }
-
-        $this->set(compact(['containers', 'hosts']));
-        $this->set('_serialize', ['containers', 'hosts']);
+        $this->set(compact(['containers', 'hosts', 'hosttemplates']));
+        $this->set('_serialize', ['containers', 'hosts', 'hosttemplates']);
     }
 
     public function loadHosts($containerId = null)
@@ -413,6 +486,21 @@ class HostgroupsController extends AppController
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadHosttemplates($containerId = null)
+    {
+        $this->allowOnlyAjaxRequests();
+
+        if($containerId == ROOT_CONTAINER){
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+        }else{
+            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
+        }
+        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
+        $this->set(compact(['hosttemplates']));
+        $this->set('_serialize', ['hosttemplates']);
     }
 
     public function delete($id = null)

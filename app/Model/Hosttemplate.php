@@ -42,6 +42,14 @@ class Hosttemplate extends AppModel
             'unique'                => true,
             'dependent'             => true,
         ],
+        'Hostgroup'    => [
+            'className'             => 'Hostgroup',
+            'joinTable'             => 'hosttemplates_to_hostgroups',
+            'foreignKey'            => 'hosttemplate_id',
+            'associationForeignKey' => 'hostgroup_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
     ];
 
     var $belongsTo = [

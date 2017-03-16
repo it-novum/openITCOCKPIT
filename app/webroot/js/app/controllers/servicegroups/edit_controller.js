@@ -54,13 +54,12 @@ App.Controllers.ServicegroupsEditController = Frontend.AppController.extend({
         // Bind change event for Container Selectbox
         this.ContainerSelectbox.addContainerEventListener({
             selectBoxSelector: '#ContainerParentId',
-            ajaxUrl: '/servicegroups/loadServices/:selectBoxValue:' + '.json',
-            optionGroupFieldTypes: {
-                services: '#ServicegroupService',
+            ajaxUrl: '/servicegroups/loadServicetemplates/:selectBoxValue:' + '.json',
+            fieldTypes: {
+                servicetemplates: '#ServicegroupServicetemplate',
             },
-            fieldTypes: {},
             dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-            dataPlaceholder: self.getVar('data_placeholder')
+            dataPlaceholder: self.getVar('data_placeholder_servicetemplate')
         });
     }
 });

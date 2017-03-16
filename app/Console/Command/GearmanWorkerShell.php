@@ -427,7 +427,13 @@ class GearmanWorkerShell extends AppShell {
                 $AfterExportTask = $_task->load('AfterExport');
                 $AfterExportTask->beQuiet();
                 $AfterExportTask->init();
-                $AfterExportTask->copy($payload['Satellite']);
+                $this->Export->updateAll([
+                    'Export.finished' => 1,
+                    'Export.successfully' => $AfterExportTask->copy($payload['Satellite']) ? 1 : 0,
+//                    'Export.text' => 'export_sync_sat_config_'.$payload['Satellite']['Satellite']['id']
+                ], [
+                    'Export.task' => 'export_sync_sat_config_'.$payload['Satellite']['Satellite']['id'],
+                ]);
                 $return = ['task' => $payload['task']];
                 break;
 
@@ -840,26 +846,21 @@ class GearmanWorkerShell extends AppShell {
             //This callback gets called, for any finished export task (like hosttemplates, services etc...)
             $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
 
-            $this->Export->create();
-            $data = [
-                'Export' => [
-                    'task' => 'export_sync_sat_config',
-                    'text' => __('Copy new monitoring configuration to satellite systems'),
-                ],
-            ];
-            $result = $this->Export->save($data);
             if (!empty($satellites)) {
                 foreach ($satellites as $satellite) {
-                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $data['Export']['task'], 'Satellite' => $satellite]), $this->Config['password']));
+                    $this->Export->create();
+                    $this->Export->save([
+                        'Export' => [
+                            'task' => 'export_sync_sat_config_'.$satellite['Satellite']['id'],
+                            'text' => __('Copy new monitoring configuration for Satellite ['.$satellite['Satellite']['id'].'] '.$satellite['Satellite']['name']),
+                        ],
+                    ]);
+                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
                 }
                 $gearmanClient->runTasks();
             }
             // Avoid "MySQL server has gone away"
             $this->Systemsetting->getDatasource()->reconnect();
-
-            $this->Export->id = $result['Export']['id'];
-            $this->Export->saveField('finished', 1);
-            $this->Export->saveField('successfully', 1);
         }
     }
 

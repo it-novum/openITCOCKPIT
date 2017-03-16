@@ -87,10 +87,17 @@
             echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
                 'label'    => __('Services'),
                 'options'  => $services,
-                'required' => true,
                 'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : [],
             ]);
 
+            echo $this->Form->input('Servicegroup.Servicetemplate', [
+                'options' => $servicetemplates,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Service templates'),
+                'data-placeholder' => __('Please choose a service template')
+            ]);
 
             ?>
             <br/>

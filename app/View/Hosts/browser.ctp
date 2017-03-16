@@ -334,7 +334,9 @@
                             <?php endif; ?>
                             <br/>
                             <br/>
-                            <strong><?php echo __('UUID') ?>:</strong> <code><?php echo $host['Host']['uuid']; ?></code><br/>
+                            <strong><?php echo __('UUID') ?>:</strong> <code><?php echo $host['Host']['uuid']; ?></code>&nbsp;
+                            <span class="btn btn-default btn-xs" iconcolor="white" onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"><?php echo __('Copy to clipboard'); ?></span>
+                            <input style="display:none;" type="text" id="host-uuid-copy" value="<?php echo $host['Host']['uuid']; ?>"><br/>
                             <strong><?php echo __('IP address'); ?>:</strong>
                             <code><?php echo h($host['Host']['address']); ?></code><br/>
                             <strong><?php echo __('Description'); ?>:</strong><br/>

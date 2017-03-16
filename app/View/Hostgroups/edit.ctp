@@ -102,6 +102,14 @@
                     'selected'         => $this->request->data['Host'],
                 ]
             );
+            echo $this->Form->input('Hostgroup.Hosttemplate', [
+                'options' => $hosttemplates,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Host templates'),
+                'data-placeholder' => __('Please choose a host template')
+            ]);
             ?>
             <br/>
             <br/>

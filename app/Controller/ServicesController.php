@@ -709,7 +709,11 @@ class ServicesController extends AppController
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
-        $hosts = $this->Host->find('list');
+        $hosts = $this->Host->find('list', [
+            'conditions' => [
+                'Host.host_type' => GENERIC_HOST
+            ]
+        ]);
         $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
@@ -774,6 +778,7 @@ class ServicesController extends AppController
                         'Contactgroup',
                         'Contact',
                         'Servicetemplategroup',
+                        'Servicegroup'
                     ],
                     'recursive'  => -1,
                     'conditions' => [
@@ -781,7 +786,6 @@ class ServicesController extends AppController
                     ],
                 ]);
             }
-
             $dataToSave = $this->Service->prepareForSave(
                 $this->Service->diffWithTemplate($this->request->data, $servicetemplate),
                 $this->request->data,
@@ -841,6 +845,7 @@ class ServicesController extends AppController
         }
 
         $__service = $this->Service->find('first', [
+            'recursive' => -1,
             'conditions' => [
                 'Service.id' => $id,
             ],
@@ -884,6 +889,9 @@ class ServicesController extends AppController
             ],
             'Contactgroup' => [
                 'Contactgroup',
+            ],
+            'Servicegroup' => [
+                'Servicegroup',
             ],
         ];
 
@@ -938,7 +946,7 @@ class ServicesController extends AppController
             ];
         }
         $servicegroups_for_changelog = [];
-        foreach (Hash::extract($service['Servicegroup'], '{n}.id', '{n}.id') as $servicegroup_id) {
+        foreach ($service['Servicegroup'] as $servicegroup_id) {
             if (isset($servicegroups[$servicegroup_id])) {
                 $servicegroups_for_changelog[] = [
                     'id'   => $servicegroup_id,
@@ -1616,11 +1624,15 @@ class ServicesController extends AppController
 
         $this->loadModel('Servicetemplate');
         $servicetemplateData = $this->Servicetemplate->find('first', [
+            'recursive' => -1,
             'conditions' => [
                 'Servicetemplate.id' => $servicetemplate_id,
             ],
             'contain'    => [
                 'Contactgroup' => [
+                    'Container' => ['fields' => 'name'],
+                ],
+                'Servicegroup' => [
                     'Container' => ['fields' => 'name'],
                 ],
             ],

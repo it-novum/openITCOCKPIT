@@ -810,6 +810,18 @@ class AppSchema extends CakeSchema
         'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $hosttemplates_to_hostgroups = [
+        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'hosttemplate_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'hostgroup_id'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'           => [
+                'PRIMARY'           => ['column' => 'id', 'unique' => 1],
+                'hosttemplate_id'   => ['column' => 'hosttemplate_id', 'unique' => 0],
+                'hostgroup_id'      => ['column' => 'hostgroup_id', 'unique' => 0],
+            ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
     public $hosts = [
         'id'                            => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'                          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -858,6 +870,7 @@ class AppSchema extends CakeSchema
         'satellite_id'                  => ['type' => 'integer', 'default' => 0],
         'host_type'                     => ['type' => 'integer', 'null' => false, 'default' => 1],
         'disabled'                      => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
+        'usage_flag'                    => ['type' => 'integer', 'null' => false, 'default' => null],
         'created'                       => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                      => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                       => [
@@ -903,6 +916,18 @@ class AppSchema extends CakeSchema
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'uuid'    => ['column' => 'uuid', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $servicetemplates_to_servicegroups = [
+        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'servicetemplate_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'servicegroup_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'           => [
+            'PRIMARY'       => ['column' => 'id', 'unique' => 1],
+            'servicetemplate_id'    => ['column' => 'servicetemplate_id', 'unique' => 0],
+            'servicegroup_id'       => ['column' => 'servicegroup_id', 'unique' => 0],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -1024,6 +1049,7 @@ class AppSchema extends CakeSchema
         'service_url'                => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'service_type'               => ['type' => 'integer', 'null' => false, 'default' => 1],
         'disabled'                   => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 1],
+        'usage_flag'                 => ['type' => 'integer', 'null' => false, 'default' => null],
         'created'                    => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                   => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                    => [

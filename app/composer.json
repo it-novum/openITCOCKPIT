@@ -10,15 +10,18 @@
       "role": "Developer"
     }
   ],
-
   "autoload": {
     "psr-4": {
       "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/"
     }
   },
-
   "config": {
     "vendor-dir": "Vendor"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "symfony/filesystem": "^3.2",
+    "adldap/adldap": "dev-master",
   }
-
 }

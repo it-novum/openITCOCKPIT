@@ -171,8 +171,8 @@ $config = [
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
-                'add'      => ['loadHosts', 'mass_add'],
-                'edit'     => ['loadHosts'],
+                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
+                'edit'     => ['loadHosts', 'loadHosttemplates'],
                 'delete'   => ['mass_delete'],
             ],
             'Hosts'                 => [
@@ -209,8 +209,8 @@ $config = [
             ],
             'Servicegroups'         => [
                 'index'  => ['listToPdf', 'view'],
-                'add'    => ['loadServices', 'mass_add'],
-                'edit'   => ['loadServices'],
+                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
+                'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
             ],
             'Services'              => [
