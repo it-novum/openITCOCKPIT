@@ -405,6 +405,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.LDAP.QUERY',
+                    'value'    => '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))',
+                    'info'     => 'Your Filter Query',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'FRONTEND.LDAP.BASEDN',
                     'value'    => 'DC=example,DC=org',
                     'info'     => 'Your BASEDN',

@@ -511,6 +511,11 @@ class Host extends AppModel {
             $requestData['Host']['Contact'] = [];
         }
 
+        if (empty($diff_array['Hostgroup']['Hostgroup'])) {
+            $diff_array['Hostgroup']['Hostgroup'] = [];
+        }
+
+
         $diff_array = Hash::merge($diff_array, [
             'Host' => [
                 'hosttemplate_id' => $hostTemplateId,
@@ -518,6 +523,7 @@ class Host extends AppModel {
                 /* Set Contact/Contactgroup for custom validation rule*/
                 'Contact'         => $requestData['Host']['Contact'],
                 'Contactgroup'    => $requestData['Host']['Contactgroup'],
+                'Hostgroup'       => $requestData['Host']['Hostgroup'],
                 'Parenthost'      => $requestData['Parenthost']['Parenthost'],
             ],
             'Container' => [
@@ -1185,21 +1191,6 @@ class Host extends AppModel {
                     if (empty($hosts) || empty($dependentHosts)) {
                         //Data is not valid, delete!
                         $Hostdependency->delete($hostdependency['Hostdependency']['id']);
-                    }
-                }
-            }
-        }
-
-        if (!empty($host['Hostgroup'])) {
-            $Hostgroup = ClassRegistry::init('Hostgroup');
-            $Container = ClassRegistry::init('Container');
-            foreach ($host['Hostgroup'] as $_hostgroup) {
-                $hostgroup = $Hostgroup->findById($_hostgroup['id']);
-                if (empty($hostgroup['Host'])) {
-                    //Hostgroup is empty and can be deleted
-                    //$this->Hostgroup->delete($hostgroup['Hostgroup']['id']);
-                    if (isset($hostgroup['Container']['id'])) {
-                        $Container->delete($hostgroup['Container']['id'], true);
                     }
                 }
             }

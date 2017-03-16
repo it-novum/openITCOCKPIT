@@ -29,14 +29,13 @@ use Adldap\Classes\AdldapSearch as AdldapSearchMain;
 
 class AdldapSearch extends AdldapSearchMain{
 
-    public function paginate($perPage = 50, $currentPage = 0, $isCritical = true)
-    {
+    public function paginate($perPage = 50, $currentPage = 0, $isCritical = true){
         // Stores all LDAP entries in a page array
         $pages = [];
         $cookie = '';
         do {
             $this->connection->controlPagedResult($perPage, $isCritical, $cookie);
-            $results = $this->connection->search($this->adldap->getBaseDn(), "(&(objectClass=user)(samaccounttype=" . adLDAP::ADLDAP_NORMAL_ACCOUNT .")(objectCategory=person)(cn=*))", $this->getSelects());
+            $results = $this->connection->search($this->adldap->getBaseDn(), $this->adldap->getMyPersonFilter(), $this->getSelects());
             if ($results) {
                 $this->connection->controlPagedResultResponse($results, $cookie);
                 $pages[] = $results;

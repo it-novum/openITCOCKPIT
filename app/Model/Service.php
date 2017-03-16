@@ -494,7 +494,6 @@ class Service extends AppModel {
         }
 
         if ((!is_array($contactGroupData) || !$diff_array['Service']['own_contactgroups'])) {
-            $contactGroup = [];
         }
         {
             $contactGroup = $contactGroupData;
@@ -503,6 +502,10 @@ class Service extends AppModel {
             $contact = [];
         } else {
             $contact = $contactData;
+        }
+
+        if (empty($diff_array['Servicegroup']['Servicegroup'])) {
+            $diff_array['Servicegroup']['Servicegroup'] = [];
         }
 
         if (isset($request_data['Service'])) {
@@ -1089,18 +1092,6 @@ class Service extends AppModel {
                         //Data is not valid, delete!
                         $Servicedependency->delete($servicedependency['Servicedependency']['id']);
                     }
-                }
-            }
-        }
-
-        if (!empty($service['Servicegroup'])) {
-            $Servicegroup = ClassRegistry::init('Servicegroup');
-            $Container = ClassRegistry::init('Container');
-            foreach ($service['Servicegroup'] as $_servicegroup) {
-                $servicegroup = $Servicegroup->findById($_servicegroup['id']);
-                if (empty($servicegroup['Service'])) {
-                    //Servicegroup is empty and can be deleted
-                    $Container->delete($servicegroup['Container']['id'], true);
                 }
             }
         }

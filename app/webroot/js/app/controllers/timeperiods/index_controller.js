@@ -42,6 +42,21 @@ App.Controllers.TimeperiodsIndexController = Frontend.AppController.extend({
 			self.fnShowHide($(this).attr('my-column'), $(this).children());
 		});
 
+		var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+		for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+			pageUrl = localStorage.key(i);
+			dataTableValue = localStorage.getItem(pageUrl);
+			if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+			dataTableValueParsed = JSON.parse(dataTableValue);
+			if(pageUrl.indexOf('DataTables_timeperiod_list_/timeperiods') !== -1){
+				if(dataTableValueParsed.time > highestTime){
+					highestTime = dataTableValueParsed.time;
+					highestValue = dataTableValue;
+				}
+			}
+		}
+		self.setDataTableFilter(highestValue);
+
 		$('#timeperiod_list').dataTable({
 			"bPaginate": false,
 			"bFilter": false,
@@ -56,7 +71,14 @@ App.Controllers.TimeperiodsIndexController = Frontend.AppController.extend({
 		this.$table = $('#timeperiod_list');
 
 		//Checkboxen aktivieren
-		$('.select_datatable').find('input').prop('checked', true);
+		$('.select_datatable').find('input').each(function () {
+			$(this).prop('checked', false);
+			var myCol = ($(this).parent().attr('my-column'));
+			var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
+			if (isVisible == true) {
+				$(this).prop('checked', true);
+			}
+		})
 
 	},
 	fnShowHide: function( iCol, inputObject){
@@ -70,5 +92,10 @@ App.Controllers.TimeperiodsIndexController = Frontend.AppController.extend({
 			inputObject.prop('checked', true);
 		}
 		oTable.fnSetColumnVis( iCol, bVis ? false : true );
+	},
+	setDataTableFilter: function(storageValue){
+		var currentURL = window.location.href;
+		var postTextURL = currentURL.substring(currentURL.indexOf('timeperiods') + 11);
+		localStorage.setItem('DataTables_timeperiod_list_/timeperiods'+postTextURL, storageValue);
 	}
 });

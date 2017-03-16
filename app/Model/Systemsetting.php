@@ -35,7 +35,43 @@ class Systemsetting extends AppModel
             $all_systemsettings[$systemsetting['Systemsetting']['section']][] = $systemsetting['Systemsetting'];
         }
 
-        return $all_systemsettings;
+        // sort the list like it is in openITCOCKPIT\InitialDatabase\Systemsettings
+        // it is just sorting, no deletions, no additions
+        require_once APP.'src'.DS.'itnovum'.DS.'openITCOCKPIT'.DS.'InitialDatabase'.DS.'Systemsetting.php';
+        $mySytemsettings = new itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
+        $myData = $mySytemsettings->getData();
+        $sortedSystemSettingsSchema = $sortedSystemSettings = [];
+        foreach ($myData as $singleSetting){
+            $sortedSystemSettingsSchema[$singleSetting['Systemsetting']['section']][] = $singleSetting['Systemsetting']['key'];
+        }
+
+        foreach($sortedSystemSettingsSchema as $sSectionName => $sSection){
+            foreach ($sSection as $sSettingOptionKey) {
+
+                // looping through our Settings
+                foreach ($all_systemsettings as $nsSectionName => $nsSection){
+                    if($sSectionName === $nsSectionName){
+                        foreach ($nsSection as $nsSectionK => $nsSettingOption){
+                            if($sSettingOptionKey === $nsSettingOption['key']){
+                                $sortedSystemSettings[$sSectionName][] = $nsSettingOption;
+                                unset($all_systemsettings[$nsSectionName][$nsSectionK]);
+                                break 2;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        // if in DB there are some options, but not in Schema, we place them at the end
+        foreach ($all_systemsettings as $nsSectionName => $nsSection){
+            foreach ($nsSection as $nsSettingOption){
+                $sortedSystemSettings[$nsSectionName][] = $nsSettingOption;
+            }
+        }
+        
+        return $sortedSystemSettings;
     }
 
     public function findAsArray()

@@ -100,6 +100,7 @@ oitc set_permissions
 #Generate documentation
 oitc docu_generator
 oitc copy_servicename
+oitc systemsettings_import
 
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then
