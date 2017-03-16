@@ -91,6 +91,7 @@ class Changelog extends AppModel
                 'Servicetemplatecommandargumentvalue'      => '{n}.{(id|value)}',
                 'Contact'                                  => '{n}.{(id|name)}',
                 'Contactgroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Servicegroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicegroup'    => [
                 'Servicegroup'      => '{(description|servicegroup_url)}',
@@ -164,8 +165,8 @@ class Changelog extends AppModel
                 ]);
                 break;
             case 'edit':
-                $tmp = [];
                 foreach ($compareRules[strtolower(Inflector::singularize($controller))] as $key => $fields) {
+                    $tmp = [];
                     if (is_array($fields)) {
                         foreach ($fields['prepareFields'] as $field) {
                             $tmp = Hash::merge($tmp, Set::classicExtract($currentSavedData, $key.'.'.$field));
@@ -255,7 +256,7 @@ class Changelog extends AppModel
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
-                    if (!$flag && !in_array($old_value, $diff)) $diff[$field_key]['before'][$old_value_key] = $old_value;
+                    if (!$flag && !in_array($old_value, $diff, true)) $diff[$field_key]['before'][$old_value_key] = $old_value;
                 }
                 break;
         }

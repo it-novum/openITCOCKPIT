@@ -494,7 +494,6 @@ class Service extends AppModel {
         }
 
         if ((!is_array($contactGroupData) || !$diff_array['Service']['own_contactgroups'])) {
-            $contactGroup = [];
         }
         {
             $contactGroup = $contactGroupData;
@@ -503,6 +502,10 @@ class Service extends AppModel {
             $contact = [];
         } else {
             $contact = $contactData;
+        }
+
+        if (empty($diff_array['Servicegroup']['Servicegroup'])) {
+            $diff_array['Servicegroup']['Servicegroup'] = [];
         }
 
         if (isset($request_data['Service'])) {

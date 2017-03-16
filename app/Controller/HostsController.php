@@ -813,11 +813,8 @@ class HostsController extends AppController
             if (isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])) {
                 $hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
             }
-
             $data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($this->request->data, $hosttemplate),
                 $this->request->data, 'edit');
-
-
             $data_to_save['Host']['own_customvariables'] = 0;
             //Add Customvariables data to $data_to_save
             $data_to_save['Customvariable'] = [];
@@ -829,7 +826,6 @@ class HostsController extends AppController
                     $data_to_save['Host']['own_customvariables'] = 1;
                 }
             }
-
             $this->Host->set($data_to_save);
             if ($this->Host->validates()) {
                 //Delete old command argument values
