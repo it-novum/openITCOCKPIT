@@ -511,6 +511,11 @@ class Host extends AppModel {
             $requestData['Host']['Contact'] = [];
         }
 
+        if (empty($diff_array['Hostgroup']['Hostgroup'])) {
+            $diff_array['Hostgroup']['Hostgroup'] = [];
+        }
+
+
         $diff_array = Hash::merge($diff_array, [
             'Host' => [
                 'hosttemplate_id' => $hostTemplateId,
@@ -518,6 +523,7 @@ class Host extends AppModel {
                 /* Set Contact/Contactgroup for custom validation rule*/
                 'Contact'         => $requestData['Host']['Contact'],
                 'Contactgroup'    => $requestData['Host']['Contactgroup'],
+                'Hostgroup'       => $requestData['Host']['Hostgroup'],
                 'Parenthost'      => $requestData['Parenthost']['Parenthost'],
             ],
             'Container' => [

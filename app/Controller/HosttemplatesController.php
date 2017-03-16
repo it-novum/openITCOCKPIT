@@ -179,7 +179,6 @@ class HosttemplatesController extends AppController {
                 'Hosttemplatecommandargumentvalue' => ['Commandargument'],
             ],
         ]);
-
         $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
@@ -201,7 +200,7 @@ class HosttemplatesController extends AppController {
         $contactgroups = $this->Contactgroup->findList();
         $timeperiods = $this->Timeperiod->find('list');
         $commands = $this->Command->hostCommands('list');
-        $hostgroups = $this->Hostgroup->findList();
+        $hostgroups = $this->Hostgroup->find('list');
         // End changelog
 
         if ($this->hasRootPrivileges === true) {
@@ -413,7 +412,6 @@ class HosttemplatesController extends AppController {
                     'objecttype_id' => OBJECT_HOSTTEMPLATE,
                 ], false);
             }
-
             //Save everything including custom variables
             if ($this->Hosttemplate->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
