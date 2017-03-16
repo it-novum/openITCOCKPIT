@@ -1330,7 +1330,6 @@ class ServicesController extends AppController
         $userId = $this->Auth->user('id');
         $servicesToCopy = [];
         $servicesCantCopy = [];
-        $hosts = [];
         if ($this->request->is('post') || $this->request->is('put')) {
             //Checking if target host exists
             if ($this->Host->exists($this->request->data('Service.host_id'))) {
@@ -1552,10 +1551,12 @@ class ServicesController extends AppController
 
                     $service['Service']['uuid'] = UUID::v4();
                     $service['Service']['host_id'] = $host['Host']['id'];
-debug($service);
-//debug(Hash::merge(Hash::filter($service['Service']), $servicetemplate['Servicetemplate'], $servicetemplate));
+//debug($service);
 //debug($servicetemplate);
-
+//debug(Hash::merge($servicetemplate, Hash::filter($service)));
+debug($this->Service->diffWithTemplateTest($service, $servicetemplate));
+//debug($servicetemplate);
+return;
                     $this->Service->create();
                     if($this->Service->saveAll(Hash::filter($service))){
                         $serviceDataAfterSave = $this->Service->prepareForView($this->Service->id);

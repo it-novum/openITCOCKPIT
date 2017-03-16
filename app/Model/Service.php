@@ -868,7 +868,95 @@ class Service extends AppModel
 
     public function diffWithTemplate($service, $servicetemplate)
     {
+        //Service-/Servicetemplate fields
+        $fields = [
+            'name',
+            'description',
+            'notes',
+            'notify_period_id',
+            'notification_interval',
+            'notify_on_recovery',
+            'notify_on_warning',
+            'notify_on_unknown',
+            'notify_on_critical',
+            'notify_on_flapping',
+            'notify_on_downtime',
+            'command_id',
+            'check_period_id',
+            'max_check_attempts',
+            'check_interval',
+            'retry_interval',
+            'tags',
+            'flap_detection_enabled',
+            'flap_detection_on_ok',
+            'flap_detection_on_warning',
+            'flap_detection_on_unknown',
+            'flap_detection_on_critical',
+            'freshness_checks_enabled',
+            'freshness_threshold',
+            'eventhandler_command_id',
+            'priority',
+            'service_url',
+            'active_checks_enabled',
+            'process_performance_data',
+        ];
+
+        $compare_array = [
+            'Service'         => [
+                ['Service.{('.implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))).')}', false],
+                ['{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}', false],
+                ['Servicecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
+                ['Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
+            ],
+            'Servicetemplate' => [
+                ['Servicetemplate.{('.implode('|', array_values($fields)).')}', false],
+                ['{(Contact|Contactgroup)}.{n}.id', true],
+                ['Servicetemplatecommandargumentvalue.{n}.{(commandargument_id|value)}', false],
+                ['Servicetemplateeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
+            ],
+        ];
         $diff_array = [];
+
+        foreach ($compare_array['Service'] as $key => $data) {
+            $possible_key = preg_replace('/(\{.*\})|(\.)/', '', $data[0]);
+            if ($data[0] == 'Servicecommandargumentvalue.{n}.{(commandargument_id|value)}') {
+                if (isset($service['Servicecommandargumentvalue'])) {
+                    if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
+                        $diff_data = Set::classicExtract($service, $data[0]);
+                        $diff_array['Servicecommandargumentvalue'] = $diff_data;
+                    }
+                    //	debug(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0])));
+                    $diff_data = $this->getDiffAsArray($this->prepareForCompare(Set::classicExtract($service, $data[0]), $data[1]),
+                        $this->prepareForCompare(Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0]),
+                            $compare_array['Servicetemplate'][$key][1]));
+                }
+            } elseif ($data[0] == 'Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}') {
+                if (isset($service['Serviceeventcommandargumentvalue'])) {
+                    if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
+                        $diff_data = Set::classicExtract($service, $data[0]);
+                        $diff_array['Serviceeventcommandargumentvalue'] = $diff_data;
+                    }
+                    //	debug(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate,$compare_array['Servicetemplate'][$key][0])));
+                    $diff_data = $this->getDiffAsArray($this->prepareForCompare(Set::classicExtract($service, $data[0]), $data[1]),
+                        $this->prepareForCompare(Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0]),
+                            $compare_array['Servicetemplate'][$key][1]));
+                }
+            } else {
+                //$Key for DiffArray with preg_replace ==>  from 'Customvariable.{n}.{(name|value)}'' to 'Customvariable'
+                $diff_data = $this->getDiffAsArray($this->prepareForCompare(Set::classicExtract($service, $data[0]), $data[1]),
+                    $this->prepareForCompare(Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0]),
+                        $compare_array['Servicetemplate'][$key][1]));
+                if (!empty($diff_data)) {
+                    $diff_array = Hash::merge($diff_array, (!empty($possible_key)) ? [$possible_key => $diff_data] : $diff_data);
+                }
+            }
+        }
+
+        return $diff_array;
+    }
+
+    public function diffWithTemplateTest($service, $servicetemplate)
+    {
         //Service-/Servicetemplate fields
         $fields = [
             'name',
