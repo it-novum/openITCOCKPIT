@@ -118,11 +118,11 @@ class AfterExportTask extends AppShell
                     $satellite['Satellite']['address'],
                     $this->conf['REMOTE']['path'],
                 ];
-                $commandTemplate = "rsync -z -e 'ssh -ax -i %s -o StrictHostKeyChecking=no' -avzm --timeout=10 --delete %s/* %s@%s:%s";
+                $commandTemplate = "rsync -e 'ssh -C -ax -i %s -o StrictHostKeyChecking=no' -avm --timeout=10 --delete %s/* %s@%s:%s";
                 $command = vsprintf($commandTemplate, $commandArgs);
                 exec($command, $output, $returnCode);
                 if ($returnCode != 0) {
-                    throw new Exception('Failed executing rsync -z -e \'ssh -ax -i %s -o StrictHostKeyChecking=no\' -avzm --timeout=10 --delete %s/* %s@%s:%s');
+                    throw new Exception(sprintf('Failed executing "%s"', $commandTemplate));
                 }
                 $this->out('<green> ok</green>');
             }

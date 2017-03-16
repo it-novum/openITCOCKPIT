@@ -1157,16 +1157,6 @@ class NagiosExportTask extends AppShell {
      * @param array $options with keys limit and offset
      */
     public function exportServices($uuid = null, $options = []) {
-        //if($uuid !== null){
-        //	$services = [];
-        //	$services[] = $this->Service->find('first', [
-        //		'conditions' => [
-        //			'Service.disabled' => 0,
-        //			'Service.uuid' => $uuid
-        //		]
-        //	]);
-        //}
-
         if (!is_dir($this->conf['path'] . $this->conf['services'])) {
             mkdir($this->conf['path'] . $this->conf['services']);
         }
@@ -1246,37 +1236,9 @@ class NagiosExportTask extends AppShell {
                     }
                 }
 
-                //if(!empty($service['Servicecommandargumentvalue'])){
-                //	$this->Commandargument->unbindModel(
-                //		['hasOne' => ['Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-                //	);
-                //	$commandarguments = $this->Commandargument->find('all', [
-                //		'conditions' => [
-                //			'Commandargument.command_id' => $service['CheckCommand']['id'],
-                //			'Servicecommandargumentvalue.service_id' => $service['Service']['id']
-                //		]
-                //	]);
-                //	$commandarguments = Hash::sort($commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-                //}
 
                 $commandarguments = [];
                 if (!empty($service['Servicecommandargumentvalue'])) {
-                    //Select command arguments + command, because we have arguments!
-                    //$commandarguments = $this->Servicecommandargumentvalue->find('all', [
-                    //	'recursive' => -1,
-                    //	'conditions' => [
-                    //		'Servicecommandargumentvalue.service_id' => $service['Service']['id']
-                    //	],
-                    //	'contain' => [
-                    //		'Commandargument' => [
-                    //			'fields' => [
-                    //				'Commandargument.name',
-                    //				'Commandargument.human_name',
-                    //				'Commandargument.command_id'
-                    //			]
-                    //		]
-                    //	]
-                    //]);
                     $commandarguments = Hash::sort($service['Servicecommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
                 }
 
@@ -1296,7 +1258,11 @@ class NagiosExportTask extends AppShell {
                 $content .= $this->nl();
                 $content .= $this->addContent(';Check settings:', 1);
 
-                $eventarguments = [];
+                $eventcommandarguments = [];
+                if (!empty($service['Serviceeventcommandargumentvalue'])) {
+                    $eventcommandarguments = Hash::sort($service['Serviceeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
+                }
+
                 if ($host['Host']['satellite_id'] == 0) {
                     if (isset($commandarguments) && !empty($commandarguments)) {
                         if ($service['CheckCommand']['uuid'] !== null && $service['CheckCommand']['uuid'] !== '') {
@@ -1327,41 +1293,32 @@ class NagiosExportTask extends AppShell {
 
 
                     // Only export event handlers if the services is on the master system. for SAT event handlers see $this->exportSatService()
-                    if (isset($service['Serviceeventcommandargumentvalue']) && !empty($service['Serviceeventcommandargumentvalue'])) {
-                        $content .= $this->addContent(';Event handler:', 1);
-                        if (!empty($service['Serviceeventcommandargumentvalue'])) {
-                            //Select command arguments + command, because we have arguments!
-                            $eventarguments = Hash::sort($service['Serviceeventcommandargumentvalue'], '{n}.Commandargument.name', 'asc', 'natural');
-                        }
-
-                        //Lookup command name of event handler (uuid)
-                        $serviceHasOwnEventhandler = true;
-                        if (!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null) {
-                            if (isset($eventarguments) && !empty($eventarguments)) {
-                                /*We have an event handler, but the same like the template uses.
-                                 * So this was set to null by Service::prepareForSave()
-                                 * We need to select the uuid of the event handler command to generate the config
-                                 */
-                                $_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
-                                $service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
-                                unset($_command);
-
-                                $serviceHasOwnEventhandler = false;
-                            }
-                        }
-
-                        if (isset($eventarguments) && !empty($eventarguments)) {
-                            $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+                    if (isset($eventcommandarguments) && !empty($eventcommandarguments)) {
+                        if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '') {
+                            //The service has its own event_handler and own event handler args
+                            $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
                         } else {
-                            if ($serviceHasOwnEventhandler === true) {
-                                //The service has a own event handler, witout arguments.
-                                $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
+                            //The services only has its own event handler args, but the same event handler command as the servicetemplate
+                            //This is not supported by nagios, so we need to select the event handler command and create the
+                            //config with the right command uuid and pass the arguments of the service
+                            $command_id = Hash::extract($eventcommandarguments, '{n}.Commandargument.command_id');
+                            if (!empty($command_id)) {
+                                $command_id = array_pop($command_id);
+                                $command = $this->Command->find('first', [
+                                    'recurisve' => -1,
+                                    'conditions' => [
+                                        'Command.id' => $command_id,
+                                    ],
+                                    'fields' => ['Command.uuid'],
+                                ]);
+                                $content .= $this->addContent('event_handler', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
+                                unset($command);
                             }
                         }
-
-                        if (isset($serviceHasOwnEventhandler)) {
-                            unset($serviceHasOwnEventhandler);
-                        }
+                    } else {
+                        //Own event_handler without any handler args
+                        if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '')
+                            $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
                     }
 
 
@@ -1369,24 +1326,6 @@ class NagiosExportTask extends AppShell {
                     $content .= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
                 }
 
-                /*
-                if($service['Host']['satellite_id'] == 0){
-                    if(isset($commandarguments) && !empty($commandarguments)){
-                        $servicecommandUuid = $service['CheckCommand']['uuid'];
-                        if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
-                            //The user changed the parameters, but not the check command its self
-                            $command = $this->Command->findById($service['Servicetemplate']['command_id']);
-                            $servicecommandUuid = $command['Command']['uuid'];
-                        }
-                        $content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-                        unset($commandarguments);
-                    }else{
-                        if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
-                            $content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
-                    }
-                }else{
-                    $content.= $this->addContent('check_command', 1, '2106cf0bf26a82af262c4078e6d9f94eded84d2a');
-                }*/
 
                 if ($service['Service']['check_period_id'] !== null && $service['Service']['check_period_id'] !== '')
                     $content .= $this->addContent('check_period', 1, $service['CheckPeriod']['uuid']);
@@ -1516,7 +1455,7 @@ class NagiosExportTask extends AppShell {
 
                 if ($this->dm === true && $host['Host']['satellite_id'] > 0) {
 
-                    $this->exportSatService($service, $host, $commandarguments, $eventarguments);
+                    $this->exportSatService($service, $host, $commandarguments, $eventcommandarguments);
 
                     /*
                      * May be not all services in servicegroup 'foo' are available on SAT system 'bar', so we create an array
@@ -1538,8 +1477,8 @@ class NagiosExportTask extends AppShell {
                     unset($commandarguments);
                 }
 
-                if (isset($eventarguments)) {
-                    unset($eventarguments);
+                if (isset($eventcommandarguments)) {
+                    unset($eventcommandarguments);
                 }
             }
         }
@@ -1556,7 +1495,7 @@ class NagiosExportTask extends AppShell {
         $this->deleteServicePerfdata();
     }
 
-    public function exportSatService($service, $host, $commandarguments, $eventarguments) {
+    public function exportSatService($service, $host, $commandarguments, $eventcommandarguments) {
         $satelliteId = $host['Host']['satellite_id'];
         if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['services'])) {
             mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['services']);
@@ -1620,53 +1559,33 @@ class NagiosExportTask extends AppShell {
         }
 
         // Export event handler to SAT-System
-        if (isset($service['Serviceeventcommandargumentvalue']) && !empty($service['Serviceeventcommandargumentvalue'])) {
-            $content .= $this->addContent(';Event handler:', 1);
-
-            //Lookup command name of event handler (uuid)
-            $serviceHasOwnEventhandler = true;
-            if (!isset($service['EventhandlerCommand']['uuid']) || $service['EventhandlerCommand']['uuid'] == null) {
-                if (isset($eventarguments) && !empty($eventarguments)) {
-                    /*We have an event handler, but the same like the template uses.
-                     * So this was set to null by Service::prepareForSave()
-                     * We need to select the uuid of the event handler command to generate the config
-                     */
-                    $_command = $this->Command->findById($service['Servicetemplate']['eventhandler_command_id']);
-                    $service['EventhandlerCommand']['uuid'] = $_command['Command']['uuid'];
-                    unset($_command);
-
-                    $serviceHasOwnEventhandler = false;
-                }
-            }
-
-            if (isset($eventarguments) && !empty($eventarguments)) {
-                $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventarguments, '{n}.Commandargument.human_name')));
+        if (isset($eventcommandarguments) && !empty($eventcommandarguments)) {
+            if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '') {
+                //The service has its own event_handler and own event handler args
+                $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
             } else {
-                if ($serviceHasOwnEventhandler === true) {
-                    //The service has a own event handler, witout arguments.
-                    $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
+                //The services only has its own event handler args, but the same event handler command as the servicetemplate
+                //This is not supported by nagios, so we need to select the event handler command and create the
+                //config with the right command uuid and pass the arguments of the service
+                $command_id = Hash::extract($eventcommandarguments, '{n}.Commandargument.command_id');
+                if (!empty($command_id)) {
+                    $command_id = array_pop($command_id);
+                    $command = $this->Command->find('first', [
+                        'recurisve' => -1,
+                        'conditions' => [
+                            'Command.id' => $command_id,
+                        ],
+                        'fields' => ['Command.uuid'],
+                    ]);
+                    $content .= $this->addContent('event_handler', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
+                    unset($command);
                 }
             }
-
-            if (isset($serviceHasOwnEventhandler)) {
-                unset($serviceHasOwnEventhandler);
-            }
+        } else {
+            //Own event_handler without any handler args
+            if ($service['EventhandlerCommand']['uuid'] !== null && $service['EventhandlerCommand']['uuid'] !== '')
+                $content .= $this->addContent('event_handler', 1, $service['EventhandlerCommand']['uuid']);
         }
-
-        /*
-        if(isset($commandarguments) && !empty($commandarguments)){
-            $servicecommandUuid = $service['CheckCommand']['uuid'];
-            if($service['CheckCommand']['uuid'] == null || $service['CheckCommand']['uuid'] !== ''){
-                //The user changed the parameters, but not the check command its self
-                $command = $this->Command->findById($service['Servicetemplate']['command_id']);
-                $servicecommandUuid = $command['Command']['uuid'];
-            }
-            $content.= $this->addContent('check_command', 1, $servicecommandUuid.'!'.implode('!', Hash::extract($commandarguments, '{n}.Servicecommandargumentvalue.value')).'; '.implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
-            unset($commandarguments);
-        }else{
-            if($service['Service']['command_id'] !== null && $service['Service']['command_id'] !== '')
-                $content.= $this->addContent('check_command', 1, $service['CheckCommand']['uuid']);
-        }*/
 
 
         if ($service['Service']['check_period_id'] !== null && $service['Service']['check_period_id'] !== '')
