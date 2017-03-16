@@ -1092,18 +1092,6 @@ class Service extends AppModel {
                 }
             }
         }
-
-        if (!empty($service['Servicegroup'])) {
-            $Servicegroup = ClassRegistry::init('Servicegroup');
-            $Container = ClassRegistry::init('Container');
-            foreach ($service['Servicegroup'] as $_servicegroup) {
-                $servicegroup = $Servicegroup->findById($_servicegroup['id']);
-                if (empty($servicegroup['Service'])) {
-                    //Servicegroup is empty and can be deleted
-                    $Container->delete($servicegroup['Container']['id'], true);
-                }
-            }
-        }
     }
 
     public function __allowDelete($serviceId) {

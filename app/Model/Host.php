@@ -1189,21 +1189,6 @@ class Host extends AppModel {
                 }
             }
         }
-
-        if (!empty($host['Hostgroup'])) {
-            $Hostgroup = ClassRegistry::init('Hostgroup');
-            $Container = ClassRegistry::init('Container');
-            foreach ($host['Hostgroup'] as $_hostgroup) {
-                $hostgroup = $Hostgroup->findById($_hostgroup['id']);
-                if (empty($hostgroup['Host'])) {
-                    //Hostgroup is empty and can be deleted
-                    //$this->Hostgroup->delete($hostgroup['Hostgroup']['id']);
-                    if (isset($hostgroup['Container']['id'])) {
-                        $Container->delete($hostgroup['Container']['id'], true);
-                    }
-                }
-            }
-        }
     }
 
     /**
