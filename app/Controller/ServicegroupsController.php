@@ -108,7 +108,7 @@ class ServicegroupsController extends AppController
             unset($query['limit']);
             $all_servicegroups = $this->Servicegroup->find('all', $query);
         } else {
-            $this->Paginator->settings = $query;
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_servicegroups = $this->Paginator->paginate();
         }
         //Aufruf für json oder xml view: /nagios_module/services.json oder /nagios_module/services.xml
