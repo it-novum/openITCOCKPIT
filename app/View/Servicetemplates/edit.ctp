@@ -152,6 +152,16 @@ $notification_settings = [
                                 'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
+                            echo $this->Form->input('Servicetemplate.Servicegroup', [
+                                'options'          => $this->Html->chosenPlaceholder($_servicegroups),
+                                'selected'  => $this->request->data['Servicegroup'],
+                                'data-placeholder' => __('Please select...'),
+                                'class'            => 'chosen',
+                                'label'            => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'style'            => 'width: 100%',
+                                'multiple'         => true,
+                            ]);
                             echo $this->Form->input('notes', [
                                 'value'     => $this->request->data['Servicetemplate']['notes'],
                                 'label'     => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
