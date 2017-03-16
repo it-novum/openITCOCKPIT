@@ -62,6 +62,7 @@ class LdapComponent extends Component
 
         try {
             $this->adldap = new Adldap([
+                'person_filter'      => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
                 'base_dn'            => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
                 'domain_controllers' => [$this->_systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'ad_port'            => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],

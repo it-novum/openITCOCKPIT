@@ -29,8 +29,19 @@ use Adldap\Adldap as AdldapMain;
 
 class Adldap extends AdldapMain{
 
+    protected $myPersonFilter = '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))';
+
     public function search(){
         require_once APP.'Model'.DS.'AdldapSearch.php';
         return new AdldapSearch($this);
     }
+
+    public function setPersonFilter($personFilter){
+        $this->myPersonFilter = $personFilter;
+    }
+
+    public function getMyPersonFilter(){
+        return $this->myPersonFilter;
+    }
+
 }
