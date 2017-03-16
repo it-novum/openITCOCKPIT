@@ -33,6 +33,22 @@ App.Controllers.DowntimesHostController = Frontend.AppController.extend({
 			self.fnShowHide($(this).attr('my-column'), $(this).children());
 		});
 
+		var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+		for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+			pageUrl = localStorage.key(i);
+			dataTableValue = localStorage.getItem(pageUrl);
+			if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+			dataTableValueParsed = JSON.parse(dataTableValue);
+			if(pageUrl.indexOf('DataTables_hostdowntimes_list_/downtimes/host') !== -1){
+				if(dataTableValueParsed.time > highestTime){
+					highestTime = dataTableValueParsed.time;
+					highestValue = dataTableValue;
+				}
+			}
+		}
+
+		self.setDataTableFilter(highestValue);
+
 		$('#hostdowntimes_list').dataTable({
 			"bPaginate": false,
 			"bFilter": false,
@@ -136,5 +152,10 @@ App.Controllers.DowntimesHostController = Frontend.AppController.extend({
 			inputObject.prop('checked', true);
 		}
 		oTable.fnSetColumnVis( iCol, bVis ? false : true );
+	},
+	setDataTableFilter: function(storageValue){
+		var currentURL = window.location.href;
+		var postTextURL = currentURL.substring(currentURL.indexOf('downtimes/host') + 14);
+		localStorage.setItem('DataTables_hostdowntimes_list_/downtimes/host'+postTextURL, storageValue);
 	}
 });
