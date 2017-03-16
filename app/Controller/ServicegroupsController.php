@@ -98,12 +98,7 @@ class ServicegroupsController extends AppController
                 ]
             ]
         ];
-        $this->Paginator->settings['order'] = [
-            'Container.name'       => 'asc',
-            'Host.name'            => 'asc',
-            'Service.name'         => 'asc',
-            'Servicetemplate.name' => 'asc',
-        ];
+
         if ($this->isApiRequest()) {
             unset($query['limit']);
             $all_servicegroups = $this->Servicegroup->find('all', $query);
