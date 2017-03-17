@@ -54,7 +54,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
+apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
@@ -77,7 +77,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-nagios,-ndoutils,-npcd,-message}
+apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
