@@ -151,7 +151,34 @@ class HostgroupsController extends AppController
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+
+        $options = [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ]
+            ],
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ];
+        $hostgroups = $this->getHostgroupNames($this->Hostgroup->find('all', $options));
+
+
         $this->set('hostgroups', $hostgroups);
         $hostgroup = [];
         if ($hostgroupId === null) {
@@ -195,6 +222,14 @@ class HostgroupsController extends AppController
 
         }
 
+    }
+
+    private function getHostgroupNames($hostgroups){
+        $hostgroupnames = [];
+        foreach($hostgroups as $hostgroup) {
+            $hostgroupnames[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
+        }
+        return $hostgroupnames;
     }
 
     public function loadServicesByHostId($hostId = null, $hostgroupId)
