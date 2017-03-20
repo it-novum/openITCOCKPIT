@@ -52,6 +52,7 @@ class HostsController extends AppController
         'CustomValidationErrors',
         'Bbcode',
         'AdditionalLinks',
+        'Flash'
     ];
     public $helpers = [
         'ListFilter.ListFilter',
@@ -60,6 +61,7 @@ class HostsController extends AppController
         'CustomValidationErrors',
         'CustomVariables',
         'Bbcode',
+        'Flash',
     ];
     public $uses = [
         'Host',
@@ -1566,11 +1568,23 @@ class HostsController extends AppController
         }
 
         if ($this->Host->__delete($host, $this->Auth->user('id'))) {
-            $this->setFlash(__('Host deleted'));
+            $this->Flash->success('Host deleted', [
+                'key' => 'positive',
+            ]);
+         //   $this->setFlash(__('Host deleted'));
             $this->redirect(['action' => 'index']);
         }
 
-        $this->setFlash(__('Could not delete host'), false);
+
+        $this->Flash->error('Could not delete host', [
+            'key' => 'positive',
+            'params' => [
+                'usedBy' => $this->Host->usedBy,
+            ]
+        ]);
+
+        //$this->setFlash(__('Could not delete host'), false);
+
         $this->redirect(['action' => 'index']);
 
     }
