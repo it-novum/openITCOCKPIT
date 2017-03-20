@@ -100,7 +100,7 @@ class Changelog extends AppModel
                 'Servicetemplate'   => '{n}.{(id|name)}',
             ],
             'host'            => [
-                'Host'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Host'                     => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
                 'Hosttemplate'             => '{(id|name)}',
                 'CheckPeriod'              => '{(id|name)}',
                 'NotifyPeriod'             => '{(id|name)}',
