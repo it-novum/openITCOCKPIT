@@ -1106,8 +1106,39 @@ class Service extends AppModel {
         }
     }
 
+    public $usedBy = null;
+
     public function __allowDelete($serviceId) {
-        //check if the service is used somwhere
+
+        //using components in Model is ugly but we need the Constants here
+        App::import('Component', 'Constants');
+        $this->Constants = new ConstantsComponent();
+
+        $moduleConstants = $this->Constants->defines['modules'];
+        $usedBy = [
+            //'Host' => [],
+            'Service' => [],
+        ];
+
+        foreach ($moduleConstants as $moduleName => $value){
+            if(!empty($serviceId)){
+                if($this->checkUsageFlag($serviceId, $value)){
+                    $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
+                }
+            }
+        }
+
+        if(empty($usedBy['Service'])){
+            return true;
+        }
+
+        $this->usedBy = $usedBy;
+        return false;
+
+
+
+
+/*        //check if the service is used somwhere
         if (CakePlugin::loaded('EventcorrelationModule')) {
             $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
             $evcCount = $this->Eventcorrelation->find('count', [
@@ -1122,7 +1153,11 @@ class Service extends AppModel {
             return true;
         }
 
-        return true;
+        return true; */
+    }
+
+    public function humanizeModuleConstantName($name){
+        return preg_replace('/_MODULE/', '', $name);
     }
 
     public function checkUsageFlag($serviceId, $moduleValue) {

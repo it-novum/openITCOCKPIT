@@ -1571,10 +1571,8 @@ class HostsController extends AppController
             $this->Flash->success('Host deleted', [
                 'key' => 'positive',
             ]);
-         //   $this->setFlash(__('Host deleted'));
             $this->redirect(['action' => 'index']);
         }
-
 
         $this->Flash->error('Could not delete host', [
             'key' => 'positive',
@@ -1582,11 +1580,7 @@ class HostsController extends AppController
                 'usedBy' => $this->Host->usedBy,
             ]
         ]);
-
-        //$this->setFlash(__('Could not delete host'), false);
-
         $this->redirect(['action' => 'index']);
-
     }
 
     /*
