@@ -150,6 +150,9 @@ class HostsController extends AppController {
         ],
     ];
 
+    //holds the data for a temporary validation purposes
+    public $temporaryRequest = [];
+
     public function index() {
         $this->__unbindAssociations('Service');
         $conditions = [];
@@ -1299,7 +1302,8 @@ class HostsController extends AppController {
                 $this->request->data,
                 'add'
             );
-
+//debug($data_to_save);
+//$data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
             $data_to_save['Host']['own_customvariables'] = 0;
             //Add Customvariables data to $data_to_save
             $data_to_save['Customvariable'] = [];
@@ -1311,7 +1315,42 @@ class HostsController extends AppController {
                     $data_to_save['Host']['own_customvariables'] = 1;
                 }
             }
-            if ($this->Host->saveAll($data_to_save)) {
+
+
+            debug($data_to_save);
+//debug($this->request->data);
+            $this->Host->temporaryRequest = $this->request->data;
+            if (!$this->Host->validates($this->request->data)) {
+                //debug($this->Host->validationErrors);
+            }
+
+            //debug($this->additionalData);
+            $additionalData = [
+                'Maximoconfiguration' => [
+                    'impact_level' => '4',
+                    'urgency_level' => '4',
+                    'maximoownergroup' => '14',
+                    'maximoservice' => '4',
+                    'type' => 'host'
+                ]
+            ];
+
+            $data_to_save['Host'] = array_merge($data_to_save['Host'], $additionalData['Maximoconfiguration']);
+            $data_to_save = array_merge($data_to_save, $additionalData);
+            //debug($data_to_save);
+            $validate = true;
+            //no additional data to save so we need to let the saveAll validate
+            if (!empty($this->additionalData)) {
+                $validate = false;
+            }
+            debug($this->Host->find('first', [
+                'conditions' => [
+                    'Host.id' => 1
+                ]
+            ]));
+            //      debug($data_to_save);
+            die('ende');
+            if ($this->Host->saveAll($data_to_save, ['validate' => $validate])) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -1584,13 +1623,13 @@ class HostsController extends AppController {
                     return;
                 }
 
-                if(!$this->Host->__delete($host, $this->Auth->user('id'))){
+                if (!$this->Host->__delete($host, $this->Auth->user('id'))) {
                     $msgCollect[] = $this->Host->usedBy;
                 }
             }
         }
 
-        if(!empty($msgCollect)) {
+        if (!empty($msgCollect)) {
             $messages = call_user_func_array('array_merge_recursive', $msgCollect);
             $this->Flash->error('Could not delete host', [
                 'key' => 'positive',
