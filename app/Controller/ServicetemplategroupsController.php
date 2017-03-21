@@ -481,6 +481,7 @@ class ServicetemplategroupsController extends AppController
     {
         $this->loadModel('Hostgroup');
         $this->loadModel('Host');
+        $excludeHostIds = [];
         if (!$this->Hostgroup->exists($id_hostgroup)) {
             throw new NotFoundException(__('Invalid hostgroup'));
         }
@@ -495,9 +496,45 @@ class ServicetemplategroupsController extends AppController
         $hosts = [];
         foreach ($hostgroup['Host'] as $host) {
             //Find host + Services
-            $hosts[] = $this->Host->findById($host['id']);
+            $hosts[] = $this->Host->find('first',[
+                'recursive' => -1,
+                'contain' => [
+                    'Service' => [
+                        'Servicetemplate'
+                    ]
+                ],
+                'conditions' => [
+                    'Host.id' => $host['id']
+                ]
+            ]);
+            $excludeHostIds[] = $host['id'];
         }
-
+        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
+        if(!empty($hostTemlateIds)){
+            $hostsByHosttemplateIds = $this->Host->find('all', [
+                'recursive' => -1,
+                'contain' => [
+                    'Service' => [
+                        'Servicetemplate'
+                    ],
+                    'Hostgroup',
+                    'Hosttemplate' => [
+                        'Hostgroup'
+                    ]
+                ],
+                'conditions' => [
+                    'Host.hosttemplate_id' => $hostTemlateIds,
+                    'NOT' => [
+                        'Host.id' => $excludeHostIds
+                    ]
+                ]
+            ]);
+            foreach($hostsByHosttemplateIds as $host){
+                if(empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup'])){
+                    $hosts[] = $host;
+                }
+            }
+        }
         $this->set(compact(['servicetemplategroup', 'hosts']));
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }
