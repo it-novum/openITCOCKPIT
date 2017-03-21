@@ -1307,6 +1307,7 @@ class ServicesController extends AppController {
     }
 
     public function mass_delete($id = null) {
+        $msgCollect = [];
         foreach (func_get_args() as $service_id) {
             if ($this->Service->exists($service_id)) {
                 $service = $this->Service->findById($service_id);
@@ -1326,12 +1327,28 @@ class ServicesController extends AppController {
                 $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
                 $containerIdsToCheck[] = $host['Host']['container_id'];
                 if ($this->allowedByContainerId($containerIdsToCheck)) {
-                    $this->Service->__delete($service, $this->Auth->user('id'));
+                    if(!$this->Service->__delete($service, $this->Auth->user('id'))){
+                        $msgCollect[] = $this->Service->usedBy;
+                    }
                 }
             }
         }
 
-        $this->setFlash(__('Services deleted'));
+
+        if(!empty($msgCollect)){
+            $messages = call_user_func_array('array_merge_recursive', $msgCollect);
+            $this->Flash->error('Could not delete service', [
+                'key' => 'positive',
+                'params' => [
+                    'usedBy' => $messages,
+                ]
+            ]);
+            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+        }
+
+        $this->Flash->success('Service deleted', [
+            'key' => 'positive',
+        ]);
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 

@@ -1109,14 +1109,12 @@ class Service extends AppModel {
     public $usedBy = null;
 
     public function __allowDelete($serviceId) {
-
         //using components in Model is ugly but we need the Constants here
         App::import('Component', 'Constants');
         $this->Constants = new ConstantsComponent();
 
         $moduleConstants = $this->Constants->defines['modules'];
         $usedBy = [
-            //'Host' => [],
             'Service' => [],
         ];
 
@@ -1134,26 +1132,6 @@ class Service extends AppModel {
 
         $this->usedBy = $usedBy;
         return false;
-
-
-
-
-/*        //check if the service is used somwhere
-        if (CakePlugin::loaded('EventcorrelationModule')) {
-            $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
-            $evcCount = $this->Eventcorrelation->find('count', [
-                'conditions' => [
-                    'service_id' => $serviceId,
-                ],
-            ]);
-            if ($evcCount > 0) {
-                return false;
-            }
-
-            return true;
-        }
-
-        return true; */
     }
 
     public function humanizeModuleConstantName($name){

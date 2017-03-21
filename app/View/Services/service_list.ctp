@@ -37,6 +37,7 @@
     </div>
 </div>
 
+<?php echo $this->Flash->render('positive'); ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
     <a href="#" data-dismiss="alert" class="close">×</a>
