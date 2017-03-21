@@ -69,7 +69,7 @@
                                 $host_url = $host['Host']['host_url'];
                             endif;
 
-                            echo $this->Form->input('Host.'.$key.'.name', ['value' => $host['Host']['name'], 'label' => __('Hostname'), 'required' => true]);
+                            echo $this->Form->input('Host.'.$key.'.name', ['value' => $host['Host']['name'], 'label' => __('Host Name'), 'required' => true]);
                             echo $this->Form->input('Host.'.$key.'.description', ['value' => $description, 'label' => __('Description'), 'required' => false]);
                             echo $this->Form->input('Host.'.$key.'.address', ['value' => $host['Host']['address'], 'label' => __('Address'), 'required' => true]);
                             echo $this->Form->input('Host.'.$key.'.host_url', ['value' => $host_url, 'label' => __('Host URL'), 'required' => false]);

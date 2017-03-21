@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Allocate to Servicetemplategroup'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Allocate to Service template group'); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -56,15 +56,15 @@
             <div class="form-group">
                 <div class="col col-xs-10 col-xs-offset-2">
                     <?= $this->Form->checkbox('new', ['id' => 'new-stgroup']); ?>
-                    <?= $this->Form->label('label-for-new', __('Create new Servicetemplategroup'), ['for' => 'new-stgroup']); ?>
+                    <?= $this->Form->label('label-for-new', __('Create new Service template group'), ['for' => 'new-stgroup']); ?>
                 </div>
             </div>
             <div id="new-to-holder" style="display:none">
-                <?= $this->Form->input('Container.name', ['type' => 'text', 'style' => 'width: 100%;', 'label' => __('Servicetemplategroup')]); ?>
+                <?= $this->Form->input('Container.name', ['type' => 'text', 'style' => 'width: 100%;', 'label' => __('Service template group')]); ?>
                 <?= $this->Form->input('Servicetemplategroup.description', ['label' => __('Description')]) ?>
             </div>
             <div id="assign-to-holder">
-                <?= $this->Form->input('Servicetemplategroup.id', ['options' => $servicetemplateGroupList, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Servicetemplategroup')]); ?>
+                <?= $this->Form->input('Servicetemplategroup.id', ['options' => $servicetemplateGroupList, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Service template group')]); ?>
             </div>
             <?= $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $allServicetemplates, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Servicetemplates'), 'data-placeholder' => __('Please choose a servicetemplate'), 'selected' => array_keys($myServiceTemplates)]); ?>
             <?= $this->Form->formActions(); ?>

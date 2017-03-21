@@ -29,7 +29,7 @@
             <i class="fa fa-bomb fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Serviceescalation'); ?>
+                <?php echo __('Service Escalation'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
-        <h2><?php echo __('Edit Serviceescalation'); ?></h2>
+        <h2><?php echo __('Edit Service Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <?php echo $this->Utils->deleteButton(null, $serviceescalation['Serviceescalation']['id']); ?>

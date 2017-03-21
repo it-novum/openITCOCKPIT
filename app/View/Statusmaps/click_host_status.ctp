@@ -57,7 +57,7 @@ if (isset($returnedServiceStatus) && $serviceAmount > 0) {
             <th colspan="2" class="h6"><?php echo __('Host'); ?></th>
         </tr>
         <tr>
-            <td class="col-md-3 col-xs-3"><?php echo __('Hostname'); ?></td>
+            <td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
             <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield[0]['name']; ?></td>
         </tr>
         <tr>

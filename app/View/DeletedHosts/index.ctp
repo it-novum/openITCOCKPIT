@@ -69,7 +69,7 @@ foreach ($this->params->named as $key => $value) {
                 -->
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
+                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                         <?php
                         if ($isFilter):
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
@@ -125,7 +125,7 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-body no-padding">
                         <?php
                         $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('search'), false, false);
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
                             <table id="host_list" class="table table-striped table-bordered smart-form" style="">

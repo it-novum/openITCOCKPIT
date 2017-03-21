@@ -48,7 +48,7 @@ foreach ($this->params->named as $key => $value) {
         </h1>
     </div>
 </div>
-<?php echo $this->Flash->render('positive'); ?>
+
 <div id="error_msg"></div>
 
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -78,7 +78,7 @@ foreach ($this->params->named as $key => $value) {
                             echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Need a space for nice buttons
                         endif;
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
 
                         if ($isFilter):
                             echo " "; //Need a space for html
@@ -96,7 +96,7 @@ foreach ($this->params->named as $key => $value) {
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Graph'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Shared'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Passive'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hostname'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Host Name'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('IP-Address'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="9"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('State since'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="10"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last check'); ?></a></li>
@@ -143,7 +143,7 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-body no-padding">
                         <?php
                         $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('Search'), false, false);
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
                             <table id="host_list" class="table table-striped table-bordered smart-form" style="">

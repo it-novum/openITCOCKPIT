@@ -45,7 +45,7 @@ $notification_settings = [
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicetemplate'); ?>
+                <?php echo __('Service Template'); ?>
             </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -56,7 +56,7 @@ $notification_settings = [
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2><?php echo __('Edit Servicetemplate'); ?></h2>
+        <h2><?php echo __('Edit Service template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <?php echo $this->Utils->deleteButton(null, Hash::merge([$servicetemplate['Servicetemplate']['id']] ,$this->params['named']), [], true, __('All attached services will be deleted too.')); ?>
@@ -138,7 +138,7 @@ $notification_settings = [
                             echo $this->Form->input('template_name', [
                                 'value'     => $this->request->data['Servicetemplate']['template_name'],
                                 'label'     => ['text' => __('Template name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'help'      => __('Servicetemplate name'),
+                                'help'      => __('Service template name'),
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
                             echo $this->Form->input('name', [

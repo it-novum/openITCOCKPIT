@@ -31,7 +31,7 @@
                 <i class="fa fa-bomb fa-fw"></i>
                 <?php echo __('Monitoring'); ?>
                 <span>>
-                    <?php echo __('Serviceescalations'); ?>
+                    <?php echo __('Service Escalations'); ?>
 			</span>
             </h1>
         </div>
@@ -51,7 +51,7 @@
                             endif;
 
                             //TODO: search functionallity
-                            //echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
+                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
 
                             if ($isFilter):
                                 echo " ";
@@ -113,7 +113,7 @@
                         <div class="jarviswidget-ctrls" role="menu">
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Serviceescalations'); ?> </h2>
+                        <h2 class="hidden-mobile"><?php echo __('Service Escalations'); ?> </h2>
 
                     </header>
                     <div>

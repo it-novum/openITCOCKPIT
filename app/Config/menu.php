@@ -232,7 +232,7 @@ $config = [
                 ],
                 'itc_node'                 => [
                     'url'               => ['controller' => 'containers', 'action' => 'index'],
-                    'title'             => 'Nodes',
+                    'title'             => 'Containers',
                     'icon'              => 'link',
                     'parent_controller' => 'itc',
                 ],

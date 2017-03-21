@@ -27,7 +27,7 @@
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-wrench fa-fw "></i>
-            <?php echo __('Systemsettings'); ?>
+            <?php echo __('System Settings'); ?>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -47,7 +47,7 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-wrench"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Systemsettings'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('System settings'); ?> </h2>
 
                 </header>
                 <div>
