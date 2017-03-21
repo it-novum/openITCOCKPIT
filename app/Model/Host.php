@@ -25,7 +25,6 @@
 
 App::uses('ValidationCollection', 'Lib');
 
-
 /**
  * @property ParentHost $ParentHost
  */
@@ -1019,8 +1018,14 @@ class Host extends AppModel {
         return false;
     }
 
+    public $usedBy = null;
+
     public function __allowDelete($host) {
         $Service = ClassRegistry::init('Service');
+        //using components in Model is ugly but we need the Constants here
+        App::import('Component', 'Constants');
+        $this->Constants = new ConstantsComponent();
+
         $serviceIds = Hash::extract($Service->find('all', [
             'recursive' => -1,
             'conditions' => [
@@ -1031,25 +1036,35 @@ class Host extends AppModel {
             ],
         ]), '{n}.Service.id');
 
-        //check if the host is used somwhere
-        if (CakePlugin::loaded('EventcorrelationModule')) {
-            $this->Eventcorrelation = ClassRegistry::init('Eventcorrelation');
-            $evcCount = $this->Eventcorrelation->find('count', [
-                'conditions' => [
-                    'OR' => [
-                        'Eventcorrelation.host_id' => $host['Host']['id'],
-                        'Eventcorrelation.service_id' => $serviceIds,
-                    ],
-                ],
-            ]);
-            if ($evcCount > 0) {
-                return false;
+        $moduleConstants = $this->Constants->defines['modules'];
+        $usedBy = [
+            'Host' => [],
+            'Service' => [],
+        ];
+        foreach ($moduleConstants as $moduleName => $value){
+            if($this->checkUsageFlag($host['Host']['id'], $value)){
+                $usedBy['Host'][$this->humanizeModuleConstantName($moduleName)][] = $host['Host']['id'];
             }
 
+            if(!empty($serviceIds)){
+                foreach ($serviceIds as $serviceId){
+                    if($this->Service->checkUsageFlag($serviceId, $value)){
+                        $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
+                    }
+                }
+            }
+        }
+
+        if(empty($usedBy['Host']) && empty($usedBy['Service'])){
             return true;
         }
 
-        return true;
+        $this->usedBy = $usedBy;
+        return false;
+    }
+
+    public function humanizeModuleConstantName($name){
+        return preg_replace('/_MODULE/', '', $name);
     }
 
     public function __deleteBySatellite($satelliteId, $userId) { // performance optimization

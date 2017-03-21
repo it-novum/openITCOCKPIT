@@ -26,26 +26,25 @@
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 
 /**
- * @property Container                                $Container
- * @property Service                                  $Service
- * @property Host                                     $Host
- * @property Servicetemplate                          $Servicetemplate
- * @property Servicegroup                             $Servicegroup
- * @property Command                                  $Command
- * @property Commandargument                          $Commandargument
- * @property Timeperiod                               $Timeperiod
- * @property Contact                                  $Contact
- * @property Contactgroup                             $Contactgroup
- * @property Customvariable                           $Customvariable
- * @property Servicecommandargumentvalue              $Servicecommandargumentvalue
- * @property Serviceeventcommandargumentvalue         $Serviceeventcommandargumentvalue
- * @property Servicetemplatecommandargumentvalue      $Servicetemplatecommandargumentvalue
+ * @property Container $Container
+ * @property Service $Service
+ * @property Host $Host
+ * @property Servicetemplate $Servicetemplate
+ * @property Servicegroup $Servicegroup
+ * @property Command $Command
+ * @property Commandargument $Commandargument
+ * @property Timeperiod $Timeperiod
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
+ * @property Customvariable $Customvariable
+ * @property Servicecommandargumentvalue $Servicecommandargumentvalue
+ * @property Serviceeventcommandargumentvalue $Serviceeventcommandargumentvalue
+ * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
- * @property DeletedService                           $DeletedService
- * @property Rrd                                      $Rrd
+ * @property DeletedService $DeletedService
+ * @property Rrd $Rrd
  */
-class ServicesController extends AppController
-{
+class ServicesController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
         'Paginator',
@@ -54,6 +53,7 @@ class ServicesController extends AppController
         'CustomValidationErrors',
         'Bbcode',
         'GearmanClient',
+        'Flash'
     ];
     public $helpers = [
         'ListFilter.ListFilter',
@@ -90,73 +90,73 @@ class ServicesController extends AppController
     ];
 
     public $listFilters = [
-        'index'        => [
+        'index' => [
             'fields' => [
-                'Host.name'                                   => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Service.servicename'                         => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Servicestatus.output'                        => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Service.tags'                                => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
-                'Servicestatus.current_state'                 => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
+                'Servicestatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Service.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Servicestatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
-                            'name'  => 'Servicestatus.ok',
+                            'name' => 'Servicestatus.ok',
                             'value' => 1,
                             'label' => 'Ok',
-                            'data'  => 'Filter.Servicestatus.current_state',
+                            'data' => 'Filter.Servicestatus.current_state',
                         ],
                         '1' => [
-                            'name'  => 'Servicestatus.warning',
+                            'name' => 'Servicestatus.warning',
                             'value' => 1,
                             'label' => 'Warning',
-                            'data'  => 'Filter.Servicestatus.current_state',
+                            'data' => 'Filter.Servicestatus.current_state',
                         ],
                         '2' => [
-                            'name'  => 'Servicestatus.critical',
+                            'name' => 'Servicestatus.critical',
                             'value' => 1,
                             'label' => 'Critical',
-                            'data'  => 'Filter.Servicestatus.current_state',
+                            'data' => 'Filter.Servicestatus.current_state',
                         ],
                         '3' => [
-                            'name'  => 'Servicestatus.unknown',
+                            'name' => 'Servicestatus.unknown',
                             'value' => 1,
                             'label' => 'Unknown',
-                            'data'  => 'Filter.Servicestatus.current_state',
+                            'data' => 'Filter.Servicestatus.current_state',
                         ],
                     ],
                 ],
                 'Servicestatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
-                            'name'  => 'Not Acknowledged',
+                            'name' => 'Not Acknowledged',
                             'value' => 1,
                             'label' => 'Not Acknowledged',
-                            'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
+                            'data' => 'Filter.Servicestatus.problem_has_been_acknowledged',
                         ],
                         '1' => [
-                            'name'  => 'Acknowledged',
+                            'name' => 'Acknowledged',
                             'value' => 1,
                             'label' => 'Acknowledged',
-                            'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
+                            'data' => 'Filter.Servicestatus.problem_has_been_acknowledged',
                         ],
                     ],
                 ],
-                'Servicestatus.scheduled_downtime_depth'      => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
                     [
                         '0' => [
-                            'name'  => 'Downtime',
+                            'name' => 'Downtime',
                             'value' => 1,
                             'label' => 'In Downtime',
-                            'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
+                            'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
                         ],
                     ],
                 ],
-                'Servicestatus.active_checks_enabled'         => ['label' => 'Passive', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                'Servicestatus.active_checks_enabled' => ['label' => 'Passive', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
-                            'name'  => 'Passive',
+                            'name' => 'Passive',
                             'value' => 1,
                             'label' => 'Passive',
-                            'data'  => 'Filter.Servicestatus.active_checks_enabled',
+                            'data' => 'Filter.Servicestatus.active_checks_enabled',
                         ],
                     ],
                 ],
@@ -186,22 +186,21 @@ class ServicesController extends AppController
         ],
         'notMonitored' => [
             'fields' => [
-                'Host.name'           => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Service.tags'        => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Service.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
             ],
         ],
-        'disabled'     => [
+        'disabled' => [
             'fields' => [
-                'Host.name'           => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Service.tags'        => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Service.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
             ],
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $this->__unbindAssociations('Host');
 
         $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
@@ -213,7 +212,7 @@ class ServicesController extends AppController
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
 
         $conditions = [
-            'Service.disabled'               => 0,
+            'Service.disabled' => 0,
             'HostsToContainers.container_id' => $this->MY_RIGHTS,
         ];
         $conditions = $this->ListFilter->buildConditions($this->request->data, $conditions);
@@ -225,7 +224,7 @@ class ServicesController extends AppController
             }
 
             $_conditions = [
-                'Host.disabled'                  => 0,
+                'Host.disabled' => 0,
                 //'Host.container_id' => $all_container_ids
                 'HostsToContainers.container_id' => $containerId,
             ];
@@ -234,10 +233,10 @@ class ServicesController extends AppController
 
         $all_services = [];
         $query = [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => $conditions,
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
+            'contain' => ['Servicetemplate'],
+            'fields' => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -272,45 +271,45 @@ class ServicesController extends AppController
 
                 'HostsToContainers.container_id',
             ],
-            'order'      => [
-                'Host.name'           => 'asc',
+            'order' => [
+                'Host.name' => 'asc',
                 'Service.servicename' => 'asc',
             ],
-            'joins'      => [[
-                'table'      => 'hosts',
-                'type'       => 'INNER',
-                'alias'      => 'Host',
+            'joins' => [[
+                'table' => 'hosts',
+                'type' => 'INNER',
+                'alias' => 'Host',
                 'conditions' => 'Service.host_id = Host.id',
             ], [
-                'table'      => 'nagios_objects',
-                'type'       => 'INNER',
-                'alias'      => 'HostObject',
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'HostObject',
                 'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
             ], [
-                'table'      => 'nagios_hoststatus',
-                'type'       => 'INNER',
-                'alias'      => 'Hoststatus',
+                'table' => 'nagios_hoststatus',
+                'type' => 'INNER',
+                'alias' => 'Hoststatus',
                 'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
             ], [
-                'table'      => 'nagios_objects',
-                'type'       => 'INNER',
-                'alias'      => 'ServiceObject',
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'ServiceObject',
                 'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
             ], [
-                'table'      => 'nagios_servicestatus',
-                'type'       => 'LEFT OUTER',
-                'alias'      => 'Servicestatus',
+                'table' => 'nagios_servicestatus',
+                'type' => 'LEFT OUTER',
+                'alias' => 'Servicestatus',
                 'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
             ], [
-                'table'      => 'hosts_to_containers',
-                'alias'      => 'HostsToContainers',
-                'type'       => 'LEFT',
+                'table' => 'hosts_to_containers',
+                'alias' => 'HostsToContainers',
+                'type' => 'LEFT',
                 'conditions' => [
                     'HostsToContainers.host_id = Host.id',
                 ],
             ],
             ],
-            'group'      => [
+            'group' => [
                 'Service.id',
             ],
         ];
@@ -326,10 +325,10 @@ class ServicesController extends AppController
         if (!empty($all_services)) {
             $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
             $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
+                'contain' => [
                     'Container',
                 ],
-                'fields'     => [
+                'fields' => [
                     'Host.id',
                     'Container.*',
                 ],
@@ -343,7 +342,7 @@ class ServicesController extends AppController
         }
         $username = $this->Auth->user('full_name');
 
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
@@ -366,8 +365,7 @@ class ServicesController extends AppController
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -388,7 +386,7 @@ class ServicesController extends AppController
         } else {
             $servicestatus = [
                 'Servicestatus' => [],
-                'Objects'       => [],
+                'Objects' => [],
             ];
         }
         $service = Hash::merge($service, $servicestatus);
@@ -397,8 +395,7 @@ class ServicesController extends AppController
         $this->set('_serialize', ['service']);
     }
 
-    public function notMonitored()
-    {
+    public function notMonitored() {
         $this->__unbindAssociations('Host');
 
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
@@ -416,12 +413,12 @@ class ServicesController extends AppController
                         false,
                         ['id', 'containertype_id']
                     ),
-                    '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.'|'.')$/].id'
+                    '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . ')$/].id'
                 )
             );
 
             $_conditions = [
-                'Host.disabled'     => 0,
+                'Host.disabled' => 0,
                 'Host.container_id' => $all_container_ids,
             ];
             $conditions = Hash::merge($conditions, $_conditions);
@@ -430,8 +427,8 @@ class ServicesController extends AppController
         $all_services = [];
         $query = [
 //			'recursive' => -1,
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
+            'contain' => ['Servicetemplate'],
+            'fields' => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -455,17 +452,17 @@ class ServicesController extends AppController
 
                 //'Hoststatus.current_state'
             ],
-            'order'      => ['Host.name' => 'asc'],
-            'joins'      => [
+            'order' => ['Host.name' => 'asc'],
+            'joins' => [
                 [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
+                    'table' => 'hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
                     'conditions' => 'Service.host_id = Host.id',
                 ], [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'ServiceObject',
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'ServiceObject',
                     'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
                 ],
             ],
@@ -482,10 +479,10 @@ class ServicesController extends AppController
         if (!empty($all_services)) {
             $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
             $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
+                'contain' => [
                     'Container',
                 ],
-                'fields'     => [
+                'fields' => [
                     'Host.id',
                     'Container.*',
                 ],
@@ -518,8 +515,7 @@ class ServicesController extends AppController
         }
     }
 
-    public function disabled()
-    {
+    public function disabled() {
         $this->__unbindAssociations('Host');
 
         $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
@@ -543,12 +539,12 @@ class ServicesController extends AppController
                         false,
                         ['id', 'containertype_id']
                     ),
-                    '{n}.Container[containertype_id=/^('.CT_GLOBAL.'|'.CT_TENANT.'|'.CT_LOCATION.')$/].id'
+                    '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . ')$/].id'
                 )
             );
 
             $_conditions = [
-                'Host.disabled'     => 0,
+                'Host.disabled' => 0,
                 'Host.container_id' => $all_container_ids,
             ];
             $conditions = Hash::merge($conditions, $_conditions);
@@ -557,8 +553,8 @@ class ServicesController extends AppController
         $all_services = [];
         $query = [
 //			'recursive' => -1,
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
+            'contain' => ['Servicetemplate'],
+            'fields' => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -581,37 +577,37 @@ class ServicesController extends AppController
 
                 'Hoststatus.current_state',
             ],
-            'order'      => ['Host.name' => 'asc'],
-            'joins'      => [
+            'order' => ['Host.name' => 'asc'],
+            'joins' => [
                 [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
+                    'table' => 'hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
                     'conditions' => 'Service.host_id = Host.id',
                 ],
                 [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'HostObject',
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'HostObject',
                     'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                 ],
                 [
-                    'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Hoststatus',
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ],
                 [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ],
             ],
             'conditions' => $conditions,
-            'group'      => [
+            'group' => [
                 'Service.id',
             ],
         ];
@@ -626,10 +622,10 @@ class ServicesController extends AppController
         if (!empty($all_services)) {
             $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
             $_hostContainers = $this->Host->find('all', [
-                'contain'    => [
+                'contain' => [
                     'Container',
                 ],
-                'fields'     => [
+                'fields' => [
                     'Host.id',
                     'Container.*',
                 ],
@@ -660,12 +656,11 @@ class ServicesController extends AppController
         }
     }
 
-    public function add()
-    {
+    public function add() {
         $userId = $this->Auth->user('id');
         $Customvariable = [];
         $customFieldsToRefill = [
-            'Service'      => [
+            'Service' => [
                 'notification_interval',
                 'notify_on_recovery',
                 'notify_on_warning',
@@ -684,7 +679,7 @@ class ServicesController extends AppController
                 'active_checks_enabled',
                 'process_performance_data',
             ],
-            'Contact'      => [
+            'Contact' => [
                 'Contact',
             ],
             'Contactgroup' => [
@@ -766,7 +761,7 @@ class ServicesController extends AppController
                 $this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])
             ) {
                 $servicetemplate = $this->Servicetemplate->find('first', [
-                    'contain'    => [
+                    'contain' => [
                         'Container',
                         'CheckPeriod',
                         'NotifyPeriod',
@@ -780,7 +775,7 @@ class ServicesController extends AppController
                         'Servicetemplategroup',
                         'Servicegroup'
                     ],
-                    'recursive'  => -1,
+                    'recursive' => -1,
                     'conditions' => [
                         'Servicetemplate.id' => $this->request->data['Service']['servicetemplate_id'],
                     ],
@@ -813,7 +808,7 @@ class ServicesController extends AppController
                     OBJECT_SERVICE,
                     $ext_data_for_changelog['Host']['container_id'], // use host container_id for user permissions
                     $userId,
-                    $ext_data_for_changelog['Host']['name'].'/'.$this->request->data['Service']['name'],
+                    $ext_data_for_changelog['Host']['name'] . '/' . $this->request->data['Service']['name'],
                     array_merge($this->request->data, $ext_data_for_changelog)
                 );
                 if ($changelog_data) {
@@ -836,8 +831,7 @@ class ServicesController extends AppController
         }
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         $this->Service->id = $id;
         if (!$this->Service->exists()) {
@@ -849,7 +843,7 @@ class ServicesController extends AppController
             'conditions' => [
                 'Service.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Host' => [
                     'Container',
                 ],
@@ -865,7 +859,7 @@ class ServicesController extends AppController
 
         $Customvariable = [];
         $customFieldsToRefill = [
-            'Service'      => [
+            'Service' => [
                 'notification_interval',
                 'notify_on_recovery',
                 'notify_on_warning',
@@ -884,7 +878,7 @@ class ServicesController extends AppController
                 'active_checks_enabled',
                 'process_performance_data',
             ],
-            'Contact'      => [
+            'Contact' => [
                 'Contact',
             ],
             'Contactgroup' => [
@@ -918,13 +912,13 @@ class ServicesController extends AppController
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Commandargument.command_id' => $service['Service']['command_id'],
             ],
         ]);
         $eventhandler_commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
             ],
@@ -933,7 +927,7 @@ class ServicesController extends AppController
         foreach ($service['Contact'] as $contact_id) {
             if (isset($contacts[$contact_id])) {
                 $contacts_for_changelog[] = [
-                    'id'   => $contact_id,
+                    'id' => $contact_id,
                     'name' => $contacts[$contact_id],
                 ];
             }
@@ -941,7 +935,7 @@ class ServicesController extends AppController
         $contactgroups_for_changelog = [];
         foreach ($service['Contactgroup'] as $contactgroup_id) {
             $contactgroups_for_changelog[] = [
-                'id'   => $contactgroup_id,
+                'id' => $contactgroup_id,
                 'name' => $contactgroups[$contactgroup_id],
             ];
         }
@@ -949,7 +943,7 @@ class ServicesController extends AppController
         foreach ($service['Servicegroup'] as $servicegroup_id) {
             if (isset($servicegroups[$servicegroup_id])) {
                 $servicegroups_for_changelog[] = [
-                    'id'   => $servicegroup_id,
+                    'id' => $servicegroup_id,
                     'name' => $servicegroups[$servicegroup_id],
                 ];
             }
@@ -965,9 +959,9 @@ class ServicesController extends AppController
         $this->Frontend->setJson('lang_and', __('and'));
 
         $serviceContactsAndContactgroups = $this->Service->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Contact'      => [
+            'recursive' => -1,
+            'contain' => [
+                'Contact' => [
                     'fields' => [
                         'Contact.id',
                         'Contact.name',
@@ -979,7 +973,7 @@ class ServicesController extends AppController
                             'Container.name',
                         ],
                     ],
-                    'fields'    => [
+                    'fields' => [
                         'Contactgroup.id',
                     ],
                 ],
@@ -987,7 +981,7 @@ class ServicesController extends AppController
             'conditions' => [
                 'Service.id' => $service['Service']['id'],
             ],
-            'fields'     => [
+            'fields' => [
                 'Service.id',
             ],
         ]);
@@ -1014,7 +1008,7 @@ class ServicesController extends AppController
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [
-                'Contact'      => [],
+                'Contact' => [],
                 'Contactgroup' => [],
                 'Servicegroup' => [],
             ];
@@ -1027,7 +1021,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
+                            'id' => $contactId,
                             'name' => $contactName,
                         ];
                     }
@@ -1036,15 +1030,15 @@ class ServicesController extends AppController
             }
             if ($this->request->data('Service.Contactgroup')) {
                 if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Contactgroup.id',
                     ],
                     'conditions' => [
@@ -1054,7 +1048,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($contactgroupsForChangelog as $contactgroupData) {
                         $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupData['Contactgroup']['id'],
+                            'id' => $contactgroupData['Contactgroup']['id'],
                             'name' => $contactgroupData['Container']['name'],
                         ];
                     }
@@ -1063,15 +1057,15 @@ class ServicesController extends AppController
             }
             if ($this->request->data('Service.Servicegroup')) {
                 if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Servicegroup.id',
                     ],
                     'conditions' => [
@@ -1081,7 +1075,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($servicegroupsForChangelog as $servicegroupData) {
                         $ext_data_for_changelog['Servicegroup'][] = [
-                            'id'   => $servicegroupData['Servicegroup']['id'],
+                            'id' => $servicegroupData['Servicegroup']['id'],
                             'name' => $servicegroupData['Container']['name'],
                         ];
                     }
@@ -1097,7 +1091,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -1113,7 +1107,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -1129,7 +1123,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($servicetemplatesForChangelog as $servicetemplateId => $servicetemplateName) {
                         $ext_data_for_changelog['Servicetemplate'] = [
-                            'id'   => $servicetemplateId,
+                            'id' => $servicetemplateId,
                             'name' => $servicetemplateName,
                         ];
                     }
@@ -1145,7 +1139,7 @@ class ServicesController extends AppController
                 ) {
                     foreach ($commandsForChangelog as $commandId => $commandName) {
                         $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
+                            'id' => $commandId,
                             'name' => $commandName,
                         ];
                     }
@@ -1154,8 +1148,8 @@ class ServicesController extends AppController
             }
             if ($this->request->data('Service.host_id')) {
                 if ($hostsForChangelog = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
+                    'recursive' => -1,
+                    'fields' => [
                         'id',
                         'name',
                         'container_id',
@@ -1167,8 +1161,8 @@ class ServicesController extends AppController
                 ) {
                     foreach ($hostsForChangelog as $hostData) {
                         $ext_data_for_changelog['Host'] = [
-                            'id'           => $hostData['id'],
-                            'name'         => $hostData['name'],
+                            'id' => $hostData['id'],
+                            'name' => $hostData['name'],
                             'container_id' => $hostData['container_id'],
                         ];
                     }
@@ -1186,7 +1180,7 @@ class ServicesController extends AppController
                 $this->Servicetemplate->exists($this->request->data['Service']['servicetemplate_id'])
             ) {
                 $servicetemplate = $this->Servicetemplate->find('first', [
-                    'contain'    => [
+                    'contain' => [
                         'Container',
                         'CheckPeriod',
                         'NotifyPeriod',
@@ -1199,7 +1193,7 @@ class ServicesController extends AppController
                         'Contact',
                         'Servicetemplategroup',
                     ],
-                    'recursive'  => -1,
+                    'recursive' => -1,
                     'conditions' => [
                         'Servicetemplate.id' => $this->request->data['Service']['servicetemplate_id'],
                     ],
@@ -1232,7 +1226,7 @@ class ServicesController extends AppController
                 ]);
 
                 $this->Customvariable->deleteAll([
-                    'object_id'     => $service['Service']['id'],
+                    'object_id' => $service['Service']['id'],
                     'objecttype_id' => OBJECT_SERVICE,
                 ], false);
             }
@@ -1245,7 +1239,7 @@ class ServicesController extends AppController
                     OBJECT_SERVICE,
                     $ext_data_for_changelog['Host']['container_id'], // use host container_id for user permissions
                     $userId,
-                    $ext_data_for_changelog['Host']['name'].'/'.$this->request->data['Service']['name'],
+                    $ext_data_for_changelog['Host']['name'] . '/' . $this->request->data['Service']['name'],
                     array_merge($this->request->data, $ext_data_for_changelog),
                     $service_for_changelog
                 );
@@ -1263,8 +1257,7 @@ class ServicesController extends AppController
         }
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1278,10 +1271,10 @@ class ServicesController extends AppController
             'conditions' => [
                 'Host.id' => $service['Host']['id'],
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
             ],
-            'fields'     => [
+            'fields' => [
                 'Host.id',
                 'Host.container_id',
                 'Container.*',
@@ -1296,15 +1289,25 @@ class ServicesController extends AppController
         }
 
         if ($this->Service->__delete($service, $this->Auth->user('id'))) {
-            $this->setFlash(__('Service deleted.'));
+            //   $this->setFlash(__('Service deleted.'));
+            $this->Flash->success('Service deleted', [
+                'key' => 'positive',
+            ]);
             $this->redirect(['action' => 'index']);
         }
-        $this->setFlash(__('Could not delete service'), false);
+        //$this->setFlash(__('Could not delete service'), false);
+
+        $this->Flash->error('Could not delete service', [
+            'key' => 'positive',
+            'params' => [
+                'usedBy' => $this->Service->usedBy,
+            ]
+        ]);
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
+        $msgCollect = [];
         foreach (func_get_args() as $service_id) {
             if ($this->Service->exists($service_id)) {
                 $service = $this->Service->findById($service_id);
@@ -1312,10 +1315,10 @@ class ServicesController extends AppController
                     'conditions' => [
                         'Host.id' => $service['Host']['id'],
                     ],
-                    'contain'    => [
+                    'contain' => [
                         'Container',
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Host.id',
                         'Host.container_id',
                         'Container.*',
@@ -1324,17 +1327,32 @@ class ServicesController extends AppController
                 $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
                 $containerIdsToCheck[] = $host['Host']['container_id'];
                 if ($this->allowedByContainerId($containerIdsToCheck)) {
-                    $this->Service->__delete($service, $this->Auth->user('id'));
+                    if(!$this->Service->__delete($service, $this->Auth->user('id'))){
+                        $msgCollect[] = $this->Service->usedBy;
+                    }
                 }
             }
         }
 
-        $this->setFlash(__('Services deleted'));
+
+        if(!empty($msgCollect)){
+            $messages = call_user_func_array('array_merge_recursive', $msgCollect);
+            $this->Flash->error('Could not delete service', [
+                'key' => 'positive',
+                'params' => [
+                    'usedBy' => $messages,
+                ]
+            ]);
+            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+        }
+
+        $this->Flash->success('Service deleted', [
+            'key' => 'positive',
+        ]);
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function copy($id = null)
-    {
+    public function copy($id = null) {
         $servicesToCopy = [];
         $servicesCantCopy = [];
         $hosts = [];
@@ -1410,8 +1428,7 @@ class ServicesController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function deactivate($id = null)
-    {
+    public function deactivate($id = null) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1425,8 +1442,7 @@ class ServicesController extends AppController
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function mass_deactivate($id = null)
-    {
+    public function mass_deactivate($id = null) {
         foreach (func_get_args() as $service_id) {
             if ($this->Service->exists($service_id)) {
                 $service = $this->Service->findById($service_id);
@@ -1437,15 +1453,13 @@ class ServicesController extends AppController
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    protected function __disable($service)
-    {
+    protected function __disable($service) {
         $service['Service']['disabled'] = 1;
 
         return $this->Service->save($service);
     }
 
-    public function enable($id = null)
-    {
+    public function enable($id = null) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1460,18 +1474,17 @@ class ServicesController extends AppController
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function loadContactsAndContactgroups($container_id = null)
-    {
+    public function loadContactsAndContactgroups($container_id = null) {
         $this->allowOnlyAjaxRequests();
 
         $result = [
-            'contacts'      => [
+            'contacts' => [
                 'contacts' => [],
-                'sizeof'   => 0,
+                'sizeof' => 0,
             ],
             'contactgroups' => [
                 'contactgroups' => [],
-                'sizeof'        => 0,
+                'sizeof' => 0,
             ],
         ];
         //container_id = 1 => ROOT
@@ -1487,15 +1500,14 @@ class ServicesController extends AppController
 
     }
 
-    public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null)
-    {
+    public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
         $test = [];
         $commandarguments = [];
         if ($command_id) {
             $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Commandargument.command_id' => $command_id,
                 ],
@@ -1507,7 +1519,7 @@ class ServicesController extends AppController
                             'Servicetemplatecommandargumentvalue.servicetemplate_id' => $servicetemplate_id,
                             'Servicetemplatecommandargumentvalue.commandargument_id' => $commandargument['Commandargument']['id'],
                         ],
-                        'fields'     => [
+                        'fields' => [
                             'Servicetemplatecommandargumentvalue.value',
                             'Servicetemplatecommandargumentvalue.id',
                         ],
@@ -1527,15 +1539,14 @@ class ServicesController extends AppController
         $this->set(compact('commandarguments'));
     }
 
-    public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null)
-    {
+    public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
         $test = [];
         $commandarguments = [];
         if ($command_id) {
             $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Commandargument.command_id' => $command_id,
                 ],
@@ -1547,7 +1558,7 @@ class ServicesController extends AppController
                             'Servicetemplateeventcommandargumentvalue.servicetemplate_id' => $servicetemplate_id,
                             'Servicetemplateeventcommandargumentvalue.commandargument_id' => $commandargument['Commandargument']['id'],
                         ],
-                        'fields'     => [
+                        'fields' => [
                             'Servicetemplateeventcommandargumentvalue.value',
                             'Servicetemplateeventcommandargumentvalue.id',
                         ],
@@ -1567,13 +1578,12 @@ class ServicesController extends AppController
         $this->set(compact('commandarguments'));
     }
 
-    public function loadArgumentsAdd($command_id = null)
-    {
+    public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
         $this->loadModel('Commandargument');
 
         $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Commandargument.command_id' => $command_id,
             ],
@@ -1583,8 +1593,7 @@ class ServicesController extends AppController
         $this->render('load_arguments');
     }
 
-    public function loadServicetemplatesArguments($servicetemplate_id = null)
-    {
+    public function loadServicetemplatesArguments($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1616,8 +1625,7 @@ class ServicesController extends AppController
         $this->render('load_arguments');
     }
 
-    public function loadTemplateData($servicetemplate_id = null)
-    {
+    public function loadTemplateData($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1628,7 +1636,7 @@ class ServicesController extends AppController
             'conditions' => [
                 'Servicetemplate.id' => $servicetemplate_id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Contactgroup' => [
                     'Container' => ['fields' => 'name'],
                 ],
@@ -1643,16 +1651,14 @@ class ServicesController extends AppController
         $this->set('_serialize', ['servicetemplate']);
     }
 
-    public function addCustomMacro($counter)
-    {
+    public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
         $this->set('objecttype_id', OBJECT_SERVICE);
         $this->set('counter', $counter);
     }
 
-    public function loadServices($host_id)
-    {
+    public function loadServices($host_id) {
         /* $this->allowOnlyAjaxRequests(); */
 
         $this->loadModel('Host');
@@ -1672,8 +1678,7 @@ class ServicesController extends AppController
         $this->set('_serialize', ['services']);
     }
 
-    public function loadTemplateMacros($servicetemplate_id = null)
-    {
+    public function loadTemplateMacros($servicetemplate_id = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1688,8 +1693,8 @@ class ServicesController extends AppController
                 'conditions' => [
                     'Servicetemplate.id' => $servicetemplate_id,
                 ],
-                'recursive'  => -1,
-                'contain'    => [
+                'recursive' => -1,
+                'contain' => [
                     'Customvariable' => [
                         'fields' => [
                             'Customvariable.name',
@@ -1698,7 +1703,7 @@ class ServicesController extends AppController
                         ],
                     ],
                 ],
-                'fields'     => [
+                'fields' => [
                     'Servicetemplate.id',
                 ],
             ]);
@@ -1706,8 +1711,7 @@ class ServicesController extends AppController
         $this->set('servicetemplate', $servicetemplate);
     }
 
-    function browser($id = null)
-    {
+    function browser($id = null) {
         $browseByUUID = false;
         $conditionsToFind = ['Service.id' => $id];
         if (preg_match('/\-/', $id)) {
@@ -1717,8 +1721,8 @@ class ServicesController extends AppController
 
         $_service = $this->Service->find('first', [
             'conditions' => $conditionsToFind,
-            'contain'    => [
-                'Contact'      => [
+            'contain' => [
+                'Contact' => [
                     'fields' => [
                         'Contact.id',
                         'Contact.name',
@@ -1730,12 +1734,12 @@ class ServicesController extends AppController
                             'Container.name',
                         ],
                     ],
-                    'fields'    => [
+                    'fields' => [
                         'Contactgroup.id',
                     ],
                 ],
                 'Servicecommandargumentvalue',
-                'Host'         => [
+                'Host' => [
                     'Container',
                 ],
                 'NotifyPeriod',
@@ -1818,7 +1822,7 @@ class ServicesController extends AppController
             ])
         );
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         $this->loadModel('Systemsetting');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
@@ -1864,27 +1868,26 @@ class ServicesController extends AppController
 	debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
 	*/
 
-    public function servicesByHostId($host_id = null)
-    {
+    public function servicesByHostId($host_id = null) {
         $this->autoRender = false;
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
         $services = $this->Service->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Servicetemplate' => [
                     'fields' => ['Servicetemplate.name'],
                 ],
-                'Host'            => [
+                'Host' => [
                     'fields' => ['Host.name', 'Host.uuid'],
                 ],
             ],
-            'fields'     => [
+            'fields' => [
                 'Service.id',
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceDescription',
             ],
-            'order'      => [
+            'order' => [
                 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => [
@@ -1896,8 +1899,7 @@ class ServicesController extends AppController
         $this->render('load_services');
     }
 
-    public function serviceList($host_id)
-    {
+    public function serviceList($host_id) {
         if (!$this->Host->exists($host_id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -1906,8 +1908,8 @@ class ServicesController extends AppController
         $deletedServices = $this->DeletedService->findAllByHostId($host_id);
         $this->Host->unbindModel([
             'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Parenthost', 'Hostgroup'],
-            'hasMany'             => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Customvariable'],
-            'belongsTo'           => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+            'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Customvariable'],
+            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
         ]);
         $host = $this->Host->findById($host_id);
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
@@ -1937,8 +1939,8 @@ class ServicesController extends AppController
         $all_services = [];
         $query = [
 //			'recursive' => -1,
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
+            'contain' => ['Servicetemplate'],
+            'fields' => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -1971,32 +1973,32 @@ class ServicesController extends AppController
 
                 'Hoststatus.current_state',
             ],
-            'order'      => ['Service.servicename' => 'asc'],
-            'joins'      => [
+            'order' => ['Service.servicename' => 'asc'],
+            'joins' => [
                 [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
+                    'table' => 'hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
                     'conditions' => 'Service.host_id = Host.id',
                 ], [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'HostObject',
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'HostObject',
                     'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                 ], [
-                    'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Hoststatus',
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ], [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'ServiceObject',
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'ServiceObject',
                     'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
                 ], [
-                    'table'      => 'nagios_servicestatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Servicestatus',
+                    'table' => 'nagios_servicestatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                 ],
             ],
@@ -2010,7 +2012,7 @@ class ServicesController extends AppController
             $all_services = $this->Service->find('all', $query);
         } else {
             $activeServices = ['conditions' => [
-                'Host.id'          => $host_id,
+                'Host.id' => $host_id,
                 'Service.disabled' => 0,
             ]];
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query, $activeServices);
@@ -2021,7 +2023,7 @@ class ServicesController extends AppController
 
         $username = $this->Auth->user('full_name');
 
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
+        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 //debug($all_services);
@@ -2040,8 +2042,7 @@ class ServicesController extends AppController
     //	$this->set(compact(['service', 'servicestatus', 'acknowledged']));
     //}
 
-    public function grapherSwitch($id)
-    {
+    public function grapherSwitch($id) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2052,23 +2053,22 @@ class ServicesController extends AppController
             $commandUuid = $servicetemplate['CheckCommand']['uuid'];
         }
 
-        if (file_exists(APP.'GrapherTemplates'.DS.$commandUuid.'.php')) {
-            return $this->redirect('/services/grapherTemplate/'.$service['Service']['id']);
+        if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
+            return $this->redirect('/services/grapherTemplate/' . $service['Service']['id']);
         }
 
-        return $this->redirect('/services/grapher/'.$service['Service']['id']);
+        return $this->redirect('/services/grapher/' . $service['Service']['id']);
     }
 
-    public function grapher($id)
-    {
+    public function grapher($id) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
         $this->Service->unbindModel([
             'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany'             => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo'           => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
+            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
         ]);
 
         $service = $this->Service->findById($id);
@@ -2098,16 +2098,15 @@ class ServicesController extends AppController
         $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services']));
     }
 
-    public function grapherTemplate($id)
-    {
+    public function grapherTemplate($id) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
         $this->Service->unbindModel([
             'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany'             => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo'           => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
+            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
         ]);
         $service = $this->Service->findById($id);
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
@@ -2122,8 +2121,7 @@ class ServicesController extends AppController
         $this->set(compact(['service', 'servicestatus', 'acknowledged', 'commandUuid']));
     }
 
-    public function grapherZoom($id, $ds, $newStart, $newEnd)
-    {
+    public function grapherZoom($id, $ds, $newStart, $newEnd) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2141,16 +2139,16 @@ class ServicesController extends AppController
         $this->render = false;
         header('Content-Type: image/png');
         $rrd_path = Configure::read('rrd.path');
-        $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.xml');
+        $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             if ($rrd_structure_datasource['ds'] == $ds):
                 $imageUrl = $this->Rrd->createRrdGraph($rrd_structure_datasource, [
-                    'host_uuid'    => $service['Host']['uuid'],
+                    'host_uuid' => $service['Host']['uuid'],
                     'service_uuid' => $service['Service']['uuid'],
-                    'path'         => $rrd_path,
-                    'start'        => $newStart,
-                    'end'          => $newEnd,
-                    'label'        => $service['Host']['name'].' / '.$service['Servicetemplate']['name'],
+                    'path' => $rrd_path,
+                    'start' => $newStart,
+                    'end' => $newEnd,
+                    'label' => $service['Host']['name'] . ' / ' . $service['Servicetemplate']['name'],
                 ]);
                 if (!isset($imageUrl['diskPath'])) {
                     //The image is broken, i gues we have an RRD error here, so we render the RRD return text into an image and send it to the browser.
@@ -2169,8 +2167,7 @@ class ServicesController extends AppController
         endforeach;
     }
 
-    public function grapherZoomTemplate($id, $ds, $newStart, $newEnd, $commandUuid)
-    {
+    public function grapherZoomTemplate($id, $ds, $newStart, $newEnd, $commandUuid) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2190,7 +2187,7 @@ class ServicesController extends AppController
         $rrd_path = Configure::read('rrd.path');
 
         //Loading template
-        require_once APP.'GrapherTemplates'.DS.$commandUuid.'.php';
+        require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
 
         foreach ($templateSettings as $key => $templateSetting):
             if ($key == $ds):
@@ -2226,8 +2223,7 @@ class ServicesController extends AppController
         endforeach;
     }
 
-    public function createGrapherErrorPng($error)
-    {
+    public function createGrapherErrorPng($error) {
         $img = imagecreatetruecolor(947, 173);
         imagesavealpha($img, true);
         $background = imagecolorallocatealpha($img, 255, 110, 110, 0);
@@ -2243,14 +2239,13 @@ class ServicesController extends AppController
     /**
      * Converts BB code to HTML
      *
-     * @param string $uuid        The services UUID you want to get the long output
-     * @param bool   $parseBbcode If you want to convert BB Code to HTML
-     * @param bool   $nl2br       If you want to replace \n with <br>
+     * @param string $uuid The services UUID you want to get the long output
+     * @param bool $parseBbcode If you want to convert BB Code to HTML
+     * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string
      */
-    function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true)
-    {
+    function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
         $this->autoRender = false;
         $result = $this->Service->findByUuid($uuid);
         if (!empty($result)) {
@@ -2271,11 +2266,10 @@ class ServicesController extends AppController
         return '';
     }
 
-    public function getSelectedServices($ids)
-    {
+    public function getSelectedServices($ids) {
         $servicestatus = $this->Service->find('all', [
-            'recursive'  => -1,
-            'fields'     => [
+            'recursive' => -1,
+            'fields' => [
                 'Service.id',
                 'Service.name',
                 'Service.host_id',
@@ -2292,23 +2286,23 @@ class ServicesController extends AppController
             'conditions' => [
                 'Service.id' => $ids,
             ],
-            'joins'      => [
+            'joins' => [
                 [
-                    'table'      => 'servicetemplates',
-                    'type'       => 'INNER',
-                    'alias'      => 'Servicetemplate',
+                    'table' => 'servicetemplates',
+                    'type' => 'INNER',
+                    'alias' => 'Servicetemplate',
                     'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
                 ],
                 [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'INNER',
-                    'alias'      => 'Objects',
+                    'table' => 'nagios_objects',
+                    'type' => 'INNER',
+                    'alias' => 'Objects',
                     'conditions' => 'Objects.name2 = Service.uuid',
                 ],
                 [
-                    'table'      => 'nagios_servicestatus',
-                    'type'       => 'INNER',
-                    'alias'      => 'Servicestatus',
+                    'table' => 'nagios_servicestatus',
+                    'type' => 'INNER',
+                    'alias' => 'Servicestatus',
                     'conditions' => 'Servicestatus.service_object_id = Objects.object_id',
                 ],
             ],
@@ -2318,34 +2312,34 @@ class ServicesController extends AppController
         $hostIds = array_unique($hostIds);
 
         $hosts = $this->Objects->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
-                'Host.disabled'     => 0,
+                'Host.disabled' => 0,
                 'Host.container_id' => $this->MY_RIGHTS,
-                'Host.id'           => $hostIds,
+                'Host.id' => $hostIds,
             ],
-            'fields'     => [
+            'fields' => [
                 'Host.id',
                 'Host.name',
                 'Host.address',
                 'Hoststatus.current_state',
                 'Hoststatus.is_flapping',
             ],
-            'joins'      => [
+            'joins' => [
                 [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
+                    'table' => 'hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
                     'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1',
                 ],
                 [
-                    'table'      => 'nagios_hoststatus',
-                    'type'       => 'INNER',
-                    'alias'      => 'Hoststatus',
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'INNER',
+                    'alias' => 'Hoststatus',
                     'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
                 ],
             ],
-            'order'      => [
+            'order' => [
                 'Host.name',
             ],
         ]);
@@ -2360,19 +2354,18 @@ class ServicesController extends AppController
             $serviceCount += sizeof($servicestatus[$currentHostId]);
         }
         $ret = [
-            'list'  => $result,
+            'list' => $result,
             'count' => $serviceCount,
         ];
 
         return $ret;
     }
 
-    public function listToPdf()
-    {
+    public function listToPdf() {
         $args = func_get_args();
 
         $conditions = [
-            'Host.disabled'     => 0,
+            'Host.disabled' => 0,
             'Host.container_id' => $this->MY_RIGHTS,
         ];
 
@@ -2391,41 +2384,41 @@ class ServicesController extends AppController
             }
         } else {
             $servicestatus = $this->Objects->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
-                    'Host.disabled'     => 0,
+                    'Host.disabled' => 0,
                     'Host.container_id' => $this->MY_RIGHTS,
                 ],
-                'fields'     => [
+                'fields' => [
                     'Host.id',
                     'Host.name',
                     'Host.address',
                     'Hoststatus.current_state',
                     'Hoststatus.is_flapping',
                 ],
-                'joins'      => [
+                'joins' => [
                     [
-                        'table'      => 'hosts',
-                        'type'       => 'INNER',
-                        'alias'      => 'Host',
+                        'table' => 'hosts',
+                        'type' => 'INNER',
+                        'alias' => 'Host',
                         'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1',
                     ],
                     [
-                        'table'      => 'nagios_hoststatus',
-                        'type'       => 'INNER',
-                        'alias'      => 'Hoststatus',
+                        'table' => 'nagios_hoststatus',
+                        'type' => 'INNER',
+                        'alias' => 'Hoststatus',
                         'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
                     ],
                 ],
-                'order'      => [
+                'order' => [
                     'Host.name',
                 ],
             ]);
             $serviceCount = 0;
             foreach ($servicestatus as $key => $hostdata) {
                 $servicestatus[$key]['ServiceData'] = $this->Service->find('all', [
-                    'recursive'  => -1,
-                    'fields'     => [
+                    'recursive' => -1,
+                    'fields' => [
                         'Service.name',
                         'Servicetemplate.name',
                         'Servicestatus.current_state',
@@ -2440,23 +2433,23 @@ class ServicesController extends AppController
                     'conditions' => [
                         'Service.host_id' => $hostdata['Host']['id'],
                     ],
-                    'joins'      => [
+                    'joins' => [
                         [
-                            'table'      => 'servicetemplates',
-                            'type'       => 'INNER',
-                            'alias'      => 'Servicetemplate',
+                            'table' => 'servicetemplates',
+                            'type' => 'INNER',
+                            'alias' => 'Servicetemplate',
                             'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
                         ],
                         [
-                            'table'      => 'nagios_objects',
-                            'type'       => 'INNER',
-                            'alias'      => 'Objects',
+                            'table' => 'nagios_objects',
+                            'type' => 'INNER',
+                            'alias' => 'Objects',
                             'conditions' => 'Objects.name2 = Service.uuid',
                         ],
                         [
-                            'table'      => 'nagios_servicestatus',
-                            'type'       => 'INNER',
-                            'alias'      => 'Servicestatus',
+                            'table' => 'nagios_servicestatus',
+                            'type' => 'INNER',
+                            'alias' => 'Servicestatus',
                             'conditions' => 'Servicestatus.service_object_id = Objects.object_id',
                         ],
                     ],
@@ -2467,28 +2460,28 @@ class ServicesController extends AppController
 
         $this->set(compact('servicestatus', 'serviceCount'));
         unset($servicestatus);
-        $filename = 'Services_'.strtotime('now').'.pdf';
+        $filename = 'Services_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
+            'engine' => 'CakePdf.WkHtmlToPdf',
+            'margin' => [
                 'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
+                'left' => 0,
+                'right' => 0,
+                'top' => 15,
             ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
+            'encoding' => 'UTF-8',
+            'download' => true,
+            'binary' => $binary_path,
+            'orientation' => 'portrait',
+            'filename' => $filename,
             'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
+            'image-dpi' => '900',
+            'background' => true,
+            'no-background' => false,
         ];
     }
 
@@ -2496,16 +2489,15 @@ class ServicesController extends AppController
 	 * $service is from prepareForView() but ther are no names in the service contact, only ids
 	 * $_service is from $this->Service->findById, because of contact names
 	 */
-    protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups)
-    {
+    protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups) {
         if (empty($serviceContactsAndContactgroups['Contact']) && empty($serviceContactsAndContactgroups['Contactgroup'])) {
 
             //Check servicetemplate for contacts
             if (!empty($service['Servicetemplate']['Contact']) || !empty($service['Servicetemplate']['Contactgroup'])) {
                 return [
-                    'inherit'      => true,
-                    'source'       => 'Servicetemplate',
-                    'Contact'      => Hash::combine($service['Servicetemplate']['Contact'], '{n}.id', '{n}.name'),
+                    'inherit' => true,
+                    'source' => 'Servicetemplate',
+                    'Contact' => Hash::combine($service['Servicetemplate']['Contact'], '{n}.id', '{n}.name'),
                     'Contactgroup' => Hash::combine($service['Servicetemplate']['Contactgroup'], '{n}.id', '{n}.Container.name'),
                 ];
             }
@@ -2514,9 +2506,9 @@ class ServicesController extends AppController
             //debug($service['Host']);
             if (!empty($service['Host']['Contact']) || !empty($service['Host']['Contactgroup'])) {
                 return [
-                    'inherit'      => true,
-                    'source'       => 'Host',
-                    'Contact'      => Hash::combine($service['Host']['Contact'], '{n}.id', '{n}.name'),
+                    'inherit' => true,
+                    'source' => 'Host',
+                    'Contact' => Hash::combine($service['Host']['Contact'], '{n}.id', '{n}.name'),
                     'Contactgroup' => Hash::combine($service['Host']['Contactgroup'], '{n}.id', '{n}.Container.name'),
                 ];
             }
@@ -2524,18 +2516,18 @@ class ServicesController extends AppController
             //Check hosttemplate for contacts
             if (!empty($service['Host']['Hosttemplate']['Contact']) || !empty($service['Host']['Hosttemplate']['Contactgroup'])) {
                 return [
-                    'inherit'      => true,
-                    'source'       => 'Hosttemplate',
-                    'Contact'      => Hash::combine($service['Host']['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
+                    'inherit' => true,
+                    'source' => 'Hosttemplate',
+                    'Contact' => Hash::combine($service['Host']['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
                     'Contactgroup' => Hash::combine($service['Host']['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.Container.name'),
                 ];
             }
         }
 
         return [
-            'inherit'      => false,
-            'source'       => 'Service',
-            'Contact'      => Hash::combine($serviceContactsAndContactgroups['Contact'], '{n}.id', '{n}.name'),
+            'inherit' => false,
+            'source' => 'Service',
+            'Contact' => Hash::combine($serviceContactsAndContactgroups['Contact'], '{n}.id', '{n}.name'),
             'Contactgroup' => Hash::combine($serviceContactsAndContactgroups['Contactgroup'], '{n}.id', '{n}.Container.name'),
         ];
     }
@@ -2543,8 +2535,7 @@ class ServicesController extends AppController
     /**
      * @return array
      */
-    protected function getChangelogDataForAdd()
-    {
+    protected function getChangelogDataForAdd() {
         $changelogData = [];
         if ($this->request->data('Service.Contact')) {
             if ($contactsForChangelog = $this->Contact->find('list', [
@@ -2555,7 +2546,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($contactsForChangelog as $contactId => $contactName) {
                     $changelogData['Contact'][] = [
-                        'id'   => $contactId,
+                        'id' => $contactId,
                         'name' => $contactName,
                     ];
                 }
@@ -2564,15 +2555,15 @@ class ServicesController extends AppController
         }
         if ($this->request->data('Service.Contactgroup')) {
             if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                'recursive'  => -1,
-                'contain'    => [
+                'recursive' => -1,
+                'contain' => [
                     'Container' => [
                         'fields' => [
                             'Container.name',
                         ],
                     ],
                 ],
-                'fields'     => [
+                'fields' => [
                     'Contactgroup.id',
                 ],
                 'conditions' => [
@@ -2582,7 +2573,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($contactgroupsForChangelog as $contactgroupData) {
                     $changelogData['Contactgroup'][] = [
-                        'id'   => $contactgroupData['Contactgroup']['id'],
+                        'id' => $contactgroupData['Contactgroup']['id'],
                         'name' => $contactgroupData['Container']['name'],
                     ];
                 }
@@ -2591,15 +2582,15 @@ class ServicesController extends AppController
         }
         if ($this->request->data('Service.Servicegroup')) {
             if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
-                'recursive'  => -1,
-                'contain'    => [
+                'recursive' => -1,
+                'contain' => [
                     'Container' => [
                         'fields' => [
                             'Container.name',
                         ],
                     ],
                 ],
-                'fields'     => [
+                'fields' => [
                     'Servicegroup.id',
                 ],
                 'conditions' => [
@@ -2609,7 +2600,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($servicegroupsForChangelog as $servicegroupData) {
                     $changelogData['Servicegroup'][] = [
-                        'id'   => $servicegroupData['Servicegroup']['id'],
+                        'id' => $servicegroupData['Servicegroup']['id'],
                         'name' => $servicegroupData['Container']['name'],
                     ];
                 }
@@ -2625,7 +2616,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                     $changelogData['NotifyPeriod'] = [
-                        'id'   => $timeperiodId,
+                        'id' => $timeperiodId,
                         'name' => $timeperiodName,
                     ];
                 }
@@ -2641,7 +2632,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                     $changelogData['CheckPeriod'] = [
-                        'id'   => $timeperiodId,
+                        'id' => $timeperiodId,
                         'name' => $timeperiodName,
                     ];
                 }
@@ -2657,7 +2648,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($servicetemplatesForChangelog as $servicetemplateId => $servicetemplateName) {
                     $changelogData['Servicetemplate'] = [
-                        'id'   => $servicetemplateId,
+                        'id' => $servicetemplateId,
                         'name' => $servicetemplateName,
                     ];
                 }
@@ -2673,7 +2664,7 @@ class ServicesController extends AppController
             ) {
                 foreach ($commandsForChangelog as $commandId => $commandName) {
                     $changelogData['CheckCommand'] = [
-                        'id'   => $commandId,
+                        'id' => $commandId,
                         'name' => $commandName,
                     ];
                 }
@@ -2682,8 +2673,8 @@ class ServicesController extends AppController
         }
         if ($this->request->data('Service.host_id')) {
             $hostsForChangelog = $this->Host->find('first', [
-                'recursive'  => -1,
-                'fields'     => [
+                'recursive' => -1,
+                'fields' => [
                     'id',
                     'name',
                     'container_id',
@@ -2695,8 +2686,8 @@ class ServicesController extends AppController
             if (!empty($hostsForChangelog)) {
                 foreach ($hostsForChangelog as $hostData) {
                     $changelogData['Host'] = [
-                        'id'           => $hostData['id'],
-                        'name'         => $hostData['name'],
+                        'id' => $hostData['id'],
+                        'name' => $hostData['name'],
                         'container_id' => $hostData['container_id'],
                     ];
                 }
@@ -2708,8 +2699,7 @@ class ServicesController extends AppController
     }
 
     //Acl
-    public function checkcommand()
-    {
+    public function checkcommand() {
         return null;
     }
 }
