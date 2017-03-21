@@ -405,6 +405,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.LDAP.QUERY',
+                    'value'    => '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))',
+                    'info'     => 'Your Filter Query',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'FRONTEND.LDAP.BASEDN',
                     'value'    => 'DC=example,DC=org',
                     'info'     => 'Your BASEDN',
@@ -446,7 +454,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.CLIENT_ID',
-                    'value'    => '1',
+                    'value'    => 'my_client_id',
                     'info'     => 'Client id generated in SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -454,7 +462,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.CLIENT_SECRET',
-                    'value'    => '1',
+                    'value'    => 'some_client_password',
                     'info'     => 'Client secret generated in SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -462,7 +470,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.AUTH_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/authorization.oauth2',
                     'info'     => 'Authorization endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -470,7 +478,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.TOKEN_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/token.oauth2',
                     'info'     => 'Token endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -478,7 +486,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.USER_ENDPOINT',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/userinfo.oauth2',
                     'info'     => 'User info endpoint of SSO Server',
                     'section'  => 'FRONTEND'
                 ],
@@ -486,7 +494,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.NO_EMAIL_MESSAGE',
-                    'value'    => '1',
+                    'value'    => 'Email address not found. Please contact your <a href="mailto:admin@my.com">administrator</a>',
                     'info'     => 'The error message that appears when provided E-mail address was not found in openITCOCKPIT',
                     'section'  => 'FRONTEND'
                 ],
@@ -494,7 +502,7 @@ class Systemsetting extends Importer
             [
                 'Systemsetting' => [
                     'key'      => 'FRONTEND.SSO.LOG_OFF_LINK',
-                    'value'    => '1',
+                    'value'    => 'https://sso.server.com/sso/logoff',
                     'info'     => 'SSO Server log out link',
                     'section'  => 'FRONTEND'
                 ],

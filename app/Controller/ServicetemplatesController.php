@@ -55,7 +55,8 @@ class ServicetemplatesController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Servicetemplate.name'        => ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.template_name'=> ['label' => 'Template name', 'searchType' => 'wildcard'],
+                'Servicetemplate.name'        => ['label' => 'Service name', 'searchType' => 'wildcard'],
                 'Servicetemplate.description' => ['label' => 'Template description', 'searchType' => 'wildcard'],
             ],
         ],
@@ -66,12 +67,15 @@ class ServicetemplatesController extends AppController
         'Command',
         'Contact',
         'Contactgroup',
+        'Servicegroup',
         'Container',
         'Commandargument',
         'Customvariable',
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
+        'Servicecommandargumentvalue',
+        'Serviceeventcommandargumentvalue'
     ];
 
     public function index()
@@ -89,6 +93,7 @@ class ServicetemplatesController extends AppController
             'fields'     => [
                 'Servicetemplate.id',
                 'Servicetemplate.uuid',
+                'Servicetemplate.template_name',
                 'Servicetemplate.name',
                 'Servicetemplate.container_id',
                 'Servicetemplate.description',
@@ -167,7 +172,8 @@ class ServicetemplatesController extends AppController
                 'Servicetemplate.id' => $id,
             ],
             'contain'    => [
-                'Contactgroup'                             => ['Container'],
+                'Contactgroup' => ['Container'],
+                'Servicegroup' => ['Container'],
                 'CheckCommand',
                 'EventhandlerCommand',
                 'Container',
@@ -188,6 +194,9 @@ class ServicetemplatesController extends AppController
         $servicetemplate_for_changelog = $serviceTemplate;
 
 
+        $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
+        $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
+
         $commands = $this->Command->serviceCommands('list');
         $eventHandlers = $this->Command->eventhandlerCommands('list');
         if ($this->hasRootPrivileges === true) {
@@ -207,6 +216,7 @@ class ServicetemplatesController extends AppController
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $contactGroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
@@ -233,6 +243,7 @@ class ServicetemplatesController extends AppController
             $ext_data_for_changelog = [
                 'Contact'             => [],
                 'Contactgroup'        => [],
+                'Servicegroup'        => [],
                 'EventhandlerCommand' => [],
             ];
             if ($this->request->data('Servicetemplate.Contact')) {
@@ -276,6 +287,33 @@ class ServicetemplatesController extends AppController
                         ];
                     }
                     unset($contactgroupsForChangelog);
+                }
+            }
+            if ($this->request->data('Servicetemplate.Servicegroup')) {
+                if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                            ],
+                        ],
+                    ],
+                    'fields'     => [
+                        'Servicegroup.id',
+                    ],
+                    'conditions' => [
+                        'Servicegroup.id' => $this->request->data['Servicetemplate']['Servicegroup'],
+                    ],
+                ])
+                ) {
+                    foreach ($servicegroupsForChangelog as $servicegroupData) {
+                        $ext_data_for_changelog['Servicegroup'][] = [
+                            'id'   => $servicegroupData['Servicegroup']['id'],
+                            'name' => $servicegroupData['Container']['name'],
+                        ];
+                    }
+                    unset($servicegroupsForChangelog);
                 }
             }
             if ($this->request->data('Servicetemplate.notify_period_id')) {
@@ -394,9 +432,12 @@ class ServicetemplatesController extends AppController
             if ($this->request->data('Servicetemplate.Contactgroup') === '') {
                 $this->request->data['Servicetemplate']['Contactgroup'] = [];
             }
+            if ($this->request->data('Servicetemplate.Servicegroup') === '') {
+                $this->request->data['Servicetemplate']['Servicegroup'] = [];
+            }
             $this->request->data['Contact']['Contact'] = $this->request->data('Servicetemplate.Contact');
             $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
-
+            $this->request->data['Servicegroup']['Servicegroup'] = $this->request->data('Servicetemplate.Servicegroup');
 
             $this->Servicetemplate->set($this->request->data);
             if ($this->Servicetemplate->validates()) {
@@ -441,9 +482,77 @@ class ServicetemplatesController extends AppController
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
+                if($oldServicetemplateCheckCommandId != $this->request->data['Servicetemplate']['command_id']){
+                    //Check command of service template was changed
+                    //Delete all custom command arguments of services
+                    //if command_id from Service is NULL
+                    $serviceCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Servicecommandargumentvalue->deleteAll([
+                                'Servicecommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
+                }
+
+                if($oldServicetemplateEventkCommandId != $this->request->data['Servicetemplate']['eventhandler_command_id']){
+                    //Event handler command of service template was changed
+                    //Delete all custom event handler command arguments of services
+                    //if eventhandler_command_id from Service is NULL
+                    $serviceEventHandlerCommandArgumentValuesToDelete = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Service' => [
+                                'conditions' => [
+                                    'Service.eventhandler_command_id IS NULL'
+                                ],
+                                'fields' => [
+                                    'Service.id'
+                                ],
+                            ]
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $this->Servicetemplate->id
+                        ],
+                        'fields' => [
+                            'Servicetemplate.id'
+                        ]
+                    ]);
+
+                    if(!empty($serviceEventHandlerCommandArgumentValuesToDelete['Service'])){
+                        $serviceIds = Hash::extract($serviceEventHandlerCommandArgumentValuesToDelete['Service'], '{n}.id');
+                        if(!empty($serviceIds)){
+                            $this->Serviceeventcommandargumentvalue->deleteAll([
+                                'Serviceeventcommandargumentvalue.service_id' => $serviceIds
+                            ]);
+                        }
+                    }
+                }
+
+
                 if ($isJson) {
                     $this->serializeId();
-
                     return;
                 }
 
@@ -458,7 +567,6 @@ class ServicetemplatesController extends AppController
             } else {
                 if ($isJson) {
                     $this->serializeErrorMessage();
-
                     return;
                 }
 
@@ -492,14 +600,17 @@ class ServicetemplatesController extends AppController
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                         $contactGroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                        $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
                     }
                 }
                 $serviceTemplate['Contact'] = $this->request->data['Servicetemplate']['Contact'];
                 $serviceTemplate['Contactgroup'] = $this->request->data['Servicetemplate']['Contactgroup'];
+                $serviceTemplate['Servicegroup'] = $this->request->data['Servicetemplate']['Servicegroup'];
             }
         } else {
             $serviceTemplate['Contact'] = Hash::combine($serviceTemplate['Contact'], '{n}.id', '{n}.id');
             $serviceTemplate['Contactgroup'] = Hash::combine($serviceTemplate['Contactgroup'], '{n}.id', '{n}.id');
+            $serviceTemplate['Servicegroup'] = Hash::combine($serviceTemplate['Servicegroup'], '{n}.id', '{n}.id');
         }
 
         $this->request->data = Hash::merge($serviceTemplate, $this->request->data);
@@ -507,6 +618,7 @@ class ServicetemplatesController extends AppController
             '_timeperiods'     => $timeperiods,
             '_contacts'        => $contacts,
             '_contactgroups'   => $contactGroups,
+            '_servicegroups'   => $serviceGroups,
             'containers'       => $containers,
             'servicetemplate'  => $serviceTemplate,
             'commands'         => $commands,
@@ -521,6 +633,7 @@ class ServicetemplatesController extends AppController
         $_timeperiods = [];
         $_contacts = [];
         $_contactgroups = [];
+        $_servicegroups = [];
         $userId = $this->Auth->user('id');
         // Checking if the user hit submit and a validation error happents, to refill input fields
         $Customvariable = [];
@@ -545,6 +658,7 @@ class ServicetemplatesController extends AppController
                 'priority',
                 'Contact',
                 'Contactgroup',
+                'Servicegroup'
             ],
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
@@ -588,6 +702,7 @@ class ServicetemplatesController extends AppController
             $ext_data_for_changelog = [
                 'Contact'             => [],
                 'Contactgroup'        => [],
+                'Servicegroup'        => [],
                 'EventhandlerCommand' => [],
             ];
             if ($this->request->data('Servicetemplate.Contact')) {
@@ -632,6 +747,33 @@ class ServicetemplatesController extends AppController
                         ];
                     }
                     unset($contactgroupsForChangelog);
+                }
+            }
+            if ($this->request->data('Servicetemplate.Servicegroup')) {
+                if ($servicegroupsForChangelog = $this->Servicegroup->find('all', [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                            ],
+                        ],
+                    ],
+                    'fields'     => [
+                        'Servicegroup.id',
+                    ],
+                    'conditions' => [
+                        'Servicegroup.id' => $this->request->data['Servicetemplate']['Servicegroup'],
+                    ],
+                ])
+                ) {
+                    foreach ($servicegroupsForChangelog as $servicegroupData) {
+                        $ext_data_for_changelog['Servicegroup'][] = [
+                            'id'   => $servicegroupData['Servicegroup']['id'],
+                            'name' => $servicegroupData['Container']['name'],
+                        ];
+                    }
+                    unset($servicegroupsForChangelog);
                 }
             }
             if ($this->request->data('Servicetemplate.notify_period_id')) {
@@ -708,6 +850,7 @@ class ServicetemplatesController extends AppController
 
             $this->request->data['Contact'] = $this->request->data('Servicetemplate.Contact');
             $this->request->data['Contactgroup'] = $this->request->data('Servicetemplate.Contactgroup');
+            $this->request->data['Servicegroup'] = $this->request->data('Servicetemplate.Servicegroup');
 
             $isJson = $this->request->ext == 'json';
             //Save everything including custom variables
@@ -771,10 +914,11 @@ class ServicetemplatesController extends AppController
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                    $_servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
                 }
             }
         }
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups']));
+        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_servicegroups']));
     }
 
     public function delete($id = null)
@@ -787,15 +931,27 @@ class ServicetemplatesController extends AppController
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        $servicetemplate = $this->Servicetemplate->findById($id);
+        $servicetemplate = $this->Servicetemplate->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Servicetemplate.id' => $id,
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'))) {
             $this->render403();
-
             return;
         }
 
         $this->Servicetemplate->id = $id;
+        $redirect = $this->Servicetemplate->redirect($this->request->params, ['action' => 'index']);
+        $flashHref = $this->Servicetemplate->flashRedirect($this->request->params, ['action' => 'usedBy']);
+        $flashHref[] = $this->Servicetemplate->id;
+        $flashHref[] = $servicetemplate['Servicetemplate']['servicetemplatetype_id'];
+
         if ($this->Servicetemplate->__allowDelete($id)) {
             if ($this->Servicetemplate->delete()) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -822,15 +978,14 @@ class ServicetemplatesController extends AppController
                 foreach ($services as $service) {
                     $this->Service->__delete($service, $this->Auth->user('id'));
                 }
-                $this->setFlash(__('Servicetemplate deleted.'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('Servicetemplate deleted'));
+                $this->redirect($redirect);
             }
             $this->setFlash(__('Could not delete servicetemplate'), false);
-            $this->redirect(['action' => 'index']);
+            $this->redirect($redirect);
         }
-        $this->setFlash(__('Could not delete servicetemplate'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->setFlash(__('Could not delete servicetemplate: <a href="'.Router::url($flashHref).'">').$servicetemplate['Servicetemplate']['template_name'].'</a>', false);
+        $this->redirect($redirect);
     }
 
     public function mass_delete($id = null)
@@ -939,6 +1094,11 @@ class ServicetemplatesController extends AppController
                         'Contactgroup.id',
                     ],
                 ],
+                'Servicegroup'                             => [
+                    'fields' => [
+                        'Servicegroup.id',
+                    ],
+                ],
                 'Servicetemplatecommandargumentvalue'      => [
                     'fields' => [
                         'commandargument_id', 'value',
@@ -972,10 +1132,12 @@ class ServicetemplatesController extends AppController
                 foreach ($this->request->data['Servicetemplate'] as $newServicetemplate) {
                     $contactIds = Hash::extract($servicetemplates[$newServicetemplate['source']], 'Contact.{n}.id');
                     $contactgroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']], 'Contactgroup.{n}.id');
+                    $servicegroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']], 'Servicegroup.{n}.id');
 
                     $newServicetemplateData = [
                         'Servicetemplate'                          => [
                             'uuid'        => $this->Servicetemplate->createUUID(),
+                            'template_name'=> $newServicetemplate['template_name'],
                             'name'        => $newServicetemplate['name'],
                             'description' => $newServicetemplate['description'],
                         ],
@@ -1000,6 +1162,11 @@ class ServicetemplatesController extends AppController
                         'Contactgroup'                             => [
                             'Contactgroup' => [
                                 $contactgroupIds,
+                            ],
+                        ],
+                        'Servicegroup'                             => [
+                            'Servicegroup' => [
+                                $servicegroupIds,
                             ],
                         ],
                     ];
@@ -1171,7 +1338,7 @@ class ServicetemplatesController extends AppController
                 'Service.servicetemplate_id'     => $id,
             ],
             'fields'     => [
-                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.name', 'HostsToContainers.container_id',
+                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.template_name', 'HostsToContainers.container_id',
             ],
             'order'      => [
                 'Host.name' => 'asc',
@@ -1408,7 +1575,10 @@ class ServicetemplatesController extends AppController
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
         $contactgroups = $this->Timeperiod->makeItJavaScriptAble($contactgroups);
 
-        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
-        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
+        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
+
+        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']));
+        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
     }
 }

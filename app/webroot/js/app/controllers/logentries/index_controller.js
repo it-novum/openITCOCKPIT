@@ -31,6 +31,22 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
             self.fnShowHide($(this).attr('my-column'), $(this).children());
         });
 
+        var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+        for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+            pageUrl = localStorage.key(i);
+            dataTableValue = localStorage.getItem(pageUrl);
+            if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+            dataTableValueParsed = JSON.parse(dataTableValue);
+            if(pageUrl.indexOf('DataTables_logentries_list_/logentries') !== -1){
+                if(dataTableValueParsed.time > highestTime){
+                    highestTime = dataTableValueParsed.time;
+                    highestValue = dataTableValue;
+                }
+            }
+        }
+
+        self.setDataTableFilter(highestValue);
+
         $('#logentries_list').dataTable({
             "bPaginate": false,
             "bFilter": false,
@@ -45,8 +61,15 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
 
         this.$table = $('#logentries_list');
 
-        //Mark checkbox as checked
-        $('.select_datatable').find('input').prop('checked', true);
+        //Checkboxen aktivieren
+        $('.select_datatable').find('input').each(function () {
+            $(this).prop('checked', false);
+            var myCol = ($(this).parent().attr('my-column'));
+            var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
+            if (isVisible == true) {
+                $(this).prop('checked', true);
+            }
+        })
 
         /*
          * Bind listoptions events
@@ -75,26 +98,29 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
                     $checkbox.prop('checked', true);
                 }
             }
+            event.stopPropagation();
         });
 
         /*
          * Bind click event for .tick_all
          */
-        $('.tick_all').click(function () {
+        $('.tick_all').click(function (event) {
             $checkboxes = $(this).parent().parent().find(':checkbox');
             $checkboxes.each(function (intIndex, checkboxObject) {
                 $(checkboxObject).prop('checked', true);
             });
+            event.stopPropagation();
         });
 
         /*
          * Bind click event for .untick_all
          */
-        $('.untick_all').click(function () {
+        $('.untick_all').click(function (event) {
             $checkboxes = $(this).parent().parent().find(':checkbox');
             $checkboxes.each(function (intIndex, checkboxObject) {
                 $(checkboxObject).prop('checked', false);
             });
+            event.stopPropagation();
         });
 
     },
@@ -110,5 +136,10 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
             inputObject.prop('checked', true);
         }
         oTable.fnSetColumnVis(iCol, bVis ? false : true);
+    },
+    setDataTableFilter: function(storageValue){
+        var currentURL = window.location.href;
+        var postTextURL = currentURL.substring(currentURL.indexOf('logentries') + 10);
+        localStorage.setItem('DataTables_logentries_list_/logentries'+postTextURL, storageValue);
     }
 });

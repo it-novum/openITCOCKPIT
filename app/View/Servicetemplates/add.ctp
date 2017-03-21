@@ -90,14 +90,28 @@ $notification_settings = [
                                 'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
+                            echo $this->Form->input('template_name', [
+                                'label'     => ['text' => __('Template name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'help'      => __('Servicetemplate name'),
+                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                            ]);
                             echo $this->Form->input('name', [
-                                'label'     => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'     => ['text' => __('Service name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'help'      => __('This is the default name for the service if you create it out of the template'),
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
                             echo $this->Form->input('description', [
                                 'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                            ]);
+                            echo $this->Form->input('Servicetemplate.Servicegroup', [
+                                'options'          => $this->Html->chosenPlaceholder($_servicegroups),
+                                'data-placeholder' => __('Please select...'),
+                                'class'            => 'chosen',
+                                'label'            => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                'style'            => 'width: 100%',
+                                'multiple'         => true,
                             ]);
                             echo $this->Form->input('notes', [
                                 'label'     => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],

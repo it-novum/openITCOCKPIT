@@ -48,6 +48,14 @@ class Servicetemplate extends AppModel
             'unique'     => true,
             'dependent'  => true,
         ],
+        'Servicegroup'    => [
+            'className'             => 'Servicegroup',
+            'joinTable'             => 'servicetemplates_to_servicegroups',
+            'foreignKey'            => 'servicetemplate_id',
+            'associationForeignKey' => 'servicegroup_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
     ];
 
 
@@ -105,14 +113,14 @@ class Servicetemplate extends AppModel
                 'required' => true,
             ],
         ],
-        'name'                       => [
+        'template_name'              => [
             'allowEmpty' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank',
                 'required' => true,
             ],
         ],
-        'description'                => [
+        'name'                       => [
             'allowEmpty' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank',
@@ -399,8 +407,12 @@ class Servicetemplate extends AppModel
         return $this->find($type, [
             'conditions' => $conditions,
             'order'      => [
-                'Servicetemplate.name' => 'ASC',
+                'Servicetemplate.template_name' => 'ASC',
             ],
+            'fields' => [
+                'Servicetemplate.id',
+                'Servicetemplate.template_name'
+            ]
         ]);
     }
 

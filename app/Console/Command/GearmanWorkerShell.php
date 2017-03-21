@@ -286,8 +286,21 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'create_apt_config':
+                exec('lsb_release -sc', $output);
+                $repo = '';
+                switch($output[0]) {
+                    case 'trusty':
+                        $repo = 'packages.openitcockpit.com/repositories/trusty trusty';
+                        break;
+                    case 'xenial':
+                        $repo = 'packages.openitcockpit.com/repositories/xenial xenial';
+                        break;
+                    case 'jessie':
+                        $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
+                        break;
+                }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
-                fwrite($file, 'deb https://secret:' . $payload['key'] . '@apt.open-itcockpit.com trusty  main' . PHP_EOL);
+                fwrite($file, 'deb https://secret:' . $payload['key'] . '@'.$repo.'  main' . PHP_EOL);
                 //fwrite($file, 'deb http://secret:'.$payload['key'].'@apt.open-itcockpit.com nightly  main'.PHP_EOL);
                 fclose($file);
                 unset($payload);
@@ -414,16 +427,28 @@ class GearmanWorkerShell extends AppShell {
                 $AfterExportTask = $_task->load('AfterExport');
                 $AfterExportTask->beQuiet();
                 $AfterExportTask->init();
-                $AfterExportTask->copy($payload['Satellite']);
+                $this->Export->updateAll([
+                    'Export.finished' => 1,
+                    'Export.successfully' => $AfterExportTask->copy($payload['Satellite']) ? 1 : 0,
+//                    'Export.text' => 'export_sync_sat_config_'.$payload['Satellite']['Satellite']['id']
+                ], [
+                    'Export.task' => 'export_sync_sat_config_'.$payload['Satellite']['Satellite']['id'],
+                ]);
                 $return = ['task' => $payload['task']];
                 break;
 
-            case 'make_sql_backup':
-                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
+            case 'make_sql_backup':;
+                $return = $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/'.$payload['filename']);
+                exec('touch /opt/openitc/nagios/backup/finishBackup.txt');
                 break;
 
             case 'restore_sql_backup':
                 $return = $this->NagiosExport->restoreSQLBackup($payload['path']);
+                exec('touch /opt/openitc/nagios/backup/finishRestore.txt');
+                break;
+
+            case 'delete_sql_backup':
+                $return = unlink($payload['path']);
                 break;
 
             case 'check_background_processes':
@@ -522,8 +547,8 @@ class GearmanWorkerShell extends AppShell {
             }
             $folder1->copy($backupTarget);
 
-            //Hier muss ddie neue Backupfunktion rein
-            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/');
+            $filename = "export_oitc_bkp_".date("Y-m-d_His").".sql";
+            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget').'/'.$filename);
 
             $this->Export->saveField('finished', 1);
             $this->Export->saveField('successfully', 1);
@@ -821,26 +846,21 @@ class GearmanWorkerShell extends AppShell {
             //This callback gets called, for any finished export task (like hosttemplates, services etc...)
             $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
 
-            $this->Export->create();
-            $data = [
-                'Export' => [
-                    'task' => 'export_sync_sat_config',
-                    'text' => __('Copy new monitoring configuration to satellite systems'),
-                ],
-            ];
-            $result = $this->Export->save($data);
             if (!empty($satellites)) {
                 foreach ($satellites as $satellite) {
-                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $data['Export']['task'], 'Satellite' => $satellite]), $this->Config['password']));
+                    $this->Export->create();
+                    $this->Export->save([
+                        'Export' => [
+                            'task' => 'export_sync_sat_config_'.$satellite['Satellite']['id'],
+                            'text' => __('Copy new monitoring configuration for Satellite ['.$satellite['Satellite']['id'].'] '.$satellite['Satellite']['name']),
+                        ],
+                    ]);
+                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
                 }
                 $gearmanClient->runTasks();
             }
             // Avoid "MySQL server has gone away"
             $this->Systemsetting->getDatasource()->reconnect();
-
-            $this->Export->id = $result['Export']['id'];
-            $this->Export->saveField('finished', 1);
-            $this->Export->saveField('successfully', 1);
         }
     }
 

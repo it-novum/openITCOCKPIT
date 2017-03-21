@@ -73,6 +73,14 @@
                     'required' => true,
                 ]);
             endif;
+            echo $this->Form->input('Servicegroup.Servicetemplate', [
+                'options' => $servicetemplates,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Service templates'),
+                'data-placeholder' => __('Please choose a service template')
+            ]);
             ?>
             <br/>
             <br/>

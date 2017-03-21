@@ -249,8 +249,8 @@ class UsersController extends AppController
             );
         }
         if ($type == 'ldap') {
-            if ($this->Ldap->userExists($samaccountname)) {
-                $ldapUser = $this->Ldap->userInfo($samaccountname);
+            $ldapUser = $this->Ldap->userInfo($samaccountname);
+            if(!is_null($ldapUser)) {
                 // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
                 $this->request->data['User']['email'] = $ldapUser['mail'];
                 $this->request->data['User']['firstname'] = $ldapUser['givenname'];
@@ -381,45 +381,19 @@ class UsersController extends AppController
     public function addFromLdap()
     {
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))) {
-                $this->redirect([
-                    'controller'     => 'users',
-                    'action'         => 'add',
-                    'ldap'           => 1,
-                    'samaccountname' => $this->request->data('Ldap.samaccountname'),
-                    //Fixing usernames like jon.doe
-                    'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
-                ]);
-                //$this->redirect('/admin/users/add/ldap/'.rawurlencode($this->request->data('Ldap.samaccountname')));
-            }
-            $this->setFlash(__('User does not exists in LDAP'), false);
+            $this->redirect([
+                'controller'     => 'users',
+                'action'         => 'add',
+                'ldap'           => 1,
+                'samaccountname' => $this->request->data('Ldap.samaccountname'),
+                //Fixing usernames like jon.doe
+                'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+            ]);
         }
 
-        $users = [];
-        $requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
-
-
-        $allLdapUsers = $this->Ldap->findAllUser();
-        foreach ($allLdapUsers as $samAccountName) {
-            $ldapUser = $this->Ldap->userInfo($samAccountName);
-            $ableToImport = true;
-            foreach ($requiredFilds as $requiredFild) {
-                if (!isset($ldapUser[$requiredFild])) {
-                    $ableToImport = false;
-                }
-            }
-
-            if ($ableToImport === true) {
-                $users[] = $ldapUser;
-            }
-        }
-
-        $usersForSelect = [];
-        foreach ($users as $user) {
-            $usersForSelect[$user['samaccountname']] = $user['displayname'].' ('.$user['samaccountname'].')';
-        }
-
+        $usersForSelect = $this->Ldap->findAllUser();
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+
         $this->set(compact(['usersForSelect', 'systemsettings']));
     }
 

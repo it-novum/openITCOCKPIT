@@ -25,10 +25,11 @@
 
 
 /**
- * @property Service       $Service
- * @property Servicegroup  $Servicegroup
- * @property Host          $Host
- * @property TreeComponent $Tree
+ * @property Service            $Service
+ * @property Servicegroup       $Servicegroup
+ * @property Host               $Host
+ * @property Servicetemplate    $Servicetemplate
+ * @property TreeComponent      $Tree
  */
 class ServicegroupsController extends AppController
 {
@@ -36,6 +37,7 @@ class ServicegroupsController extends AppController
         'Servicegroup',
         'Container',
         'Service',
+        'Servicetemplate',
         'User',
         MONITORING_OBJECTS,
         'Host',
@@ -67,83 +69,46 @@ class ServicegroupsController extends AppController
         }
         $query = [
             'recursive' => -1,
-            'joins'     => [
-                [
-                    'table'      => 'containers',
-                    'alias'      => 'Container',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'Servicegroup.container_id = Container.id',
-                    ],
-                ],
-                [
-                    'table'      => 'services_to_servicegroups',
-                    'alias'      => 'servicesToServicegroups',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'servicesToServicegroups.servicegroup_id = Servicegroup.id',
-                    ],
-                ],
-                [
-                    'table'      => 'services',
-                    'alias'      => 'Service',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'Service.id = servicesToServicegroups.service_id',
-                    ],
-                ],
-                [
-                    'table'      => 'servicetemplates',
-                    'alias'      => 'Servicetemplate',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-                ],
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id',
-                    ],
-                ],
-            ],
-
-            'fields'     => [
-                'Servicegroup.id',
-                'Servicegroup.uuid',
-                'Servicegroup.description',
-                'Container.id',
-                'Container.parent_id',
-                'Container.name',
-                'Service.id',
-                'Service.name',
-                'Host.id',
-                'Host.name',
-                'Servicetemplate.name',
-            ],
             'conditions' => $conditions,
+            'contain' => [
+                'Container',
+                'Service' => [
+                    'fields' => [
+                        'Service.id',
+                        'Service.name'
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.name'
+                        ]
+                    ],
+                    'Host' =>[
+                        'fields' => [
+                            'Host.id',
+                            'Host.name'
+                        ]
+                    ]
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.template_name',
+                        'Servicetemplate.name'
+                    ]
+                ]
+            ]
         ];
 
-        $this->Paginator->settings['order'] = [
-            'Container.name'       => 'asc',
-            'Host.name'            => 'asc',
-            'Service.name'         => 'asc',
-            'Servicetemplate.name' => 'asc',
-        ];
         if ($this->isApiRequest()) {
             unset($query['limit']);
             $all_servicegroups = $this->Servicegroup->find('all', $query);
         } else {
-            $this->Paginator->settings = $query;
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_servicegroups = $this->Paginator->paginate();
-            $all_servicegroups = Hash::merge([], Set::combine($all_servicegroups, '{n}.Servicegroup.id', '{n}.{(Servicegroup|Container)}'), Set::combine($all_servicegroups, '{n}.Service.id', '{n}.{(Service$|Servicetemplate|Host)}', '{n}.Servicegroup.id'));
         }
-
-        $this->set('all_servicegroups', $all_servicegroups);
-
         //Aufruf für json oder xml view: /nagios_module/services.json oder /nagios_module/services.xml
+
+        $this->set(compact(['all_servicegroups']));
         $this->set('_serialize', ['all_servicegroups']);
         $this->set('isFilter', false);
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
@@ -186,6 +151,7 @@ class ServicegroupsController extends AppController
         }
 
         $servicegroup = $this->Servicegroup->find('first', [
+            'recursive' => -1,
             'contain'    => [
                 'Service' => [
                     'fields'          => [
@@ -205,6 +171,12 @@ class ServicegroupsController extends AppController
                         ],
                     ],
                 ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
                 'Container',
             ],
             'conditions' => [
@@ -223,7 +195,6 @@ class ServicegroupsController extends AppController
                 'id'   => $service['id'],
                 'name' => $service['Host']['name'].' | '.(($service['name']) ? $service['name'] : $service['Servicetemplate']['name']),
             ];
-            //$services_for_changelog[$service['id']] = $service['Host']['name'].' | '.(($service['name'])?$service['name']:$service['Servicetemplate']['name']);
         }
 
         $serviceIds = [ROOT_CONTAINER];
@@ -235,7 +206,7 @@ class ServicegroupsController extends AppController
         $serviceIds = $this->Tree->resolveChildrenOfContainerIds($serviceIds);
         array_unshift($serviceIds, ROOT_CONTAINER);
         $_services = $this->Service->servicesByHostContainerIds($serviceIds);
-
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($serviceIds, 'list');
         //Fix that duplicate hostnames dont overwrite the array key!!
         foreach ($_services as $service) {
             $hostId = $service['Host']['id'];
@@ -250,15 +221,34 @@ class ServicegroupsController extends AppController
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [];
 
-            if (isset($this->request->data['Servicegroup']['Service'])) {
-                $this->request->data['Service'] = $this->request->data['Servicegroup']['Service'];
-            }
+            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
+            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
+
             if ($this->request->data('Servicegroup.Service')) {
                 $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $ext_data_for_changelog['Service'][] = [
                         'id'   => $service_id,
                         'name' => $serviceAsList[$service_id],
+                    ];
+                }
+            }
+            if ($this->request->data('Servicegroup.Servicetemplate')) {
+                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain'    => [],
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id'   => $servicetemplate_id,
+                        'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
                 }
             }
@@ -280,7 +270,6 @@ class ServicegroupsController extends AppController
                 }
                 if ($this->request->ext == 'json') {
                     $this->serializeId();
-
                     return;
                 }
                 $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
@@ -288,7 +277,6 @@ class ServicegroupsController extends AppController
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('Servicegroup could not be saved'), false);
@@ -299,8 +287,8 @@ class ServicegroupsController extends AppController
         }
 
         $this->request->data = Hash::merge($servicegroup, $this->request->data);
-        $this->set(compact(['servicegroup', 'containers', 'services']));
-        $this->set('_serialize', ['servicegroup', 'containers', 'services']);
+        $this->set(compact(['servicegroup', 'containers', 'services', 'servicetemplates']));
+        $this->set('_serialize', ['servicegroup', 'containers', 'services', 'servicetemplates']);
     }
 
     public function add()
@@ -313,13 +301,17 @@ class ServicegroupsController extends AppController
         }
 
         $services = [];
+        $servicetemplates = [];
         $this->Frontend->set('data_placeholder', __('Please choose a service'));
+        $this->Frontend->set('data_placeholder_servicetemplate', __('Please choose a service template'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
         if ($this->request->is('post') || $this->request->is('put')) {
             $_services = [];
+            $_servicetemplates = [];
             if ($this->request->data['Container']['parent_id'] > 0) {
                 $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id'], $this->hasRootPrivileges);
                 $_services = $this->Service->servicesByHostContainerIds($containerIds);
+                $_servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds);
             }
 
             //Fix that duplicate hostnames dont overwrite the array key!!
@@ -342,8 +334,30 @@ class ServicegroupsController extends AppController
                     ];
                 }
             }
-
+            if ($this->request->data('Servicegroup.Servicetemplate')) {
+                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain'    => [],
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id'   => $servicetemplate_id,
+                        'name' => $servicetemplate['Servicetemplate']['name'],
+                    ];
+                }
+            }
             $isJsonRequest = $this->request->ext === 'json';
+
+            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
+            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
+
             if ($this->Servicegroup->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -357,6 +371,7 @@ class ServicegroupsController extends AppController
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
+                    debug($changelog_data);
                 }
 
                 if ($isJsonRequest) {
@@ -370,14 +385,13 @@ class ServicegroupsController extends AppController
             } else {
                 if ($isJsonRequest) {
                     $this->serializeErrorMessage();
-
                     return;
                 } else {
                     $this->setFlash(__('could not save data'), false);
                 }
             }
         }
-        $this->set(compact(['containers', 'services']));
+        $this->set(compact(['containers', 'services', 'servicetemplates']));
     }
 
     public function loadServices($containerId = null)
@@ -390,6 +404,18 @@ class ServicegroupsController extends AppController
         $services = $this->Service->makeItJavaScriptAble($services);
 
         $data = ['services' => $services];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
+    }
+
+    public function loadServicetemplates($containerId = null)
+    {
+        $this->allowOnlyAjaxRequests();
+
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
+        $servicetemplates = $this->Servicetemplate->makeItJavaScriptAble($servicetemplates);
+
+        $data = ['servicetemplates' => $servicetemplates];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
     }

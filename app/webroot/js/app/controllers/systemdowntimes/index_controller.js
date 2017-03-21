@@ -31,6 +31,22 @@ App.Controllers.SystemdowntimesIndexController = Frontend.AppController.extend({
 			self.fnShowHide($(this).attr('my-column'), $(this).children());
 		});
 
+		var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+		for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+			pageUrl = localStorage.key(i);
+			dataTableValue = localStorage.getItem(pageUrl);
+			if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+			dataTableValueParsed = JSON.parse(dataTableValue);
+			if(pageUrl.indexOf('DataTables_recurringdowntimes_list_/systemdowntimes') !== -1){
+				if(dataTableValueParsed.time > highestTime){
+					highestTime = dataTableValueParsed.time;
+					highestValue = dataTableValue;
+				}
+			}
+		}
+
+		self.setDataTableFilter(highestValue);
+
 		$('#recurringdowntimes_list').dataTable({
 			"bPaginate": false,
 			"bFilter": false,
@@ -106,5 +122,10 @@ App.Controllers.SystemdowntimesIndexController = Frontend.AppController.extend({
 			inputObject.prop('checked', true);
 		}
 		oTable.fnSetColumnVis( iCol, bVis ? false : true );
+	},
+	setDataTableFilter: function(storageValue){
+		var currentURL = window.location.href;
+		var postTextURL = currentURL.substring(currentURL.indexOf('systemdowntimes') + 15);
+		localStorage.setItem('DataTables_recurringdowntimes_list_/systemdowntimes'+postTextURL, storageValue);
 	}
 });

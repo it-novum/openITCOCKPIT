@@ -31,7 +31,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Hostgroups'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -101,6 +101,7 @@
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Hostgroup.description');
                                         echo $this->Paginator->sort('Hostgroup.description', 'Description'); ?></th>
                                     <th class="no-sort"><?php echo __('Hosts'); ?></th>
+                                    <th class="no-sort"><?php echo __('Host templates'); ?></th>
                                     <th class="no-sort"></th>
                                 </tr>
                                 </thead>
@@ -134,6 +135,21 @@
                                             </ul>
                                         </td>
                                         <td>
+                                            <ul class="list-unstyled">
+                                                <?php
+                                                foreach ($hostgroup['Hosttemplate'] as $hosttemplate):
+                                                    if ($this->Acl->hasPermission('edit', 'hosttemplates')): ?>
+                                                        <li>
+                                                            <a href="<?php echo Router::url(['controller' => 'hosttemplates', 'action' => 'edit', $hosttemplate['id']]); ?>"><?php echo h($hosttemplate['name']); ?></a>
+                                                        </li>
+                                                    <?php else: ?>
+                                                        <li><?php echo h($hosttemplate['name']); ?></li>
+                                                    <?php endif;
+                                                endforeach;
+                                                ?>
+                                            </ul>
+                                        </td>
+                                        <td>
                                             <center>
                                                 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                     <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $hostgroup['Hostgroup']['id']; ?>"
@@ -152,12 +168,12 @@
 
                         <div style="padding: 5px 10px;">
                             <?php /*
-							<div class="row">
-								<div class="col-xs-12 col-md-3">
-									<a href="<?php echo Router::url(['controller' => 'hostgroups', 'action' => 'listToPdf/.pdf']); ?>" id="listAsPDF" class="pointer" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a>
-								</div>
-							</div>
-							*/ ?>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-3">
+                                    <a href="<?php echo Router::url(['controller' => 'hostgroups', 'action' => 'listToPdf/.pdf']); ?>" id="listAsPDF" class="pointer" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a>
+                                </div>
+                            </div>
+                            */ ?>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"

@@ -43,7 +43,114 @@ class ChangelogsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Changelog.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Changelog.name' => [
+                    'label' => 'Name',
+                    'searchType' => 'wildcard',
+                    'inputOptions' => [
+                        'class' => 'form-control',
+                        'style' => 'width:80%;'
+                    ]
+                ],
+                'Changelog.model' => [
+                    'label' => 'Object type',
+                    'type' => 'checkbox',
+                    'searchType' => 'nix',
+                    'options' => [
+                        'Command' => [
+                            'name'  => 'Command',
+                            'value' => 1,
+                            'label' => 'Command',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Contact' => [
+                            'name'  => 'Contact',
+                            'value' => 1,
+                            'label' => 'Contact',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Contactgroup' => [
+                            'name'  => 'Contactgroup',
+                            'value' => 1,
+                            'label' => 'Contactgroup',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Host' => [
+                            'name'  => 'Host',
+                            'value' => 1,
+                            'label' => 'Host',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Hostgroup' => [
+                            'name'  => 'Hostgroup',
+                            'value' => 1,
+                            'label' => 'Hostgroup',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Hosttemplate' => [
+                            'name'  => 'Hosttemplate',
+                            'value' => 1,
+                            'label' => 'Hosttemplate',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Service' => [
+                            'name'  => 'Service',
+                            'value' => 1,
+                            'label' => 'Service',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Servicegroup' => [
+                            'name'  => 'Servicegroup',
+                            'value' => 1,
+                            'label' => 'Servicegroup',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Servicetemplate' => [
+                            'name'  => 'Servicetemplate',
+                            'value' => 1,
+                            'label' => 'Servicetemplate',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                        'Timeperiod' => [
+                            'name'  => 'Timeperiod',
+                            'value' => 1,
+                            'label' => 'Timeperiod',
+                            'data'  => 'Filter.Changelog.model',
+                        ],
+                    ],
+                ],
+                'Changelog.action' => [
+                    'label' => 'Object type',
+                    'type' => 'checkbox',
+                    'searchType' => 'nix',
+                    'options' => [
+                        'add' => [
+                            'name'  => 'add',
+                            'value' => 1,
+                            'label' => '<i class="fa fa-plus txt-color-greenLight"></i> add',
+                            'data'  => 'Filter.Changelog.action',
+                        ],
+                    /*
+                        'copy' => [
+                            'name'  => 'copy',
+                            'value' => 1,
+                            'label' => 'copy',
+                            'data'  => 'Filter.Changelog.action',
+                        ],
+                    */
+                        'delete' => [
+                            'name'  => 'delete',
+                            'value' => 1,
+                            'label' => '<i class="fa fa-trash-o txt-color-red"></i> delete',
+                            'data'  => 'Filter.Changelog.action',
+                        ],
+                        'edit' => [
+                            'name'  => 'edit',
+                            'value' => 1,
+                            'label' => '<i class="fa fa-pencil txt-color-blue"></i> edit',
+                            'data'  => 'Filter.Changelog.action',
+                        ],
+                    ],
+                ],
             ],
         ],
     ];

@@ -11,8 +11,8 @@ So easy that everyone can use it: create your entire monitoring configuration wi
 ![openITCOCKPIT](https://mgmt.it-novum.com/oitc.png "openITCOCKPIT")
 
 # System requirements
-* Ubuntu 14.04 LTS x64
-* 2 CPU cores
+* Ubuntu Linux (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 8 "jessie"
+* 2 CPU cores (x86-64)
 * 2 GB RAM
 * 15 GB space
 
@@ -27,29 +27,57 @@ A rough guide:
 * 500GB space
 
 # Installation
-openITCOCKPIT runs on Ubuntu systems and is available in the package manager apt.
+openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via apt repositories.
 
 To install openITCOCKPIT on your system, just run the following commands.
 
 If [phpMyAdmin](https://www.phpmyadmin.net/) asks you for your web server **leave the selection blank** and continue with **Ok**.
 
-openITCOCKPIT uses Nginx as webserver and will generate the configuration for phpMyAdmin automatically for you.
+openITCOCKPIT uses Nginx as webserver and will generate a configuration for phpMyAdmin automatically for you.
 
 **openITCOCKPIT + Naemon (recommended)**
 ````
-echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
+apt-get install apt-transport-https
+apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
+````
+Ubuntu 14.04 - Trusty
+````
+echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+Ubuntu 16.04 - Xenial
+````
+echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+Debian 8 - Jessie
+````
+echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+````
 apt-get update
-apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
+apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
 
 ````
-echo 'deb https://apt.open-itcockpit.com trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com A7D3EAFA
+apt-get install apt-transport-https
+apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
+````
+Ubuntu 14.04 - Trusty
+````
+echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+Ubuntu 16.04 - Xenial
+````
+echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+Debian 8 - Jessie
+````
+echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+````
 apt-get update
-apt-get install openitcockpit{,-nagios,-ndoutils,-npcd,-message}
+apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
@@ -87,7 +115,7 @@ vagrant up
 ````
 
 # Developers welcome
-openITCOCKPIT's development is publicly available in GitHub. Everybody is welcomed to join :-)
+openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
 ### Vagrant box (nightly)
 Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/master/openITCOCKPIT_V3-nightly/Vagrantfile) to install the latest nightly build
@@ -97,7 +125,7 @@ Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/m
 * [it-novum GmbH](http://www.it-novum.com/en/support-openitcockpit-en.html) provides commercial support
 
 # License
-Copyright (C) <2015>  <it-novum GmbH>
+Copyright (C) 2015-2017  it-novum GmbH
 
 
 openITCOCKPIT is dual licensed

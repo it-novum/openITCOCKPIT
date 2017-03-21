@@ -42,6 +42,14 @@ class Hosttemplate extends AppModel
             'unique'                => true,
             'dependent'             => true,
         ],
+        'Hostgroup'    => [
+            'className'             => 'Hostgroup',
+            'joinTable'             => 'hosttemplates_to_hostgroups',
+            'foreignKey'            => 'hosttemplate_id',
+            'associationForeignKey' => 'hostgroup_id',
+            'unique'                => true,
+            'dependent'             => true,
+        ],
     ];
 
     var $belongsTo = [
@@ -73,6 +81,7 @@ class Hosttemplate extends AppModel
             'dependent'  => true,
         ],
         'Hosttemplatecommandargumentvalue',
+        'Host'
     ];
 
     var $validate = [
@@ -384,17 +393,24 @@ class Hosttemplate extends AppModel
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
-    public function hosttemplatesByContainerId($container_id = [], $type = 'all')
-    {
+    public function hosttemplatesByContainerId($container_ids = [], $type = 'all', $hosttemplate_type = GENERIC_HOST, $ignoreType = false) {
+        $conditions = [
+            'Hosttemplate.container_id' => $container_ids,
+        ];
+        if (!$ignoreType) {
+            $conditions['Hosttemplate.hosttemplatetype_id'] = $hosttemplate_type;
+        }
+
         return $this->find($type, [
             'conditions' => [
-                'Hosttemplate.container_id' => $container_id,
+                $conditions
             ],
-            'order'      => [
+            'order' => [
                 'Hosttemplate.name' => 'ASC',
             ],
         ]);
     }
+
 
     public function __allowDelete($hosttemplateId)
     {

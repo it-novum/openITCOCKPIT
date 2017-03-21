@@ -171,7 +171,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                     $htmlChecked = 'checked="checked"';
                                     if (isset($LogentiresListsettings['logentry_type'])):
                                         $htmlChecked = '';
-                                        if ($LogentiresListsettings['logentry_type'] == $logentry_type):
+                                        if ($LogentiresListsettings['logentry_type'] & $logentry_type):
                                             $htmlChecked = 'checked="checked"';
                                         endif;
                                     endif;

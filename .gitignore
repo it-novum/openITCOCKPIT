@@ -3,7 +3,7 @@ tmp/*
 [Cc]onfig/database.php
 app/tmp/*
 app/[Cc]onfig/database.php
-vendor
+/vendor
 build
 !empty
 lib/Cake/Console/Templates/skel/tmp/*

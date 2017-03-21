@@ -89,8 +89,7 @@
                                             <td><?php echo $location['Container']['name']; ?></td>
                                             <td><?php echo $location['Location']['description']; ?></td>
                                             <td><?php if ($location['Container']['parent_id'] == 1): echo __('/root/');
-                                                else: ?> <a
-                                                        href="/tenants/edit/<?php echo $location['Container']['parent_id']; ?>"> <?php echo $container[$location['Container']['parent_id']]; ?></a><?php endif; ?>
+                                                else: ?> <?php echo $container[$location['Container']['parent_id']]; ?><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group">

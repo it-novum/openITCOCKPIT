@@ -30,6 +30,8 @@
 
         <h1>Developers</h1>
         <dl>
+            <dt>Teamlead</dt>
+            <dd>Sascha Veres</dd>
             <dt>Software architect</dt>
             <dd>Irina Bering</dd>
             <dt>Software architect</dt>
@@ -37,16 +39,16 @@
             <dt>Developer</dt>
             <dd>Maximilian Pappert</dd>
             <dt>Developer</dt>
-            <dd>Patrick Nawracay</dd>
+            <dd>Oliver Müller</dd>
             <dt>Developer</dt>
             <dd>Christian Fleck</dd>
             <dt>Developer</dt>
-            <dd>Stephan Girgenti-Müller</dd>
+            <dd>Laziz Karimov</dd>
         </dl>
 
 
         <h1>Special Thanks</h1>
-        <p>Steffen Rieger, Christian Michel, René Kleffel, Michael Ziegler, Adrian Röbig and more...</p>
+        <p>Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
         <div class="clearfix"></div>
 
         <h1>Special Thanks</h1>

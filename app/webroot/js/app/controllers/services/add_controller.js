@@ -25,6 +25,7 @@
 App.Controllers.ServicesAddController = Frontend.AppController.extend({
 	$contacts: null,
 	$contactgroups: null,
+    $servicegroups: null,
 	$tagsinput: null,
 	lang: null,
 
@@ -39,8 +40,8 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 			ajaxUrl: 'addCustomMacro',
 			macrotype: 'SERVICE',
 			onClick: function(){
-				self.hosttemplateManager._onChangeMacro();
-				self.hosttemplateManager._activateOrUpdateMacroRestore();
+				self.servicetemplateManager._onChangeMacro();
+				self.servicetemplateManager._activateOrUpdateMacroRestore();
 			}
 		});
 		/*
@@ -52,6 +53,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 		this.$contacts = $('#ServiceContact');
 		this.$contactgroups = $('#ServiceContactgroup');
+        this.$servicegroups = $('#ServiceServicegroup');
 
 		this.lang = [];
 		this.lang[1] = this.getVar('lang_minutes');
@@ -101,6 +103,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 		this.fieldMap['contact'] = 'Contact';
 		this.fieldMap['contactgroup'] = 'Contactgroup';
+        this.fieldMap['servicegroup'] = 'Servicegroup';
 
 		// Render fancy tags input
 		this.$tagsinput = $('.tagsinput');
@@ -183,7 +186,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 		 *	onChangeField()			- When a field gets changed, this method will be called.
 		 *	onClickRestoreDefault() - A click on the restore button.
 		 */
-		self.hosttemplateManager = {
+		self.servicetemplateManager = {
 			isRestoreFunctionalityInitialized: false,
 			isInitializedOnce: false,
 
@@ -213,8 +216,8 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				});
 
 				var templateValues = {};
-				for(var key in self.hosttemplateManager.currentCustomVariables){
-					var obj = self.hosttemplateManager.currentCustomVariables[key];
+				for(var key in self.servicetemplateManager.currentCustomVariables){
+					var obj = self.servicetemplateManager.currentCustomVariables[key];
 					if(caseInsensitive){
 						templateValues[obj.name.toUpperCase()] = obj.value.toUpperCase();
 					}else{
@@ -240,14 +243,14 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 					}
 				}
 
-				self.hosttemplateManager._createOrUpdateMacroRestoreIcon(isIdenticalWithTemplate);
+				self.servicetemplateManager._createOrUpdateMacroRestoreIcon(isIdenticalWithTemplate);
 			},
 
 			_restoreHostMacrosFromTemplate: function(){
 				//Loading the macros of the hosttemplate
 				self.CustomVariables.loadMacroFromTemplate(
-						self.hosttemplateManager.currentTemplate.id,
-						self.hosttemplateManager._activateOrUpdateMacroRestore
+						self.servicetemplateManager.currentTemplate.id,
+						self.servicetemplateManager._activateOrUpdateMacroRestore
 					);
 			},
 
@@ -268,7 +271,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 				if(!isIdenticalWithTemplate){
 					$icon.off('click');
-					$icon.on('click', self.hosttemplateManager._restoreHostMacrosFromTemplate);
+					$icon.on('click', self.servicetemplateManager._restoreHostMacrosFromTemplate);
 				}
 
 				// Update the class of the icon.
@@ -295,18 +298,18 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 						$field
 							.off('change.restoreDefault')
 							.off('keyup')
-							.on('change.restoreDefault', self.hosttemplateManager._onChangeMacro)
-							.on('keyup', self.hosttemplateManager._onChangeMacro);
+							.on('change.restoreDefault', self.servicetemplateManager._onChangeMacro)
+							.on('keyup', self.servicetemplateManager._onChangeMacro);
 
-						self.hosttemplateManager._onChangeMacro();
+						self.servicetemplateManager._onChangeMacro();
 					}
 				});
-				self.hosttemplateManager._onChangeMacro();
+				self.servicetemplateManager._onChangeMacro();
 
 				// The event has to be used through "document". This is because the original function is attached the same way.
 				// Otherwise it is executed before the original delete function is executed!
 				$(document).off('click.macroRemove', '.deleteMacro');
-				$(document).on('click.macroRemove', '.deleteMacro', self.hosttemplateManager._onChangeMacro);
+				$(document).on('click.macroRemove', '.deleteMacro', self.servicetemplateManager._onChangeMacro);
 			},
 
 			deactivateRestoreFunctionality: function(){
@@ -327,12 +330,12 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				$hostMacroSettings.find('.fa-chain-default, .fa-chain-non-default').remove();
 				$hostMacroSettings.off('click.MacroRemove', '.deleteMacro');
 
-				self.hosttemplateManager.isRestoreFunctionalityInitialized = false;
+				self.servicetemplateManager.isRestoreFunctionalityInitialized = false;
 			},
 
 			onClickRestoreDefault: function(){
 				var $field = $(this);
-				var fieldType = self.hosttemplateManager.getFieldType($field);
+				var fieldType = self.servicetemplateManager.getFieldType($field);
 				var inputId = $field.attr('id') || '';
 				var keyName;
 				if(inputId.match(/stars-rating/)){
@@ -340,18 +343,21 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				}else{
 					keyName = getObjectKeyByValue(self.fieldMap, inputId.replace(/^(Service)/, ''));
 				}
-				var templateDefaultValue = self.hosttemplateManager.currentTemplate[keyName];
+				var templateDefaultValue = self.servicetemplateManager.currentTemplate[keyName];
 				if(typeof templateDefaultValue === 'undefined'){
 					templateDefaultValue = $field.prop('data-template-default');
 				}
-				if(in_array(keyName, ['contact', 'contactgroup'])){
+				if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
 					switch(keyName){
 						case 'contact':
-							templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
+							templateDefaultValue = self.servicetemplateManager.currentContact.map(function(elem){ return elem.id });
 							break;
 						case 'contactgroup':
-							templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
+							templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function(elem){ return elem.id });
 							break;
+                        case 'servicegroup':
+                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function(elem){ return elem.id });
+                            break;
 					}
 				}
 				// console.log('onClickRestoreDefault()');
@@ -420,25 +426,29 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				}else{
 					keyName = getObjectKeyByValue(self.fieldMap, inputId.replace(/^(Service)/, ''));
 				}
-				var templateDefaultValue = self.hosttemplateManager.currentTemplate[keyName];
+				var templateDefaultValue = self.servicetemplateManager.currentTemplate[keyName];
 				var templateDefaultTitle = '';
 				if(typeof templateDefaultValue === 'undefined'){
 					templateDefaultValue = $field.prop('data-template-default');
 				}
-				if(in_array(keyName, ['contact', 'contactgroup'])){
+				if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
 					switch(keyName){
 						case 'contact':
-							templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
-							templateDefaultTitle = self.hosttemplateManager.currentContact.map(function(elem){ return elem.name });
+							templateDefaultValue = self.servicetemplateManager.currentContact.map(function(elem){ return elem.id });
+							templateDefaultTitle = self.servicetemplateManager.currentContact.map(function(elem){ return elem.name });
 							break;
 						case 'contactgroup':
-							templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
-							templateDefaultTitle = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.Container.name });
+							templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function(elem){ return elem.id });
+							templateDefaultTitle = self.servicetemplateManager.currentContactGroup.map(function(elem){ return elem.Container.name });
 							break;
+                        case 'servicegroup':
+                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function(elem){ return elem.id });
+                            templateDefaultTitle = self.servicetemplateManager.currentServiceGroup.map(function(elem){ return elem.Container.name });
+                            break;
 					}
 					templateDefaultTitle = templateDefaultTitle.join(', ');
 				}
-				var fieldType = self.hosttemplateManager.getFieldType($field);
+				var fieldType = self.servicetemplateManager.getFieldType($field);
 				var nonDefaultClassName = 'fa fa-chain-broken fa-chain-non-default txt-color-red';
 				var defaultClassName = 'fa fa-chain fa-chain-default txt-color-green';
 				var defaultTitle = 'Default value';
@@ -475,7 +485,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 					case 'select':
 						fieldValue = $field.val();
-						if(in_array(keyName, ['contact', 'contactgroup'])){
+						if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
 							if(fieldValue === null){
 								fieldValue = [];
 							}
@@ -494,7 +504,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				}
 
 				var wrappedOnClickRestore = function(){
-					self.hosttemplateManager.onClickRestoreDefault.call($field);
+					self.servicetemplateManager.onClickRestoreDefault.call($field);
 				};
 				var $restoreDefaultIcon = $field.parents('.form-group').find('.fa-chain, .fa-chain-broken');
 				var isEqual = (is_scalar(fieldValue) && is_scalar(templateDefaultValue) && fieldValue == templateDefaultValue) ||
@@ -538,7 +548,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 			 * Initalizes the restore functionality. The default values depend on the chosen Hosttemplate.
 			 */
 			initRestoreDefault: function(){
-				self.hosttemplateManager.deactivateRestoreFunctionality();
+				self.servicetemplateManager.deactivateRestoreFunctionality();
 				// console.log('initRestoreDefault()');
 				// Bind on all predefined inputs to allow to restore their defaults.
 				for(var key in self.fieldMap){
@@ -554,41 +564,41 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 					switch(fieldType){
 						case 'text':
 						case 'checkbox':
-							self.hosttemplateManager.onChangeField.call($field); // Call once for this field
-							$field.on('change.restoreDefault', self.hosttemplateManager.onChangeField);
-							$field.on('keyup', self.hosttemplateManager.onChangeField);
+							self.servicetemplateManager.onChangeField.call($field); // Call once for this field
+							$field.on('change.restoreDefault', self.servicetemplateManager.onChangeField);
+							$field.on('keyup', self.servicetemplateManager.onChangeField);
 							break;
 
 						case 'radio':
 							var $radioFields = $field.parents('.form-group').find('[name="' + $field.attr('name') + '"]');
 							$radioFields.each(function(){
-								self.hosttemplateManager.onChangeField.call($(this));
+								self.servicetemplateManager.onChangeField.call($(this));
 								$(this).on('change.restoreDefault', function(){
-									self.hosttemplateManager.onChangeField.call($(this));
+									self.servicetemplateManager.onChangeField.call($(this));
 								});
 							});
 							break;
 
 						case 'select':
-							self.hosttemplateManager.onChangeField.call($field);
-							$field.on('change.restoreDefault', self.hosttemplateManager.onChangeField);
+							self.servicetemplateManager.onChangeField.call($field);
+							$field.on('change.restoreDefault', self.servicetemplateManager.onChangeField);
 							break;
 
 						case 'number':
-							self.hosttemplateManager.onChangeField.call($field);
-							$field.on('change.restoreDefault', self.hosttemplateManager.onChangeField);
+							self.servicetemplateManager.onChangeField.call($field);
+							$field.on('change.restoreDefault', self.servicetemplateManager.onChangeField);
 							break;
 
 						case 'default':
 							break;
 					}
 				}
-				self.hosttemplateManager.isRestoreFunctionalityInitialized = true;
-				self.hosttemplateManager.isInitializedOnce = true;
+				self.servicetemplateManager.isRestoreFunctionalityInitialized = true;
+				self.servicetemplateManager.isInitializedOnce = true;
 			},
 
 			updateHosttemplateValues: function(onComplete){
-				self.hosttemplateManager.currentTemplate = {};
+				self.servicetemplateManager.currentTemplate = {};
 				var $selectBoxHosttemplate = $('#ServiceServicetemplateId');
 
 				var ajaxCompleteCallback = function(response){
@@ -600,25 +610,26 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 					var hosttemplateId = $selectBoxHosttemplate.val(),
 						servicetemplate = responseObject.servicetemplate;
 
-					self.hosttemplateManager.currentTemplate = servicetemplate.Servicetemplate;
-					self.hosttemplateManager.currentContact = servicetemplate.Contact;
-					self.hosttemplateManager.currentContactGroup = servicetemplate.Contactgroup;
-					self.hosttemplateManager.currentCustomVariables = servicetemplate.Customvariable;
+					self.servicetemplateManager.currentTemplate = servicetemplate.Servicetemplate;
+					self.servicetemplateManager.currentContact = servicetemplate.Contact;
+					self.servicetemplateManager.currentContactGroup = servicetemplate.Contactgroup;
+                    self.servicetemplateManager.currentServiceGroup = servicetemplate.Servicegroup;
+					self.servicetemplateManager.currentCustomVariables = servicetemplate.Customvariable;
 
 					// For debugging purposes only // TODO remove before commit
 					window.currentTemplate = servicetemplate.Servicetemplate;
 					window.currentContact = servicetemplate.Contact;
 					window.currentContactGroup = servicetemplate.Contactgroup;
-
+                    window.currentServiceGroup = servicetemplate.Servicegroup;
 					window.currentCustomVariable = servicetemplate.Customvariable;
 
-					if(self.hosttemplateManager.currentTemplate.id != hosttemplateId){
+					if(self.servicetemplateManager.currentTemplate.id != hosttemplateId){
 						self.Ajaxloader.hide();
 
 						return;
 					}
 
-					if(self.hosttemplateManager.isInitializedOnce){ // After it was initialized once, replace the values
+					if(self.servicetemplateManager.isInitializedOnce){ // After it was initialized once, replace the values
 						// Update the interface input self.fieldMap out of the hosttemplate JSON data
 						for(var key in self.fieldMap){
 							//modifying values of sliders
@@ -686,6 +697,13 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 							selectedContactgroups.push(jsonContactgroup.id);
 						});
 						self.updateSelectbox({value: selectedContactgroups, selector: '#ServiceContactgroup', prefix: 'false'});
+
+                        //Servicegroups
+                        var selectedServicegroups = [];
+                        $(servicetemplate.Servicegroup).each(function(intIndex, jsonServicegroup){
+                            selectedServicegroups.push(jsonServicegroup.id);
+                        });
+                        self.updateSelectbox({value: selectedServicegroups, selector: '#ServiceServicegroup', prefix: 'false'});
 					}
 
 					// Loading command arguments of the template
@@ -694,8 +712,8 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 
 					// Loading the macros of the hosttemplate
 					self.CustomVariables.loadMacroFromTemplate(
-							self.hosttemplateManager.currentTemplate.id,
-							self.hosttemplateManager._activateOrUpdateMacroRestore
+							self.servicetemplateManager.currentTemplate.id,
+							self.servicetemplateManager._activateOrUpdateMacroRestore
 						);
 
 					self.Ajaxloader.hide();
@@ -704,11 +722,11 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				};
 
 				var onChangeHosttemplate = function(){
-					self.hosttemplateManager.isRestoreFunctionalityInitialized = true;
+					self.servicetemplateManager.isRestoreFunctionalityInitialized = true;
 					var templateId = parseInt($(this).val(), 10);
 					if(templateId <= 0){
-						self.hosttemplateManager.currentTemplate = {};
-						self.hosttemplateManager.deactivateRestoreFunctionality();
+						self.servicetemplateManager.currentTemplate = {};
+						self.servicetemplateManager.deactivateRestoreFunctionality();
 
 						return false;
 					}
@@ -730,7 +748,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 				if(parseInt($selectBoxHosttemplate.val(), 10) > 0){
 					onChangeHosttemplate.call($selectBoxHosttemplate);
 				}else{
-					self.hosttemplateManager.isInitializedOnce = true;
+					self.servicetemplateManager.isInitializedOnce = true;
 				}
 
 				// Bind change event on the hosttemplate selectbox and load the template settings.
@@ -745,7 +763,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 			}
 		};
 
-		self.hosttemplateManager.init();
+		self.servicetemplateManager.init();
 	},
 
 	checkFlapDetection: function(){

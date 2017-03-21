@@ -110,7 +110,7 @@
             <!-- Button Upload icons set -->
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#UploadIconsModal"
                     id="icons-upload-btn">
-                <?php echo __('Upload Icons set'); ?>
+                <?php echo __('Upload Items set'); ?>
             </button>
 
             <!-- Button Options -->
@@ -131,6 +131,8 @@
                                 id="UploadLabel"><?php echo __('Upload your Map Background'); ?></h4>
                         </div>
                         <div class="modal-body">
+                            <div class="alert alert-danger" id="backgrounds-upload-error" style="display: none"></div>
+                            <div class="alert alert-success" id="backgrounds-upload-success" style="display: none"></div>
                             <div class="row">
                                 <div class="background-dropzone dropzone"
                                      action="/map_module/backgroundUploads/upload/">
