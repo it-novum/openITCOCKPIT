@@ -29,7 +29,7 @@
             <i class="fa fa-link fa-fw "></i>
             <?php echo __('System'); ?>
             <span>>
-                <?php echo __('Containers'); ?>
+                <?php echo __('Nodes'); ?>
             </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -85,7 +85,7 @@
                     <div class="jarviswidget" id="wid-id-0">
                         <header>
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-                            <h2><?php echo __('Add new container'); ?>:</h2>
+                            <h2><?php echo __('Add new node'); ?>:</h2>
                         </header>
                         <div>
                             <div class="widget-body">
