@@ -810,10 +810,6 @@ class Host extends AppModel {
                 }
             }
         }
-
-        debug($this->additionalData);
-        //debug($this->validate);
-
         return parent::beforeValidate($options);
     }
 
