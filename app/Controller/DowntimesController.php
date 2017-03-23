@@ -58,15 +58,15 @@ class DowntimesController extends AppController
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
 
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
         $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         $this->Paginator->settings['joins'] = [
 
         ];
@@ -95,15 +95,15 @@ class DowntimesController extends AppController
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
 
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
         $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
 
         //--force --doit --yes-i-know-what-i-do
