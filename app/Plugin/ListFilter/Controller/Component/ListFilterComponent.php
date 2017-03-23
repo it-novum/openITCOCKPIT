@@ -112,8 +112,18 @@ class ListFilterComponent extends Component
                 foreach ($this->Controller->passedArgs as $arg => $value) {
                     if (substr($arg, 0, 7) == 'Filter.') {
                         unset($betweenDate);
-                        list($filter, $model, $field) = explode('.', $arg);
 
+                        //list() is dangerous in php7: http://php.net/manual/de/function.list.php
+                        $list = explode('.', $arg);
+                        if(isset($list[0])){
+                            $filter = $list[0];
+                        }
+                        if(isset($list[1])){
+                            $model = $list[1];
+                        }
+                        if(isset($list[2])){
+                            $field = $list[2];
+                        }
                         if (substr($arg, -1) == ']') {
                             if (preg_match('/^(.*)\[\d+\]$/', $arg, $matches)) {
                                 $fieldArg = $matches[1];
@@ -199,6 +209,7 @@ class ListFilterComponent extends Component
                 $this->Controller->paginate = Hash::merge($this->Controller->paginate, [
                     'conditions' => Set::merge($conditions, $filters),
                 ]);
+
             }
 
             foreach ($this->listFilters['fields'] as $field => $options) {

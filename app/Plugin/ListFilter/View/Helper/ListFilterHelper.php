@@ -250,7 +250,9 @@ class ListFilterHelper extends AppHelper
         $ret .= "<div class='pull-left'><h3>{$title}</h3></div>";
         $ret .= "<div class='pull-right'>";
         if ($showButton) {
-            $ret .= $this->Html->link($filterActive ? __('list_filter.close') : __('list_filter.open'), 'javascript:', ['class' => 'btn btn-xs btn-primary toggle']);
+            $ret .= $this->Html->link($filterActive ? __('list_filter.close') : __('list_filter.open'), 'javascript:', [
+                'class' => 'btn btn-xs btn-primary toggle'
+            ]);
         }
         $ret .= "</div>";
         $ret .= "<hr style='clear:both'><div class='content'>";
@@ -313,7 +315,7 @@ class ListFilterHelper extends AppHelper
 
     public function resetLink($title = null, $options = [], $isPlugin = false)
     {
-        $_options = ['class' => 'btn-default btn-mini', 'icon' => ''];
+        $_options = ['class' => 'btn-default btn-mini', 'icon' => '', 'url' => ''];
         $options = Hash::merge($_options, $options);
         if (!$title) {
             $title = __('Reset filter');
@@ -339,7 +341,12 @@ class ListFilterHelper extends AppHelper
         }
 
         $params['action'] = $this->params->action;
-        if ($params['action'] == 'index') {
+        if($options['url']){
+            return $this->Html->link($title, $options['url'], ['class' => 'btn '.$options['class'], 'icon' => $options['icon']]);
+        }
+        if(!empty($this->params['pass']) && $params['action'] == 'index'){
+            return $this->Html->link($title, $redirectUrl.'/index/'.implode('/', $this->params['pass']), ['class' => 'btn '.$options['class'], 'icon' => $options['icon']]);
+        }elseif ($params['action'] == 'index') {
             return $this->Html->link($title, $redirectUrl.'/index', ['class' => 'btn '.$options['class'], 'icon' => $options['icon']]);
         }
 

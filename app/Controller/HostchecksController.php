@@ -39,7 +39,7 @@ class HostchecksController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Servicecheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Hostcheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
         ],
     ];
@@ -57,6 +57,7 @@ class HostchecksController extends AppController
                 'Host.name',
                 'Host.address',
                 'Host.host_url',
+                'Host.container_id'
             ],
             'conditions' => [
                 'Host.id' => $id,
@@ -86,8 +87,8 @@ class HostchecksController extends AppController
 
         $requestSettings = $this->Hostcheck->listSettings($this->request, $host['Host']['uuid']);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }

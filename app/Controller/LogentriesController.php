@@ -59,8 +59,8 @@ class LogentriesController extends AppController
         if (!isset($this->Paginator->settings['order'])) {
             $this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
         }
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
@@ -72,7 +72,6 @@ class LogentriesController extends AppController
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
 
         $paginatorLimit = $this->Paginator->settings['limit'];
-
 
         $this->Uuid->buildCache();
         $this->set('uuidCache', $this->Uuid->getCache());

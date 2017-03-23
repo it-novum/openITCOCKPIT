@@ -125,8 +125,8 @@ class AcknowledgementsController extends AppController
 
         $requestSettings = $this->Acknowledged->listSettingsService($this->request, $service['Service']['uuid']);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
@@ -187,8 +187,8 @@ class AcknowledgementsController extends AppController
 
         $requestSettings = $this->Acknowledged->listSettingsHost($this->request, $host['Host']['uuid']);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
