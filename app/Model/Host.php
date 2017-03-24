@@ -812,7 +812,19 @@ class Host extends AppModel {
         }
         return parent::beforeValidate($options);
     }
-
+/*
+    public function beforeSave(){
+        $this->bindModel([
+            'hasOne' => [
+                'Maximoconfiguration' => [
+                    'className' => 'MaximoModule.Maximoconfiguration',
+                    'foreignKey' => 'element_id'
+                ]
+            ]
+        ]);
+        return true;
+    }
+*/
     /**
      * @param int[] $containerIds May be empty if the option `hasRootPrivileges` is true.
      * @param string $type

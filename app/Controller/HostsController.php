@@ -1317,14 +1317,8 @@ class HostsController extends AppController {
             }
 
 
-//debug($data_to_save);
-//debug($this->request->data);
             $this->Host->temporaryRequest = $this->request->data;
-         /*   if (!$this->Host->validates($this->request->data)) {
-                //debug($this->Host->validationErrors);
-            }
-*/
-            //debug($this->additionalData);
+
             $additionalData = [
                 'Maximoconfiguration' => [
                     'impact_level' => '4',
@@ -1339,18 +1333,7 @@ class HostsController extends AppController {
             $data_to_save['Host'] = array_merge($data_to_save['Host'], $additionalData['Maximoconfiguration']);
             //this wont. May we need it to store the data
             $data_to_save = array_merge($data_to_save, $additionalData);
-            //debug($data_to_save);
-            //$validate = true;
-            //no additional data to save so we need to let the saveAll validate
-           /* if (!empty($this->additionalData)) {
-                $validate = false;
-            }/*
-
-//debug($this->Host->validate);
            // $test1 = $data_to_save;
-//debug($this->Host->validate);
-//$this->Maximoconfiguration = ClassRegistry::init('MaximoModule.Maximoconfiguration');
-//debug($this->Maximoconfiguration->validate);
          //   debug($test1);
      /*       if($this->Host->validateAssociated($test1)){
                 debug('validated assoc successful');
@@ -1359,24 +1342,16 @@ class HostsController extends AppController {
                 debug($this->Host->validationErrors);
                 debug('validation assoc failed');
             }*/
-//debug($data_to_save);
-            $this->Host->bindModel([
+
+            //we need to bind that model otherwise the data could not be saved
+         /*   $this->Host->bindModel([
                 'hasOne' => [
                     'Maximoconfiguration' => [
                         'className' => 'MaximoModule.Maximoconfiguration',
                         'foreignKey' => 'element_id'
                     ]
                 ]
-            ]);
-            /*debug($this->Host->find('all',[
-                'conditions' => [
-                    'Host.id' => 1
-                ]
-            ]));*/
-          //  die('ende');
-            //$test = $this->Host->saveAll($data_to_save/*, ['validate' => 'only']*/);
-            //debug($test);
-            //debug($this->Host->validationErrors);
+            ]);*/
             //die('ende');
             if ($this->Host->saveAll($data_to_save/*, ['validate' => 'only']*/)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -1407,7 +1382,7 @@ class HostsController extends AppController {
                 } else {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
-debug($this->Host->validationErrors);
+//debug($this->Host->validationErrors);
                 //Refil data that was loaded by ajax due to selected container id
                 if ($this->Container->exists($this->request->data('Host.container_id'))) {
                     $container_id = $this->request->data('Host.container_id');
