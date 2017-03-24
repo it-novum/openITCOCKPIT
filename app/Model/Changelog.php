@@ -133,6 +133,7 @@ class Changelog extends AppModel
         return $_objectDefaults;
     }
 
+    // use $user_id = 0 to specify cron task 
     public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_id, $user_id, $name, $requestData, $currentSavedData = [])
     {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];
