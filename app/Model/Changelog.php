@@ -117,8 +117,8 @@ class Changelog extends AppModel
                 'CheckCommand'                => '{(id|name)}',
                 'Servicegroup'                => '{n}.{(id|name)}',
                 'Customvariable'              => '{n}.{(id|name|value)}',
-                'Servicecommandargumentvalue' => '{n}.{(id|value)}',
-                'Serviceeventcommandargumentvalue' => '{n}.{(id|value)}',
+                'Servicecommandargumentvalue'     => '{n}.{(id|value)}',
+                'Serviceeventcommandargumentvalue'=> '{n}.{(id|value)}',
                 'Contact'                     => '{n}.{(id|name)}',
                 'Contactgroup'                => '{n}.{(id|name)}',
             ],
@@ -142,10 +142,10 @@ class Changelog extends AppModel
                     if (is_array($fields)) {
                         $fields = $fields['fields'];
                     }
-                    if (!is_null(Set::classicExtract($requestData, $key.'.'.$fields))) {
+                    if (!is_null($currentData = Set::classicExtract($requestData, $key.'.'.$fields))) {
                         $changes[] = [
                             $key => [
-                                'current_data' => Set::classicExtract($requestData, $key.'.'.$fields),
+                                'current_data' => $currentData,
                             ],
                         ];
                     }

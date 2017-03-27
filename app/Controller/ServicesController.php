@@ -1379,7 +1379,10 @@ class ServicesController extends AppController
                             'Service.tags',
                             'Service.service_url',
                             'Service.is_volatile',
-                            'Service.service_type'
+                            'Service.service_type',
+                            'Service.own_contacts',
+                            'Service.own_contactgroups',
+                            'Service.own_customvariables',
                         ],
                         'contain' => [
                             'CheckPeriod' =>[
@@ -1523,12 +1526,14 @@ class ServicesController extends AppController
                                     ],
                                     'Servicetemplatecommandargumentvalue' => [
                                         'fields' => [
+                                            'id',
                                             'commandargument_id',
                                             'value',
                                         ],
                                     ],
                                     'Servicetemplateeventcommandargumentvalue' => [
                                         'fields' => [
+                                            'id',
                                             'commandargument_id',
                                             'value',
                                         ],
@@ -1551,15 +1556,19 @@ class ServicesController extends AppController
 
                     $service['Service']['uuid'] = UUID::v4();
                     $service['Service']['host_id'] = $host['Host']['id'];
-//debug($service);
-//debug($servicetemplate);
-//debug(Hash::merge($servicetemplate, Hash::filter($service)));
-debug($this->Service->diffWithTemplateTest($service, $servicetemplate));
-//debug($servicetemplate);
-return;
+                    $service['Host'] = ['id' => $host['Host']['id'], 'name' => $host['Host']['name']];
+                    $service['Service']['Contact'] = $service['Contact'];
+                    $service['Service']['Contactgroup'] = $service['Contactgroup'];
+                    $service['Service']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
+                    $service['Contact']['Contact'] = $service['Contact'];
+                    $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
+                    $service['Servicegroup']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
+
+                    $data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($service, $servicetemplate), $service, 'add');
+
                     $this->Service->create();
-                    if($this->Service->saveAll(Hash::filter($service))){
-                        $serviceDataAfterSave = $this->Service->prepareForView($this->Service->id);
+                    if( $this->Service->saveAll($data_to_save)){
+                        $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $this->params['action'],
                             $this->params['controller'],
@@ -1567,7 +1576,7 @@ return;
                             OBJECT_SERVICE,
                             $host['Host']['container_id'],
                             $userId,
-                            $serviceDataAfterSave['Service']['name'],
+                            $host['Host']['name'].'/'.$serviceDataAfterSave['Service']['name'],
                             $serviceDataAfterSave
                         );
                         if ($changelog_data) {
@@ -1577,7 +1586,7 @@ return;
 
                 }
                 $this->setFlash(__('Copied successfully'));
-//               $this->redirect(['action' => 'serviceList', $host['Host']['id']]);
+                $this->redirect(['action' => 'serviceList', $host['Host']['id']]);
             } else {
                 $this->setFlash(__('Target host does not exist'), false);
             }
