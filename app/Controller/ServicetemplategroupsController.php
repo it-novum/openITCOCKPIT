@@ -353,6 +353,7 @@ class ServicetemplategroupsController extends AppController
         }
 
         $userId = $this->Auth->user('id');
+        $hostIds = [];
         $servicetemplategroup = $this->Servicetemplategroup->find('first', [
             'contain'    => [
                 'Container',
@@ -379,6 +380,11 @@ class ServicetemplategroupsController extends AppController
                         'Host.id',
                     ],
                 ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id'
+                    ]
+                ],
             ],
             'order'      => [
                 'Container.name' => 'asc',
@@ -401,9 +407,38 @@ class ServicetemplategroupsController extends AppController
             $this->redirect(['action' => 'index']);
         }
 
+        if(!empty($hostgroup['Host'])){
+            $hostIds = Hash::Extract($hostgroup['Host'], '{n}.id');
+        }
+        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
+        if(!empty($hostTemlateIds)){
+            $hostsByHosttemplateIds = $this->Host->find('all', [
+                'recursive' => -1,
+                'contain' => [
+                    'Hostgroup',
+                    'Hosttemplate' => [
+                        'Hostgroup' => [
+                            'conditions' => [
+                                'Hostgroup.id' => $hostgroup['Hostgroup']['id']
+                            ]
+                        ]
+                    ]
+                ],
+                'conditions' => [
+                    'Host.hosttemplate_id' => $hostTemlateIds,
+                    'NOT' => [
+                        'Host.id' => $hostIds
+                    ]
+                ]
+            ]);
+            foreach($hostsByHosttemplateIds as $host){
+                if(empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup']) && !in_array($host['Host']['id'], $hostIds, true)){
+                    $hostIds[] = $host['Host']['id'];
+                }
+            }
+        }
         $servicetemplateCache = [];
-
-        foreach ($hostgroup['Host'] as $_host) {
+        foreach ($hostIds as $_host) {
             $host = $this->Host->find('first', [
                 'contain'    => [
                     'Service' => [
@@ -413,7 +448,7 @@ class ServicetemplategroupsController extends AppController
                     ],
                 ],
                 'conditions' => [
-                    'Host.id'       => $_host['id'],
+                    'Host.id'       => $_host,
                     'Host.disabled' => 0,
                 ],
                 'fields'     => [
@@ -481,6 +516,7 @@ class ServicetemplategroupsController extends AppController
     {
         $this->loadModel('Hostgroup');
         $this->loadModel('Host');
+        $excludeHostIds = [];
         if (!$this->Hostgroup->exists($id_hostgroup)) {
             throw new NotFoundException(__('Invalid hostgroup'));
         }
@@ -495,9 +531,49 @@ class ServicetemplategroupsController extends AppController
         $hosts = [];
         foreach ($hostgroup['Host'] as $host) {
             //Find host + Services
-            $hosts[] = $this->Host->findById($host['id']);
+            $hosts[] = $this->Host->find('first',[
+                'recursive' => -1,
+                'contain' => [
+                    'Service' => [
+                        'Servicetemplate'
+                    ]
+                ],
+                'conditions' => [
+                    'Host.id' => $host['id']
+                ]
+            ]);
+            $excludeHostIds[] = $host['id'];
         }
-
+        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
+        if(!empty($hostTemlateIds)){
+            $hostsByHosttemplateIds = $this->Host->find('all', [
+                'recursive' => -1,
+                'contain' => [
+                    'Service' => [
+                        'Servicetemplate'
+                    ],
+                    'Hostgroup',
+                    'Hosttemplate' => [
+                        'Hostgroup' => [
+                            'conditions' => [
+                                'Hostgroup.id' => $id_hostgroup
+                            ]
+                        ]
+                    ]
+                ],
+                'conditions' => [
+                    'Host.hosttemplate_id' => $hostTemlateIds,
+                    'NOT' => [
+                        'Host.id' => $excludeHostIds
+                    ]
+                ]
+            ]);
+            foreach($hostsByHosttemplateIds as $host){
+                if(empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup'])){
+                    $hosts[] = $host;
+                }
+            }
+        }
         $this->set(compact(['servicetemplategroup', 'hosts']));
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }

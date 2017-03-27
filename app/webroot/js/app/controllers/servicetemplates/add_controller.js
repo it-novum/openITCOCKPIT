@@ -25,6 +25,7 @@
 App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 	$contacts: null,
 	$contactgroups: null,
+    $servicegroups: null,
 
 	components: ['Highlight', 'Ajaxloader', 'CustomVariables', 'ContainerSelectbox'],
 
@@ -45,7 +46,8 @@ App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 				timeperiods: '#ServicetemplateNotifyPeriodId',
 				checkperiods: '#ServicetemplateCheckPeriodId',
 				contacts: '#ServicetemplateContact',
-				contactgroups: '#ServicetemplateContactgroup'
+				contactgroups: '#ServicetemplateContactgroup',
+                servicegroups: '#ServicetemplateServicegroup'
 			},
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
 			dataPlaceholder: self.getVar('data_placeholder')
@@ -58,6 +60,7 @@ App.Controllers.ServicetemplatesAddController = Frontend.AppController.extend({
 
 		this.$contacts = $('#ContactContact');
 		this.$contactgroups = $('#ContactgroupContactgroup');
+        this.$servicegroups = $('#ServicegroupServicegroup');
 
 		// Flapdetection checkbox control
 		$('input[type="checkbox"]#ServicetemplateFlapDetectionEnabled').change(function(){

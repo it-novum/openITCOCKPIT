@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use adLDAP\adLDAP;
+use Model\Adldap;
 
 class LdapComponent extends Component
 {
@@ -36,7 +36,7 @@ class LdapComponent extends Component
         parent::__construct($collection, $settings);
 
         //Load external lib
-        require_once APP.'Vendor'.DS.'adLDAP'.DS.'lib'.DS.'adLDAP'.DS.'adLDAP.php';
+        require_once APP.'Model'.DS.'Adldap.php';
 
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
@@ -61,7 +61,8 @@ class LdapComponent extends Component
         }
 
         try {
-            $this->adldap = new adLDAP([
+            $this->adldap = new Adldap([
+                'person_filter'      => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
                 'base_dn'            => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
                 'domain_controllers' => [$this->_systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'ad_port'            => $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -88,6 +89,10 @@ class LdapComponent extends Component
 
     public function userInfo($username)
     {
+        $allUsers = $this->findAllUser(true);
+        return isset($allUsers[$username]) ? $allUsers[$username] : null;
+
+        /*
         $fields = ['samaccountname', 'mail', 'memberof', 'department', 'displayname', 'telephonenumber', 'primarygroupid', 'objectsid', 'sn', 'givenname'];
         $ldapResult = $this->adldap->user()->info($username, $fields);
         //pr($ldapResult); //use pr() becasue cakes debug() will not work on ldap results!!!
@@ -103,7 +108,7 @@ class LdapComponent extends Component
             unset($return['objectsid']);
         }
 
-        return $return;
+        return $return; */
     }
 
     public function userExists($username)
@@ -123,8 +128,36 @@ class LdapComponent extends Component
         return $result;
     }
 
-    public function findAllUser()
+    public function findAllUser($allData = false)
     {
-        return $this->adldap->user()->all();
+        $returnUsers = [];
+        $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+        $perPage = 900;
+        $currentPage = 0;
+        $makeRequest = true;
+        while($makeRequest){
+            $ldapUsers = $this->adldap->search()->select(['samaccountname', 'mail', 'sn', 'givenname', 'displayname'])->paginate($perPage, $currentPage);
+            foreach ($ldapUsers[1] as $ldapUser) {
+                $ableToImport = true;
+                foreach ($requiredFields as $requiredField) {
+                    if (!isset($ldapUser[$requiredField])) {
+                        $ableToImport = false;
+                    }
+                }
+
+                if ($ableToImport) {
+                    if($allData){
+                        $returnUsers[$ldapUser['samaccountname']] = $ldapUser;
+                    }else {
+                        $returnUsers[$ldapUser['samaccountname']] = (isset($ldapUser['displayname']) ? $ldapUser['displayname'] : '') . ' (' . $ldapUser['samaccountname'] . ')';
+                    }
+                }
+            }
+            $currentPage++;
+            if($currentPage >= $ldapUsers[0])
+                break;
+        }
+
+        return $returnUsers;
     }
 }

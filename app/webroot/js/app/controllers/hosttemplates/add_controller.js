@@ -49,7 +49,8 @@ App.Controllers.HosttemplatesAddController = Frontend.AppController.extend({
 				timeperiods: '#HosttemplateNotifyPeriodId',
 				checkperiods: '#HosttemplateCheckPeriodId',
 				contacts: '#HosttemplateContact',
-				contactgroups: '#HosttemplateContactgroup'
+				contactgroups: '#HosttemplateContactgroup',
+                hostgroups: '#HosttemplateHostgroup'
 			},
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
 			dataPlaceholder: self.getVar('data_placeholder')

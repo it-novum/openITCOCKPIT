@@ -140,6 +140,17 @@ $notification_settings = [
                                 'label'     => ['text' => __('Description'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
+                            echo $this->Form->input('Hosttemplate.Hostgroup', [
+                                'options'          => $_hostgroups,
+                                'data-placeholder' => __('Please select...'),
+                                'multiple'         => true,
+                                'class'            => 'chosen',
+                                'style'            => 'width:100%;',
+                                'label'            => ['text' => __('Hostgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'selected'         => $this->request->data['Hostgroup'],
+                                'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                             ]);
+
                             echo $this->Form->input('notes', [
                                 'value'     => $hosttemplate['Hosttemplate']['notes'],
                                 'label'     => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],

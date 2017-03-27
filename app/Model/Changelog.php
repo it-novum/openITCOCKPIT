@@ -66,6 +66,7 @@ class Changelog extends AppModel
                 'Hostgroup' => '{(description|hostgroup_url)}',
                 'Container' => '{(name)}',
                 'Host'      => '{n}.{(id|name)}',
+                'Hosttemplate'      => '{n}.{(id|name)}',
             ],
             'hosttemplate'    => [
                 'Hosttemplate'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
@@ -77,6 +78,7 @@ class Changelog extends AppModel
                 //			'Hosttemplatecommandargumentvalue' => ['prepareFields' => ['{n}.{(id|name|value)}', 'Commandargument.{(human_name)}'], 'fields' => '{n}.{(id|name|human_name)}'],
                 'Contact'                          => '{n}.{(id|name)}',
                 'Contactgroup'                     => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Hostgroup'                        => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicetemplate' => [
                 'Servicetemplate'                          => '{(template_name|name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_enabled|notes|priority|tags|service_url|active_checks_enabled|process_performance_data|is_volatile|freshness_checks_enabled|freshness_threshold|flap_detection_on_).*}',
@@ -89,11 +91,13 @@ class Changelog extends AppModel
                 'Servicetemplatecommandargumentvalue'      => '{n}.{(id|value)}',
                 'Contact'                                  => '{n}.{(id|name)}',
                 'Contactgroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
+                'Servicegroup'                             => ['prepareFields' => ['{n}.{(id)}', '{n}.Container.{(name)}'], 'fields' => '{n}.{(id|name)}'],
             ],
             'servicegroup'    => [
-                'Servicegroup' => '{(description|servicegroup_url)}',
-                'Container'    => '{(name)}',
-                'Service'      => '{n}.{(id|name)}',
+                'Servicegroup'      => '{(description|servicegroup_url)}',
+                'Container'         => '{(name)}',
+                'Service'           => '{n}.{(id|name)}',
+                'Servicetemplate'   => '{n}.{(id|name)}',
             ],
             'host'            => [
                 'Host'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
@@ -163,8 +167,8 @@ class Changelog extends AppModel
                 ]);
                 break;
             case 'edit':
-                $tmp = [];
                 foreach ($compareRules[strtolower(Inflector::singularize($controller))] as $key => $fields) {
+                    $tmp = [];
                     if (is_array($fields)) {
                         foreach ($fields['prepareFields'] as $field) {
                             $tmp = Hash::merge($tmp, Set::classicExtract($currentSavedData, $key.'.'.$field));
@@ -254,7 +258,7 @@ class Changelog extends AppModel
                         $flag |= ($new_value == $old_value);
                         if ($flag) break;
                     }
-                    if (!$flag && !in_array($old_value, $diff)) $diff[$field_key]['before'][$old_value_key] = $old_value;
+                    if (!$flag && !in_array($old_value, $diff, true)) $diff[$field_key]['before'][$old_value_key] = $old_value;
                 }
                 break;
         }

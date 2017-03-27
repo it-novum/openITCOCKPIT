@@ -25,13 +25,12 @@
 
 
 /**
- * @property Contact    $Contact
- * @property Container  $Container
- * @property Command    $Command
+ * @property Contact $Contact
+ * @property Container $Container
+ * @property Command $Command
  * @property Timeperiod $Timeperiod
  */
-class ContactsController extends AppController
-{
+class ContactsController extends AppController {
     public $uses = [
         'Contact',
         'Container',
@@ -50,45 +49,44 @@ class ContactsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Contact.name'  => [
-                    'label'      => 'Name',
+                'Contact.name' => [
+                    'label' => 'Name',
                     'searchType' => 'wildcard',
                 ],
                 'Contact.email' => [
-                    'label'      => 'Email',
+                    'label' => 'Email',
                     'searchType' => 'wildcard',
                 ],
                 'Contact.phone' => [
-                    'label'      => 'Pager',
+                    'label' => 'Pager',
                     'searchType' => 'wildcard',
                 ],
             ],
         ],
     ];
 
-    function index()
-    {
+    function index(){
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $this->Contact->unbindModel([
                 'hasAndBelongsToMany' => ['HostCommands', 'ServiceCommands', 'Contactgroup'],
-                'belongsTo'           => ['HostTimeperiod', 'ServiceTimeperiod'],
+                'belongsTo' => ['HostTimeperiod', 'ServiceTimeperiod'],
             ]
         );
         $options = [
             //'recursive' => -1,
-            'joins'      => [
+            'joins' => [
                 [
-                    'table'      => 'contacts_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'ContactsToContainer',
+                    'table' => 'contacts_to_containers',
+                    'type' => 'INNER',
+                    'alias' => 'ContactsToContainer',
                     'conditions' => [
                         'ContactsToContainer.contact_id = Contact.id',
                     ],
                 ],
                 [
-                    'table'      => 'containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'Container',
+                    'table' => 'containers',
+                    'type' => 'INNER',
+                    'alias' => 'Container',
                     'conditions' => [
                         'Container.id = ContactsToContainer.container_id',
                         'Container.containertype_id NOT' => CT_CONTACTGROUP,
@@ -98,8 +96,8 @@ class ContactsController extends AppController
             'conditions' => [
                 'ContactsToContainer.container_id' => $this->MY_RIGHTS,
             ],
-            'order'      => ['Contact.name' => 'asc'],
-            'group'      => ['Contact.id'],
+            'order' => ['Contact.name' => 'asc'],
+            'group' => ['Contact.id'],
         ];
 
         $query = Hash::merge($this->Paginator->settings, $options);
@@ -121,8 +119,9 @@ class ContactsController extends AppController
 
             $all_contacts[$key]['allowEdit'] = true;
             if ($this->hasRootPrivileges === false) {
-                if (!empty(array_diff($contactsWithContainers[$contact['Contact']['id']], $this->getWriteContainers()))) {
-                    $all_contacts[$key]['allowEdit'] = false;
+                $all_contacts[$key]['allowEdit'] = false;
+                if (!empty(array_intersect($contactsWithContainers[$contact['Contact']['id']], $this->getWriteContainers()))) {
+                    $all_contacts[$key]['allowEdit'] = true;
                 }
             }
 
@@ -138,8 +137,7 @@ class ContactsController extends AppController
         }
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null){
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -159,26 +157,21 @@ class ContactsController extends AppController
         $this->set('_serialize', ['contact']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null){
         $userId = $this->Auth->user('id');
         if (!$this->Contact->exists($id)) {
             throw new NotFoundException(__('Invalid contact'));
         }
-        /*fixme for permissions*/
 
         $contact = $this->Contact->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-            $this->render403();
 
-            return;
+        if ($this->hasRootPrivileges === false) {
+            if (empty(array_intersect(Hash::extract($contact, 'Container.{n}.id'), $this->getWriteContainers()))) {
+                $this->render403();
+
+            }
         }
-
-        if (!empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-            $this->render403();
-
-            return;
-        }
+        $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         $notification_commands = $this->Command->notificationCommands('list');
@@ -192,12 +185,12 @@ class ContactsController extends AppController
             }
 
             $ext_data_for_changelog = [
-                'HostTimeperiod'    => [
-                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
+                'HostTimeperiod' => [
+                    'id' => $this->request->data['Contact']['host_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
                 ],
                 'ServiceTimeperiod' => [
-                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
+                    'id' => $this->request->data['Contact']['service_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
                 ],
             ];
@@ -205,7 +198,7 @@ class ContactsController extends AppController
             if (isset($this->request->data['Contact']['HostCommands']) && is_array($this->request->data['Contact']['HostCommands'])) {
                 foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
                     $ext_data_for_changelog['HostCommands'][] = [
-                        'id'   => $command_id,
+                        'id' => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -213,7 +206,7 @@ class ContactsController extends AppController
             if (isset($this->request->data['Contact']['ServiceCommands']) && is_array($this->request->data['Contact']['ServiceCommands'])) {
                 foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
                     $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id'   => $command_id,
+                        'id' => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -262,8 +255,7 @@ class ContactsController extends AppController
         $this->set('_serialize', ['contact', 'notification_commands', 'timeperiods', '_timeperiods']);
     }
 
-    public function add()
-    {
+    public function add(){
         $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
@@ -292,12 +284,12 @@ class ContactsController extends AppController
 
             $this->Contact->set($this->request->data);
             $ext_data_for_changelog = [
-                'HostTimeperiod'    => [
-                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
+                'HostTimeperiod' => [
+                    'id' => $this->request->data['Contact']['host_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
                 ],
                 'ServiceTimeperiod' => [
-                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
+                    'id' => $this->request->data['Contact']['service_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
                 ],
             ];
@@ -305,7 +297,7 @@ class ContactsController extends AppController
             if (is_array($this->request->data['Contact']['HostCommands'])) {
                 foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
                     $ext_data_for_changelog['HostCommands'][] = [
-                        'id'   => $command_id,
+                        'id' => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -313,7 +305,7 @@ class ContactsController extends AppController
             if (is_array($this->request->data['Contact']['ServiceCommands'])) {
                 foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
                     $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id'   => $command_id,
+                        'id' => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -363,54 +355,30 @@ class ContactsController extends AppController
 
     }
 
-    public function addFromLdap()
-    {
+    public function addFromLdap(){
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Ldap->userExists($this->request->data('Ldap.samaccountname'))) {
-                $ldapUser = $this->Ldap->findUser($this->request->data('Ldap.samaccountname'));
+            $ldapUser = $this->Ldap->userInfo($this->request->data('Ldap.samaccountname'));
+            if(!is_null($ldapUser)) {
                 $this->redirect([
-                    'controller'     => 'contacts',
-                    'action'         => 'add',
-                    'ldap'           => 1,
-                    'email'          => $ldapUser['mail'],
+                    'controller' => 'contacts',
+                    'action' => 'add',
+                    'ldap' => 1,
+                    'email' => $ldapUser['mail'],
                     'samaccountname' => $ldapUser['samaccountname'],
                     //Fixing usernames like jon.doe
-                    'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+                    'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
                 ]);
             }
             $this->setFlash(__('Contact does not exists in LDAP'), false);
         }
 
-        $users = [];
-        $requiredFilds = ['samaccountname', 'mail', 'sn', 'givenname'];
-
-
-        $allLdapUsers = $this->Ldap->findAllUser();
-        foreach ($allLdapUsers as $samAccountName) {
-            $ldapUser = $this->Ldap->userInfo($samAccountName);
-            $ableToImport = true;
-            foreach ($requiredFilds as $requiredFild) {
-                if (!isset($ldapUser[$requiredFild])) {
-                    $ableToImport = false;
-                }
-            }
-
-            if ($ableToImport === true) {
-                $users[] = $ldapUser;
-            }
-        }
-
-        $usersForSelect = [];
-        foreach ($users as $user) {
-            $usersForSelect[$user['samaccountname']] = $user['displayname'].' ('.$user['samaccountname'].')';
-        }
-
+        $usersForSelect = $this->Ldap->findAllUser();
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+
         $this->set(compact(['usersForSelect', 'systemsettings']));
     }
 
-    protected function __allowDelete($contact)
-    {
+    protected function __allowDelete($contact){
         if (is_numeric($contact)) {
             $contactId = $contact;
         } else {
@@ -441,8 +409,7 @@ class ContactsController extends AppController
         return true;
     }
 
-    public function delete($id)
-    {
+    public function delete($id){
         $userId = $this->Auth->user('id');
         $contact = $this->Contact->findById($id);
 
@@ -486,8 +453,7 @@ class ContactsController extends AppController
         }
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null){
         $userId = $this->Auth->user('id');
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -536,8 +502,7 @@ class ContactsController extends AppController
         $this->set(compact(['contactsToDelete', 'contactsCanotDelete', 'count']));
     }
 
-    public function loadTimeperiods()
-    {
+    public function loadTimeperiods(){
         $this->allowOnlyAjaxRequests();
 
         $timePeriods = [];

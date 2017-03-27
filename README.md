@@ -54,7 +54,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-naemon,-statusengine-naemon,-npcd,-message}
+apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
@@ -77,9 +77,18 @@ echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-nagios,-ndoutils,-npcd,-message}
+apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
+
+# Register openitcockpit community version:
+You can register your openITCOCKPIT installation to get an access to free community modules.
+
+**That's how it works**
+
+Login to the webinterface of openITCOCKPIT and navigate to Administration -> Registration, enter the community license key 
+`0dc0d951-e34e-43d0-a5a5-a690738e6a49` and click Register. 
+After successful registration you can install the free community modules at Administration -> Package Manager
 
 # Features
 * Easy to use web interface

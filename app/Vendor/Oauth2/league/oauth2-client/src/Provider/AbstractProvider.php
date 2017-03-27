@@ -645,7 +645,9 @@ abstract class AbstractProvider
                 $response = $this->getHttpClient()->send($request);
             }
         } catch (BadResponseException $e) {
-		    return [false, $response = $e->getMessage()];
+            $errorMessage = str_replace($this->clientId, '***', $e->getMessage());
+            $errorMessage = str_replace($this->clientSecret, '***', $errorMessage);
+		    return [false, $errorMessage];
         }
         return [true, $response];
     }

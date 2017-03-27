@@ -46,7 +46,8 @@ class HosttemplatesController extends AppController {
         'Customvariable',
         'Commandargument',
         'Hosttemplatecommandargumentvalue',
-        'Hostcommandargumentvalue'
+        'Hostcommandargumentvalue',
+        'Hostgroup'
     ];
     public $layout = 'Admin.default';
 
@@ -168,6 +169,7 @@ class HosttemplatesController extends AppController {
             ],
             'contain' => [
                 'Contactgroup' => ['Container'],
+                'Hostgroup' => ['Container'],
                 'CheckCommand',
                 'Container',
                 'Customvariable',
@@ -177,7 +179,6 @@ class HosttemplatesController extends AppController {
                 'Hosttemplatecommandargumentvalue' => ['Commandargument'],
             ],
         ]);
-
         $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'))) {
@@ -199,6 +200,7 @@ class HosttemplatesController extends AppController {
         $contactgroups = $this->Contactgroup->findList();
         $timeperiods = $this->Timeperiod->find('list');
         $commands = $this->Command->hostCommands('list');
+        $hostgroups = $this->Hostgroup->find('list');
         // End changelog
 
         if ($this->hasRootPrivileges === true) {
@@ -220,6 +222,7 @@ class HosttemplatesController extends AppController {
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
 
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
@@ -241,6 +244,7 @@ class HosttemplatesController extends AppController {
             $ext_data_for_changelog = [
                 'Contact' => [],
                 'Contactgroup' => [],
+                'Hostgroup' => []
             ];
 
             if ($this->request->data('Hosttemplate.Contact')) {
@@ -334,8 +338,38 @@ class HosttemplatesController extends AppController {
                     unset($commandsForChangelog);
                 }
             }
+
+            if ($this->request->data('Hosttemplate.Hostgroup')) {
+                if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
+                    'recursive' => -1,
+                    'contain' => [
+                            'Container' => [
+                                    'fields' => [
+                                            'Container.name',
+                                        ],
+                                ],
+                        ],
+                    'fields' => [
+                            'Hostgroup.id',
+                        ],
+                    'conditions' => [
+                            'Hostgroup.id' => $this->request->data['Hosttemplate']['Hostgroup'],
+                        ],
+                ])
+            ){
+                foreach ($hostgroupsForChangelog as $hostgroupData) {
+                        $ext_data_for_changelog['Hostgroup'][] = [
+                                'id' => $hostgroupData['Hostgroup']['id'],
+                                'name' => $hostgroupData['Container']['name'],
+                            ];
+                    }
+                 unset($hostgroupsForChangelog);
+                }
+            }
+
             $this->request->data['Contact'] = ($this->request->data['Hosttemplate']['Contact']) ? $this->request->data['Hosttemplate']['Contact'] : [];
             $this->request->data['Contactgroup'] = ($this->request->data['Hosttemplate']['Contactgroup']) ? $this->request->data['Hosttemplate']['Contactgroup'] : [];
+            $this->request->data['Hostgroup'] = ($this->request->data['Hosttemplate']['Hostgroup']) ? $this->request->data['Hosttemplate']['Hostgroup'] : [];
 
             //Delete Command argument values
             //Fetching all commandargument_id of the command arguments out of database:
@@ -378,7 +412,6 @@ class HosttemplatesController extends AppController {
                     'objecttype_id' => OBJECT_HOSTTEMPLATE,
                 ], false);
             }
-
             //Save everything including custom variables
             if ($this->Hosttemplate->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -464,7 +497,7 @@ class HosttemplatesController extends AppController {
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-
+                    $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 }
             }
         }
@@ -472,14 +505,16 @@ class HosttemplatesController extends AppController {
         //Restore contacts after submit
         $hosttemplate['Contact'] = Hash::combine($hosttemplate['Contact'], '{n}.id', '{n}.id');
         $hosttemplate['Contactgroup'] = Hash::combine($hosttemplate['Contactgroup'], '{n}.id', '{n}.id');
+        $hosttemplate['Hostgroup'] = Hash::combine($hosttemplate['Hostgroup'], '{n}.id', '{n}.id');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $hosttemplate['Contact'] = $this->request->data['Hosttemplate']['Contact'];
             $hosttemplate['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
+            $hosttemplate['Hostgroup'] = $this->request->data['Hosttemplate']['Hostgroup'];
         }
 
         $this->request->data = Hash::merge($hosttemplate, $this->request->data);
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups']));
+        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
     }
 
     public function add($hosttemplatetype_id = null) {
@@ -487,6 +522,7 @@ class HosttemplatesController extends AppController {
         $_timeperiods = [];
         $_contacts = [];
         $_contactgroups = [];
+        $_hostgroups = [];
 
         $userId = $this->Auth->user('id');
         // Checking if the user hit submit and a validation error happents, to refill input fields
@@ -540,6 +576,7 @@ class HosttemplatesController extends AppController {
             ];
             if ($this->request->data('Hosttemplate.Contact')) {
                 if ($contactsForChangelog = $this->Contact->find('list', [
+                    'recursive' => -1,
                     'conditions' => [
                         'Contact.id' => $this->request->data['Hosttemplate']['Contact'],
                     ],
@@ -629,9 +666,44 @@ class HosttemplatesController extends AppController {
                     unset($commandsForChangelog);
                 }
             }
+
+            if ($this->request->data('Hosttemplate.Hostgroup')) {
+                if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
+                        'recursive'  => -1,
+                        'contain'    => [
+                                'Container' => [
+                                        'fields' => [
+                                                'Container.name',
+                                            ],
+                                    ],
+                            ],
+                        'fields'     => [
+                                'Hostgroup.id',
+                            ],
+                        'conditions' => [
+                                'Hostgroup.id' => $this->request->data['Hosttemplate']['Hostgroup'],
+                            ],
+                        ])
+                    ) {
+                        foreach ($hostgroupsForChangelog as $hostgroupData) {
+                                $ext_data_for_changelog['Hostgroup'][] = [
+                                        'id'   => $hostgroupData['Hostgroup']['id'],
+                                        'name' => $hostgroupData['Container']['name'],
+                                    ];
+                            }
+                    unset($hostgroupsForChangelog);
+                }
+            }
+
             $this->request->data['Contact'] = $this->request->data['Hosttemplate']['Contact'];
             $this->request->data['Contactgroup'] = $this->request->data['Hosttemplate']['Contactgroup'];
             $this->request->data['Hosttemplate']['uuid'] = $this->Hosttemplate->createUUID();
+
+            if (isset($this->request->data['Hosttemplate']['Hostgroup']) && is_array($this->request->data['Hosttemplate']['Hostgroup'])) {
+                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Hosttemplate']['Hostgroup'];
+            } else {
+                $this->request->data['Hostgroup']['Hostgroup'] = [];
+            }
 
             if ($hosttemplatetype_id !== null && is_numeric($hosttemplatetype_id)) {
                 $this->request->data['Hosttemplate']['hosttemplatetype_id'] = $hosttemplatetype_id;
@@ -696,11 +768,11 @@ class HosttemplatesController extends AppController {
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                    $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 }
             }
         }
-        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups']));
-
+        $this->set(compact(['_timeperiods', '_contacts', '_contactgroups', '_hostgroups']));
     }
 
     public function delete($id = null) {
@@ -834,97 +906,42 @@ class HosttemplatesController extends AppController {
     }
 
     public function copy($id = null) {
-        $userId = $this->Auth->user('id');
         //get the source ids from the Hosttemplates which shall be copied
         $sourceIds = func_get_args();
         //get the data of the Hosttemplates
         $hosttemplates = $this->Hosttemplate->find('all', [
-            'recursive' => -1,
+            //'recursive' => -1,
             'conditions' => [
                 'Hosttemplate.id' => $sourceIds,
-            ],
-            'fields' => [
-                'Hosttemplate.name',
-                'Hosttemplate.description',
-                'Hosttemplate.container_id',
-                'Hosttemplate.hosttemplatetype_id',
-                'Hosttemplate.command_id',
-                'Hosttemplate.eventhandler_command_id',
-                'Hosttemplate.check_period_id',
-                'Hosttemplate.notify_period_id',
-                'Hosttemplate.check_interval',
-                'Hosttemplate.retry_interval',
-                'Hosttemplate.max_check_attempts',
-                'Hosttemplate.notification_interval',
-                'Hosttemplate.notifications_enabled',
-                'Hosttemplate.notify_on_down',
-                'Hosttemplate.notify_on_unreachable',
-                'Hosttemplate.notify_on_recovery',
-                'Hosttemplate.notify_on_flapping',
-                'Hosttemplate.notify_on_downtime',
-                'Hosttemplate.flap_detection_enabled',
-                'Hosttemplate.flap_detection_on_up',
-                'Hosttemplate.flap_detection_on_down',
-                'Hosttemplate.flap_detection_on_unreachable',
-                'Hosttemplate.notes',
-                'Hosttemplate.priority',
-                'Hosttemplate.tags',
-                'Hosttemplate.host_url',
-                'Hosttemplate.active_checks_enabled'
             ],
             'contain' => [
                 'Contact' => [
                     'fields' => [
                         'Contact.id',
-                        'Contact.name'
                     ],
                 ],
                 'Contactgroup' => [
                     'fields' => [
-                        'Contactgroup.id'
-
+                        'Contactgroup.id',
                     ],
-                    'Container' => [
-                        'fields' => [
-                            'Container.name'
-                        ]
-                    ]
                 ],
-                'CheckPeriod' =>[
-                    'fields' =>[
-                        'CheckPeriod.id',
-                        'CheckPeriod.name'
-                    ]
-                ],
-                'NotifyPeriod' =>[
-                    'fields' =>[
-                        'NotifyPeriod.id',
-                        'NotifyPeriod.name'
-                    ]
-                ],
-                'CheckCommand' => [
+                'Hostgroup' => [
                     'fields' => [
-                        'CheckCommand.id',
-                        'CheckCommand.name',
-                    ]
-                ],
-                'Hosttemplatecommandargumentvalue' => [
-                    'fields' => [
-                        'Hosttemplatecommandargumentvalue.commandargument_id',
-                        'Hosttemplatecommandargumentvalue.value',
-                    ]
-                ],
-                'Customvariable'                           => [
-                    'fields' => [
-                        'name', 'value',
+                        'Hostgroup.id',
                     ],
                 ],
             ],
         ]);
 
         $hosttemplates = Hash::combine($hosttemplates, '{n}.Hosttemplate.id', '{n}');
-        $hosttemplates = Hash::remove($hosttemplates, '{n}.Hosttemplatecommandargumentvalue.{n}.hosttemplate_id');
-        $oldHosttemplatesCopy = Hash::remove($hosttemplates, '{n}.Hosttemplate.id');
+        $oldHosttemplatesCopy = $hosttemplates;
+
+        foreach ($oldHosttemplatesCopy as $key => $oldHosttemplate) {
+            unset($oldHosttemplatesCopy[$key]['Hosttemplate']['created']);
+            unset($oldHosttemplatesCopy[$key]['Hosttemplate']['modified']);
+            unset($oldHosttemplatesCopy[$key]['Hosttemplate']['id']);
+            unset($oldHosttemplatesCopy[$key]['Hosttemplate']['uuid']);
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $datasource = $this->Hosttemplate->getDataSource();
@@ -933,7 +950,7 @@ class HosttemplatesController extends AppController {
                 foreach ($this->request->data['Hosttemplate'] as $newHosttemplate) {
                     $contactIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Contact.{n}.id');
                     $contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Contactgroup.{n}.id');
-                    $hostTemplateCommandArgumentValues = (!empty($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplatecommandargumentvalue']))?$oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplatecommandargumentvalue']:[];
+                    $hostgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Hostgroup.{n}.id');
 
                     $newHosttemplateData = [
                         'Hosttemplate' => [
@@ -942,47 +959,25 @@ class HosttemplatesController extends AppController {
                             'description' => $newHosttemplate['description'],
                             'Contact' => $contactIds,
                             'Contactgroup' => $contactgroupIds,
+                            'Hostgroup' => $hostgroupIds,
                         ],
                         'Contact' => $contactIds,
                         'Contactgroup' => $contactgroupIds,
-                        'Hosttemplatecommandargumentvalue' => $hostTemplateCommandArgumentValues,
-                        'Customvariable'                           => Hash::insert(
-                            Hash::remove(
-                                $oldHosttemplatesCopy[$newHosttemplate['source']]['Customvariable'], '{n}.object_id'
-                            ),
-                            '{n}.objecttype_id',
-                            OBJECT_HOSTTEMPLATE
-                        ),
+                        'Hostgroup' => $hostgroupIds
                     ];
 
                     unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contact']);
                     unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Contactgroup']);
+                    unset($oldHosttemplatesCopy[$newHosttemplate['source']]['Hostgroup']);
 
                     $dataToSave = Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']], $newHosttemplateData);
                     if (!$this->Hosttemplate->saveAll($dataToSave)) {
                         throw new Exception("Hosttemplate could not be saved");
                     }
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Hosttemplate->id,
-                        OBJECT_HOSTTEMPLATE,
-                        $oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplate']['container_id'],
-                        $userId,
-                        $newHosttemplate['name'],
-                        Hash::merge(
-                            $oldHosttemplatesCopy[$newHosttemplate['source']], [
-                            'Hosttemplate' => [
-                                'name' => $newHosttemplate['name'],
-                                'description' => $newHosttemplate['description']
-                            ]
-                        ])
-                    );
-                    if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
                 }
+
                 $datasource->commit();
+
                 $this->setFlash(__('Hosttemplate successfully copied'));
                 $this->redirect(['action' => 'index']);
             } catch (Exception $e) {
@@ -992,6 +987,8 @@ class HosttemplatesController extends AppController {
                 $this->redirect(['action' => 'index']);
             }
         }
+
+
         $this->set(compact('hosttemplates'));
         $this->set('back_url', $this->referer());
     }
@@ -1117,13 +1114,15 @@ class HosttemplatesController extends AppController {
         $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Timeperiod->makeItJavaScriptAble($contacts);
+        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Timeperiod->makeItJavaScriptAble($contactgroups);
+        $contactgroups = $this->Contactgroup->makeItJavaScriptAble($contactgroups);
 
-        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
-        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
+        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble($hostgroups);
+
+        $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']));
+        $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
     }
-
 }

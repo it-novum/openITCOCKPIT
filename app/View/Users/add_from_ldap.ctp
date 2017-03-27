@@ -59,10 +59,13 @@
             ?>
             <div class="padding-top-20"></div>
             <div class="form-group">
-                <span class="col col-md-2 control-label"><i class="fa fa-info-circle text-info"></i></span>
+                <span class="col col-md-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
                 <div class="col col-xs-10 text-info">
                     <?php echo __('Contacted LDAP server'); ?>:
                     <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']); ?></strong>
+                    <br/>
+                    <?php echo __('Searched filter query'); ?>:
+                    <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']); ?></strong>
                     <br/>
                     <?php echo __('Searched Base DN'); ?>:
                     <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']); ?></strong>

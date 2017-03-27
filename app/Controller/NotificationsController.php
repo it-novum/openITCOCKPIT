@@ -293,12 +293,12 @@ class NotificationsController extends AppController
             $requestSettings['Listsettings']['to'] = date('d.m.Y H:i', time());
         }
 
-        if (isset($this->paginate['conditions'])) {
+        if (isset($this->Paginator->settings['conditions'])) {
             //Merging our conditions and ListFilterComponents conditions
             if (isset($requestSettings['paginator']['conditions'])) {
-                $requestSettings['paginator']['conditions'] = Hash::merge($requestSettings['paginator']['conditions'], $this->paginate['conditions']);
+                $requestSettings['paginator']['conditions'] = Hash::merge($requestSettings['paginator']['conditions'], $this->Paginator->settings['conditions']);
             } else {
-                $requestSettings['paginator']['conditions'] = $this->paginate['conditions'];
+                $requestSettings['paginator']['conditions'] = $this->Paginator->settings['conditions'];
             }
         }
 

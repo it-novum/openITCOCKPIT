@@ -24,6 +24,7 @@
 
 App.Controllers.ServicegroupsAddController = Frontend.AppController.extend({
     $services: null,
+    $servicetemplates: null,
     lang: null,
 
     components: ['Highlight', 'Ajaxloader', 'ContainerSelectbox'],
@@ -62,6 +63,15 @@ App.Controllers.ServicegroupsAddController = Frontend.AppController.extend({
             fieldTypes: {},
             dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
             dataPlaceholder: self.getVar('data_placeholder')
+        });
+        this.ContainerSelectbox.addContainerEventListener({
+            selectBoxSelector: '#ContainerParentId',
+            ajaxUrl: '/servicegroups/loadServicetemplates/:selectBoxValue:' + '.json',
+            fieldTypes: {
+                servicetemplates: '#ServicegroupServicetemplate',
+            },
+            dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+            dataPlaceholder: self.getVar('data_placeholder_servicetemplate')
         });
     }
 });

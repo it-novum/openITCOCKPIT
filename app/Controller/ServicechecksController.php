@@ -94,7 +94,7 @@ class ServicechecksController extends AppController
 
         $requestSettings = $this->Servicecheck->listSettings($this->request, $service['Service']['uuid']);
 
-        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 
