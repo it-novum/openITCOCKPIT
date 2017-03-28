@@ -90,7 +90,6 @@ class ProfileController extends AppController
                 if($this->request->data['User']['paginatorlength'] > '1000'){
                     $this->request->data['User']['paginatorlength'] = '1000';
                 }
-
                 if ($this->User->save($this->request->data)) {
                     $this->setFlash(__('Profile edit successfully'));
                     $sessionUser = $this->Session->read('Auth');
