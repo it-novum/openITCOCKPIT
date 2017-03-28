@@ -162,16 +162,15 @@ class Background extends MapModuleAppModel
         ]);
 
         // checking the folder if something is missing
-        $iconNames = $myMapUpload->getIconsNames();
         $itemsFolder = scandir($basePath);
         $iconInsert = false;
         foreach ($itemsFolder as $name) {
             if(in_array($name, ['.', '..'])) continue;
-            foreach($iconNames as $iconName){
-                if(!file_exists($basePath.DS.$name.DS.$iconName)){
-                    continue 2;
-                }
+
+            if(!file_exists($basePath.DS.$name.DS.'ok.png')) {
+                continue;
             }
+
             foreach($allMapsIcons as $myMapsIcon){
                 if($myMapsIcon['MapUpload']['saved_name'] === $name){
                     continue 2;
