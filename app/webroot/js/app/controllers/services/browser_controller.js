@@ -208,12 +208,12 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 			});
 
 		if($('#serviceHasGraphs').val() == 1){
-			self.loadGraph(1490605169, 1490619569, $('#service-value').val());
+			self.loadGraph($('#grapg-filter-from').val(), $('#grapg-filter-to').val(), $('#grapg-filter-value').val());
 		}
 
-		$('#service-value').change(function(){
+		$('#apply-graph-filter').click(function(){
 			if($('#serviceHasGraphs').val() == 1){
-				self.loadGraph(1490605169, 1490619569, $('#service-value').val());
+				self.loadGraph($('#graph-filter-from').val(), $('#graph-filter-to').val(), $('#graph-filter-value').val());
 			}
 		});
 
@@ -235,9 +235,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 			timezoneOffset: this.Time.timezoneOffset //Rename to user timesone offset
 		});
 
-		//var today = new Date(),
-		var current_time = parseInt(this.Time.getCurrentTimeWithOffset(0).getTime() / 1000, 10),
-			time_period = {
+		var time_period = {
 				start: startDate,
 				end: endDate
 			};

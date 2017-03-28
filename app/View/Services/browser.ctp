@@ -528,7 +528,7 @@
                     <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Service graphs'); ?>:</strong></h2>
                     <?php
                     reset($serviceValues);
-                    echo $this->Form->input('service-value', [
+                    echo $this->Form->input('graph-filter-value', [
                         'options'       => $serviceValues,
                         'SelectionMode' => 'single',
                         'class'         => 'chosen',
@@ -537,10 +537,27 @@
                         ],
                         'selected' => key($serviceValues),
                         'div' => [
-                            'class' => 'display-inline padding-top-5 padding-left-5'
+                            'class' => 'widget-toolbar pull-left hidden-mobile padding-left-10',
+                            'role' => 'menu',
+                            'style' => 'border-left:none'
                         ]
                     ]);
                     ?>
+                    <div class="widget-toolbar pull-left hidden-mobile" role="menu">
+                        <span style="line-height: 32px;" class="pull-left"><?php echo __('From:'); ?></span>
+                        <input id="graph-filter-from" class="form-control text-center pull-left margin-left-10" style="width: 78%;"
+                               type="text" maxlength="255" value="<?= date('d-m-Y H:i', time()-60*60*4) ?>"
+                               name="data[Listsettings][from]">
+                    </div>
+
+                    <div class="widget-toolbar pull-left hidden-mobile" role="menu">
+                        <span style="line-height: 32px;" class="pull-left"><?php echo __('To:'); ?></span>
+                        <input id="graph-filter-to" class="form-control text-center pull-left margin-left-10" style="width: 85%;"
+                               type="text" maxlength="255" value="<?= date('d-m-Y H:i') ?>"
+                               name="data[Listsettings][to]">
+                    </div>
+                    <button id="apply-graph-filter" class="btn btn-xs btn-success toggle hidden-mobile margin-top-5"><i
+                            class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
                     <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                 <!-- widget div-->
                 <div role="content">

@@ -407,6 +407,12 @@ class GraphgeneratorsController extends AppController
                 'start' => $this->request->data('start'),
                 'end'   => $this->request->data('end'),
             ];
+        }elseif(preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('start')) &&
+            preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('end'))){
+            $options = [
+                'start' => strtotime($this->request->data('start')),
+                'end'   => strtotime($this->request->data('end')),
+            ];
         }
 
 
