@@ -199,8 +199,16 @@ class NagvisMigrationShell extends AppShell {
         $pass = $this->in('Please Enter the Password for user ' . $user . ' on ' . $host);
         $frontendUser = $this->in('Please Enter a valid Frontend user on ' . $host);
         $frontendPass = $this->in('Please Enter the Password for user ' . $frontendUser . ' on ' . $host);
+        $https = $this->in('using SSL for Frontend Login ?',['y', 'n'], 'n');
 
-        return ['host' => $host, 'user' => $user, 'pass' => $pass, 'frontendUser' => $frontendUser, 'frontendPass' => $frontendPass];
+        return [
+            'host' => $host,
+            'user' => $user,
+            'pass' => $pass,
+            'frontendUser' => $frontendUser,
+            'frontendPass' => $frontendPass,
+            'https' => $https,
+        ];
     }
 
     /**
@@ -275,15 +283,24 @@ class NagvisMigrationShell extends AppShell {
      * @return Array                the list of existing files
      */
     protected function getFileList($filename) {
-        $user = $this->hostData['frontendUser'];
-        $pass = $this->hostData['frontendPass'];
-        $host = $this->hostData['host'];
+        try {
+            $user = $this->hostData['frontendUser'];
+            $pass = $this->hostData['frontendPass'];
+            $host = $this->hostData['host'];
+            $https = $this->hostData['https'];
+            $protocol = 'http';
+            if ($https == 'y') {
+                $protocol = 'https';
+            }
 
-        $socket = new HttpSocket();
+            $socket = new HttpSocket();
 
-        $response = $socket->post('http://'.$user.':'.$pass.'@'.$host.'/openitc/main/'.$filename);
+            $response = $socket->post($protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename);
 
-        return json_decode($response->body);
+            return json_decode($response->body);
+        }catch (Exception $e){
+            $this->error($e->getMessage());
+        }
     }
 
     /**
