@@ -75,7 +75,11 @@
                         <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
                         <?php
                         if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
+                            echo $this->ListFilter->resetLink(null, [
+                                'class' => 'btn-danger btn-xs',
+                                'icon' => 'fa fa-times',
+                                'url'   => 'index/'.$host['Host']['id']
+                            ]);
                         endif;
                         ?>
                     </div>
