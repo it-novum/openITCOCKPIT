@@ -1458,7 +1458,9 @@ class ServicesController extends AppController {
                             ],
                             'Customvariable' => [
                                 'fields' => [
-                                    'name', 'value',
+                                    'name',
+                                    'value',
+                                    'objecttype_id'
                                 ],
                             ],
                             'Servicegroup' => [
@@ -1477,6 +1479,7 @@ class ServicesController extends AppController {
                             'Service.service_type' => $this->Service->serviceTypes('copy')
                         ],
                     ]);
+
                     if (isset($servicetemplates[$service['Service']['servicetemplate_id']])) {
                         $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
                     } else {
@@ -1551,6 +1554,16 @@ class ServicesController extends AppController {
                                             ]
                                         ]
                                     ],
+                                    'Servicegroup' => [
+                                        'fields' => [
+                                            'Servicegroup.id',
+                                        ],
+                                        'Container' => [
+                                            'fields' => [
+                                                'Container.name'
+                                            ]
+                                        ]
+                                    ],
                                     'Servicetemplatecommandargumentvalue' => [
                                         'fields' => [
                                             'id',
@@ -1579,22 +1592,74 @@ class ServicesController extends AppController {
                         $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
                     }
                     $service = Hash::remove($service, 'Service.id');
-                    $service['Service']['host_id'] = $host['Host']['id'];
+                    $service = Hash::remove($service, '{s}.{n}.{s}.service_id');
+                    $contactIds = (!empty($service['Contact']))?Hash::extract($service['Contact'], '{n}.id' ):[];
+                    $contactgroupIds = (!empty($service['Contactgroup']))?Hash::extract($service['Contactgroup'], '{n}.id' ):[];
+                    $servicegroupIds =  (!empty($service['Servicegroup'])) ? Hash::extract($service['Servicegroup'], '{n}.id' ): [];
+                    $customVariables =(!empty($service['Customvariable']))?Hash::remove($service['Customvariable'], '{n}.object_id'):[];
+                    $newServiceData = [
+                        'Service' => Hash::merge(
+                            $service['Service'], [
+                                'uuid'      => UUID::v4(),
+                                'host_id'   => $host['Host']['id'],
+                                'Contact' => $contactIds,
+                                'Contactgroup' => $contactgroupIds,
+                                'Servicegroup' => $servicegroupIds,
+                                'Customvariable' => $customVariables,
+                        ]),
+                        'Contact' =>['Contact' => $contactIds],
+                        'Contactgroup' => ['Contactgroup' => $contactgroupIds],
+                        'Servicegroup' => ['Servicegroup' => $servicegroupIds],
 
-                    $service['Service']['uuid'] = UUID::v4();
-                    $service['Service']['host_id'] = $host['Host']['id'];
+                        'Customvariable' => $customVariables,
+                        'Servicecommandargumentvalue' => (!empty($service['Servicecommandargumentvalue']))?Hash::remove($service['Servicecommandargumentvalue'], '{n}.service_id'):[],
+                        'Serviceeventcommandargumentvalue' => (!empty($service['Serviceeventcommandargumentvalue']))?Hash::remove($service['Serviceeventcommandargumentvalue'], '{n}.service_id'):[],
+                    ];
+
+                    /* Data for Changelog Start*/
                     $service['Host'] = ['id' => $host['Host']['id'], 'name' => $host['Host']['name']];
-                    $service['Service']['Contact'] = $service['Contact'];
-                    $service['Service']['Contactgroup'] = $service['Contactgroup'];
-                    $service['Service']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
-                    $service['Contact']['Contact'] = $service['Contact'];
-                    $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
-                    $service['Servicegroup']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
+                    if(!empty($service['Contactgroup'])){
+                        $contactgroups = [];
+                        foreach($service['Contactgroup'] as $contactgroup){
+                            $contactgroups[] = [
+                                'id' => $contactgroup['id'],
+                                'name' => $contactgroup['Container']['name']
+                            ];
+                        }
+                        $service['Contactgroup'] = $contactgroups;
+                    }elseif(empty($service['Contactgroup']) && !empty($servicetemplate['Contactgroup'])){
+                        $contactgroups = [];
+                        foreach($servicetemplate['Contactgroup'] as $contactgroup){
+                            $contactgroups[] = [
+                                'id' => $contactgroup['id'],
+                                'name' => $contactgroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplate['Contactgroup'] = $contactgroups;
+                    }
 
-                    $data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($service, $servicetemplate), $service, 'add');
-
+                    if(!empty($service['Servicegroup'])){
+                        $servicegroups = [];
+                        foreach($service['Servicegroup'] as $servicegroup){
+                            $servicegroups[] = [
+                                'id' => $servicegroup['id'],
+                                'name' => $servicegroup['Container']['name']
+                            ];
+                        }
+                        $service['Servicegroup'] = $servicegroups;
+                    }elseif(empty($service['Servicegroup']) && !empty($servicetemplate['Servicegroup'])){
+                        $servicegroups = [];
+                        foreach($servicetemplate['Servicegroup'] as $servicegroup){
+                            $servicegroups[] = [
+                                'id' => $servicegroup['id'],
+                                'name' => $servicegroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplate['Servicegroup'] = $servicegroups;
+                    }
+                    /* Data for Changelog End*/
                     $this->Service->create();
-                    if( $this->Service->saveAll($data_to_save)){
+                    if( $this->Service->saveAll($newServiceData)){
                         $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $this->params['action'],

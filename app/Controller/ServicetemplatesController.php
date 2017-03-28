@@ -1159,6 +1159,11 @@ class ServicetemplatesController extends AppController
                     'fields' => [
                         'Servicegroup.id',
                     ],
+                    'Container' => [
+                        'fields' => [
+                            'Container.name'
+                        ]
+                    ]
                 ],
                 'Servicetemplatecommandargumentvalue'      => [
                     'fields' => [
@@ -1188,12 +1193,12 @@ class ServicetemplatesController extends AppController
                     $servicegroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']], 'Servicegroup.{n}.id');
 
                     $newServicetemplateData = [
-                        'Servicetemplate'                          => [
+                        'Servicetemplate' => Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], [
                             'uuid'        => $this->Servicetemplate->createUUID(),
                             'template_name'=> $newServicetemplate['template_name'],
                             'name'        => $newServicetemplate['name'],
                             'description' => $newServicetemplate['description'],
-                        ],
+                        ]),
                         'Customvariable'                           => Hash::insert(
                             Hash::remove(
                                 $servicetemplates[$newServicetemplate['source']]['Customvariable'], '{n}.object_id'
@@ -1209,22 +1214,32 @@ class ServicetemplatesController extends AppController
                             $servicetemplates[$newServicetemplate['source']]['Servicetemplateeventcommandargumentvalue'],
                             '{n}.servicetemplate_id'
                         ),
-                        'Contact'                                  => [
-                            'Contact' => $contactIds,
-                        ],
-                        'Contactgroup'                             => [
-                            'Contactgroup' => [
-                                $contactgroupIds,
-                            ],
-                        ],
-                        'Servicegroup'                             => [
-                            'Servicegroup' => [
-                                $servicegroupIds,
-                            ],
-                        ],
+                        'Contact' => $contactIds,
+                        'Contactgroup' => $contactgroupIds,
+                        'Servicegroup' => $servicegroupIds
                     ];
-                    $servicetemplates[$newServicetemplate['source']]['Servicetemplate'] = Hash::remove($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], 'Servicetemplate.id');
-                    $newServicetemplateData['Servicetemplate'] = Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], $newServicetemplateData['Servicetemplate']);
+                    $newServicetemplateData['Servicetemplate'] = Hash::remove($newServicetemplateData['Servicetemplate'], 'id');
+                    if(!empty($servicetemplates[$newServicetemplate['source']]['Contactgroup'])){
+                        $contactgroups = [];
+                        foreach($servicetemplates[$newServicetemplate['source']]['Contactgroup'] as $contactgroup){
+                            $contactgroups[] = [
+                                'id' => $contactgroup['id'],
+                                'name' => $contactgroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplates[$newServicetemplate['source']]['Contactgroup'] = $contactgroups;
+                    }
+                    if(!empty($servicetemplates[$newServicetemplate['source']]['Servicegroup'])){
+                        $servicegroups = [];
+                        foreach($servicetemplates[$newServicetemplate['source']]['Servicegroup'] as $servicegroup){
+                            $servicegroups[] = [
+                                'id' => $servicegroup['id'],
+                                'name' => $servicegroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplates[$newServicetemplate['source']]['Servicegroup'] = $servicegroups;
+                    }
+                    $this->Servicetemplate->create();
                     if (!$this->Servicetemplate->saveAll($newServicetemplateData)) {
                         throw new Exception('Some of the Servicetemplates could not be copied');
                     }

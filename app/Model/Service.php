@@ -977,7 +977,7 @@ class Service extends AppModel {
             'Servicecommandargumentvalue'      => $servicecommandargumentvalue,
             'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
             'Servicetemplate'                  => $servicetemplate['Servicetemplate'],
-            'Servicegroup'                     => $service['Servicegroup'],
+            'Servicegroup'                     => (!empty($service['Servicegroup']))?$service['Servicegroup']:$servicetemplate['Servicegroup'],
             'Host'                             => $service['Host'],
             'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $servicetemplate['CheckPeriod'] : $service['CheckPeriod'],
             'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $servicetemplate['NotifyPeriod'] : $service['NotifyPeriod'],
