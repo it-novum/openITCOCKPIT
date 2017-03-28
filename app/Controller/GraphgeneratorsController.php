@@ -376,22 +376,25 @@ class GraphgeneratorsController extends AppController
         if (!$host_and_service_uuids || !is_array($host_and_service_uuids) || count($host_and_service_uuids) == 0) {
             return;
         }
+        $service_uuid_amount = 0;
         foreach ($host_and_service_uuids as $host_uuid => $service_uuids) {
             if (!UUID::is_valid($host_uuid)) {
                 return;
             }
 
-            foreach ($service_uuids as $service_uuid) {
+            foreach ($service_uuids as $service_uuid_arr) {
+                if(is_array($service_uuid_arr)){
+                    $service_uuid = $service_uuid_arr[0];
+                }else{
+                    $service_uuid = $service_uuid_arr;
+                }
                 if (!UUID::is_valid($service_uuid)) {
                     return;
                 }
             }
-        }
-
-        $service_uuid_amount = 0;
-        foreach ($host_and_service_uuids as $service_uuids) {
             $service_uuid_amount += count($service_uuids);
         }
+
         $limit = (int)(self::MAX_RESPONSE_GRAPH_POINTS / $service_uuid_amount);
 
         $options = [
@@ -425,10 +428,16 @@ class GraphgeneratorsController extends AppController
             }
         }*/
 
-
         foreach ($host_and_service_uuids as $host_uuid => $service_uuids) {
-            foreach ($service_uuids as $service_uuid) {
-                $rrd_data = $this->Rrd->getPerfDataFiles($host_uuid, $service_uuid, $options);
+            foreach ($service_uuids as $service_uuid_arr) {
+                if(is_array($service_uuid_arr)){
+                    $service_uuid = $service_uuid_arr[0];
+                    $service_value = isset($service_uuid_arr[1]) ? strtolower($service_uuid_arr[1]) : null;
+                }else{
+                    $service_uuid = $service_uuid_arr;
+                    $service_value = null;
+                }
+                $rrd_data = $this->Rrd->getPerfDataFiles($host_uuid, $service_uuid, $options, $service_value);
                 $data_sources_count = count($rrd_data['data']);
                 $tmp_limit = $limit / $data_sources_count;
                 foreach ($rrd_data['data'] as $key => $value_array) {

@@ -1804,7 +1804,13 @@ class ServicesController extends AppController
             'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
         ]);
         $username = $this->Auth->user('full_name');
-
+        $serviceAllValues = $this->Rrd->getPerfDataFiles($service['Host']['uuid'], $service['Service']['uuid']);
+        $serviceValues = [];
+        if(isset($serviceAllValues['xml_data']) && !empty($serviceAllValues['xml_data'])) {
+            foreach ($serviceAllValues['xml_data'] as $serviceValueArr) {
+                $serviceValues[$serviceValueArr['ds']] = $service['Host']['name'] . '/' . $service['Service']['name'] . '/' . $serviceValueArr['name'];
+            }
+        }
         $this->set(compact([
                 'service',
                 'servicestatus',
@@ -1815,6 +1821,7 @@ class ServicesController extends AppController
                 'hoststatus',
                 'allowEdit',
                 'ticketSystem',
+                'serviceValues'
             ])
         );
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);

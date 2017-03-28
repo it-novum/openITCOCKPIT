@@ -526,6 +526,21 @@
                  id="wid-id-11" class="jarviswidget jarviswidget-sortable" role="widget">
                 <header role="heading">
                     <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Service graphs'); ?>:</strong></h2>
+                    <?php
+                    reset($serviceValues);
+                    echo $this->Form->input('service-value', [
+                        'options'       => $serviceValues,
+                        'SelectionMode' => 'single',
+                        'class'         => 'chosen',
+                        'label' => [
+                            'class' => 'hidden'
+                        ],
+                        'selected' => key($serviceValues),
+                        'div' => [
+                            'class' => 'display-inline padding-top-5 padding-left-5'
+                        ]
+                    ]);
+                    ?>
                     <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span></header>
                 <!-- widget div-->
                 <div role="content">

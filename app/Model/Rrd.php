@@ -28,7 +28,7 @@ class Rrd extends AppModel
     var $useTable = false;
     public $rrd_path = null;
 
-    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [])
+    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null)
     {
         $result = [];
 
@@ -48,6 +48,25 @@ class Rrd extends AppModel
 
         $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd().'/'.$perfdata_files[1])];
         $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd().'/'.$perfdata_files[0], $options);
+
+        if(!empty($xml_data['xml_data']) && !is_null($service_value)){ // ignoring other values if $service_value is set
+            $neededIndex = null;
+            $notNeededIndexes = [];
+            foreach($xml_data['xml_data'] as $xmlIndex => $xmlArr){
+                if($service_value === $xmlArr['ds']){
+                    $neededIndex = intval($xmlArr['ds']);
+                    continue;
+                }
+                $notNeededIndexes[$xmlIndex] = $xmlArr['ds'];
+            }
+            if(isset($perfdata_from_rrd['data'][$neededIndex]) && !empty($notNeededIndexes)){ // we found needed value, we can unset the other values
+                foreach($notNeededIndexes as  $notNeededIndex => $notNeededDS){
+                    unset($xml_data['xml_data'][$notNeededIndex]);
+                    unset($perfdata_from_rrd['data'][$notNeededDS]);
+                }
+
+            }
+        }
 
         return array_merge($xml_data, $perfdata_from_rrd);
     }
