@@ -208,7 +208,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 			});
 
 		if($('#serviceHasGraphs').val() == 1){
-			self.loadGraph($('#grapg-filter-from').val(), $('#grapg-filter-to').val(), $('#grapg-filter-value').val());
+			self.loadGraph($('#graph-filter-from').val(), $('#graph-filter-to').val(), $('#graph-filter-value').val());
 		}
 
 		$('#apply-graph-filter').click(function(){
