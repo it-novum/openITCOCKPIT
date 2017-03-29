@@ -1175,9 +1175,10 @@ class ServicetemplatesController extends AppController
                         'commandargument_id', 'value',
                     ],
                 ],
-                'Customvariable'                           => [
+                'Customvariable' => [
                     'fields' => [
-                        'name', 'value',
+                        'name',
+                        'value',
                     ],
                 ],
             ],

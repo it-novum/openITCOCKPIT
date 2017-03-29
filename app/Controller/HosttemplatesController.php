@@ -948,7 +948,13 @@ class HosttemplatesController extends AppController {
                         'CheckCommand.name',
                     ]
                 ],
-                'Customvariable',
+                'Customvariable' => [
+                    'fields' => [
+                        'name',
+                        'value',
+                        'objecttype_id'
+                    ],
+                ],
                 'NotifyPeriod' => [
                     'fields' => [
                         'NotifyPeriod.id',
@@ -989,7 +995,9 @@ class HosttemplatesController extends AppController {
                     $contactgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Contactgroup.{n}.id');
                     $hostgroupIds = Hash::extract($oldHosttemplatesCopy[$newHosttemplate['source']], 'Hostgroup.{n}.id');
                     $hosttemplateCommandargumentValues = (!empty($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplatecommandargumentvalue']))?Hash::remove($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplatecommandargumentvalue'], '{n}.hosttemplate_id'):[];
-
+                    $customVariables = (!empty($oldHosttemplatesCopy[$newHosttemplate['source']]['Customvariable']))? Hash::remove(
+                        $oldHosttemplatesCopy[$newHosttemplate['source']]['Customvariable'], '{n}.object_id'
+                    ):[];
                     $newHosttemplateData = [
                         'Hosttemplate' => Hash::merge($oldHosttemplatesCopy[$newHosttemplate['source']]['Hosttemplate'], [
                             'uuid' => $this->Hosttemplate->createUUID(),
@@ -998,14 +1006,13 @@ class HosttemplatesController extends AppController {
                             'Contact' => $contactIds,
                             'Contactgroup' => $contactgroupIds,
                             'Hostgroup' => $hostgroupIds,
-                            'Hosttemplatecommandargumentvalue' => $hosttemplateCommandargumentValues
                         ]),
-
+                        'Customvariable' => $customVariables,
+                        'Hosttemplatecommandargumentvalue' => $hosttemplateCommandargumentValues,
                         'Contact' => $contactIds,
                         'Contactgroup' => $contactgroupIds,
                         'Hostgroup' => $hostgroupIds
                     ];
-
                     if(!empty($hosttemplates[$newHosttemplate['source']]['Contactgroup'])){
                         $contactgroups = [];
                         foreach($hosttemplates[$newHosttemplate['source']]['Contactgroup'] as $contactgroup){
