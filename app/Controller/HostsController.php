@@ -1316,44 +1316,35 @@ class HostsController extends AppController {
                 }
             }
 
-
             $this->Host->temporaryRequest = $this->request->data;
 
-            $additionalData = [
-                'Maximoconfiguration' => [
-                    'impact_level' => '4',
-                    'urgency_level' => '4',
-                    'maximo_ownergroup_id' => '14',
-                    'maximo_service_id' => '4',
-                    'type' => 'host'
-                ]
-            ];
-
-            //this works with validateAssociated()
-            $data_to_save['Host'] = array_merge($data_to_save['Host'], $additionalData['Maximoconfiguration']);
-            //this wont. May we need it to store the data
-            $data_to_save = array_merge($data_to_save, $additionalData);
-           // $test1 = $data_to_save;
-         //   debug($test1);
-     /*       if($this->Host->validateAssociated($test1)){
-                debug('validated assoc successful');
-            }else{
-
-                debug($this->Host->validationErrors);
-                debug('validation assoc failed');
-            }*/
-
-            //we need to bind that model otherwise the data could not be saved
-         /*   $this->Host->bindModel([
-                'hasOne' => [
+            if (CakePlugin::loaded('MaximoModule')) {
+                $additionalData = [
                     'Maximoconfiguration' => [
-                        'className' => 'MaximoModule.Maximoconfiguration',
-                        'foreignKey' => 'element_id'
+                        'impact_level' => $this->request->data['Host']['impact_level'],
+                        'urgency_level' => $this->request->data['Host']['urgency_level'],
+                        'maximo_ownergroup_id' => $this->request->data['Host']['maximo_ownergroup_id'],
+                        'maximo_service_id' => $this->request->data['Host']['maximo_service_id'],
+                        'type' => $this->request->data['Host']['type']
                     ]
-                ]
-            ]);*/
-            //die('ende');
-            if ($this->Host->saveAll($data_to_save/*, ['validate' => 'only']*/)) {
+                ];
+                //this works with validateAssociated()
+                $data_to_save['Host'] = array_merge($data_to_save['Host'], $additionalData['Maximoconfiguration']);
+                //this wont. May we need it to store the data
+                $data_to_save = array_merge($data_to_save, $additionalData);
+
+
+                $this->Host->bindModel([
+                    'hasOne' => [
+                        'Maximoconfiguration' => [
+                            'className' => 'MaximoModule.Maximoconfiguration',
+                            'foreignKey' => 'element_id'
+                        ]
+                    ]
+                ]);
+            }
+
+            if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
