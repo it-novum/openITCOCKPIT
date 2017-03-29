@@ -730,6 +730,7 @@ class Host extends AppModel {
             'Hostcommandargumentvalue'  => $hostcommandargumentvalue,
             'Hosttemplate'              => $hosttemplate['Hosttemplate'],
             'Hostgroup'                 => (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $hosttemplate['Hostgroup'],
+            'Parenthost'                => (!empty($host['Parenthost'])) ? $host['Parenthost'] : [],
             'CheckPeriod'               => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
             'NotifyPeriod'              => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
             'CheckCommand'              => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],

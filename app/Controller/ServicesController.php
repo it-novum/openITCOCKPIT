@@ -1675,7 +1675,6 @@ class ServicesController extends AppController {
                             CakeLog::write('log', serialize($changelog_data));
                         }
                     }
-
                 }
                 $this->setFlash(__('Copied successfully'));
                 $this->redirect(['action' => 'serviceList', $host['Host']['id']]);

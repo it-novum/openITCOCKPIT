@@ -1621,14 +1621,145 @@ class HostsController extends AppController {
                 if (!$this->Host->exists($host2copy)) {
                     continue;
                 }
-                $sourceHost = $this->Host->prepareForView($host2copy['source']);
+                $sourceHost = $this->Host->find('first', [
+                    'recursive' => -1,
+                    'fields' => [
+                        'Host.name',
+                        'Host.hosttemplate_id',
+                        'Host.container_id',
+                        'Host.check_period_id',
+                        'Host.notify_period_id',
+                        'Host.description',
+                        'Host.command_id',
+                        'Host.check_interval',
+                        'Host.retry_interval',
+                        'Host.max_check_attempts',
+                        'Host.notification_interval',
+                        'Host.notifications_enabled',
+                        'Host.notify_on_down',
+                        'Host.notify_on_unreachable',
+                        'Host.notify_on_recovery',
+                        'Host.notify_on_flapping',
+                        'Host.notify_on_downtime',
+                        'Host.flap_detection_enabled',
+                        'Host.flap_detection_on_up',
+                        'Host.flap_detection_on_down',
+                        'Host.flap_detection_on_unreachable',
+                        'Host.process_performance_data',
+                        'Host.freshness_checks_enabled',
+                        'Host.freshness_threshold',
+                        'Host.notes',
+                        'Host.priority',
+                        'Host.tags',
+                        'Host.host_url',
+                        'Host.host_type',
+                        'Host.own_contacts',
+                        'Host.own_contactgroups',
+                        'Host.own_customvariables',
+                    ],
+                    'contain' => [
+                        'Parenthost' => [
+                            'fields' => [
+                                'id',
+                                'name',
+                            ],
+                        ],
+                        'Container' => [
+                            'fields' => [
+                                'id',
+                                'name',
+                            ],
+                        ],
+                        'CheckPeriod' =>[
+                            'fields' =>[
+                                'CheckPeriod.id',
+                                'CheckPeriod.name'
+                            ]
+                        ],
+                        'NotifyPeriod' =>[
+                            'fields' =>[
+                                'NotifyPeriod.id',
+                                'NotifyPeriod.name'
+                            ]
+                        ],
+                        'CheckCommand' => [
+                            'fields' => [
+                                'CheckCommand.id',
+                                'CheckCommand.name',
+                            ]
+                        ],
+                        'Contact' => [
+                            'fields' => [
+                                'Contact.id',
+                                'Contact.name'
+                            ],
+                        ],
+                        'Contactgroup' => [
+                            'fields' => [
+                                'Contactgroup.id',
+                            ],
+                            'Container' => [
+                                'fields' => [
+                                    'Container.name'
+                                ]
+                            ]
+                        ],
+                        'Hostcommandargumentvalue' => [
+                            'fields' => [
+                                'commandargument_id',
+                                'value',
+                            ],
+                        ],
+                        'Customvariable' => [
+                            'fields' => [
+                                'name',
+                                'value',
+                                'objecttype_id'
+                            ],
+                        ],
+                        'Hostgroup' => [
+                            'fields' => [
+                                'Hostgroup.id',
+                            ],
+                            'Container' => [
+                                'fields' => [
+                                    'Container.name'
+                                ]
+                            ]
+                        ],
+                    ],
+                    'conditions' => [
+                        'Host.id' => $host2copy['source']
+                    ],
+                ]);
+
                 $hosttemplate = $this->Hosttemplate->find('first', [
                     'recursive' => -1,
                     'contain' => [
-                        'Customvariable',
-                        'CheckPeriod',
-                        'NotifyPeriod',
-                        'CheckCommand',
+                        'Customvariable' => [
+                            'fields' => [
+                                'name',
+                                'value',
+                            ],
+                        ],
+                        'CheckPeriod' =>[
+                            'fields' =>[
+                                'CheckPeriod.id',
+                                'CheckPeriod.name'
+                            ]
+                        ],
+                        'NotifyPeriod' =>[
+                            'fields' =>[
+                                'NotifyPeriod.id',
+                                'NotifyPeriod.name'
+                            ]
+                        ],
+                        'CheckCommand' => [
+                            'fields' => [
+                                'CheckCommand.id',
+                                'CheckCommand.name',
+                            ]
+                        ],
                         'Contact' => [
                             'fields' => [
                                 'id',
@@ -1651,51 +1782,126 @@ class HostsController extends AppController {
                                 ],
                             ],
                         ],
+                        'Hosttemplatecommandargumentvalue' => [
+                            'fields' => [
+                                'commandargument_id',
+                                'value',
+                            ],
+                        ],
                     ],
                     'conditions' => [
-                        'Hosttemplate.id' => $sourceHost['Hosttemplate']['id']
+                        'Hosttemplate.id' => $sourceHost['Host']['hosttemplate_id']
                     ]
                 ]);
-                unset($sourceHost['Host']['id']);
 
-                $sourceHost['Host']['uuid'] = UUID::v4();
-                $sourceHost['Host']['name'] = $host2copy['name'];
-                $sourceHost['Host']['description'] = $host2copy['description'];
-                $sourceHost['Host']['address'] = $host2copy['address'];
-                $sourceHost['Host']['host_url'] = $host2copy['host_url'];
-                $sourceHost['Host']['command_id'] = $sourceHost['Host']['command_id'];
+                $sourceHost = Hash::remove($sourceHost, 'Host.id');
+                $sourceHost = Hash::remove($sourceHost, '{s}.{n}.{s}.host_id');
 
-                $sourceHost['Host']['Contact'] = $sourceHost['Contact'];
-               // $sourceHost['Host']['CheckPeriod'] = $sourceHost['CheckPeriod'];
-                $sourceHost['Host']['Contactgroup'] = $sourceHost['Contactgroup'];
-                $sourceHost['Host']['Parenthost'] = $sourceHost['Parenthost'];
-                $sourceHost['Host']['Hostgroup'] = (is_array($sourceHost['Hostgroup'])) ? $sourceHost['Hostgroup'] : [];
 
-                $sourceHost['Contact']['Contact'] = $sourceHost['Contact'];
-                $sourceHost['Contactgroup']['Contactgroup'] = $sourceHost['Contactgroup'];
-                $sourceHost['Parenthost']['Parenthost'] = $sourceHost['Parenthost'];
-                $sourceHost['Hostgroup']['Hostgroup'] = (is_array($sourceHost['Hostgroup'])) ? $sourceHost['Hostgroup'] : [];
-                $data_to_save = $this->Host->prepareForSave($this->_diffWithTemplate($sourceHost, $hosttemplate), $sourceHost, 'add');
-                $this->Host->set($data_to_save);
+                $contactIds = (!empty($sourceHost['Contact']))?Hash::extract($sourceHost['Contact'], '{n}.id' ):[];
+                $contactgroupIds = (!empty($sourceHost['Contactgroup']))?Hash::extract($sourceHost['Contactgroup'], '{n}.id' ):[];
+                $hostgroupIds =  (!empty($sourceHost['Hostgroup'])) ? Hash::extract($sourceHost['Hostgroup'], '{n}.id' ): [];
+                $customVariables =(!empty($sourceHost['Customvariable']) && !is_null($sourceHost['Customvariable']))?Hash::remove($sourceHost['Customvariable'], '{n}.object_id'):[];
+                $parentHostIds = (!empty($sourceHost['Parenthost']))?Hash::extract($sourceHost['Parenthost'], '{n}.id' ):[];
+                $containerIds = (!empty($sourceHost['Container']))?Hash::extract($sourceHost['Container'], '{n}.id' ):[];
+                $newHostData = [
+                    'Host' => Hash::merge(
+                        $sourceHost['Host'], [
+                        'uuid'          => UUID::v4(),
+                        'name'          => $host2copy['name'],
+                        'description'   => $host2copy['description'],
+                        'host_url'      => $host2copy['host_url'],
+                        'address'       => $host2copy['address'],
+                        'Contact' => $contactIds,
+                        'Contactgroup' => $contactgroupIds,
+                        'Hostgroup' => $hostgroupIds,
+                    ]),
+                    'Contact' =>['Contact' => $contactIds],
+                    'Contactgroup' => ['Contactgroup' => $contactgroupIds],
+                    'Hostgroup' => ['Hostgroup' => $hostgroupIds],
+                    'Container' => ['Container' => $containerIds],
+                    'Customvariable' => $customVariables,
+                    'Hostcommandargumentvalue' => (!empty($sourceHost['Hostcommandargumentvalue']))?Hash::remove($sourceHost['Hostcommandargumentvalue'], '{n}.host_id'):[],
+                    'Parenthost' => ['Parenthost' => $parentHostIds]
+                ];
+                /* Data for Changelog Start*/
+                $sourceHost['Customvariable'] = $customVariables;
+                $hosttemplate['Customvariable'] = (!empty($sourceHost['Customvariable']) && !is_null($sourceHost['Customvariable']))?Hash::remove($sourceHost['Customvariable'], '{n}.object_id'):[];;
+
+
+                if(!empty($sourceHost['Parenthost'])){
+                    $parenthosts = [];
+                    foreach($sourceHost['Parenthost'] as $parenthost){
+                        $parenthosts[] = [
+                            'id' => $parenthost['id'],
+                            'name' => $parenthost['name']
+                        ];
+                    }
+                    $sourceHost['Parenthost'] = $parenthosts;
+                }
+                if(!empty($sourceHost['Contactgroup'])){
+                    $contactgroups = [];
+                    foreach($sourceHost['Contactgroup'] as $contactgroup){
+                        $contactgroups[] = [
+                            'id' => $contactgroup['id'],
+                            'name' => $contactgroup['Container']['name']
+                        ];
+                    }
+                    $sourceHost['Contactgroup'] = $contactgroups;
+                }elseif(empty($sourceHost['Contactgroup']) && !empty($hosttemplate['Contactgroup'])){
+                    $contactgroups = [];
+                    foreach($hosttemplate['Contactgroup'] as $contactgroup){
+                        $contactgroups[] = [
+                            'id' => $contactgroup['id'],
+                            'name' => $contactgroup['Container']['name']
+                        ];
+                    }
+                    $hosttemplate['Contactgroup'] = $contactgroups;
+                }
+
+                if(!empty($sourceHost['Hostgroup'])){
+                    $hostgroups = [];
+                    foreach($sourceHost['Hostgroup'] as $hostgroup){
+                        $hostgroups[] = [
+                            'id' => $hostgroup['id'],
+                            'name' => $hostgroup['Container']['name']
+                        ];
+                    }
+                    $sourceHost['Hostgroup'] = $hostgroups;
+                }elseif(empty($sourceHost['Hostgroup']) && !empty($hosttemplate['Hostgroup'])){
+                    $hostgroups = [];
+                    foreach($hosttemplate['Hostgroup'] as $hostgroup){
+                        $hostgroups[] = [
+                            'id' => $hostgroup['id'],
+                            'name' => $hostgroup['Container']['name']
+                        ];
+                    }
+                    $hosttemplate['Hostgroup'] = $hostgroups;
+                }
+                /* Data for Changelog End*/
+                $this->Host->set($newHostData);
+
                 if ($this->Host->validates()) {
-                    $dataToSaveArray[$host2copy['source']] = $data_to_save;
+                    $dataToSaveArray[$host2copy['source']] = $newHostData;
+                    $dataForChangeLog[$host2copy['source']] = [
+                        'Host'          => $sourceHost,
+                        'Hosttemplate'  => $hosttemplate
+                    ];
                 } else {
                     $validationError = true;
                 }
-
                 if (!empty($this->Host->validationErrors)) {
                     $validationErrors['Host'][$key] = $this->Host->validationErrors;
                 }
             }
-
             if ($validationError === false) {
                 //All data is valid we can create the copy of the host
                 $this->loadModel('Service');
                 $this->loadModel('Servicetemplate');
                 foreach ($dataToSaveArray as $sourceHostId => $data) {
                     $this->Host->create();
-                    if($this->Host->saveAll($data)){
-                        $hostDataAfterSave = $this->Host->dataForChangelogCopy($data, $hosttemplate);
+                    if($this->Host->saveAll($data)) {
+                        $hostDataAfterSave = $this->Host->dataForChangelogCopy($dataForChangeLog[$sourceHostId]['Host'], $dataForChangeLog[$sourceHostId]['Hosttemplate']);
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $this->params['action'],
                             $this->params['controller'],
@@ -1709,155 +1915,313 @@ class HostsController extends AppController {
                         if ($changelog_data) {
                             CakeLog::write('log', serialize($changelog_data));
                         }
-                    }
-                    $services = $this->Service->find('all', [
-                        'conditions' => [
-                            'Service.host_id' => $sourceHostId,
-                            'Service.service_type' => $this->Service->serviceTypes('copy'),
-                        ],
-                    ]);
-
-                    //A Cache for servicetemplates to reduce the SQL querys
-                    $servicetemplates = [];
-                    foreach ($services as $service) {
-                        if (isset($servicetemplates[$service['Service']['servicetemplate_id']])) {
-                            $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
-                        } else {
-                            $servicetemplates[$service['Service']['servicetemplate_id']] = $this->Servicetemplate->find('first',[
-                                    'recursive' => -1,
+                        $hostId = $this->Host->id;
+                        $services = $this->Service->find('all', [
+                            'recursive' => -1,
+                            'fields' => [
+                                'Service.name',
+                                'Service.servicetemplate_id',
+                                'Service.check_period_id',
+                                'Service.notify_period_id',
+                                'Service.description',
+                                'Service.command_id',
+                                'Service.eventhandler_command_id',
+                                'Service.check_interval',
+                                'Service.retry_interval',
+                                'Service.max_check_attempts',
+                                'Service.notification_interval',
+                                'Service.notifications_enabled',
+                                'Service.notify_on_warning',
+                                'Service.notify_on_unknown',
+                                'Service.notify_on_critical',
+                                'Service.notify_on_recovery',
+                                'Service.notify_on_flapping',
+                                'Service.notify_on_downtime',
+                                'Service.flap_detection_enabled',
+                                'Service.flap_detection_on_ok',
+                                'Service.flap_detection_on_warning',
+                                'Service.flap_detection_on_unknown',
+                                'Service.flap_detection_on_critical',
+                                'Service.process_performance_data',
+                                'Service.freshness_checks_enabled',
+                                'Service.freshness_threshold',
+                                'Service.notes',
+                                'Service.priority',
+                                'Service.tags',
+                                'Service.service_url',
+                                'Service.is_volatile',
+                                'Service.service_type',
+                                'Service.own_contacts',
+                                'Service.own_contactgroups',
+                                'Service.own_customvariables',
+                            ],
+                            'contain' => [
+                                'CheckPeriod' => [
                                     'fields' => [
-                                        'Servicetemplate.template_name',
-                                        'Servicetemplate.name',
-                                        'Servicetemplate.check_period_id',
-                                        'Servicetemplate.notify_period_id',
-                                        'Servicetemplate.description',
-                                        'Servicetemplate.command_id',
-                                        'Servicetemplate.eventhandler_command_id',
-                                        'Servicetemplate.check_interval',
-                                        'Servicetemplate.retry_interval',
-                                        'Servicetemplate.max_check_attempts',
-                                        'Servicetemplate.notification_interval',
-                                        'Servicetemplate.notifications_enabled',
-                                        'Servicetemplate.notify_on_warning',
-                                        'Servicetemplate.notify_on_unknown',
-                                        'Servicetemplate.notify_on_critical',
-                                        'Servicetemplate.notify_on_recovery',
-                                        'Servicetemplate.notify_on_flapping',
-                                        'Servicetemplate.notify_on_downtime',
-                                        'Servicetemplate.flap_detection_enabled',
-                                        'Servicetemplate.flap_detection_on_ok',
-                                        'Servicetemplate.flap_detection_on_warning',
-                                        'Servicetemplate.flap_detection_on_unknown',
-                                        'Servicetemplate.flap_detection_on_critical',
-                                        'Servicetemplate.process_performance_data',
-                                        'Servicetemplate.freshness_checks_enabled',
-                                        'Servicetemplate.freshness_threshold',
-                                        'Servicetemplate.notes',
-                                        'Servicetemplate.priority',
-                                        'Servicetemplate.tags',
-                                        'Servicetemplate.service_url',
-                                        'Servicetemplate.is_volatile',
-                                        'Servicetemplate.check_freshness',
-                                    ],
-                                    'contain' => [
-                                        'CheckPeriod' =>[
-                                            'fields' =>[
-                                                'CheckPeriod.id',
-                                                'CheckPeriod.name'
-                                            ]
-                                        ],
-                                        'NotifyPeriod' =>[
-                                            'fields' =>[
-                                                'NotifyPeriod.id',
-                                                'NotifyPeriod.name'
-                                            ]
-                                        ],
-                                        'CheckCommand' => [
-                                            'fields' => [
-                                                'CheckCommand.id',
-                                                'CheckCommand.name',
-                                            ]
-                                        ],
-                                        'Contact' => [
-                                            'fields' => [
-                                                'Contact.id',
-                                                'Contact.name'
-                                            ],
-                                        ],
-                                        'Contactgroup' => [
-                                            'fields' => [
-                                                'Contactgroup.id',
-                                            ],
-                                            'Container' => [
-                                                'fields' => [
-                                                    'Container.name'
-                                                ]
-                                            ]
-                                        ],
-                                        'Servicetemplatecommandargumentvalue' => [
-                                            'fields' => [
-                                                'id',
-                                                'commandargument_id',
-                                                'value',
-                                            ],
-                                        ],
-                                        'Servicetemplateeventcommandargumentvalue' => [
-                                            'fields' => [
-                                                'id',
-                                                'commandargument_id',
-                                                'value',
-                                            ],
-                                        ],
-                                        'Customvariable' => [
-                                            'fields' => [
-                                                'name', 'value',
-                                            ],
-                                        ],
-                                    ],
-                                    'conditions' => [
-                                        'Servicetemplate.id' => $service['Service']['servicetemplate_id']
+                                        'CheckPeriod.id',
+                                        'CheckPeriod.name'
                                     ]
-                                ]
-                            );
-                            $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
-                        }
-                        unset($service['Service']['id']);
-                        $service['Service']['uuid'] = UUID::v4();
-                        $service['Service']['host_id'] = $this->Host->id;
-                        $service['Host'] = $data;
+                                ],
+                                'NotifyPeriod' => [
+                                    'fields' => [
+                                        'NotifyPeriod.id',
+                                        'NotifyPeriod.name'
+                                    ]
+                                ],
+                                'CheckCommand' => [
+                                    'fields' => [
+                                        'CheckCommand.id',
+                                        'CheckCommand.name',
+                                    ]
+                                ],
+                                'Contact' => [
+                                    'fields' => [
+                                        'Contact.id',
+                                        'Contact.name'
+                                    ],
+                                ],
+                                'Contactgroup' => [
+                                    'fields' => [
+                                        'Contactgroup.id',
+                                    ],
+                                    'Container' => [
+                                        'fields' => [
+                                            'Container.name'
+                                        ]
+                                    ]
+                                ],
+                                'Servicecommandargumentvalue' => [
+                                    'fields' => [
+                                        'commandargument_id', 'value',
+                                    ],
+                                ],
+                                'Serviceeventcommandargumentvalue' => [
+                                    'fields' => [
+                                        'commandargument_id', 'value',
+                                    ],
+                                ],
+                                'Customvariable' => [
+                                    'fields' => [
+                                        'name',
+                                        'value',
+                                        'objecttype_id'
+                                    ],
+                                ],
+                                'Servicegroup' => [
+                                    'fields' => [
+                                        'Servicegroup.id',
+                                    ],
+                                    'Container' => [
+                                        'fields' => [
+                                            'Container.name'
+                                        ]
+                                    ]
+                                ],
+                            ],
+                            'conditions' => [
+                                'Service.host_id' => $sourceHostId,
+                                'Service.service_type' => $this->Service->serviceTypes('copy'),
+                            ],
+                        ]);
 
-                        $service['Service']['Contact'] = $service['Contact'];
-                        $service['Service']['Contactgroup'] = $service['Contactgroup'];
-                        $service['Service']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
+                        //A Cache for servicetemplates to reduce the SQL querys
+                        $servicetemplates = [];
+                        foreach ($services as $service) {
+                            if (isset($servicetemplates[$service['Service']['servicetemplate_id']])) {
+                                $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
+                            } else {
+                                $servicetemplates[$service['Service']['servicetemplate_id']] = $this->Servicetemplate->find('first', [
+                                        'recursive' => -1,
+                                        'fields' => [
+                                            'Servicetemplate.template_name',
+                                            'Servicetemplate.name',
+                                            'Servicetemplate.check_period_id',
+                                            'Servicetemplate.notify_period_id',
+                                            'Servicetemplate.description',
+                                            'Servicetemplate.command_id',
+                                            'Servicetemplate.eventhandler_command_id',
+                                            'Servicetemplate.check_interval',
+                                            'Servicetemplate.retry_interval',
+                                            'Servicetemplate.max_check_attempts',
+                                            'Servicetemplate.notification_interval',
+                                            'Servicetemplate.notifications_enabled',
+                                            'Servicetemplate.notify_on_warning',
+                                            'Servicetemplate.notify_on_unknown',
+                                            'Servicetemplate.notify_on_critical',
+                                            'Servicetemplate.notify_on_recovery',
+                                            'Servicetemplate.notify_on_flapping',
+                                            'Servicetemplate.notify_on_downtime',
+                                            'Servicetemplate.flap_detection_enabled',
+                                            'Servicetemplate.flap_detection_on_ok',
+                                            'Servicetemplate.flap_detection_on_warning',
+                                            'Servicetemplate.flap_detection_on_unknown',
+                                            'Servicetemplate.flap_detection_on_critical',
+                                            'Servicetemplate.process_performance_data',
+                                            'Servicetemplate.freshness_checks_enabled',
+                                            'Servicetemplate.freshness_threshold',
+                                            'Servicetemplate.notes',
+                                            'Servicetemplate.priority',
+                                            'Servicetemplate.tags',
+                                            'Servicetemplate.service_url',
+                                            'Servicetemplate.is_volatile',
+                                            'Servicetemplate.check_freshness',
+                                        ],
+                                        'contain' => [
+                                            'CheckPeriod' => [
+                                                'fields' => [
+                                                    'CheckPeriod.id',
+                                                    'CheckPeriod.name'
+                                                ]
+                                            ],
+                                            'NotifyPeriod' => [
+                                                'fields' => [
+                                                    'NotifyPeriod.id',
+                                                    'NotifyPeriod.name'
+                                                ]
+                                            ],
+                                            'CheckCommand' => [
+                                                'fields' => [
+                                                    'CheckCommand.id',
+                                                    'CheckCommand.name',
+                                                ]
+                                            ],
+                                            'Contact' => [
+                                                'fields' => [
+                                                    'Contact.id',
+                                                    'Contact.name'
+                                                ],
+                                            ],
+                                            'Contactgroup' => [
+                                                'fields' => [
+                                                    'Contactgroup.id',
+                                                ],
+                                                'Container' => [
+                                                    'fields' => [
+                                                        'Container.name'
+                                                    ]
+                                                ]
+                                            ],
+                                            'Servicegroup' => [
+                                                'fields' => [
+                                                    'Servicegroup.id',
+                                                ],
+                                                'Container' => [
+                                                    'fields' => [
+                                                        'Container.name'
+                                                    ]
+                                                ]
+                                            ],
+                                            'Servicetemplatecommandargumentvalue' => [
+                                                'fields' => [
+                                                    'id',
+                                                    'commandargument_id',
+                                                    'value',
+                                                ],
+                                            ],
+                                            'Servicetemplateeventcommandargumentvalue' => [
+                                                'fields' => [
+                                                    'id',
+                                                    'commandargument_id',
+                                                    'value',
+                                                ],
+                                            ],
+                                            'Customvariable' => [
+                                                'fields' => [
+                                                    'name', 'value',
+                                                ],
+                                            ],
+                                        ],
+                                        'conditions' => [
+                                            'Servicetemplate.id' => $service['Service']['servicetemplate_id']
+                                        ]
+                                    ]
+                                );
+                                $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
+                            }
+                            $service = Hash::remove($service, 'Service.id');
+                            $service = Hash::remove($service, '{s}.{n}.{s}.service_id');
+                            $contactIds = (!empty($service['Contact'])) ? Hash::extract($service['Contact'], '{n}.id') : [];
+                            $contactgroupIds = (!empty($service['Contactgroup'])) ? Hash::extract($service['Contactgroup'], '{n}.id') : [];
+                            $servicegroupIds = (!empty($service['Servicegroup'])) ? Hash::extract($service['Servicegroup'], '{n}.id') : [];
+                            $customVariables = (!empty($service['Customvariable'])) ? Hash::remove($service['Customvariable'], '{n}.object_id') : [];
+                            $newServiceData = [
+                                'Service' => Hash::merge(
+                                    $service['Service'], [
+                                    'uuid' => UUID::v4(),
+                                    'host_id' => $hostId,
+                                    'Contact' => $contactIds,
+                                    'Contactgroup' => $contactgroupIds,
+                                    'Servicegroup' => $servicegroupIds
+                                ]),
+                                'Contact' => ['Contact' => $contactIds],
+                                'Contactgroup' => ['Contactgroup' => $contactgroupIds],
+                                'Servicegroup' => ['Servicegroup' => $servicegroupIds],
+                                'Customvariable' => $customVariables,
+                                'Servicecommandargumentvalue' => (!empty($service['Servicecommandargumentvalue'])) ? Hash::remove($service['Servicecommandargumentvalue'], '{n}.service_id') : [],
+                                'Serviceeventcommandargumentvalue' => (!empty($service['Serviceeventcommandargumentvalue'])) ? Hash::remove($service['Serviceeventcommandargumentvalue'], '{n}.service_id') : [],
+                            ];
 
-                        $service['Contact']['Contact'] = $service['Contact'];
-                        $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
-                        $service['Servicegroup']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
+                            /* Data for Changelog Start*/
+                            $service['Host'] = ['id' => $hostId, 'name' => $data['Host']['name']];
+                            $service['Customvariable'] = $customVariables;
+                            $servicetemplate['Customvariable'] = (!empty($service['Customvariable']) && !is_null($service['Customvariable']))?Hash::remove($service['Customvariable'], '{n}.object_id'):[];;
 
+                            if (!empty($service['Contactgroup'])) {
+                                $contactgroups = [];
+                                foreach ($service['Contactgroup'] as $contactgroup) {
+                                    $contactgroups[] = [
+                                        'id' => $contactgroup['id'],
+                                        'name' => $contactgroup['Container']['name']
+                                    ];
+                                }
+                                $service['Contactgroup'] = $contactgroups;
+                            } elseif (empty($service['Contactgroup']) && !empty($servicetemplate['Contactgroup'])) {
+                                $contactgroups = [];
+                                foreach ($servicetemplate['Contactgroup'] as $contactgroup) {
+                                    $contactgroups[] = [
+                                        'id' => $contactgroup['id'],
+                                        'name' => $contactgroup['Container']['name']
+                                    ];
+                                }
+                                $servicetemplate['Contactgroup'] = $contactgroups;
+                            }
 
-
-                        $service['Host'] = ['id' => $sourceHostId, 'name' => $data['Host']['name']];
-                        $service['Contact']['Contact'] = $service['Contact'];
-                        $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
-                        $service['Servicegroup']['Servicegroup'] = (is_array($service['Servicegroup'])) ? $service['Servicegroup'] : [];
-
-
-                        $data_to_save = $this->Service->prepareForSave($this->Service->diffWithTemplate($service, $servicetemplate), $service, 'add');
-                        $this->Service->create();
-                        if($this->Service->saveAll($data_to_save)){
-                            $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
-                            $changelog_data = $this->Changelog->parseDataForChangelog(
-                                $this->params['action'],
-                                'services',
-                                $this->Service->id,
-                                OBJECT_SERVICE,
-                                $data['Host']['container_id'],
-                                $userId,
-                                $data['Host']['name'].'/'.$serviceDataAfterSave['Service']['name'],
-                                $serviceDataAfterSave
-                            );
-                            if ($changelog_data) {
-                                CakeLog::write('log', serialize($changelog_data));
+                            if (!empty($service['Servicegroup'])) {
+                                $servicegroups = [];
+                                foreach ($service['Servicegroup'] as $servicegroup) {
+                                    $servicegroups[] = [
+                                        'id' => $servicegroup['id'],
+                                        'name' => $servicegroup['Container']['name']
+                                    ];
+                                }
+                                $service['Servicegroup'] = $servicegroups;
+                            } elseif (empty($service['Servicegroup']) && !empty($servicetemplate['Servicegroup'])) {
+                                $servicegroups = [];
+                                foreach ($servicetemplate['Servicegroup'] as $servicegroup) {
+                                    $servicegroups[] = [
+                                        'id' => $servicegroup['id'],
+                                        'name' => $servicegroup['Container']['name']
+                                    ];
+                                }
+                                $servicetemplate['Servicegroup'] = $servicegroups;
+                            }
+                            /* Data for Changelog End*/
+                            $this->Service->create();
+                            if ($this->Service->saveAll($newServiceData)) {
+                                $serviceDataAfterSave = $this->Service->dataForChangelogCopy($service, $servicetemplate);
+                                $changelog_data = $this->Changelog->parseDataForChangelog(
+                                    $this->params['action'],
+                                    'services',
+                                    $this->Service->id,
+                                    OBJECT_SERVICE,
+                                    $data['Host']['container_id'],
+                                    $userId,
+                                    $data['Host']['name'] . '/' . $serviceDataAfterSave['Service']['name'],
+                                    $serviceDataAfterSave
+                                );
+                                if ($changelog_data) {
+                                    CakeLog::write('log', serialize($changelog_data));
+                                }
                             }
                         }
                     }
@@ -1870,8 +2234,7 @@ class HostsController extends AppController {
                     $this->Host->validationErrors = $validationErrors['Host'];
                     $this->setFlash(__('Could not copy host/s'), false);
                     /*
-                    For multiple "line" validation errors the array we gibe the view needs to look like this
-    :
+                    For multiple "line" validation errors the array we gibe the view needs to look like this:
                     array(
                         (int) 0 => array(
                             'name' => array(
@@ -1902,8 +2265,6 @@ class HostsController extends AppController {
         }
         $this->set(compact(['hosts']));
         $this->set('back_url', $this->referer());
-        //$this->setFlash(__('Hosts deleted'));
-        //$this->redirect(array('action' => 'index'));
     }
 
     function browser($id = null) {
