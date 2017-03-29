@@ -351,6 +351,7 @@ class Host extends AppModel {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Hostgroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare) {
+            if(!is_array($prepare_array)) return [];
             $currentKey = key($prepare_array);
             if(!in_array($currentKey, $keysForArraySort, true)){
                 return $prepare_array;
