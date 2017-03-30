@@ -158,7 +158,42 @@ class Background extends MapModuleAppModel
         $this->importIconsFromFilesToDB();
         $allMapsIcons = $myMapUpload->find('all', [
             'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds],
+            'recursive' => -1
         ]);
+
+        // checking the folder if something is missing
+        $itemsFolder = scandir($basePath);
+        $iconInsert = false;
+        foreach ($itemsFolder as $name) {
+            if(in_array($name, ['.', '..'])) continue;
+
+            if(!file_exists($basePath.DS.$name.DS.'ok.png')) {
+                continue;
+            }
+
+            foreach($allMapsIcons as $myMapsIcon){
+                if($myMapsIcon['MapUpload']['saved_name'] === $name){
+                    continue 2;
+                }
+            }
+
+            $iconInsert = true;
+            $newUpload = new MapUpload();
+            $newUpload->set([
+                'upload_type'  => MapUpload::TYPE_ICON_SET,
+                'upload_name'  => $name,
+                'saved_name'   => $name,
+                'container_id' => 1,
+            ]);
+            $newUpload->save();
+        }
+        if($iconInsert){
+            $allMapsIcons = $myMapUpload->find('all', [
+                'conditions' => ['MapUpload.upload_type' => MapUpload::TYPE_ICON_SET, 'MapUpload.container_id' => $containerIds],
+                'recursive' => -1
+            ]);
+        }
+
         $iconSets = [];
         foreach ($allMapsIcons as $mapUploadItem) {
             //check if there is an ok.png icon
