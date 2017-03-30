@@ -100,7 +100,7 @@ class Changelog extends AppModel
                 'Servicetemplate'   => '{n}.{(id|name)}',
             ],
             'host'            => [
-                'Host'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Host'                     => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
                 'Hosttemplate'             => '{(id|name)}',
                 'CheckPeriod'              => '{(id|name)}',
                 'NotifyPeriod'             => '{(id|name)}',
@@ -133,6 +133,7 @@ class Changelog extends AppModel
         return $_objectDefaults;
     }
 
+    // use $user_id = 0 to specify cron task 
     public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_id, $user_id, $name, $requestData, $currentSavedData = [])
     {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];

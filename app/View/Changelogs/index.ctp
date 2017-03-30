@@ -169,9 +169,9 @@
                                                 <?php if ($change['User']['lastname'] !== null && $change['User']['firstname'] !== null && $change['User']['id'] !== null): ?>
                                                     <?php echo __('by'); ?>
                                                     <a href="/users/edit/<?php echo $change['User']['id']; ?>"><?php echo $change['User']['firstname'].' '.$change['User']['lastname']; ?></a>
-                                                    <?php
+                                                <?php
                                                 else:
-                                                    echo __('User has been deleted');
+                                                    echo $change['Changelog']['user_id'] === '0' ? __('with Cron Job') : __('by deleted user');
                                                 endif; ?>
 												</span>
 
