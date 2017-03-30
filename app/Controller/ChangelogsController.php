@@ -129,14 +129,12 @@ class ChangelogsController extends AppController
                             'label' => '<i class="fa fa-plus txt-color-greenLight"></i> add',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                    /*
                         'copy' => [
                             'name'  => 'copy',
                             'value' => 1,
                             'label' => 'copy',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                    */
                         'delete' => [
                             'name'  => 'delete',
                             'value' => 1,

@@ -711,6 +711,33 @@ class Host extends AppModel {
         return $host;
     }
 
+    public function dataForChangelogCopy($host, $hosttemplate)
+    {
+        $hostcommandargumentvalue = [];
+        if (!empty($host['Hostcommandargumentvalue'])) {
+            $hostcommandargumentvalue = $host['Hostcommandargumentvalue'];
+        }else {
+            if ($host['Host']['command_id'] === $hosttemplate['Hosttemplate']['command_id'] || $host['Host']['command_id'] === null) {
+                $hostcommandargumentvalue = $hosttemplate['Hosttemplatecommandargumentvalue'];
+            }
+        }
+
+        $host = [
+            'Host'                      => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), $hosttemplate['Hosttemplate']),
+            'Contact'                   => (!empty($host['Contact'])) ? $host['Contact'] : $hosttemplate['Contact'],
+            'Contactgroup'              => (!empty($host['Contactgroup'])) ? $host['Contactgroup'] : $hosttemplate['Contactgroup'],
+            'Customvariable'            => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $hosttemplate['Customvariable'],
+            'Hostcommandargumentvalue'  => $hostcommandargumentvalue,
+            'Hosttemplate'              => $hosttemplate['Hosttemplate'],
+            'Hostgroup'                 => (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $hosttemplate['Hostgroup'],
+            'Parenthost'                => (!empty($host['Parenthost'])) ? $host['Parenthost'] : [],
+            'CheckPeriod'               => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
+            'NotifyPeriod'              => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
+            'CheckCommand'              => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
+        ];
+        return $host;
+    }
+
     /**
      * Callback function for filtering.
      *
