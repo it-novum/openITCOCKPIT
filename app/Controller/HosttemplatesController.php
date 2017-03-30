@@ -177,6 +177,7 @@ class HosttemplatesController extends AppController {
                 'CheckPeriod',
                 'Contact',
                 'Hosttemplatecommandargumentvalue' => ['Commandargument'],
+                'Host'
             ],
         ]);
         $oldHosttemplateCheckCommandId = $hosttemplate['Hosttemplate']['command_id'];
@@ -207,6 +208,16 @@ class HosttemplatesController extends AppController {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+        if(count($hosttemplate['Host']) > 0){
+            $newContainers = [];
+            foreach($containers as $containerId => $containerName){
+                if(!in_array($containerId, [ROOT_CONTAINER, $hosttemplate['Hosttemplate']['container_id']]))
+                    continue;
+                $newContainers[$containerId] = $containerName;
+            }
+            $containers = $newContainers;
         }
 
         // Data to refill form
