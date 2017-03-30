@@ -130,13 +130,20 @@ class LdapComponent extends Component
 
     public function findAllUser($allData = false)
     {
+        $ldapType = isset($this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE']) ? $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] : 'adldap';
         $returnUsers = [];
-        $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+        if($ldapType === 'openldap'){
+            $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+            $selectFields = ['uid', 'mail', 'sn', 'givenname', 'displayname'];
+        }else{
+            $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+            $selectFields = ['samaccountname', 'mail', 'sn', 'givenname', 'displayname'];
+        }
         $perPage = 900;
         $currentPage = 0;
         $makeRequest = true;
         while($makeRequest){
-            $ldapUsers = $this->adldap->search()->select(['samaccountname', 'mail', 'sn', 'givenname', 'displayname'])->paginate($perPage, $currentPage);
+            $ldapUsers = $this->adldap->search()->select($selectFields)->paginate($perPage, $currentPage);
             foreach ($ldapUsers[1] as $ldapUser) {
                 $ableToImport = true;
                 foreach ($requiredFields as $requiredField) {
@@ -146,6 +153,10 @@ class LdapComponent extends Component
                 }
 
                 if ($ableToImport) {
+                    if($ldapType === 'openldap'){
+                        $ldapUser['samaccountname'] = $ldapUser['uid'];
+                    }
+
                     if($allData){
                         $returnUsers[$ldapUser['samaccountname']] = $ldapUser;
                     }else {
