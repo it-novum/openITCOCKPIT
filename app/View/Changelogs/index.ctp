@@ -31,7 +31,7 @@
                 <?php echo __('System'); ?>
                 <span>>
                     <?php echo __('Changelog'); ?>
-			</span>
+            </span>
             </h1>
         </div>
     </div>
@@ -43,19 +43,6 @@
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <!-- Widget ID (each widget will need unique ID)-->
                 <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                    <!-- widget options:
-                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                    data-widget-colorbutton="false"
-                    data-widget-editbutton="false"
-                    data-widget-togglebutton="false"
-                    data-widget-deletebutton="false"
-                    data-widget-fullscreenbutton="false"
-                    data-widget-custombutton="false"
-                    data-widget-collapsed="true"
-                    data-widget-sortable="false"
-
-                    -->
                     <header>
                         <div class="widget-toolbar" role="menu">
                             <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
@@ -71,7 +58,7 @@
 
                     <!-- widget div-->
                     <div>
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false); ?>
                         <!-- widget edit box -->
                         <div class="jarviswidget-editbox">
                             <!-- This area used as dropdown edit box -->
@@ -85,7 +72,7 @@
                                         <?php $niceTime = true; ?>
                                         <?php
                                         $replacement_keys_for_objects = [
-                                            'Command'    => [
+                                            'Command' => [
                                                 'command_type' => [
                                                     1 => 'CHECK_COMMAND',
                                                     2 => 'HOSTCHECK_COMMAND',
@@ -104,7 +91,7 @@
                                                     7 => __('Sunday'),
                                                 ],
                                             ],
-                                            'Timerange'  => [
+                                            'Timerange' => [
                                                 'day' => [
                                                     1 => __('Monday'),
                                                     2 => __('Tuesday'),
@@ -147,33 +134,33 @@
                                                 </div>
                                                 <div class="smart-timeline-content">
                                                     <p>
-											<span><?php echo __($change['Changelog']['model']) ?>:
-												<strong> <?php
+                                            <span><?php echo __($change['Changelog']['model']) ?>:
+                                                <strong> <?php
                                                     if (array_key_exists($change['Changelog']['object_id'], $link_ids[$change['Changelog']['model']]) && $link_ids[$change['Changelog']['model']][$change['Changelog']['object_id']]):
                                                         echo $this->Html->link($change['Changelog']['name'], [
                                                             'controller' => $link_ids[$change['Changelog']['model']][$change['Changelog']['object_id']],
-                                                            'action'     => 'edit',
+                                                            'action' => 'edit',
                                                             $change['Changelog']['object_id'],
                                                         ],
                                                             ['class' => 'light_blue', 'escape' => false]);
 
                                                     else:?>
                                                         <span class="changelog_delete">
-													<?php
+                                                    <?php
                                                     echo $change['Changelog']['name']; ?>
-													</span>
+                                                    </span>
                                                         <?php
                                                     endif;
                                                     ?>
-												</strong>
+                                                </strong>
                                                 <?php if ($change['User']['lastname'] !== null && $change['User']['firstname'] !== null && $change['User']['id'] !== null): ?>
                                                     <?php echo __('by'); ?>
                                                     <a href="/users/edit/<?php echo $change['User']['id']; ?>"><?php echo $change['User']['firstname'].' '.$change['User']['lastname']; ?></a>
-                                                <?php
+                                                <?php 
                                                 else:
                                                     echo $change['Changelog']['user_id'] === '0' ? __('with Cron Job') : __('by deleted user');
                                                 endif; ?>
-												</span>
+                                                </span>
 
                                                     </p>
                                                     <?php
@@ -184,17 +171,10 @@
                                                                 foreach ($values_arr as $key => $value):?>
                                                                     <?php
                                                                     if (isset($value['current_data'])):
-                                                                        $show_identifier = (in_array($key, $hide_field_names) && !preg_match('/^'.$key.'$/i', $change['Changelog']['model'])) ? false : true;
+                                                                        $show_identifier = (in_array($key, $hide_field_names) && !preg_match('/^' . $key . '$/i', $change['Changelog']['model'])) ? false : true;
                                                                         ?>
                                                                         <p class="font-xs padding-top-10"><?php echo $key; ?></p>
                                                                         <?php
-                                                                        /* Array Dimension => 1
-                                                                        'current_data' => array(
-                                                                            'command_type' => '2',
-                                                                            'name' => 'Neues Kommando',
-                                                                            'command_line' => 'echo 123;'
-                                                                        )
-                                                                         */
                                                                         //if old data has been deleted => dimensions $value['current_data'] = 0
                                                                         $current_data_dimension_counter = Hash::dimensions($value['current_data']);
                                                                         $after_data_dimension_counter = (isset($value['after'])) ? Hash::dimensions($value['after']) : 0;
@@ -203,41 +183,26 @@
                                                                                 if ($after_data_dimension_counter === 1):
                                                                                     foreach (array_keys($value['after']) as $field_name):
                                                                                         if ($field_name !== 'id'):?>
-                                                                                            <small><?php echo ($show_identifier) ? $field_name.':' : ''; ?>
+                                                                                            <small><?php echo ($show_identifier) ? $field_name . ':' : ''; ?>
                                                                                                 <span class="txt-color-blue">
-																						<?php
+                                                                                        <?php
                                                                                         echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : $value['after'][$field_name]); ?>
-																					</span>
+                                                                                    </span>
                                                                                             </small>
                                                                                             <?php
-                                                                                            /*
-                                                                                            else:
-                                                                                                if(!isset($link_ids[$key])):
-                                                                                                    $link_ids[$key] = [];
-                                                                                                endif;
-                                                                                                if(!array_key_exists($value['after'][$field_name], $link_ids[$key])):
-                                                                                                    $link_ids[$key][$value['after'][$field_name]] = recordExists($key, $value['after'][$field_name]);
-                                                                                                endif;
-                                                                                            */
                                                                                         endif;
                                                                                     endforeach;
                                                                                 elseif ($after_data_dimension_counter === 2):
                                                                                     foreach ($value['after'] as $counter => $after_data_value):
                                                                                         foreach (array_keys($after_data_value) as $field_identifier):
                                                                                             if ($field_identifier !== 'id'):?>
-                                                                                                <small><?php echo ($show_identifier) ? $field_identifier.':' : ''; ?>
+                                                                                                <small><?php echo ($show_identifier) ? $field_identifier . ':' : ''; ?>
                                                                                                     <span class="txt-color-blue"><?php
                                                                                                         echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_identifier, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_identifier][$after_data_value[$field_identifier]] : $after_data_value[$field_identifier]);
                                                                                                         ?>
-																					</span>
+                                                                                    </span>
                                                                                                 </small>
                                                                                                 <?php
-                                                                                                /*
-                                                                                                else:
-                                                                                                    if(!array_key_exists($after_data_value[$field_identifier], $link_ids[$key])):
-                                                                                                        $link_ids[$key][$after_data_value[$field_identifier]] = recordExists($key, $after_data_value[$field_identifier]);
-                                                                                                    endif;
-                                                                                                */
                                                                                             endif;
                                                                                         endforeach;
                                                                                     endforeach;
@@ -249,29 +214,30 @@
                                                                                     continue;
                                                                                 endif;
                                                                                 if ($field_name !== 'id'):?>
-                                                                                    <small><?php echo ($show_identifier) ? $field_name.':' : ''; ?>
+                                                                                    <small><?php echo ($show_identifier) ? $field_name . ':' : ''; ?>
                                                                                         <?php
                                                                                         switch ($change['Changelog']['action']):
                                                                                             case 'edit':
                                                                                                 ?>
                                                                                                 <span class="txt-color-red">
-																					<?php
+                                                                                    <?php
 
                                                                                     echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['before'][$field_name]] : $value['before'][$field_name]); ?>
-																				</span>
+                                                                                </span>
                                                                                                 <i class="fa fa-caret-right"></i>
                                                                                                 <span class="txt-color-green">
-																					<?php
+                                                                                    <?php
                                                                                     echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : $value['after'][$field_name]); ?>
-																				</span>
+                                                                                </span>
                                                                                                 <?php
                                                                                                 break;
                                                                                             case 'add':
+                                                                                            case 'copy':
                                                                                                 ?>
                                                                                                 <span class="txt-color-blue">
-																					<?php
+                                                                                    <?php
                                                                                     echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['current_data'][$field_name]] : $value['current_data'][$field_name]); ?>
-																					</span>
+                                                                                    </span>
                                                                                                 <?php
                                                                                                 break;
                                                                                         endswitch;
@@ -280,25 +246,13 @@
                                                                                     <?php
                                                                                 endif;
                                                                             endforeach;
-                                                                        /* Array Dimension => 2
-                                                                        'current_data' => array(
-                                                                            (int) 0 => array(
-                                                                            'name' => '$ARG1$',
-                                                                            'human_name' => 'Wert 1'
-                                                                        ),
-                                                                        (int) 1 => array(
-                                                                            'name' => '$ARG2$',
-                                                                            'human_name' => 'Wert 2'
-                                                                        ),
-                                                                        )
-                                                                         */
                                                                         elseif ($current_data_dimension_counter === 2):
                                                                             foreach ($value['current_data'] as $counter => $current_data_value):
                                                                                 $changelog_min_action = 'changelog_new';
                                                                                 $ids_after_save = (isset($value['after'])) ? Hash::extract($value['after'], '{n}.id') : [];
                                                                                 $ids_before_save = (isset($value['before'])) ? Hash::extract($value['before'], '{n}.id') : [];
                                                                                 if (isset($current_data_value['id'])):
-                                                                                    if (!in_array($current_data_value['id'], $ids_before_save) && !in_array($current_data_value['id'], $ids_after_save) && $change['Changelog']['action'] != 'add'):
+                                                                                    if (!in_array($current_data_value['id'], $ids_before_save) && !in_array($current_data_value['id'], $ids_after_save) && ($change['Changelog']['action'] != 'add' && $change['Changelog']['action'] != 'copy')):
                                                                                         continue;
                                                                                     endif;
                                                                                     if (in_array($current_data_value['id'], $ids_before_save) && !in_array($current_data_value['id'], $ids_after_save)):
@@ -309,7 +263,7 @@
                                                                                 endif;
                                                                                 foreach (array_keys($current_data_value) as $field_identifier):
                                                                                     if ($field_identifier !== 'id'):?>
-                                                                                        <small><?php echo ($show_identifier) ? $field_identifier.':' : ''; ?>
+                                                                                        <small><?php echo ($show_identifier) ? $field_identifier . ':' : ''; ?>
                                                                                             <?php
                                                                                             switch ($changelog_min_action):
                                                                                                 case 'changelog_delete':
@@ -323,18 +277,18 @@
                                                                                                 case 'changelog_edit':
                                                                                                     ?>
                                                                                                     <?php
-                                                                                                    $value_after_edit = (isset(Hash::extract($value['after'], '{n}[id='.$current_data_value['id'].'].'.$field_identifier)[0])) ? Hash::extract($value['after'], '{n}[id='.$current_data_value['id'].'].'.$field_identifier)[0] : '';
+                                                                                                    $value_after_edit = (isset(Hash::extract($value['after'], '{n}[id=' . $current_data_value['id'] . '].' . $field_identifier)[0])) ? Hash::extract($value['after'], '{n}[id=' . $current_data_value['id'] . '].' . $field_identifier)[0] : '';
                                                                                                     ?>
                                                                                                     <span class="txt-color-red"><?php
                                                                                                         echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_identifier, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_identifier][$current_data_value[$field_identifier]] : $current_data_value[$field_identifier]);
                                                                                                         ?>
-																						</span>
+                                                                                        </span>
                                                                                                     <i class="fa fa-caret-right"></i>
                                                                                                     <span class="txt-color-green">
-																							<?php
+                                                                                            <?php
                                                                                             echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_identifier, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_identifier][$value_after_edit] : $value_after_edit);
                                                                                             ?>
-																						</span>
+                                                                                        </span>
                                                                                                     <?php
                                                                                                     break;
                                                                                                 case 'changelog_new':
@@ -342,22 +296,13 @@
                                                                                                     <span class="txt-color-blue"><?php
                                                                                                         echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_identifier, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_identifier][$current_data_value[$field_identifier]] : $current_data_value[$field_identifier]);
                                                                                                         ?>
-																						</span>
+                                                                                        </span>
                                                                                                     <?php
                                                                                                     break;
                                                                                             endswitch;
                                                                                             ?>
                                                                                         </small>
                                                                                         <?php
-                                                                                        /*
-                                                                                        else:
-                                                                                            if(!isset($link_ids[$key])):
-                                                                                                $link_ids[$key] = [];
-                                                                                            endif;
-                                                                                            if(!array_key_exists($current_data_value[$field_identifier], $link_ids[$key])):
-                                                                                                $link_ids[$key][$current_data_value[$field_identifier]] = recordExists($key, $current_data_value[$field_identifier]);
-                                                                                            endif;
-                                                                                        */
                                                                                     endif;
                                                                                 endforeach;
                                                                             endforeach;
@@ -369,23 +314,15 @@
                                                                                     endif;
                                                                                     foreach (array_keys($saved_value) as $field_identifier):
                                                                                         if ($field_identifier == 'id'):
-                                                                                            /*
-                                                                                            if(!isset($link_ids[$key])):
-                                                                                                $link_ids[$key] = [];
-                                                                                            endif;
-                                                                                            if(!array_key_exists($saved_value[$field_identifier], $link_ids[$key])):
-                                                                                                $link_ids[$key][$saved_value[$field_identifier]] = recordExists($key, $saved_value[$field_identifier]);
-                                                                                            endif;
-                                                                                            */
                                                                                             continue;
                                                                                         endif;
                                                                                         ?>
-                                                                                        <small><?php echo ($show_identifier) ? $field_identifier.':' : ''; ?>
+                                                                                        <small><?php echo ($show_identifier) ? $field_identifier . ':' : ''; ?>
                                                                                             <span class="txt-color-blue">
-																					<?php
+                                                                                    <?php
                                                                                     echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_identifier, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_identifier][$saved_value[$field_identifier]] : $saved_value[$field_identifier]);
                                                                                     ?>
-																				</span>
+                                                                                </span>
                                                                                         </small>
                                                                                         <?php
                                                                                     endforeach;
@@ -428,19 +365,18 @@
         <!-- end row -->
     </section>
 <?php
-function recordExists($model_name, $id)
-{
+function recordExists($model_name, $id) {
     $excluded_models = ['Timerange', 'Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue'];
     if (in_array($model_name, $excluded_models)) {
         return false;
     }
     $replacement_for_modelname = [
-        'HostCommands'    => 'Command',
+        'HostCommands' => 'Command',
         'ServiceCommands' => 'Command',
-        'CheckCommand'    => 'Command',
-        'CheckPeriod'     => 'Timeperiod',
-        'NotifyPeriod'    => 'Timeperiod',
-        'Parenthost'      => 'Host',
+        'CheckCommand' => 'Command',
+        'CheckPeriod' => 'Timeperiod',
+        'NotifyPeriod' => 'Timeperiod',
+        'Parenthost' => 'Host',
     ];
     if (array_key_exists($model_name, $replacement_for_modelname)) {
         $model_name = $replacement_for_modelname[$model_name];
