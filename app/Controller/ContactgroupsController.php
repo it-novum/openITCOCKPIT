@@ -431,6 +431,7 @@ class ContactgroupsController extends AppController
 
     public function copy($id = null)
     {
+        $userId = $this->Auth->user('id');
         $contactgroups = $this->Contactgroup->find('all', [
             'recursive' => -1,
             'contain' =>[
@@ -443,7 +444,8 @@ class ContactgroupsController extends AppController
                 ],
                 'Contact' => [
                     'fields' =>[
-                        'Contact.id'
+                        'Contact.id',
+                        'Contact.name'
                     ]
                 ]
             ],
@@ -456,7 +458,6 @@ class ContactgroupsController extends AppController
         ]);
 
         $contactgroups = Hash::combine($contactgroups, '{n}.Contactgroup.id', '{n}');
-
         if ($this->request->is('post') || $this->request->is('put')) {
             $datasource = $this->Contactgroup->getDataSource();
             try {
@@ -479,11 +480,30 @@ class ContactgroupsController extends AppController
                     if (!$this->Contactgroup->saveAll($newContactGroupData)) {
                         throw new Exception('Some of the Contactgroups could not be copied');
                     }
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Contactgroup->id,
+                        OBJECT_CONTACTGROUP,
+                        $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
+                        $userId,
+                        $newContactGroup['name'],
+                        Hash::merge($contactgroups[$sourceContactGroupId], [
+                            'Contactgroup' => [
+                                'description' =>  $newContactGroup['description']
+                            ],
+                            'Container' => [
+                                'name' => $newContactGroup['name']
+                            ]
+                        ])
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
                 }
                 $datasource->commit();
                 $this->setFlash(__('Contactgroups are successfully copied'));
                 $this->redirect(['action' => 'index']);
-
             } catch (Exception $e) {
                 $datasource->rollback();
                 $this->setFlash(__($e->getMessage()), false);

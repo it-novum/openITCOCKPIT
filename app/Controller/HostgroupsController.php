@@ -151,7 +151,37 @@ class HostgroupsController extends AppController
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+
+        $options = [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ]
+            ],
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ];
+
+        $resultHostgroups = $this->Hostgroup->find('all', $options);
+        $hostgroups = $this->getHostgroupNames($resultHostgroups);
+        $hosttemplates = $this->getHosttemplates($resultHostgroups);
+        $hostsInHostgroup = $this->getHostsInHostgroup($resultHostgroups);
+
         $this->set('hostgroups', $hostgroups);
         $hostgroup = [];
         if ($hostgroupId === null) {
@@ -177,7 +207,7 @@ class HostgroupsController extends AppController
             $this->Frontend->setJson('hostgroupId', $hostgroup['Hostgroup']['id']);
             $this->Frontend->setJson('renderTableMessage', __('Render data in browser'));
 
-            $HostsExtendedLoader = new HostsExtendedLoader($this->Hostgroup, $containerIds, $hostgroup['Hostgroup']['id']);
+            $HostsExtendedLoader = new HostsExtendedLoader($this->Hostgroup, $containerIds, $hostgroup['Hostgroup']['id'], $hosttemplates[$hostgroup['Hostgroup']['id']], $hostsInHostgroup[$hostgroup['Hostgroup']['id']]);
             $hosts = $HostsExtendedLoader->loadHostsWithStatus();
 
             $ServicesExtendedLoader = new ServicesExtendedLoader($this->Hostgroup, $containerIds, $hostgroup['Hostgroup']['id']);
@@ -195,6 +225,48 @@ class HostgroupsController extends AppController
 
         }
 
+    }
+
+    private function getHostgroupNames($hostgroups){
+        $hostgroupnames = [];
+        foreach($hostgroups as $hostgroup) {
+            $hostgroupnames[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
+        }
+        return $hostgroupnames;
+    }
+
+    private function getHosttemplates($hostgroups) {
+        $hosttemplates = [];
+
+        foreach($hostgroups as $hostgroup) {
+            $templateIds = "";
+            foreach($hostgroup['Hosttemplate'] as $template) {
+                if ($templateIds !== ""){
+                    $templateIds = $templateIds.", ".$template['id'];
+                } else {
+                    $templateIds = $template['id'];
+                }
+            }
+            $hosttemplates[$hostgroup['Hostgroup']['id']] = $templateIds;
+        }
+        return $hosttemplates;
+    }
+
+    private function getHostsInHostgroup($hostgroups) {
+        $hostsInHostgroup = [];
+
+        foreach($hostgroups as $hostgroup) {
+            $hostIds = "";
+            foreach($hostgroup['Host'] as $host) {
+                if ($hostIds !== ""){
+                    $hostIds = $hostIds.", ".$host['id'];
+                } else {
+                    $hostIds = $host['id'];
+                }
+            }
+            $hostsInHostgroup[$hostgroup['Hostgroup']['id']] = $hostIds;
+        }
+        return $hostsInHostgroup;
     }
 
     public function loadServicesByHostId($hostId = null, $hostgroupId)

@@ -59,14 +59,14 @@ class SystemdowntimesController extends AppController
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Systemdowntime->listSettings($this->request, $paginatorLimit);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
 
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
 
         $all_systemdowntimes = $this->Paginator->paginate();

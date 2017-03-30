@@ -43,6 +43,10 @@ class HostsExtendedLoader
      */
     private $hostgroupId = null;
 
+    private $hosttemplateId;
+
+    private $hostsInHostgroup;
+
 
     /**
      * HostsExtendedLoader constructor.
@@ -51,11 +55,13 @@ class HostsExtendedLoader
      * @param array      $containerIds
      * @param int        $hostgroupId
      */
-    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId)
+    public function __construct(\Hostgroup $Hostgroup, $containerIds, $hostgroupId, $hosttemplateId, $hostsInHostgroup)
     {
         $this->Hostgroup = $Hostgroup;
         $this->containerIds = $containerIds;
         $this->hostgroupId = $hostgroupId;
+        $this->hosttemplateId = $hosttemplateId;
+        $this->hostsInHostgroup = $hostsInHostgroup;
     }
 
     /**
@@ -71,15 +77,93 @@ class HostsExtendedLoader
      */
     public function loadHostsWithStatus()
     {
-        return $this->Hostgroup->find('all', $this->getQueryWithHoststatus());
+        return array_merge($this->Hostgroup->find('all', $this->getQueryHostsWithHosttemplateAndStatus()), $this->Hostgroup->find('all', $this->getQueryWithHoststatus()));
+        //return $this->Hostgroup->find('all', $this->getQueryHostsWithHosttemplateAndStatus());
+        //return $this->Hostgroup->find('all', $this->getQueryWithHoststatus());
+    }
 
+    private function getQueryHostsWithHosttemplateAndStatus(){
+        $query = [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id',
+                ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host',
+                    'conditions' => [
+                        'Host.hosttemplate_id' => $this->hosttemplateId,
+                        'NOT' => [
+                            'Host.id' => $this->hostsInHostgroup,
+                            'Host.id IN (SELECT host_id from hosts_to_hostgroups)'
+                        ]
+                    ]
+                ],
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.name1 = Host.uuid',
+                ],
+                [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = Objects.object_id',
+                ],
+            ],
+            'fields'     => [
+                'Hostgroup.id',
+                'Hostgroup.uuid',
+                'Hostgroup.container_id',
+                'Hostgroup.description',
+                'Hostgroup.hostgroup_url',
+
+                'Container.id',
+                'Container.parent_id',
+                'Container.name',
+
+                'Host.id',
+                'Host.name',
+                'Host.uuid',
+
+
+                'Objects.object_id',
+                'Objects.name1',
+
+                'Hoststatus.current_state',
+                'Hoststatus.is_flapping',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.last_hard_state_change',
+            ],
+            'order'      => [
+                'Host.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.id' => $this->containerIds,
+            ],
+        ];
+
+        if (!$this->hostgroupId !== null) {
+            $query['conditions']['Hostgroup.id'] = $this->hostgroupId;
+        }
+
+        return $query;
     }
 
     private function getQueryWithHoststatus()
     {
         $query = [
             'recursive'  => -1,
-            'contain'    => [],
             'joins'      => [
                 [
                     'table'      => 'containers',
@@ -201,5 +285,4 @@ class HostsExtendedLoader
 
         return $query;
     }
-
 }

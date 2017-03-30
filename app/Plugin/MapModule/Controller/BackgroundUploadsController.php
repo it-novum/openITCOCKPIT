@@ -137,8 +137,8 @@ class BackgroundUploadsController extends MapModuleAppController
             $myZip->extractTo($fullFolderTempPath);
             $myZip->close();
 
-            $iconsNames = $this->getIconsNames();
-            $iconsDir = $this->getIconsSubDirectory($fullFolderTempPath);
+            $iconsNames = $this->MapUpload->getIconsNames();
+            $iconsDir = $this->getIconsSubDirectory($fullFolderTempPath, $iconsNames);
 
             if (is_null($iconsDir)) {
                 throw new Exception(__('Please check the zip file. It must contain all icons: '.implode(', ', $iconsNames)));
@@ -176,34 +176,13 @@ class BackgroundUploadsController extends MapModuleAppController
 
     }
 
-    private function getIconsNames()
-    {
-        return [
-            'ack.png',
-            'critical.png',
-            'down.png',
-            'error.png',
-            'okaytime.png',
-            'okaytimeuser.png',
-            'ok.png',
-            'pending.png',
-            'sack.png',
-            'sdowntime.png',
-            'unknown.png',
-            'unreachable.png',
-            'up.png',
-            'warning.png',
-        ];
-    }
-
-    private function getIconsSubDirectory($startDir)
+    private function getIconsSubDirectory($startDir, $iconsNames)
     {
         $iconDir = null;
-        $iconsNames = $this->getIconsNames();
         foreach (scandir($startDir) as $object) {
             if ($object != "." && $object != "..") {
                 if (is_dir($startDir.DS.$object)) {
-                    $iconDir = $this->getIconsSubDirectory($startDir.DS.$object);
+                    $iconDir = $this->getIconsSubDirectory($startDir.DS.$object, $iconsNames);
                     if (!is_null($iconDir))
                         return $iconDir;
                 } elseif (($keyO = array_search($object, $iconsNames)) !== false) {

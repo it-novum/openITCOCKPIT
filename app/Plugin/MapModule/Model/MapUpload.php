@@ -39,4 +39,24 @@ class MapUpload extends MapModuleAppModel
             'foreignKey' => 'user_id',
             'className'  => 'User',
         ]];
+
+    public function getIconsNames()
+    {
+        return [
+            'ack.png',
+            'critical.png',
+            'down.png',
+            'error.png',
+            'okaytime.png',
+            'okaytimeuser.png',
+            'ok.png',
+            'pending.png',
+            'sack.png',
+            'sdowntime.png',
+            'unknown.png',
+            'unreachable.png',
+            'up.png',
+            'warning.png',
+        ];
+    }
 }

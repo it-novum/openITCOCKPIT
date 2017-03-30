@@ -81,9 +81,16 @@
                 'captionGridClass' => 'col col-xs-10',
                 'captionClass'     => 'col col-md-2 control-label',
                 'checked'          => (boolean)$user['User']['showstatsinmenu'],
-            ]); ?>
+            ]);
 
-            <?php
+            echo $this->Form->fancyCheckbox('recursive_browser', [
+                'caption'          => __('Recursive Browser'),
+                'wrapGridClass'    => 'col col-xs-10',
+                'captionGridClass' => 'col col-xs-10',
+                'captionClass'     => 'col col-md-2 control-label',
+                'checked'          => (boolean)$user['User']['recursive_browser'],
+            ]);
+
             echo $this->Form->input('paginatorlength', [
                 'label' => __('Listelement Length'),
                 'value' => $paginatorLength,

@@ -529,6 +529,10 @@
                                     <td><?php echo h($parameters['hostname']); ?></td>
                                 </tr>
                                 <tr>
+                                    <td><strong><?php echo __('Hostdescription'); ?>:</strong></td>
+                                    <td><?php echo h($parameters['hostdescription']); ?></td>
+                                </tr>
+                                <tr>
                                     <td><strong><?php echo __('Hostaddress'); ?>:</strong></td>
                                     <td><?php echo h($parameters['hostaddress']); ?></td>
                                 </tr>
@@ -639,5 +643,3 @@ ACK_NOTIFICATIONTYPE: SERVICE
 --- END ACK2 INFORMATION ---
 <?php endif; ?>
 -->
-
-

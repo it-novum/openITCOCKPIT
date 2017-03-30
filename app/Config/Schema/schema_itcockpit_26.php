@@ -1081,6 +1081,7 @@ class AppSchema extends CakeSchema
         'showstatsinmenu'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'dashboard_tab_rotation' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10],
         'paginatorlength'        => ['type' => 'integer', 'null' => false, 'default' => '25', 'length' => 4],
+        'recursive_browser'      => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 1],
         'created'                => ['type' => 'datetime', 'null' => true, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => true, 'default' => null],
         'indexes'                => [
