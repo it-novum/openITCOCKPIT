@@ -1078,6 +1078,7 @@ class AppSchema extends CakeSchema
         'image'                  => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'onetimetoken'           => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 100, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'samaccountname'         => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
+        'ldap_dn'                => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 512, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'],
         'showstatsinmenu'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'dashboard_tab_rotation' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 10],
         'paginatorlength'        => ['type' => 'integer', 'null' => false, 'default' => '25', 'length' => 4],

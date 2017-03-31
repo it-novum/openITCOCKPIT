@@ -256,6 +256,7 @@ class UsersController extends AppController
                 $this->request->data['User']['firstname'] = $ldapUser['givenname'];
                 $this->request->data['User']['lastname'] = $ldapUser['sn'];
                 $this->request->data['User']['samaccountname'] = $ldapUser['samaccountname'];
+                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
             }
         }
 

@@ -99,6 +99,10 @@
                     'readonly' => $readonly,
                     'help'     => __('This is the username, you need to for the login!'),
                 ]);
+                echo $this->Form->input('ldap_dn', [
+                    'label'    => 'DN',
+                    'readonly' => $readonly
+                ]);
             endif;
 
             echo $this->Form->input('email', [
