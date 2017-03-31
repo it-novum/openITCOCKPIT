@@ -92,10 +92,9 @@
 
                     echo $this->Form->fancyCheckbox('is_recurring', [
                         'caption'          => __('Recurring downtime'),
-                        'captionGridClass' => 'col col-md-2 text-left',
-                        'captionClass'     => 'control-label',
-                        'wrapGridClass'    => 'col col-md-1',
-                        'class'            => 'onoffswitch-checkbox notification_control',
+                        'wrapGridClass' => 'col col-xs-1 no-padding',
+                        'captionGridClass' => 'col col-xs-1 col-md-1 col-lg-1 no-padding',
+                        'captionClass' => 'control-label text-left no-padding',
                         'checked'          => (bool)$this->CustomValidationErrors->refill('is_recurring', false),
                     ]);
                     ?>
@@ -133,7 +132,7 @@
                             :</label>
                         <div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
                             <input type="text" id="SystemdowntimeFromDate"
-                                   value="<?php echo $this->CustomValidationErrors->refill('check_interval', date('d.m.Y')); ?>"
+                                   value="<?php echo $this->CustomValidationErrors->refill('from_date', date('d.m.Y')); ?>"
                                    class="form-control" name="data[Systemdowntime][from_date]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('from_date'); ?>
@@ -141,7 +140,7 @@
                         </div>
                         <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('from_time'); ?>"
                              style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeFromTime" value="<?php echo date('H:m'); ?>"
+                            <input type="text" id="SystemdowntimeFromTime" value="<?php echo $this->CustomValidationErrors->refill('from_time',  date('H:m')); ?>"
                                    class="form-control" name="data[Systemdowntime][from_time]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('from_time'); ?>
@@ -156,7 +155,7 @@
                             :</label>
                         <div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
                             <input type="text" id="SystemdowntimeToDate"
-                                   value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control"
+                                   value="<?php echo $this->CustomValidationErrors->refill('to_date', date('d.m.Y', strtotime('+3 days'))); ?>" class="form-control"
                                    name="data[Systemdowntime][to_date]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('to_date'); ?>
@@ -164,7 +163,7 @@
                         </div>
                         <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('to_time'); ?>"
                              style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeToTime" value="<?php echo date('H:m'); ?>"
+                            <input type="text" id="SystemdowntimeToTime" value="<?php echo $this->CustomValidationErrors->refill('to_time',  date('H:m')); ?>"
                                    class="form-control" name="data[Systemdowntime][to_time]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('to_time'); ?>

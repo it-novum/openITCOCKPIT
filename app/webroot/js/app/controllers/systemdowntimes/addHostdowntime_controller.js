@@ -46,8 +46,13 @@ App.Controllers.SystemdowntimesAddHostdowntimeController = Frontend.AppControlle
 			if($(this).prop('checked') == true){
 				$('.chosen-container').css('width', '100%');
 				$('#recurringHost_settings').show();
+                $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeFromDate').next().html('');
 				$('#SystemdowntimeFromDate').hide();
 				$('#SystemdowntimeToDate').hide();
+                $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeToDate').next().html('');
+                $('#recurringHost_settings').children('.form-group').addClass('required');
 			}else{
 				$('#recurringHost_settings').hide();
 				$('#SystemdowntimeFromDate').show();

@@ -84,7 +84,7 @@ class SystemdowntimesController extends AppController
 
     public function addHostdowntime()
     {
-        $selected = $this->getNamedParameter('host_id', []);
+        $selected = $this->request->data('Systemdowntime.object_id');
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
@@ -110,11 +110,28 @@ class SystemdowntimesController extends AppController
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
                 $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
             }
-
             $this->request->data = $this->_rewritePostData();
-
             //Try validate the data:
             foreach ($this->request->data as $request) {
+                if($this->request->data('Systemdowntime.is_recurring')){
+                    $this->Systemdowntime->validate = Hash::merge(
+                        $this->Systemdowntime->validate,
+                        [
+                            'from_date' => [
+                                'notBlank' => [
+                                    'required' => false,
+                                    'allowEmpty' => true,
+                                 ],
+                            ],
+                            'to_date' => [
+                                'notBlank' => [
+                                    'required' => false,
+                                    'allowEmpty' => true,
+                                ]
+                            ]
+                        ]
+                    );
+                }
                 $this->Systemdowntime->set($request);
                 if ($this->Systemdowntime->validates()) {
                     /* The data is valide and we can save it.
@@ -125,17 +142,24 @@ class SystemdowntimesController extends AppController
                      * these guys we want to save in our systemdowntimestable
                      * Normal downtimes, will be sent to sudo_servers unix socket.
                      */
-                    $this->setFlash(__('Downtime successfully saved'));
-
 
                     if ($request['Systemdowntime']['is_recurring'] == 1) {
+                        $this->Systemdowntime->create();
                         $this->Systemdowntime->save($request);
                     } else {
                         $start = strtotime($request['Systemdowntime']['from_date'].' '.$request['Systemdowntime']['from_time']);
                         $end = strtotime($request['Systemdowntime']['to_date'].' '.$request['Systemdowntime']['to_time']);
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'host') {
-                            $host = $this->Host->findById($request['Systemdowntime']['object_id']);
+                            $host = $this->Host->find('first', [
+                                'recursive' => -1,
+                                'fields' => [
+                                    'Host.uuid'
+                                ],
+                                'conditions' => [
+                                    'Host.id' => $request['Systemdowntime']['object_id']
+                                ]
+                            ]);
                             $payload = [
                                 'hostUuid'     => $host['Host']['uuid'],
                                 'downtimetype' => $request['Systemdowntime']['downtimetype_id'],
@@ -157,6 +181,7 @@ class SystemdowntimesController extends AppController
                     return;
                 }
             }
+            $this->setFlash(__('Downtime successfully saved'));
             $this->redirect(['controller' => 'downtimes', 'action' => 'index']);
         }
     }
