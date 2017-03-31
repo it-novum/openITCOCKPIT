@@ -739,6 +739,7 @@ class AppSchema extends CakeSchema
         'notify_host_unreachable'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_host_flapping'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_host_downtime'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'own_customvariables'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'indexes'                       => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'uuid'    => ['column' => 'uuid', 'unique' => 1],

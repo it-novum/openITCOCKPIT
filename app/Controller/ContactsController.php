@@ -29,6 +29,7 @@
  * @property Container $Container
  * @property Command $Command
  * @property Timeperiod $Timeperiod
+ * @property Customvariable $Customvariable
  */
 class ContactsController extends AppController {
     public $uses = [
@@ -36,6 +37,7 @@ class ContactsController extends AppController {
         'Container',
         'Command',
         'Timeperiod',
+        'Customvariable',
     ];
     public $layout = 'Admin.default';
     public $components = [
@@ -44,7 +46,7 @@ class ContactsController extends AppController {
         'RequestHandler',
         'Ldap',
     ];
-    public $helpers = ['ListFilter.ListFilter'];
+    public $helpers = ['ListFilter.ListFilter', 'CustomVariables'];
 
     public $listFilters = [
         'index' => [
@@ -212,8 +214,21 @@ class ContactsController extends AppController {
                 }
             }
 
+            //Checks if the user deletes a customvariable/macro over the trash icon
+            if (!isset($this->request->data['Customvariable'])) {
+                $this->request->data['Customvariable'] = [];
+            }
+
+            $this->Contact->set($this->request->data);
+            if ($this->Contact->validates()) {
+                $this->Customvariable->deleteAll([
+                    'object_id'     => $contact['Contact']['id'],
+                    'objecttype_id' => OBJECT_CONTACT,
+                ], false);
+            }
+
             $this->Contact->id = $id;
-            if ($this->Contact->save($this->request->data)) {
+            if ($this->Contact->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -228,6 +243,7 @@ class ContactsController extends AppController {
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
+
                 $this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
                 $this->redirect(['action' => 'index']);
             } else {
@@ -579,6 +595,14 @@ class ContactsController extends AppController {
 
         $this->set(compact('contacts'));
         $this->set('back_url', $this->referer());
+    }
+
+    public function addCustomMacro($counter)
+    {
+        $this->allowOnlyAjaxRequests();
+
+        $this->set('objecttype_id', OBJECT_CONTACT);
+        $this->set('counter', $counter);
     }
 }
 

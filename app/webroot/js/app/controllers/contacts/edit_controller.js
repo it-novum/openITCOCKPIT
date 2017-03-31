@@ -23,12 +23,17 @@
 //	confirmation.
 
 App.Controllers.ContactsEditController = Frontend.AppController.extend({
-	components: ['Ajaxloader'],
+	components: ['Ajaxloader', 'CustomVariables'],
 
 	_initialize: function() {
 		var self = this;
 
 		this.Ajaxloader.setup();
+		self.CustomVariables.setup({
+			controller: 'Contacts',
+			ajaxUrl: 'Contacts/addCustomMacro',
+			macrotype: 'CONTACT'
+		});
 
 		var timeperiodSelectors = [
 			'#ContactHostTimeperiodId',
