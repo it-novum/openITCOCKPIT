@@ -43,6 +43,7 @@ class NagiosNotificationShell extends AppShell
                 $host = $this->getHostname($parameters['hostname']);
                 $parameters['hostUuid'] = $parameters['hostname'];
                 $parameters['hostname'] = $host['hostname'];
+                $parameters['hostdescription'] = $host['hostdescription'];
                 $this->NagiosNotification->hostNotification($parameters);
             }
 
@@ -52,6 +53,7 @@ class NagiosNotificationShell extends AppShell
                 $parameters['serviceUuid'] = $service['serviceUuid'];
                 $parameters['hostUuid'] = $parameters['hostname'];
                 $parameters['hostname'] = $service['hostname'];
+                $parameters['hostdescription'] = $service['hostdescription'];
                 $this->NagiosNotification->serviceNotification($parameters);
             }
         }
@@ -66,6 +68,7 @@ class NagiosNotificationShell extends AppShell
             'type'              => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
             'notificationtype'  => ['help' => __d('oitc_console', 'Notification type of monitoring engine')],
             'hostname'          => ['help' => __d('oitc_console', 'Host uuid you want to send a notification')],
+            'hostdescription'   => ['help' => __d('oitc_console', 'Host description you want to send a notification')],
             'hoststate'         => ['help' => __d('oitc_console', 'current host state')],
             'hostaddress'       => ['help' => __d('oitc_console', 'host address')],
             'hostoutput'        => ['help' => __d('oitc_console', 'host output')],
@@ -102,6 +105,15 @@ class NagiosNotificationShell extends AppShell
                 $return['hostname'] = $this->params['hostname'];
             }
         }
+
+        if (isset($_SERVER['NAGIOS_HOSTALIAS'])) {
+            $return['hostdescription'] = $_SERVER['NAGIOS_HOSTALIAS'];
+        } else {
+            if (array_key_exists('hostdescription', $this->params)) {
+                $return['hostdescription'] = $this->params['hostdescription'];
+            }
+        }
+
         if (isset($_SERVER['NAGIOS_HOSTSTATE'])) {
             $return['hoststate'] = $_SERVER['NAGIOS_HOSTSTATE'];
         } else {
@@ -208,12 +220,12 @@ class NagiosNotificationShell extends AppShell
                 'Host.uuid' => $hostUuid,
             ],
             'fields'     => [
-                'Host.id', 'Host.name', 'Host.uuid',
+                'Host.id', 'Host.name', 'Host.uuid', 'Host.description',
             ],
             'contain'    => [],
         ]);
 
-        return ['hostUuid' => $host['Host']['uuid'], 'hostname' => $host['Host']['name']];
+        return ['hostUuid' => $host['Host']['uuid'], 'hostname' => $host['Host']['name'], 'hostdescription' => $host['Host']['description']];
     }
 
     public function getServicename($serviceUuid)
@@ -241,6 +253,7 @@ class NagiosNotificationShell extends AppShell
                         'Host.id',
                         'Host.uuid',
                         'Host.name',
+                        'Host.description',
                     ],
                 ],
             ],
@@ -251,7 +264,7 @@ class NagiosNotificationShell extends AppShell
             $service['Service']['name'] = $service['Servicetemplate']['name'];
         }
 
-        return ['serviceUuid' => $service['Service']['uuid'], 'servicedesc' => $service['Service']['name'], 'hostname' => $service['Host']['name']];
+        return ['serviceUuid' => $service['Service']['uuid'], 'servicedesc' => $service['Service']['name'], 'hostname' => $service['Host']['name'], 'hostdescription' => $service['Host']['description']];
     }
 
     public function dump($mixed)

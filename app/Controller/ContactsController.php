@@ -554,8 +554,9 @@ class ContactsController extends AppController {
         $this->set('_serialize', array_keys($data));
     }
 
-    public function copy($id = null){
-
+    public function copy($id = null)
+    {
+        $userId = $this->Auth->user('id');
         $contacts = $this->Contact->find('all', [
             'recursive' => 0,
             'contain' => [
@@ -564,13 +565,37 @@ class ContactsController extends AppController {
                         'Container.id'
                     ],
                 ],
+
                 'Customvariable' => [
                     'fields' => [
                         'name', 'value',
                     ],
                 ],
-                'HostCommands',
-                'ServiceCommands'
+                'HostCommands' => [
+                    'fields' => [
+                        'id',
+                        'name'
+                    ]
+                ],
+                'ServiceCommands' => [
+                    'fields' => [
+                        'id',
+                        'name'
+                    ]
+                ],
+                'HostTimeperiod' => [
+                    'fields' => [
+                        'HostTimeperiod.id',
+                        'HostTimeperiod.name',
+                    ]
+                ],
+                'ServiceTimeperiod' => [
+                    'fields' => [
+                        'ServiceTimeperiod.id',
+                        'ServiceTimeperiod.name',
+                    ]
+                ]
+
             ],
             'conditions' => [
                 'Contact.id' => func_get_args(),
@@ -586,7 +611,6 @@ class ContactsController extends AppController {
                 foreach ($this->request->data['Contact'] as $sourceContactId => $newContact) {
                     $newContact['uuid'] = UUID::v4();
                     unset($contacts[$sourceContactId]['Contact']['id']); // remove contact id for save
-
                     $newContactData = [
                         'Contact' => Hash::merge(
                             $contacts[$sourceContactId]['Contact'],
@@ -610,6 +634,7 @@ class ContactsController extends AppController {
                                 Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id')
                         ]
                     ];
+
                     $this->Contact->create();
                     if (!$this->Contact->saveAll($newContactData)) {
                         $errorMessage = 'Contacts could not be copied.';
@@ -623,6 +648,21 @@ class ContactsController extends AppController {
                         }
                         throw new Exception($errorMessage);
                     }
+
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Contact->id,
+                        OBJECT_CONTACT,
+                        Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id'),
+                        $userId,
+                        $newContact['name'],
+                        Hash::merge($contacts[$sourceContactId], ['Contact' => $newContact])
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
+
                 }
                 $datasource->commit();
                 $this->setFlash(__('Contacts are successfully copied'));

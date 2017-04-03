@@ -101,7 +101,7 @@ class Changelog extends AppModel
                 'Servicetemplate'   => '{n}.{(id|name)}',
             ],
             'host'            => [
-                'Host'                     => '{(name|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
+                'Host'                     => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',
                 'Hosttemplate'             => '{(id|name)}',
                 'CheckPeriod'              => '{(id|name)}',
                 'NotifyPeriod'             => '{(id|name)}',
@@ -122,7 +122,8 @@ class Changelog extends AppModel
                 'CheckCommand'                => '{(id|name)}',
                 'Servicegroup'                => '{n}.{(id|name)}',
                 'Customvariable'              => '{n}.{(id|name|value)}',
-                'Servicecommandargumentvalue' => '{n}.{(id|value)}',
+                'Servicecommandargumentvalue'     => '{n}.{(id|value)}',
+                'Serviceeventcommandargumentvalue'=> '{n}.{(id|value)}',
                 'Contact'                     => '{n}.{(id|name)}',
                 'Contactgroup'                => '{n}.{(id|name)}',
             ],
@@ -134,6 +135,7 @@ class Changelog extends AppModel
         return $_objectDefaults;
     }
 
+    // use $user_id = 0 to specify cron task 
     public function parseDataForChangelog($action, $controller, $object_id, $objecttype_id, $container_id, $user_id, $name, $requestData, $currentSavedData = [])
     {
         $data_array_keys = ['action', 'controller', 'object_id', 'objecttype_id', 'container_id', 'user_id', 'name', 'data'];
@@ -141,14 +143,15 @@ class Changelog extends AppModel
         $compareRules = $this->getCompareRules();
         switch ($action) {
             case 'add':
+            case 'copy':
                 foreach ($compareRules[strtolower(Inflector::singularize($controller))] as $key => $fields) {
                     if (is_array($fields)) {
                         $fields = $fields['fields'];
                     }
-                    if (!is_null(Set::classicExtract($requestData, $key.'.'.$fields))) {
+                    if (!is_null($currentData = Set::classicExtract($requestData, $key.'.'.$fields))) {
                         $changes[] = [
                             $key => [
-                                'current_data' => Set::classicExtract($requestData, $key.'.'.$fields),
+                                'current_data' => $currentData,
                             ],
                         ];
                     }
