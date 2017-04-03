@@ -92,7 +92,7 @@ $notification_settings = [
                         <div id="tab1" class="tab-pane fade active in">
                             <span class="note"><?php echo __('Basic configuration'); ?>:</span>
                             <?php
-                            if ($hasRootPrivileges):
+                            if ($hasRootPrivileges || !$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
                                         'options'          => $this->Html->chosenPlaceholder($containers),
                                         'data-placeholder' => __('Please select...'),
@@ -102,18 +102,7 @@ $notification_settings = [
                                         'style'            => 'width: 100%',
                                         'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                    ]
-                                );
-                            elseif (!$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
-                                echo $this->Form->input('container_id', [
-                                        'options'          => $this->Html->chosenPlaceholder($containers),
-                                        'data-placeholder' => __('Please select...'),
-                                        'multiple'         => false,
-                                        'selected'         => $this->request->data['Servicetemplate']['container_id'],
-                                        'class'            => 'chosen col col-xs-12',
-                                        'style'            => 'width: 100%',
-                                        'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                        'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                        'help'      => count($servicetemplate['Service']) > 0 ? __('There are Services using this Service Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:

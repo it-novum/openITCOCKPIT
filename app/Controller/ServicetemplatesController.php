@@ -204,6 +204,17 @@ class ServicetemplatesController extends AppController
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
+
+        if(count($serviceTemplate['Service']) > 0){
+            $newContainers = [];
+            foreach($containers as $containerId => $containerName){
+                if(!in_array($containerId, [ROOT_CONTAINER, $serviceTemplate['Servicetemplate']['container_id']]))
+                    continue;
+                $newContainers[$containerId] = $containerName;
+            }
+            $containers = $newContainers;
+        }
+        
         // Data to refill form
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Servicetemplate.container_id');
