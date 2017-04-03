@@ -351,6 +351,7 @@ class Host extends AppModel {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Hostgroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare) {
+            if(!is_array($prepare_array)) return [];
             $currentKey = key($prepare_array);
             if(!in_array($currentKey, $keysForArraySort, true)){
                 return $prepare_array;
@@ -708,6 +709,33 @@ class Host extends AppModel {
             'NotifyPeriod'             => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],
         ];
 
+        return $host;
+    }
+
+    public function dataForChangelogCopy($host, $hosttemplate)
+    {
+        $hostcommandargumentvalue = [];
+        if (!empty($host['Hostcommandargumentvalue'])) {
+            $hostcommandargumentvalue = $host['Hostcommandargumentvalue'];
+        }else {
+            if ($host['Host']['command_id'] === $hosttemplate['Hosttemplate']['command_id'] || $host['Host']['command_id'] === null) {
+                $hostcommandargumentvalue = $hosttemplate['Hosttemplatecommandargumentvalue'];
+            }
+        }
+
+        $host = [
+            'Host'                      => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), $hosttemplate['Hosttemplate']),
+            'Contact'                   => (!empty($host['Contact'])) ? $host['Contact'] : $hosttemplate['Contact'],
+            'Contactgroup'              => (!empty($host['Contactgroup'])) ? $host['Contactgroup'] : $hosttemplate['Contactgroup'],
+            'Customvariable'            => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $hosttemplate['Customvariable'],
+            'Hostcommandargumentvalue'  => $hostcommandargumentvalue,
+            'Hosttemplate'              => $hosttemplate['Hosttemplate'],
+            'Hostgroup'                 => (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $hosttemplate['Hostgroup'],
+            'Parenthost'                => (!empty($host['Parenthost'])) ? $host['Parenthost'] : [],
+            'CheckPeriod'               => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
+            'NotifyPeriod'              => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
+            'CheckCommand'              => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
+        ];
         return $host;
     }
 

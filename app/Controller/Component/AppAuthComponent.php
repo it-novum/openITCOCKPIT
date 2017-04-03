@@ -152,13 +152,20 @@ class AppAuthComponent extends AuthComponent
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
                 $_options = [];
+                if (isset($user['User']['ldap_dn'])) {
+                    $_options['dn'] = $user['User']['ldap_dn'];
+                }
                 if (isset($this->request->data['User']['samaccountname'])) {
-                    $_options['samaccountname'] = $this->request->data['User']['samaccountname'];
+                    $_options['samaccountname'] = strtolower($this->request->data['User']['samaccountname']);
                 }
                 if (isset($this->request->data['User']['password'])) {
                     $_options['sampassword'] = $this->request->data['User']['password'];
                 }
                 $options = Hash::merge($_options, $options);
+
+                if($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap' && isset($options['dn'])){
+                    $options['samaccountname'] = $options['dn'];
+                }
 
                 $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
                 if ($result) {

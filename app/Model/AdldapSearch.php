@@ -54,6 +54,9 @@ class AdldapSearch extends AdldapSearchMain{
 
             if (is_array($entries) && array_key_exists('count', $entries)) {
                 for ($i = 0; $i < $entries['count']; $i++) {
+                    if(isset($entries[$i]['dn'])){
+                        $entries[$i]['dn'] = [$entries[$i]['dn']];
+                    }
                     $entry = $this->newLdapEntry($entries[$i], $this->connection);
                     $objects[] = $entry->getAttributes();
                 }

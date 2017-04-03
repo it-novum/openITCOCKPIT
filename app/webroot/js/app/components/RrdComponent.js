@@ -155,10 +155,10 @@ App.Components.RrdComponent = Frontend.Component.extend({
 					host = response.rrd_data[host_uuid];
 					for(service_uuid in host){
 						service = host[service_uuid];
-
+						var ds;
 						$.each(service.xml_data, function(i, xml_object){
-							var ds = service.xml_data[i].ds,
-								dataObj = service.data[xml_object.ds];
+							ds = service.xml_data[i].ds;
+							var dataObj = service.data[xml_object.ds];
 
 							if(typeof self.last_fetched_graph_data[host_uuid] !== 'object'){
 								self.last_fetched_graph_data[host_uuid] = {};
@@ -198,9 +198,9 @@ App.Components.RrdComponent = Frontend.Component.extend({
 						self.service_names[service_uuid] = service.servicename;
 
 						// Not necessary at this moment
-						//if(self.display_threshold_lines === true){
-						//	self.addThreshold();
-						//}
+						if(self.display_threshold_lines === true){
+							self.addThreshold(host_uuid, service_uuid, ds);
+						}
 					}
 				}
 				//console.log('last_fetched_graph_data', self.last_fetched_graph_data);
@@ -241,6 +241,7 @@ App.Components.RrdComponent = Frontend.Component.extend({
 				}
 			}
 		}
+		//console.log(this.threshold_lines);
 		self.$selector.css({
 			'width': self.width,
 			'height': self.height
@@ -600,21 +601,22 @@ App.Components.RrdComponent = Frontend.Component.extend({
 			.fadeIn(200);
 	},
 
-	addThreshold: function(){
+	addThreshold: function(host_uuid, service_uuid, ds){
 		this.threshold_lines = [];
-		if($.isNumeric(this.ds)){
+		this.ds = ds;
+		if($.isNumeric(this.ds) && this.threshold_values[host_uuid][service_uuid][this.ds]['warn'] !== '' && this.threshold_values[host_uuid][service_uuid][this.ds]['crit'] !== ''){
 			this.threshold_lines.push({
 				color: '#FFFF00',
 				yaxis: {
-					from: this.threshold_values[this.ds]['warn'],
-					to: this.threshold_values[this.ds]['warn']
+					from: this.threshold_values[host_uuid][service_uuid][this.ds]['warn'],
+					to: this.threshold_values[host_uuid][service_uuid][this.ds]['warn']
 				}
 			});
 			this.threshold_lines.push({
 				color: '#FF0000',
 				yaxis: {
-					from: this.threshold_values[this.ds]['crit'],
-					to: this.threshold_values[this.ds]['crit']
+					from: this.threshold_values[host_uuid][service_uuid][this.ds]['crit'],
+					to: this.threshold_values[host_uuid][service_uuid][this.ds]['crit']
 				}
 			});
 		}else if($.isArray(this.ds)){

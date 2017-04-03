@@ -84,7 +84,8 @@ class ChangelogHelper extends AppHelper
 
             case 'delete':
                 return 'fa-trash-o ';
-
+            case 'copy':
+                return 'fa-files-o';
             default:
                 return 'fa-pencil';
         }

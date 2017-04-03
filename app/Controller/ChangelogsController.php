@@ -129,14 +129,12 @@ class ChangelogsController extends AppController
                             'label' => '<i class="fa fa-plus txt-color-greenLight"></i> add',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                    /*
                         'copy' => [
                             'name'  => 'copy',
                             'value' => 1,
                             'label' => 'copy',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                    */
                         'delete' => [
                             'name'  => 'delete',
                             'value' => 1,
@@ -170,7 +168,7 @@ class ChangelogsController extends AppController
                 [
                     'table'      => 'users',
                     'alias'      => 'User',
-                    'type'       => 'INNER',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'User.id = Changelog.user_id',
                     ],
@@ -200,6 +198,7 @@ class ChangelogsController extends AppController
         } else {
             $all_changes = $this->Paginator->paginate();
         }
+        
         $this->set('_serialize', ['all_changes']);
 
         $this->set('isFilter', false);

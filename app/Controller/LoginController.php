@@ -162,7 +162,7 @@ class LoginController extends AppController
 
             $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
-                $__user = $this->User->findBySamaccountname($this->data['User']['samaccountname']);
+                $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
 
             if (!isset($this->request->data['User']['auth_method'])) {

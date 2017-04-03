@@ -389,6 +389,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.LDAP.TYPE',
+                    'value'    => 'adldap',
+                    'info'     => 'LDAP server type',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'FRONTEND.LDAP.ADDRESS',
                     'value'    => '192.168.1.10',
                     'info'     => 'The address or hostname of your LDAP server',
