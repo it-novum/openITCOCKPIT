@@ -390,7 +390,7 @@ class Service extends AppModel {
     {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Servicegroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
-        if (!$prepare) {
+        if (!$prepare && is_array($prepare_array)) {
             $currentKey = key($prepare_array);
             if(!in_array($currentKey, $keysForArraySort, true)){
                 return $prepare_array;
