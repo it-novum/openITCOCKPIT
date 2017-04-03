@@ -156,7 +156,7 @@ class AppAuthComponent extends AuthComponent
                     $_options['dn'] = $user['User']['ldap_dn'];
                 }
                 if (isset($this->request->data['User']['samaccountname'])) {
-                    $_options['samaccountname'] = $this->request->data['User']['samaccountname'];
+                    $_options['samaccountname'] = strtolower($this->request->data['User']['samaccountname']);
                 }
                 if (isset($this->request->data['User']['password'])) {
                     $_options['sampassword'] = $this->request->data['User']['password'];
