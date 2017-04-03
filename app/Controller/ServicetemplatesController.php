@@ -181,6 +181,7 @@ class ServicetemplatesController extends AppController
                 'NotifyPeriod',
                 'CheckPeriod',
                 'Contact',
+                'Service',
                 'Servicetemplatecommandargumentvalue'      => ['Commandargument'],
                 'Servicetemplateeventcommandargumentvalue' => ['Commandargument'],
             ],
@@ -214,7 +215,7 @@ class ServicetemplatesController extends AppController
             }
             $containers = $newContainers;
         }
-        
+
         // Data to refill form
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Servicetemplate.container_id');
