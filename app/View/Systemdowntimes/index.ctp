@@ -341,6 +341,7 @@
                                         <td>
                                             <?php
                                             $days = explode(',', $systemdowntime['Systemdowntime']['weekdays']);
+                                            $days = Hash::filter($days);
                                             $_days = [];
                                             foreach ($days as $day):
                                                 $_days[] = $weekdays[$day];

@@ -261,7 +261,7 @@ class Systemdowntime extends AppModel
         if($this->data[$this->name]['is_recurring']){
             return true;
         }
-        return Validation::comparison($this->data[$this->alias]['from_date'], '>=', $this->data[$this->alias]['to_date']);
+        return Validation::comparison($this->data[$this->alias]['from_date'], '<=', $this->data[$this->alias]['to_date']);
     }
 
     function timeComparison() {

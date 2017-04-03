@@ -32,30 +32,42 @@ App.Controllers.SystemdowntimesAddServicedowntimeController = Frontend.AppContro
 		 */ 
 		
 		if($('#SystemdowntimeIsRecurring').prop('checked') == true){
-			$('.chosen-container').css('width', '100%');
-			$('#recurringHost_settings').show();
+            $('.chosen-container').css('width', '100%');
+            $('#recurringHost_settings').show();
+            $('#SystemdowntimeFromDate').hide();
+            $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeFromDate').next().html('');
+            $('#SystemdowntimeToDate').hide();
+            $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeToDate').next().html('');
 		}
-		
+
 		/*
 		 * Bind click events for recurring downtimes
 		 */
-		
-		$('#SystemdowntimeIsRecurring').change(function(){
-			if($(this).prop('checked') == true){
-				$('.chosen-container').css('width', '100%');
-				$('#recurringHost_settings').show();
-				$('#SystemdowntimeFromDate').hide();
-				$('#SystemdowntimeToDate').hide();
-			}else{
-				$('#recurringHost_settings').hide();
-				$('#SystemdowntimeFromDate').show();
-				$('#SystemdowntimeToDate').show();
-			}
-		});
-		
-		/*
-		 * Render Datepickers
-		 */
+
+        $('#SystemdowntimeIsRecurring').change(function(){
+            if($(this).prop('checked') == true){
+                $('.chosen-container').css('width', '100%');
+                $('#recurringHost_settings').show();
+                $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeFromDate').next().html('');
+                $('#SystemdowntimeFromDate').hide();
+                $('#SystemdowntimeToDate').hide();
+                $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeToDate').next().html('');
+                $('#recurringHost_settings').children('.form-group').addClass('required');
+            }else{
+                $('#recurringHost_settings').hide();
+                $('#SystemdowntimeFromDate').show();
+                $('#SystemdowntimeToDate').show();
+            }
+        });
+
+
+        /*
+         * Render Datepickers
+         */
 		$('#SystemdowntimeFromDate').datepicker({
 			format: this.getVar('dateformat')
 		});

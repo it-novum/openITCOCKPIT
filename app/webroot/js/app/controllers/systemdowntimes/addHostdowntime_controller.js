@@ -29,14 +29,18 @@ App.Controllers.SystemdowntimesAddHostdowntimeController = Frontend.AppControlle
 		
 		/*
 		 * Check if the checkbox is checked and we need to display the hidden stuff
-		 */ 
-		
-		if($('#SystemdowntimeIsRecurring').prop('checked') == true){
-			$('.chosen-container').css('width', '100%');
-			$('#recurringHost_settings').show();
-			$('#SystemdowntimeFromDate').hide();
-			$('#SystemdowntimeToDate').hide();
-		}
+		 */
+
+        if($('#SystemdowntimeIsRecurring').prop('checked') == true){
+            $('.chosen-container').css('width', '100%');
+            $('#recurringHost_settings').show();
+            $('#SystemdowntimeFromDate').hide();
+            $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeFromDate').next().html('');
+            $('#SystemdowntimeToDate').hide();
+            $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeToDate').next().html('');
+        }
 		
 		/*
 		 * Bind click events for recurring downtimes
