@@ -148,4 +148,8 @@ class DowntimesController extends AppController
         }
         echo 0;
     }
+
+    public function delete(){
+        // creating rights downtimes.delete
+    }
 }
