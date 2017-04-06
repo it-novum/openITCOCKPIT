@@ -28,16 +28,16 @@ $config = [
         'SSH' => [
 
             //Username via the SSH connection is established
-            'username'        => 'root',
+            'username'        => 'nagios',
 
             //Path to your ssh private key file
-            'private_key'     => '/root/.ssh/id_rsa',
+            'private_key'     => '/var/lib/nagios/.ssh/id_rsa',
 
             //Path to your ssh public key file
-            'public_key'      => '/root/.ssh/id_rsa.pub',
+            'public_key'      => '/var/lib/nagios/.ssh/id_rsa.pub',
 
             //Command to restart remote monitoring engine
-            'restart_command' => 'service naemon restart',
+            'restart_command' => 'sudo /opt/openitc/nagios/bin/restart-monitoring.sh',
 
             //Use rsync or PHP SSH lib to copy data
             'use_rsync'       => true,
