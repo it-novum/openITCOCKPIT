@@ -49,6 +49,8 @@ foreach ($this->params->named as $key => $value) {
     </div>
 </div>
 
+<?php echo $this->Flash->render('positive'); ?>
+
 <div id="error_msg"></div>
 
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">

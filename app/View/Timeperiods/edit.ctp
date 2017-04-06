@@ -29,7 +29,7 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-clock-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
-            <span>
+            <span>>
                 <?php echo __('Time Periods'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>

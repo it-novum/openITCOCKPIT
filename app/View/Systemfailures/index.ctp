@@ -29,7 +29,7 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-desktop fa-fw "></i>
             <?php echo __('Administration') ?>
-            <span>
+            <span>>
                 <?php echo __('System Failure'); ?>
 			</span>
         </h1>

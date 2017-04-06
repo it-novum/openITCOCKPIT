@@ -28,7 +28,7 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Administration'); ?>
-            <span>
+            <span>>
                 <?php echo __('System failure'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>

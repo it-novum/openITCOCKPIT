@@ -28,7 +28,7 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
-            <span>
+            <span>>
                 <?php echo $this->Utils->pluralize($servicetemplates, __('Servicetemplates'), __('Servicetemplates')); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
