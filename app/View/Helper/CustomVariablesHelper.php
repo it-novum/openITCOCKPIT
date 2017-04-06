@@ -166,6 +166,7 @@ class CustomVariablesHelper extends AppHelper
             OBJECT_HOST            => 'text-primary',
             OBJECT_SERVICETEMPLATE => 'text-success',
             OBJECT_SERVICE         => 'text-primary',
+            OBJECT_CONTACT         => 'text-primary',
         ];
 
         return $colors[$objecttype_id];
