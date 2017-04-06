@@ -98,7 +98,7 @@ $notification_settings = [
                                         'style'     => 'width: 100%',
                                         'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                        'help'      => count($hosttemplate['Host']) > 0 ? __('There are Hosts using this Host Template. Therefore tne number of Containers is decreased.') : '',
+                                        'help'      => count($hosttemplate['Host']) > 0 ? __('There are Hosts using this Host Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:
