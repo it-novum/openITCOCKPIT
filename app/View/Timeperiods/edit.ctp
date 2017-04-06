@@ -30,7 +30,7 @@
             <i class="fa fa-clock-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Timeperiods'); ?>
+                <?php echo __('Time Periods'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-clock-o"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('timeperiod'); ?></h2>
+        <h2><?php echo $this->action == 'edit' ? 'Edit ' : 'Add ' ?><?php echo __('time period'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <?php echo $this->Utils->deleteButton(null, $timeperiod['Timeperiod']['id']); ?>

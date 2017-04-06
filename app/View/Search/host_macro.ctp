@@ -29,7 +29,7 @@
             <i class="fa fa-search fa-fw "></i>
             <?php echo __('Host macro') ?>
             <span>>
-                <?php echo __('search result'); ?>
+                <?php echo __('Search Result'); ?>
 			</span>
         </h1>
     </div>
@@ -45,7 +45,7 @@
                         <?php echo $this->Utils->backButton(__('Back'), '/search'); ?>
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-search"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Search result'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Search Result'); ?></h2>
 
                 </header>
                 <div>
@@ -56,7 +56,7 @@
                             <table id="host_list" class="table table-striped table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort"><?php echo __('Hostname'); ?></th>
+                                    <th class="no-sort"><?php echo __('Host Name'); ?></th>
                                     <th class="no-sort"><?php echo __('IP-Address'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>

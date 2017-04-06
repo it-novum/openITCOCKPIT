@@ -212,7 +212,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             echo $this->Form->input(
                                 'name',
                                 [
-                                    'label' => ['text' => __('Hostname'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'label' => ['text' => __('Host Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'value' => $host['Host']['name'],
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]

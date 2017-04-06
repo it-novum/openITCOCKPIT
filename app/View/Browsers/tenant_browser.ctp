@@ -188,7 +188,7 @@
                                     <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="select_datatable no-sort"><?php echo __('Hoststatus'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
-                                    <th class="no-sort"><?php echo __('Hostname'); ?></th>
+                                    <th class="no-sort"><?php echo __('Host Name'); ?></th>
                                     <th class="no-sort"><?php echo __('IP address'); ?></th>
                                     <th class="no-sort"><?php echo __('State since'); ?></th>
                                     <th class="no-sort"><?php echo __('Last check'); ?></th>

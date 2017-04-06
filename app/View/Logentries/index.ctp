@@ -29,7 +29,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-file-text-o fa-fw"></i>
-            <?php echo __('Logentries'); ?>
+            <?php echo __('Log Entries'); ?>
             <span>
                 <?php echo __('Overview'); ?>
             </span>
@@ -48,7 +48,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
                         if ($isFilter):
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
                         endif;
@@ -71,7 +71,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             </li>
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
-                                    <input type="checkbox" class="pull-left"/>&nbsp; <?php echo __('Logentry'); ?>
+                                    <input type="checkbox" class="pull-left"/>&nbsp; <?php echo __('Log Entry'); ?>
                                 </a>
                             </li>
                         </ul>
@@ -212,7 +212,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-file-text-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Logentries'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Log Entries'); ?> </h2>
 
                 </header>
 
@@ -220,7 +220,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <div>
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
                             <table id="logentries_list" class="table table-striped table-bordered smart-form" style="">
                                 <thead>
@@ -236,7 +236,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                     </th>
                                     <th class="no-sort">
                                         <?php echo $this->Utils->getDirection($order, 'logentry_data');
-                                        echo $this->Paginator->sort('logentry_data', __('Logentry')); ?>
+                                        echo $this->Paginator->sort('logentry_data', __('Log Entry')); ?>
                                     </th>
                                 </tr>
                                 </thead>

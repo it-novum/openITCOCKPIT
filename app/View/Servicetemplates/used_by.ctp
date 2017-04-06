@@ -28,7 +28,7 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-code-fork fa-fw "></i>
-            <?php echo __('Servicetemplate'); ?>
+            <?php echo __('Service Template'); ?>
             <span>>
                 <?php echo __('used by...'); ?>
 			</span>
@@ -49,7 +49,7 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
-                    <h2><?php echo __('Servicetemplate'); ?>
+                    <h2><?php echo __('Service Template'); ?>
                         <strong><?php echo h($servicetemplate['Servicetemplate']['template_name']); ?></strong> <?php echo __('is used by the following'); ?> <?php echo $this->Utils->pluralize($all_hosts, __('host'), __('hosts')); ?>
                         (<?php echo sizeof($all_hosts); ?>):</h2>
 

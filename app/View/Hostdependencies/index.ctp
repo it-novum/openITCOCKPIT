@@ -49,7 +49,7 @@
                                 echo " "; //Fix HTML if search is implemented
                             endif;
                             // TODO Implement Search
-                            //echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
+                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
                             if ($isFilter):
                                 echo " "; //Fix HTML
                                 echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
