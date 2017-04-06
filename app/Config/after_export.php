@@ -37,7 +37,7 @@ $config = [
             'public_key'      => '/var/lib/nagios/.ssh/id_rsa.pub',
 
             //Command to restart remote monitoring engine
-            'restart_command' => '/opt/openitc/nagios/bin/restart-monitoring.sh',
+            'restart_command' => 'sudo /opt/openitc/nagios/bin/restart-monitoring.sh',
 
             //Use rsync or PHP SSH lib to copy data
             'use_rsync'       => true,
