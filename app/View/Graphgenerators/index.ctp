@@ -36,7 +36,7 @@
             <i class="fa fa-area-chart fa-fw"></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Graphgenerator'); ?>
+                <?php echo __('Graph Generator'); ?>
 			</span>
         </h1>
     </div>
@@ -59,7 +59,7 @@
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"><i class="fa fa-area-chart"></i></span>
 
-                    <h2 class="hidden-mobile hidden-tablet"><?php echo __('Graphgenerator'); ?></h2>
+                    <h2 class="hidden-mobile hidden-tablet"><?php echo __('Graph Generator'); ?></h2>
                     <ul class="nav nav-tabs pull-right padding-left-20" id="widget-tab-1">
                         <li<?php echo $is_config_loaded ? '' : ' class="active"' ?>>
                             <a href="/graphgenerators/index">

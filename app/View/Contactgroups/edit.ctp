@@ -29,7 +29,7 @@
             <i class="fa fa-users fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Contactgroups'); ?>
+                <?php echo __('Contact Groups'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>

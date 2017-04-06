@@ -30,7 +30,7 @@
                 <i class="fa fa-pencil-square-o fa-fw "></i>
                 <?php echo __('Monitoring'); ?>
                 <span>>
-                    <?php echo __('Servicetemplates'); ?>
+                    <?php echo __('Service Templates'); ?>
 			</span>
             </h1>
         </div>
@@ -47,7 +47,7 @@
                                 echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
-                            echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                            echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
                             if ($isFilter):
                                 echo " "; //Fix HTML
                                 echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
@@ -55,14 +55,14 @@
                             ?>
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-pencil-square-o"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Servicestemplates'); ?> </h2>
-                        <?= $this->Form->hidden('same-contaner-text', ['value' => __('Servicetemplates must belong to the same container')]) ?>
+                        <h2 class="hidden-mobile"><?php echo __('Services Templates'); ?> </h2>
+                        <?= $this->Form->hidden('same-contaner-text', ['value' => __('Service templates must belong to the same container')]) ?>
                     </header>
                     <div>
                         <div class="jarviswidget-editbox">
                         </div>
                         <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
+                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                             <div class="mobile_table">
                                 <table id="service_list" class="table table-striped table-bordered smart-form" style="">
                                     <thead>
@@ -70,7 +70,7 @@
                                         <?php $order = $this->Paginator->param('order'); ?>
                                         <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
                                         <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-2"><?php echo $this->Utils->getDirection($order, 'template_name');
-                                            echo $this->Paginator->sort('template_name', __('Servicetemplate name')); ?></th>
+                                            echo $this->Paginator->sort('template_name', __('Service template name')); ?></th>
                                         <th class="no-sort col-xs-2 col-sm-2 col-md-2 col-lg-3"><?php echo $this->Utils->getDirection($order, 'name');
                                             echo $this->Paginator->sort('name', __('Service name')); ?></th>
                                         <th class="no-sort col-xs-4 col-sm-4 col-md-4 col-lg-4"><?php echo $this->Utils->getDirection($order, 'description');

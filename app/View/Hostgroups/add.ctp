@@ -29,7 +29,7 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostgroups'); ?>
+                <?php echo __('Host Groups'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
-        <h2><?php echo __('Add hostgroup'); ?></h2>
+        <h2><?php echo __('Add Host Group'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(); ?>
         </div>
@@ -58,9 +58,9 @@
                 'label' => __('Container'),
                 'SelectionMode' => 'single',
             ]);
-            echo $this->Form->input('Container.name', ['label' => __('Hostgroup name')]);
+            echo $this->Form->input('Container.name', ['label' => __('Host Group Name')]);
             echo $this->Form->input('Hostgroup.description', ['label' => __('Description')]);
-            echo $this->Form->input('hostgroup_url', ['label' => __('Hostgroup URL')]);
+            echo $this->Form->input('hostgroup_url', ['label' => __('Host Group URL')]);
             echo $this->Form->input('Hostgroup.Host', [
                 'options' => $hosts,
                 'class' => 'chosen',

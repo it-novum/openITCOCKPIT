@@ -29,8 +29,8 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-desktop fa-fw "></i>
             <?php echo __('Administration') ?>
-            <span>>
-                <?php echo __('Systemfailure'); ?>
+            <span>
+                <?php echo __('System Failure'); ?>
 			</span>
         </h1>
     </div>
@@ -47,7 +47,7 @@
                             echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
                         endif;
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
 
                         if ($isFilter):
                             echo " "; //Fix HTML
@@ -59,12 +59,12 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Systemfailure'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('System failure'); ?> </h2>
 
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('Search'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
                             <table id="systemfailure_list" class="table table-striped table-bordered smart-form"
                                    style="">

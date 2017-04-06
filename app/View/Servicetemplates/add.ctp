@@ -44,7 +44,7 @@ $notification_settings = [
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicetemplate'); ?>
+                <?php echo __('Service Template'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>

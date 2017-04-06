@@ -44,7 +44,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostgroups'); ?>
+                <?php echo __('Host Groups'); ?>
 			</span>
         </h1>
     </div>

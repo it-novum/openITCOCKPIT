@@ -29,7 +29,7 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostgroups'); ?>
+                <?php echo __('Host Groups'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -39,7 +39,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2><?php echo __('Edit hostgroups'); ?></h2>
+        <h2><?php echo __('Edit Host Groups'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <?php echo $this->Utils->deleteButton(null, $hostgroup['Hostgroup']['id']); ?>
@@ -89,9 +89,9 @@
                     ]
                 );
             endif;
-            echo $this->Form->input('Container.name', ['label' => __('Hostgroup name'), 'value' => $this->request->data['Container']['name']]);
+            echo $this->Form->input('Container.name', ['label' => __('Host Group name'), 'value' => $this->request->data['Container']['name']]);
             echo $this->Form->input('Hostgroup.description', ['label' => __('Description'), 'value' => $this->request->data['Hostgroup']['description']]);
-            echo $this->Form->input('hostgroup_url', ['label' => __('Hostgroup URL'), 'value' => $this->request->data['Hostgroup']['hostgroup_url']]);
+            echo $this->Form->input('hostgroup_url', ['label' => __('Host Group URL'), 'value' => $this->request->data['Hostgroup']['hostgroup_url']]);
             echo $this->Form->input('Hostgroup.Host', [
                     'options'          => $hosts,
                     'class'            => 'chosen',
