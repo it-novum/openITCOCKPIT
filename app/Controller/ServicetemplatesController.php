@@ -478,6 +478,7 @@ class ServicetemplatesController extends AppController
                     $requestData,
                     $servicetemplate_for_changelog
                 );
+
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
@@ -854,6 +855,7 @@ class ServicetemplatesController extends AppController
 
             $isJson = $this->request->ext == 'json';
             //Save everything including custom variables
+            
             if ($this->Servicetemplate->saveAll($this->request->data)) {
                 $changelogData = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
