@@ -70,6 +70,40 @@ class SystemdowntimesController extends AppController
         $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
 
         $all_systemdowntimes = $this->Paginator->paginate();
+        foreach($all_systemdowntimes as $dKey => $systemdowntime){
+            switch($systemdowntime['Systemdowntime']['objecttype_id']){
+                case OBJECT_HOST:
+                    if(isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Host']['container_id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Host']['container_id']] == WRITE_RIGHT){
+                        $all_systemdowntimes[$dKey]['canDelete'] = true;
+                    }else{
+                        $all_systemdowntimes[$dKey]['canDelete'] = false;
+                    }
+                    break;
+
+                case OBJECT_SERVICE:
+                    if(isset($this->MY_RIGHTS_LEVEL[$systemdowntime['ServiceHost']['container_id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['ServiceHost']['container_id']] == WRITE_RIGHT){
+                        $all_systemdowntimes[$dKey]['canDelete'] = true;
+                    }else{
+                        $all_systemdowntimes[$dKey]['canDelete'] = false;
+                    }
+                    break;
+
+                case OBJECT_HOSTGROUP:
+                    if(isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == WRITE_RIGHT){
+                        $all_systemdowntimes[$dKey]['canDelete'] = true;
+                    }else{
+                        $all_systemdowntimes[$dKey]['canDelete'] = false;
+                    }
+                    break;
+
+                default:
+                    $all_systemdowntimes[$dKey]['canDelete'] = false;
+            }
+
+        }
 
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
         $this->set('all_systemdowntimes', $all_systemdowntimes);
@@ -102,7 +136,14 @@ class SystemdowntimesController extends AppController
         $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        $writeContainerIds = [];
+        foreach($containerIds as $containerId){
+            if(isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT){
+                $writeContainerIds[] = $containerId;
+            }
+
+        }
+        $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
 
         $this->set(compact(['hosts', 'selected']));
         $this->set('back_url', $this->referer());
@@ -205,7 +246,14 @@ class SystemdowntimesController extends AppController
         $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
+        $writeContainerIds = [];
+        foreach($containerIds as $containerId){
+            if(isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT){
+                $writeContainerIds[] = $containerId;
+            }
+
+        }
+        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($writeContainerIds, 'list', 'id');
         $this->set(compact(['hostgroups', 'selected']));
         $this->set('back_url', $this->referer());
 
@@ -308,8 +356,15 @@ class SystemdowntimesController extends AppController
         ];
         $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
 
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $writeContainerIds = [];
+        foreach($containerIds as $containerId){
+            if(isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT){
+                $writeContainerIds[] = $containerId;
+            }
 
-        $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS);
+        }
+        $services = $this->Service->servicesByHostContainerIds($writeContainerIds);
         $services = Hash::combine($services, '{n}.Service.id', ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name');
 
         $this->set(compact(['services', 'selected']));

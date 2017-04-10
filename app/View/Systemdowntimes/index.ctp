@@ -364,7 +364,7 @@
                                         <td><?php echo $systemdowntime['Systemdowntime']['to_time']; ?></td>
                                         <td class="text-center">
                                             <?php
-                                            if ($this->Acl->hasPermission('delete', 'systemdowntimes')):
+                                            if ($this->Acl->hasPermission('delete', 'systemdowntimes') && $systemdowntime['canDelete']):
                                                 echo $this->Utils->deleteButton(null, $systemdowntime['Systemdowntime']['id']);
                                             endif;
                                             ?>

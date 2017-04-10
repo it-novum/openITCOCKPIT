@@ -188,7 +188,7 @@ class Systemdowntime extends AppModel
             'conditions'   => [],
             'default'      => [
                 'recursive' => -1,
-                'fields'    => ['Systemdowntime.*', 'Host.*', 'Hostgroup.*', 'Service.*', 'Servicetemplate.*', 'Container.*'],
+                'fields'    => ['Systemdowntime.*', 'Host.*', 'Hostgroup.*', 'Service.*', 'Servicetemplate.*', 'Container.*', 'ServiceHost.container_id'],
                 'joins'     => [
                     [
                         'table'      => 'hosts',
@@ -202,6 +202,13 @@ class Systemdowntime extends AppModel
                         'type'       => 'LEFT',
                         'alias'      => 'Service',
                         'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_SERVICE.' AND Service.id = Systemdowntime.object_id)',
+                    ],
+
+                    [
+                        'table'      => 'hosts',
+                        'type'       => 'LEFT',
+                        'alias'      => 'ServiceHost',
+                        'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_SERVICE.' AND Service.host_id = ServiceHost.id)',
                     ],
 
                     [
