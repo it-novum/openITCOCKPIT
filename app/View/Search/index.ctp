@@ -75,7 +75,7 @@
                                 <br/>
                                 <?php
                                 echo $this->Form->input('Hostname', [
-                                    'label' => __('Hostname'),
+                                    'label' => __('Host Name'),
                                     'help'  => __('This is a wildcard search, you don\'t need to add * or %'),
                                 ]);
 

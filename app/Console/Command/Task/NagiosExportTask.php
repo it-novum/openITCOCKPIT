@@ -192,6 +192,7 @@ class NagiosExportTask extends AppShell {
                     'ServiceTimeperiod',
                     'HostCommands',
                     'ServiceCommands',
+                    'Customvariable'
                 ],
             ]);
         }
@@ -233,6 +234,15 @@ class NagiosExportTask extends AppShell {
             if (!empty($contact['Contact']['phone'])) {
                 $content .= $this->addContent('pager', 1, $contact['Contact']['phone']);
             }
+
+            if (!empty($contact['Customvariable'])) {
+                $content .= $this->nl();
+                $content .= $this->addContent(';Custom  variables:', 1);
+                foreach ($contact['Customvariable'] as $customvariable) {
+                    $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+                }
+            }
+
             $content .= $this->addContent('}', 0);
             if (!$this->conf['minified']) {
                 $file->write($content);

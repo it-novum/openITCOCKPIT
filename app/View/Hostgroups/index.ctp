@@ -30,7 +30,7 @@
             <i class="fa fa-sitemap fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Hostgroups'); ?>
+                <?php echo __('Host Groups'); ?>
             </span>
         </h1>
     </div>
@@ -47,7 +47,7 @@
                             echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
                         endif;
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
                         if ($isFilter):
                             echo " "; //Fix HTML
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
@@ -61,7 +61,7 @@
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         class="select_datatable text-left" my-column="1"><input
                                             type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Hostgroup name'); ?></a></li>
+                                    &nbsp; <?php echo __('Host Group Name'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         class="select_datatable text-left" my-column="2"><input
                                             type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Description'); ?>
@@ -76,7 +76,7 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Hostgroups'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Host Groups'); ?></h2>
                     <?php if (!empty($all_hostgroups) && $this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
@@ -88,7 +88,7 @@
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
                             <table id="hostgroup_list" class="table table-striped table-bordered smart-form" style="">
                                 <thead>
@@ -97,7 +97,7 @@
                                     <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
                                     <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name');
-                                        echo $this->Paginator->sort('Container.name', 'Hostgroup name'); ?></th>
+                                        echo $this->Paginator->sort('Container.name', 'Host Group Name'); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Hostgroup.description');
                                         echo $this->Paginator->sort('Hostgroup.description', 'Description'); ?></th>
                                     <th class="no-sort"><?php echo __('Hosts'); ?></th>

@@ -69,7 +69,7 @@
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <!--						--><?php //echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false); ?>
+                        <!--						--><?php //echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
                             <table id="host_list" class="table table-striped table-bordered">
                                 <!--							<table id="host_list" class="table table-striped table-bordered smart-form">-->

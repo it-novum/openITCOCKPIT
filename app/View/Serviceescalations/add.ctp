@@ -29,7 +29,7 @@
             <i class="fa fa-bomb fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Serviceescalation'); ?>
+                <?php echo __('Service Escalation'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-bomb"></i> </span>
-        <h2><?php echo __('Add Serviceescalation'); ?></h2>
+        <h2><?php echo __('Add Service Escalation'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(); ?>
         </div>
@@ -86,7 +86,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-plus-square text-success"></i> Servicegroups'),
+                'label'            => __('<i class="fa fa-plus-square text-success"></i> Service Groups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -100,7 +100,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Servicegroups (excluded)'),
+                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Service Groups (excluded)'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -133,7 +133,7 @@
                 'class'            => 'chosen',
                 'multiple'         => false,
                 'style'            => 'width:100%;',
-                'label'            => __('Timeperiod'),
+                'label'            => __('Time period'),
                 'data-placeholder' => __('Please choose a contact'),
             ]);
 
@@ -151,13 +151,13 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('Contactgroups'),
+                'label'            => __('Contact groups'),
                 'data-placeholder' => __('Please choose a contactgroup'),
             ]);
             ?>
             <fieldset>
                 <legend class="font-sm">
-                    <label><?php echo __('Serviceescalation options'); ?></label>
+                    <label><?php echo __('Service escalation options'); ?></label>
                     <?php if (isset($validation_service_notification)): ?>
                         <span class="text-danger"><?php echo $validation_service_notification; ?></span>
                     <?php endif; ?>

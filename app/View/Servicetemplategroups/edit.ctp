@@ -74,7 +74,7 @@
             endif;
             echo $this->Form->input('Servicetemplategroup.id', ['type' => 'hidden', 'value' => $servicetemplategroup['Servicetemplategroup']['id']]);
             echo $this->Form->input('container_id', ['type' => 'hidden', 'value' => $servicetemplategroup['Servicetemplategroup']['container_id']]);
-            echo $this->Form->input('Container.name', ['label' => __('Servicetemplategroup name'), 'value' => $this->request->data['Container']['name']]);
+            echo $this->Form->input('Container.name', ['label' => __('Service Template Group Name'), 'value' => $this->request->data['Container']['name']]);
             echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Servicetemplates'), 'data-placeholder' => __('Please choose a service'), 'selected' => $this->request->data['Servicetemplate']]);
             echo $this->Form->input('Servicetemplategroup.description', ['label' => __('Description'), 'value' => $this->request->data['Servicetemplategroup']['description']]);
             ?>

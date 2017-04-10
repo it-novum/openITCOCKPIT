@@ -142,8 +142,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods'],
-                'edit'  => ['loadTimeperiods'],
+                'add'   => ['loadTimeperiods', 'addCustomMacro'],
+                'edit'  => ['loadTimeperiods', 'addCustomMacro'],
             ],
             'Cronjobs'              => [
                 'add'  => ['loadTasksByPlugin'],

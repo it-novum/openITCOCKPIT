@@ -704,12 +704,18 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
+        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myRights = $myContainerId;
+        if(!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false){
+            unset($myRights[$rootKey]);
+        }
         $hosts = $this->Host->find('list', [
             'conditions' => [
-                'Host.host_type' => GENERIC_HOST
+                'Host.host_type' => GENERIC_HOST,
+                'Host.container_id' => $myRights
             ]
         ]);
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
         //container_id = 1 => ROOT

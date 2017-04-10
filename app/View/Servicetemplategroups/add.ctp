@@ -29,7 +29,7 @@
             <i class="fa fa-cogs fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicetemplategroup'); ?>
+                <?php echo __('Service Template Group'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-        <h2><?php echo __('Add Servicetemplategroup'); ?></h2>
+        <h2><?php echo __('Add Service Template Group'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(); ?>
         </div>
@@ -54,8 +54,8 @@
             echo $this->Form->input('Container.parent_id', ['options'       => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
                                                             'SelectionMode' => 'single',
             ]);
-            echo $this->Form->input('Container.name', ['label' => __('Servicetemplategroup name')]);
-            echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen optgroup_show', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Servicetemplates'), 'data-placeholder' => __('Please choose a servicetemplate')]);
+            echo $this->Form->input('Container.name', ['label' => __('Service Template Group Name')]);
+            echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen optgroup_show', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Service Templates'), 'data-placeholder' => __('Please choose a service template')]);
             echo $this->Form->input('Servicetemplategroup.description', ['label' => __('Description')]);
             ?>
             <br/>

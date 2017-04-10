@@ -31,7 +31,7 @@
             <i class="fa fa-users fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Contactgroups'); ?>
+                <?php echo __('Contact Groups'); ?>
 			</span>
         </h1>
     </div>
@@ -48,7 +48,7 @@
                             echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
                         endif;
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
                         if ($isFilter):
                             echo " "; //Fix HTML;
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
@@ -62,7 +62,7 @@
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         class="select_datatable text-left" my-column="1"><input
                                             type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Contactgroup name'); ?></a></li>
+                                    &nbsp; <?php echo __('Contact group name'); ?></a></li>
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         class="select_datatable text-left" my-column="2"><input
                                             type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Description'); ?>
@@ -77,11 +77,11 @@
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-users"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Contactgroups'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Contact Groups'); ?> </h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
                             <table id="contactgroup_list" class="table table-striped table-bordered smart-form"
                                    style="">
@@ -91,7 +91,7 @@
                                     <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
                                     <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name');
-                                        echo $this->Paginator->sort('Container.name', __('Contactgroup name')); ?></th>
+                                        echo $this->Paginator->sort('Container.name', __('Contact group name')); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Contacts.description');
                                         echo $this->Paginator->sort('Contactgroup.description', __('Description')); ?></th>
                                     <th class="no-sort"><?php echo __('Contacts'); ?></th>

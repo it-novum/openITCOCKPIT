@@ -45,7 +45,7 @@ $notification_settings = [
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicetemplate'); ?>
+                <?php echo __('Service Template'); ?>
             </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -56,7 +56,7 @@ $notification_settings = [
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2><?php echo __('Edit Servicetemplate'); ?></h2>
+        <h2><?php echo __('Edit Service template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <?php echo $this->Utils->deleteButton(null, Hash::merge([$servicetemplate['Servicetemplate']['id']] ,$this->params['named']), [], true, __('All attached services will be deleted too.')); ?>
@@ -92,7 +92,7 @@ $notification_settings = [
                         <div id="tab1" class="tab-pane fade active in">
                             <span class="note"><?php echo __('Basic configuration'); ?>:</span>
                             <?php
-                            if ($hasRootPrivileges):
+                            if ($hasRootPrivileges || !$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
                                         'options'          => $this->Html->chosenPlaceholder($containers),
                                         'data-placeholder' => __('Please select...'),
@@ -102,18 +102,7 @@ $notification_settings = [
                                         'style'            => 'width: 100%',
                                         'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                    ]
-                                );
-                            elseif (!$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
-                                echo $this->Form->input('container_id', [
-                                        'options'          => $this->Html->chosenPlaceholder($containers),
-                                        'data-placeholder' => __('Please select...'),
-                                        'multiple'         => false,
-                                        'selected'         => $this->request->data['Servicetemplate']['container_id'],
-                                        'class'            => 'chosen col col-xs-12',
-                                        'style'            => 'width: 100%',
-                                        'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                        'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                        'help'      => count($servicetemplate['Service']) > 0 ? __('There are Services using this Service Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:
@@ -138,7 +127,7 @@ $notification_settings = [
                             echo $this->Form->input('template_name', [
                                 'value'     => $this->request->data['Servicetemplate']['template_name'],
                                 'label'     => ['text' => __('Template name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'help'      => __('Servicetemplate name'),
+                                'help'      => __('Service template name'),
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
                             echo $this->Form->input('name', [
