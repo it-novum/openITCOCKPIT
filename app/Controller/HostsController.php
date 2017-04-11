@@ -553,7 +553,8 @@ class HostsController extends AppController {
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups']));
+
+        $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'id']));
         // End form refill
 
         if ($this->hasRootPrivileges === true) {
@@ -840,6 +841,10 @@ class HostsController extends AppController {
 
             }
 
+            if(CakePlugin::loaded('MaximoModule')){
+                $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+            }
+
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1039,7 +1044,7 @@ class HostsController extends AppController {
 
     public function add() {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
-        //Empty variables, get fild if Model::save() fails for refill
+        //Empty variables, get field if Model::save() fails for refill
         $_hosttemplates = [];
         $_hostgroups = [];
         $_parenthosts = [];
@@ -1059,7 +1064,7 @@ class HostsController extends AppController {
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
 
 
-        // Checking if the user hit submit and a validation error happents, to refill input fields
+        // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
             'Host' => [
@@ -1080,6 +1085,9 @@ class HostsController extends AppController {
             'Contact' => [
                 'Contact',
             ],
+            'Maximoconfiguration' => [
+                'maximo_ownergroup_id'
+            ]
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
@@ -1302,8 +1310,6 @@ class HostsController extends AppController {
                 $this->request->data,
                 'add'
             );
-//debug($data_to_save);
-//$data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
             $data_to_save['Host']['own_customvariables'] = 0;
             //Add Customvariables data to $data_to_save
             $data_to_save['Customvariable'] = [];
@@ -1316,32 +1322,8 @@ class HostsController extends AppController {
                 }
             }
 
-            $this->Host->temporaryRequest = $this->request->data;
-
             if (CakePlugin::loaded('MaximoModule')) {
-                $additionalData = [
-                    'Maximoconfiguration' => [
-                        'impact_level' => $this->request->data['Host']['impact_level'],
-                        'urgency_level' => $this->request->data['Host']['urgency_level'],
-                        'maximo_ownergroup_id' => $this->request->data['Host']['maximo_ownergroup_id'],
-                        'maximo_service_id' => $this->request->data['Host']['maximo_service_id'],
-                        'type' => $this->request->data['Host']['type']
-                    ]
-                ];
-                //this works with validateAssociated()
-                $data_to_save['Host'] = array_merge($data_to_save['Host'], $additionalData['Maximoconfiguration']);
-                //this wont. May we need it to store the data
-                $data_to_save = array_merge($data_to_save, $additionalData);
-
-
-                $this->Host->bindModel([
-                    'hasOne' => [
-                        'Maximoconfiguration' => [
-                            'className' => 'MaximoModule.Maximoconfiguration',
-                            'foreignKey' => 'element_id'
-                        ]
-                    ]
-                ]);
+                $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
             }
 
             if ($this->Host->saveAll($data_to_save)) {
@@ -1373,7 +1355,6 @@ class HostsController extends AppController {
                 } else {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
-//debug($this->Host->validationErrors);
                 //Refil data that was loaded by ajax due to selected container id
                 if ($this->Container->exists($this->request->data('Host.container_id'))) {
                     $container_id = $this->request->data('Host.container_id');

@@ -29,7 +29,6 @@ App::uses('ValidationCollection', 'Lib');
  * @property ParentHost $ParentHost
  */
 class Host extends AppModel {
-    public $actsAs = ['DynamicValidations'];
 
     public $hasAndBelongsToMany = [
         'Container' => [
@@ -795,36 +794,9 @@ class Host extends AppModel {
             ];
         }
 
-        //debug($options);
-        if (is_object($this->Behaviors->DynamicValidations)) {
-            $this->additionalValidationRules = $this->Behaviors->DynamicValidations->dynamicValidations($this->alias);
-            if (!empty($this->additionalValidationRules)) {
-                $validator = $this->validator();
-                //iterate through modules
-                foreach ($this->additionalValidationRules as $moduleModel => $validationRules) {
-                    //and then the validation rules
-                    foreach ($validationRules as $field => $conditions) {
-                        $this->additionalData[$moduleModel][$field] = $this->temporaryRequest[$this->alias][$field];
-                        $validator->add($field, $conditions);
-                    }
-                }
-            }
-        }
         return parent::beforeValidate($options);
     }
-/*
-    public function beforeSave(){
-        $this->bindModel([
-            'hasOne' => [
-                'Maximoconfiguration' => [
-                    'className' => 'MaximoModule.Maximoconfiguration',
-                    'foreignKey' => 'element_id'
-                ]
-            ]
-        ]);
-        return true;
-    }
-*/
+
     /**
      * @param int[] $containerIds May be empty if the option `hasRootPrivileges` is true.
      * @param string $type
