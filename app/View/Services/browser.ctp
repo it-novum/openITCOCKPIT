@@ -546,7 +546,7 @@
                     <div class="widget-toolbar pull-left hidden-mobile" role="menu">
                         <span style="line-height: 32px;" class="pull-left"><?php echo __('From:'); ?></span>
                         <input id="graph-filter-from" class="form-control text-center pull-left margin-left-10" style="width: 78%;"
-                               type="text" maxlength="255" value="<?= date('d-m-Y H:i', time()-60*60*4) ?>"
+                               type="text" maxlength="255" value="<?php echo date('d-m-Y H:i', strtotime(date('d-m-Y H:i', time()).' -1 day')); ?>"
                                name="data[Listsettings][from]">
                     </div>
 
@@ -570,7 +570,6 @@
                     <div class="widget-body no-padding">
                         <!-- widget body text-->
                         <div class="padding-35">
-                            <div id="graph_legend" class="graph_legend"></div>
                             <div id="graph_loader">
                                 <center><i class="fa fa-cog fa-4x fa-spin"></i></center>
                             </div>

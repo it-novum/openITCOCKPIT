@@ -2435,7 +2435,18 @@ class ServicesController extends AppController {
         $this->layout = false;
         $this->render = false;
         header('Content-Type: image/png');
+
+
         $rrd_path = Configure::read('rrd.path');
+
+        $File = new File($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml', false);
+        if (!$File->exists()){
+            $errorImage = $this->createGrapherErrorPng('No such file or directory');
+            imagepng($errorImage);
+            imagedestroy($errorImage);
+            return;
+        }
+
         $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             if ($rrd_structure_datasource['ds'] == $ds):
