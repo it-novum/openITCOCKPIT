@@ -1,6 +1,7 @@
 <?php
 
-class ClearCacheTask extends AppShell
+use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+class ClearCacheTask extends AppShell implements CronjobInterface
 {
     public function execute()
     {
