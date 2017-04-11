@@ -136,8 +136,31 @@ App.Controllers.DowntimesHostController = Frontend.AppController.extend({
 		 * Bind click event for delete downtime button
 		 */
 		$('.delete_downtime').click(function(){
-			self.WebsocketSudo.send(self.WebsocketSudo.toJson('submitDeleteHostDowntime', [$(this).attr('internal-downtime-id')]));
-			self.Externalcommand.refresh();
+			var $yes = $('#message_yes');
+			var $no = $('#message_no');
+			var $cancel = $('#message_cancel');
+
+            var currentDowntimeId = $(this).attr('data-id');
+
+			$.SmartMessageBox({
+				title : "<span class='text-warning'>You are about to delete downtime for host: "+$('#downtime-host-name-'+currentDowntimeId)+"</span>",
+				sound: false,
+				sound_on: false,
+				content : $('#delete_message_h2').val()+'11',
+				buttons : '['+$cancel.val()+']['+$no.val()+']['+$yes.val()+']'
+			}, function(ButtonPressed) {
+				if (ButtonPressed === $yes.val()) {
+					alert('yes');
+				}else if(ButtonPressed === $no.val()){
+					alert('no');
+				}else{
+					alert('caNCEL');
+				}
+			}.bind(this));
+
+			
+			// self.WebsocketSudo.send(self.WebsocketSudo.toJson('submitDeleteHostDowntime', [$(this).attr('internal-downtime-id')]));
+			// self.Externalcommand.refresh();
 		});
 
 	},

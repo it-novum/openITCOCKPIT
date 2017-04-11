@@ -309,7 +309,7 @@
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a href="/Hosts/browser/<?php echo $downtime['Host']['id']; ?>"><?php echo $downtime['Host']['name']; ?></a>
                                                 <?php else: ?>
-                                                    <?php echo h($downtime['Host']['name']); ?>
+                                                    <span id="downtime-host-name-<?php echo $downtime['Downtime']['id'] ?>"><?php echo h($downtime['Host']['name']); ?></span>
                                                 <?php endif; ?>
                                             <?php else: ?>
                                                 <span class="muted italic"><?php echo __('Host deleted'); ?></span>
@@ -375,4 +375,8 @@
             </div>
     </div>
 </section>
+
+<input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>
+<input type="hidden" id="message_no" value="<?php echo __('No'); ?>"/>
+<input type="hidden" id="message_cancel" value="<?php echo __('Cancel'); ?>"/>
 
