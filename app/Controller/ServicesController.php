@@ -802,7 +802,9 @@ class ServicesController extends AppController {
             $isJsonRequest = $this->request->ext === 'json';
 
             if(CakePlugin::loaded('MaximoModule')){
-                $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                if(!empty($this->request->data['Maximoconfiguration'])) {
+                    $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
             }
 
             if ($this->Service->saveAll($dataToSave)) {
@@ -1235,6 +1237,12 @@ class ServicesController extends AppController {
                     'object_id' => $service['Service']['id'],
                     'objecttype_id' => OBJECT_SERVICE,
                 ], false);
+            }
+
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
             }
 
             if ($this->Service->saveAll($data_to_save)) {
