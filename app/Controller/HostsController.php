@@ -842,7 +842,9 @@ class HostsController extends AppController {
             }
 
             if(CakePlugin::loaded('MaximoModule')){
-                $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
             }
 
             if ($this->Host->saveAll($data_to_save)) {
@@ -1323,7 +1325,10 @@ class HostsController extends AppController {
             }
 
             if (CakePlugin::loaded('MaximoModule')) {
-                $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+
             }
 
             if ($this->Host->saveAll($data_to_save)) {
