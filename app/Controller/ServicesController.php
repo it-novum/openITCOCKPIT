@@ -800,6 +800,11 @@ class ServicesController extends AppController {
             }
 
             $isJsonRequest = $this->request->ext === 'json';
+
+            if(CakePlugin::loaded('MaximoModule')){
+                $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+            }
+
             if ($this->Service->saveAll($dataToSave)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1003,7 +1008,8 @@ class ServicesController extends AppController {
             'Customvariable',
             'commandarguments',
             'ContactsInherited',
-            'eventhandler_commandarguments'
+            'eventhandler_commandarguments',
+            'id'
         ));
 
         if ($this->request->is('post') || $this->request->is('put')) {
