@@ -212,23 +212,6 @@ class Host extends AppModel {
             ],
 
         ],
-        /*
-                'priority' => [
-                    'notBlank' => [
-                        'rule'    => 'notBlank',
-                        'message' => 'This field cannot be left blank.',
-                        'required' => true
-                    ],
-                    'range' => [
-                        'rule' => ['range', 0, 6],
-                        'message' => 'This value must be between 1 and 5'
-                    ],
-                    'numeric' => [
-                        'rule' => 'numeric',
-                        'message' => 'This value needs to be numeric'
-                    ]
-                ],
-        */
     ];
 
     /**

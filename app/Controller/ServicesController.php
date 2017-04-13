@@ -1280,6 +1280,10 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+       /* $Maximoconfiguration = ClassRegistry::init('MaximoModule.Maximoconfiguration');
+        debug($Maximoconfiguration->hasMaximoconfiguration(OBJECT_SERVICE, $id));
+        die();
+*/
         $service = $this->Service->findById($id);
         $host = $this->Host->find('first', [
             'conditions' => [
