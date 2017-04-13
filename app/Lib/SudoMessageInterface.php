@@ -286,6 +286,13 @@ class SudoMessageInterface implements MessageComponentInterface
 
             case 'submitDeleteHostDowntime':
                 $this->Cake->Externalcommand->deleteHostDowntime($msg->data[0]);
+                if(isset($msg->data[1])){ // deleting service downtimes too
+                    $servicesArr = explode(',', $msg->data[1]);
+                    foreach($servicesArr as $serviceDowntimeId){
+                        if($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
+                        $this->Cake->Externalcommand->deleteServiceDowntime($serviceDowntimeId);
+                    }
+                }
                 break;
 
             case 'submitDeleteServiceDowntime':

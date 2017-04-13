@@ -307,7 +307,7 @@
                                             <?php
                                             if ($downtime['Host']['id'] != null): ?>
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                    <a href="/Hosts/browser/<?php echo $downtime['Host']['id']; ?>"><?php echo $downtime['Host']['name']; ?></a>
+                                                    <a href="/Hosts/browser/<?php echo $downtime['Host']['id']; ?>" ><?php echo $downtime['Host']['name']; ?></a>
                                                 <?php else: ?>
                                                     <span id="downtime-host-name-<?php echo $downtime['Downtime']['id'] ?>"><?php echo h($downtime['Host']['name']); ?></span>
                                                 <?php endif; ?>
@@ -335,6 +335,7 @@
                                                 <?php if ($this->Acl->hasPermission('delete', 'downtimes') && $downtime['canDelete']): ?>
                                                     <a class="btn btn-danger btn-xs delete_downtime"
                                                        href="javascript:void(0)"
+                                                       downtime-services-id="<?php echo $downtime['servicesDown'] ?>"
                                                        internal-downtime-id="<?php echo h($downtime['Downtime']['internal_downtime_id']); ?>"
                                                        downtimehistory-id="<?php echo h($downtime['Downtime']['downtimehistory_id']); ?>"><i
                                                                 class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>

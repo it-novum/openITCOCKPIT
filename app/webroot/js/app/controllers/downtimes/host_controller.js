@@ -140,27 +140,22 @@ App.Controllers.DowntimesHostController = Frontend.AppController.extend({
 			var $no = $('#message_no');
 			var $cancel = $('#message_cancel');
 
-            var currentDowntimeId = $(this).attr('data-id');
-
 			$.SmartMessageBox({
-				title : "<span class='text-warning'>You are about to delete downtime for host: "+$('#downtime-host-name-'+currentDowntimeId)+"</span>",
+				title : "<span class='text-info'>You are about to delete downtime for host: "+$('#downtime-host-name-'+$(this).attr('internal-downtime-id')).text()+"</span>",
 				sound: false,
 				sound_on: false,
-				content : $('#delete_message_h2').val()+'11',
+				content : 'Do you want to delete service downtimes for this host too?',
 				buttons : '['+$cancel.val()+']['+$no.val()+']['+$yes.val()+']'
 			}, function(ButtonPressed) {
 				if (ButtonPressed === $yes.val()) {
-					alert('yes');
+                    self.WebsocketSudo.send(self.WebsocketSudo.toJson('submitDeleteHostDowntime', [$(this).attr('internal-downtime-id'), $(this).attr('downtime-services-id')]));
+                    self.Externalcommand.refresh();
 				}else if(ButtonPressed === $no.val()){
-					alert('no');
-				}else{
-					alert('caNCEL');
+                    self.WebsocketSudo.send(self.WebsocketSudo.toJson('submitDeleteHostDowntime', [$(this).attr('internal-downtime-id')]));
+                    self.Externalcommand.refresh();
 				}
 			}.bind(this));
 
-			
-			// self.WebsocketSudo.send(self.WebsocketSudo.toJson('submitDeleteHostDowntime', [$(this).attr('internal-downtime-id')]));
-			// self.Externalcommand.refresh();
 		});
 
 	},
