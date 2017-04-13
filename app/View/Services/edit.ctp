@@ -125,34 +125,44 @@ $notification_settings = [
                             <?php
                             if ($service['Service']['service_type'] == MK_SERVICE):
                                 echo $this->Form->input('Service.servicetemplate_id', [
-                                    'options'          => $this->Html->chosenPlaceholder($servicetemplates),
-                                    'data-placeholder' => __('Please select...'),
-                                    'class'            => 'chosen',
-                                    'label'            => ['text' => '<a href="/servicetemplates/edit/'.$service['Service']['servicetemplate_id'].'"><i class="fa fa-cog"></i> </a>'.__('Servicetemplate'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'selected'         => $service['Service']['servicetemplate_id'],
-                                    'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                    'style'            => 'width: 100%',
-                                    'disabled'         => true,
+                                    'type'  => 'hidden',
+                                    'value' => $service['Service']['servicetemplate_id'],
                                 ]);
+                                ?>
+                                <div class="form-group">
+                                    <label class="col-xs-1 col-md-1 col-lg-1"
+                                           for="ServiceName">
+                                        <?php $allowEdit = $this->Acl->isWritableContainer($service['Servicetemplate']['container_id']); ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicetemplates', '') && $allowEdit): ?>
+                                            <a href="/servicetemplates/edit/<?php echo $service['Service']['servicetemplate_id'].'/'.MK_SERVICE.'/'; ?>_controller:mkservicetemplates/_action:index/_plugin:mk_module"><i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <?php echo __('Service template'); ?>
+                                    </label>
+                                    <div class="col col-xs-10 padding-top-5"><?php echo $service['Servicetemplate']['name']; ?></div>
+                                </div>
+                                <?php
                             else:
                                 echo $this->Form->input('Service.servicetemplate_id', [
                                     'options'          => $this->Html->chosenPlaceholder($servicetemplates),
                                     'data-placeholder' => __('Please select...'),
                                     'class'            => 'chosen',
-                                    'label'            => ['text' => '<a href="/servicetemplates/edit/'.$service['Service']['servicetemplate_id'].'"><i class="fa fa-cog"></i> </a>'.__('Servicetemplate'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'label'            => ['text' => '<a href="/servicetemplates/edit/'.$service['Service']['servicetemplate_id'].'"><i class="fa fa-cog"></i> </a>'.__('Service template'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'selected'         => $service['Service']['servicetemplate_id'],
                                     'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                                     'style'            => 'width: 100%',
                                 ]);
                             endif;
-                            if ($service['Service']['service_type'] == MK_SERVICE):
-                                echo $this->Form->input('Service.name', [
-                                    'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                    'value'     => $service['Service']['name'],
-                                    'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                    'disabled'  => true,
-                                ]);
-                            else:
+                            if ($service['Service']['service_type'] == MK_SERVICE): ?>
+                                <div class="form-group">
+                                    <label class="col-xs-1 col-md-1 col-lg-1"
+                                           for="ServiceName">
+                                        <?php echo __('Name'); ?>
+                                    </label>
+                                    <div class="col col-xs-10 padding-top-5"><?php echo $service['Service']['name']; ?></div>
+                                    <?php echo $this->Form->input('Service.name', ['type' => 'hidden', 'value' => $service['Service']['name']]); ?>
+                                </div>
+                            <?php endif;
+                            if ($service['Service']['service_type'] != MK_SERVICE):
                                 echo $this->Form->input('Service.name', [
                                     'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'value'     => $service['Service']['name'],
