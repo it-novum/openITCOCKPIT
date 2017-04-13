@@ -1083,6 +1083,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             if(Contact != null){
                 for(var ContactId in Contact){
                     $('#HostContact :nth-child('+ContactId+')').prop('selected', true);
+                    document.getElementById('HostContact').selectedIndex = ContactId;
                 }
             }
 
@@ -1092,6 +1093,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             if(Contactgroup != null){
                 for(var ContactgroupId in Contactgroup){
                     $('#HostContactgroup :nth-child('+ContactgroupId+')').prop('selected', true);
+                    document.getElementById('HostContactgroup').selectedIndex = ContactgroupId;
                 }
             }
 
@@ -1102,10 +1104,6 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             $('#hostContactSelects').unblock();
             $('#HostContact').prop('readonly', false);
             $('#HostContactgroup').prop('readonly', false);
-
-            //Remove selection of the select boxes
-            document.getElementById('HostContact').selectedIndex = -1;
-            document.getElementById('HostContactgroup').selectedIndex = -1;
         }
         $('#HostContact').trigger("chosen:updated");
         $('#HostContactgroup').trigger("chosen:updated");
