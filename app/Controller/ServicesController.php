@@ -687,6 +687,16 @@ class ServicesController extends AppController {
             ],
         ];
 
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         //Check if a host was selected before adding new service (host service list)
@@ -895,6 +905,16 @@ class ServicesController extends AppController {
                 'Servicegroup',
             ],
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
 
         $service = $this->Service->prepareForView($id);
         $service_for_changelog = $service;
@@ -1280,10 +1300,6 @@ class ServicesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-       /* $Maximoconfiguration = ClassRegistry::init('MaximoModule.Maximoconfiguration');
-        debug($Maximoconfiguration->hasMaximoconfiguration(OBJECT_SERVICE, $id));
-        die();
-*/
         $service = $this->Service->findById($id);
         $host = $this->Host->find('first', [
             'conditions' => [

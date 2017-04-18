@@ -480,7 +480,7 @@ class HostsController extends AppController {
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
         $this->Frontend->setJson('hostId', $id);
 
-        // Checking if the user hit submit and a validation error happents, to refill input fields
+        // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
             'Host' => [
@@ -506,6 +506,18 @@ class HostsController extends AppController {
             //		'Contactgroup'
             //	]
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                    'type',
+                    'impact_level',
+                    'urgency_level',
+                    'maximo_ownergroup_id',
+                    'maximo_service_id'
+            ];
+
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -1087,10 +1099,19 @@ class HostsController extends AppController {
             'Contact' => [
                 'Contact',
             ],
-            'Maximoconfiguration' => [
-                'maximo_ownergroup_id'
-            ]
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
