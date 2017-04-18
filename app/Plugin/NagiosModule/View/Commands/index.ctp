@@ -104,7 +104,7 @@
                             <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
                             <div id="tab1" class="tab-pane fade active in">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -141,7 +141,7 @@
 
                             <div id="tab2" class="tab-pane fade">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -175,7 +175,7 @@
 
                             <div id="tab3" class="tab-pane fade">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>

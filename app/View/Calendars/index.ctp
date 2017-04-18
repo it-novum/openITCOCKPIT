@@ -56,7 +56,7 @@
                         <div class="tab-content">
                             <div id="tab1" class="tab-pane fade active in">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
