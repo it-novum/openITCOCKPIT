@@ -56,6 +56,21 @@
                     </div>
                 </div>
             </div>
+          <!--  <div class="widget-footer text-right padding-10">
+                <?php /* echo $this->Form->fancyCheckbox('recursive', [
+                    'caption'          => __('Recursive'),
+                    'wrapGridClass'    => 'col col-xs-2',
+                    'captionGridClass' => 'col col-xs-2',
+                    'captionClass'     => 'col col-md-2 control-label',
+                    //'checked'          => ,
+                ]);
+
+                echo $this->Form->postButton('refresh', '' ,[
+                    'class' => 'btn btn-default btn-sm',
+                    'wrapGridClass'    => 'col col-xs-1',
+                ]); */
+                ?>
+            </div> -->
         </div>
     </article>
     <article class="col-sm-5 col-md-5 col-lg-5">
@@ -166,6 +181,7 @@
         </div>
     </article>
 </div>
+
 <div class="row">
     <article class="col-sm-12 col-md-12 col-lg-12">
         <div class="jarviswidget ">
@@ -291,13 +307,11 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php //echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+                                        <?php //echo $this->Paginator->pagination(['ul' => 'pagination',]); ?>
                                     </div>
                                 </div>
                             </div>

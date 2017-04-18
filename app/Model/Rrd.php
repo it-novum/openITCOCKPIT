@@ -28,7 +28,7 @@ class Rrd extends AppModel
     var $useTable = false;
     public $rrd_path = null;
 
-    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [])
+    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null)
     {
         $result = [];
 
@@ -41,13 +41,30 @@ class Rrd extends AppModel
 
         $perfdata_dir = new Folder($rrd_path.$host_uuid);
         $perfdata_files = $perfdata_dir->find($service_uuid.'.(xml|rrd)', true);
-
         if (!isset($perfdata_files[0]) || !isset($perfdata_files[1])) {
             return $result;
         }
-
         $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd().'/'.$perfdata_files[1])];
         $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd().'/'.$perfdata_files[0], $options);
+
+        if(!empty($xml_data['xml_data']) && !is_null($service_value)){ // ignoring other values if $service_value is set
+            $neededIndex = null;
+            $notNeededIndexes = [];
+            foreach($xml_data['xml_data'] as $xmlIndex => $xmlArr){
+                if($service_value === $xmlArr['ds']){
+                    $neededIndex = intval($xmlArr['ds']);
+                    continue;
+                }
+                $notNeededIndexes[$xmlIndex] = $xmlArr['ds'];
+            }
+            if(isset($perfdata_from_rrd['data'][$neededIndex]) && !empty($notNeededIndexes)){ // we found needed value, we can unset the other values
+                foreach($notNeededIndexes as  $notNeededIndex => $notNeededDS){
+                    unset($xml_data['xml_data'][$notNeededIndex]);
+                    unset($perfdata_from_rrd['data'][$notNeededDS]);
+                }
+
+            }
+        }
 
         return array_merge($xml_data, $perfdata_from_rrd);
     }
@@ -56,7 +73,11 @@ class Rrd extends AppModel
     {
         App::uses('Xml', 'Utility');
         $rrd_structure = [];
-        $xml_rrd = Xml::build($xml_path);
+        try {
+            $xml_rrd = Xml::build($xml_path); // Here will throw a Exception
+        } catch (XmlException $e) {
+           return false;
+        }
         $xml_rrd_as_array = Xml::toArray($xml_rrd);
 
         $xml_rrd_structure = ['ds', 'name', 'label', 'unit', 'act', 'warn', 'crit', 'min', 'max'];
@@ -160,7 +181,6 @@ class Rrd extends AppModel
         if (!$perf_data) {
             return [];
         }
-
         foreach ($perf_data as $key => $value) {
             if ($key == 'data') {
                 foreach (array_keys($perf_data['data']) as $sub_key => $data_array) {

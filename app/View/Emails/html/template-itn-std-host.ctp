@@ -528,8 +528,12 @@
                                     <td><?php echo date('H:i:s T'); ?></td>
                                 </tr>
                                 <tr>
-                                    <td><strong><?php echo __('Hostname'); ?>:</strong></td>
+                                    <td><strong><?php echo __('Host Name'); ?>:</strong></td>
                                     <td><?php echo h($parameters['hostname']); ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Hostdescription'); ?>:</strong></td>
+                                    <td><?php echo h($parameters['hostdescription']); ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('Hostaddress'); ?>:</strong></td>

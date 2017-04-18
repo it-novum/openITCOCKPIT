@@ -1,4 +1,4 @@
-<img src="https://mgmt.it-novum.com/oitc2.svg" alt="openITCOCKPIT logo" width="auto" height="100">
+<img src="https://repo.it-novum.com/oitc/oitc2.svg" alt="openITCOCKPIT logo" width="auto" height="100">
 
 [![Chat on Matrix](https://img.shields.io/badge/style-matrix-blue.svg?style=flat&label=chat)](https://riot.im/app/#/room/#openitcockpit:matrix.org)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-freenode-blue.svg)](https://kiwiirc.com/client/chat.freenode.net/#openitcockpit)
@@ -8,7 +8,7 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart interface written in PHP
 
-![openITCOCKPIT](https://mgmt.it-novum.com/oitc.png "openITCOCKPIT")
+![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
 
 # System requirements
 * Ubuntu Linux (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 8 "jessie"
@@ -80,6 +80,15 @@ apt-get update
 apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
+
+# Register openitcockpit community version:
+You can register your openITCOCKPIT installation to get an access to free community modules.
+
+**That's how it works**
+
+Login to the webinterface of openITCOCKPIT and navigate to Administration -> Registration, enter the community license key 
+`0dc0d951-e34e-43d0-a5a5-a690738e6a49` and click Register. 
+After successful registration you can install the free community modules at Administration -> Package Manager
 
 # Features
 * Easy to use web interface

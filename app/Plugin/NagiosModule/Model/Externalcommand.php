@@ -747,6 +747,53 @@ class Externalcommand extends NagiosModuleAppModel
         $options = Hash::merge($_options, $options);
         //Nagios workaround -.-
         $this->Hostgroup = ClassRegistry::init('Hostgroup');
+        $this->Host = ClassRegistry::init('Host');
+        $hostgroup = $this->Hostgroup->find('first', [
+            'recursive' => -1,
+            'contain'    => [
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                    ],
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id'
+                    ]
+                ],
+            ],
+            'conditions' => [
+                'Hostgroup.uuid' => $options['hostgroupUuid']
+            ]
+        ]);
+        $hostIds = [];
+        if(!empty($hostgroup['Host'])){
+            $hostIds = Hash::extract($hostgroup['Host'], '{n}.id');
+        }
+        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
+        $hostsByHosttemplateIds = $this->Host->find('all', [
+            'recursive' => -1,
+            'contain' => [
+                'Hostgroup',
+                'Hosttemplate' => [
+                    'Hostgroup' => [
+                        'conditions' => [
+                            'Hostgroup.id' => $hostgroup['Hostgroup']['id']
+                        ]
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Host.hosttemplate_id' => $hostTemlateIds,
+                'NOT' => [
+                    'Host.id' => $hostIds
+                ]
+            ],
+            'fields' => [
+                'Host.uuid'
+            ]
+        ]);
 
         switch ($options['downtimetype']) {
             case 0:
@@ -755,12 +802,20 @@ class Externalcommand extends NagiosModuleAppModel
                  */
                 //Host only and may be this will work some day
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
-
                 //Nagios workaround
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => 0,
+                    ]);
+                }
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -774,9 +829,7 @@ class Externalcommand extends NagiosModuleAppModel
                 //Host inc services and may be this will work some day
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
                 //$this->_write(' SCHEDULE_HOSTGROUP_SVC_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
-
                 //Nagios workaround
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
@@ -787,15 +840,32 @@ class Externalcommand extends NagiosModuleAppModel
                         'downtimetype' => 1,
                     ]);
                 }
-
-
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => 1,
+                    ]);
+                }
                 break;
 
             default:
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => $options['downtimetype'],
+                    ]);
+                }
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],

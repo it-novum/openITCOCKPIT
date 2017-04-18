@@ -89,7 +89,7 @@ $notification_settings = [
                         <div id="tab1" class="tab-pane fade active in">
                             <span class="note"><?php echo __('Basic configuration'); ?>:</span>
                             <?php
-                            if ($hasRootPrivileges):
+                            if ($hasRootPrivileges || !$hasRootPrivileges && $hosttemplate['Container']['id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
                                         'options'   => $containers,
                                         'multiple'  => false,
@@ -98,17 +98,7 @@ $notification_settings = [
                                         'style'     => 'width: 100%',
                                         'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                    ]
-                                );
-                            elseif (!$hasRootPrivileges && $hosttemplate['Container']['id'] != ROOT_CONTAINER):
-                                echo $this->Form->input('container_id', [
-                                        'options'   => $containers,
-                                        'multiple'  => false,
-                                        'selected'  => $hosttemplate['Container']['id'],
-                                        'class'     => 'chosen',
-                                        'style'     => 'width: 100%',
-                                        'label'     => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                        'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                                        'help'      => count($hosttemplate['Host']) > 0 ? __('There are Hosts using this Host Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:

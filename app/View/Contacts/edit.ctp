@@ -305,6 +305,37 @@
                     </div>
                 </article>
             </div>
+
+            <div class="row margin-bottom-10">
+                <div class="col-xs-12">
+                    <br/>
+                    <legend class="font-sm"></legend>
+
+                    <!-- Host macro settings -->
+                    <div class="host-macro-settings">
+                        <span class="note pull-left"><?php echo __('Contact macro settings'); ?>:</span>
+                        <br class="clearfix"/>
+                        <br/>
+                        <?php if (isset($customVariableValidationError)): ?>
+                            <div class="text-danger"><?php echo $customVariableValidationError; ?></div>
+                        <?php endif; ?>
+                        <?php if (isset($customVariableValidationErrorValue)): ?>
+                            <div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
+                        <?php endif; ?>
+                        <?php
+                        $customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+                            $contact['Customvariable'], []
+                        );
+                        $mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+                        ?>
+                        <?php $this->CustomVariables->setup('CONTACT', OBJECT_CONTACT, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
+                        <?php echo $this->CustomVariables->prepare(); ?>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+
+
             <?php echo $this->Form->formActions(); ?>
         </div>
     </div>

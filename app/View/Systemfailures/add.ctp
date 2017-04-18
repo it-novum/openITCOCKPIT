@@ -29,7 +29,7 @@
             <i class="fa fa-pencil-square-o fa-fw "></i>
             <?php echo __('Administration'); ?>
             <span>>
-                <?php echo __('Systemfailure'); ?>
+                <?php echo __('System failure'); ?>
 			</span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Add Systemfailure'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Add System failure'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>

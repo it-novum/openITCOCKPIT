@@ -600,6 +600,7 @@ class CommandsController extends AppController
 
     public function copy($id = null)
     {
+        $userId = $this->Auth->user('id');
         $commands = $this->Command->find('all', [
             'resursive' => -1,
             'contain' =>[
@@ -645,6 +646,19 @@ class CommandsController extends AppController
                     $this->Command->create();
                     if (!$this->Command->saveAll($newCommandData)) {
                         throw new Exception('Some of the Commands could not be copied');
+                    }
+                    $changeLogData = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Command->id,
+                        OBJECT_COMMAND,
+                        [ROOT_CONTAINER],
+                        $userId,
+                        $newCommand['name'],
+                        $newCommandData
+                    );
+                    if ($changeLogData) {
+                        CakeLog::write('log', serialize($changeLogData));
                     }
                 }
 

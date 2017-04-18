@@ -123,8 +123,6 @@ class CustomVariablesHelper extends AppHelper
             'objecttype_id'       => $this->objecttype_id,
             'macro_objecttype_id' => null,
         ];
-
-
         $options = Hash::merge($_options, $options);
         $html = '<div class="col-xs-12">
             <div class="col-md-3 hidden-mobile '.$this->getColor($options['macro_objecttype_id'], $options).'">
@@ -168,6 +166,7 @@ class CustomVariablesHelper extends AppHelper
             OBJECT_HOST            => 'text-primary',
             OBJECT_SERVICETEMPLATE => 'text-success',
             OBJECT_SERVICE         => 'text-primary',
+            OBJECT_CONTACT         => 'text-primary',
         ];
 
         return $colors[$objecttype_id];
@@ -217,7 +216,7 @@ class CustomVariablesHelper extends AppHelper
                 $html .= $this->html($i, [
                     'name'                => $macro['name'],
                     'value'               => $macro['value'],
-                    //'id' => $macro['id'],
+                    'id' => $macro['id'],
                     'objecttype_id'       => $this->objecttype_id,
                     'macro_objecttype_id' => $macro['objecttype_id'],
                 ]);

@@ -69,6 +69,17 @@ class Contact extends AppModel
         ],
     ];
 
+    public $hasMany = [
+        'Customvariable' => [
+            'className' => 'Customvariable',
+            'foreignKey' => 'object_id',
+            'conditions' => [
+                'objecttype_id' => OBJECT_CONTACT,
+            ],
+            'dependent' => true,
+        ],
+    ];
+
     var $validate = [
         'Container' => [
             'rule'    => ['multiple', ['min' => 1]],

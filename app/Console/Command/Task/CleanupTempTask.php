@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CleanupTempTask extends AppShell
+use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+class CleanupTempTask extends AppShell implements CronjobInterface
 {
 
     public function execute($quiet = false)

@@ -29,14 +29,18 @@ App.Controllers.SystemdowntimesAddHostdowntimeController = Frontend.AppControlle
 		
 		/*
 		 * Check if the checkbox is checked and we need to display the hidden stuff
-		 */ 
-		
-		if($('#SystemdowntimeIsRecurring').prop('checked') == true){
-			$('.chosen-container').css('width', '100%');
-			$('#recurringHost_settings').show();
-			$('#SystemdowntimeFromDate').hide();
-			$('#SystemdowntimeToDate').hide();
-		}
+		 */
+
+        if($('#SystemdowntimeIsRecurring').prop('checked') == true){
+            $('.chosen-container').css('width', '100%');
+            $('#recurringHost_settings').show();
+            $('#SystemdowntimeFromDate').hide();
+            $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeFromDate').next().html('');
+            $('#SystemdowntimeToDate').hide();
+            $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+            $('#SystemdowntimeToDate').next().html('');
+        }
 		
 		/*
 		 * Bind click events for recurring downtimes
@@ -46,8 +50,13 @@ App.Controllers.SystemdowntimesAddHostdowntimeController = Frontend.AppControlle
 			if($(this).prop('checked') == true){
 				$('.chosen-container').css('width', '100%');
 				$('#recurringHost_settings').show();
+                $('#SystemdowntimeFromDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeFromDate').next().html('');
 				$('#SystemdowntimeFromDate').hide();
 				$('#SystemdowntimeToDate').hide();
+                $('#SystemdowntimeToDate').parent().parent().removeClass('has-error');
+                $('#SystemdowntimeToDate').next().html('');
+                $('#recurringHost_settings').children('.form-group').addClass('required');
 			}else{
 				$('#recurringHost_settings').hide();
 				$('#SystemdowntimeFromDate').show();

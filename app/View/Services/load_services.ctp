@@ -59,7 +59,7 @@ if (!empty($services)):
                     <header>
                         <div class="widget-toolbar" role="menu">
                             <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
-                            <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
+                            <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                             <?php
                             /*if($isFilter):
                                 echo $this->ListFilter->resetLink(null, array('class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'));
@@ -89,7 +89,7 @@ if (!empty($services)):
                                                                 class="select_datatable text-left"
                                                                 class="select_datatable text-left" my-column="4"><input
                                                     type="checkbox" class="pull-left"/>
-                                            &nbsp; <?php echo __('Hostname'); ?></a></li>
+                                            &nbsp; <?php echo __('Host Name'); ?></a></li>
                                     <li style="width: 100%;"><a href="javascript:void(0)"
                                                                 class="select_datatable text-left"
                                                                 class="select_datatable text-left" my-column="5"><input
@@ -134,7 +134,7 @@ if (!empty($services)):
 
                         <!-- widget content -->
                         <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
+                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                             <table id="service_list" class="table table-striped table-bordered smart-form" style="">
                                 <thead>
                                 <tr>

@@ -49,6 +49,7 @@ class ProfileController extends AppController
             'contain'    => false,
         ]);
 
+        //Format: https://secure.php.net/manual/en/function.strftime.php
         $dateformats = [
             1 => '%B %e, %Y %H:%M:%S',
             2 => '%m-%d-%Y  %H:%M:%S',
@@ -61,6 +62,9 @@ class ProfileController extends AppController
             9  => '%d.%m.%Y - %l:%M:%S %p',
             10 => '%H:%M:%S - %d.%m.%Y', //Default date format
             11 => '%H:%M - %d.%m.%Y',
+
+            12 => '%Y-%m-%d %H:%M',
+            13 => '%Y-%m-%d %H:%M:%S'
         ];
 
         $selectedUserTime = 10;
@@ -90,7 +94,6 @@ class ProfileController extends AppController
                 if($this->request->data['User']['paginatorlength'] > '1000'){
                     $this->request->data['User']['paginatorlength'] = '1000';
                 }
-
                 if ($this->User->save($this->request->data)) {
                     $this->setFlash(__('Profile edit successfully'));
                     $sessionUser = $this->Session->read('Auth');

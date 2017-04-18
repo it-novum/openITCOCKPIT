@@ -247,6 +247,11 @@ class GearmanWorkerShell extends AppShell {
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                 $output = null;
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+
+                //Delete Check_MK autochecks
+                $this->deleteMkAutochecks();
+
+
                 $return = $output;
                 break;
 
@@ -269,6 +274,7 @@ class GearmanWorkerShell extends AppShell {
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                 $output = null;
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                $this->deleteMkAutochecks();
                 $return = $output;
                 unset($output);
                 break;
@@ -379,7 +385,7 @@ class GearmanWorkerShell extends AppShell {
                 $this->NagiosExport->exportHostescalations();
                 $return = ['task' => $payload['task']];
                 break;
-                $this->NagiosExport->exportMacros();
+                $this->NagiosExport->exportMacros(); // @todo fixme ?
                 $return = ['task' => $payload['task']];
             case 'export_servicetemplates':
                 $this->NagiosExport->exportServicetemplates();
@@ -983,5 +989,28 @@ class GearmanWorkerShell extends AppShell {
         }
 
         return $return;
+    }
+
+    /**
+     * @return bool
+     */
+    private function deleteMkAutochecks(){
+        $autochecksPath = $this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'] . 'autochecks';
+        if(!is_dir($autochecksPath)){
+            return false;
+        }
+        $files = [];
+        foreach (new DirectoryIterator($autochecksPath) as $fileInfo) {
+            if (!$fileInfo->isDot()) {
+                $files[] = $fileInfo->getRealPath();
+            }
+        }
+        if(empty($files)){
+            return true;
+        }
+
+        $Filesystem = new \Symfony\Component\Filesystem\Filesystem();
+        $Filesystem->remove($files);
+        return true;
     }
 }

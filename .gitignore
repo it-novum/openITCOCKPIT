@@ -3,6 +3,7 @@ tmp/*
 [Cc]onfig/database.php
 app/tmp/*
 app/[Cc]onfig/database.php
+app/[Cc]onfig/email.php
 /vendor
 build
 !empty

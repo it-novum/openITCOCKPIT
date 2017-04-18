@@ -181,6 +181,7 @@ class ServicetemplatesController extends AppController
                 'NotifyPeriod',
                 'CheckPeriod',
                 'Contact',
+                'Service',
                 'Servicetemplatecommandargumentvalue'      => ['Commandargument'],
                 'Servicetemplateeventcommandargumentvalue' => ['Commandargument'],
             ],
@@ -204,6 +205,17 @@ class ServicetemplatesController extends AppController
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
+
+        if(count($serviceTemplate['Service']) > 0){
+            $newContainers = [];
+            foreach($containers as $containerId => $containerName){
+                if(!in_array($containerId, [ROOT_CONTAINER, $serviceTemplate['Servicetemplate']['container_id']]))
+                    continue;
+                $newContainers[$containerId] = $containerName;
+            }
+            $containers = $newContainers;
+        }
+
         // Data to refill form
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Servicetemplate.container_id');
@@ -478,6 +490,7 @@ class ServicetemplatesController extends AppController
                     $requestData,
                     $servicetemplate_for_changelog
                 );
+
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
@@ -854,6 +867,7 @@ class ServicetemplatesController extends AppController
 
             $isJson = $this->request->ext == 'json';
             //Save everything including custom variables
+            
             if ($this->Servicetemplate->saveAll($this->request->data)) {
                 $changelogData = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1078,26 +1092,92 @@ class ServicetemplatesController extends AppController
 
     public function copy($id = null)
     {
-
+        $userId = $this->Auth->user('id');
         $servicetmpl = $this->Servicetemplate->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Servicetemplate.template_name',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.container_id',
+                'Servicetemplate.servicetemplatetype_id',
+                'Servicetemplate.check_period_id',
+                'Servicetemplate.notify_period_id',
+                'Servicetemplate.command_id',
+                'Servicetemplate.eventhandler_command_id',
+                'Servicetemplate.check_interval',
+                'Servicetemplate.retry_interval',
+                'Servicetemplate.max_check_attempts',
+                'Servicetemplate.notification_interval',
+                'Servicetemplate.notifications_enabled',
+                'Servicetemplate.notify_on_warning',
+                'Servicetemplate.notify_on_unknown',
+                'Servicetemplate.notify_on_critical',
+                'Servicetemplate.notify_on_recovery',
+                'Servicetemplate.notify_on_flapping',
+                'Servicetemplate.notify_on_downtime',
+                'Servicetemplate.flap_detection_enabled',
+                'Servicetemplate.notes',
+                'Servicetemplate.priority',
+                'Servicetemplate.tags',
+                'Servicetemplate.service_url',
+                'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.process_performance_data',
+                'Servicetemplate.is_volatile',
+                'Servicetemplate.freshness_checks_enabled',
+                'Servicetemplate.freshness_threshold',
+                'Servicetemplate.flap_detection_on_ok',
+                'Servicetemplate.flap_detection_on_warning',
+                'Servicetemplate.flap_detection_on_unknown',
+                'Servicetemplate.flap_detection_on_critical'
+            ],
             'conditions' => [
                 'Servicetemplate.id' => func_get_args(),
             ],
             'contain'    => [
+                'CheckPeriod' =>[
+                    'fields' =>[
+                        'CheckPeriod.id',
+                        'CheckPeriod.name'
+                    ]
+                ],
+                'NotifyPeriod' =>[
+                    'fields' =>[
+                        'NotifyPeriod.id',
+                        'NotifyPeriod.name'
+                    ]
+                ],
+                'CheckCommand' => [
+                    'fields' => [
+                        'CheckCommand.id',
+                        'CheckCommand.name',
+                    ]
+                ],
                 'Contact'                                  => [
                     'fields' => [
                         'Contact.id',
+                        'Contact.name'
                     ],
                 ],
                 'Contactgroup'                             => [
                     'fields' => [
                         'Contactgroup.id',
                     ],
+                    'Container' => [
+                        'fields' => [
+                            'Container.name'
+                        ]
+                    ]
                 ],
                 'Servicegroup'                             => [
                     'fields' => [
                         'Servicegroup.id',
                     ],
+                    'Container' => [
+                        'fields' => [
+                            'Container.name'
+                        ]
+                    ]
                 ],
                 'Servicetemplatecommandargumentvalue'      => [
                     'fields' => [
@@ -1109,23 +1189,16 @@ class ServicetemplatesController extends AppController
                         'commandargument_id', 'value',
                     ],
                 ],
-                'Customvariable'                           => [
+                'Customvariable' => [
                     'fields' => [
-                        'name', 'value',
+                        'name',
+                        'value',
                     ],
                 ],
             ],
         ]);
         $servicetemplates = Hash::combine($servicetmpl, '{n}.Servicetemplate.id', '{n}');
-
         if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($servicetemplates as $key => $servicetemplate) {
-                unset($servicetemplates[$key]['Servicetemplate']['created']);
-                unset($servicetemplates[$key]['Servicetemplate']['modified']);
-                unset($servicetemplates[$key]['Servicetemplate']['id']);
-                unset($servicetemplates[$key]['Servicetemplate']['uuid']);
-            }
-
             $datasource = $this->Servicetemplate->getDataSource();
             try {
                 $datasource->begin();
@@ -1135,12 +1208,12 @@ class ServicetemplatesController extends AppController
                     $servicegroupIds = Hash::extract($servicetemplates[$newServicetemplate['source']], 'Servicegroup.{n}.id');
 
                     $newServicetemplateData = [
-                        'Servicetemplate'                          => [
+                        'Servicetemplate' => Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], [
                             'uuid'        => $this->Servicetemplate->createUUID(),
                             'template_name'=> $newServicetemplate['template_name'],
                             'name'        => $newServicetemplate['name'],
                             'description' => $newServicetemplate['description'],
-                        ],
+                        ]),
                         'Customvariable'                           => Hash::insert(
                             Hash::remove(
                                 $servicetemplates[$newServicetemplate['source']]['Customvariable'], '{n}.object_id'
@@ -1156,29 +1229,57 @@ class ServicetemplatesController extends AppController
                             $servicetemplates[$newServicetemplate['source']]['Servicetemplateeventcommandargumentvalue'],
                             '{n}.servicetemplate_id'
                         ),
-                        'Contact'                                  => [
-                            'Contact' => $contactIds,
-                        ],
-                        'Contactgroup'                             => [
-                            'Contactgroup' => [
-                                $contactgroupIds,
-                            ],
-                        ],
-                        'Servicegroup'                             => [
-                            'Servicegroup' => [
-                                $servicegroupIds,
-                            ],
-                        ],
+                        'Contact' => $contactIds,
+                        'Contactgroup' => $contactgroupIds,
+                        'Servicegroup' => $servicegroupIds
                     ];
-
-                    $newServicetemplateData['Servicetemplate'] = Hash::merge($servicetemplates[$newServicetemplate['source']]['Servicetemplate'], $newServicetemplateData['Servicetemplate']);
+                    $newServicetemplateData['Servicetemplate'] = Hash::remove($newServicetemplateData['Servicetemplate'], 'id');
+                    if(!empty($servicetemplates[$newServicetemplate['source']]['Contactgroup'])){
+                        $contactgroups = [];
+                        foreach($servicetemplates[$newServicetemplate['source']]['Contactgroup'] as $contactgroup){
+                            $contactgroups[] = [
+                                'id' => $contactgroup['id'],
+                                'name' => $contactgroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplates[$newServicetemplate['source']]['Contactgroup'] = $contactgroups;
+                    }
+                    if(!empty($servicetemplates[$newServicetemplate['source']]['Servicegroup'])){
+                        $servicegroups = [];
+                        foreach($servicetemplates[$newServicetemplate['source']]['Servicegroup'] as $servicegroup){
+                            $servicegroups[] = [
+                                'id' => $servicegroup['id'],
+                                'name' => $servicegroup['Container']['name']
+                            ];
+                        }
+                        $servicetemplates[$newServicetemplate['source']]['Servicegroup'] = $servicegroups;
+                    }
+                    $this->Servicetemplate->create();
                     if (!$this->Servicetemplate->saveAll($newServicetemplateData)) {
                         throw new Exception('Some of the Servicetemplates could not be copied');
                     }
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Servicetemplate->id,
+                        OBJECT_SERVICETEMPLATE,
+                        $servicetemplates[$newServicetemplate['source']]['Servicetemplate']['container_id'],
+                        $userId,
+                        $newServicetemplate['template_name'],
+                        Hash::merge(
+                            $servicetemplates[$newServicetemplate['source']], [
+                            'Servicetemplate' => [
+                                'template_name'=> $newServicetemplate['template_name'],
+                                'name'        => $newServicetemplate['name'],
+                                'description' => $newServicetemplate['description'],
+                            ]
+                        ])
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
                 }
-
                 $datasource->commit();
-
                 $this->setFlash(__('Servicetemplates are successfully copied'));
                 $this->redirect(['action' => 'index']);
 
@@ -1187,9 +1288,7 @@ class ServicetemplatesController extends AppController
                 $this->setFlash(__($e->getMessage()), false);
                 $this->redirect(['action' => 'index']);
             }
-
         }
-
         $this->set(compact('servicetemplates'));
         $this->set('back_url', $this->referer());
     }

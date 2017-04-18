@@ -473,6 +473,7 @@ class TimeperiodsController extends AppController
 
     public function copy($id = null)
     {
+        $userId = $this->Auth->user('id');
         $timeperiods = $this->Timeperiod->find('all', [
             'contain' => [
                 'Timerange' => [
@@ -517,6 +518,19 @@ class TimeperiodsController extends AppController
                     $this->Timeperiod->create();
                     if (!$this->Timeperiod->saveAll($newTimeperiodData)) {
                         throw new Exception('Some of the Timeperiods could not be copied');
+                    }
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Timeperiod->id,
+                        OBJECT_TIMEPERIOD,
+                        [$timeperiodData['container_id']],
+                        $userId,
+                        $timeperiodData['name'],
+                        $newTimeperiodData
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
                     }
                 }
 

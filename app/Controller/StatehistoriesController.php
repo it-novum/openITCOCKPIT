@@ -42,6 +42,11 @@ class StatehistoriesController extends AppController
                 'Statehistory.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
         ],
+        'host' => [
+            'fields' => [
+                'Statehistory.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+            ],
+        ],
     ];
 
     public function service($id = null)
@@ -94,13 +99,13 @@ class StatehistoriesController extends AppController
 
         $requestSettings = $this->Statehistory->listSettings($this->request, $service['Service']['uuid'], $service['Host']['uuid']);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
 
-        $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
 
         //SQL Clenup
         if (isset($this->Paginator->settings['conditions']['Statehistory.state'])) {
@@ -138,6 +143,7 @@ class StatehistoriesController extends AppController
                 'Host.name',
                 'Host.address',
                 'Host.host_url',
+                'Host.container_id'
             ],
             'conditions' => [
                 'Host.id' => $id,
@@ -168,8 +174,8 @@ class StatehistoriesController extends AppController
 
         $requestSettings = $this->Statehistory->listSettingsHost($this->request, $host['Host']['uuid']);
 
-        if (isset($this->paginate['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->paginate['conditions'], $requestSettings['conditions']);
+        if (isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }

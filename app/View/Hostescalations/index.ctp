@@ -30,7 +30,7 @@
                 <i class="fa fa-bomb fa-fw"></i>
                 <?php echo __('Monitoring'); ?>
                 <span>>
-                    <?php echo __('Hostescalations'); ?>
+                    <?php echo __('Host Escalations'); ?>
 			</span>
             </h1>
         </div>
@@ -49,7 +49,7 @@
                                 //echo " "; //Fix HTML if search is implemented
                             endif;
                             // TODO: search functionallity
-                            //echo $this->Html->link(__('Search'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search'));
+                            //echo $this->Html->link(__('Filter'), 'javascript:', array('class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter'));
 
                             if ($isFilter):
                                 echo " "; //Fix HTML
@@ -111,7 +111,7 @@
                         <div class="jarviswidget-ctrls" role="menu">
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>
-                        <h2 class="hidden-mobile"><?php echo __('Hostescalations'); ?> </h2>
+                        <h2 class="hidden-mobile"><?php echo __('Host Escalations'); ?> </h2>
 
                     </header>
                     <div>

@@ -80,6 +80,10 @@ class CustomMacroReplacer
             case OBJECT_SERVICE:
                 return '$_SERVICE';
                 break;
+
+            case OBJECT_CONTACT:
+                return '$_CONTACT';
+                break;
         }
     }
 

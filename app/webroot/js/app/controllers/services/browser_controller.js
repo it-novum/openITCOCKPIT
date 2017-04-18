@@ -207,18 +207,25 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 				$(this).removeClass('text-primary pointer');
 			});
 
+		if($('#serviceHasGraphs').val() == 1){
+			self.loadGraph($('#graph-filter-from').val(), $('#graph-filter-to').val(), $('#graph-filter-value').val());
+		}
+
+		$('#apply-graph-filter').click(function(){
 			if($('#serviceHasGraphs').val() == 1){
-				self.loadGraph();
+				self.loadGraph($('#graph-filter-from').val(), $('#graph-filter-to').val(), $('#graph-filter-value').val());
 			}
+		});
 
 	},
 
-	loadGraph: function(){
+	loadGraph: function(startDate, endDate, $serviceValue){
 		var self = this,
 			host_and_service_uuids = {};
 
-		host_and_service_uuids[self.host_uuid] = [self.service_uuid];
+		host_and_service_uuids[self.host_uuid] = [[self.service_uuid, $serviceValue]];
 		$('#graph_loader').show();
+		$('#graph').hide();
 		self.Rrd.setup({
 			url: '/Graphgenerators/fetchGraphData.json',
 			host_and_service_uuids: host_and_service_uuids,
@@ -228,21 +235,14 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 			timezoneOffset: this.Time.timezoneOffset //Rename to user timesone offset
 		});
 
-
-
-		//var today = new Date(),
-		var current_time = parseInt(this.Time.getCurrentTimeWithOffset(0).getTime() / 1000, 10),
-			time_period = { // Current timestamp.
-				start: current_time - (60 * 60 * 4),
-				end: current_time
-			},
-			development_time_period = {
-				start: current_time - (60 * 60 * 24 * 35),
-				end: current_time -  (60 * 60 * 24 * 30)
+		var time_period = {
+				start: startDate,
+				end: endDate
 			};
 
 		self.Rrd.fetchRrdData(time_period, function(){
-			self.Rrd.renderGraph();
+			$('#graph').show();
+			self.Rrd.renderGraphForBrowser();
 			$('#graph_loader').hide();
 		});
 

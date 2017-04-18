@@ -406,7 +406,7 @@ class Service extends AppModel {
     public function prepareForCompare($prepare_array = [], $prepare = false) {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Servicegroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
-        if (!$prepare) {
+        if (!$prepare && is_array($prepare_array)) {
             $currentKey = key($prepare_array);
             if (!in_array($currentKey, $keysForArraySort, true)) {
                 return $prepare_array;
@@ -519,7 +519,6 @@ class Service extends AppModel {
         } else {
             $contact = $contactData;
         }
-
         if (empty($diff_array['Servicegroup']['Servicegroup'])) {
             $diff_array['Servicegroup']['Servicegroup'] = [];
         }
@@ -801,6 +800,7 @@ class Service extends AppModel {
         return $service;
     }
 
+
     /**
      * Callback function for filtering.
      *
@@ -874,7 +874,6 @@ class Service extends AppModel {
         // type all or everything else
         return $result;
     }
-
     public function diffWithTemplate($service, $servicetemplate) {
         $diff_array = [];
         //Service-/Servicetemplate fields
@@ -968,7 +967,43 @@ class Service extends AppModel {
         return $diff_array;
     }
 
-    public function serviceTypes($task) {
+    public function dataForChangelogCopy($service, $servicetemplate)
+    {
+        $servicecommandargumentvalue = [];
+        if (!empty($service['Servicecommandargumentvalue'])) {
+            $servicecommandargumentvalue = $service['Servicecommandargumentvalue'];
+        }else {
+            if ($service['Service']['command_id'] === $servicetemplate['Servicetemplate']['command_id'] || $service['Service']['command_id'] === null) {
+                $servicecommandargumentvalue = $servicetemplate['Servicetemplatecommandargumentvalue'];
+            }
+        }
+        $serviceeventcommandargumentvalue = [];
+        if (!empty($service['Serviceeventcommandargumentvalue'])) {
+            $serviceeventcommandargumentvalue = $service['Serviceeventcommandargumentvalue'];
+        } else {
+            if ($service['Service']['eventhandler_command_id'] === $servicetemplate['Servicetemplate']['eventhandler_command_id'] || $service['Service']['eventhandler_command_id'] === null) {
+                $serviceeventcommandargumentvalue = $servicetemplate['Servicetemplateeventcommandargumentvalue'];
+            }
+        }
+        $service = [
+            'Service'                          => Hash::merge(Hash::filter($service['Service'], ['Service', 'filterNullValues']), $servicetemplate['Servicetemplate']),
+            'Contact'                          => (!empty($service['Contact'])) ? $service['Contact'] : $servicetemplate['Contact'],
+            'Contactgroup'                     => (!empty($service['Contactgroup'])) ? $service['Contactgroup'] : $servicetemplate['Contactgroup'],
+            'Customvariable'                   => ($service['Service']['own_customvariables']) ? $service['Customvariable'] : $servicetemplate['Customvariable'],
+            'Servicecommandargumentvalue'      => $servicecommandargumentvalue,
+            'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
+            'Servicetemplate'                  => $servicetemplate['Servicetemplate'],
+            'Servicegroup'                     => (!empty($service['Servicegroup']))?$service['Servicegroup']:$servicetemplate['Servicegroup'],
+            'Host'                             => $service['Host'],
+            'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $servicetemplate['CheckPeriod'] : $service['CheckPeriod'],
+            'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $servicetemplate['NotifyPeriod'] : $service['NotifyPeriod'],
+            'CheckCommand'                     => (empty(Hash::filter($service['CheckCommand']))) ? $servicetemplate['CheckCommand'] : $service['CheckCommand'],
+        ];
+        return $service;
+    }
+
+    public function serviceTypes($task)
+    {
         switch ($task) {
             case 'copy':
                 return [GENERIC_SERVICE];

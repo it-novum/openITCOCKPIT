@@ -53,7 +53,7 @@ foreach ($this->params->named as $key => $value) {
                             echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Space for html
                         endif;
-                        echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']);
+                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
                         if ($isFilter):
                             echo " "; //Space for html
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
@@ -95,7 +95,7 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-body no-padding">
                         <?php
                         $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-search"></i> '.__('search'), false, false);
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
                             <table id="host_list" class="table table-striped table-bordered smart-form" style="">
