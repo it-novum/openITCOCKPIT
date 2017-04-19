@@ -1460,3 +1460,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .text-transform-none{
 	text-transform: none!important;
 }
+
+.select_all, .deselect_all{
+	font-style:italic;
+}
