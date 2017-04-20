@@ -95,6 +95,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                 <a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-terminal"></i> <span
                             class="hidden-mobile hidden-tablet"> <?php echo __('Expert settings'); ?> </span></a>
             </li>
+
+            <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
         </ul>
     </header>
     <div>
@@ -670,6 +672,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <?php endif; ?>
 
                         </div>
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
 
                     </div> <!-- close tab-content -->
                 </div> <!-- close col -->
