@@ -89,8 +89,6 @@ class HostsController extends AppController {
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
                 'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-
-                //'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
                 'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
 
                 'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
