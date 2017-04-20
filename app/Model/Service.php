@@ -320,8 +320,8 @@ class Service extends AppModel {
         ],
     ];
 
-    function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
+    function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
+        parent::__construct($id, $table, $ds, $useDynamicAssociations);
         App::uses('UUID', 'Lib');
         $this->notification_options = [
             'service' => [

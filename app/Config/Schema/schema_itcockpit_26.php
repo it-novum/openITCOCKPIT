@@ -5,11 +5,17 @@ use itnovum\openITCOCKPIT\InitialDatabase;
 class AppSchema extends CakeSchema
 {
 
+    public function __construct($options = []){
+        parent::__construct($options);
+
+        require_once APP.'Model'.DS.'Host.php';
+        require_once APP.'Model'.DS.'Service.php';
+    }
+
     public function before($event = [])
     {
         $db = ConnectionManager::getDataSource($this->connection);
         $db->cacheSources = false;
-
         return true;
     }
 
@@ -58,7 +64,7 @@ class AppSchema extends CakeSchema
                     break;
 
                 case 'hosts':
-                    $HostsImporter = new InitialDatabase\Host(ClassRegistry::init('Host'));
+                    $HostsImporter = new InitialDatabase\Host(new Host(false, null, null, false));
                     $HostsImporter->import();
                     break;
 
@@ -68,7 +74,7 @@ class AppSchema extends CakeSchema
                     break;
 
                 case 'services':
-                    $ServicesImporter = new InitialDatabase\Service(ClassRegistry::init('Service'));
+                    $ServicesImporter = new InitialDatabase\Service(new Service(false, null, null, false));
                     $ServicesImporter->import();
                     break;
 

@@ -31,22 +31,24 @@ class AppModel extends Model {
     protected $lastInsertedIds = [];
     protected $lastInsertedData = [];
 
-    public function __construct($id = false, $table = null, $ds = null) {
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds);
 
-        if (is_object($this->Behaviors->DynamicAssociations)) {
+        if($useDynamicAssociations) {
+            if (is_object($this->Behaviors->DynamicAssociations)) {
 
-            $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
+                $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
 
-            //This is not working, but i dont know why!!
-            //$this->bindModel() not works on delete, so we use the --force method
-            //if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
-            //    $this->bindModel($dynamicAssociations, false);
-            //}
+                //This is not working, but i dont know why!!
+                //$this->bindModel() not works on delete, so we use the --force method
+                //if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
+                //    $this->bindModel($dynamicAssociations, false);
+                //}
 
-            //This is the --force way, but thi works :)
-            foreach ($dynamicAssociations as $associationsName => $associationsConf) {
-                $this->{$associationsName} = Hash::merge($this->{$associationsName}, $associationsConf);
+                //This is the --force way, but thi works :)
+                foreach ($dynamicAssociations as $associationsName => $associationsConf) {
+                    $this->{$associationsName} = Hash::merge($this->{$associationsName}, $associationsConf);
+                }
             }
         }
     }
