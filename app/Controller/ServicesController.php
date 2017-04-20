@@ -95,7 +95,7 @@ class ServicesController extends AppController {
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
                 'Servicestatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Service.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Service.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
                 'Servicestatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
@@ -210,6 +210,7 @@ class ServicesController extends AppController {
         $this->Service->virtualFields['output'] = 'Servicestatus.output';
         $this->Service->virtualFields['hostname'] = 'Host.name';
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->Service->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
 
         $conditions = [
             'Service.disabled' => 0,
@@ -242,6 +243,7 @@ class ServicesController extends AppController {
                 'Service.name',
                 'Service.description',
                 'Service.active_checks_enabled',
+                'Service.tags',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -260,6 +262,7 @@ class ServicesController extends AppController {
                 'Servicetemplate.name',
                 'Servicetemplate.description',
                 'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
 
                 'Host.name',
                 'Host.id',

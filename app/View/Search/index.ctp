@@ -45,7 +45,7 @@
                 <a href="#tab1" data-toggle="tab"> <?php echo __('default'); ?> </a>
             </li>
             <li class="">
-                <a href="#tab2" data-toggle="tab"><?php echo __('by keywords'); ?></a>
+                <a href="#tab2" data-toggle="tab"><?php echo __('by tags'); ?></a>
             </li>
             <li class="">
                 <a href="#tab3" data-toggle="tab"><?php echo __('by address'); ?></a>
