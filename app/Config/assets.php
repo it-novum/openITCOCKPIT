@@ -72,6 +72,8 @@ $config = [
             '/smartadmin/js/plugin/flot/jquery.flot.resize.js',
             '/smartadmin/js/plugin/flot/jquery.flot.navigate.js',
             '/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
+            '/smartadmin/js/plugin/flot/jquery.flot.selection.js',
+
 //			'/smartadmin/js/plugin/flot/jquery.flot.time.js', // timezones for jQuery flot
             '/smartadmin/js/plugin/colorpicker/bootstrap-colorpicker.min.js',
             'app/shortcuts.js',

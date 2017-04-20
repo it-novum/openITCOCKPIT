@@ -287,12 +287,6 @@ App.Components.RrdComponent = Frontend.Component.extend({
                         return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
                     }
                 },
-                yaxes: {
-                    tickFormatter: function(val, axis){
-                        return '$' + val
-                    },
-                    max: 1200
-                },
                 lines: {
                     show: true,
                     lineWidth: 1,
@@ -318,17 +312,9 @@ App.Components.RrdComponent = Frontend.Component.extend({
                         return '<a href="#' + label + '">' + label + '</a>';
                     },
                 },
-
-                zoom: {
-                    interactive: {
-                        zoomclick: true
-                    },
-                    trigger: 'dblclick',
-                    amount: 1.5
+                selection: {
+                    mode: "x"
                 },
-                pan: {
-                    interactive: true
-                }
             };
 
         $.extend(true, options, self.flot_options);
@@ -355,6 +341,17 @@ App.Components.RrdComponent = Frontend.Component.extend({
         self.plot = $.plot($container, graph_data, options);
 
         on_success(); // Callback
+
+        $('#graph').bind('plotselected', function(event, ranges){
+            $.each(self.plot.getXAxes(), function(_, axis) {
+                var opts = axis.options;
+                opts.min = ranges.xaxis.from;
+                opts.max = ranges.xaxis.to;
+            });
+            self.plot.setupGrid();
+            self.plot.draw();
+            self.plot.clearSelection();
+        });
 
         if(self.displayTooltip){
             self.initTooltip();
@@ -461,12 +458,13 @@ App.Components.RrdComponent = Frontend.Component.extend({
                     return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
                 }
             },
-            yaxes: {
+          /*  yaxis: {
                 tickFormatter: function(val, axis){
+                    console.log(val);
                     return '$' + val
                 },
                 max: 1200
-            },
+            },*/
             lines: {
                 show: true,
                 lineWidth: 1,
@@ -491,17 +489,11 @@ App.Components.RrdComponent = Frontend.Component.extend({
                 color: defaultColor,
                 threshold: thresholdArray,
             },
-            zoom: {
-                interactive: {
-                    zoomclick: true
-                },
-                trigger: 'dblclick',
-                amount: 1.5
+            selection: {
+                mode: "x"
             },
-            pan: {
-                interactive: true
-            }
         };
+
 
         $.extend(true, options, self.flot_options);
 
@@ -518,6 +510,7 @@ App.Components.RrdComponent = Frontend.Component.extend({
                 })
                 .on('contextmenu', function(event){
                     event.preventDefault();
+                    //self.plot.zoomOut({amount:1.2,center: {left:0, top:450}});
                     self.plot.zoomOut();
                     return false;
                 });
@@ -525,6 +518,19 @@ App.Components.RrdComponent = Frontend.Component.extend({
 
         self.plot = $.plot($container, graph_data, options);
         on_success(); // Callback
+
+        $('#graph').bind('plotselected', function(event, ranges){
+            $.each(self.plot.getXAxes(), function(_, axis) {
+                var opts = axis.options;
+                opts.min = ranges.xaxis.from;
+                opts.max = ranges.xaxis.to;
+            });
+            self.plot.setupGrid();
+            self.plot.draw();
+            self.plot.clearSelection();
+        });
+
+
 
         if(self.displayTooltip){
             self.initTooltip();
