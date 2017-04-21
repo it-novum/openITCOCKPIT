@@ -86,7 +86,7 @@ class UsergroupsController extends AppController
         ]);
 
         $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
-        unset($aros);
+        unset($permissions);
 
         $acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
