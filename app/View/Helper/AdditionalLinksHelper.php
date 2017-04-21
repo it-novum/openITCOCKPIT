@@ -28,8 +28,7 @@
  * @author Patrick Nawracay <patrick.nawracay@it-novum.com>
  * @since  3.0
  */
-class AdditionalLinksHelper extends AppHelper
-{
+class AdditionalLinksHelper extends AppHelper {
     public $helpers = ['Html']; // Allows to use another Helper within this Helper
 
     /**
@@ -38,15 +37,14 @@ class AdditionalLinksHelper extends AppHelper
      * it MUST have all of the following keys: 'title', 'url', 'options' and 'confirmMessage'.
      *
      * @param string[][] $additionalLinks
-     * @param int        $currentIndex The current index or ID of the current item
+     * @param int $currentIndex The current index or ID of the current item
      *
      * @return string The list items (<li>) with the corresponding links (<a>)
      */
-    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [])
-    {
+    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = []) {
         $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam);
         $links = array_map(function ($element) {
-            return '<li>'.$element.'</li>';
+            return '<li>' . $element . '</li>';
         }, $links);
 
         return implode($links);
@@ -58,12 +56,11 @@ class AdditionalLinksHelper extends AppHelper
      * it MUST have all of the following keys: 'title', 'url', 'options' and 'confirmMessage'.
      *
      * @param string[][] $additionalLinks
-     * @param int        $currentIndex The current index or ID of the current item
+     * @param int $currentIndex The current index or ID of the current item
      *
      * @return string The list of links (<a>)
      */
-    public function renderAsLinks($additionalLinks, $currentIndex = -1)
-    {
+    public function renderAsLinks($additionalLinks, $currentIndex = -1) {
         $links = $this->renderLinks($additionalLinks, $currentIndex);
 
         return implode($links);
@@ -71,12 +68,11 @@ class AdditionalLinksHelper extends AppHelper
 
     /**
      * @param string[][] $additionalLinks
-     * @param int        $currentIndex The current index or ID of the current item.
+     * @param int $currentIndex The current index or ID of the current item.
      *
      * @return string[] The rendered <a> tags. Each element accords to one link.
      */
-    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = [])
-    {
+    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = []) {
         $result = [];
         foreach ($additionalLinks as $link) {
             if (isset($link['callback']) && isset($addArrParam['Service']['name']) && !$link['callback']($addArrParam['Service']['name']))
@@ -106,8 +102,7 @@ class AdditionalLinksHelper extends AppHelper
         return $result;
     }
 
-    public function renderElements($additionalElements)
-    {
+    public function renderElements($additionalElements) {
         $return = '';
         foreach ($additionalElements as $element) {
             //, array(), array('plugin' => 'Contacts'));
@@ -116,5 +111,46 @@ class AdditionalLinksHelper extends AppHelper
         }
 
         return $return;
+    }
+
+
+    public function renderTabs($additionalElements) {
+
+        $htmlContent = [];
+        foreach ($additionalElements as $element) {
+            $html = '<div id="tab' . $element['uuid'] . '" class="tab-pane fade">';
+            //load element ctp here
+            if (!empty($element['element'])) {
+                $html .= $this->renderElements([$element['element']]);
+            }
+            $html .= '</div>';
+            $htmlContent[] = $html;
+        }
+        return implode($htmlContent);
+    }
+
+    public function renderTabLinks($additionalElements) {
+        $htmlLink = [];
+        foreach ($additionalElements as $element) {
+            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab">';
+            $html .= '<span class="hidden-mobile hidden-tablet">' . __($element['title']) . '</span></a>';
+            $html .= '</li>';
+            $htmlLink[] = $html;
+        }
+        return implode($htmlLink);
+    }
+
+    public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab') {
+        $type = lcfirst($type);
+        //if elementId is null its a new Host/Service
+
+        $result = '';
+        if ($renderType == 'tabLink') {
+            $result = $this->renderTabLinks($additionalLinks);
+        } else {
+            $result = $this->renderTabs($additionalLinks);
+        }
+
+        return $result;
     }
 }

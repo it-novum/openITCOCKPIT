@@ -687,6 +687,16 @@ class ServicesController extends AppController {
             ],
         ];
 
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         //Check if a host was selected before adding new service (host service list)
@@ -806,6 +816,13 @@ class ServicesController extends AppController {
             }
 
             $isJsonRequest = $this->request->ext === 'json';
+
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])) {
+                    $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+            }
+
             if ($this->Service->saveAll($dataToSave)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -894,6 +911,16 @@ class ServicesController extends AppController {
                 'Servicegroup',
             ],
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
 
         $service = $this->Service->prepareForView($id);
         $service_for_changelog = $service;
@@ -1009,7 +1036,8 @@ class ServicesController extends AppController {
             'Customvariable',
             'commandarguments',
             'ContactsInherited',
-            'eventhandler_commandarguments'
+            'eventhandler_commandarguments',
+            'id'
         ));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -1235,6 +1263,12 @@ class ServicesController extends AppController {
                     'object_id' => $service['Service']['id'],
                     'objecttype_id' => OBJECT_SERVICE,
                 ], false);
+            }
+
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
             }
 
             if ($this->Service->saveAll($data_to_save)) {
