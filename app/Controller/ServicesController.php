@@ -230,6 +230,19 @@ class ServicesController extends AppController {
                 'HostsToContainers.container_id' => $containerId,
             ];
             $conditions = Hash::merge($conditions, $_conditions);
+
+            if($this->Auth->user('recursive_browser')){
+                //get recursive container ids
+                $containerIdToResolve = $this->request->params['named']['BrowserContainerId'];
+                $containerIds = Hash::extract($this->Container->children($containerIdToResolve, false, ['Container.id']), '{n}.Container.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId){
+                    if(in_array($containerId, $this->MY_RIGHTS)){
+                        $recursiveContainerIds['HostsToContainers.container_id'][] = $containerId ;
+                    }
+                }
+                $conditions = array_merge_recursive($conditions, $recursiveContainerIds);
+            }
         }
 
         $all_services = [];
