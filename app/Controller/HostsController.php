@@ -89,7 +89,8 @@ class HostsController extends AppController {
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
                 'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+
                 'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
@@ -150,6 +151,9 @@ class HostsController extends AppController {
         ],
     ];
 
+    //holds the data for a temporary validation purposes
+    public $temporaryRequest = [];
+
     public function index() {
         $this->__unbindAssociations('Service');
         $conditions = [];
@@ -184,6 +188,7 @@ class HostsController extends AppController {
         $this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
         $this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
         $this->Host->virtualFields['output'] = 'Hoststatus.output';
+        $this->Host->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
 
         $query = [
             'conditions' => $conditions,
@@ -196,6 +201,8 @@ class HostsController extends AppController {
                 'Host.address',
                 'Host.satellite_id',
                 'Host.container_id',
+                'Host.tags',
+
                 'Hoststatus.current_state',
                 'Hoststatus.last_check',
                 'Hoststatus.next_check',
@@ -212,6 +219,8 @@ class HostsController extends AppController {
                 'Hosttemplate.name',
                 'Hosttemplate.description',
                 'Hosttemplate.active_checks_enabled',
+                'Hosttemplate.tags',
+
                 'Hoststatus.current_state',
             ],
             'order' => ['Host.name' => 'asc'],
@@ -477,7 +486,7 @@ class HostsController extends AppController {
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
         $this->Frontend->setJson('hostId', $id);
 
-        // Checking if the user hit submit and a validation error happents, to refill input fields
+        // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
             'Host' => [
@@ -503,6 +512,18 @@ class HostsController extends AppController {
             //		'Contactgroup'
             //	]
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                    'type',
+                    'impact_level',
+                    'urgency_level',
+                    'maximo_ownergroup_id',
+                    'maximo_service_id'
+            ];
+
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -550,7 +571,8 @@ class HostsController extends AppController {
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups']));
+
+        $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'id']));
         // End form refill
 
         if ($this->hasRootPrivileges === true) {
@@ -837,6 +859,12 @@ class HostsController extends AppController {
 
             }
 
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+            }
+
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1036,7 +1064,7 @@ class HostsController extends AppController {
 
     public function add() {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
-        //Empty variables, get fild if Model::save() fails for refill
+        //Empty variables, get field if Model::save() fails for refill
         $_hosttemplates = [];
         $_hostgroups = [];
         $_parenthosts = [];
@@ -1056,7 +1084,7 @@ class HostsController extends AppController {
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
 
 
-        // Checking if the user hit submit and a validation error happents, to refill input fields
+        // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
             'Host' => [
@@ -1078,6 +1106,18 @@ class HostsController extends AppController {
                 'Contact',
             ],
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
@@ -1299,7 +1339,6 @@ class HostsController extends AppController {
                 $this->request->data,
                 'add'
             );
-
             $data_to_save['Host']['own_customvariables'] = 0;
             //Add Customvariables data to $data_to_save
             $data_to_save['Customvariable'] = [];
@@ -1311,6 +1350,14 @@ class HostsController extends AppController {
                     $data_to_save['Host']['own_customvariables'] = 1;
                 }
             }
+
+            if (CakePlugin::loaded('MaximoModule')) {
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+
+            }
+
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1340,7 +1387,6 @@ class HostsController extends AppController {
                 } else {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
-
                 //Refil data that was loaded by ajax due to selected container id
                 if ($this->Container->exists($this->request->data('Host.container_id'))) {
                     $container_id = $this->request->data('Host.container_id');
@@ -1584,13 +1630,13 @@ class HostsController extends AppController {
                     return;
                 }
 
-                if(!$this->Host->__delete($host, $this->Auth->user('id'))){
+                if (!$this->Host->__delete($host, $this->Auth->user('id'))) {
                     $msgCollect[] = $this->Host->usedBy;
                 }
             }
         }
 
-        if(!empty($msgCollect)) {
+        if (!empty($msgCollect)) {
             $messages = call_user_func_array('array_merge_recursive', $msgCollect);
             $this->Flash->error('Could not delete host', [
                 'key' => 'positive',

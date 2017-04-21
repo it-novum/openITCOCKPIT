@@ -140,6 +140,16 @@ $notification_settings = [
                                     <?php endif; ?>
                                 </div>
                             </div>
+
+                            <!-- key words -->
+                            <?php echo $this->Form->input('tags', [
+                                'label'     => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'class'     => 'form-control tagsinput',
+                                'data-role' => 'tagsinput',
+                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                            ]);
+                            ?>
+
                             <!-- notification settings -->
                             <span class="note"><?php echo __('Notification settings'); ?>:</span>
                             <?php
@@ -317,14 +327,6 @@ $notification_settings = [
                             <!-- expert settings -->
                             <span class="note pull-left"><?php echo __('Expert settings'); ?>:</span>
                             <br class="clearfix"/>
-                            <!-- key words -->
-                            <?php echo $this->Form->input('tags', [
-                                'label'     => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'class'     => 'form-control tagsinput',
-                                'data-role' => 'tagsinput',
-                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                            ]);
-                            ?>
                             <div class="form-group">
                                 <?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
                                     'caption'          => __('Flap detection'),

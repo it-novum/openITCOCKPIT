@@ -95,7 +95,7 @@ class ServicesController extends AppController {
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
                 'Servicestatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Service.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Service.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
                 'Servicestatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
@@ -210,6 +210,7 @@ class ServicesController extends AppController {
         $this->Service->virtualFields['output'] = 'Servicestatus.output';
         $this->Service->virtualFields['hostname'] = 'Host.name';
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->Service->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
 
         $conditions = [
             'Service.disabled' => 0,
@@ -242,6 +243,7 @@ class ServicesController extends AppController {
                 'Service.name',
                 'Service.description',
                 'Service.active_checks_enabled',
+                'Service.tags',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -260,6 +262,7 @@ class ServicesController extends AppController {
                 'Servicetemplate.name',
                 'Servicetemplate.description',
                 'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
 
                 'Host.name',
                 'Host.id',
@@ -687,6 +690,16 @@ class ServicesController extends AppController {
             ],
         ];
 
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
+
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         //Check if a host was selected before adding new service (host service list)
@@ -806,6 +819,13 @@ class ServicesController extends AppController {
             }
 
             $isJsonRequest = $this->request->ext === 'json';
+
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])) {
+                    $dataToSave['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+            }
+
             if ($this->Service->saveAll($dataToSave)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -894,6 +914,16 @@ class ServicesController extends AppController {
                 'Servicegroup',
             ],
         ];
+
+        if(CakePlugin::loaded('MaximoModule')){
+            $customFieldsToRefill['Maximoconfiguration'] = [
+                'type',
+                'impact_level',
+                'urgency_level',
+                'maximo_ownergroup_id',
+                'maximo_service_id'
+            ];
+        }
 
         $service = $this->Service->prepareForView($id);
         $service_for_changelog = $service;
@@ -1009,7 +1039,8 @@ class ServicesController extends AppController {
             'Customvariable',
             'commandarguments',
             'ContactsInherited',
-            'eventhandler_commandarguments'
+            'eventhandler_commandarguments',
+            'id'
         ));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -1235,6 +1266,12 @@ class ServicesController extends AppController {
                     'object_id' => $service['Service']['id'],
                     'objecttype_id' => OBJECT_SERVICE,
                 ], false);
+            }
+
+            if(CakePlugin::loaded('MaximoModule')){
+                if(!empty($this->request->data['Maximoconfiguration'])){
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
             }
 
             if ($this->Service->saveAll($data_to_save)) {
@@ -2435,7 +2472,18 @@ class ServicesController extends AppController {
         $this->layout = false;
         $this->render = false;
         header('Content-Type: image/png');
+
+
         $rrd_path = Configure::read('rrd.path');
+
+        $File = new File($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml', false);
+        if (!$File->exists()){
+            $errorImage = $this->createGrapherErrorPng('No such file or directory');
+            imagepng($errorImage);
+            imagedestroy($errorImage);
+            return;
+        }
+
         $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             if ($rrd_structure_datasource['ds'] == $ds):

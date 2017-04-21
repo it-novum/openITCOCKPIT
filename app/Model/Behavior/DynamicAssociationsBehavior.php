@@ -25,14 +25,12 @@
 
 App::uses('ModelBehavior', 'Model');
 
-class DynamicAssociationsBehavior extends ModelBehavior
-{
+class DynamicAssociationsBehavior extends ModelBehavior {
 
     /*
      * the setup function gets called by cake automaticly like __construct in normal php classes
      */
-    public function setup(Model $model, $settings = [])
-    {
+    public function setup(Model $model, $settings = []) {
         $this->dynamicAssociations = $this->_loadDynamicAssociationsConfiguration();
     }
 
@@ -40,8 +38,7 @@ class DynamicAssociationsBehavior extends ModelBehavior
      * This function searches for the associations.php in $PlugnName/config/ and returns the
      * config content.
      */
-    protected function _loadDynamicAssociationsConfiguration()
-    {
+    protected function _loadDynamicAssociationsConfiguration() {
         $configFileName = 'associations';
         $dynamicAssociations = [];
 
@@ -49,7 +46,7 @@ class DynamicAssociationsBehavior extends ModelBehavior
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $pluginName) {
-            Configure::load($pluginName.'.'.$configFileName, 'silent', 'false');
+            Configure::load($pluginName . '.' . $configFileName, 'silent', 'false');
         }
 
         $dynamicAssociations = Configure::read($configFileName);
@@ -60,8 +57,7 @@ class DynamicAssociationsBehavior extends ModelBehavior
     /*
      * Is called by the AppModel and returns needed dynamic associations for the current model
      */
-    public function dynamicAssociations($modelName, $modelCallback)
-    {
+    public function dynamicAssociations($modelName, $modelCallback) {
         if (isset($this->dynamicAssociations[$modelName])) {
             if (in_array($modelCallback, $this->dynamicAssociations[$modelName]['callbacks'])) {
                 //Avoud php overload proerty error
@@ -70,6 +66,17 @@ class DynamicAssociationsBehavior extends ModelBehavior
 
                 return $return;
             }
+
+        }
+
+        return [];
+    }
+
+    public function dynamicAssociationsIgnoreCallback($modelName) {
+        if (isset($this->dynamicAssociations[$modelName])) {
+            $return = $this->dynamicAssociations[$modelName];
+            unset($return['callbacks']);
+            return $return;
 
         }
 

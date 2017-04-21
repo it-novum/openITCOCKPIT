@@ -72,14 +72,14 @@ $allowSharing = $hostSharingPermissions->allowSharing();
             <span class="onoffswitch-title" rel="tooltip" data-placement="top"
                   data-original-title="<?php echo __('auto DNS lookup'); ?>"><i class="fa fa-search"></i></span>
             <span class="onoffswitch">
-					<input type="checkbox" id="autoDNSlookup" checked="checked" class="onoffswitch-checkbox"
+                <input type="checkbox" id="autoDNSlookup" checked="checked" class="onoffswitch-checkbox"
                            name="onoffswitch">
-					<label for="autoDNSlookup" class="onoffswitch-label">
-						<span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>"
+                <label for="autoDNSlookup" class="onoffswitch-label">
+                    <span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>"
                               class="onoffswitch-inner"></span>
-						<span class="onoffswitch-switch"></span>
-					</label>
-				</span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </span>
         </div>
 
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
@@ -95,6 +95,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                 <a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-terminal"></i> <span
                             class="hidden-mobile hidden-tablet"> <?php echo __('Expert settings'); ?> </span></a>
             </li>
+
+            <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
         </ul>
     </header>
     <div>
@@ -300,7 +302,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <!-- key words -->
                             <?php echo $this->Form->input(
                                 'tags', [
-                                    'label' => ['text' => __('Label'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'class' => 'form-control tagsinput',
                                     'data-role' => 'tagsinput',
                                     'value' => $host['Host']['tags'],
@@ -670,6 +672,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <?php endif; ?>
 
                         </div>
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
 
                     </div> <!-- close tab-content -->
                 </div> <!-- close col -->
