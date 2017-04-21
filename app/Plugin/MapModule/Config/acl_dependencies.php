@@ -53,5 +53,14 @@ $config = [
         ],
         'dependencies'   => [
         ],
+        'roles_rights' => [
+            'Administrator' => ['*'],
+            'Viewer' => [
+                'Mapeditors' => ['index', 'view'],
+                'Maps' => ['index'],
+                'Mapviews' => ['index'],
+                'Rotations' => ['index'],
+            ]
+        ]
     ],
 ];
