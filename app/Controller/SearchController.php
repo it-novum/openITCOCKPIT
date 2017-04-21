@@ -80,7 +80,7 @@ class SearchController extends AppController
                     $hostKeywords = explode(',', $this->request->data['SearchKeywords']['Hostkeywords']);
                     $url = ['controller' => 'hosts', 'action' => 'index'];
                     foreach ($hostKeywords as $key => $keyword) {
-                        $url['Filter.Host.tags['.$key.']'] = $keyword;
+                        $url['Filter.Host.keywords['.$key.']'] = $keyword;
                     }
                     $url['q'] = 1; //Fix for .exe .png and so on
                     return $this->redirect($url);
@@ -91,7 +91,7 @@ class SearchController extends AppController
                     $hostKeywords = explode(',', $this->request->data['SearchKeywords']['Servicekeywords']);
                     $url = ['controller' => 'services', 'action' => 'index'];
                     foreach ($hostKeywords as $key => $keyword) {
-                        $url['Filter.Service.tags['.$key.']'] = $keyword;
+                        $url['Filter.Service.keywords['.$key.']'] = $keyword;
                     }
                     $url['q'] = 1; //Fix for .exe .png and so on
                     return $this->redirect($url);
