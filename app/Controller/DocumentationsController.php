@@ -31,12 +31,12 @@ class DocumentationsController extends AppController
 
     public $uses = ['Documentation', 'Host'];
 
-    public function view($uuid = null)
+    public function view($uuid = null, $type = 'host')
     {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
                 $this->setFlash(__('Page successfully saved'));
-                $this->redirect(['action' => 'view', $uuid]);
+                $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
             } else {
                 $this->setFlash(__('Could not save data'), false);
             }
@@ -69,7 +69,7 @@ class DocumentationsController extends AppController
 
         $hostDocuExists = !empty($post);
 
-        $this->set(compact(['post', 'uuid', 'host', 'hostDocuExists']));
+        $this->set(compact(['post', 'uuid', 'host', 'hostDocuExists', 'type']));
     }
 
     public function index()

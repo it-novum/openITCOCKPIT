@@ -22,10 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
+
 echo $this->Form->create('Documentation', [
     'class' => 'form-horizontal clear',
+    'url' => $this->params->params['pass']
 ]);
 ?>
 
@@ -39,10 +40,28 @@ echo $this->Form->create('Documentation', [
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                </a>
-                <?php echo $this->element('host_browser_menu'); ?>
+                <?php
+                switch($type):
+                case 'host':
+                    ?>
+                    <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
+                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
+                    </a>
+                    <?php
+                    echo $this->element('host_browser_menu');
+                break;
+
+                case 'servicetemplate':
+                    ?>
+                    <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
+                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
+                    </a>
+                    <?php
+                    break;
+
+                endswitch;
+                ?>
+
             </div>
         </h5>
     </div>
@@ -84,7 +103,7 @@ echo $this->Form->create('Documentation', [
                         <div>
                             <div class="widget-body">
                                 <i class="fa fa-exclamation-triangle fa-lg txt-color-red"></i> <span
-                                        class="italic"><?php echo __('No documentation yet been written for this host. Click on "Create page" to start writing...'); ?></span>
+                                        class="italic"><?php echo __('No documentation yet been written for this object. Click on "Edit" to start writing...'); ?></span>
                             </div>
                         </div>
                     <?php endif; ?>

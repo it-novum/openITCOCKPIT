@@ -75,7 +75,8 @@ class ServicetemplatesController extends AppController
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
         'Servicecommandargumentvalue',
-        'Serviceeventcommandargumentvalue'
+        'Serviceeventcommandargumentvalue',
+        'Documentation'
     ];
 
     public function index()
@@ -980,6 +981,13 @@ class ServicetemplatesController extends AppController
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
+                }
+
+                //Delete Dokumentation record if exists
+                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
                 }
 
                 //Delete all services that were created using this template
