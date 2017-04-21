@@ -1075,6 +1075,14 @@ class Service extends AppModel {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
+                $Documentation = ClassRegistry::init('Documentation');
+                //Delete the Documentation of the Host
+                $documentation = $Documentation->findByUuid($service['Service']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
+                }
+
                 //Add service to deleted objects table
                 $_serviceName = $service['Service']['name'];
                 if ($service['Service']['name'] == null || $service['Service']['name'] == '') {

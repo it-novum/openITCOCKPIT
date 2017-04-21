@@ -87,6 +87,7 @@ class ServicesController extends AppController {
         'DeletedService',
         'Rrd',
         'Container',
+        'Documentation'
     ];
 
     public $listFilters = [
@@ -2096,6 +2097,7 @@ class ServicesController extends AppController {
         }
 
         $service = $this->Service->prepareForView($id);
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
         //$_service = $this->Service->findById($id);
 
         if (!$this->allowedByContainerId(Hash::extract($_service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
@@ -2165,7 +2167,8 @@ class ServicesController extends AppController {
                 'hoststatus',
                 'allowEdit',
                 'ticketSystem',
-                'serviceValues'
+                'serviceValues',
+                'docuExists'
             ])
         );
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);

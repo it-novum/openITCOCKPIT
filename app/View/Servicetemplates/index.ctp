@@ -125,6 +125,14 @@
                                                                 </a>
                                                             </li>
                                                         <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+                                                            <li>
+                                                                <a href="<?php echo Router::url(['controller' => 'documentations', 'action' => 'view', $servicetemplate['Servicetemplate']['uuid'], 'servicetemplate']); ?>"><i
+                                                                            class="fa fa-book"></i> <?php echo __('Documentation'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+
                                                         <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $servicetemplate['Servicetemplate']['id']); ?>
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>

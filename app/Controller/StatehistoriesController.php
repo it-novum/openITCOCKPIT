@@ -29,7 +29,14 @@ class StatehistoriesController extends AppController
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_STATEHISTORY, MONITORING_SERVICESTATUS, MONITORING_HOSTSTATUS, 'Host', 'Service', 'Documentation'];
+    public $uses = [
+        MONITORING_STATEHISTORY,
+        MONITORING_SERVICESTATUS,
+        MONITORING_HOSTSTATUS,
+        'Host',
+        'Service',
+        'Documentation'
+    ];
 
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
@@ -119,8 +126,9 @@ class StatehistoriesController extends AppController
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 
         $all_statehistories = $this->Paginator->paginate();
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
-        $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit']));
+        $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
@@ -143,7 +151,8 @@ class StatehistoriesController extends AppController
                 'Host.name',
                 'Host.address',
                 'Host.host_url',
-                'Host.container_id'
+                'Host.container_id',
+                'Host.host_type'
             ],
             'conditions' => [
                 'Host.id' => $id,
@@ -186,9 +195,9 @@ class StatehistoriesController extends AppController
 
         $all_statehistories = $this->Paginator->paginate();
 
-        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
-        $this->set(compact(['host', 'all_statehistories', 'hoststatus', 'hostDocuExists']));
+        $this->set(compact(['host', 'all_statehistories', 'hoststatus', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {

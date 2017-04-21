@@ -47,7 +47,8 @@ class HosttemplatesController extends AppController {
         'Commandargument',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
-        'Hostgroup'
+        'Hostgroup',
+        'Documentation'
     ];
     public $layout = 'Admin.default';
 
@@ -832,6 +833,14 @@ class HosttemplatesController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
+                //Delete Documentation record if exists
+                $documentation = $this->Documentation->findByUuid($hosttemplate['Hosttemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
+                }
+
+
                 //Hosttemplate deleted, now we need to delete all hosts + services that are using this template
                 $this->loadModel('Host');
                 $hosts = $this->Host->find('all', [
@@ -885,6 +894,13 @@ class HosttemplatesController extends AppController {
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
+                    }
+
+                    //Delete Documentation record if exists
+                    $documentation = $this->Documentation->findByUuid($hosttemplate['Hosttemplate']['uuid']);
+                    if (isset($documentation['Documentation']['id'])) {
+                        $this->Documentation->delete($documentation['Documentation']['id']);
+                        unset($documentation);
                     }
 
                     //Hosttemplate deleted, now we need to delete all hosts + services that are using this template

@@ -2442,7 +2442,7 @@ class HostsController extends AppController {
             $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
         }
 
-        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
 
         $acknowledged = [];
@@ -2464,7 +2464,7 @@ class HostsController extends AppController {
                 'path',
                 'commandarguments',
                 'acknowledged',
-                'hostDocuExists',
+                'docuExists',
                 'ContactsInherited',
                 'parenthosts',
                 'allowEdit',

@@ -29,7 +29,14 @@ class AcknowledgementsController extends AppController
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_ACKNOWLEDGED, MONITORING_SERVICESTATUS, 'Host', 'Service', MONITORING_HOSTSTATUS, 'Documentation'];
+    public $uses = [
+        MONITORING_ACKNOWLEDGED,
+        MONITORING_SERVICESTATUS,
+        'Host',
+        'Service',
+        MONITORING_HOSTSTATUS,
+        'Documentation'
+    ];
 
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
@@ -122,6 +129,7 @@ class AcknowledgementsController extends AppController
                 'Servicestatus.current_state',
             ],
         ]);
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
         $requestSettings = $this->Acknowledged->listSettingsService($this->request, $service['Service']['uuid']);
 
@@ -138,7 +146,7 @@ class AcknowledgementsController extends AppController
         $all_acknowledgements = $this->Paginator->paginate();
 
         $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
-        $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit']));
+        $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit', 'docuExists']));
 
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
@@ -161,6 +169,7 @@ class AcknowledgementsController extends AppController
                 'Host.name',
                 'Host.address',
                 'Host.host_url',
+                'Host.host_type'
             ],
             'conditions' => [
                 'Host.id' => $id,
@@ -183,7 +192,7 @@ class AcknowledgementsController extends AppController
             ],
         ]);
 
-        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
         $requestSettings = $this->Acknowledged->listSettingsHost($this->request, $host['Host']['uuid']);
 
@@ -200,7 +209,7 @@ class AcknowledgementsController extends AppController
         $all_acknowledgements = $this->Paginator->paginate();
 
         $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
-        $this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'hostDocuExists']));
+        $this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'docuExists']));
 
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
