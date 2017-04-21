@@ -29,7 +29,7 @@ else: echo $this->here; endif; ?>" data-original-title="<?php echo __('Refresh')
    rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
 <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
     <span style="position:relative;">
-		<a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>"
+		<a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
         <?php if ($hostDocuExists === true): ?>
