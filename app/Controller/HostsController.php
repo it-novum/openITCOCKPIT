@@ -89,7 +89,8 @@ class HostsController extends AppController {
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
                 'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+
                 'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
                     [
                         '0' => [
@@ -187,6 +188,7 @@ class HostsController extends AppController {
         $this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
         $this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
         $this->Host->virtualFields['output'] = 'Hoststatus.output';
+        $this->Host->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
 
         $query = [
             'conditions' => $conditions,
@@ -199,6 +201,8 @@ class HostsController extends AppController {
                 'Host.address',
                 'Host.satellite_id',
                 'Host.container_id',
+                'Host.tags',
+
                 'Hoststatus.current_state',
                 'Hoststatus.last_check',
                 'Hoststatus.next_check',
@@ -215,6 +219,8 @@ class HostsController extends AppController {
                 'Hosttemplate.name',
                 'Hosttemplate.description',
                 'Hosttemplate.active_checks_enabled',
+                'Hosttemplate.tags',
+
                 'Hoststatus.current_state',
             ],
             'order' => ['Host.name' => 'asc'],
