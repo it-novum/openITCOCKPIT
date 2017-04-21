@@ -59,6 +59,14 @@ echo $this->Form->create('Documentation', [
                     <?php
                     break;
 
+                case 'hosttemplate':
+                    ?>
+                    <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
+                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
+                    </a>
+                    <?php
+                    break;
+
                 endswitch;
                 ?>
 

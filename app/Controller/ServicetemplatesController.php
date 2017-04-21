@@ -983,7 +983,7 @@ class ServicetemplatesController extends AppController
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                //Delete Dokumentation record if exists
+                //Delete Documentation record if exists
                 $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
                 if (isset($documentation['Documentation']['id'])) {
                     $this->Documentation->delete($documentation['Documentation']['id']);
@@ -1041,6 +1041,13 @@ class ServicetemplatesController extends AppController
 
                 if (!$this->Servicetemplate->delete()) {
                     throw new Exception('Some of the Servicetemplates could not be deleted', 1);
+                }
+
+                //Delete Documentation record if exists
+                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
                 }
 
 
