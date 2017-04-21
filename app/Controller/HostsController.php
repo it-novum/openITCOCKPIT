@@ -163,7 +163,9 @@ class HostsController extends AppController {
                 'HostsToContainers.container_id' => $this->MY_RIGHTS,
             ];
         }
+
         $conditions = $this->ListFilter->buildConditions([], $conditions);
+
         $userRights = $this->MY_RIGHTS;
 
         $childrenContainer = [];
@@ -178,12 +180,25 @@ class HostsController extends AppController {
                     return;
                 }
             }
+
             $conditions = Hash::merge($conditions, [
                 'Host.disabled' => 0,
                 'HostsToContainers.container_id' => $this->request->params['named']['BrowserContainerId'],
             ]);
-        }
 
+            if($this->Auth->user('recursive_browser')){
+                //get recursive container ids
+                $containerIdToResolve = $this->request->params['named']['BrowserContainerId'];
+                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+                $recursiveContainerIds = [];
+                foreach ($containerIds as $containerId){
+                    if(in_array($containerId, $this->MY_RIGHTS)){
+                        $recursiveContainerIds['HostsToContainers.container_id'][] = $containerId ;
+                    }
+                }
+                $conditions = array_merge_recursive($conditions, $recursiveContainerIds);
+            }
+        }
         $this->Host->virtualFields['hoststatus'] = 'Hoststatus.current_state';
         $this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
         $this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
