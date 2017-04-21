@@ -84,6 +84,11 @@ class Container extends AppModel {
             'foreignKey' => 'container_id',
             'dependent' => true,
         ],
+        'Servicetemplategroup' => [
+            'className' => 'Servicetemplategroup',
+            'foreignKey' => 'container_id',
+            'dependent' => true,
+        ],
         'Calendar' => [
             'className' => 'Calendar',
             'foreignKey' => 'container_id',
