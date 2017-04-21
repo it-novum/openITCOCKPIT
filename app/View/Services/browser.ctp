@@ -55,14 +55,14 @@
                 echo h($service['Servicetemplate']['name']);
             endif;
             ?><span>
-				&nbsp;<?php echo __('on'); ?>&nbsp;
+                &nbsp;<?php echo __('on'); ?>&nbsp;
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                     <a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo h($service['Host']['name']); ?>
                         (<?php echo h($service['Host']['address']); ?>)</a>
                 <?php else: ?>
                     <?php echo h($service['Host']['name']); ?> (<?php echo h($service['Host']['address']); ?>)
                 <?php endif; ?>
-			</span>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
@@ -122,14 +122,14 @@
 
                             <?php if ($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged')) && !empty($acknowledged)): ?>
                                 <p>
-								<span class="fa-stack fa-lg">
-									<?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
-                                        <i class="fa fa-user fa-stack-2x"></i>
-                                    <?php else: ?>
-                                        <i class="fa fa-user-o fa-stack-2x"></i>
-                                    <?php endif; ?>
-                                    <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
-								</span>
+                                    <span class="fa-stack fa-lg">
+                                        <?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
+                                            <i class="fa fa-user fa-stack-2x"></i>
+                                        <?php else: ?>
+                                            <i class="fa fa-user-o fa-stack-2x"></i>
+                                        <?php endif; ?>
+                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
+                                    </span>
                                     <?php
                                     if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1):
                                         echo __('The current status was already acknowledged by');
@@ -165,10 +165,10 @@
 
                             <?php if ($this->Monitoring->checkForDowntime($this->Status->sget($service['Service']['uuid'], 'scheduled_downtime_depth'))): ?>
                                 <p>
-								<span class="fa-stack fa-lg">
-									<i class="fa fa-power-off fa-stack-2x"></i>
-									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-								</span>
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-power-off fa-stack-2x"></i>
+                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                    </span>
                                     <?php echo __('The service is currently in a planned maintenance period.'); ?>
                                     <br/><br/>
                                 </p>
@@ -188,10 +188,10 @@
                             <?php endif; ?>
                             <?php if ($this->Monitoring->checkForDowntime($this->Status->get($service['Host']['uuid'], 'scheduled_downtime_depth'))): ?>
                                 <p class="parentstatus">
-								<span class="fa-stack fa-lg">
-									<i class="fa fa-power-off fa-stack-2x"></i>
-									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-								</span>
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-power-off fa-stack-2x"></i>
+                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                    </span>
                                     <?php echo __('The Host is currently in a planned maintenance period.'); ?>
                                 </p>
                             <?php endif; ?>
@@ -329,12 +329,12 @@
                                                id="nagShowLongOutput"><?php echo __('...read more'); ?></a></div>
                                         <div id="nag_longoutput_container" style="display:none;">
                                             <div id="nag_longoutput_loader">
-												<span class="text-center">
-													<h1>
-														<i class="fa fa-cog fa-lg fa-spin"></i>
-													</h1>
-													<br/>
-												</span>
+                                                <span class="text-center">
+                                                    <h1>
+                                                        <i class="fa fa-cog fa-lg fa-spin"></i>
+                                                    </h1>
+                                                    <br/>
+                                                </span>
                                             </div>
                                             <div id="nag_longoutput_content"><!-- content loaded by ajax --></div>
                                         </div>
@@ -482,33 +482,41 @@
                             </dl>
                         </div>
                         <div id="tab4" class="tab-pane fade">
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_reschedule"><i
-                                            class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
-                                            class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_schedule_downtime"><i
-                                            class="fa fa-power-off"></i> <?php echo __('Set planned maintenance times'); ?> </span><br/>
-                            </h5>
-                            <?php if ($this->Status->sget($service['Service']['uuid'], 'current_state') > 0): ?>
+                            <?php if ($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') === null): ?>
+                                <div class="alert alert-info alert-block">
+                                    <a class="close" data-dismiss="alert" href="#">×</a>
+                                    <h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo __('Service not found in monitoring'); ?></h4>
+                                    <?php echo __('Due to the service is not available for the monitoring engine, you can not send commands.'); ?>
+                                </div>
+                            <?php else: ?>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_reschedule"><i
+                                                class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
+                                                class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>
+                                </h5>
                                 <h5><span class="nag_command" data-toggle="modal"
-                                          data-target="#nag_command_ack_state"><i
-                                                class="fa fa-user"></i> <?php echo __('Acknowledge service status'); ?> </span><br/>
+                                          data-target="#nag_command_schedule_downtime"><i
+                                                class="fa fa-power-off"></i> <?php echo __('Set planned maintenance times'); ?> </span><br/>
+                                </h5>
+                                <?php if ($this->Status->sget($service['Service']['uuid'], 'current_state') > 0): ?>
+                                    <h5><span class="nag_command" data-toggle="modal"
+                                              data-target="#nag_command_ack_state"><i
+                                                    class="fa fa-user"></i> <?php echo __('Acknowledge service status'); ?> </span><br/>
+                                    </h5>
+                                <?php endif; ?>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_flap_detection"><i
+                                                class="fa fa-adjust"></i> <?php echo __('Enables/disables flap detection for a particular service'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal"
+                                          data-target="#nag_command_notifications"><i
+                                                class="fa fa-envelope-o"></i> <?php echo __('Enables/disables notifications'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal"
+                                          data-target="#nag_command_custom_notification"><i
+                                                class="fa fa-envelope"></i> <?php echo __('Send custom service notification'); ?> </span><br/>
                                 </h5>
                             <?php endif; ?>
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_flap_detection"><i
-                                            class="fa fa-adjust"></i> <?php echo __('Enables/disables flap detection for a particular service'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_notifications"><i
-                                            class="fa fa-envelope-o"></i> <?php echo __('Enables/disables notifications'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_custom_notification"><i
-                                            class="fa fa-envelope"></i> <?php echo __('Send custom service notification'); ?> </span><br/>
-                            </h5>
                         </div>
                     </div>
                     <div class="widget-footer text-right"></div>
@@ -756,14 +764,14 @@
                         'class' => 'form-horizontal clear',
                     ]); ?>
                     <center>
-						<span class="hintmark">
-							<?php if ($this->Monitoring->compareServiceFlapDetectionWithMonitoring($service)['value'] == 0): ?>
+                        <span class="hintmark">
+                            <?php if ($this->Monitoring->compareServiceFlapDetectionWithMonitoring($service)['value'] == 0): ?>
                                 <?php echo __('Yes, i want temporarily <strong>enable</strong> flap detection.'); ?>
                             <?php else: ?>
                                 <?php echo __('Yes, i want temporarily <strong>disable</strong> flap detection.'); ?>
                             <?php endif; ?>
                             <?php echo $this->Form->input('condition', ['type' => 'hidden', 'value' => ($this->Monitoring->compareServiceFlapDetectionWithMonitoring($service)['value'] == 1) ? 0 : 1]); ?>
-						</span>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -879,15 +887,15 @@
                     ]); ?>
                     <?php echo $this->Form->input('isEnabled', ['type' => 'hidden', 'value' => $this->Status->sget($service['Service']['uuid'], 'notifications_enabled')]); ?>
                     <center>
-						<span class="hintmark">
-							<?php
+                        <span class="hintmark">
+                            <?php
                             if ($this->Status->sget($service['Service']['uuid'], 'notifications_enabled') == 0):
                                 echo __('Yes, i want temporarily <strong>enable</strong> notifications.');
                             else:
                                 echo __('Yes, i want temporarily <strong>disable</strong> notifications.');
                             endif;
                             ?>
-						</span>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
