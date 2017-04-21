@@ -51,6 +51,15 @@ echo $this->Form->create('Documentation', [
                     echo $this->element('host_browser_menu');
                 break;
 
+                case 'service':
+                    ?>
+                    <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
+                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                    </a>
+                    <?php
+                    echo $this->element('service_browser_menu');
+                    break;
+
                 case 'servicetemplate':
                     ?>
                     <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i

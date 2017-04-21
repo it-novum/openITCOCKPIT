@@ -27,15 +27,15 @@
 <a href="<?php if (isset($ListsettingsUrlParams)): echo Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams));
 else: echo $this->here; endif; ?>" data-original-title="<?php echo __('Refresh'); ?>" data-placement="bottom"
    rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
-<?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+<?php if ($this->Acl->hasPermission('view', 'documentations') && $host['Host']['host_type'] == GENERIC_HOST): ?>
     <span style="position:relative;">
-		<a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"
+        <a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
-        <?php if ($hostDocuExists === true): ?>
+        <?php if ($docuExists === true): ?>
             <span class="badge bg-color-green docu-badge"><i class="fa fa-check"></i></span>
         <?php endif; ?>
-	</span>
+    </span>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('hostNotification', 'notifications')): ?>
     <a href="/notifications/hostNotification/<?php echo $host['Host']['id']; ?>"
