@@ -158,7 +158,7 @@
                             <!-- Tab index -->
                             <div id="tab1" class="tab-pane fade active in">
                                 <div class="mobile_table">
-                                    <table id="host_list" class="table table-striped table-bordered smart-form"
+                                    <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
                                            style="">
                                         <thead>
                                         <tr>
@@ -327,7 +327,7 @@
                             <!-- Disabled services -->
                             <div id="tab2" class="tab-pane fade">
                                 <div class="mobile_table">
-                                    <table class="table table-striped table-bordered smart-form" style="">
+                                    <table class="table table-striped table-hover table-bordered smart-form" style="">
                                         <thead>
                                         <tr>
                                             <?php $order = $this->Paginator->param('order'); ?>
@@ -397,7 +397,7 @@
                             <!-- Deleted services -->
                             <div id="tab3" class="tab-pane fade">
                                 <div class="mobile_table">
-                                    <table class="table table-striped table-bordered smart-form" style="">
+                                    <table class="table table-striped table-hover table-bordered smart-form" style="">
                                         <thead>
                                         <tr>
                                             <?php $order = $this->Paginator->param('order'); ?>

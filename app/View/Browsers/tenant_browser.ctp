@@ -182,7 +182,7 @@
                 <div class="widget-body no-padding">
                     <div class="mobile_table">
                         <?php if (!empty($hosts)): ?>
-                            <table id="host-list-datatables" class="table table-striped table-bordered smart-form">
+                            <table id="host-list-datatables" class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
