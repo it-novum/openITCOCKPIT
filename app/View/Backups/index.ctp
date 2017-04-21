@@ -62,11 +62,11 @@
             </div>
             <?php
             echo $this->Form->input('backupfile', [
-                    'options'   => $backup_files,
-                    'multiple'  => false,
-                    'class'     => 'chosen',
-                    'style'     => 'width: 80%',
-                    'label'     => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+                    'options' => $backup_files,
+                    'multiple' => false,
+                    'class' => 'chosen',
+                    'style' => 'width: 80%',
+                    'label' => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
                     'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
                 ]
             );
@@ -80,41 +80,43 @@
                 echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
                 ?>
                 <a href="javascript:void(0);" id="delete" class="btn btn-primary"><?php echo __('Delete file'); ?></a>
-                <a href="javascript:void(0);" id="restore" class="btn btn-primary"><?php echo __('Start Restore'); ?></a>
-                </div>
+                <a href="javascript:void(0);" id="restore"
+                   class="btn btn-primary"><?php echo __('Start Restore'); ?></a>
             </div>
         </div>
     </div>
-    <hr>
-    <div class="widget-body">
+</div>
+<hr>
+<div class="widget-body">
+    <?php
+    echo $this->Form->input('filenameForBackup', [
+            'label' => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+            'style' => 'width: 100%',
+            'value' => 'mysql_oitc_bkp',
+            'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
+        ]
+    );
+    ?>
+    <br><br>
+    <div class="row">
+        <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
         <?php
-        echo $this->Form->input('filenameForBackup', [
-                'label'     => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
-                'style'     => 'width: 100%',
-                'value'     => 'mysql_oitc_bkp',
-                'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
-            ]
-        );
+
+        echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
+        echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
         ?>
-        <br><br>
-        <div class="row">
-            <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
-            <?php
+        <a href="javascript:void(0);" id="backup" class="btn btn-primary"><?php echo __('Start Backup'); ?></a>
+    </div>
+</div>
 
-            echo "<div class='col col-xs-6 col-md-6 col-lg-6'> </div>";
-            echo "<div class=' col col-xs-2 col-md-2 col-lg-2'><div class='pull-right'>";
-            ?>
-            <a href="javascript:void(0);" id="backup" class="btn btn-primary"><?php echo __('Start Backup'); ?></a>
-        </div>
-    </div>
-
-    <br><br><hr>
-    <div class="col-xs-2">
-        State of choosen Action
-    </div>
-    <div class="col-xs-8">
-        <div class="well" id="backupLog"></div>
-    </div>
-    <br><br><br><br>
+<br><br>
+<hr>
+<div class="col-xs-2">
+    State of choosen Action
+</div>
+<div class="col-xs-8">
+    <div class="well" id="backupLog"></div>
+</div>
+<br><br><br><br>
 </div>
 </div>

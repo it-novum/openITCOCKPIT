@@ -262,6 +262,9 @@ $config = [
             'Usergroups'            => [
                 'index' => ['view'],
             ],
+            'Backups'               => [
+                'index' => ['checkBackupFinished'],
+            ],
         ],
     ],
 ];
