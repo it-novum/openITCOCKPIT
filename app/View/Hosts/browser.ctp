@@ -499,7 +499,7 @@
                                     <div class="widget-body">
                                         <div class="custom-scroll">
                                             <?php if (!empty($services)): ?>
-                                                <table class="table table-bordered" id="host_browser_service_table">
+                                                <table class="table table-bordered table-hover" id="host_browser_service_table">
                                                     <thead>
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
