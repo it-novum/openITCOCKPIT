@@ -101,7 +101,7 @@ class SetupShell extends AppShell
                                 fclose($file);
                                 $this->out('<green>Mail configuration saved successfully</green>');
 
-                                $this->createMysqlPartitions();
+                                //$this->createMysqlPartitions();
                                 $this->createCronjobs();
                                 $this->out('');
                                 $this->hr();
