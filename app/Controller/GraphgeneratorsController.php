@@ -462,10 +462,35 @@ class GraphgeneratorsController extends AppController
                 }
 
                 // Add hostname
-                $additional_information['hostname'] = $this->Host->findByUuid($host_uuid)['Host']['name'];
+                $host = $this->Host->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Host.uuid' => $host_uuid
+                    ]
+                ]);
+                $additional_information['hostname'] = $host['Host']['name'];
+
+                $service = $this->Service->find('first', [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Servicetemplate' => [
+                            'fields' => [
+                                'Servicetemplate.name'
+                            ]
+                        ]
+                    ],
+                    'conditions' => [
+                        'Service.uuid' => $service_uuid
+                    ],
+                    'fields' => [
+                        'Service.id',
+                        'Service.uuid',
+                        'Service.name'
+                    ]
+                ]);
+
 
                 // Add servicename
-                $service = $this->Service->findByUuid($service_uuid);
                 $service_name = $service['Service']['name'] != '' ?
                     $service['Service']['name'] : $service['Servicetemplate']['name'];
                 $additional_information['servicename'] = $service_name;
