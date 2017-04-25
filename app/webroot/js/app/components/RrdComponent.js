@@ -83,7 +83,6 @@ App.Components.RrdComponent = Frontend.Component.extend({
 			}, self.timeout_in_ms);
 		};
 		self.flot_options = conf.flot_options == null ? {} : conf.flot_options;
-
 		// currently unused
 		self.threshold_lines = [];
 		self.threshold_values = [];
@@ -210,184 +209,473 @@ App.Components.RrdComponent = Frontend.Component.extend({
 		});
 	},
 
-	/**
-	 * Renders the given graph data. If 'graph_data' isn't given, it renders what was last fetched via fetchRrdData().
-	 *
-	 * @param {Array} graph_data [] - The data to be rendered.
-	 * @param {Function} on_success [fn] - The function which will be called after the graph has been rendered.
-	 */
-	renderGraph: function(graph_data, on_success){
-		var self = this;
-		on_success = typeof on_success == 'function' ? on_success : function(){};
+    /**
+     * Renders the given graph data. If 'graph_data' isn't given, it renders what was last fetched via fetchRrdData().
+     *
+     * @param {Array} graph_data [] - The data to be rendered.
+     * @param {Function} on_success [fn] - The function which will be called after the graph has been rendered.
+     */
+    renderGraph: function(graph_data, on_success){
+        var self = this;
+        on_success = typeof on_success == 'function' ? on_success : function(){};
 
-		if(!graph_data){
-			graph_data = [];
-			for(var host_uuid in self.last_fetched_graph_data){
-				var services = self.last_fetched_graph_data[host_uuid];
-				for(var service_uuid in services){
-					var current_data = services[service_uuid],
-						host_name = self.host_names[host_uuid],
-						service_name = self.service_names[service_uuid],
-						units = self.units[host_uuid][service_uuid];
+        if(!graph_data){
+            graph_data = [];
+            for(var host_uuid in self.last_fetched_graph_data){
+                var services = self.last_fetched_graph_data[host_uuid];
+                for(var service_uuid in services){
+                    var current_data = services[service_uuid],
+                        host_name = self.host_names[host_uuid],
+                        service_name = self.service_names[service_uuid],
+                        units = self.units[host_uuid][service_uuid];
 
-					for(var ds_number in current_data){
-						graph_data.push({
-							//label: host_name + '/' + service_name + '/' + ds_number,
-							label: host_name + '/' + service_name + '/' + self.threshold_values[host_uuid][service_uuid][ds_number]['label'],
-							data: current_data[ds_number],
-							unit: units[ds_number]
-						})
-					}
-				}
-			}
-		}
-		//console.log(this.threshold_lines);
-		self.$selector.css({
-			'width': self.width,
-			'height': self.height
-		});
+                    for(var ds_number in current_data){
+                        graph_data.push({
+                            //label: host_name + '/' + service_name + '/' + ds_number,
+                            label: host_name + '/' + service_name + '/' + self.threshold_values[host_uuid][service_uuid][ds_number]['label'],
+                            data: current_data[ds_number],
+                            unit: units[ds_number]
+                        })
+                    }
+                }
+            }
+        }
+        self.$selector.css({
+            'width': self.width,
+            'height': self.height
+        });
 
-		var color_amount = graph_data.length < 3 ? 3 : graph_data.length,
-			color_generator = new ColorGenerator(),
-			// TODO remove the options here and place it somewhere where it makes more sense to have them. like the setup function.
-			options = {
-				//colors: ['#ed1b24', '#f1592a', '#f1592a', '#f8931f', '#fef200', '#8cc540', '#21b24b', '#09b3cd', '#2e3094', '#262163', '#652d92', '#92278f'],
-				colors: color_generator.generate(color_amount, 90, 90),
-				legend: {
-					show: true,
-					noColumns: 3, // number of colums in legend table
-					labelFormatter: null, // fn: string -> string
-					labelBoxBorderColor: '', // border color for the little label boxes
-					//container: $('.graph_legend'), // container (as jQuery object) to put legend in, null means default on top of graph
-					//Optimisation for the legend container selector to be multiuseable per site
-					container: $(self.selector).parent().find('.graph_legend'), // container (as jQuery object) to put legend in, null means default on top of graph
-					position: 'ne', // position of default legend container within plot
-					margin: [5, -300], // distance from grid edge to default legend container within plot
-					backgroundColor: '', // null means auto-detect
-					backgroundOpacity: 1 // set to 0 to avoid background
-				},
+        var color_amount = graph_data.length < 3 ? 3 : graph_data.length,
+            color_generator = new ColorGenerator(),
+            // TODO remove the options here and place it somewhere where it makes more sense to have them. like the setup function.
+            options = {
+                //colors: ['#ed1b24', '#f1592a', '#f1592a', '#f8931f', '#fef200', '#8cc540', '#21b24b', '#09b3cd', '#2e3094', '#262163', '#652d92', '#92278f'],
+                colors: color_generator.generate(color_amount, 90, 120),
+                legend: {
+                    show:true,
+                    noColumns: 3,
+                    container: $(self.selector).parent().find('.graph_legend'), // container (as jQuery object) to put legend in, null means default on top of graph
+                },
+                grid: {
+                    hoverable: true,
+                    markings: self.threshold_lines,
+                    borderWidth: {
+                        top: 1,
+                        right: 1,
+                        bottom: 1,
+                        left: 1
+                    },
+                    borderColor: {
+                        top: '#CCCCCC'
+                    }
+                },
+                tooltip: true,
+                tooltipOpts: {
+                    defaultTheme: false
+                },
+                xaxis: {
+                    mode: 'time',
+                    timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
+                    tickFormatter: function(val, axis){
+                        var fooJS = new Date((val + self.timezoneOffset) * 1000);
+                        var fixTime = function(value){
+                            if(value < 10){
+                                return '0' + value;
+                            }
+                            return value;
+                        };
+                        return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                    }
+                },
+                lines: {
+                    show: true,
+                    lineWidth: 1,
+                    fill: true,
+                    steps: 0,
+                    fillColor : {
+                        colors : [{
+                            opacity : 0.5
+                        },
+                        {
+                            opacity : 0.3
+                        }]
+                    }
+                },
+                points: {
+                    show: false,
+                    radius: 1
+                },
+                series: {
+                    show: true,
+                    labelFormatter: function(label, series){
+                        // series is the series object for the label
+                        return '<a href="#' + label + '">' + label + '</a>';
+                    },
+                },
+                selection: {
+                    mode: "x"
+                },
+            };
 
-				grid: {
-					hoverable: true,
-					markings: self.threshold_lines
-				},
-				tooltip: true,
-				tooltipOpts: {
-					defaultTheme: false
-				},
-				xaxis: {
-					mode: 'time',
-					timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-					//timezone: 'browser' // This was addec by a plugin -> jquery.flot.time.js
-					// mode: 'time',
-					//zoomRange: [0.1, 10],
-					//panRange: [-10, 10]
-					tickFormatter: function(val, axis){
-						//return date("d.m.y H:i:s", val + self.timezoneOffset + (new Date().getTimezoneOffset() * 60)); // <-- this returns local time or other crap and will not work!!
-						var fooJS = new Date((val + self.timezoneOffset) * 1000);
-						var fixTime = function(value){
-							if(value < 10){
-								return '0' + value;
-							}
+        $.extend(true, options, self.flot_options);
 
-							return value;
-						};
-						return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+        var $container = self.$selector,
+            plot_actions = ['plotpan', 'plotzoom'];
 
-					}
-				},
-				yaxes: {
-					tickFormatter: function(val, axis){
-						return '$' + val
-					},
-					max: 1200
-					//zoomRange: [0.1, 10],
-					//panRange: [-10, 10]
-				},
-				/*label: 'y = 3', */
-				lines: {
-					show: true,
-					lineWidth: 1,
-					fill: true,
-					steps: 0,
-					fillColor : {
-						colors : [{
-							opacity : 0.1
-						}, {
-							opacity : 0.15
-						}]
-					}
-				},
-				points: {
-					show: false,
-					radius: 1
-				},
-				series: {
-					show: true,
-					//shadowSize: 5,
-					opacity: .7,
-					labelFormatter: function(label, series){
-						// series is the series object for the label
-						return '<a href="#' + label + '">' + label + '</a>';
-					},
-					lines : {
-						show : true,
-						lineWidth : 1,
-						fill : true,
-						fillColor : {
-							colors : [{
-								opacity : 0.1
-							}, {
-								opacity : 0.15
-							}]
-						}
-					}
-				},
-				zoom: {
-					interactive: {
-						zoomclick: true
-					},
-					trigger: 'dblclick',
-					amount: 1.5
-				},
-				pan: {
-					interactive: true
-				}
-				/*tooltip: true, //boolean
-				 tooltipOpts: {
-				 content: "rta | %x | %y.4 ms", //%s -> series label, %x -> X value, %y -> Y value, %x.2 -> precision of X value, %p -> percent
-				 dateFormat: self.dataformat,
-				 }*/
-			};
+        $.each(plot_actions, function(i, action){
+            $container
+                .off(action)
+                .off('contextmenu'); // Removes all previously bound functions.
+            $container
+                .on(action, function(event, plot){
+                    console.info('test');
+                    self.update_plot(event, plot, action);
+                })
+                .on('contextmenu', function(event){
+                    event.preventDefault();
+                    self.plot.zoomOut();
+                    return false;
+                });
+        });
 
-		$.extend(true, options, self.flot_options);
+        self.plot = $.plot($container, graph_data, options);
 
-		var $container = self.$selector,
-			plot_actions = ['plotpan', 'plotzoom'];
+        on_success(); // Callback
 
-		$.each(plot_actions, function(i, action){
-			$container
-				.off(action)
-				.off('contextmenu'); // Removes all previously bound functions.
-			$container
-				.on(action, function(event, plot){
-					self.update_plot(event, plot, action);
-				})
-				.on('contextmenu', function(event){
-					event.preventDefault();
-					self.plot.zoomOut();
-					return false;
-				});
-		});
+        $('#graph').bind('plotselected', function(event, ranges){
+            $.each(self.plot.getXAxes(), function(_, axis) {
+                var opts = axis.options;
+                opts.min = ranges.xaxis.from;
+                opts.max = ranges.xaxis.to;
+            });
+            self.plot.setupGrid();
+            self.plot.draw();
+            self.plot.clearSelection();
+        });
 
-		self.plot = $.plot($container, graph_data, options);
+        if(self.displayTooltip){
+            self.initTooltip();
+        }
+    },
+    /**
+     * Renders the given graph data. If 'graph_data' isn't given, it renders what was last fetched via fetchRrdData().
+     *
+     * @param {Array} graph_data [] - The data to be rendered.
+     * @param {Function} on_success [fn] - The function which will be called after the graph has been rendered.
+     */
+    renderGraphForBrowser: function(graph_data, on_success){
+        var self = this;
+        on_success = typeof on_success == 'function' ? on_success : function(){};
+        var thresholdWarnValue = null;
+        var thresholdCriticalValue = null;
+        if(!graph_data){
+            graph_data = [];
+            for(var host_uuid in self.last_fetched_graph_data){
+                var services = self.last_fetched_graph_data[host_uuid];
+                for(var service_uuid in services){
+                    var current_data = services[service_uuid],
+                        host_name = self.host_names[host_uuid],
+                        service_name = self.service_names[service_uuid],
+                        units = self.units[host_uuid][service_uuid];
 
-		on_success(); // Callback
+                    for(var ds_number in current_data){
+                        graph_data.push({
+                            label: host_name + ' / ' + service_name + ' / ' + self.threshold_values[host_uuid][service_uuid][ds_number]['label'],
+                            data: current_data[ds_number],
+                            unit: units[ds_number]
+                        });
+                        if(self.threshold_values[host_uuid][service_uuid][ds_number]['warn']){
+                            thresholdWarnValue = self.threshold_values[host_uuid][service_uuid][ds_number]['warn'];
+                        }
+                        if(self.threshold_values[host_uuid][service_uuid][ds_number]['crit']){
+                            thresholdCriticalValue = self.threshold_values[host_uuid][service_uuid][ds_number]['crit'];
+                        }
+                    }
+                }
+            }
+        }
+        self.$selector.css({
+            'width': self.width,
+            'height': self.height
+        });
 
-		if(self.displayTooltip){
-			self.initTooltip();
-		}
-	},
+        var thresholdArray = [];
+        var invertedWarnAndCriticalValues = false; // if warn value is greater than critical value, for example Disk Size
+        if((thresholdWarnValue !== null && thresholdCriticalValue !== null) && Number(thresholdWarnValue) > Number(thresholdCriticalValue)){
+            invertedWarnAndCriticalValues = true;
+        }
+        var defaultColor = 'green';
+        if(invertedWarnAndCriticalValues){
+            if(thresholdWarnValue !== null){
+                thresholdArray.push({below:thresholdWarnValue,color:'#FFFF00'});
+            }
+            if(thresholdCriticalValue !== null){
+                thresholdArray.push({below:thresholdCriticalValue,color:'#FF0000'});
+            }
+        }else{
+            defaultColor = '#FF0000';
+            if(thresholdCriticalValue !== null){
+                thresholdArray.push({below:thresholdCriticalValue,color:'#FFFF00'});
+            }
+            if(thresholdWarnValue !== null){
+                thresholdArray.push({below:thresholdWarnValue,color:'green'});
+            }
+        }
+        var options = {
+            legend: {
+                show: false,
+            },
+            grid: {
+                hoverable: true,
+                markings: self.threshold_lines,
+                borderWidth: {
+                    top: 1,
+                    right: 1,
+                    bottom: 1,
+                    left: 1
+                },
+                borderColor: {
+                    top: '#CCCCCC'
+                }
+            },
+            tooltip: true,
+            tooltipOpts: {
+                defaultTheme: false
+            },
+            xaxis: {
+                mode: 'time',
+                timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
+                tickFormatter: function(val, axis){
+                    //return date("d.m.y H:i:s", val + self.timezoneOffset + (new Date().getTimezoneOffset() * 60)); // <-- this returns local time or other crap and will not work!!
+                    var fooJS = new Date((val + self.timezoneOffset) * 1000);
+                    var fixTime = function(value){
+                        if(value < 10){
+                            return '0' + value;
+                        }
+
+                        return value;
+                    };
+                    return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                }
+            },
+          /*  yaxis: {
+                tickFormatter: function(val, axis){
+                    console.log(val);
+                    return '$' + val
+                },
+                max: 1200
+            },*/
+            lines: {
+                show: true,
+                lineWidth: 1,
+                fill: true,
+                fillColor : {
+                    colors : [{
+                        opacity : 0.4
+                    },
+                    {
+                        opacity : 0.3
+                    },
+                    {
+                        opacity : 0.9
+                    }]
+                }
+            },
+            points: {
+                show: false,
+                radius: 1
+            },
+            series: {
+                color: defaultColor,
+                threshold: thresholdArray,
+            },
+            selection: {
+                mode: "x"
+            },
+        };
+
+
+        $.extend(true, options, self.flot_options);
+
+        var $container = self.$selector,
+            plot_actions = ['plotpan', 'plotzoom'];
+
+        $.each(plot_actions, function(i, action){
+            $container
+                .off(action)
+                .off('contextmenu'); // Removes all previously bound functions.
+            $container
+                .on(action, function(event, plot){
+                    self.update_plot(event, plot, action);
+                })
+                .on('contextmenu', function(event){
+                    event.preventDefault();
+                    //self.plot.zoomOut({amount:1.2,center: {left:0, top:450}});
+                    self.plot.zoomOut();
+                    return false;
+                });
+        });
+
+        self.plot = $.plot($container, graph_data, options);
+        on_success(); // Callback
+
+        $('#graph').bind('plotselected', function(event, ranges){
+            $.each(self.plot.getXAxes(), function(_, axis) {
+                var opts = axis.options;
+                opts.min = ranges.xaxis.from;
+                opts.max = ranges.xaxis.to;
+            });
+            self.plot.setupGrid();
+            self.plot.draw();
+            self.plot.clearSelection();
+        });
+
+
+
+        if(self.displayTooltip){
+            self.initTooltip();
+        }
+    },
+
+    /**
+     * Renders the given graph data. If 'graph_data' isn't given, it renders what was last fetched via fetchRrdData().
+     *
+     * @param {Array} graph_data [] - The data to be rendered.
+     * @param {Function} on_success [fn] - The function which will be called after the graph has been rendered.
+     */
+    renderGraphForPopup: function(graph_data, on_success){
+        var self = this;
+        on_success = typeof on_success == 'function' ? on_success : function(){};
+
+        if(!graph_data){
+            graph_data = [];
+            for(var host_uuid in self.last_fetched_graph_data){
+                var services = self.last_fetched_graph_data[host_uuid];
+                for(var service_uuid in services){
+                    var current_data = services[service_uuid],
+                        host_name = self.host_names[host_uuid],
+                        service_name = self.service_names[service_uuid],
+                        units = self.units[host_uuid][service_uuid];
+
+                    for(var ds_number in current_data){
+                        graph_data.push({
+                            //label: host_name + '/' + service_name + '/' + ds_number,
+                            label: host_name + '/' + service_name + '/' + self.threshold_values[host_uuid][service_uuid][ds_number]['label'],
+                            data: current_data[ds_number],
+                            unit: units[ds_number]
+                        })
+                    }
+                }
+            }
+        }
+        self.$selector.css({
+            'width': self.width,
+            'height': self.height
+        });
+        var color_amount = graph_data.length < 3 ? 3 : graph_data.length,
+            color_generator = new ColorGenerator(),
+            // TODO remove the options here and place it somewhere where it makes more sense to have them. like the setup function.
+            options = {
+                //colors: ['#ed1b24', '#f1592a', '#f1592a', '#f8931f', '#fef200', '#8cc540', '#21b24b', '#09b3cd', '#2e3094', '#262163', '#652d92', '#92278f'],
+                colors: color_generator.generate(color_amount, 90, 90),
+                legend: {
+                    show: false,
+                },
+                grid: {
+                    hoverable: true,
+                    markings: self.threshold_lines,
+                    borderWidth: {
+                        top: 1,
+                        right: 1,
+                        bottom: 1,
+                        left: 1
+                    },
+                    borderColor: {
+                        top: '#CCCCCC'
+                    }
+                },
+                tooltip: true,
+                tooltipOpts: {
+                    defaultTheme: false
+                },
+                xaxis: {
+                    mode: 'time',
+                    timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
+                    //timezone: 'browser' // This was addec by a plugin -> jquery.flot.time.js
+                    // mode: 'time',
+                    //zoomRange: [0.1, 10],
+                    //panRange: [-10, 10]
+                    tickFormatter: function(val, axis){
+                        //return date("d.m.y H:i:s", val + self.timezoneOffset + (new Date().getTimezoneOffset() * 60)); // <-- this returns local time or other crap and will not work!!
+                        var fooJS = new Date((val + self.timezoneOffset) * 1000);
+                        var fixTime = function(value){
+                            if(value < 10){
+                                return '0' + value;
+                            }
+
+                            return value;
+                        };
+                        return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+
+                    }
+                },
+                yaxes: {
+                    tickFormatter: function(val, axis){
+                        return '$' + val
+                    },
+                    max: 1200
+                    //zoomRange: [0.1, 10],
+                    //panRange: [-10, 10]
+                },
+                series: {
+                    lines: {
+                        lineWidth: 1,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
+                                opacity: 0.5
+                            }, {
+                                opacity: 0.2
+                            }]
+                        },
+                        steps: false
+
+                    }
+                },
+                points: {
+                    show: false,
+                    radius: 1
+                },
+            };
+
+        $.extend(true, options, self.flot_options);
+
+        var $container = self.$selector,
+            plot_actions = ['plotpan', 'plotzoom'];
+
+        $.each(plot_actions, function(i, action){
+            $container
+                .off(action)
+                .off('contextmenu'); // Removes all previously bound functions.
+            $container
+                .on(action, function(event, plot){
+                    self.update_plot(event, plot, action);
+                })
+                .on('contextmenu', function(event){
+                    event.preventDefault();
+                    self.plot.zoomOut();
+                    return false;
+                });
+        });
+
+        self.plot = $.plot($container, graph_data, options);
+
+        on_success(); // Callback
+
+        if(self.displayTooltip){
+            self.initTooltip();
+        }
+    },
 
 	/**
 	 * This function updates the plot on pan or zoom.
@@ -771,7 +1059,7 @@ App.Components.RrdComponent = Frontend.Component.extend({
 
 
 		this.fetchRrdData(time_period, function(){
-			this.renderGraph();
+			this.renderGraphForPopup();
 
 			var margin = 15;
 

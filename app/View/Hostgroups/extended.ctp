@@ -155,7 +155,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <table id="hostgroup_list" class="table table-striped table-bordered smart-form" style="">
+                        <table id="hostgroup_list" class="table table-striped table-hover table-bordered smart-form" style="">
                             <tr>
                                 <td colspan="10" class="no-padding text-right txt-color-white">
                                     <?php

@@ -75,7 +75,8 @@ class ServicetemplatesController extends AppController
         'Servicetemplateeventcommandargumentvalue',
         'Servicetemplategroup',
         'Servicecommandargumentvalue',
-        'Serviceeventcommandargumentvalue'
+        'Serviceeventcommandargumentvalue',
+        'Documentation'
     ];
 
     public function index()
@@ -399,40 +400,6 @@ class ServicetemplatesController extends AppController
                 $this->request->data['Customvariable'] = [];
             }
 
-            //Delete Command argument values
-            //Fetching all commandargument_id of the command arguments out of database:
-            $commandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
-            //Fetching all commandargument_id out of $this->request-data
-            $commandargumentIdsOfRequest = [];
-            if (isset($this->request->data['Servicetemplatecommandargumentvalue'])) {
-                $commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
-            }
-            // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-            $this->loadModel('Servicetemplatecommandargumentvalue');
-            foreach ($commandargumentIdsOfDatabase as $commandargumentId) {
-                if (!in_array($commandargumentId, $commandargumentIdsOfRequest)) {
-                    // Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-                    $this->Servicetemplatecommandargumentvalue->delete(
-                        $this->Servicetemplatecommandargumentvalue->find('first', [
-                            'conditions' => [
-                                'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                                'commandargument_id' => $commandargumentId,
-                            ],
-                        ])
-                        ['Servicetemplatecommandargumentvalue']
-                    );
-                }
-            }
-
-            //Delete Command argument values
-            //Fetching all commandargument_id of the command arguments out of database:
-            $commandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
-            //Fetching all commandargument_id out of $this->request-data
-            $commandargumentIdsOfRequest = [];
-            if (isset($this->request->data['Servicetemplateeventcommandargumentvalue'])) {
-                $commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
-            }
-
             if ($servicetemplatetype_id !== null && is_numeric($servicetemplatetype_id)) {
                 $this->request->data['Servicetemplate']['servicetemplatetype_id'] = $servicetemplatetype_id;
             }
@@ -453,20 +420,44 @@ class ServicetemplatesController extends AppController
 
             $this->Servicetemplate->set($this->request->data);
             if ($this->Servicetemplate->validates()) {
+                //Delete Command argument values
+                //Fetching all commandargument_id of the command arguments out of database:
+                $commandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
+                //Fetching all commandargument_id out of $this->request-data
+                $commandargumentIdsOfRequest = [];
+                if (isset($this->request->data['Servicetemplatecommandargumentvalue'])) {
+                    $commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
+                }
                 // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-                $this->loadModel('Servicetemplateeventcommandargumentvalue');
+
+                $this->loadModel('Servicetemplatecommandargumentvalue');
+
                 foreach ($commandargumentIdsOfDatabase as $commandargumentId) {
                     if (!in_array($commandargumentId, $commandargumentIdsOfRequest)) {
+                        $this->Servicetemplatecommandargumentvalue->deleteAll([
+                            'Servicetemplatecommandargumentvalue.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+                            'Servicetemplatecommandargumentvalue.commandargument_id' => $commandargumentId
+                        ], false);
+                    }
+                }
+
+                // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+                //Delete Event Command argument values
+                //Fetching all commandargument_id of the command arguments out of database:
+                $eventCommandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
+                //Fetching all commandargument_id out of $this->request-data
+                $eventCommandargumentIdsOfRequest = [];
+                if (isset($this->request->data['Servicetemplateeventcommandargumentvalue'])) {
+                    $eventCommandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
+                }
+                $this->loadModel('Servicetemplateeventcommandargumentvalue');
+                foreach ($eventCommandargumentIdsOfDatabase as $eventCommandargumentId) {
+                    if (!in_array($eventCommandargumentId, $eventCommandargumentIdsOfRequest)) {
                         // Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-                        $this->Servicetemplateeventcommandargumentvalue->delete(
-                            $this->Servicetemplateeventcommandargumentvalue->find('first', [
-                                'conditions' => [
-                                    'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                                    'commandargument_id' => $commandargumentId,
-                                ],
-                            ])
-                            ['Servicetemplateeventcommandargumentvalue']
-                        );
+                        $this->Servicetemplateeventcommandargumentvalue->deleteAll([
+                            'Servicetemplateeventcommandargumentvalue.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+                            'Servicetemplateeventcommandargumentvalue.commandargument_id' => $eventCommandargumentId
+                        ], false);
                     }
                 }
 
@@ -867,7 +858,7 @@ class ServicetemplatesController extends AppController
 
             $isJson = $this->request->ext == 'json';
             //Save everything including custom variables
-            
+
             if ($this->Servicetemplate->saveAll($this->request->data)) {
                 $changelogData = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -982,6 +973,13 @@ class ServicetemplatesController extends AppController
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
+                //Delete Documentation record if exists
+                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
+                }
+
                 //Delete all services that were created using this template
                 $this->loadModel('Service');
                 $services = $this->Service->find('all', [
@@ -1033,6 +1031,13 @@ class ServicetemplatesController extends AppController
 
                 if (!$this->Servicetemplate->delete()) {
                     throw new Exception('Some of the Servicetemplates could not be deleted', 1);
+                }
+
+                //Delete Documentation record if exists
+                $documentation = $this->Documentation->findByUuid($servicetemplate['Servicetemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
                 }
 
 

@@ -29,7 +29,13 @@ class ServicechecksController extends AppController
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_SERVICECHECK, MONITORING_SERVICESTATUS, 'Host', 'Service'];
+    public $uses = [
+        MONITORING_SERVICECHECK,
+        MONITORING_SERVICESTATUS,
+        'Host',
+        'Service',
+        'Documentation'
+    ];
 
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
@@ -90,6 +96,7 @@ class ServicechecksController extends AppController
                 'Servicestatus.current_state',
             ],
         ]);
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
 
         $requestSettings = $this->Servicecheck->listSettings($this->request, $service['Service']['uuid']);
@@ -101,7 +108,7 @@ class ServicechecksController extends AppController
         $all_servicechecks = $this->Paginator->paginate();
 
         $this->set('ServicecheckListsettings', $requestSettings['Listsettings']);
-        $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'allowEdit']));
+        $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'allowEdit', 'docuExists']));
 
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {

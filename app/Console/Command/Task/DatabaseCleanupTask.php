@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DatabaseCleanupTask extends AppShell
+use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+class DatabaseCleanupTask extends AppShell implements CronjobInterface
 {
     public $uses = [
         'Cronjob',

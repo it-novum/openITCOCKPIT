@@ -320,8 +320,8 @@ class Service extends AppModel {
         ],
     ];
 
-    function __construct($id = false, $table = null, $ds = null) {
-        parent::__construct($id, $table, $ds);
+    function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
+        parent::__construct($id, $table, $ds, $useDynamicAssociations);
         App::uses('UUID', 'Lib');
         $this->notification_options = [
             'service' => [
@@ -342,6 +342,23 @@ class Service extends AppModel {
                 'flap_detection_on_critical',
             ],
         ];
+
+/*
+        if (is_object($this->Behaviors->DynamicAssociations)) {
+
+
+            $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
+
+            //This is not working, but i dont know why!!
+            //$this->bindModel() not works on delete, so we use the --force method
+            if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
+                $this->bindModel($dynamicAssociations, false);
+            }
+
+
+        }
+*/
+
     }
 
     /*
@@ -386,16 +403,15 @@ class Service extends AppModel {
         return Hash::diff($service_values, $servicetemplate_values);
     }
 
-    public function prepareForCompare($prepare_array = [], $prepare = false)
-    {
+    public function prepareForCompare($prepare_array = [], $prepare = false) {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Servicegroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
         if (!$prepare && is_array($prepare_array)) {
             $currentKey = key($prepare_array);
-            if(!in_array($currentKey, $keysForArraySort, true)){
+            if (!in_array($currentKey, $keysForArraySort, true)) {
                 return $prepare_array;
             }
-            if(is_array($prepare_array[$currentKey][$currentKey])){
+            if (is_array($prepare_array[$currentKey][$currentKey])) {
                 sort($prepare_array[$currentKey][$currentKey]);
             }
             return $prepare_array;
@@ -403,7 +419,7 @@ class Service extends AppModel {
         $new_array = [];
         if (is_array($prepare_array)) {
             foreach ($prepare_array as $key => $data) {
-                if(is_array($data)){
+                if (is_array($data)) {
                     sort($data);
                 }
                 $new_array[$key][$key] = $data;
@@ -583,7 +599,7 @@ class Service extends AppModel {
             'conditions' => [
                 'Service.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Servicetemplate' => [
                     'Contact' => [
                         'fields' => [
@@ -591,7 +607,7 @@ class Service extends AppModel {
                         ],
                     ],
                     'Contactgroup' => [
-                        'fields'    => ['id'],
+                        'fields' => ['id'],
                         'Container' => [
                             'fields' => [
                                 'name',
@@ -599,7 +615,7 @@ class Service extends AppModel {
                         ],
                     ],
                     'Servicegroup' => [
-                        'fields'    => [
+                        'fields' => [
                             'id'
                         ],
                         'Container' => [
@@ -611,13 +627,13 @@ class Service extends AppModel {
                     'CheckCommand',
                     'CheckPeriod',
                     'NotifyPeriod',
-                    'Customvariable'                           => [
+                    'Customvariable' => [
                         'fields' => [
                             'id', 'name', 'value', 'objecttype_id',
                         ],
                     ],
-                    'Servicetemplatecommandargumentvalue'      => [
-                        'fields'          => [
+                    'Servicetemplatecommandargumentvalue' => [
+                        'fields' => [
                             'commandargument_id', 'value',
                         ],
                         'Commandargument' => [
@@ -625,7 +641,7 @@ class Service extends AppModel {
                         ],
                     ],
                     'Servicetemplateeventcommandargumentvalue' => [
-                        'fields'          => [
+                        'fields' => [
                             'commandargument_id', 'value',
                         ],
                         'Commandargument' => [
@@ -634,10 +650,10 @@ class Service extends AppModel {
                     ],
                 ],
                 'Host' => [
-                    'fields'       => [
+                    'fields' => [
                         'id', 'name',
                     ],
-                    'Contact'      => [
+                    'Contact' => [
                         'fields' => [
                             'id', 'name',
                         ],
@@ -648,12 +664,12 @@ class Service extends AppModel {
                                 'Container.name',
                             ],
                         ],
-                        'fields'    => [
+                        'fields' => [
                             'Contactgroup.id',
                         ],
                     ],
                     'Hosttemplate' => [
-                        'Contact'      => [
+                        'Contact' => [
                             'fields' => [
                                 'id', 'name',
                             ],
@@ -664,7 +680,7 @@ class Service extends AppModel {
                                     'Container.name',
                                 ],
                             ],
-                            'fields'    => [
+                            'fields' => [
                                 'Contactgroup.id',
                             ],
                         ],
@@ -677,7 +693,7 @@ class Service extends AppModel {
                     ],
                 ],
                 'Contactgroup' => [
-                    'fields'    => [
+                    'fields' => [
                         'id'
                     ],
                     'Container' => [
@@ -687,7 +703,7 @@ class Service extends AppModel {
                     ],
                 ],
                 'Servicegroup' => [
-                    'fields'    => [
+                    'fields' => [
                         'id'
                     ],
                     'Container' => [
@@ -705,7 +721,7 @@ class Service extends AppModel {
                     ],
                 ],
                 'Servicecommandargumentvalue' => [
-                    'fields'          => [
+                    'fields' => [
                         'id',
                         'commandargument_id',
                         'value',
@@ -734,7 +750,7 @@ class Service extends AppModel {
                 'CheckPeriod',
                 'NotifyPeriod',
             ],
-            'recursive'  => -1,
+            'recursive' => -1,
         ]);
         $service = $service[0];
         if (!isset($service['Service']['servicetemplate_id']) || $service['Service']['servicetemplate_id'] == 0) {
@@ -760,9 +776,9 @@ class Service extends AppModel {
         }
 
         $servicegroups = [];
-        if(!empty($service['Servicegroup'])){
+        if (!empty($service['Servicegroup'])) {
             $servicegroups = Hash::combine($service['Servicegroup'], '{n}.id', '{n}.id');
-        }elseif(empty($service['Servicegroup']) && !(empty($service['Servicetemplate']['Servicegroup']))){
+        } elseif (empty($service['Servicegroup']) && !(empty($service['Servicetemplate']['Servicegroup']))) {
             $servicegroups = Hash::combine($service['Servicetemplate']['Servicegroup'], '{n}.id', '{n}.id');
         }
 
@@ -773,12 +789,12 @@ class Service extends AppModel {
             'Customvariable' => ($service['Service']['own_customvariables']) ? $service['Customvariable'] : $service['Servicetemplate']['Customvariable'],
             'Servicecommandargumentvalue' => $servicecommandargumentvalue,
             'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
-            'Servicetemplate'                  => $service['Servicetemplate'],
-            'Servicegroup'                     => $servicegroups,
-            'Host'                             => $service['Host'],
-            'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $service['Servicetemplate']['CheckPeriod'] : $service['CheckPeriod'],
-            'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $service['Servicetemplate']['NotifyPeriod'] : $service['NotifyPeriod'],
-            'CheckCommand'                     => (empty(Hash::filter($service['CheckCommand']))) ? $service['Servicetemplate']['CheckCommand'] : $service['CheckCommand'],
+            'Servicetemplate' => $service['Servicetemplate'],
+            'Servicegroup' => $servicegroups,
+            'Host' => $service['Host'],
+            'CheckPeriod' => (empty(Hash::filter($service['CheckPeriod']))) ? $service['Servicetemplate']['CheckPeriod'] : $service['CheckPeriod'],
+            'NotifyPeriod' => (empty(Hash::filter($service['NotifyPeriod']))) ? $service['Servicetemplate']['NotifyPeriod'] : $service['NotifyPeriod'],
+            'CheckCommand' => (empty(Hash::filter($service['CheckCommand']))) ? $service['Servicetemplate']['CheckCommand'] : $service['CheckCommand'],
         ];
 
         return $service;
@@ -894,8 +910,8 @@ class Service extends AppModel {
         ];
 
         $compare_array = [
-            'Service'         => [
-                ['Service.{('.implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))).')}', false],
+            'Service' => [
+                ['Service.{(' . implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))) . ')}', false],
                 ['{^Contact$}.{^Contact$}.{n}', false],
                 ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
                 ['{^Servicegroup$}.{^Servicegroup$}.{n}', false],
@@ -903,7 +919,7 @@ class Service extends AppModel {
                 ['Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}', false],
             ],
             'Servicetemplate' => [
-                ['Servicetemplate.{('.implode('|', array_values($fields)).')}', false],
+                ['Servicetemplate.{(' . implode('|', array_values($fields)) . ')}', false],
                 ['{^Contact$}.{n}.id', true],
                 ['{^Contactgroup$}.{n}.id', true],
                 ['{^Servicegroup$}.{n}.id', true],
@@ -1032,6 +1048,7 @@ class Service extends AppModel {
         $Changelog = ClassRegistry::init('Changelog');
 
         if ($this->__allowDelete($id)) {
+
             if ($this->delete($id)) {
                 //Delete was successfully - delete Graphgenerator configurations
                 $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
@@ -1056,6 +1073,14 @@ class Service extends AppModel {
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
+                }
+
+                $Documentation = ClassRegistry::init('Documentation');
+                //Delete the Documentation of the Host
+                $documentation = $Documentation->findByUuid($service['Service']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
                 }
 
                 //Add service to deleted objects table
@@ -1144,15 +1169,15 @@ class Service extends AppModel {
             'Service' => [],
         ];
 
-        foreach ($moduleConstants as $moduleName => $value){
-            if(!empty($serviceId)){
-                if($this->checkUsageFlag($serviceId, $value)){
+        foreach ($moduleConstants as $moduleName => $value) {
+            if (!empty($serviceId)) {
+                if ($this->checkUsageFlag($serviceId, $value)) {
                     $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
                 }
             }
         }
 
-        if(empty($usedBy['Service'])){
+        if (empty($usedBy['Service'])) {
             return true;
         }
 
@@ -1160,7 +1185,7 @@ class Service extends AppModel {
         return false;
     }
 
-    public function humanizeModuleConstantName($name){
+    public function humanizeModuleConstantName($name) {
         return preg_replace('/_MODULE/', '', $name);
     }
 

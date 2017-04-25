@@ -65,7 +65,7 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="automaps_list" class="table table-striped table-bordered" style="">
+                                <table id="automaps_list" class="table table-striped table-hover table-bordered" style="">
                                     <thead>
                                     <tr>
                                         <th class="no-sort"><?php echo __('Name'); ?></th>

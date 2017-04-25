@@ -198,6 +198,7 @@ class NagiosModuleSchema extends CakeSchema
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Contactgroup definitions'],
     ];
 
+    /*
     public $nagios_contactnotificationmethods = [
         'contactnotificationmethod_id' => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'                  => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -214,7 +215,9 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'              => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical record of contact notification methods'],
     ];
+    */
 
+    /*
     public $nagios_contactnotifications = [
         'contactnotification_id' => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -230,6 +233,7 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical record of contact notifications'],
     ];
+    */
 
     public $nagios_contacts = [
         'contact_id'                    => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
@@ -446,6 +450,7 @@ class NagiosModuleSchema extends CakeSchema
         'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Parent hosts'],
     ];
 
+    /*
     public $nagios_hostchecks = [
         'hostcheck_id'          => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
@@ -478,6 +483,7 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical host checks'],
     ];
+    */
 
     public $nagios_hostdependencies = [
         'hostdependency_id'        => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
@@ -716,6 +722,7 @@ class NagiosModuleSchema extends CakeSchema
         'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Location names of various Nagios installations'],
     ];
 
+    /*
     public $nagios_logentries = [
         'logentry_id'             => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false, 'key' => 'index'],
@@ -733,7 +740,9 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'         => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical record of log entries'],
     ];
+    */
 
+    /*
     public $nagios_notifications = [
         'notification_id'     => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
@@ -757,6 +766,7 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical record of host and service notifications'],
     ];
+    */
 
     public $nagios_objects = [
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
@@ -894,6 +904,7 @@ class NagiosModuleSchema extends CakeSchema
         'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Parent services'],
     ];
 
+    /*
     public $nagios_servicechecks = [
         'servicecheck_id'       => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false, 'key' => 'index'],
@@ -927,6 +938,7 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical service checks'],
     ];
+    */
 
     public $nagios_servicedependencies = [
         'servicedependency_id'        => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
@@ -1152,6 +1164,7 @@ class NagiosModuleSchema extends CakeSchema
         'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Current service status information'],
     ];
 
+    /*
     public $nagios_statehistory = [
         'statehistory_id'       => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],
         'instance_id'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 6, 'unsigned' => false],
@@ -1172,6 +1185,7 @@ class NagiosModuleSchema extends CakeSchema
         ],
         'tableParameters'       => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB', 'comment' => 'Historical host and service state changes'],
     ];
+    */
 
     public $nagios_systemcommands = [
         'systemcommand_id' => ['type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'],

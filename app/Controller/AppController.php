@@ -616,7 +616,7 @@ class AppController extends Controller {
         // Set the additional links for each controller!
         $controller = Inflector::tableize($this->name);
         $action = $request->params['action'];
-        $positions = ['top', 'list', 'bottom'];
+        $positions = ['top', 'list', 'bottom', 'tab'];
         $contentPositions = ['top', 'center', 'bottom', 'form'];
 
         $additionalLinks = $this->AdditionalLinks->fetchLinkData($controller, $action, $positions);
@@ -624,10 +624,19 @@ class AppController extends Controller {
         //debug($additionalContent);
         foreach ($additionalLinks as $viewPosition => $linkData) {
             $this->set('additionalLinks' . ucfirst($viewPosition), $linkData);
+            if(!empty($linkData) && $viewPosition == 'tab'){
+                foreach ($linkData as $key => $data){
+                    //add an id so we can identify tabs
+                    $linkData[$key]['uuid'] = UUID::v4();
+                }
+            }
+            //defines the vars link $additionalLinkList or $additionalLinkTab
+            $this->set('additionalLinks' . ucfirst($viewPosition), $linkData);
+
         }
 
         foreach ($additionalContent as $viewPosition => $linkData) {
-            //debug($linkData);
+            //defines the vars link $additionalElementsList or $additionalElementsTab
             $this->set('additionalElements' . ucfirst($viewPosition), $linkData);
         }
 

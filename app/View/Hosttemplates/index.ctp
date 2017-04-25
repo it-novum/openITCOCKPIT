@@ -64,7 +64,7 @@
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-bordered smart-form" style="">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -112,6 +112,13 @@
                                                         <li>
                                                             <a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $hosttemplate['Hosttemplate']['id']; ?>"><i
                                                                         class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+                                                        <li>
+                                                            <a href="<?php echo Router::url(['controller' => 'documentations', 'action' => 'view', $hosttemplate['Hosttemplate']['uuid'], 'hosttemplate']); ?>"><i
+                                                                        class="fa fa-book"></i> <?php echo __('Documentation'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>

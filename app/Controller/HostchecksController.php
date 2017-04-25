@@ -57,7 +57,8 @@ class HostchecksController extends AppController
                 'Host.name',
                 'Host.address',
                 'Host.host_url',
-                'Host.container_id'
+                'Host.container_id',
+                'Host.host_type'
             ],
             'conditions' => [
                 'Host.id' => $id,
@@ -99,9 +100,9 @@ class HostchecksController extends AppController
 
         $all_hostchecks = $this->Paginator->paginate();
 
-        $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
-        $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'hostDocuExists']));
+        $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {

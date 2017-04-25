@@ -72,7 +72,7 @@
                             <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
                             <div class="mobile_table">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>

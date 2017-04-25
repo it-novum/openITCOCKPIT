@@ -48,8 +48,8 @@
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($host['Host']['name']); ?>
             <span>
-				(<?php echo h($host['Host']['address']); ?>)
-			</span>
+                (<?php echo h($host['Host']['address']); ?>)
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
@@ -118,14 +118,14 @@
 
                             <?php if ($this->Monitoring->checkForAck($this->Status->get($host['Host']['uuid'], 'problem_has_been_acknowledged')) && !empty($acknowledged)): ?>
                                 <p>
-								<span class="fa-stack fa-lg">
-									<?php if ($hoststatus[$host['Host']['uuid']]['Hoststatus']['acknowledgement_type'] == 1): ?>
-                                        <i class="fa fa-user fa-stack-2x"></i>
-                                    <?php else: ?>
-                                        <i class="fa fa-user-o fa-stack-2x"></i>
-                                    <?php endif; ?>
-                                    <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
-								</span>
+                                    <span class="fa-stack fa-lg">
+                                        <?php if ($hoststatus[$host['Host']['uuid']]['Hoststatus']['acknowledgement_type'] == 1): ?>
+                                        <   i class="fa fa-user fa-stack-2x"></i>
+                                        <?php else: ?>
+                                            <i class="fa fa-user-o fa-stack-2x"></i>
+                                        <?php endif; ?>
+                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
+                                    </span>
                                     <?php
                                     if ($hoststatus[$host['Host']['uuid']]['Hoststatus']['acknowledgement_type'] == 1):
                                         echo __('The current status was already acknowledged by');
@@ -161,10 +161,10 @@
 
                             <?php if ($this->Monitoring->checkForDowntime($this->Status->get($host['Host']['uuid'], 'scheduled_downtime_depth'))): ?>
                                 <p>
-								<span class="fa-stack fa-lg">
-									<i class="fa fa-power-off fa-stack-2x"></i>
-									<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-								</span>
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-power-off fa-stack-2x"></i>
+                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                    </span>
                                     <?php echo __('The host is currently in a planned maintenance period.'); ?>
                                     <br/><br/>
                                 </p>
@@ -189,10 +189,10 @@
                                     <?php endif; ?>
                                     <?php if ($this->Monitoring->checkForDowntime($this->Status->get($parenthost['Host']['uuid'], 'scheduled_downtime_depth'))): ?>
                                         <p class="parentstatus">
-										<span class="fa-stack fa-lg">
-											<i class="fa fa-power-off fa-stack-2x"></i>
-											<i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-										</span>
+                                            <span class="fa-stack fa-lg">
+                                                <i class="fa fa-power-off fa-stack-2x"></i>
+                                                <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                            </span>
                                             <?php echo __('The parent host'); ?>
                                             <strong><?php echo h($parenthost['Host']['name']); ?></strong> <?php echo __('is currently in a scheduled downtime'); ?>
                                         </p>
@@ -299,12 +299,12 @@
                                                id="nagShowLongOutput"><?php echo __('...read more'); ?></a></div>
                                         <div id="nag_longoutput_container" style="display:none;">
                                             <div id="nag_longoutput_loader">
-											<span class="text-center">
-												<h1>
-													<i class="fa fa-cog fa-lg fa-spin"></i>
-												</h1>
-												<br/>
-											</span>
+                                                <span class="text-center">
+                                                    <h1>
+                                                        <i class="fa fa-cog fa-lg fa-spin"></i>
+                                                    </h1>
+                                                    <br/>
+                                                </span>
                                             </div>
                                             <div id="nag_longoutput_content"><!-- content loaded by ajax --></div>
                                         </div>
@@ -408,33 +408,41 @@
                             <?php endif; ?>
                         </div>
                         <div id="tab4" class="tab-pane fade">
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_reschedule"><i
-                                            class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
-                                            class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_schedule_downtime"><i
-                                            class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?> </span><br/>
-                            </h5>
-                            <?php if ($this->Status->get($host['Host']['uuid'], 'current_state') > 0): ?>
+                            <?php if ($this->Status->get($host['Host']['uuid'], 'active_checks_enabled') === null): ?>
+                                <div class="alert alert-info alert-block">
+                                    <a class="close" data-dismiss="alert" href="#">×</a>
+                                    <h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo __('Host not found in monitoring'); ?></h4>
+                                    <?php echo __('Due to the host is not available for the monitoring engine, you can not send commands.'); ?>
+                                </div>
+                            <?php else: ?>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_reschedule"><i
+                                                class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
+                                                class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>
+                                </h5>
                                 <h5><span class="nag_command" data-toggle="modal"
-                                          data-target="#nag_command_ack_state"><i
-                                                class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?> </span><br/>
+                                          data-target="#nag_command_schedule_downtime"><i
+                                                class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?> </span><br/>
+                                </h5>
+                                <?php if ($this->Status->get($host['Host']['uuid'], 'current_state') > 0): ?>
+                                    <h5><span class="nag_command" data-toggle="modal"
+                                              data-target="#nag_command_ack_state"><i
+                                                    class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?> </span><br/>
+                                    </h5>
+                                <?php endif; ?>
+                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_flap_detection"><i
+                                                class="fa fa-adjust"></i> <?php echo __('Enables/disables flap detection for a particular host'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal"
+                                          data-target="#nag_command_notifications"><i
+                                                class="fa fa-envelope-o"></i> <?php echo __('Enables/disables notifications'); ?> </span><br/>
+                                </h5>
+                                <h5><span class="nag_command" data-toggle="modal"
+                                          data-target="#nag_command_custom_notification"><i
+                                                class="fa fa-envelope"></i> <?php echo __('Send custom host notification'); ?> </span><br/>
                                 </h5>
                             <?php endif; ?>
-                            <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_flap_detection"><i
-                                            class="fa fa-adjust"></i> <?php echo __('Enables/disables flap detection for a particular host'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_notifications"><i
-                                            class="fa fa-envelope-o"></i> <?php echo __('Enables/disables notifications'); ?> </span><br/>
-                            </h5>
-                            <h5><span class="nag_command" data-toggle="modal"
-                                      data-target="#nag_command_custom_notification"><i
-                                            class="fa fa-envelope"></i> <?php echo __('Send custom host notification'); ?> </span><br/>
-                            </h5>
                         </div>
                     </div>
                     <!-- end widget body text-->
@@ -491,7 +499,7 @@
                                     <div class="widget-body">
                                         <div class="custom-scroll">
                                             <?php if (!empty($services)): ?>
-                                                <table class="table table-bordered" id="host_browser_service_table">
+                                                <table class="table table-bordered table-hover" id="host_browser_service_table">
                                                     <thead>
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -869,14 +877,14 @@
                         'class' => 'form-horizontal clear',
                     ]); ?>
                     <center>
-						<span class="hintmark">
-							<?php if ($this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['value'] == 0): ?>
+                        <span class="hintmark">
+                            <?php if ($this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['value'] == 0): ?>
                                 <?php echo __('Yes, i want temporarily <strong>enable</strong> flap detection.'); ?>
                             <?php else: ?>
                                 <?php echo __('Yes, i want temporarily <strong>disable</strong> flap detection.'); ?>
                             <?php endif; ?>
                             <?php echo $this->Form->input('condition', ['type' => 'hidden', 'value' => ($this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['value'] == 1) ? 0 : 1]); ?>
-						</span>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -994,15 +1002,15 @@
                     <?php echo $this->Form->input('isEnabled', ['type' => 'hidden', 'value' => $this->Status->get($host['Host']['uuid'], 'notifications_enabled')]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only host'), 'hostAndServices' => __('Host including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php
+                        <span class="hintmark">
+                            <?php
                             if ($this->Status->get($host['Host']['uuid'], 'notifications_enabled') == 0):
                                 echo __('Yes, i want temporarily <strong>enable</strong> notifications.');
                             else:
                                 echo __('Yes, i want temporarily <strong>disable</strong> notifications.');
                             endif;
                             ?>
-						</span>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">

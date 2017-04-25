@@ -242,7 +242,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 
 		self.Rrd.fetchRrdData(time_period, function(){
 			$('#graph').show();
-			self.Rrd.renderGraph();
+			self.Rrd.renderGraphForBrowser();
 			$('#graph_loader').hide();
 		});
 
