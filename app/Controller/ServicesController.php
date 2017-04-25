@@ -2423,6 +2423,7 @@ class ServicesController extends AppController {
 
         $service = $this->Service->findById($id);
         $hostContainerId = $service['Host']['container_id'];
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
         $services = $this->Service->find('all', [
             'recursive' => -1,
@@ -2445,7 +2446,7 @@ class ServicesController extends AppController {
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services']));
+        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services', 'docuExists']));
     }
 
     public function grapherTemplate($id) {
@@ -2459,6 +2460,7 @@ class ServicesController extends AppController {
             'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
         ]);
         $service = $this->Service->findById($id);
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
 
@@ -2468,7 +2470,7 @@ class ServicesController extends AppController {
             $commandUuid = $servicetemplate['CheckCommand']['uuid'];
         }
 
-        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'commandUuid']));
+        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'commandUuid', 'docuExists']));
     }
 
     public function grapherZoom($id, $ds, $newStart, $newEnd) {
