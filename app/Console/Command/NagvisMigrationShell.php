@@ -296,8 +296,11 @@ class NagvisMigrationShell extends AppShell {
             $socket = new HttpSocket();
 
             $response = $socket->post($protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename);
+            if($response->code == 200){
+                return json_decode($response->body);
+            }
+            throw new Exception($filename.' '.$response->code.' '.$response->reasonPhrase);
 
-            return json_decode($response->body);
         }catch (Exception $e){
             $this->error($e->getMessage());
         }
