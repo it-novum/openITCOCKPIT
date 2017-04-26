@@ -294,12 +294,12 @@ class NagvisMigrationShell extends AppShell {
             $pass = $this->hostData['frontendPass'];
             $host = $this->hostData['host'];
             $https = $this->hostData['https'];
-            $sslVerify = $this->hostData['sslVerification'];
+            $noSSLVerify = $this->hostData['sslVerification'];
             $protocol = 'http';
             $options = [];
             if ($https == 'y') {
                 $protocol = 'https';
-                if($sslVerify == 'y'){
+                if($noSSLVerify == 'y'){
                     $options = [
                         'ssl_verify_peer' => false
                     ];
