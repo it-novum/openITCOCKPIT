@@ -199,7 +199,12 @@ class NagvisMigrationShell extends AppShell {
         $pass = $this->in('Please Enter the Password for user ' . $user . ' on ' . $host);
         $frontendUser = $this->in('Please Enter a valid Frontend user on ' . $host);
         $frontendPass = $this->in('Please Enter the Password for user ' . $frontendUser . ' on ' . $host);
-        $https = $this->in('using SSL for Frontend Login ?',['y', 'n'], 'n');
+        $https = $this->in('Using SSL for Frontend Login ?',['y', 'n'], 'n');
+        $sslVerification = '';
+        if($https == 'y'){
+            $sslVerification = $this->in('Disable SSL verification? (mostly needed with self-signed certificates)',['y', 'n'], 'n');
+        }
+
 
         return [
             'host' => $host,
@@ -208,6 +213,7 @@ class NagvisMigrationShell extends AppShell {
             'frontendUser' => $frontendUser,
             'frontendPass' => $frontendPass,
             'https' => $https,
+            'sslVerification' => $sslVerification,
         ];
     }
 
@@ -288,12 +294,19 @@ class NagvisMigrationShell extends AppShell {
             $pass = $this->hostData['frontendPass'];
             $host = $this->hostData['host'];
             $https = $this->hostData['https'];
+            $sslVerify = $this->hostData['sslVerification'];
             $protocol = 'http';
+            $options = [];
             if ($https == 'y') {
                 $protocol = 'https';
+                if($sslVerify == 'y'){
+                    $options = [
+                        'ssl_verify_peer' => false
+                    ];
+                }
             }
 
-            $socket = new HttpSocket();
+            $socket = new HttpSocket($options);
 
             $response = $socket->post($protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename);
 
