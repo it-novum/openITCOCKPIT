@@ -1,26 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
-//
-// This file is dual licensed
-//
-// 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-// 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//Licensed under The MIT License
 
 use Crate\PDO\PDO as PDO;
 use Crate\PDO\PDOStatement;
@@ -34,9 +13,20 @@ class Crate extends CrateDboSource {
     public $description = "CrateDB DBO Driver";
 
     protected $_baseConfig = [
-        'host' => 'cratedb1.oitc.itn:4200',
+        'host' => '127.0.0.1:4200',
         'timeout' => 1
     ];
+
+    public $startQuote = '';
+
+    public $endQuote = '';
+
+    /**
+     * The set of valid SQL operations usable in a WHERE statement
+     *
+     * @var array
+     */
+    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to');
 
     /**
      * @var array
@@ -93,7 +83,7 @@ class Crate extends CrateDboSource {
         'boolean' => array('name' => 'tinyint', 'limit' => '1')
     );
 
-    public function __construct($config = null, $autoConnect = true) {
+    public function __construct($config = null, $autoConnect = true){
         $this->config = Hash::merge($this->_baseConfig, $config);
         parent::__construct($config, $autoConnect);
     }
@@ -102,10 +92,9 @@ class Crate extends CrateDboSource {
         return null;
     }
 
-    function describe($model) {
+    function describe($model){
         [];
     }
-
 
 
     public function connect(){
@@ -135,23 +124,15 @@ class Crate extends CrateDboSource {
 
     }
 
-
-    protected function _execute($sql, $params = array(), $prepareOptions = array()) {
-        $sql = trim($sql);
-        if (preg_match('/^(?:CREATE|ALTER|DROP)\s+(?:TABLE|INDEX)/i', $sql)) {
-            $statements = array_filter(explode(';', $sql));
-            if (count($statements) > 1) {
-                $result = array_map(array($this, '_execute'), $statements);
-                return array_search(false, $result) === false;
-            }
-        }
-
+    /**
+     * @param PDOStatement $query
+     * @param string $sql
+     * @return bool|PDOStatement
+     */
+    protected function __execute(PDOStatement $query, $sql){
         try {
-            $query = $this->_connection->prepare($sql, $prepareOptions);
-            var_dump($sql);
-            var_dump($prepareOptions);
-            $query->setFetchMode(PDO::FETCH_ASSOC);
-            if (!$query->execute($params)) {
+            //$query->setFetchMode(PDO::FETCH_ASSOC);
+            if (!$query->execute()) {
                 $this->_results = $query;
                 $query->closeCursor();
                 return false;
@@ -172,87 +153,324 @@ class Crate extends CrateDboSource {
             throw $e;
         }
     }
-    
-    public function read(Model $Model, $queryData = array(), $recursive = null) {
+
+
+    public function read(Model $Model, $queryData = array(), $recursive = null){
+        $this->findType = $Model->findQueryType;
         $this->modelName = $Model->alias;
         $this->tableName = $Model->table;
         $this->Model = $Model;
-        $this->getTableMetaInformation($Model->table);
 
+        $this->getTableMetaInformation($this->tableName);
 
-        return parent::read($Model, $queryData, $recursive);
-    }
-
-    public function getTableMetaInformation($tableName){
-        $query = $this->_connection->prepare(sprintf('SHOW COLUMNS FROM %s', $tableName));
-        $query->setFetchMode(PDO::FETCH_ASSOC);
-        $query->execute();
-        $this->tableMetaData = $query->fetchAll();
-    }
-
-    public function resultSet($results) {
-
-        $this->map = array();
-        $numFields = $results->columnCount();
-
-        $index = 0;
-
-        foreach($this->tableMetaData as $table){
-            $this->map[$index++] = array($this->tableName, $table['column_name'], $table['data_type']);
+        if (empty($queryData['fields'])) {
+            $queryData['fields'] = ['*'];
         }
+
+        if (!empty($queryData['joins'])) {
+            throw new NotImplementedException('joins are not implemented now');
+        }
+
+        $this->buildSelectQuery($queryData);
+        return $this->fetchAllCrate();
 
     }
 
-    public function fetchAll($sql, $params = array(), $options = array()) {
-        if (is_string($options)) {
-            $options = array('modelName' => $options);
-        }
-        if (is_bool($params)) {
-            $options['cache'] = $params;
-            $params = array();
-        }
-        $options += array('cache' => true);
-        $cache = $options['cache'];
-        if ($cache && ($cached = $this->getQueryCache($sql, $params)) !== false) {
-            return $cached;
-        }
-        $result = $this->execute($sql, array(), $params);
-        if ($result) {
-            $out = array();
+    public function buildSelectQuery($queryData){
+        $queryTemplate = 'SELECT %s FROM %s AS %s ';
+        $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tableName, $this->modelName);
 
-            if ($this->hasResult()) {
-                foreach($this->_result->fetchAll() as $record){
-                    $out[] = [
-                        $this->modelName => $record
-                    ];
-                }
-                /*$first = $this->fetchRow();
-                if ($first) {
-                    $out[] = $first;
-                }
-                while ($item = $this->fetchResult()) {
-                    if (isset($item[0])) {
-                        $this->fetchVirtualField($item);
+        if (!empty($queryData['conditions'])) {
+            $i = 1;
+            foreach ($queryData['conditions'] as $column => $condition) {
+                if ($this->columnExists($column)) {
+                    $result = $this->_parseKey($column, $condition, $this->Model);
+                    if ($i === 1) {
+                        if (is_array($result['value'])) {
+                            $placeholders = [];
+                            foreach ($result['value'] as $value) {
+                                $placeholders[] = '?';
+                            }
+                            $queryTemplate = sprintf('%s WHERE %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
+                        } else {
+                            $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                        }
+                    } else {
+                        if (is_array($result['value'])) {
+                            $placeholders = [];
+                            foreach ($result['value'] as $value) {
+                                $placeholders[] = '?';
+                            }
+                            $queryTemplate = sprintf('%s AND %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
+                        } else {
+                            $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                        }
                     }
-                    $out[] = $item;
-                }*/
+                    $i++;
+                }
+            }
+        }
+
+        if (!empty($queryData['group'])) {
+            $groupBy = [];
+            foreach ($queryData['group'] as $column) {
+                if ($this->columnExists($column)) {
+                    $groupBy[] = $column;
+                }
             }
 
-            if (!is_bool($result) && $cache) {
-                $this->_writeQueryCache($sql, $out, $params);
+            if (!empty($groupBy)) {
+                $queryTemplate = sprintf('%s GROUP BY %s', $queryTemplate, implode(', ', $groupBy));
+            }
+        }
+
+        if (!empty($queryData['order'])) {
+            $orderBy = [];
+            foreach ($queryData['order'] as $column => $direction) {
+                if ($this->columnExists($column)) {
+                    $direction = $this->getDirection($direction);
+                    $orderBy[] = sprintf('%s %s', $column, $direction);
+                }
             }
 
-            if (empty($out) && is_bool($this->_result)) {
-                return $this->_result;
+            if (!empty($orderBy)) {
+                $queryTemplate = sprintf('%s ORDER BY %s', $queryTemplate, implode(', ', $orderBy));
             }
-            return $out;
+        }
+
+        if (!empty($queryData['limit'])) {
+            $queryTemplate = sprintf('%s LIMIT ?', $queryTemplate);
+        }
+
+
+        if (!empty($queryData['offset'])) {
+            $queryTemplate = sprintf('%s OFFSET ?', $queryTemplate);
+        }
+
+        $attachedParameters = [];
+        $query = $this->_connection->prepare($queryTemplate);
+        $i = 1;
+        if (!empty($queryData['conditions'])) {
+            foreach ($queryData['conditions'] as $column => $condition) {
+                if ($this->columnExists($column)) {
+                    $result = $this->_parseKey($column, $condition, $this->Model);
+                    if (is_array($result['value'])) {
+                        foreach ($result['value'] as $value) {
+                            $query->bindValue($i++, $value);
+                            $attachedParameters[] = $value;
+                        }
+                    } else {
+                        $query->bindValue($i++, $result['value']);
+                        $attachedParameters[] = $result['value'];
+                    }
+                }
+            }
+        }
+
+        if (!empty($queryData['limit'])) {
+            $query->bindValue($i++, $queryData['limit'], PDO::PARAM_INT);
+            $attachedParameters[] = $queryData['limit'];
+        }
+
+
+        if (!empty($queryData['offset'])) {
+            $offset = $queryData['offset'];
+            if (!empty($queryData['page']) && $queryData['page'] > 1 && !empty($queryData['limit'])) {
+                $offset = (int)$queryData['page'] * $queryData['limit'];
+            }
+            $query->bindValue($i++, $offset, PDO::PARAM_INT);
+            $attachedParameters[] = $offset;
+        }
+
+        return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
+    }
+
+    /**
+     * @param string $columnName
+     * @return bool
+     */
+    public function columnExists($columnName){
+        $key = $this->modelName . '.';
+        if (strpos($columnName, $key, 0) === 0) {
+            $columnName = substr($columnName, strlen($key));
+        }
+
+        foreach ($this->tableMetaData as $column) {
+            if ($column['column_name'] === $columnName) {
+                return true;
+            }
         }
         return false;
     }
 
-/*
-    public function fetchAll(PDOStatement $query){
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+    /**
+     * @param string $direction
+     * @return string
+     */
+    public function getDirection($direction){
+        $direction = strtoupper($direction);
+        if (!in_array($direction, ['ASC', 'DESC'], true)) {
+            return 'ASC';
+        }
+        return $direction;
     }
-*/
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param Model|null $Model
+     * @return array
+     */
+    protected function _parseKey($key, $value, Model $Model = null){
+        $operatorMatch = '/^(((' . implode(')|(', $this->_sqlOps);
+        $operatorMatch .= ')\\x20?)|<[>=]?(?![^>]+>)\\x20?|[>=!]{1,3}(?!<)\\x20?)/is';
+        $bound = (strpos($key, '?') !== false || (is_array($value) && strpos($key, ':') !== false));
+
+        $key = trim($key);
+        if (strpos($key, ' ') === false) {
+            $operator = '=';
+        } else {
+            list($key, $operator) = explode(' ', $key, 2);
+
+            if (!preg_match($operatorMatch, trim($operator)) && strpos($operator, ' ') !== false) {
+                $key = $key . ' ' . $operator;
+                $split = strrpos($key, ' ');
+                $operator = substr($key, $split);
+                $key = substr($key, 0, $split);
+            }
+        }
+
+        $null = $value === null || (is_array($value) && empty($value));
+
+        if (!preg_match($operatorMatch, trim($operator))) {
+            $operator .= is_array($value) ? ' IN' : ' =';
+        }
+        $operator = trim($operator);
+
+        if (is_array($value)) {
+            switch ($operator) {
+                case '=':
+                    $operator = 'IN';
+                    break;
+                case '!=':
+                case '<>':
+                    $operator = 'NOT IN';
+                    break;
+            }
+        } elseif ($null || $value === 'NULL') {
+            switch ($operator) {
+                case '=':
+                    $operator = 'IS';
+                    break;
+                case '!=':
+                case '<>':
+                    $operator = 'IS NOT';
+                    break;
+            }
+        }
+
+        return [
+            'key' => $key,
+            'value' => $value,
+            'operator' => $operator,
+            'bound' => $bound
+        ];
+    }
+
+    /**
+     * @param string $tableName
+     */
+    public function getTableMetaInformation($tableName){
+        $sql = sprintf('SHOW COLUMNS FROM %s', $tableName);
+        $query = $this->_connection->prepare($sql);
+        $query = $this->executeQuery($query, $sql, [], []);
+        $this->_result->setFetchMode(PDO::FETCH_ASSOC);
+        $this->tableMetaData = $this->_result->fetchAll();
+    }
+
+
+    /**
+     * @param PDOStatement $query
+     * @param string $sql
+     * @param array $options
+     * @param array $params
+     * @return array|bool|PDOStatement
+     */
+    public function executeQuery(PDOStatement $query, $sql, $options = array(), $params = array()){
+        $options += array('log' => $this->fullDebug);
+
+        $t = microtime(true);
+        $this->_result = $this->__execute($query, $sql);
+
+
+        if ($options['log']) {
+            $this->took = round((microtime(true) - $t) * 1000, 0);
+            $this->numRows = $this->affected = $this->lastAffected();
+            $this->logQuery($sql, $params);
+        }
+
+        return $this->_result;
+    }
+
+    /**
+     * @return array
+     */
+    public function fetchAllCrate(){
+        if ($this->hasResult()) {
+            $this->_result->setFetchMode(PDO::FETCH_ASSOC);
+            $dbResult = $this->_result->fetchAll();
+
+            if ($this->findType == 'first' && isset($dbResult[0])) {
+                return [
+                    $this->modelName => $dbResult[0]
+                ];
+            }
+
+            $result = [];
+            foreach ($dbResult as $dbRecord) {
+                $result[] = [
+                    $this->modelName => $dbRecord
+                ];
+            }
+            return $result;
+
+        }
+
+        return [];
+    }
+
+    /**
+     * Log given SQL query.
+     *
+     * @param string $sql SQL statement
+     * @param array $params Values binded to the query (prepared statements)
+     * @return void
+     */
+    public function logQuery($sql, $params = array()){
+        foreach ($params as $param) {
+            if (!is_numeric($param)) {
+                $param = sprintf('\'%s\'', $param);
+            }
+            $positionToReplace = strpos($sql, '?');
+            if ($positionToReplace !== false) {
+                $sql = substr_replace($sql, $param, $positionToReplace, 10);
+            }
+
+        }
+        $params = [];
+
+        $this->_queriesCnt++;
+        $this->_queriesTime += $this->took;
+        $this->_queriesLog[] = array(
+            'query' => $sql,
+            'params' => $params,
+            'affected' => $this->affected,
+            'numRows' => $this->numRows,
+            'took' => $this->took
+        );
+        if (count($this->_queriesLog) > $this->_queriesLogMax) {
+            array_shift($this->_queriesLog);
+        }
+    }
+
 }

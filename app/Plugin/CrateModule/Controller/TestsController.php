@@ -33,13 +33,48 @@ class TestsController extends CrateModuleAppController {
             'fields' => [
                 '*'
             ],
-            //'conditions' => [
-            //    'node_version' => '3.0.0'
-            //],
+            'conditions' => [
+                //'Test.node_version' => ['3.0.0', '3.0.1'],
+                'Test.node_version' => '3.0.0'
+            ],
             'order' => [
                 'node_start_time' => 'asc'
-            ]
+            ],
+            'limit' => 50,
+            'offset' => 0,
+            'order' => [
+                'Test.node_name' => 'asc',
+                'node_start_time' => 'desc'
+            ],
+            //'group' => [
+            //    'Test.node_name',
+            //    'node_start_time'
+            //]
         ]));
+
+
+        debug($this->Test->find('count', [
+
+            'conditions' => [
+                //'Test.node_version' => ['3.0.0', '3.0.1'],
+                'Test.node_version' => '3.0.0'
+            ],
+            'order' => [
+                'node_start_time' => 'asc'
+            ],
+            'limit' => 50,
+            'offset' => 0,
+            'order' => [
+                'Test.node_name' => 'asc',
+                'node_start_time' => 'desc'
+            ],
+            //'group' => [
+            //    'Test.node_name',
+            //    'node_start_time'
+            //]
+        ]));
+
+
         debug('this is index');
     }
 
