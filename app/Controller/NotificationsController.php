@@ -87,6 +87,7 @@ class NotificationsController extends AppController
                     'Host.name',
                     'Host.address',
                     'Host.host_url',
+                    'Host.host_type'
                 ],
                 'conditions' => [
                     'Host.id' => $host_id,
@@ -113,9 +114,9 @@ class NotificationsController extends AppController
             //--force --doit --yes-i-know-what-i-do
             $all_notification = $this->Paginator->paginate(null, [], $order);
 
-            $hostDocuExists = $this->Documentation->existsForHost($host['Host']['uuid']);
+            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
-            $this->set(compact(['host', 'hoststatus', 'all_notification', 'hostDocuExists']));
+            $this->set(compact(['host', 'hoststatus', 'all_notification', 'docuExists']));
 
             if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
                 $this->set('isFilter', true);
@@ -196,7 +197,8 @@ class NotificationsController extends AppController
                 ],
             ]);
             $order = $this->ListsettingsParser('serviceNotification', ['hostUuid' => $service['Host']['uuid'], 'serviceUuid' => $service['Service']['uuid']]);
-
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set('docuExists', $docuExists);
 
             //--force --doit --yes-i-know-what-i-do
             $all_notification = $this->Paginator->paginate(null, [], $order);

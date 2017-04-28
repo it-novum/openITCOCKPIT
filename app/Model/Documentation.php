@@ -25,7 +25,7 @@
 
 class Documentation extends AppModel
 {
-    public function existsForHost($uuid = null)
+    public function existsForUuid($uuid = null)
     {
         return !empty($this->findByUuid($uuid));
     }

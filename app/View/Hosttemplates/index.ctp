@@ -115,6 +115,13 @@
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+                                                        <li>
+                                                            <a href="<?php echo Router::url(['controller' => 'documentations', 'action' => 'view', $hosttemplate['Hosttemplate']['uuid'], 'hosttemplate']); ?>"><i
+                                                                        class="fa fa-book"></i> <?php echo __('Documentation'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
                                                     <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $hosttemplate['Hosttemplate']['id']); ?>
                                                     <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                         <li class="divider"></li>
