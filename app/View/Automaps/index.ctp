@@ -79,6 +79,17 @@
                                     </thead>
                                     <tbody>
                                     <?php foreach ($all_automaps as $automap): ?>
+                                        <?php
+                                        //Better performance, than run all the Hash::extracts if not necessary
+                                        $hasEditPermission = false;
+                                        if ($hasRootPrivileges === true):
+                                            $hasEditPermission = true;
+                                        else:
+                                            if ($this->Acl->isWritableContainer($automap['Automap']['container_id'])):
+                                                $hasEditPermission = true;
+                                            endif;
+                                        endif;
+                                        ?>
                                         <tr>
                                             <td>
                                                 <a href="/<?php echo $this->params['controller']; ?>/view/<?php echo $automap['Automap']['id']; ?>"><?php echo h($automap['Automap']['name']); ?></a>
@@ -94,11 +105,14 @@
                                                     <span class="label label-danger"><?php echo __('No'); ?></span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-center"><a
+                                            <td class="text-center">
+                                                <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+                                                <a
                                                         href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $automap['Automap']['id']; ?>"
                                                         data-original-title="<?php echo __('Edit'); ?>"
                                                         data-placement="left" rel="tooltip" data-container="body"><i
                                                             id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a>
+                                                <?php endif; ?>
                                             </td>
 
                                         </tr>
