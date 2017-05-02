@@ -317,6 +317,7 @@ class NagvisMigrationShell extends AppShell {
             }else{
                 throw new Exception($http->getLastError()['error']);
             }
+
         }catch (Exception $e){
             $this->error($e->getMessage());
         }

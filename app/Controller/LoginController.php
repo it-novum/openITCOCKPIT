@@ -295,7 +295,7 @@ class LoginController extends AppController
 
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => APP.'webroot/img/logo_small.png',
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
