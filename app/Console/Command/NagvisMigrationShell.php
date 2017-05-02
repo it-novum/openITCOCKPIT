@@ -301,7 +301,8 @@ class NagvisMigrationShell extends AppShell {
                 $protocol = 'https';
                 if($noSSLVerify == 'y'){
                     $options = [
-                        'ssl_verify_peer' => false
+                        'ssl_verify_peer' => false,
+                        'ssl_verify_host' => false,
                     ];
                 }
             }
