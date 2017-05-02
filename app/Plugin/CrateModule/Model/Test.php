@@ -25,7 +25,9 @@
 class Test extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';
-    public $useTable = 'statusengine_nodes';
+    public $useTable = 'nodes';
+    public $tablePrefix = 'statusengine_';
+
 
 
 }

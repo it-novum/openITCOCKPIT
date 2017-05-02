@@ -61,6 +61,11 @@ class Crate extends CrateDboSource {
      */
     private $tableName;
 
+    /**
+     * @var string
+     */
+    private $tablePrefix;
+
     public $fieldParameters = array(
         'charset' => array('value' => 'CHARACTER SET', 'quote' => false, 'join' => ' ', 'column' => false, 'position' => 'beforeDefault'),
         'collate' => array('value' => 'COLLATE', 'quote' => false, 'join' => ' ', 'column' => 'Collation', 'position' => 'beforeDefault'),
@@ -188,10 +193,12 @@ class Crate extends CrateDboSource {
         $this->findType = $Model->findQueryType;
         $this->modelName = $Model->alias;
         $this->tableName = $Model->table;
+        $this->tablePrefix = $Model->tablePrefix;
+
         $this->Model = $Model;
 
         if($this->tableMetaData === null) {
-            $this->getTableMetaInformation($this->tableName);
+            $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
         }
 
         if (empty($queryData['fields'])) {
@@ -201,7 +208,7 @@ class Crate extends CrateDboSource {
         if (!empty($queryData['joins'])) {
             throw new NotImplementedException('joins are not implemented now');
         }
-
+debug($queryData);
         $this->buildSelectQuery($queryData);
         return $this->fetchAllCrate();
     }
@@ -209,9 +216,9 @@ class Crate extends CrateDboSource {
     public function buildSelectQuery($queryData){
         $queryTemplate = 'SELECT %s FROM %s AS %s ';
         if ($this->findType === 'count') {
-            $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tableName, $this->modelName);
+            $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix.$this->tableName, $this->modelName);
         } else {
-            $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tableName, $this->modelName);
+            $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tablePrefix.$this->tableName, $this->modelName);
         }
 
         if (!empty($queryData['conditions'])) {
@@ -497,17 +504,31 @@ class Crate extends CrateDboSource {
      * @return void
      */
     public function logQuery($sql, $params = array()){
-        foreach ($params as $param) {
-            if (!is_numeric($param)) {
-                $param = sprintf('\'%s\'', $param);
+        $queryParts = explode('?', $sql);
+        debug($queryParts);
+        debug($params);
+        $_sql = '';
+        foreach($queryParts as $key => $part){
+            if($key === 0){
+                $_sql .= $part;
+                //This is the "base part" where no parameters are inside.
+                continue;
             }
-            $positionToReplace = strpos($sql, '?');
-            if ($positionToReplace !== false) {
-                $sql = substr_replace($sql, $param, $positionToReplace, 10);
+            $key = $key - 1;
+            if(isset($params[$key])){
+                $param = $params[$key];
+                if (!is_numeric($param)) {
+                    $param = sprintf('\'%s\'', $param);
+                }
+                $_sql.= $param;
+            }else{
+                $_sql.= '?';
             }
-
+            $_sql.= $part;
         }
-        $params = [];
+
+        $sql = $_sql;
+        //$params = [];
 
         $this->_queriesCnt++;
         $this->_queriesTime += $this->took;
