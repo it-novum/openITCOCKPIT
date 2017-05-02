@@ -45,7 +45,9 @@ class Logentry extends CrateModuleAppModel
 
         if (isset($requestData['Listsettings']['logentry_type'])) {
             if (!is_array($requestData['Listsettings']['logentry_type'])) {
-                $requestData['Listsettings']['logentry_type'] = [$requestData['Listsettings']['logentry_type']];
+                $requestData['Listsettings']['logentry_type'] = $this->getTypesByBitValue(
+                    $requestData['Listsettings']['logentry_type']
+                );
             }
             $bitSelector = array_sum($requestData['Listsettings']['logentry_type']);
 
@@ -99,6 +101,20 @@ class Logentry extends CrateModuleAppModel
             524288  => __('Host notification'),
             1048576 => __('Service notification'),
         ];
+    }
+
+    /**
+     * @param int $bitValue
+     * @return array
+     */
+    public function getTypesByBitValue($bitValue){
+        $types = [];
+        foreach($this->types() as $type){
+            if($type & $bitValue){
+                $types[] = $type;
+            }
+        }
+        return $types;
     }
 
 }
