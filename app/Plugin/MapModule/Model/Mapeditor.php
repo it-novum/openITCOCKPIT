@@ -509,15 +509,33 @@ class Mapeditor extends MapModuleAppModel
 
         $HostgroupHostUuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
 
+        $hoststatusMapping = [];
+        $servicestatusMapping = [];
+
         foreach ($hostgroupstatus as $hgKey => $hostgroup) {
             foreach ($HostgroupHostUuids as $key => $hostUuid) {
                 $conditions = [
                     'Objects.name1' => $hostUuid,
                     'Objects.is_active' => 1,
                 ];
-                $hostgroupstatus[$hgKey]['Host'][$key]['Hoststatus'] = $this->_hoststatus($conditions, $hostFields);
 
-                $hostgroupstatus[$hgKey]['Host'][$key]['Servicestatus'] = $this->_servicestatus($conditions, $serviceFields);
+                if(empty($hoststatusMapping[$hostUuid])){
+                    $hoststatusMapping[$hostUuid] = $this->_hoststatus($conditions, $hostFields);
+                    $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
+                }else{
+                    $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
+                }
+
+                if(empty($servicestatusMapping[$hostUuid])){
+                    $servicestatusMapping[$hostUuid] = $this->_servicestatus($conditions, $serviceFields);
+                    $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
+                }else{
+                    $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
+                }
+
+                $hostgroupstatus[$hgKey]['Host'][$key]['Hoststatus'] = $hostgroupHostStatus;
+
+                $hostgroupstatus[$hgKey]['Host'][$key]['Servicestatus'] = $hostgroupServiceStatus;
             }
         }
 
