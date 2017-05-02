@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Http;
+
 App::uses('Folder', 'Utility');
 App::uses('HttpSocket', 'Network/Http');
 App::import('Controller', 'MapModule.BackgroundUploads');
@@ -301,17 +303,20 @@ class NagvisMigrationShell extends AppShell {
                 $protocol = 'https';
                 if($noSSLVerify == 'y'){
                     $options = [
-                        'ssl_verify_peer' => false,
-                        'ssl_verify_host' => false,
+                        'CURLOPT_SSL_VERIFYPEER' => false,
+                        'CURLOPT_SSL_VERIFYHOST' => 0
                     ];
                 }
             }
 
-            $socket = new HttpSocket($options);
-
-            $response = $socket->post($protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename);
-
-            return json_decode($response->body);
+            $url = $protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename;
+            $http = new Http($url, $options);
+            $http->sendRequest();
+            if(!empty($http->data)){
+                return json_decode($http->data);
+            }else{
+                throw new Exception($http->getLastError()['error']);
+            }
         }catch (Exception $e){
             $this->error($e->getMessage());
         }
