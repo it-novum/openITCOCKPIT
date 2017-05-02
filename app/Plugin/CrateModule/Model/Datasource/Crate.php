@@ -8,8 +8,25 @@ require_once __DIR__ . DS . 'CrateDboSource.php';
 
 class Crate extends CrateDboSource {
 
+    /**
+     * @var string
+     */
+    private $findType;
+
+    /**
+     * @var string
+     */
+    private $modelName;
+
+
+    /**
+     * @var Model
+     */
     private $Model;
 
+    /**
+     * @var string
+     */
     public $description = "CrateDB DBO Driver";
 
     protected $_baseConfig = [
@@ -17,8 +34,14 @@ class Crate extends CrateDboSource {
         'timeout' => 1
     ];
 
+    /**
+     * @var string
+     */
     public $startQuote = '';
 
+    /**
+     * @var string
+     */
     public $endQuote = '';
 
     /**
@@ -31,7 +54,7 @@ class Crate extends CrateDboSource {
     /**
      * @var array
      */
-    private $tableMetaData;
+    private $tableMetaData = null;
 
     /**
      * @var string
@@ -155,13 +178,21 @@ class Crate extends CrateDboSource {
     }
 
 
+    /**
+     * @param Model $Model
+     * @param array $queryData
+     * @param null $recursive
+     * @return array|int
+     */
     public function read(Model $Model, $queryData = array(), $recursive = null){
         $this->findType = $Model->findQueryType;
         $this->modelName = $Model->alias;
         $this->tableName = $Model->table;
         $this->Model = $Model;
 
-        $this->getTableMetaInformation($this->tableName);
+        if($this->tableMetaData === null) {
+            $this->getTableMetaInformation($this->tableName);
+        }
 
         if (empty($queryData['fields'])) {
             $queryData['fields'] = ['*'];
@@ -173,12 +204,15 @@ class Crate extends CrateDboSource {
 
         $this->buildSelectQuery($queryData);
         return $this->fetchAllCrate();
-
     }
 
     public function buildSelectQuery($queryData){
         $queryTemplate = 'SELECT %s FROM %s AS %s ';
-        $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tableName, $this->modelName);
+        if ($this->findType === 'count') {
+            $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tableName, $this->modelName);
+        } else {
+            $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tableName, $this->modelName);
+        }
 
         if (!empty($queryData['conditions'])) {
             $i = 1;
@@ -224,7 +258,7 @@ class Crate extends CrateDboSource {
             }
         }
 
-        if (!empty($queryData['order'])) {
+        if (!empty($queryData['order']) && $this->findType !== 'count') {
             $orderBy = [];
             foreach ($queryData['order'] as $column => $direction) {
                 if ($this->columnExists($column)) {
@@ -238,12 +272,12 @@ class Crate extends CrateDboSource {
             }
         }
 
-        if (!empty($queryData['limit'])) {
+        if (!empty($queryData['limit']) && $this->findType !== 'count') {
             $queryTemplate = sprintf('%s LIMIT ?', $queryTemplate);
         }
 
 
-        if (!empty($queryData['offset'])) {
+        if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $queryTemplate = sprintf('%s OFFSET ?', $queryTemplate);
         }
 
@@ -267,13 +301,13 @@ class Crate extends CrateDboSource {
             }
         }
 
-        if (!empty($queryData['limit'])) {
+        if (!empty($queryData['limit']) && $this->findType !== 'count') {
             $query->bindValue($i++, $queryData['limit'], PDO::PARAM_INT);
             $attachedParameters[] = $queryData['limit'];
         }
 
 
-        if (!empty($queryData['offset'])) {
+        if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $offset = $queryData['offset'];
             if (!empty($queryData['page']) && $queryData['page'] > 1 && !empty($queryData['limit'])) {
                 $offset = (int)$queryData['page'] * $queryData['limit'];
@@ -281,6 +315,8 @@ class Crate extends CrateDboSource {
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
+
+        debug($queryTemplate);
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
@@ -413,14 +449,28 @@ class Crate extends CrateDboSource {
     }
 
     /**
-     * @return array
+     * @return array|int
      */
     public function fetchAllCrate(){
         if ($this->hasResult()) {
             $this->_result->setFetchMode(PDO::FETCH_ASSOC);
             $dbResult = $this->_result->fetchAll();
 
-            if ($this->findType == 'first' && isset($dbResult[0])) {
+            if ($this->findType === 'count') {
+                $count = 0;
+                if (isset($dbResult[0]['count'])) {
+                    $count = (int)$dbResult[0]['count'];
+                }
+                return [
+                    0 => [
+                        $this->modelName => [
+                            'count' => $count
+                        ]
+                    ]
+                ];
+            }
+
+            if ($this->findType === 'first' && isset($dbResult[0])) {
                 return [
                     $this->modelName => $dbResult[0]
                 ];
