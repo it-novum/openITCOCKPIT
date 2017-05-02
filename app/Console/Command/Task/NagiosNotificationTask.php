@@ -71,7 +71,7 @@ class NagiosNotificationTask extends AppShell
 
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => APP.'webroot/img/logo_small.png',
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
@@ -114,7 +114,7 @@ class NagiosNotificationTask extends AppShell
 
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => APP.'webroot/img/logo_small.png',
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
@@ -138,7 +138,7 @@ class NagiosNotificationTask extends AppShell
             $hosttmpdir_path = '/tmp/'.$parameters['hostUuid'];
             $hosttmpdir = new Folder($hosttmpdir_path, true, 0777);
 
-            $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
+            $attachments['logo.png'] = ['file' => APP.'webroot/img/logo_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
 
             // draw graph for every datasource of the service 
             foreach ($rrdds as $ds) {
@@ -162,7 +162,7 @@ class NagiosNotificationTask extends AppShell
             //print_r($mailgraph_files);
 
         } else {
-            $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
+            $attachments['logo.png'] = ['file' => APP.'webroot/img/logo_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
         }
         // debug($attachments);
         // send attachments
