@@ -36,26 +36,6 @@ class Hostcheck extends NagiosModuleAppModel
         ],
     ];
 
-    public function byUuid($uuid = null)
-    {
-        $return = [];
-        if ($uuid !== null) {
-            $hostcheck = $this->find('all', [
-                'conditions' => [
-                    'Objects.Name1'         => $uuid,
-                    'Objects.objecttype_id' => 1,
-                ],
-            ]);
-
-            if (!empty($hostcheck)) {
-                foreach ($hostcheck as $hostcheck) {
-                    $return[$hostcheck['Objects']['name1']] = $hostcheck;
-                }
-            }
-        }
-
-        return $return;
-    }
 
 
     public function listSettings($cakeRequest, $hostUuid)

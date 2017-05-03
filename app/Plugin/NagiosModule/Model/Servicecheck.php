@@ -36,26 +36,6 @@ class Servicecheck extends NagiosModuleAppModel
         ],
     ];
 
-    public function byUuid($uuid = null)
-    {
-        $return = [];
-        if ($uuid !== null) {
-            $serviechecks = $this->find('all', [
-                'conditions' => [
-                    'Objects.Name2' => $uuid,
-                ],
-            ]);
-
-            if (!empty($serviechecks)) {
-                foreach ($serviechecks as $servicecheck) {
-                    $return[$servicecheck['Objects']['name2']] = $servicecheck;
-                }
-            }
-        }
-
-        return $return;
-    }
-
 
     public function listSettings($cakeRequest, $serviceUuid)
     {
