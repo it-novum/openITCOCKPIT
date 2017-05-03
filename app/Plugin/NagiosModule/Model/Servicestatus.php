@@ -69,8 +69,6 @@ class Servicestatus extends NagiosModuleAppModel
             }
         }
 
-        debug($return);
-
         return $return;
     }
 
