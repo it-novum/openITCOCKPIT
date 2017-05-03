@@ -1,5 +1,11 @@
 #!/bin/bash
+if [[ $1 == "--help" ]]; then
+	echo "Supported parameters:"
+	echo "--roles    Restore all default user role permissions"
+	echo "--rights   Reset file permissions"
 
+	exit 0
+fi
 . /etc/dbconfig-common/openitcockpit.conf
 
 APPDIR="/usr/share/openitcockpit/app"
@@ -101,6 +107,22 @@ oitc set_permissions
 oitc docu_generator
 oitc copy_servicename
 oitc systemsettings_import
+
+for i in "$@"; do
+	case $i in
+		--roles)
+			oitc roles
+		;;
+
+		--rights)
+			oitc rights
+		;;
+
+		*)
+			#No default at the moment
+		;;
+	esac
+done
 
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then

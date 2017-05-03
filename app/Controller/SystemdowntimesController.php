@@ -94,8 +94,11 @@ class SystemdowntimesController extends AppController
                     if(isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
                         $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == WRITE_RIGHT){
                         $all_systemdowntimes[$dKey]['canDelete'] = true;
-                    }else{
+                    }elseif(isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == READ_RIGHT){
                         $all_systemdowntimes[$dKey]['canDelete'] = false;
+                    }else{
+                        unset($all_systemdowntimes[$dKey]);
                     }
                     break;
 

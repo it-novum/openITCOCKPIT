@@ -64,7 +64,7 @@
                         <div class="widget-body no-padding">
                             <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                             <div class="mobile_table">
-                                <table id="service_list" class="table table-striped table-bordered smart-form" style="">
+                                <table id="service_list" class="table table-striped table-hover table-bordered smart-form" style="">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -125,6 +125,14 @@
                                                                 </a>
                                                             </li>
                                                         <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
+                                                            <li>
+                                                                <a href="<?php echo Router::url(['controller' => 'documentations', 'action' => 'view', $servicetemplate['Servicetemplate']['uuid'], 'servicetemplate']); ?>"><i
+                                                                            class="fa fa-book"></i> <?php echo __('Documentation'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+
                                                         <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $servicetemplate['Servicetemplate']['id']); ?>
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>

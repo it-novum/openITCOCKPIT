@@ -78,7 +78,6 @@ class UsergroupsController extends AppController
         if (!$this->Usergroup->exists($id)) {
             throw new NotFoundException(__('Invalid user role'));
         }
-        $usergroup = $this->Usergroup->findById($id);
 
         $permissions = $this->Acl->Aro->Permission->find('all', [
             'conditions' => [
@@ -88,10 +87,10 @@ class UsergroupsController extends AppController
 
         $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
         unset($permissions);
+
         $acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
-        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
 
         $usergroup = $this->Usergroup->findById($id);
 
@@ -99,7 +98,6 @@ class UsergroupsController extends AppController
         $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
         $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
         $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
-
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $aro = $this->Acl->Aro->find('first', [

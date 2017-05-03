@@ -29,14 +29,18 @@ class DocumentationsController extends AppController
     public $components = ['Bbcode'];
     public $helpers = ['Bbcode'];
 
-    public $uses = ['Documentation', 'Host'];
+    public $uses = [
+        'Documentation',
+        'Host',
+        'Service'
+    ];
 
-    public function view($uuid = null)
+    public function view($uuid = null, $type = 'host')
     {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
                 $this->setFlash(__('Page successfully saved'));
-                $this->redirect(['action' => 'view', $uuid]);
+                $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
             } else {
                 $this->setFlash(__('Could not save data'), false);
             }
@@ -45,31 +49,87 @@ class DocumentationsController extends AppController
         $this->set('back_url', $this->referer());
         $post = $this->Documentation->findByUuid($uuid);
 
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-            ],
-            'conditions' => [
-                'Host.uuid' => $uuid,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
+        if($type === 'host') {
+            $host = $this->Host->find('first', [
+                'fields' => [
+                    'Host.id',
+                    'Host.uuid',
+                    'Host.name',
+                    'Host.address',
+                    'Host.container_id',
+                    'Host.host_url',
+                    'Host.host_type',
+                ],
+                'conditions' => [
+                    'Host.uuid' => $uuid,
+                ],
+                'contain' => [
+                    'Container',
+                ],
+            ]);
 
-        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))) {
-            $this->render403();
+            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $host['Host']['container_id'];
 
-            return;
+            //Check if user is permitted to see this object
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+
+                return;
+            }
+
+            //Check if user is permitted to edit this object
+            $allowEdit = false;
+            if ($this->allowedByContainerId($containerIdsToCheck)) {
+                $allowEdit = true;
+            }
+
+            $this->set('host', $host);
+            $this->set('allowEdit', $allowEdit);
         }
 
-        $hostDocuExists = !empty($post);
+        if($type === 'service'){
+            $service = $this->Service->find('first', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Host'            => [
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.uuid' => $uuid,
+                ],
 
-        $this->set(compact(['post', 'uuid', 'host', 'hostDocuExists']));
+            ]);
+
+
+            $host = $this->Host->findById($service['Service']['host_id']);
+            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $host['Host']['container_id'];
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+
+                return;
+            }
+
+            $allowEdit = false;
+            if ($this->allowedByContainerId($containerIdsToCheck)) {
+                $allowEdit = true;
+            }
+
+            $this->set('service', $service);
+            $this->set('allowEdit', $allowEdit);
+        }
+
+        $docuExists = !empty($post);
+
+        $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
     }
 
     public function index()

@@ -274,7 +274,7 @@
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="hostdowntimes_list" class="table table-striped table-bordered smart-form"
+                            <table id="hostdowntimes_list" class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>

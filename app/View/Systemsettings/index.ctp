@@ -59,7 +59,7 @@
                         ]);
                         ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-bordered smart-form" style="">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <th><?php echo __('Key'); ?></th>

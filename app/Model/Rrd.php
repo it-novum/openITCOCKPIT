@@ -41,11 +41,9 @@ class Rrd extends AppModel
 
         $perfdata_dir = new Folder($rrd_path.$host_uuid);
         $perfdata_files = $perfdata_dir->find($service_uuid.'.(xml|rrd)', true);
-
         if (!isset($perfdata_files[0]) || !isset($perfdata_files[1])) {
             return $result;
         }
-
         $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd().'/'.$perfdata_files[1])];
         $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd().'/'.$perfdata_files[0], $options);
 
@@ -75,7 +73,11 @@ class Rrd extends AppModel
     {
         App::uses('Xml', 'Utility');
         $rrd_structure = [];
-        $xml_rrd = Xml::build($xml_path);
+        try {
+            $xml_rrd = Xml::build($xml_path); // Here will throw a Exception
+        } catch (XmlException $e) {
+           return false;
+        }
         $xml_rrd_as_array = Xml::toArray($xml_rrd);
 
         $xml_rrd_structure = ['ds', 'name', 'label', 'unit', 'act', 'warn', 'crit', 'min', 'max'];
@@ -179,7 +181,6 @@ class Rrd extends AppModel
         if (!$perf_data) {
             return [];
         }
-
         foreach ($perf_data as $key => $value) {
             if ($key == 'data') {
                 foreach (array_keys($perf_data['data']) as $sub_key => $data_array) {

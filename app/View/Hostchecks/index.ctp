@@ -239,7 +239,7 @@
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
 
-                        <table id="hostchecks_list" class="table table-striped table-bordered smart-form" style="">
+                        <table id="hostchecks_list" class="table table-striped table-hover table-bordered smart-form" style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>

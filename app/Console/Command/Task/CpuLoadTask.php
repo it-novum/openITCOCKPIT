@@ -23,7 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CpuLoadTask extends AppShell
+use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+class CpuLoadTask extends AppShell implements CronjobInterface
 {
 
     function execute($quiet = false)

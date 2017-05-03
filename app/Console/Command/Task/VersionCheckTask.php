@@ -25,8 +25,9 @@
 use \itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
-class VersionCheckTask extends AppShell
+class VersionCheckTask extends AppShell implements CronjobInterface
 {
 
     public function execute($quiet = false)

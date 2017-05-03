@@ -1,12 +1,12 @@
 /* Pretty handling of time axes.
 
- Copyright (c) 2007-2014 IOLA and Ole Laursen.
- Licensed under the MIT license.
+Copyright (c) 2007-2014 IOLA and Ole Laursen.
+Licensed under the MIT license.
 
- Set axis.mode to "time" to enable. See the section "Time series data" in
- API.txt for details.
+Set axis.mode to "time" to enable. See the section "Time series data" in
+API.txt for details.
 
- */
+*/
 
 (function($) {
 
@@ -158,7 +158,7 @@
 			return makeUtcWrapper(new Date(ts));
 		}
 	}
-
+	
 	// map of app. size of time units in milliseconds
 
 	var timeUnitSize = {
@@ -176,9 +176,9 @@
 
 	var baseSpec = [
 		[1, "second"], [2, "second"], [5, "second"], [10, "second"],
-		[30, "second"],
+		[30, "second"], 
 		[1, "minute"], [2, "minute"], [5, "minute"], [10, "minute"],
-		[30, "minute"],
+		[30, "minute"], 
 		[1, "hour"], [2, "hour"], [4, "hour"],
 		[8, "hour"], [12, "hour"],
 		[1, "day"], [2, "day"], [3, "day"],
@@ -211,9 +211,9 @@
 						// mentioned in either of these options
 
 						var spec = (opts.tickSize && opts.tickSize[1] ===
-						"quarter") ||
-						(opts.minTickSize && opts.minTickSize[1] ===
-						"quarter") ? specQuarters : specMonths;
+							"quarter") ||
+							(opts.minTickSize && opts.minTickSize[1] ===
+							"quarter") ? specQuarters : specMonths;
 
 						if (opts.minTickSize != null) {
 							if (typeof opts.tickSize == "number") {
@@ -225,7 +225,7 @@
 
 						for (var i = 0; i < spec.length - 1; ++i) {
 							if (axis.delta < (spec[i][0] * timeUnitSize[spec[i][1]]
-								+ spec[i + 1][0] * timeUnitSize[spec[i + 1][1]]) / 2
+											  + spec[i + 1][0] * timeUnitSize[spec[i + 1][1]]) / 2
 								&& spec[i][0] * timeUnitSize[spec[i][1]] >= minSize) {
 								break;
 							}
@@ -336,14 +336,14 @@
 									d.setDate(1);
 									var start = d.getTime();
 									d.setMonth(d.getMonth() +
-									(unit == "quarter" ? 3 : 1));
+										(unit == "quarter" ? 3 : 1));
 									var end = d.getTime();
 									d.setTime(v + carry * timeUnitSize.hour + (end - start) * tickSize);
 									carry = d.getHours();
 									d.setHours(0);
 								} else {
 									d.setMonth(d.getMonth() +
-									tickSize * (unit == "quarter" ? 3 : 1));
+										tickSize * (unit == "quarter" ? 3 : 1));
 								}
 							} else if (unit == "year") {
 								d.setFullYear(d.getFullYear() + tickSize);
@@ -369,9 +369,9 @@
 						// any of these places
 
 						var useQuarters = (axis.options.tickSize &&
-							axis.options.tickSize[1] == "quarter") ||
+								axis.options.tickSize[1] == "quarter") ||
 							(axis.options.minTickSize &&
-							axis.options.minTickSize[1] == "quarter");
+								axis.options.minTickSize[1] == "quarter");
 
 						var t = axis.tickSize[0] * timeUnitSize[axis.tickSize[1]];
 						var span = axis.max - axis.min;

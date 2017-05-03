@@ -371,7 +371,6 @@ class ServicegroupsController extends AppController
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
-                    debug($changelog_data);
                 }
 
                 if ($isJsonRequest) {

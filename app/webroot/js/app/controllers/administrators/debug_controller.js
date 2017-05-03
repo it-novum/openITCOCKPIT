@@ -30,6 +30,7 @@ App.Controllers.AdministratorsDebugController = Frontend.AppController.extend({
 
 	_initialize: function() {
 		if(this.getVar('renderGraph') === true){
+            $('#loadGraph').html('');
 			$('#loadGraph').css('height', '300px');
 			$('.graph_legend').show();
 			//console.log(this.getVar('graphData'));

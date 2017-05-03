@@ -51,7 +51,7 @@ class Systemdowntime extends AppModel
             ],
             'comparison' => [
                 'rule'     => ['dateComparison'],
-                'message' => 'The "from" date must occur before the "to" date',
+                'message' => 'The "from" date must occur before the "to" date 123',
                 'required' => true
             ],
         ],
@@ -82,8 +82,8 @@ class Systemdowntime extends AppModel
                 'message' => 'Please enter a valid date',
             ],
             'checkPastDate' => [
-                'rule'=> ['checkPastDate', 'to_date', 'is_recurring'],
-                'message' => 'The "to" date should be in the future and not the past',
+                'rule'=> ['checkPastDate'],
+                'message' => 'The "to" date/time should be in the future and not the past',
                 'required' => true
             ],
             'comparison' => [
@@ -257,18 +257,18 @@ class Systemdowntime extends AppModel
      * @param array $check Contains the value passed from the view to be validated
      * @return boolean False if in the future, True otherwise
      */
-    public function checkPastDate($toDate, $isRecurring) {
-        if($this->data[$this->alias][$isRecurring]){
+    public function checkPastDate() {
+        if($this->data[$this->name]['is_recurring']){
             return true;
         }
-        return CakeTime::fromString($this->data[$this->alias][$toDate]) < CakeTime::fromString(date('Y.m.d'));
+        return CakeTime::fromString($this->data[$this->alias]['to_date'].' '.$this->data[$this->alias]['to_time']) > time();
     }
 
     function dateComparison() {
         if($this->data[$this->name]['is_recurring']){
             return true;
         }
-        return Validation::comparison($this->data[$this->alias]['from_date'], '<=', $this->data[$this->alias]['to_date']);
+        return Validation::comparison(CakeTime::fromString($this->data[$this->alias]['from_date']), '<=', CakeTime::fromString($this->data[$this->alias]['to_date']));
     }
 
     function timeComparison() {

@@ -136,13 +136,14 @@ class BrowsersController extends AppController {
 
             $query = $this->Browser->hostsQuery($lookupIds);
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $hostsForCounter = $this->Host->find('all', $query);
             $hosts = $this->Paginator->paginate('Host');
-            //$hosts = $this->Host->find('all', $query);
             $query = $this->Browser->serviceQuery($lookupIds);
             $services = $this->Service->find('all', $query);
         }
-        $state_array_host = $this->Browser->countHoststate($hosts);
+        $state_array_host = $this->Browser->countHoststate($hostsForCounter);
         $state_array_service = $this->Browser->countServicestate($services);
+
         $currentContainer = $this->Container->findById($id);
         $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
         $this->set(compact([

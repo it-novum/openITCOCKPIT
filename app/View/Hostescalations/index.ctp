@@ -119,7 +119,7 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="hostescalation_list" class="table table-striped table-bordered smart-form"
+                                <table id="hostescalation_list" class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
