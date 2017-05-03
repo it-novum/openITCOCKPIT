@@ -489,8 +489,14 @@
                                     <?php echo __('Due to the service is not available for the monitoring engine, you can not send commands.'); ?>
                                 </div>
                             <?php else: ?>
-                                <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_reschedule"><i
-                                                class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?> </span><br/>
+                                <h5><?php
+                                    echo $this->Form->create('nag_command');
+                                    echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
+                                    <span class="nag_command submitRescheduleService">
+                                        <i class="fa fa-refresh"></i>
+                                        <?php echo __('Reset check time'); ?>
+                                    </span>
+                                    <?php echo $this->Form->end(); ?>
                                 </h5>
                                 <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
                                                 class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>
@@ -598,44 +604,6 @@
         </article>
     </div>
 <?php endif; ?>
-
-
-<div class="modal fade" id="nag_command_reschedule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Reset check time '); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <?php
-                    echo $this->Form->create('nag_command', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
-                    <center>
-                        <?php echo __('Reset check time now'); ?>
-                    </center>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="submitRescheduleService" data-dismiss="modal">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>
 
 <div class="modal fade" id="nag_command_passive_result" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
      aria-hidden="true">
