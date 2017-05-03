@@ -42,7 +42,7 @@ class Servicestatus extends NagiosModuleAppModel
      * @param          string   or array $uuid you want to get service status for
      * @param    array $options for the find request (see cakephp's find for all options)
      *
-     * @return    void
+     * @return    array
      * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since      3.0
      * @version    3.0.1
@@ -68,6 +68,8 @@ class Servicestatus extends NagiosModuleAppModel
                 }
             }
         }
+
+        debug($return);
 
         return $return;
     }

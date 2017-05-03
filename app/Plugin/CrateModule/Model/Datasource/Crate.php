@@ -53,7 +53,7 @@ class Crate extends DboSource {
     /**
      * @var array
      */
-    private $tableMetaData = null;
+    private $tableMetaData = [];
 
     /**
      * @var string
@@ -196,7 +196,7 @@ class Crate extends DboSource {
 
         $this->Model = $Model;
 
-        if($this->tableMetaData === null) {
+        if(!isset($this->tableMetaData[$this->modelName])) {
             $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
         }
 
@@ -337,7 +337,7 @@ class Crate extends DboSource {
             $columnName = substr($columnName, strlen($key));
         }
 
-        foreach ($this->tableMetaData as $column) {
+        foreach ($this->tableMetaData[$this->modelName] as $column) {
             if ($column['column_name'] === $columnName) {
                 return true;
             }
@@ -444,7 +444,7 @@ class Crate extends DboSource {
         $query = $this->_connection->prepare($sql);
         $query = $this->executeQuery($query, $sql, [], []);
         $this->_result->setFetchMode(PDO::FETCH_ASSOC);
-        $this->tableMetaData = $this->_result->fetchAll();
+        $this->tableMetaData[$this->modelName] = $this->_result->fetchAll();
     }
 
 

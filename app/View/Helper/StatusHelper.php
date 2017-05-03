@@ -105,7 +105,7 @@ class StatusHelper extends AppHelper
         if ($servicestatus === null) {
             $servicestatus = $this->_View->viewVars['servicestatus'];
         }
-        if (isset($servicestatus[$uuid]['Servicestatus']['current_state']) && !in_array($servicestatus[$uuid]['Servicestatus']['current_state'], [null, 'null'])) {
+        if (isset($servicestatus[$uuid]['Servicestatus']['current_state']) && !in_array($servicestatus[$uuid]['Servicestatus']['current_state'], [null, 'null'], true)) {
             switch ($servicestatus[$uuid]['Servicestatus']['current_state']) {
                 case 0:
                     return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="'.$href.'" class="btn btn-success btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'glyphicon glyphicon-ok'];

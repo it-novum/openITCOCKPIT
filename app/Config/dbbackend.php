@@ -23,7 +23,8 @@
 //  confirmation.
 
 $config = [
-    'dbbackend' => 'Nagios',
-    //'dbbackend' => 'Crate',
+    // @todo enable mysql by default!
+    //'dbbackend' => 'Nagios',
+    'dbbackend' => 'Crate',
 ];
 
