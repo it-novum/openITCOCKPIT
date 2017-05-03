@@ -490,13 +490,11 @@
                                 </div>
                             <?php else: ?>
                                 <h5><?php
-                                    echo $this->Form->create('nag_command');
                                     echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
                                     <span class="nag_command submitRescheduleService">
                                         <i class="fa fa-refresh"></i>
                                         <?php echo __('Reset check time'); ?>
                                     </span>
-                                    <?php echo $this->Form->end(); ?>
                                 </h5>
                                 <h5><span class="nag_command" data-toggle="modal" data-target="#nag_command_passive_result"><i
                                                 class="fa fa-download"></i> <?php echo __('Passive transfer of check results') ?> </span><br/>

@@ -23,13 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php
-echo $this->Form->create('nag_command', ['class' => 'pull-left']);
-echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
-    <span class="btn btn-default btn-sm nag_command submitRescheduleService" style="margin-right: 5px;">
-        <i class="fa fa-refresh fa-lg"></i>
-    </span>
-<?php echo $this->Form->end(); ?>
+<?php if($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'services'): ?>
+<span class="btn btn-default btn-sm nag_command submitRescheduleService">
+    <i class="fa fa-refresh fa-lg"></i>
+</span>
+<?php endif; ?>
 <?php if ($this->Acl->hasPermission('view', 'documentations') && $service['Service']['service_type'] == GENERIC_SERVICE): ?>
     <span style="position:relative;">
         <a href="/documentations/view/<?php echo $service['Service']['uuid']; ?>/service"
