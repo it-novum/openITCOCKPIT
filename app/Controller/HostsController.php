@@ -2455,13 +2455,26 @@ class HostsController extends AppController {
 
         $servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
         $username = $this->Auth->user('full_name');
+
+        $mainContainer = $this->Tree->treePath($host['Host']['container_id'], ['delimiter'=> '/']);
+        //get the already shared containers
+        if (is_array($host['Container']) && !empty($host['Container'])) {
+            foreach ($host['Container'] as $container){
+                if($container != $host['Host']['container_id']){
+                    $sharedContainers[] = $this->Tree->treePath($container, ['delimiter'=> '/']);
+                }
+            }
+        } else {
+            $sharedContainers = [];
+        }
+
+
         $this->set(compact([
                 'host',
                 'hoststatus',
                 'servicestatus',
                 'services',
                 'username',
-                'path',
                 'commandarguments',
                 'acknowledged',
                 'docuExists',
@@ -2469,6 +2482,8 @@ class HostsController extends AppController {
                 'parenthosts',
                 'allowEdit',
                 'ticketSystem',
+                'mainContainer',
+                'sharedContainers',
             ])
         );
 
