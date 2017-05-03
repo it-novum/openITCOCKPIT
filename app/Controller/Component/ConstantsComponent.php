@@ -33,11 +33,14 @@ class ConstantsComponent extends Component {
             define('ROOT_CONTAINER', 1);
         }
 
+        Configure::load('dbbackend');
+
         //core array
         $this->defines = [];
 
         //Monitoring Objects
-        $monitoring = 'Nagios';
+        $monitoring = Configure::read('dbbackend');
+
         $this->defines['monitoring'] = [
             //Models
             'MONITORING_HOSTSTATUS' => $monitoring . 'Module.Hoststatus',

@@ -4,9 +4,8 @@
 use Crate\PDO\PDO as PDO;
 use Crate\PDO\PDOStatement;
 
-require_once __DIR__ . DS . 'CrateDboSource.php';
 
-class Crate extends CrateDboSource {
+class Crate extends DboSource {
 
     /**
      * @var string
@@ -49,7 +48,7 @@ class Crate extends CrateDboSource {
      *
      * @var array
      */
-    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to');
+    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*');
 
     /**
      * @var array
@@ -208,7 +207,7 @@ class Crate extends CrateDboSource {
         if (!empty($queryData['joins'])) {
             throw new NotImplementedException('joins are not implemented now');
         }
-debug($queryData);
+
         $this->buildSelectQuery($queryData);
         return $this->fetchAllCrate();
     }
@@ -224,8 +223,9 @@ debug($queryData);
         if (!empty($queryData['conditions'])) {
             $i = 1;
             foreach ($queryData['conditions'] as $column => $condition) {
+                $result = $this->_parseKey($column, $condition, $this->Model);
+                $column = $result['key'];
                 if ($this->columnExists($column)) {
-                    $result = $this->_parseKey($column, $condition, $this->Model);
                     if ($i === 1) {
                         if (is_array($result['value'])) {
                             $placeholders = [];
@@ -293,8 +293,9 @@ debug($queryData);
         $i = 1;
         if (!empty($queryData['conditions'])) {
             foreach ($queryData['conditions'] as $column => $condition) {
+                $result = $this->_parseKey($column, $condition, $this->Model);
+                $column = $result['key'];
                 if ($this->columnExists($column)) {
-                    $result = $this->_parseKey($column, $condition, $this->Model);
                     if (is_array($result['value'])) {
                         foreach ($result['value'] as $value) {
                             $query->bindValue($i++, $value);
@@ -322,8 +323,6 @@ debug($queryData);
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
-
-        debug($queryTemplate);
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
@@ -375,6 +374,10 @@ debug($queryData);
         } else {
             list($key, $operator) = explode(' ', $key, 2);
 
+            if($operator === 'LIKE' ||$operator === 'like'){
+                $operator = '~*';
+            }
+
             if (!preg_match($operatorMatch, trim($operator)) && strpos($operator, ' ') !== false) {
                 $key = $key . ' ' . $operator;
                 $split = strrpos($key, ' ');
@@ -409,6 +412,19 @@ debug($queryData);
                 case '<>':
                     $operator = 'IS NOT';
                     break;
+            }
+        }
+
+
+        if($operator === '~*'){
+            //Replace first % if exists
+            if(substr($value, 0, 1) === '%'){
+                $value = sprintf('.*%s', substr($value, 1));
+            }
+
+            $len = strlen($value);
+            if(substr($value, $len-1, 1) === '%'){
+                $value = sprintf('%s.*', substr($value, 0, $len-1));
             }
         }
 
@@ -505,8 +521,6 @@ debug($queryData);
      */
     public function logQuery($sql, $params = array()){
         $queryParts = explode('?', $sql);
-        debug($queryParts);
-        debug($params);
         $_sql = '';
         foreach($queryParts as $key => $part){
             if($key === 0){

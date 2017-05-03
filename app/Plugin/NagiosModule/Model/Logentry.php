@@ -62,37 +62,8 @@ class Logentry extends NagiosModuleAppModel
 
     public function types()
     {
-        return [
-            1 => __('Runtime error'),
-            2 => __('Runtime warning'),
-
-            4 => __('Verification error'),
-            8 => __('Verification warning'),
-
-            16 => __('Config error'),
-            32 => __('Config warning'),
-
-            64  => __('Process info'),
-            128 => __('Event handler'),
-            512 => __('External command'),
-            //514 => __('External command failed'),
-
-            1024 => __('Host up'),
-            2048 => __('Host down'),
-            4096 => __('Host unreachable'),
-
-            8192  => __('Service ok'),
-            16384 => __('Service unknown'),
-            32768 => __('Service warning'),
-            65536 => __('Service critical'),
-
-            131072 => __('Passive check'),
-
-            262144 => __('Message'),
-
-            524288  => __('Host notification'),
-            1048576 => __('Service notification'),
-        ];
+        $LogentryTypes = new \itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes();
+        return $LogentryTypes->getTypes();
     }
 
 }

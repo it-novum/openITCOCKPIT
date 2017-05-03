@@ -50,15 +50,22 @@ class LogentriesController extends AppController
         if($this->request->is('post')){
             $requestSettings = $this->Logentry->listSettings($this->request->data);
         }
+
         if (!is_array($this->Paginator->settings)) {
             $this->Paginator->settings = [];
         }
+
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-        if (!isset($this->Paginator->settings['order'])) {
+
+        if(!empty($requestSettings['paginator']['order'])){
+            $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
+        }else{
             $this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
         }
+
+
         if (isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
         } else {
