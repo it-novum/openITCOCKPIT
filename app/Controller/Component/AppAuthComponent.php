@@ -151,6 +151,9 @@ class AppAuthComponent extends AuthComponent
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
+                if(isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE){
+                    return false;
+                }
                 $_options = [];
                 if (isset($user['User']['ldap_dn'])) {
                     $_options['dn'] = $user['User']['ldap_dn'];

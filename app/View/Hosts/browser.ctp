@@ -318,6 +318,12 @@
 
                         </div>
                         <div id="tab2" class="tab-pane fade">
+                            <strong><?php echo __('Container') ?>:</strong>
+                            <?php echo h($mainContainer); ?>
+                            <br/>
+                            <strong><?php echo __('Shared containers') ?>:</strong>
+                            <?php echo empty($sharedContainers) ? '-' : h(implode( ', ', $sharedContainers));?>
+                            <br/>
                             <strong><?php echo __('Check period') ?>
                                 :</strong> <?php echo h($host['CheckPeriod']['name']); ?><br/>
                             <strong><?php echo __('Check interval') ?>:</strong>
