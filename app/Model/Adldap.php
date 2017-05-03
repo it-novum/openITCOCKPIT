@@ -44,4 +44,9 @@ class Adldap extends AdldapMain{
         return $this->myPersonFilter;
     }
 
+//    public function connect(){
+//
+//        return parent::connect();
+//    }
+
 }

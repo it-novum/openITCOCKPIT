@@ -333,10 +333,10 @@ class Downtime extends NagiosModuleAppModel
     public function getServiceDowntimesForHost($hostId, $start, $end){
         $query = [
             'conditions' => [
-                'Downtime.downtime_type = 1',
-                'Service.host_id = '.$hostId,
-                "Downtime.scheduled_start_time = '$start'",
-                "Downtime.scheduled_end_time = '$end'"
+                'Downtime.downtime_type' => 1,
+                'Service.host_id' => $hostId,
+                'Downtime.scheduled_start_time' => $start,
+                'Downtime.scheduled_end_time' => $end
             ],
             'fields' => [
                 'Downtime.internal_downtime_id',
