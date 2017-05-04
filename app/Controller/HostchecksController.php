@@ -80,7 +80,6 @@ class HostchecksController extends AppController
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
-                'Objects.name1',
                 'Hoststatus.current_state',
             ],
         ]);

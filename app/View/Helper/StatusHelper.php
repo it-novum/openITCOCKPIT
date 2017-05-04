@@ -320,7 +320,7 @@ class StatusHelper extends AppHelper
      */
     public function hget($uuid, $field, $default = null, $hoststatus = null)
     {
-        return $this->get($uuid, $field, $defaul, 'Hoststatus', $hoststatus);
+        return $this->get($uuid, $field, $default, 'Hoststatus', $hoststatus);
     }
 
     /**
@@ -338,7 +338,7 @@ class StatusHelper extends AppHelper
      */
     public function sget($uuid, $field, $default = null, $servicestatus = null)
     {
-        return $this->get($uuid, $field, $default = null, 'Servicestatus', null, $servicestatus);
+        return $this->get($uuid, $field, $default, 'Servicestatus', null, $servicestatus);
     }
 
     /**
@@ -388,11 +388,11 @@ class StatusHelper extends AppHelper
      */
     public function humanServiceStateType($state_type)
     {
-        if ($state_type === 0 || $state_type === '0') {
+        if ($state_type === 0 || $state_type === '0' || $state_type === false) {
             return __('soft');
         }
 
-        if ($state_type === 1 || $state_type === '1') {
+        if ($state_type === 1 || $state_type === '1' || $state_type === true) {
             return __('hard');
         }
 

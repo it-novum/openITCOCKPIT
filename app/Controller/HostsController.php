@@ -907,7 +907,7 @@ class HostsController extends AppController {
     }
 
 
-    function sharing($id = null) {
+    public function sharing($id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $userId = $this->Auth->user('id');
 
@@ -954,7 +954,7 @@ class HostsController extends AppController {
         $this->set(compact(['host', 'containers', 'sharingContainers']));
     }
 
-    function edit_details($host_id = null) {
+    public function edit_details($host_id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -2328,7 +2328,7 @@ class HostsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-    function browser($id = null) {
+    public function browser($id = null) {
         $browseByUUID = false;
         $conditionsToFind = ['Host.id' => $id];
         if (preg_match('/\-/', $id)) {

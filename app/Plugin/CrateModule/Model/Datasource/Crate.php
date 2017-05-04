@@ -36,12 +36,12 @@ class Crate extends DboSource {
     /**
      * @var string
      */
-    public $startQuote = '';
+    public $startQuote = '"';
 
     /**
      * @var string
      */
-    public $endQuote = '';
+    public $endQuote = '"';
 
     /**
      * The set of valid SQL operations usable in a WHERE statement
@@ -59,6 +59,7 @@ class Crate extends DboSource {
      * @var string
      */
     private $tableName;
+
 
     /**
      * @var string
@@ -119,8 +120,50 @@ class Crate extends DboSource {
         return null;
     }
 
+
+    /**
+     * @param Model|string $model
+     * @return array|bool
+     */
     function describe($model){
-        [];
+        $table = $this->fullTableName($model, false);
+
+        if(!isset($this->tableMetaData[$model->alias])) {
+            $this->getTableMetaInformation($table, $model);
+        }
+
+        $fields = [];
+
+        foreach($this->tableMetaData[$model->alias] as $column){
+            $fields[$column['column_name']] = [
+                'type' => $column['data_type'],
+                'null' => null,
+                'default' => null,
+                'length' => null,
+                'unsigned' => null
+            ];
+        }
+
+        //Add virtual field as well
+        foreach($model->virtualFields as $virtualField => $realField){
+            $realField = $this->removeModelAlias($realField, $model);
+            if(isset($fields[$realField])){
+                $fields[$virtualField] = [
+                    'type' => $fields[$realField]['type'],
+                    'null' => false,
+                    'default' => false,
+                    'length' => false,
+                    'unsigned' => false,
+                    'isVirtual' => true
+                ];
+            }
+        }
+
+        if(empty($fields)){
+            return false;
+        }
+
+        return $fields;
     }
 
 
@@ -204,8 +247,24 @@ class Crate extends DboSource {
             $queryData['fields'] = ['*'];
         }
 
+        if(!empty($this->Model->virtualFields) && $this->findType !== 'count'){
+            foreach($this->Model->virtualFields as $virtualField => $realField){
+                $queryData['fields'][] = sprintf(
+                    '%s AS %s',
+                    $realField,
+                    $virtualField
+                );
+            }
+        }
+
         if (!empty($queryData['joins'])) {
             throw new NotImplementedException('joins are not implemented now');
+        }
+
+        if(!empty($queryData['sort']) && !empty($queryData['direction'])){
+            $queryData['order'] = [
+                $queryData['sort'] => $queryData['direction']
+            ];
         }
 
         $this->buildSelectQuery($queryData);
@@ -268,6 +327,12 @@ class Crate extends DboSource {
         if (!empty($queryData['order']) && $this->findType !== 'count') {
             $orderBy = [];
             foreach ($queryData['order'] as $column => $direction) {
+                if($this->isVirtualField($column)){
+                    //Remove Modelname from virtual fields
+                    $column = $this->removeModelAlias($column);
+                }
+
+
                 if ($this->columnExists($column)) {
                     $direction = $this->getDirection($direction);
                     $orderBy[] = sprintf('%s %s', $column, $direction);
@@ -318,13 +383,44 @@ class Crate extends DboSource {
         if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $offset = $queryData['offset'];
             if (!empty($queryData['page']) && $queryData['page'] > 1 && !empty($queryData['limit'])) {
-                $offset = (int)$queryData['page'] * $queryData['limit'];
+                $offset = (int)($queryData['page'] -1) * $queryData['limit'];
             }
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
+    }
+
+    /**
+     * @param $columnName
+     * @return bool
+     */
+    public function isVirtualField($columnName){
+        $key = $this->modelName . '.';
+        if (strpos($columnName, $key, 0) === 0) {
+            $columnName = substr($columnName, strlen($key));
+        }
+
+        return isset($this->Model->virtualFields[$columnName]);
+    }
+
+    /**
+     * @param $columnName
+     * @param null $model
+     * @return string
+     */
+    public function removeModelAlias($columnName, $model = null){
+        if($model === null){
+            $modelName = $this->modelName;
+        }else{
+            $modelName = $model->alias;
+        }
+        $key = $modelName . '.';
+        if (strpos($columnName, $key, 0) === 0) {
+            $columnName = substr($columnName, strlen($key));
+        }
+        return $columnName;
     }
 
     /**
@@ -342,6 +438,17 @@ class Crate extends DboSource {
                 return true;
             }
         }
+
+        //check virtual fields
+        //is_hardstate as state_type
+        if(isset($this->Model->virtualFields[$columnName])){
+            return true;
+        }
+        //is_hardstate as Hostcheck.state_type
+        if(isset($this->Model->virtualFields[$key])){
+            return true;
+        }
+
         return false;
     }
 
@@ -439,12 +546,19 @@ class Crate extends DboSource {
     /**
      * @param string $tableName
      */
-    public function getTableMetaInformation($tableName){
+    public function getTableMetaInformation($tableName, $model = null){
+        if($model === null){
+            $modelName = $this->modelName;
+        }else{
+            $modelName = $model->alias;
+        }
+
+
         $sql = sprintf('SHOW COLUMNS FROM %s', $tableName);
         $query = $this->_connection->prepare($sql);
         $query = $this->executeQuery($query, $sql, [], []);
         $this->_result->setFetchMode(PDO::FETCH_ASSOC);
-        $this->tableMetaData[$this->modelName] = $this->_result->fetchAll();
+        $this->tableMetaData[$modelName] = $this->_result->fetchAll();
     }
 
 

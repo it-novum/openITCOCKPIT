@@ -42,11 +42,14 @@ class Hoststatus extends CrateModuleAppModel {
 
         $_options = [
             'conditions' => [
-                'hoststatus.hostname' => $uuid,
+                'Hoststatus.hostname' => $uuid,
             ],
         ];
 
         $options = Hash::merge($_options, $options);
+        if(isset($options['fields'])){
+            $options['fields'][] = 'Hoststatus.hostname';
+        }
 
         if ($uuid !== null) {
             $hoststatus = $this->find('all', $options);

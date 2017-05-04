@@ -53,6 +53,9 @@ class Hoststatus extends NagiosModuleAppModel
                 'Objects.name1'         => $uuid,
                 'Objects.objecttype_id' => 1,
             ],
+            'fields' => [
+                'Objects.*'
+            ]
         ];
 
         $options = Hash::merge($_options, $options);

@@ -23,22 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hostcheck extends NagiosModuleAppModel
-{
-    //public $useDbConfig = 'nagios';
+class Hostcheck extends CrateModuleAppModel {
+    public $useDbConfig = 'Crate';
     public $useTable = 'hostchecks';
-    public $primaryKey = 'hostcheck_id';
-    public $tablePrefix = 'nagios_';
-    public $belongsTo = [
-        'Objects' => [
-            'className'  => 'NagiosModule.Objects',
-            'foreignKey' => 'host_object_id',
-        ],
-    ];
+    public $tablePrefix = 'statusengine_';
 
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+        parent::__construct($id, $table, $ds, $useDynamicAssociations);
+        $this->virtualFields['state_type'] = 'Hostcheck.is_hardstate';
+    }
 
-    public function listSettings($cakeRequest, $hostUuid)
-    {
+    public function listSettings($cakeRequest, $hostUuid){
         $requestData = $cakeRequest->data;
 
         if (isset($cakeRequest->params['named']['Listsettings'])) {
@@ -47,22 +42,18 @@ class Hostcheck extends NagiosModuleAppModel
         $requestParams = $cakeRequest->params;
 
         $service_state_types = [
-            'recovery'    => 0,
-            'down'        => 1,
+            'recovery' => 0,
+            'down' => 1,
             'unreachable' => 2,
         ];
 
         $return = [
-            'conditions'   => [
-                'Objects.name1'         => $hostUuid,
-                'Objects.objecttype_id' => 1,
+            'conditions' => [
+                'Hostcheck.hostname' => $hostUuid,
             ],
-            'paginator'    => [
+            'paginator' => [
                 'limit' => 30,
                 'order' => ['Hostcheck.start_time' => 'DESC'],
-                'fields' => [
-                    'Hostcheck.*',
-                ]
             ],
             'Listsettings' => [
                 'limit' => 30,
@@ -103,10 +94,10 @@ class Hostcheck extends NagiosModuleAppModel
                 $time = strtotime('3 days ago');
             }
 
-            $return['conditions']['Hostcheck.start_time >'] = date('Y-m-d H:i:s', $time);
+            $return['conditions']['Hostcheck.start_time >'] = $time;
             $return['Listsettings']['from'] = date('d.m.Y H:i', $time);
         } else {
-            $return['conditions']['Hostcheck.start_time >'] = date('Y-m-d H:i:s', strtotime('3 days ago'));
+            $return['conditions']['Hostcheck.start_time >'] = strtotime('3 days ago');
             $return['Listsettings']['from'] = date('d.m.Y H:i', strtotime('3 days ago'));
         }
 
@@ -116,10 +107,10 @@ class Hostcheck extends NagiosModuleAppModel
                 $time = time() + (60 * 5); //Add 5 minutes to avoid missing entires in result
             }
 
-            $return['conditions']['Hostcheck.start_time <'] = date('Y-m-d H:i:s', $time);
+            $return['conditions']['Hostcheck.start_time <'] = $time;
             $return['Listsettings']['to'] = date('d.m.Y H:i', $time);
         } else {
-            $return['conditions']['Hostcheck.start_time <'] = date('Y-m-d H:i:s', time() + (60 * 5));
+            $return['conditions']['Hostcheck.start_time <'] = time() + (60 * 5);
             $return['Listsettings']['to'] = date('d.m.Y H:i', time() + (60 * 5));
         }
 
