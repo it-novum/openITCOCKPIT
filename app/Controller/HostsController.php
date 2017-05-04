@@ -155,7 +155,6 @@ class HostsController extends AppController {
     public $temporaryRequest = [];
 
     public function index() {
-        $this->__unbindAssociations('Service');
         $conditions = [];
         if (!isset($this->request->params['named']['BrowserContainerId'])) {
             $conditions = [
@@ -206,6 +205,21 @@ class HostsController extends AppController {
         $this->Host->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
 
         $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
             'conditions' => $conditions,
             'fields' => [
                 'Host.id',
@@ -228,13 +242,7 @@ class HostsController extends AppController {
                 'Hoststatus.state_type',
                 'Hoststatus.problem_has_been_acknowledged',
                 'Hoststatus.acknowledgement_type',
-                'Hoststatus.is_flapping',
-                'Hosttemplate.id',
-                'Hosttemplate.uuid',
-                'Hosttemplate.name',
-                'Hosttemplate.description',
-                'Hosttemplate.active_checks_enabled',
-                'Hosttemplate.tags',
+
 
                 'Hoststatus.current_state',
             ],
@@ -264,12 +272,7 @@ class HostsController extends AppController {
             ],
         ];
 
-        $this->Host->unbindModel([
-                'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
-                'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Parenthost', 'Hostgroup'],
-                'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
-            ]
-        );
+
         if ($this->isApiRequest()) {
             $all_hosts = $this->Host->find('all', $query);
         } else {
@@ -427,6 +430,7 @@ class HostsController extends AppController {
         );
         if ($this->isApiRequest()) {
             $all_hosts = $this->Host->find('all', $query);
+            debug($all_hosts);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_hosts = $this->Paginator->paginate();
