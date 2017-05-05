@@ -151,9 +151,6 @@ class HostsController extends AppController {
         ],
     ];
 
-    //holds the data for a temporary validation purposes
-    public $temporaryRequest = [];
-
     public function index() {
         $conditions = [];
         if (!isset($this->request->params['named']['BrowserContainerId'])) {
