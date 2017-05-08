@@ -10,6 +10,7 @@ class AppSchema extends CakeSchema
 
         require_once APP.'Model'.DS.'Host.php';
         require_once APP.'Model'.DS.'Service.php';
+        require_once APP.'Model'.DS.'Container.php';
     }
 
     public function before($event = [])
@@ -29,7 +30,7 @@ class AppSchema extends CakeSchema
                     break;
 
                 case 'containers':
-                    $ContainerImporter = new InitialDatabase\Container(ClassRegistry::init('Container'));
+                    $ContainerImporter = new InitialDatabase\Container(new Container(false, null, null, false));
                     $ContainerImporter->import();
                     break;
 
