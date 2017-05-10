@@ -7,7 +7,7 @@ oitc compress
 oitc nagios_export --all
 
 CODENAME=$(lsb_release -sc)
-if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
+if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch"]; then
     systemctl restart nagios
     systemctl restart sudo_server
 fi
