@@ -392,6 +392,62 @@ class Crate extends DboSource {
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
 
+    public function create(Model $Model, $fields = null, $values = null){
+
+        $this->findType = $Model->findQueryType;
+        $this->modelName = $Model->alias;
+        $this->tableName = $Model->table;
+        $this->tablePrefix = $Model->tablePrefix;
+
+        $this->Model = $Model;
+
+        if(!isset($this->tableMetaData[$this->modelName])) {
+            $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
+        }
+
+        return $this->buildInsertQuery($Model, $fields, $values);
+    }
+
+    public function buildInsertQuery($Model, $fields, $values){
+        $placeHolders = [];
+        foreach($fields as $field){
+            $placeHolders[] = '?';
+            if(!$this->columnExists($field)){
+                throw new Exception(sprintf('Field %s does not exists', $field));
+            }
+        }
+
+        $queryTemplate = 'INSERT INTO %s (%s)VALUES(%s)';
+        $queryTemplate = sprintf(
+            $queryTemplate,
+            $this->tablePrefix.$this->tableName,
+            implode(',', $fields),
+            implode(',', $placeHolders)
+        );
+
+
+        $query = $this->_connection->prepare($queryTemplate);
+        $i = 1;
+        foreach($values as $key => $value){
+            $field = $fields[$key];
+            switch($this->getColumnType($field)){
+                case 'integer':
+                    $query->bindValue($i++, $value, PDO::PARAM_INT);
+                    break;
+
+                case 'array':
+                    $query->bindValue($i++, $value, PDO::PARAM_ARRAY);
+                    break;
+
+                default:
+                    $query->bindValue($i++, $value);
+            }
+
+        }
+
+        return $this->executeQuery($query, $queryTemplate, [], $values);
+    }
+
     /**
      * @param $columnName
      * @return bool
@@ -421,6 +477,25 @@ class Crate extends DboSource {
             $columnName = substr($columnName, strlen($key));
         }
         return $columnName;
+    }
+
+    /**
+     * @param $columnName
+     * @return null|string
+     */
+    public function getColumnType($columnName){
+        $columnType = null;
+        foreach ($this->tableMetaData[$this->modelName] as $column) {
+            if ($column['column_name'] === $columnName) {
+                $columnType = $column['data_type'];
+            }
+        }
+
+        if(strstr($columnType, 'array')){
+            $columnType = 'array';
+        }
+
+        return $columnType;
     }
 
     /**
@@ -645,8 +720,11 @@ class Crate extends DboSource {
             $key = $key - 1;
             if(isset($params[$key])){
                 $param = $params[$key];
-                if (!is_numeric($param)) {
+                if (!is_numeric($param) && !is_array($param)) {
                     $param = sprintf('\'%s\'', $param);
+                }
+                if(is_array($param)){
+                    $param = implode(',', $param);
                 }
                 $_sql.= $param;
             }else{
