@@ -23,115 +23,158 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
+<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-file-image-o fa-fw "></i>
-            <?php echo __('Adhoc Reports'); ?>
+            <i class="fa fa-file-text-o fa-fw "></i>
+            <?php echo __('Reporting'); ?>
             <span>>
                 <?php echo __('Instant Report'); ?>
 			</span>
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
-<div class="jarviswidget">
-    <header>
-        <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2><?php echo __('Create Instant Report'); ?></h2>
-        <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
-        </div>
-    </header>
-    <div>
-        <div class="widget-body">
-            <?php
-            echo $this->Form->create('Instantreport', [
-                'class' => 'form-horizontal clear',
-            ]);
 
-            echo $this->Form->input('evaluationMethod', [
-                'before'  => '<label class="col col-md-2 text-right">'.__('Evaluation').'</label>',
-                'type'    => 'radio',
-                'options' => [
-                    'InstantreportHost'    => '<i class="fa fa-desktop"></i> '.__('Hosts '),
-                    'InstantreportService' => '<i class="fa fa-gears"></i> '.__('Hosts and Services '),
-                ],
-                'class'   => 'padding-right-10',
-                'default' => 'InstantreportHost',
-            ]);
+<section id="widget-grid" class="">
+    <div class="row">
+        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <div class="widget-toolbar" role="menu">
+                        <?php
+                        if ($this->Acl->hasPermission('add')):
+                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo " "; //Fix HTML
+                        endif;
+                        ?>
+                    </div>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-file-image-o"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Instant Reports'); ?></h2>
 
-            echo $this->Form->input('Host', [
-                'div'      => 'form-group checkbox-group multiple-select InstantreportHost',
-                'options'  => Hash::combine($hosts, '{n}.Host.uuid', '{n}.Host.name'),
-                'class'    => 'chosen',
-                'multiple' => true,
-                'style'    => 'width:100%;', 'label' => __('<i class="fa fa-desktop"></i> Hosts'), 'data-placeholder' => __('Please choose a host'), 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10']]);
+                </header>
+                <div>
+                    <div class="widget-body no-padding">
+                        <div class="mobile_table">
+                            <table id="timeperiod_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                                <thead>
+                                <tr>
+                                    <?php $order = $this->Paginator->param('order'); ?>
+                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.evaluation');
+                                        echo $this->Paginator->sort('Instantreport.evaluation', 'Evaluation'); ?></th>
 
-            echo $this->Form->input('Service', [
-                'div'      => 'form-group checkbox-group multiple-select disabled InstantreportService',
-                'options'  => $services,
-                'class'    => 'chosen',
-                'multiple' => true,
-                'disabled' => true,
-                'style'    => 'width:100%;',
-                'label'    => [
-                    'text'             => __('<i class="fa fa-gears"></i> Services'),
-                    'data-placeholder' => __('Please choose a service'),
-                    'wrapInput'        => [
-                        'tag'   => 'div',
-                        'class' => 'col col-xs-10',
-                    ],
-                ],
-            ]);
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.type');
+                                        echo $this->Paginator->sort('Instantreport.type', 'Type'); ?></th>
 
-            echo $this->Form->input('report_format', [
-                    'options'          => ['pdf' => __('PDF'), 'html' => __('HTML')],
-                    'data-placeholder' => __('Please select...'),
-                    'class'            => 'chosen',
-                    'label'            => __('Report format'),
-                    'style'            => 'width:100%;',
-                ]
-            );
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.report_format');
+                                        echo $this->Paginator->sort('Instantreport.report_format', 'Report format'); ?></th>
 
-            echo $this->Form->input('timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.timeperiod_id');
+                                        echo $this->Paginator->sort('Instantreport.timeperiod_id', 'Time period'); ?></th>
+                                    <th class="no-sort"><?= __('Start date'); ?><br /><?= __('End date'); ?></th>
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.summary');
+                                        echo $this->Paginator->sort('Instantreport.summary', 'Summary display'); ?></th>
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.send_email');
+                                        echo $this->Paginator->sort('Instantreport.send_email', 'Send emails'); ?></th>
+                                    <th class="no-sort"><?= __('Send interval'); ?></th>
+                                    <th class="no-sort" style="width:150px;"><?= __('Send to'); ?></th>
+                                    <th class="no-sort"><?= __('Container'); ?></th>
+                                    <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($allInstantReports as $instantReport): ?>
+                                    <?php
+                                        $allowEdit = $this->Acl->isWritableContainer($instantReport['Instantreport']['container_id']);
+                                        $usersText = '';
+                                        if($instantReport['Instantreport']['send_email'] === '1' && !empty($instantReport['User'])){
+                                            foreach($instantReport['User'] as $user){
+                                                $usersText .= '<div>'.$user['firstname'] . ' ' . $user['lastname'] . '</div>';
+                                            }
+                                        }
+                                    ?>
+                                    <tr>
+                                        <td><?= '<i class="fa fa-'.$evaluations[$instantReport['Instantreport']['evaluation']]['icon'].'"></i> '.$evaluations[$instantReport['Instantreport']['evaluation']]['label']; ?></td>
+                                        <td><?= $types[$instantReport['Instantreport']['type']]; ?></td>
+                                        <td><?= $reportFormats[$instantReport['Instantreport']['report_format']]; ?></td>
+                                        <td><?= $instantReport['Timeperiod']['name']; ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['start_date'] === '0000-00-00 00:00:00' || $instantReport['Instantreport']['end_date'] === '0000-00-00 00:00:00' ?
+                                                '<i class="fa fa-times fa-lg txt-color-red"></i>' : (date('d.m.Y', strtotime($instantReport['Instantreport']['start_date'])) . '<br />' . date('d.m.Y', strtotime($instantReport['Instantreport']['end_date']))) ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['summary'] === '1' ?
+                                                '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['send_email'] === '1' ?
+                                                '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['send_email'] === '1' && $instantReport['Instantreport']['send_interval'] > 0 ?
+                                                $sendIntervals[$instantReport['Instantreport']['send_interval']] : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $usersText !== '' ? $usersText : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td><?= isset($resolvedContainerNames[$instantReport['Container']['id']]) ? $resolvedContainerNames[$instantReport['Container']['id']] : $instantReport['Container']['name']; ?></td>
+                                        <td>
+                                            <div class="btn-group" style="width:52px;">
+                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
+                                                    <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"
+                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                                <?php else: ?>
+                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                            class="fa fa-cog"></i>&nbsp;</a>
+                                                <?php endif; ?>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                                <ul class="dropdown-menu pull-right">
+                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
+                                                        <li>
+                                                            <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"><i
+                                                                    class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                        <li>
+                                                            <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
+                                                                        class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
+                                                        <li class="divider"></li>
+                                                        <li>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'instantreports', 'action' => 'delete', $instantReport['Instantreport']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php if (empty($allInstantReports)): ?>
+                            <div class="noMatch">
+                                <center>
+                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                                </center>
+                            </div>
+                        <?php endif; ?>
 
-            echo $this->Form->input('start_date', [
-                'label' => __('From'),
-                'type'  => 'text',
-                'class' => 'form-control required',
-                'value' => $this->CustomValidationErrors->refill('start_date', date('d.m.Y', strtotime('-15 days'))),
-            ]);
-
-            echo $this->Form->input('end_date', [
-                'label'    => __('To'),
-                'type'     => 'text',
-                'class'    => 'form-control required',
-                'reguired' => true,
-                'value'    => $this->CustomValidationErrors->refill('end_date', date('d.m.Y', time())),
-            ]);
-            echo $this->Form->input('check_hard_state', [
-                'options'          => [__('soft and hard state'), __('only hard state')],
-                'data-placeholder' => __('Please select...'),
-                'class'            => 'chosen',
-                'label'            => __('Reflection state'),
-                'style'            => 'width:100%;',
-            ]);
-            ?>
-            <div class="form-group">
-                <?php
-                echo $this->Form->fancyCheckbox('consider_downtimes', [
-                    'caption'          => __('Consider downtimes'),
-                    'wrapGridClass'    => 'col col-md-1',
-                    'captionGridClass' => 'col col-md-2',
-                    'captionClass'     => 'control-label',
-                    'checked'          => $this->CustomValidationErrors->refill('consider_downtimes', false),
-                ]);
-                ?>
+                        <div style="padding: 5px 10px;">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="dataTables_info" style="line-height: 32px;"
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                </div>
+                                <div class="col-sm-6 text-right">
+                                    <div class="dataTables_paginate paging_bootstrap">
+                                        <?php echo $this->Paginator->pagination([
+                                            'ul' => 'pagination',
+                                        ]); ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <?php
-            echo $this->Form->formActions(__('Create'));
-            ?>
-        </div>
     </div>
-</div>
+</section>
