@@ -79,7 +79,12 @@ class Crate extends DboSource {
     /**
      * @var array
      */
-    protected $joins;
+    protected $joins = [];
+
+    /**
+     * @var array
+     */
+    protected $joinedModels = [];
 
     /**
      * @var string
@@ -148,13 +153,13 @@ class Crate extends DboSource {
     function describe($model){
         $table = $this->fullTableName($model, false);
 
-        if(!isset($this->tableMetaData[$model->alias])) {
+        if (!isset($this->tableMetaData[$model->alias])) {
             $this->getTableMetaInformation($table, $model);
         }
 
         $fields = [];
 
-        foreach($this->tableMetaData[$model->alias] as $column){
+        foreach ($this->tableMetaData[$model->alias] as $column) {
             $fields[$column['column_name']] = [
                 'type' => $column['data_type'],
                 'null' => null,
@@ -165,9 +170,9 @@ class Crate extends DboSource {
         }
 
         //Add virtual field as well
-        foreach($model->virtualFields as $virtualField => $realField){
+        foreach ($model->virtualFields as $virtualField => $realField) {
             $realField = $this->removeModelAlias($realField, $model);
-            if(isset($fields[$realField])){
+            if (isset($fields[$realField])) {
                 $fields[$virtualField] = [
                     'type' => $fields[$realField]['type'],
                     'null' => false,
@@ -179,7 +184,7 @@ class Crate extends DboSource {
             }
         }
 
-        if(empty($fields)){
+        if (empty($fields)) {
             return false;
         }
 
@@ -260,22 +265,23 @@ class Crate extends DboSource {
 
         $this->Model = $Model;
 
-        if(!isset($this->tableMetaData[$this->modelName])) {
-            $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
+        if (!isset($this->tableMetaData[$this->modelName])) {
+            $this->getTableMetaInformation($this->tablePrefix . $this->tableName);
         }
 
-        foreach($queryData['joins'] as $join){
+        foreach ($queryData['joins'] as $join) {
             $fakeModel = new stdClass();
             $fakeModel->alias = $join['alias'];
             $this->getTableMetaInformation($join['table'], $fakeModel);
+            $this->joinedModels[] = $join['alias'];
         }
 
         if (empty($queryData['fields'])) {
             $queryData['fields'] = ['*'];
         }
 
-        if(!empty($this->Model->virtualFields) && $this->findType !== 'count'){
-            foreach($this->Model->virtualFields as $virtualField => $realField){
+        if (!empty($this->Model->virtualFields) && $this->findType !== 'count') {
+            foreach ($this->Model->virtualFields as $virtualField => $realField) {
                 $queryData['fields'][] = sprintf(
                     '%s AS %s',
                     $realField,
@@ -288,7 +294,7 @@ class Crate extends DboSource {
         //    throw new NotImplementedException('joins are not implemented now');
         //}
 
-        if(!empty($queryData['sort']) && !empty($queryData['direction'])){
+        if (!empty($queryData['sort']) && !empty($queryData['direction'])) {
             $queryData['order'] = [
                 $queryData['sort'] => $queryData['direction']
             ];
@@ -301,12 +307,12 @@ class Crate extends DboSource {
     public function buildSelectQuery($queryData){
         $queryTemplate = 'SELECT %s FROM %s AS %s ';
         if ($this->findType === 'count') {
-            $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix.$this->tableName, $this->modelName);
+            $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix . $this->tableName, $this->modelName);
         } else {
-            $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tablePrefix.$this->tableName, $this->modelName);
+            $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tablePrefix . $this->tableName, $this->modelName);
         }
 
-        foreach($queryData['joins'] as $join){
+        foreach ($queryData['joins'] as $join) {
             //INNER JOIN statusengine_hoststatus as Hoststatus on Hoststatus.hostname = Host.uuid
             $queryTemplate = sprintf(
                 '%s %s JOIN %s AS %s ON %s',
@@ -323,6 +329,7 @@ class Crate extends DboSource {
             foreach ($queryData['conditions'] as $column => $condition) {
                 $result = $this->_parseKey($column, $condition, $this->Model);
                 $column = $result['key'];
+                debug($this->columnExists($column));
                 if ($this->columnExists($column)) {
                     if ($i === 1) {
                         if (is_array($result['value'])) {
@@ -366,7 +373,7 @@ class Crate extends DboSource {
         if (!empty($queryData['order']) && $this->findType !== 'count') {
             $orderBy = [];
             foreach ($queryData['order'] as $column => $direction) {
-                if($this->isVirtualField($column)){
+                if ($this->isVirtualField($column)) {
                     //Remove Modelname from virtual fields
                     $column = $this->removeModelAlias($column);
                 }
@@ -422,7 +429,7 @@ class Crate extends DboSource {
         if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $offset = $queryData['offset'];
             if (!empty($queryData['page']) && $queryData['page'] > 1 && !empty($queryData['limit'])) {
-                $offset = (int)($queryData['page'] -1) * $queryData['limit'];
+                $offset = (int)($queryData['page'] - 1) * $queryData['limit'];
             }
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
@@ -440,8 +447,8 @@ class Crate extends DboSource {
 
         $this->Model = $Model;
 
-        if(!isset($this->tableMetaData[$this->modelName])) {
-            $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
+        if (!isset($this->tableMetaData[$this->modelName])) {
+            $this->getTableMetaInformation($this->tablePrefix . $this->tableName);
         }
 
         return $this->buildInsertQuery($Model, $fields, $values);
@@ -449,9 +456,9 @@ class Crate extends DboSource {
 
     public function buildInsertQuery($Model, $fields, $values){
         $placeHolders = [];
-        foreach($fields as $field){
+        foreach ($fields as $field) {
             $placeHolders[] = '?';
-            if(!$this->columnExists($field)){
+            if (!$this->columnExists($field)) {
                 throw new Exception(sprintf('Field %s does not exists', $field));
             }
         }
@@ -459,7 +466,7 @@ class Crate extends DboSource {
         $queryTemplate = 'INSERT INTO %s (%s)VALUES(%s)';
         $queryTemplate = sprintf(
             $queryTemplate,
-            $this->tablePrefix.$this->tableName,
+            $this->tablePrefix . $this->tableName,
             implode(',', $fields),
             implode(',', $placeHolders)
         );
@@ -467,9 +474,9 @@ class Crate extends DboSource {
 
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
-        foreach($values as $key => $value){
+        foreach ($values as $key => $value) {
             $field = $fields[$key];
-            switch($this->getColumnType($field)){
+            switch ($this->getColumnType($field)) {
                 case 'integer':
                     $query->bindValue($i++, $value, PDO::PARAM_INT);
                     break;
@@ -506,9 +513,9 @@ class Crate extends DboSource {
      * @return string
      */
     public function removeModelAlias($columnName, $model = null){
-        if($model === null){
+        if ($model === null) {
             $modelName = $this->modelName;
-        }else{
+        } else {
             $modelName = $model->alias;
         }
         $key = $modelName . '.';
@@ -530,7 +537,7 @@ class Crate extends DboSource {
             }
         }
 
-        if(strstr($columnType, 'array')){
+        if (strstr($columnType, 'array')) {
             $columnType = 'array';
         }
 
@@ -538,28 +545,40 @@ class Crate extends DboSource {
     }
 
     /**
-     * @param string $columnName
+     * @param string $columnNameSource
+     * @param null|string $modelName
      * @return bool
      */
-    public function columnExists($columnName){
-        $key = $this->modelName . '.';
+    public function columnExists($columnNameSource, $modelName = null){
+        if ($modelName === null) {
+            $modelName = $this->modelName;
+        }
+        $key = $modelName . '.';
+
+        $columnName = $columnNameSource;
         if (strpos($columnName, $key, 0) === 0) {
             $columnName = substr($columnName, strlen($key));
         }
 
-        foreach ($this->tableMetaData[$this->modelName] as $column) {
+        foreach ($this->tableMetaData[$modelName] as $column) {
             if ($column['column_name'] === $columnName) {
                 return true;
             }
         }
 
+        foreach ($this->joinedModels as $modelName) {
+             if($this->columnExists($columnNameSource, $modelName)){
+                 return true;
+             }
+        }
+
         //check virtual fields
         //is_hardstate as state_type
-        if(isset($this->Model->virtualFields[$columnName])){
+        if (isset($this->Model->virtualFields[$columnName])) {
             return true;
         }
         //is_hardstate as Hostcheck.state_type
-        if(isset($this->Model->virtualFields[$key])){
+        if (isset($this->Model->virtualFields[$key])) {
             return true;
         }
 
@@ -595,7 +614,7 @@ class Crate extends DboSource {
         } else {
             list($key, $operator) = explode(' ', $key, 2);
 
-            if($operator === 'LIKE' ||$operator === 'like'){
+            if ($operator === 'LIKE' || $operator === 'like') {
                 $operator = '~*';
             }
 
@@ -637,15 +656,15 @@ class Crate extends DboSource {
         }
 
 
-        if($operator === '~*'){
+        if ($operator === '~*') {
             //Replace first % if exists
-            if(substr($value, 0, 1) === '%'){
+            if (substr($value, 0, 1) === '%') {
                 $value = sprintf('.*%s', substr($value, 1));
             }
 
             $len = strlen($value);
-            if(substr($value, $len-1, 1) === '%'){
-                $value = sprintf('%s.*', substr($value, 0, $len-1));
+            if (substr($value, $len - 1, 1) === '%') {
+                $value = sprintf('%s.*', substr($value, 0, $len - 1));
             }
         }
 
@@ -661,9 +680,9 @@ class Crate extends DboSource {
      * @param string $tableName
      */
     public function getTableMetaInformation($tableName, $model = null){
-        if($model === null){
+        if ($model === null) {
             $modelName = $this->modelName;
-        }else{
+        } else {
             $modelName = $model->alias;
         }
 
@@ -722,7 +741,7 @@ class Crate extends DboSource {
             }
 
             if ($this->findType === 'first' && isset($dbResult[0])) {
-                if(!empty($this->joins)){
+                if (!empty($this->joins)) {
                     return $this->formatResultFindAllWithJoins($dbResult);
                 }
                 return $this->formatResultFindAll($dbResult);
@@ -730,7 +749,7 @@ class Crate extends DboSource {
 
             $result = [];
 
-            if(!empty($this->joins)){
+            if (!empty($this->joins)) {
                 return $this->formatResultFindAllWithJoins($dbResult);
             }
             return $this->formatResultFindAll($dbResult);
@@ -748,24 +767,24 @@ class Crate extends DboSource {
         $results = [];
         $fields = [];
 
-        foreach($this->tableMetaData[$this->modelName] as $column){
+        foreach ($this->tableMetaData[$this->modelName] as $column) {
             $fields[$this->modelName][] = $column['column_name'];
         }
 
-        foreach($this->joins as $join){
-            foreach($this->tableMetaData[$join['alias']] as $column){
+        foreach ($this->joins as $join) {
+            foreach ($this->tableMetaData[$join['alias']] as $column) {
                 $fields[$join['alias']][] = $column['column_name'];
             }
         }
 
-        foreach($dbResult as $record){
-            foreach($record as $field => $value){
+        foreach ($dbResult as $record) {
+            foreach ($record as $field => $value) {
                 $result = [];
-                foreach($fields as $modelName => $fieldsFromModel){
-                    $result[$modelName] = Set::classicExtract($record, '{('.implode('|', array_values($fieldsFromModel)).')}');
+                foreach ($fields as $modelName => $fieldsFromModel) {
+                    $result[$modelName] = Set::classicExtract($record, '{(' . implode('|', array_values($fieldsFromModel)) . ')}');
                 }
-                $results[] = $result;
             }
+            $results[] = $result;
         }
 
         return $results;
@@ -796,26 +815,26 @@ class Crate extends DboSource {
     public function logQuery($sql, $params = array()){
         $queryParts = explode('?', $sql);
         $_sql = '';
-        foreach($queryParts as $key => $part){
-            if($key === 0){
+        foreach ($queryParts as $key => $part) {
+            if ($key === 0) {
                 $_sql .= $part;
                 //This is the "base part" where no parameters are inside.
                 continue;
             }
             $key = $key - 1;
-            if(isset($params[$key])){
+            if (isset($params[$key])) {
                 $param = $params[$key];
                 if (!is_numeric($param) && !is_array($param)) {
                     $param = sprintf('\'%s\'', $param);
                 }
-                if(is_array($param)){
+                if (is_array($param)) {
                     $param = implode(',', $param);
                 }
-                $_sql.= $param;
-            }else{
-                $_sql.= '?';
+                $_sql .= $param;
+            } else {
+                $_sql .= '?';
             }
-            $_sql.= $part;
+            $_sql .= $part;
         }
 
         $sql = $_sql;
