@@ -40,6 +40,9 @@ class TestsController extends CrateModuleAppController {
                     'alias' => 'Hoststatus',
                     'conditions' => 'CrateHost.uuid = Hoststatus.hostname',
                 ]
+            ],
+            'conditions' => [
+                'Hoststatus.current_state' => 1
             ]
         ]));
 
