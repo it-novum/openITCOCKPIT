@@ -239,7 +239,7 @@ class Crate extends DboSource {
                 }
             }
             return $query;
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             if (isset($query->queryString)) {
                 $e->queryString = $query->queryString;
             } else {
@@ -324,12 +324,12 @@ class Crate extends DboSource {
             );
         }
 
+        $hasWhere = false;
         if (!empty($queryData['conditions'])) {
             $i = 1;
             foreach ($queryData['conditions'] as $column => $condition) {
                 $result = $this->_parseKey($column, $condition, $this->Model);
                 $column = $result['key'];
-                debug($this->columnExists($column));
                 if ($this->columnExists($column)) {
                     if ($i === 1) {
                         if (is_array($result['value'])) {
@@ -337,8 +337,10 @@ class Crate extends DboSource {
                             foreach ($result['value'] as $value) {
                                 $placeholders[] = '?';
                             }
+                            $hasWhere = true;
                             $queryTemplate = sprintf('%s WHERE %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
                         } else {
+                            $hasWhere = true;
                             $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
                         }
                     } else {
@@ -353,6 +355,21 @@ class Crate extends DboSource {
                         }
                     }
                     $i++;
+                }
+            }
+        }
+
+        if (!empty($queryData['array_difference'])) {
+            //WHERE array_difference([1,2], Host.container_ids) != [1,2]
+            foreach($queryData['array_difference'] as $field => $values){
+                if ($this->columnExists($field)) {
+                    $queryTemplate = sprintf(
+                        '%s %s array_difference(?, %s) != ?',
+                        $queryTemplate,
+                        ($hasWhere) ? 'AND' : 'WHERE',
+                        $field
+                    );
+                    $hasWhere = true;
                 }
             }
         }
@@ -420,6 +437,20 @@ class Crate extends DboSource {
             }
         }
 
+        if (!empty($queryData['array_difference'])) {
+            //WHERE array_difference([1,2], Host.container_ids) != [1,2]
+            foreach($queryData['array_difference'] as $field => $values){
+                if ($this->columnExists($field)) {
+                    $values = array_values($values);
+                    $query->bindValue($i++, $values, PDO::PARAM_ARRAY);
+                    $query->bindValue($i++, $values, PDO::PARAM_ARRAY);
+                    $attachedParameters[] = $values;
+                    $attachedParameters[] = $values;
+                }
+
+            }
+        }
+
         if (!empty($queryData['limit']) && $this->findType !== 'count') {
             $query->bindValue($i++, $queryData['limit'], PDO::PARAM_INT);
             $attachedParameters[] = $queryData['limit'];
@@ -434,6 +465,7 @@ class Crate extends DboSource {
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
+
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
@@ -547,9 +579,10 @@ class Crate extends DboSource {
     /**
      * @param string $columnNameSource
      * @param null|string $modelName
+     * @param int $recursionLevel
      * @return bool
      */
-    public function columnExists($columnNameSource, $modelName = null){
+    public function columnExists($columnNameSource, $modelName = null, $recursionLevel = 0){
         if ($modelName === null) {
             $modelName = $this->modelName;
         }
@@ -566,10 +599,12 @@ class Crate extends DboSource {
             }
         }
 
-        foreach ($this->joinedModels as $modelName) {
-             if($this->columnExists($columnNameSource, $modelName)){
-                 return true;
-             }
+        if ($recursionLevel === 0) {
+            foreach ($this->joinedModels as $modelName) {
+                if ($this->columnExists($columnNameSource, $modelName, $recursionLevel + 1)) {
+                    return true;
+                }
+            }
         }
 
         //check virtual fields
@@ -828,7 +863,7 @@ class Crate extends DboSource {
                     $param = sprintf('\'%s\'', $param);
                 }
                 if (is_array($param)) {
-                    $param = implode(',', $param);
+                    $param = sprintf('[%s]', implode(',', $param));
                 }
                 $_sql .= $param;
             } else {
@@ -838,7 +873,7 @@ class Crate extends DboSource {
         }
 
         $sql = $_sql;
-        //$params = [];
+        $params = [];
 
         $this->_queriesCnt++;
         $this->_queriesTime += $this->took;

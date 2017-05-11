@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS openitcockpit_hosts (
   uuid string,
   name string,
   address string,
+  container_id int,
   container_ids array(int)
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');

@@ -42,7 +42,13 @@ class TestsController extends CrateModuleAppController {
                 ]
             ],
             'conditions' => [
-                'Hoststatus.current_state' => 1
+                'Hoststatus.current_state' => 1,
+            ],
+            'array_difference' => [
+                'CrateHost.container_ids' => [1, 2]
+            ],
+            'order' => [
+                'Hoststatus.last_check' => 'desc'
             ]
         ]));
 

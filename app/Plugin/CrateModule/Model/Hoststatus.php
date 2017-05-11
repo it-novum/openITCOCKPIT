@@ -31,13 +31,12 @@ class Hoststatus extends CrateModuleAppModel {
     /**
      * Return the host status as array for given uuid as stirng or array
      *
-     * @param          string $uuid    UUID or array $uuid you want to get host status for
-     * @param    array        $options for the find request (see cakephp's find for all options)
+     * @param          string $uuid UUID or array $uuid you want to get host status for
+     * @param    array $options for the find request (see cakephp's find for all options)
      *
      * @return array
      */
-    public function byUuid($uuid = null, $options = [])
-    {
+    public function byUuid($uuid = null, $options = []){
         $return = [];
 
         $_options = [
@@ -47,7 +46,7 @@ class Hoststatus extends CrateModuleAppModel {
         ];
 
         $options = Hash::merge($_options, $options);
-        if(isset($options['fields'])){
+        if (isset($options['fields'])) {
             $options['fields'][] = 'Hoststatus.hostname';
         }
 
@@ -62,6 +61,32 @@ class Hoststatus extends CrateModuleAppModel {
         }
 
         return $return;
+    }
+
+    /**
+     * @param array $conditions
+     * @param array $containerIds
+     * @return array
+     */
+    public function getHostIndexQuery($conditions = [], $containerIds = []){
+        $query = [
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ]
+            ],
+            //'conditions' => $conditions,
+            'array_difference' => [
+                'Host.container_ids' => $containerIds
+            ],
+            'order' => [
+                'Host.name' => 'asc'
+            ]
+        ];
+        return $query;
     }
 
 }

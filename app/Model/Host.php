@@ -1254,4 +1254,80 @@ class Host extends AppModel {
             return false;
         }
     }
+
+    /**
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostIndexQuery($conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+                'Host.tags',
+
+                'Hoststatus.current_state',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.last_hard_state_change',
+                'Hoststatus.output',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.state_type',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.acknowledgement_type',
+
+
+                'Hoststatus.current_state',
+            ],
+            'order' => ['Host.name' => 'asc'],
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'INNER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ], [
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ], [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+        return $query;
+    }
+
 }

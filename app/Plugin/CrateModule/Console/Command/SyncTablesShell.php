@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SyncTablesShell extends AppShell
-{
+class SyncTablesShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
      */
@@ -33,8 +32,7 @@ class SyncTablesShell extends AppShell
         'CrateModule.CrateHost'
     ];
 
-    public function main()
-    {
+    public function main(){
 
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
@@ -51,14 +49,14 @@ class SyncTablesShell extends AppShell
         ]);
 
         $crateHosts = [];
-        foreach($hosts as $host){
+        foreach ($hosts as $host) {
             $containerIds = [];
             $_containerIds = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            foreach($_containerIds as $_containerId){
+            foreach ($_containerIds as $_containerId) {
                 $containerIds[] = (int)$_containerId;
             }
 
-            if(!in_array((int)$host['Host']['container_id'], $containerIds, true)){
+            if (!in_array((int)$host['Host']['container_id'], $containerIds, true)) {
                 $containerIds[] = (int)$host['Host']['container_id'];
             }
             $crateHosts[] = [
@@ -68,6 +66,7 @@ class SyncTablesShell extends AppShell
                     'uuid' => $host['Host']['uuid'],
                     'address' => $host['Host']['address'],
                     'container_ids' => $containerIds,
+                    'container_id' => (int)$host['Host']['container_id']
                 ]
             ];
         }
@@ -76,11 +75,10 @@ class SyncTablesShell extends AppShell
 
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser(){
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
+            'type' => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
             'hostname' => ['help' => __d('oitc_console', 'The uuid of the host')],
         ]);
 
