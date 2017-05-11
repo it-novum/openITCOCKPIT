@@ -729,7 +729,6 @@ class Crate extends DboSource {
 
             $result = [];
 
-            debug($this->tableMetaData);
             if(!empty($this->joins)){
                 return $this->formatResultFindAllWithJoins($dbResult);
             }
@@ -758,23 +757,17 @@ class Crate extends DboSource {
             }
         }
 
-        debug($dbResult);
-        debug($fields);
         foreach($dbResult as $record){
             foreach($record as $field => $value){
                 foreach($fields as $modelName => $fieldsFromModel){
-                        //cool stuff
+                    $result[$modelName] = Set::classicExtract($record, '{('.implode('|', array_values($fieldsFromModel)).')}');
                 }
             }
         }
 
-        foreach ($dbResult as $dbRecord) {
-            $result[] = [
-                $this->modelName => $dbRecord
-            ];
-        }
         return $result;
     }
+
 
     /**
      * @param array $dbResult
