@@ -60,6 +60,26 @@ class Crate extends DboSource {
      */
     private $tableName;
 
+    /**
+     * @var array
+     */
+    protected $_queryDefaults = array(
+        'conditions' => array(),
+        'fields' => null,
+        'table' => null,
+        'alias' => null,
+        'order' => null,
+        'limit' => null,
+        'joins' => array(),
+        'group' => null,
+        'offset' => null
+    );
+
+
+    /**
+     * @var array
+     */
+    protected $joins;
 
     /**
      * @var string
@@ -236,11 +256,18 @@ class Crate extends DboSource {
         $this->modelName = $Model->alias;
         $this->tableName = $Model->table;
         $this->tablePrefix = $Model->tablePrefix;
+        $this->joins = $queryData['joins'];
 
         $this->Model = $Model;
 
         if(!isset($this->tableMetaData[$this->modelName])) {
             $this->getTableMetaInformation($this->tablePrefix.$this->tableName);
+        }
+
+        foreach($queryData['joins'] as $join){
+            $fakeModel = new stdClass();
+            $fakeModel->alias = $join['alias'];
+            $this->getTableMetaInformation($join['table'], $fakeModel);
         }
 
         if (empty($queryData['fields'])) {
@@ -257,9 +284,9 @@ class Crate extends DboSource {
             }
         }
 
-        if (!empty($queryData['joins'])) {
-            throw new NotImplementedException('joins are not implemented now');
-        }
+        //if (!empty($queryData['joins'])) {
+        //    throw new NotImplementedException('joins are not implemented now');
+        //}
 
         if(!empty($queryData['sort']) && !empty($queryData['direction'])){
             $queryData['order'] = [
@@ -277,6 +304,18 @@ class Crate extends DboSource {
             $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix.$this->tableName, $this->modelName);
         } else {
             $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tablePrefix.$this->tableName, $this->modelName);
+        }
+
+        foreach($queryData['joins'] as $join){
+            //INNER JOIN statusengine_hoststatus as Hoststatus on Hoststatus.hostname = Host.uuid
+            $queryTemplate = sprintf(
+                '%s %s JOIN %s AS %s ON %s',
+                $queryTemplate,
+                $join['type'],
+                $join['table'],
+                $join['alias'],
+                $join['conditions']
+            );
         }
 
         if (!empty($queryData['conditions'])) {
@@ -689,16 +728,66 @@ class Crate extends DboSource {
             }
 
             $result = [];
-            foreach ($dbResult as $dbRecord) {
-                $result[] = [
-                    $this->modelName => $dbRecord
-                ];
+
+            debug($this->tableMetaData);
+            if(!empty($this->joins)){
+                return $this->formatResultFindAllWithJoins($dbResult);
             }
-            return $result;
+            return $this->formatResultFindAll($dbResult);
 
         }
 
         return [];
+    }
+
+    /**
+     * @param array $dbResult
+     * @return array
+     */
+    public function formatResultFindAllWithJoins($dbResult = []){
+        $result = [];
+        $fields = [];
+
+        foreach($this->tableMetaData[$this->modelName] as $column){
+            $fields[$this->modelName][] = $column['column_name'];
+        }
+
+        foreach($this->joins as $join){
+            foreach($this->tableMetaData[$join['alias']] as $column){
+                $fields[$join['alias']][] = $column['column_name'];
+            }
+        }
+
+        debug($dbResult);
+        debug($fields);
+        foreach($dbResult as $record){
+            foreach($record as $field => $value){
+                foreach($fields as $modelName => $fieldsFromModel){
+                        //cool stuff
+                }
+            }
+        }
+
+        foreach ($dbResult as $dbRecord) {
+            $result[] = [
+                $this->modelName => $dbRecord
+            ];
+        }
+        return $result;
+    }
+
+    /**
+     * @param array $dbResult
+     * @return array
+     */
+    public function formatResultFindAll($dbResult = []){
+        $result = [];
+        foreach ($dbResult as $dbRecord) {
+            $result[] = [
+                $this->modelName => $dbRecord
+            ];
+        }
+        return $result;
     }
 
     /**

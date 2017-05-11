@@ -25,10 +25,26 @@
 class TestsController extends CrateModuleAppController {
 
     public $uses = [
-        'CrateModule.Test'
+        'CrateModule.Test',
+        'CrateModule.CrateHost'
     ];
 
     public function index(){
+
+
+        debug($this->CrateHost->find('all', [
+            'joins' => [
+                [
+                    'table' => 'statusengine_hoststatus',
+                    'type' => 'INNER',
+                    'alias' => 'Hoststatus',
+                    'conditions' => 'CrateHost.uuid = Hoststatus.hostname',
+                ]
+            ]
+        ]));
+
+        return;
+
         debug($this->Test->find('all', [
             'fields' => [
                 '*'
