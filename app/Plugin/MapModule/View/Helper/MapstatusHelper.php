@@ -451,7 +451,6 @@ class MapstatusHelper extends AppHelper {
         //the state wich will be displayed in the view mode
         $baseStateForView = $this->ServicegroupstatusValues($cumulative_state);
         $baseStateForView['cumulated_type_key'] = $key;
-
         return $baseStateForView;
     }
 
