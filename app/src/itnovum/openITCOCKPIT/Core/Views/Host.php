@@ -111,9 +111,9 @@ class Host {
             $this->containerId = (int)$host['Host']['container_id'];
         }
 
-        if (isset($host['Container']['HostsToContainer'])) {
+        if (isset($host['Container'])) {
             //MySQL
-            $this->containerIds = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $this->containerIds = \Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         }
 
         if (isset($host['Host']['container_ids'])) {
