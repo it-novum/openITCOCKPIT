@@ -125,7 +125,6 @@ class HostSharingPermissions
     public function cleanHostContainerArray($hostContainerId, $hostSharingContainerIds)
     {
         $sharedContainerIds = [];
-        $hostSharingContainerIds = \Hash::extract($hostSharingContainerIds, '{n}.id');
         foreach ($hostSharingContainerIds as $key => $hostSharingContainerId) {
             if ($hostSharingContainerId != $hostContainerId) {
                 $sharedContainerIds[] = $hostSharingContainerId;

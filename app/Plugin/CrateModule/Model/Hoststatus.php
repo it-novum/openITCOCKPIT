@@ -22,6 +22,8 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use itnovum\openITCOCKPIT\Core\HostConditions;
+
 class Hoststatus extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';
@@ -64,11 +66,11 @@ class Hoststatus extends CrateModuleAppModel {
     }
 
     /**
+     * @param HostConditions $HostConditions
      * @param array $conditions
-     * @param array $containerIds
      * @return array
      */
-    public function getHostIndexQuery($conditions = [], $containerIds = []){
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
         $query = [
             'joins' => [
                 [
@@ -78,9 +80,10 @@ class Hoststatus extends CrateModuleAppModel {
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
-            //'conditions' => $conditions,
+            'conditions' => $conditions,
             'array_difference' => [
-                'Host.container_ids' => $containerIds
+                'Host.container_ids' =>
+                    $HostConditions->getContainerIds(),
             ],
             'order' => [
                 'Host.name' => 'asc'

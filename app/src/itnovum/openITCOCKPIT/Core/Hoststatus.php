@@ -25,27 +25,59 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class Hoststatus
-{
+class Hoststatus {
 
+    /**
+     * @var null|int
+     */
     private $currentState = null;
 
+    /**
+     * @var bool
+     */
     private $isFlapping;
 
+    /**
+     * @var bool
+     */
     private $problemHasBeenAcknowledged;
 
+    /**
+     * @var string
+     */
     private $scheduledDowntimeDepth;
 
+    /**
+     * @var string
+     */
     private $lastCheck;
 
+    /**
+     * @var string
+     */
     private $nextCheck;
 
+    /**
+     * @var bool
+     */
     private $activeChecksEnabled;
 
+    /**
+     * @var string
+     */
     private $lastHardStateChange;
 
-    public function __construct($data)
-    {
+    /**
+     * @var string
+     */
+    private $output;
+
+    /**
+     * @var int
+     */
+    private $acknowledgement_type;
+
+    public function __construct($data){
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
         }
@@ -77,30 +109,36 @@ class Hoststatus
         if (isset($data['last_hard_state_change'])) {
             $this->lastHardStateChange = $data['last_hard_state_change'];
         }
+
+        if (isset($data['acknowledgement_type'])) {
+            $this->acknowledgement_type = (int)$data['acknowledgement_type'];
+        }
+
+        if (isset($data['output'])) {
+            $this->output = $data['output'];
+        }
     }
 
-    public function getHumanHoststatus($href = 'javascript:void(0)', $style = '')
-    {
+    public function getHumanHoststatus($href = 'javascript:void(0)', $style = ''){
         if ($this->currentState === null) {
-            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="'.$href.'" class="btn btn-primary status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-question-circle'];
+            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="' . $href . '" class="btn btn-primary status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-question-circle'];
         }
 
         switch ($this->currentState) {
             case 0:
-                return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="'.$href.'" class="btn btn-success status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'glyphicon glyphicon-ok'];
+                return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'glyphicon glyphicon-ok'];
                 break;
 
             case 1:
-                return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="'.$href.'" class="btn btn-danger status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-exclamation'];
+                return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-exclamation'];
                 break;
 
             default:
-                return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="'.$href.'" class="btn btn-default status-circle" style="padding:0;'.$style.'"></a>'];
+                return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default status-circle" style="padding:0;' . $style . '"></a>'];
         }
     }
 
-    public function getHostFlappingIconColored($class = '')
-    {
+    public function getHostFlappingIconColored($class = ''){
         $stateColors = [
             0 => 'ok',
             1 => 'critical',
@@ -109,27 +147,27 @@ class Hoststatus
 
         if ($this->isFlapping() === true) {
             if ($this->currentState !== null) {
-                return '<span class="flapping_airport '.$class.' '.$stateColors[$this->currentState].'"><i class="fa fa-circle '.$stateColors[$this->currentState].'"></i> <i class="fa fa-circle-o '.$stateColors[$this->currentState].'"></i></span>';
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
             }
 
-            return '<span class="flapping_airport text-primary '.$class.'"><i class="fa fa-circle '.$stateColors[$this->currentState].'"></i> <i class="fa fa-circle-o '.$stateColors[$this->currentState].'"></i></span>';
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
         }
 
         return '';
     }
 
-    public function currentState()
-    {
+    public function currentState(){
         return $this->currentState;
     }
 
-    public function isAacknowledged()
-    {
+    public function isAacknowledged(){
         return (bool)$this->problemHasBeenAcknowledged;
     }
 
-    public function isInDowntime()
-    {
+    /**
+     * @return bool
+     */
+    public function isInDowntime(){
         if ($this->scheduledDowntimeDepth > 0) {
             return true;
         }
@@ -137,33 +175,41 @@ class Hoststatus
         return false;
     }
 
-    public function getLastHardStateChange()
-    {
+    public function getLastHardStateChange(){
         return $this->lastHardStateChange;
     }
 
-    public function getLastCheck()
-    {
+    public function getLastCheck(){
         return $this->lastCheck;
     }
 
-    public function getNextCheck()
-    {
+    public function getNextCheck(){
         return $this->nextCheck;
     }
 
-    public function isActiveChecksEnabled()
-    {
+    public function isActiveChecksEnabled(){
         return (bool)$this->activeChecksEnabled;
     }
 
     /**
      * @return bool
      */
-    public function isFlapping()
-    {
+    public function isFlapping(){
         return (bool)$this->isFlapping;
     }
 
+    /**
+     * @return int
+     */
+    public function getAcknowledgementType(){
+        return $this->acknowledgement_type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutput(){
+        return $this->output;
+    }
 
 }

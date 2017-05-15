@@ -34,6 +34,7 @@ App::uses('CakeTime', 'Utility');
 App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
 
 /**
  * @property User $User
@@ -133,6 +134,11 @@ class AppController extends Controller {
     protected $PERMISSIONS = [];
 
     /**
+     * @var DbBackend
+     */
+    protected $DbBackend;
+
+    /**
      * Translated strings to be passed to the front end. Can be added via
      * _addLocaleStrings()
      * @var array
@@ -147,6 +153,9 @@ class AppController extends Controller {
 
         //DANGER ZONE - ALLOW ALL ACTIONS
         //$this->Auth->allow();
+
+        Configure::load('dbbackend');
+        $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';

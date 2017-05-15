@@ -189,17 +189,24 @@ class HostsController extends AppController {
             }
         }
 
+        if($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
+        }
 
-        $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
-        $this->Host->virtualFieldsForIndex();
-
+        if($this->DbBackend->isCrateDb()) {
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $modelName = 'Hoststatus';
+        }
 
         if ($this->isApiRequest()) {
-            $all_hosts = $this->Host->find('all', $query);
+            $all_hosts = $this->${$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hosts = $this->Paginator->paginate('Host');
+            $all_hosts = $this->Paginator->paginate($modelName);
         }
+
         $this->set('all_hosts', $all_hosts);
 
 
