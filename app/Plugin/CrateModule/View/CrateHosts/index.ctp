@@ -33,7 +33,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 $filter = "/";
 foreach ($this->params->named as $key => $value) {
     if (!is_array($value)) {
-        $filter .= $key.":".$value."/";
+        $filter .= $key . ":" . $value . "/";
     }
 }
 ?>
@@ -44,7 +44,7 @@ foreach ($this->params->named as $key => $value) {
             <?php echo __('Hosts') ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -76,8 +76,8 @@ foreach ($this->params->named as $key => $value) {
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                        if ($this->Acl->hasPermission('add', 'hosts', '')):
+                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Need a space for nice buttons
                         endif;
                         echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
@@ -93,18 +93,54 @@ foreach ($this->params->named as $key => $value) {
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                     class="fa fa-lg fa-table"></i></a>
                         <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="2"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="3"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('In downtime'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="4"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Graph'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="5"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Shared'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="6"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Passive'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="7"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Host Name'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="8"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('IP-Address'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="9"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('State since'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="10"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last check'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="11"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Output'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="12"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Instance'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left" class="select_datatable text-left" my-column="13"><input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Edit'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="2"><input
+                                            type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Acknowledgement'); ?></a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="3"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('In downtime'); ?>
+                                </a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="4"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Graph'); ?></a>
+                            </li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="5"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Shared'); ?></a>
+                            </li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="6"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Passive'); ?></a>
+                            </li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="7"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Host Name'); ?>
+                                </a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="8"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('IP-Address'); ?>
+                                </a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="9"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('State since'); ?>
+                                </a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="10"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last check'); ?>
+                                </a></li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="11"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Output'); ?></a>
+                            </li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="12"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Instance'); ?></a>
+                            </li>
+                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
+                                                        class="select_datatable text-left" my-column="13"><input
+                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Edit'); ?></a>
+                            </li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -118,19 +154,19 @@ foreach ($this->params->named as $key => $value) {
                             <a href="/hosts/index<?php echo $filter; ?>"><i class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
-                        <?php if ($this->Acl->hasPermission('notMonitored')): ?>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'hosts', '')): ?>
                             <li class="">
                                 <a href="/hosts/notMonitored<?php echo $filter; ?>"><i class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('disabled')): ?>
+                        <?php if ($this->Acl->hasPermission('disabled', 'hosts', '')): ?>
                             <li>
                                 <a href="/hosts/disabled<?php echo $filter; ?>"><i class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
+                        <?php if ($this->Acl->hasPermission('index', 'DeletedHosts', '')): ?>
                             <li>
                                 <a href="/deleted_hosts/index<?php echo $filter; ?>"><i class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
@@ -145,10 +181,11 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-body no-padding">
                         <?php
                         $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -211,16 +248,18 @@ foreach ($this->params->named as $key => $value) {
                                                 echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
                                             else:
                                                 $href = 'javascript:void(0);';
-                                                if ($this->Acl->hasPermission('browser')):
-                                                    $href = '/hosts/browser/'.$host['Host']['id'];
+                                                if ($this->Acl->hasPermission('browser', 'hosts', '')):
+                                                    $href = '/hosts/browser/' . $host['Host']['id'];
                                                 endif;
                                                 echo $this->Status->humanHostStatus($host['Host']['uuid'], $href, [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host['Hoststatus']['current_state']]]])['html_icon'];
                                             endif;
                                             ?>
-                                            <?php //echo $this->Status->humanHostStatus($host['Host']['uuid'], '/hosts/browser/'.$host['Host']['id'])['html_icon']; ?>
+                                            <?php //echo $this->Status->humanHostStatus($host['Host']['uuid'], '/hosts/browser/'.$host['Host']['id'])['html_icon'];
+                                            ?>
                                         </td>
 
-                                        <td class="text-center"><?php //debug($host['Hoststatus']);?>
+                                        <td class="text-center"><?php //debug($host['Hoststatus']);
+                                            ?>
                                             <?php if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0): ?>
                                                 <?php if ($host['Hoststatus']['acknowledgement_type'] == 1): ?>
                                                     <i class="fa fa-user fa-lg "
@@ -243,8 +282,8 @@ foreach ($this->params->named as $key => $value) {
                                             <?php if ($this->Monitoring->checkForHostGraph($host['Host']['uuid'])): ?>
                                                 <?php
                                                 $graphHref = 'javascript:void(0);';
-                                                if ($this->Acl->hasPermission('serviceList', 'services')):
-                                                    $graphHref = '/services/serviceList/'.$host['Host']['id'];
+                                                if ($this->Acl->hasPermission('serviceList', 'services', '')):
+                                                    $graphHref = '/services/serviceList/' . $host['Host']['id'];
                                                 endif;
                                                 ?>
                                                 <a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i
@@ -278,7 +317,7 @@ foreach ($this->params->named as $key => $value) {
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if ($this->Acl->hasPermission('browser')): ?>
+                                            <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
                                                 <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
                                             <?php else: ?>
                                                 <?php echo h($host['Host']['name']); ?>
@@ -302,8 +341,13 @@ foreach ($this->params->named as $key => $value) {
                                         </td>
                                         <td class="width-50">
                                             <div class="btn-group">
-                                                <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"
+                                                <?php if ($this->Acl->hasPermission('edit', 'Hosts', '') && $hasEditPermission): ?>
+                                                    <a href="<?php echo Router::url([
+                                                        'controller' => 'Hosts',
+                                                        'action' => 'edit',
+                                                        'plugin' => '',
+                                                        $host['Host']['id']
+                                                    ]); ?>"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
@@ -313,51 +357,79 @@ foreach ($this->params->named as $key => $value) {
                                                    class="btn btn-default dropdown-toggle"><span
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'Hosts', '') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $host['Host']['id']; ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'Hosts',
+                                                                'action' => 'edit',
+                                                                'plugin' => '',
+                                                                $host['Host']['id'],
+                                                            ]); ?>">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('sharing') && $hasEditPermission): ?>
+                                                    <?php if ($this->Acl->hasPermission('sharing', 'Hosts', '') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i
-                                                                        class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'Hosts',
+                                                                'action' => 'sharing',
+                                                                'plugin' => '',
+                                                                $host['Host']['id']
+                                                            ]); ?>">
+                                                                <i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('deactivate') && $hasEditPermission): ?>
+                                                    <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $host['Host']['id']; ?>"><i
-                                                                        class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'Hosts',
+                                                                'action' => 'deactivate',
+                                                                'plugin' => '',
+                                                                $host['Host']['id']
+                                                            ]); ?>
+                                                            ">
+                                                                <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                                    <?php if ($this->Acl->hasPermission('serviceList', 'services', '')): ?>
                                                         <li>
-                                                            <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i
-                                                                        class="fa fa-list"></i> <?php echo __('Service List'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'services',
+                                                                'action' => 'serviceList',
+                                                                'plugin' => '',
+                                                                $host['Host']['id']
+                                                            ]); ?>
+                                                            ">
+                                                            <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
+                                                    <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups', '')): ?>
                                                         <li>
-                                                            <a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i
-                                                                        class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'Hosts',
+                                                                'action' => 'allocateServiceTemplateGroup',
+                                                                'plugin' => '',
+                                                                $host['Host']['id']
+                                                            ]); ?>"
+                                                            >
+                                                                <i class="fa fa-external-link"></i> <?php echo __('Allocate Service Template Group'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
 
                                                     <?php
-                                                    if ($this->Acl->hasPermission('edit') && $hasEditPermission):
+                                                    if ($this->Acl->hasPermission('edit', 'Hosts', '') && $hasEditPermission):
                                                         echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
                                                     endif;
                                                     ?>
-                                                    <?php if ($this->Acl->hasPermission('delete') && $hasEditPermission): ?>
+                                                    <?php if ($this->Acl->hasPermission('delete', 'Hosts', '') && $hasEditPermission): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this host?')); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'hosts', 'action' => 'delete', 'plugin' => '', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this host?')); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -382,7 +454,7 @@ foreach ($this->params->named as $key => $value) {
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -418,7 +490,7 @@ foreach ($this->params->named as $key => $value) {
                     echo $this->Form->create('nag_command', [
                         'class' => 'form-horizontal clear',
                     ]); ?>
-                    <?php echo $this->Form->input('rescheduleHost', ['options' => ['hostOnly' => __('only Hosts'), 'hostAndServices' => __('Hosts and Services')], 'label' => __('Host check for').':']); ?>
+                    <?php echo $this->Form->input('rescheduleHost', ['options' => ['hostOnly' => __('only Hosts'), 'hostAndServices' => __('Hosts and Services')], 'label' => __('Host check for') . ':']); ?>
                 </div>
 
             </div>
@@ -463,8 +535,8 @@ foreach ($this->params->named as $key => $value) {
                         3 => __('Hosts and dependent Hosts (non-triggered)'),
                     ];
                     ?>
-                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for').':']) ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
+                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for') . ':']) ?>
+                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
 
                     <!-- from -->
                     <div class="form-group">
@@ -530,7 +602,7 @@ foreach ($this->params->named as $key => $value) {
                         'class' => 'form-horizontal clear',
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Acknowledge for']); ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
+                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
                     <?php echo $this->Form->input('sticky', ['type' => 'checkbox', 'label' => __('Sticky'), 'wrapInput' => 'col-md-offset-2 col-md-10']); ?>
                     <?php echo $this->Form->input('author', ['type' => 'hidden', 'value' => $username]) ?>
                 </div>

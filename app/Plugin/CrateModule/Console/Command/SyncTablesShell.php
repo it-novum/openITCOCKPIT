@@ -37,7 +37,12 @@ class SyncTablesShell extends AppShell {
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
             'contain' => [
-                'Container'
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.active_checks_enabled'
+                    ]
+                ]
             ],
             'fields' => [
                 'Host.id',
@@ -45,6 +50,8 @@ class SyncTablesShell extends AppShell {
                 'Host.uuid',
                 'Host.address',
                 'Host.container_id',
+                'Host.active_checks_enabled',
+                'Host.satellite_id'
             ]
         ]);
 
@@ -59,12 +66,20 @@ class SyncTablesShell extends AppShell {
             if (!in_array((int)$host['Host']['container_id'], $containerIds, true)) {
                 $containerIds[] = (int)$host['Host']['container_id'];
             }
+
+            $active_checks_enabled = $host['Hosttemplate']['active_checks_enabled'];
+            if($host['Host']['active_checks_enabled'] !== null){
+                $active_checks_enabled = $host['Host']['active_checks_enabled'];
+            }
+
             $crateHosts[] = [
                 'CrateHost' => [
                     'id' => $host['Host']['id'],
                     'name' => $host['Host']['name'],
                     'uuid' => $host['Host']['uuid'],
                     'address' => $host['Host']['address'],
+                    'active_checks_enabled' => (int)$active_checks_enabled,
+                    'satellite_id' => (int)$host['Host']['satellite_id'],
                     'container_ids' => $containerIds,
                     'container_id' => (int)$host['Host']['container_id']
                 ]

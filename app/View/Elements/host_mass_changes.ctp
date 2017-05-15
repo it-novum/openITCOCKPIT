@@ -32,13 +32,13 @@
     <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
                     class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
     <div class="col-xs-12 col-md-2">
-        <?php if ($this->Acl->hasPermission('copy')): ?>
+        <?php if ($this->Acl->hasPermission('copy', 'Hosts', '')): ?>
             <a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;"><i
                         class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?></a>
         <?php endif; ?>
     </div>
     <div class="col-xs-12 col-md-2">
-        <?php if ($this->Acl->hasPermission('delete')): ?>
+        <?php if ($this->Acl->hasPermission('delete', 'Hosts', '')): ?>
             <a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i
                         class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
         <?php endif; ?>
@@ -49,19 +49,19 @@
             <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle"><span
                         class="caret"></span></a>
             <ul class="dropdown-menu">
-                <?php if ($this->Acl->hasPermission('edit_details')): ?>
+                <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
                     <li>
                         <a href="javascript:void(0);" id="editDetailAll"><i
                                     class="fa fa-cog"></i> <?php echo __('Edit details'); ?></a>
                     </li>
                 <?php endif; ?>
-                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                     <li>
                         <a href="javascript:void(0);" id="disableAll"><i
                                     class="fa fa-plug"></i> <?php echo __('Disable'); ?></a>
                     </li>
                 <?php endif; ?>
-                <?php if ($this->Acl->hasPermission('add', 'hostgroups')): ?>
+                <?php if ($this->Acl->hasPermission('add', 'hostgroups', '')): ?>
                     <li>
                         <a href="javascript:void(0);" id="addToGroupAll"><i
                                     class="fa fa-sitemap"></i> <?php echo __('Add to hostgroup'); ?></a>

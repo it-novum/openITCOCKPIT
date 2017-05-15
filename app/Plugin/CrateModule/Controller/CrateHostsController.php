@@ -142,6 +142,19 @@ class CrateHostsController extends CrateModuleAppController {
         $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
         $this->set('userRights', $this->MY_RIGHTS);
+        $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+
+        // Distributed Monitoring
+        $this->set('masterInstance', $masterInstance);
+        $SatelliteModel = false;
+        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+        }
+        $SatelliteNames = [];
+        if ($SatelliteModel !== false) {
+            $SatelliteNames = $SatelliteModel->find('list');
+        }
+        $this->set('SatelliteNames', $SatelliteNames);
 
     }
 
