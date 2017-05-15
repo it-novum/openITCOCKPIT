@@ -25,6 +25,9 @@
 
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
+use \itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * @property Host $Host
@@ -152,97 +155,61 @@ class HostsController extends AppController {
     ];
 
     public function index() {
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        if (in_array('CrateModule', $modulePlugins)) {
-            $this->redirect([
-                'plugin' => 'crate_module',
-                'controller' => 'CrateHosts',
-                'action' => 'index'
-            ]);
+        $HostControllerRequest = new HostControllerRequest($this->request);
+        $HostCondition = new \itnovum\openITCOCKPIT\Core\HostConditions();
+        $User = new User($this->Auth);
+        if ($HostControllerRequest->isRequestFromBrowser() === false) {
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
         }
 
-        $conditions = [];
-        if (!isset($this->request->params['named']['BrowserContainerId'])) {
-            $conditions = [
-                'Host.disabled' => 0,
-                'HostsToContainers.container_id' => $this->MY_RIGHTS,
-            ];
-        }
-
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-
-        $userRights = $this->MY_RIGHTS;
-
-        $childrenContainer = [];
-        if (isset($this->request->params['named']['BrowserContainerId'])) {
-            if (!is_array($this->request->params['named']['BrowserContainerId'])) {
-                $this->request->params['named']['BrowserContainerId'] = [$this->request->params['named']['BrowserContainerId']];
-            }
-            foreach ($this->request->params['named']['BrowserContainerId'] as $containerIdToCheck) {
+        if ($HostControllerRequest->isRequestFromBrowser() === true) {
+            $browserContainerIds = $HostControllerRequest->getBrowserContainerIdsByRequest();
+            foreach ($browserContainerIds as $containerIdToCheck) {
                 if (!in_array($containerIdToCheck, $this->MY_RIGHTS)) {
                     $this->render403();
-
                     return;
                 }
             }
 
-            $conditions = Hash::merge($conditions, [
-                'Host.disabled' => 0,
-                'HostsToContainers.container_id' => $this->request->params['named']['BrowserContainerId'],
-            ]);
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($browserContainerIds);
 
-            if($this->Auth->user('recursive_browser')){
+            if($User->isRecursiveBrowserEnabled()){
                 //get recursive container ids
-                $containerIdToResolve = $this->request->params['named']['BrowserContainerId'];
+                $containerIdToResolve = $browserContainerIds;
                 $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId){
                     if(in_array($containerId, $this->MY_RIGHTS)){
-                        $recursiveContainerIds['HostsToContainers.container_id'][] = $containerId ;
+                        $recursiveContainerIds[] = $containerId ;
                     }
                 }
-                $conditions = array_merge_recursive($conditions, $recursiveContainerIds);
+                $HostCondition->setContainerIds(array_merge($HostCondition->getContainerIds(), $recursiveContainerIds));
             }
         }
-        $this->Host->virtualFields['hoststatus'] = 'Hoststatus.current_state';
-        $this->Host->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
-        $this->Host->virtualFields['last_check'] = 'Hoststatus.last_check';
-        $this->Host->virtualFields['output'] = 'Hoststatus.output';
-        $this->Host->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
 
-        $query = $this->Host->getHostIndexQuery($conditions);
 
-        //$query = $this->Hoststatus->getHostIndexQuery($conditions, $this->MY_RIGHTS);
+        $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+        $this->Host->virtualFieldsForIndex();
+
 
         if ($this->isApiRequest()) {
             $all_hosts = $this->Host->find('all', $query);
         } else {
-            //$this->Paginator->settings = $query;
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            //$all_hosts = $this->Hoststatus->find('all', $query);
             $all_hosts = $this->Paginator->paginate('Host');
         }
+        $this->set('all_hosts', $all_hosts);
 
-        //distributed monitoring stuff
-        $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
-        $SatelliteModel = false;
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
-            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-        }
-        $SatelliteNames = [];
-        if ($SatelliteModel !== false) {
-            $SatelliteNames = $SatelliteModel->find('list');
-        }
-
-        $username = $this->Auth->user('full_name');
 
         $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
-        $this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames', 'username', 'userRights']));
+        $this->set('username', $User->getFullName());
+        $this->set('userRights', $this->MY_RIGHTS);
+
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_hosts']);
         $this->set('myNamedFilters', $this->request->data);
@@ -257,6 +224,16 @@ class HostsController extends AppController {
 
         $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+        $SatelliteModel = false;
+        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+        }
+        $SatelliteNames = [];
+        if ($SatelliteModel !== false) {
+            $SatelliteNames = $SatelliteModel->find('list');
+        }
+        $this->set('SatelliteNames', $SatelliteNames);
     }
 
     public function view($id = null) {

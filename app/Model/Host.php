@@ -24,6 +24,7 @@
 //	confirmation.
 
 App::uses('ValidationCollection', 'Lib');
+use itnovum\openITCOCKPIT\Core\HostConditions;
 
 /**
  * @property ParentHost $ParentHost
@@ -1256,10 +1257,11 @@ class Host extends AppModel {
     }
 
     /**
+     * @param HostConditions $HostConditions
      * @param array $conditions
      * @return array
      */
-    public function getHostIndexQuery($conditions = []){
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
         $query = [
             'recursive' => -1,
             'contain' => [
@@ -1327,7 +1329,19 @@ class Host extends AppModel {
                 'Host.id',
             ],
         ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
         return $query;
+    }
+
+    public function virtualFieldsForIndex(){
+        $this->virtualFields['hoststatus'] = 'Hoststatus.current_state';
+        $this->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
+        $this->virtualFields['last_check'] = 'Hoststatus.last_check';
+        $this->virtualFields['output'] = 'Hoststatus.output';
+        $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
 }
