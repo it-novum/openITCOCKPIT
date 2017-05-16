@@ -43,6 +43,11 @@ class HostConditions {
     private $containerIds = [];
 
     /**
+     * @var array
+     */
+    private $order = [];
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -84,6 +89,20 @@ class HostConditions {
      */
     public function setContainerIds($containerIds){
         $this->containerIds = $containerIds;
+    }
+
+    /**
+     * @param array $order
+     */
+    public function setOrder($order = []){
+        $this->order = $order;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrder(){
+        return $this->order;
     }
 
 

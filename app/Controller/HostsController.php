@@ -189,6 +189,10 @@ class HostsController extends AppController {
             }
         }
 
+        $HostCondition->setOrder($HostControllerRequest->getOrder(
+            ['Host.name' => 'asc'] //Default order
+        ));
+
         if($this->DbBackend->isNdoUtils()) {
             $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
             $this->Host->virtualFieldsForIndex();
@@ -204,7 +208,7 @@ class HostsController extends AppController {
             $all_hosts = $this->${$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hosts = $this->Paginator->paginate($modelName);
+            $all_hosts = $this->Paginator->paginate($modelName,[], [key($this->Paginator->settings['order'])]);
         }
 
         $this->set('all_hosts', $all_hosts);

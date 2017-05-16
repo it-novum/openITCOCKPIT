@@ -1304,7 +1304,7 @@ class Host extends AppModel {
 
                 'Hoststatus.current_state',
             ],
-            'order' => ['Host.name' => 'asc'],
+            'order' => $HostConditions->getOrder(),
             'joins' => [
                 [
                     'table' => 'nagios_objects',
@@ -1337,7 +1337,7 @@ class Host extends AppModel {
     }
 
     public function virtualFieldsForIndex(){
-        $this->virtualFields['hoststatus'] = 'Hoststatus.current_state';
+        //$this->virtualFields['hoststatus'] = 'Hoststatus.current_state';
         $this->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
         $this->virtualFields['last_check'] = 'Hoststatus.last_check';
         $this->virtualFields['output'] = 'Hoststatus.output';

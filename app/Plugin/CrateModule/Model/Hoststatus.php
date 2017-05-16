@@ -85,9 +85,7 @@ class Hoststatus extends CrateModuleAppModel {
                 'Host.container_ids' =>
                     $HostConditions->getContainerIds(),
             ],
-            'order' => [
-                'Host.name' => 'asc'
-            ]
+            'order' => $HostConditions->getOrder()
         ];
         return $query;
     }

@@ -49,9 +49,24 @@ class HostControllerRequest {
     public function getBrowserContainerIdsByRequest(){
         $containerIds = $this->request->params['named']['BrowserContainerId'];
         if (!is_array($containerIds)) {
-            $containerIds  = [$containerIds];
+            $containerIds = [$containerIds];
         }
         return $containerIds;
+    }
+
+    /**
+     * @param array $defaultOrder
+     * @return array
+     */
+    public function getOrder($defaultOrder = []){
+        if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
+            return [
+                $this->request['named']['sort'] => $this->request['named']['direction']
+            ];
+        }
+
+        return $defaultOrder;
+
     }
 
 }

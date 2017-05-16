@@ -193,32 +193,63 @@ foreach ($this->params->named as $key => $value) {
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Host.current_state');
-                                        echo $this->Paginator->sort('Host.hoststatus', 'Hoststatus'); ?></th>
-                                    <th class="no-sort text-center"><i class="fa fa-user fa-lg"
-                                                                       title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                    <th class="select_datatable no-sort">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.current_state');
+                                        echo $this->Paginator->sort('Hoststatus.current_state', 'Hoststatus');
+                                        ?>
                                     </th>
-                                    <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"
-                                                                       title="<?php echo __('in Downtime'); ?>"></i>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-user fa-lg" title="<?php echo __('Acknowledgedment'); ?>"></i>
                                     </th>
-                                    <th class="no-sort text-center"><i class="fa fa-area-chart fa-lg"
-                                                                       title="<?php echo __('Grapher'); ?>"></i></th>
-                                    <th class="no-sort text-center"><i title="<?php echo __('Shared'); ?>"
-                                                                       class="fa fa-sitemap fa-lg"></i></th>
-                                    <th class="no-sort text-center"><strong
-                                                title="<?php echo __('Passively transferred host'); ?>">P</strong></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'name');
-                                        echo $this->Paginator->sort('name', 'Hostname'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'address');
-                                        echo $this->Paginator->sort('address', __('IP address')); ?></th>
-                                    <th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_hard_state_change');
-                                        echo $this->Paginator->sort('Host.last_hard_state_change', __('State since')); ?></th>
-                                    <th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'last_check');
-                                        echo $this->Paginator->sort('Host.last_check', __('Last check')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output');
-                                        echo $this->Paginator->sort('Host.output', __('Output')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'satellite_id');
-                                        echo $this->Paginator->sort('Host.satellite_id', __('Instance')); ?></th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-power-off fa-lg" title="<?php echo __('in Downtime'); ?>"></i>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i title="<?php echo __('Shared'); ?>" class="fa fa-sitemap fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <strong title="<?php echo __('Passively transferred host'); ?>">P</strong>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Host.name');
+                                        echo $this->Paginator->sort('Host.name', 'Hostname');
+                                        ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Host.address');
+                                        echo $this->Paginator->sort('Host.address', __('IP address'));
+                                        ?>
+                                    </th>
+                                    <th class="no-sort tableStatewidth">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_hard_state_change');
+                                        echo $this->Paginator->sort('Hoststatus.last_hard_state_change', __('State since'));
+                                        ?>
+                                    </th>
+                                    <th class="no-sort tableStatewidth">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_check');
+                                        echo $this->Paginator->sort('Hoststatus.last_check', __('Last check'));
+                                        ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.output');
+                                        echo $this->Paginator->sort('Hoststatus.output', __('Output'));
+                                        ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php
+                                        echo $this->Utils->getDirection($order, 'Host.satellite_id');
+                                        echo $this->Paginator->sort('Host.satellite_id', __('Instance'));
+                                        ?>
+                                    </th>
                                     <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>
                                 </thead>
