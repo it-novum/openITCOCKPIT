@@ -29,6 +29,7 @@ use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Host $Host
@@ -220,8 +221,7 @@ class HostsController extends AppController {
         $this->set('userRights', $this->MY_RIGHTS);
         $this->set('myNamedFilters', $this->request->data);
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
 
         $SatelliteNames = [];
@@ -2381,8 +2381,7 @@ class HostsController extends AppController {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     /**

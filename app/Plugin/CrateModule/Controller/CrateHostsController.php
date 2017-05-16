@@ -22,6 +22,8 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+
 class CrateHostsController extends CrateModuleAppController {
     public $layout = 'Admin.default';
     public $components = [
@@ -130,8 +132,7 @@ class CrateHostsController extends CrateModuleAppController {
         }
         $this->set(compact(['all_hosts']));
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
         $this->set('userRights', $this->MY_RIGHTS);
         $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 

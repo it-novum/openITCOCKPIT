@@ -112,4 +112,12 @@ class Systemsetting extends AppModel
     public function getMasterInstanceName(){
         return $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
     }
+
+    /**
+     * @return mixed
+     */
+    public function getQueryHandlerPath(){
+        return $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+    }
+
 }

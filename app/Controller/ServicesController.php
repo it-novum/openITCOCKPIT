@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Container $Container
@@ -375,8 +376,7 @@ class ServicesController extends AppController {
             $this->set('isFilter', false);
         }
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     public function view($id = null) {
@@ -2172,8 +2172,7 @@ class ServicesController extends AppController {
         $this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
         $this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     /*
