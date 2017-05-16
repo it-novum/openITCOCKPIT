@@ -1337,10 +1337,6 @@ class Host extends AppModel {
     }
 
     public function virtualFieldsForIndex(){
-        //$this->virtualFields['hoststatus'] = 'Hoststatus.current_state';
-        $this->virtualFields['last_hard_state_change'] = 'Hoststatus.last_hard_state_change';
-        $this->virtualFields['last_check'] = 'Hoststatus.last_check';
-        $this->virtualFields['output'] = 'Hoststatus.output';
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
