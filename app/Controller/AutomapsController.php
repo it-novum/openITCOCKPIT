@@ -28,7 +28,7 @@ use itnovum\openITCOCKPIT\Core\ContainerRepository;
 class AutomapsController extends AppController
 {
     public $layout = 'Admin.default';
-    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, 'Systemsetting', MONITORING_ACKNOWLEDGED];
+    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, MONITORING_ACKNOWLEDGED];
     public $components = ['CustomValidationErrors'];
     public $helpers = ['CustomValidationErrors', 'Status'];
 
@@ -115,9 +115,6 @@ class AutomapsController extends AppController
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
         }
-
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $automap = $this->Automap->findById($id);
 

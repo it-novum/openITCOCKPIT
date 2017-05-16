@@ -311,6 +311,16 @@ class AppController extends Controller {
         if (!$this->request->is('ajax')) {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
+
+        //Add Websocket Information
+        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+        if (!$this->Session->check('SUDO_SERVER.API_KEY')) {
+            $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
+            $this->Session->write('SUDO_SERVER.API_KEY', $key['Systemsetting']['value']);
+        }
+        $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
+
+
         ClassRegistry::addObject('AuthComponent', $this->Auth);
         $this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
         $this->set('loggedIn', $this->Auth->loggedIn());

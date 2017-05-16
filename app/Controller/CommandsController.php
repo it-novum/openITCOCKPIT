@@ -181,9 +181,6 @@ class CommandsController extends AppController
     {
         $userId = $this->Auth->user('id');
         $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
         $this->set('command_types', $this->getCommandTypes());
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -238,9 +235,6 @@ class CommandsController extends AppController
             $this->set(compact(['command', 'command_types']));
             $this->set('_serialize', ['command', 'command_types']);
             $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-            $this->loadModel('Systemsetting');
-            $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-            $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
             $this->Frontend->setJson('command_id', $id);
 
             if ($this->request->is('post') || $this->request->is('put')) {

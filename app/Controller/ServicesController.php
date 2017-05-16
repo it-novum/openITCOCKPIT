@@ -87,7 +87,8 @@ class ServicesController extends AppController {
         'DeletedService',
         'Rrd',
         'Container',
-        'Documentation'
+        'Documentation',
+        'Systemsetting'
     ];
 
     public $listFilters = [
@@ -358,9 +359,6 @@ class ServicesController extends AppController {
             }
         }
         $username = $this->Auth->user('full_name');
-
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $this->set(compact(['all_services', 'username', 'hostContainers']));
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
@@ -2171,9 +2169,6 @@ class ServicesController extends AppController {
             ])
         );
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
         $this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
         $this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
 
@@ -2371,9 +2366,7 @@ class ServicesController extends AppController {
 
         $username = $this->Auth->user('full_name');
 
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-//debug($all_services);
+
         $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
         $this->set('_serialize', ['all_services']);
     }

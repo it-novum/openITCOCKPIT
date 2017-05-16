@@ -214,9 +214,6 @@ class HostsController extends AppController {
         $this->set('all_hosts', $all_hosts);
 
 
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
         $this->set('username', $User->getFullName());
         $this->set('userRights', $this->MY_RIGHTS);
 
@@ -2409,9 +2406,6 @@ class HostsController extends AppController {
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));

@@ -30,7 +30,7 @@ class DowntimesController extends AppController
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_DOWNTIME, 'Host', 'Service', 'Hostgroup', 'Systemsetting'];
+    public $uses = [MONITORING_DOWNTIME, 'Host', 'Service', 'Hostgroup'];
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
@@ -79,9 +79,6 @@ class DowntimesController extends AppController
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);
         } else {
@@ -110,9 +107,6 @@ class DowntimesController extends AppController
         $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
-
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);

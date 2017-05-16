@@ -268,8 +268,6 @@ class AdministratorsController extends AppController
 
         $recipientAddress = $this->Auth->user('email');
 
-        $this->Frontend->setJson('akey', $systemsetting['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
-
         $this->set(compact([
             'disks',
             'memory',
