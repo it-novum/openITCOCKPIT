@@ -22,12 +22,40 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+
+use itnovum\openITCOCKPIT\Core\HostConditions;
+
 class CrateHost extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';
     public $useTable = 'hosts';
     public $tablePrefix = 'openitcockpit_';
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'joins' => [
+                [
+                    'table' => 'statusengine_hoststatus',
+                    'type' => 'LEFT',
+                    'alias' => 'Hoststatus',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ]
+            ],
+            'conditions' => $conditions,
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $HostConditions->getContainerIds(),
+            ],
+            'order' => $HostConditions->getOrder()
+        ];
+        $query['conditions'][] = 'Hoststatus.hostname IS NULL';
+        return $query;
+    }
 
 
 }

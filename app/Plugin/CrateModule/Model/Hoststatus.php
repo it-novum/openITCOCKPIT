@@ -89,5 +89,4 @@ class Hoststatus extends CrateModuleAppModel {
         ];
         return $query;
     }
-
 }
