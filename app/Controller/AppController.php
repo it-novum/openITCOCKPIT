@@ -312,6 +312,12 @@ class AppController extends Controller {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
 
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+
         //Add Websocket Information
         $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         if (!$this->Session->check('SUDO_SERVER.API_KEY')) {

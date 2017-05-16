@@ -52,12 +52,6 @@ class AutomapsController extends AppController
         }
         $this->set(compact(['all_automaps']));
         $this->set('_serialize', ['all_automaps']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function add()

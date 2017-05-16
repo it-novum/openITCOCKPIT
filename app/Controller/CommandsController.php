@@ -77,10 +77,6 @@ class CommandsController extends AppController
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
         }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
     }
@@ -102,10 +98,6 @@ class CommandsController extends AppController
         } else {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
         }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
@@ -129,10 +121,6 @@ class CommandsController extends AppController
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
         }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
     }
@@ -154,10 +142,6 @@ class CommandsController extends AppController
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
         }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));

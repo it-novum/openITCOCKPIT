@@ -109,12 +109,5 @@ class ServicechecksController extends AppController
 
         $this->set('ServicecheckListsettings', $requestSettings['Listsettings']);
         $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'allowEdit', 'docuExists']));
-
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 }

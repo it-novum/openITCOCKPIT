@@ -53,8 +53,7 @@ class DowntimesController extends AppController
         ],
     ];
 
-    public function host()
-    {
+    public function host(){
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
@@ -78,16 +77,10 @@ class DowntimesController extends AppController
 
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
-    public function service()
-    {
+
+    public function service(){
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
@@ -108,11 +101,6 @@ class DowntimesController extends AppController
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function index()

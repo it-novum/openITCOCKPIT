@@ -147,13 +147,6 @@ class AcknowledgementsController extends AppController
 
         $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
         $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit', 'docuExists']));
-
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function host($id = null)
@@ -210,12 +203,5 @@ class AcknowledgementsController extends AppController
 
         $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
         $this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'docuExists']));
-
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 }

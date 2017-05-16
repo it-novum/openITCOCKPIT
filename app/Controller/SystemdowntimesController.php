@@ -74,12 +74,6 @@ class SystemdowntimesController extends AppController
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
         $this->set('all_systemdowntimes', $all_systemdowntimes);
         $this->set('paginatorLimit', $paginatorLimit);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function addHostdowntime()

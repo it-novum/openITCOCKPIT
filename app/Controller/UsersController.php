@@ -59,11 +59,7 @@ class UsersController extends AppController
     public function index()
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
+
         $this->loadModel('Container');
         $options = [
             'recursive'  => -1,

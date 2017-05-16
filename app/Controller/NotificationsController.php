@@ -60,11 +60,6 @@ class NotificationsController extends AppController
 
         $order = $this->ListsettingsParser();
 
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
         $paginatorLimit = $this->Paginator->settings['limit'];
 
         //--force --doit --yes-i-know-what-i-do
@@ -117,12 +112,6 @@ class NotificationsController extends AppController
             $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
             $this->set(compact(['host', 'hoststatus', 'all_notification', 'docuExists']));
-
-            if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-                $this->set('isFilter', true);
-            } else {
-                $this->set('isFilter', false);
-            }
 
         } else {
             throw new NotFoundException(__('Invalid host'));
@@ -203,13 +192,6 @@ class NotificationsController extends AppController
             //--force --doit --yes-i-know-what-i-do
             $all_notification = $this->Paginator->paginate(null, [], $order);
             $this->set(compact(['service', 'servicestatus', 'all_notification', 'allowEdit']));
-
-            if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-                $this->set('isFilter', true);
-            } else {
-                $this->set('isFilter', false);
-            }
-
         } else {
             throw new NotFoundException(__('Invalid host'));
         }

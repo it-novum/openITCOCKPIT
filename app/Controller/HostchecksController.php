@@ -103,11 +103,5 @@ class HostchecksController extends AppController
 
         $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 }

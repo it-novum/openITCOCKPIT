@@ -130,12 +130,6 @@ class StatehistoriesController extends AppController
 
         $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function host($id = null)
@@ -199,11 +193,5 @@ class StatehistoriesController extends AppController
 
         $this->set(compact(['host', 'all_statehistories', 'hoststatus', 'docuExists']));
         $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 }

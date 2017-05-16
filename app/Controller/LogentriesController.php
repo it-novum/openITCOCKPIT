@@ -88,12 +88,5 @@ class LogentriesController extends AppController
         $this->set(compact(['all_logentries', 'paginatorLimit']));
         $this->set('LogentiresListsettings', $requestSettings['Listsettings']);
         $this->set('logentry_types', $this->Logentry->types());
-
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 }

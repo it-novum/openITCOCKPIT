@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 /**
  * @property Host $Host
@@ -156,7 +157,7 @@ class HostsController extends AppController {
 
     public function index() {
         $HostControllerRequest = new HostControllerRequest($this->request);
-        $HostCondition = new \itnovum\openITCOCKPIT\Core\HostConditions();
+        $HostCondition = new HostConditions();
         $User = new User($this->Auth);
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
@@ -212,32 +213,21 @@ class HostsController extends AppController {
         }
 
         $this->set('all_hosts', $all_hosts);
+        $this->set('_serialize', ['all_hosts']);
 
 
         $this->set('username', $User->getFullName());
         $this->set('userRights', $this->MY_RIGHTS);
-
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_hosts']);
         $this->set('myNamedFilters', $this->request->data);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (!isset($this->request->data['Filter']['HostStatus']['current_state'])) {
-                $this->set('HostStatus.current_state', []);
-            }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
 
         $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
-        $SatelliteModel = false;
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
-            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-        }
+
         $SatelliteNames = [];
-        if ($SatelliteModel !== false) {
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
             $SatelliteNames = $SatelliteModel->find('list');
         }
         $this->set('SatelliteNames', $SatelliteNames);
@@ -380,16 +370,6 @@ class HostsController extends AppController {
         $this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames']));
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_hosts']);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (isset($this->request->data['Filter']['HostStatus']['current_state'])) {
-                //$this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
-            } else {
-                $this->set('HostStatus.current_state', []);
-            }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function edit($id = null) {
@@ -1435,12 +1415,6 @@ class HostsController extends AppController {
         $deletedHostCount = $this->DeletedHost->find('count');*/
         $this->set(compact(['disabledHosts']));
         $this->set('_serialize', ['disabledHosts']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function deactivate($id = null, $return = false) {

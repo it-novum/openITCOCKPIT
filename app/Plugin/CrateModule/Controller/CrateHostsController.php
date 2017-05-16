@@ -130,15 +130,6 @@ class CrateHostsController extends CrateModuleAppController {
         }
         $this->set(compact(['all_hosts']));
 
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (!isset($this->request->data['Filter']['HostStatus']['current_state'])) {
-                $this->set('HostStatus.current_state', []);
-            }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
         $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
         $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
         $this->set('userRights', $this->MY_RIGHTS);
