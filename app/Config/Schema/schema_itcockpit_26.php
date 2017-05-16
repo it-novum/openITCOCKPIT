@@ -1585,6 +1585,7 @@ class AppSchema extends CakeSchema
         'end_date'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'send_email'      => ['type' => 'integer', 'null' => false, 'default' => null],
         'send_interval'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'last_send_date'   => ['type' => 'datetime', 'null' => false, 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [

@@ -71,9 +71,9 @@
 
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.timeperiod_id');
                                         echo $this->Paginator->sort('Instantreport.timeperiod_id', 'Time period'); ?></th>
-                                    <th class="no-sort"><?= __('Start date'); ?><br /><?= __('End date'); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.summary');
                                         echo $this->Paginator->sort('Instantreport.summary', 'Summary display'); ?></th>
+                                    <th class="no-sort"><?= __('Start date'); ?><br /><?= __('End date'); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.send_email');
                                         echo $this->Paginator->sort('Instantreport.send_email', 'Send emails'); ?></th>
                                     <th class="no-sort"><?= __('Send interval'); ?></th>
@@ -99,10 +99,10 @@
                                         <td><?= $types[$instantReport['Instantreport']['type']]; ?></td>
                                         <td><?= $reportFormats[$instantReport['Instantreport']['report_format']]; ?></td>
                                         <td><?= $instantReport['Timeperiod']['name']; ?></td>
-                                        <td class="text-center"><?= $instantReport['Instantreport']['start_date'] === '0000-00-00 00:00:00' || $instantReport['Instantreport']['end_date'] === '0000-00-00 00:00:00' ?
-                                                '<i class="fa fa-times fa-lg txt-color-red"></i>' : (date('d.m.Y', strtotime($instantReport['Instantreport']['start_date'])) . '<br />' . date('d.m.Y', strtotime($instantReport['Instantreport']['end_date']))) ?></td>
                                         <td class="text-center"><?= $instantReport['Instantreport']['summary'] === '1' ?
                                                 '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['start_date'] === '0000-00-00 00:00:00' || $instantReport['Instantreport']['end_date'] === '0000-00-00 00:00:00' || $instantReport['Instantreport']['send_email'] === '1' ?
+                                                '<i class="fa fa-times fa-lg txt-color-red"></i>' : (date('d.m.Y', strtotime($instantReport['Instantreport']['start_date'])) . '<br />' . date('d.m.Y', strtotime($instantReport['Instantreport']['end_date']))) ?></td>
                                         <td class="text-center"><?= $instantReport['Instantreport']['send_email'] === '1' ?
                                                 '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
                                         <td class="text-center"><?= $instantReport['Instantreport']['send_email'] === '1' && $instantReport['Instantreport']['send_interval'] > 0 ?
@@ -129,7 +129,7 @@
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                    <?php if ($this->Acl->hasPermission('generate') && $instantReport['Instantreport']['send_email'] !== '1'): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
                                                                         class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>

@@ -53,10 +53,10 @@ $totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalSe
                 <i class="fa fa-calendar txt-color-blueDark"></i>
                 <?php
                 echo __('Analysis period: ');
-                echo h($this->Time->format($instantReportDetails['startDate'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>
+                echo h($this->Time->format($instantReportDetails['startDate'], '%H:%M:%S - %d.%m.%Y', false)); ?>
                 <i class="fa fa-long-arrow-right"></i>
                 <?php
-                echo h($this->Time->format($instantReportDetails['endDate'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
+                echo h($this->Time->format($instantReportDetails['endDate'], '%H:%M:%S - %d.%m.%Y', false));
                 ?>
             </div>
             <div class="col-md-3 text-left">
@@ -300,7 +300,6 @@ $totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalSe
         <?php if(empty($instantReportData)): ?>
             <div class="row margin-bottom-10"><div class="col-md-12">No hosts/services found</div></div>
         <?php endif; ?>
-
     </div>
 
 </body>

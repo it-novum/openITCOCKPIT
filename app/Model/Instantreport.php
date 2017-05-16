@@ -119,8 +119,8 @@ class Instantreport extends AppModel {
             ]
         ],
         'start_date'    => [
-            'notBlankDates'      => [
-                'rule'     => 'notBlankDates',
+            'notBlankDateStart'      => [
+                'rule'     => 'notBlankDateStart',
                 'message'  => 'This field cannot be left blank',
             ],
             'date'          => [
@@ -133,8 +133,8 @@ class Instantreport extends AppModel {
             ],
         ],
         'end_date'      => [
-            'notBlankDates'      => [
-                'rule'     => 'notBlankDates',
+            'notBlankDateEnd'      => [
+                'rule'     => 'notBlankDateEnd',
                 'message'  => 'This field cannot be left blank',
             ],
             'date'          => [
@@ -195,8 +195,12 @@ class Instantreport extends AppModel {
     }
 
     public function beforeSave($options = []) {
-        $this->data['Instantreport']['start_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['start_date']));
-        $this->data['Instantreport']['end_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['end_date']));
+        if(isset($this->data['Instantreport']['start_date'])){
+            $this->data['Instantreport']['start_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['start_date']));
+        }
+        if(isset($this->data['Instantreport']['end_date'])){
+            $this->data['Instantreport']['end_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['end_date']));
+        }
         return true;
     }
 
@@ -229,8 +233,12 @@ class Instantreport extends AppModel {
         return $this->data['Instantreport']['send_email'] !== '1' || !empty($this->data['Instantreport']['User']);
     }
 
-    public function notBlankDates(){
-        return !isset($this->data['Instantreport']['send_email']) || $this->data['Instantreport']['send_email'] !== '1';
+    public function notBlankDateStart(){
+        return $this->data['Instantreport']['send_email'] === '1' || !empty($this->data['Instantreport']['start_date']);
+    }
+
+    public function notBlankDateEnd(){
+        return $this->data['Instantreport']['send_email'] === '1' || !empty($this->data['Instantreport']['end_date']);
     }
 
     public function validateDates() {
@@ -380,4 +388,36 @@ class Instantreport extends AppModel {
             self::SEND_YEARLY => __('Yearly')
         ];
     }
+
+    public function getFromDate($lastSent, $sendInterval){
+        $oneDay = 60 * 60 * 24;
+        switch($sendInterval){
+            case self::SEND_DAILY:
+                if($lastSent === '0000-00-00 00:00:00' || time() - $oneDay >= strtotime($lastSent)){
+                    return time() - $oneDay;
+                }
+                break;
+
+            case self::SEND_WEEKLY:
+                if($lastSent === '0000-00-00 00:00:00' || time() - 7 * $oneDay >= strtotime($lastSent)){
+                    return time() - 7 * $oneDay;
+                }
+                break;
+
+            case self::SEND_MONTHLY:
+                if($lastSent === '0000-00-00 00:00:00' || time() - 30 * $oneDay >= strtotime($lastSent)){
+                    return time() - 30 * $oneDay;
+                }
+                break;
+
+            case self::SEND_YEARLY:
+                if($lastSent === '0000-00-00 00:00:00' || time() - 365 * $oneDay >= strtotime($lastSent)){
+                    return time() - 365 * $oneDay;
+                }
+                break;
+        }
+
+        return false;
+    }
+
 }

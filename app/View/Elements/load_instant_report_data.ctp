@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+$totalHostsData[0] = $totalHostsData[1] = $totalHostsData[2] = 0;
+$totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalServicesData[3] = 0;
 ?>
 <div class="jarviswidget">
     <header>
@@ -49,6 +52,7 @@
             </div>
         </div>
         <?php
+        if(!$instantReportDetails['summary'] && !empty($instantReportData)):
         foreach ($instantReportData['Hosts'] as $hostUuid => $hostData):?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -61,31 +65,33 @@
                                     </h2>
                                 </header>
                                 <div class="well padding-bottom-10">
-                                    <div class="row margin-top-10 font-md padding-bottom-20">
-                                        <div class="col-md-12 text-left">
-                                            <?php
-                                            $overview_chart = $this->PieChart->createPieChart([$hostData[0], $hostData[1], $hostData[2]]);
-
-                                            echo $this->Html->image(
-                                                '/img/charts/'.$overview_chart
-                                            ); ?>
-                                        </div>
-                                        <div class="col-md-12 text-left font-xs">
-                                            <?php
-                                            for ($i = 0; $i <= 2; $i++):?>
-
-                                                <i class="fa fa-square no-padding <?php echo $this->Status->HostStatusTextColor($i); ?> "></i>
-                                                <em class="padding-right-20">
-                                                    <?php
-                                                    echo round($hostData[$i] / $instantReportDetails['totalTime'] * 100, 2).' % ('.$this->Status->humanSimpleHostStatus($i).')';
-                                                    ?>
-                                                </em>
-
+                                    <?php if(!$instantReportDetails['onlyServices']): ?>
+                                        <div class="row margin-top-10 font-md padding-bottom-20">
+                                            <div class="col-md-12 text-left">
                                                 <?php
-                                            endfor;
-                                            ?>
+                                                $overview_chart = $this->PieChart->createPieChart([$hostData[0], $hostData[1], $hostData[2]]);
+
+                                                echo $this->Html->image(
+                                                    '/img/charts/'.$overview_chart
+                                                ); ?>
+                                            </div>
+                                            <div class="col-md-12 text-left font-xs">
+                                                <?php
+                                                for ($i = 0; $i <= 2; $i++):?>
+
+                                                    <i class="fa fa-square no-padding <?php echo $this->Status->HostStatusTextColor($i); ?> "></i>
+                                                    <em class="padding-right-20">
+                                                        <?php
+                                                        echo round($hostData[$i] / $instantReportDetails['totalTime'] * 100, 2).' % ('.$this->Status->humanSimpleHostStatus($i).')';
+                                                        ?>
+                                                    </em>
+
+                                                    <?php
+                                                endfor;
+                                                ?>
+                                            </div>
                                         </div>
-                                    </div>
+                                    <?php endif; ?>
                                     <div>
                                         <?php
                                         if (isset($hostData['Services'])):
@@ -114,10 +120,9 @@
                                                         </em>
 
                                                         <?php
-                                                    endfor;
-                                                endif; ?>
-                                                </div>
-                                                <?php
+                                                    endfor; ?>
+                                                    </div>
+                                                <?php endif;
                                             endforeach;
                                         endif;
                                         ?>
@@ -132,9 +137,111 @@
             </section>
             <?php
         endforeach;
+        elseif(!empty($instantReportData)):
+            foreach($instantReportData['Hosts'] as $hostUuid => $hostData){
+                if (isset($hostData[0], $hostData[1], $hostData[2])){
+                    $totalHostsData[0] += $hostData[0];
+                    $totalHostsData[1] += $hostData[1];
+                    $totalHostsData[2] += $hostData[2];
+                }
+                if (isset($hostData['Services'])){
+                    foreach ($hostData['Services'] as $serviceUuid => $serviceData){
+                        if (isset($serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3])){
+                            $totalServicesData[0] += $serviceData[0];
+                            $totalServicesData[1] += $serviceData[1];
+                            $totalServicesData[2] += $serviceData[2];
+                            $totalServicesData[3] += $serviceData[3];
+                        }
+                    }
+                }
+            }
+            $totalTimeHosts = $totalHostsData[0] + $totalHostsData[1] + $totalHostsData[2];
+            $totalTimeServices = $totalServicesData[0] + $totalServicesData[1] + $totalServicesData[2] + $totalServicesData[3];
+            ?>
+
+            <?php if(!$instantReportDetails['onlyServices'] && $totalTimeHosts != 0): ?>
+                <section id="widget-grid" class="">
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2><i class="fa fa-desktop"></i> <?= __('Hosts summary') ?></h2>
+                                </header>
+                                <div class="well padding-bottom-10">
+                                    <div class="row margin-top-10 font-md padding-bottom-20">
+                                        <div class="col-md-12 text-left">
+                                            <?php
+                                            $overview_chart = $this->PieChart->createPieChart([$totalHostsData[0], $totalHostsData[1], $totalHostsData[2]]);
+
+                                            echo $this->Html->image('/img/charts/'.$overview_chart); ?>
+                                        </div>
+                                        <div class="col-md-12 text-left font-xs">
+                                            <?php
+                                            for ($i = 0; $i <= 2; $i++):?>
+
+                                                <i class="fa fa-square no-padding <?php echo $this->Status->HostStatusTextColor($i); ?> "></i>
+                                                <em class="padding-right-20">
+                                                    <?php
+                                                    echo round($totalHostsData[$i] / $totalTimeHosts * 100, 2).' % ('.$this->Status->humanSimpleHostStatus($i).')';
+                                                    ?>
+                                                </em>
+                                                <?php
+                                            endfor;
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <?php if(!$instantReportDetails['onlyHosts'] && $totalTimeServices != 0): ?>
+                <section id="widget-grid" class="">
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                                <header role="heading">
+                                    <h2><i class="fa fa-gear"></i> <?= __('Services summary') ?></h2>
+                                </header>
+                                <div class="well padding-bottom-10">
+                                    <div class="row margin-top-10 font-md padding-bottom-20">
+                                        <div class="col-md-12 text-left">
+                                            <?php
+                                            $overview_chart = $this->PieChart->createPieChart([$totalServicesData[0], $totalServicesData[1], $totalServicesData[2], $totalServicesData[3]]);
+
+                                            echo $this->Html->image(
+                                                '/img/charts/'.$overview_chart
+                                            ); ?>
+                                        </div>
+                                        <div class="col-md-12 text-left font-xs">
+                                            <?php
+                                            for ($i = 0; $i <= 3; $i++):?>
+                                                <i class="fa fa-square no-padding <?php echo $this->Status->ServiceStatusTextColor($i); ?> "></i>
+                                                <em class="padding-right-20 ">
+                                                    <?php
+                                                    echo round($totalServicesData[$i] / $totalTimeServices * 100, 2).' % ('.$this->Status->humanSimpleServiceStatus($i).')';
+                                                    ?>
+                                                </em>
+
+                                                <?php
+                                            endfor;
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            <?php endif;
+        endif;
+
+
         $hostsNotMonitored = Hash::extract($instantReportData, 'Hosts.{s}.HostsNotMonitored.{n}');
         $servicesNotMonitored = Hash::extract($instantReportData, 'Hosts.{s}.Services.ServicesNotMonitored.{s}');
-        if (!empty($hostsNotMonitored) || !empty($servicesNotMonitored)):?>
+        if (!empty($hostsNotMonitored) || !empty($servicesNotMonitored)): ?>
             <section id="widget-grid" class="">
                 <div class="row">
                     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
@@ -146,12 +253,14 @@
                             </header>
                             <div class="well padding-bottom-10">
                                 <?php
-                                foreach ($hostsNotMonitored as $hostId => $hostName):?>
-                                    <div>
-                                        <i class="fa fa-desktop"></i> <?php echo h($hostName); ?>
-                                    </div>
-                                    <?php
-                                endforeach;
+                                if(!$instantReportDetails['onlyServices']):
+                                    foreach ($hostsNotMonitored as $hostId => $hostName): ?>
+                                        <div>
+                                            <i class="fa fa-desktop"></i> <?php echo h($hostName); ?>
+                                        </div>
+                                        <?php
+                                    endforeach;
+                                endif;
                                 foreach ($servicesNotMonitored as $serviceId => $serviceArray):?>
                                     <div>
                                         <i class="fa fa-gear"></i>
@@ -168,8 +277,10 @@
                     </article>
                 </div>
             </section>
-            <?php
-        endif;
-        ?>
+        <?php endif; ?>
+
+        <?php if(empty($instantReportData)): ?>
+            <div class="row margin-bottom-10"><div class="col-md-12">No hosts/services found</div></div>
+        <?php endif; ?>
     </div>
 </div>

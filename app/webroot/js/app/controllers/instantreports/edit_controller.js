@@ -87,6 +87,7 @@ App.Controllers.InstantreportsEditController = Frontend.AppController.extend({
             $('#InstantreportStartDate').attr('disabled', 'disabled');
             $('#InstantreportEndDate').attr('disabled', 'disabled');
             $('div.start-end-date-holder > label').addClass('disabled');
+            $('.generate-submit-class').hide();
         }else{
             $('.send-interval-holder').hide();
             if($('#InstantreportStartDate').val() == ''){
@@ -98,6 +99,7 @@ App.Controllers.InstantreportsEditController = Frontend.AppController.extend({
             $('#InstantreportStartDate').removeAttr('disabled');
             $('#InstantreportEndDate').removeAttr('disabled');
             $('div.start-end-date-holder > label').removeClass('disabled');
+            $('.generate-submit-class').show();
         }
     }
 });

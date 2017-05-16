@@ -214,17 +214,15 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
             </div>
             <div class="well formactions"><div class="pull-right">
                     <?php
-                    if ($this->Acl->hasPermission('edit') && $this->Acl->hasPermission('generate')):
-                        echo $this->Form->submit(__('Save & generate'), ['div' => false, 'class' => 'btn btn-primary', 'name' => 'save_generate_submit']).'&nbsp;'.
-                            $this->Form->submit(__('Generate'), ['div' => false, 'class' => 'btn btn-primary', 'name' => 'generate_submit']).'&nbsp;';
-                    elseif($this->Acl->hasPermission('edit') && !$this->Acl->hasPermission('generate')):
-                        echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary', 'name' => 'save_submit']).'&nbsp;';
-                    elseif(!$this->Acl->hasPermission('edit') && $this->Acl->hasPermission('generate')):
-                        echo $this->Form->submit(__('Generate'), ['div' => false, 'class' => 'btn btn-primary', 'name' => 'generate_submit']).'&nbsp;';
+                    if ($this->Acl->hasPermission('edit')){
+                        echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary save-submit-class', 'name' => 'save_submit']).'&nbsp;';
+                    }
+                    if($this->Acl->hasPermission('generate')):
+                        echo $this->Form->submit(__('Generate'), ['div' => false, 'class' => 'btn btn-primary generate-submit-class', 'name' => 'generate_submit']).'&nbsp;';
                     endif;
                     echo $this->Html->link(__('Cancel'), ['action' => 'index'], ['class' => 'btn btn-default']);
                     ?>
-                </div></div>
+            </div></div>
         </div>
     </div>
 </div>
