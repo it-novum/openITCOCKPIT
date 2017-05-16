@@ -181,7 +181,6 @@ class CommandsController extends AppController
     {
         $userId = $this->Auth->user('id');
         $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $this->loadModel('Systemsetting');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
@@ -239,9 +238,6 @@ class CommandsController extends AppController
             $this->set(compact(['command', 'command_types']));
             $this->set('_serialize', ['command', 'command_types']);
             $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-            //$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
-            //$this->Frontend->setJson('websocket_port', 8081);
-            $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
             $this->loadModel('Systemsetting');
             $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
             $this->Frontend->setJson('akey', $key['Systemsetting']['value']);

@@ -145,7 +145,6 @@ class HostgroupsController extends AppController
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $this->loadModel('Systemsetting');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);

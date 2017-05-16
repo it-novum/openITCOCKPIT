@@ -79,7 +79,6 @@ class DowntimesController extends AppController
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
@@ -112,7 +111,6 @@ class DowntimesController extends AppController
         $this->set(compact(['all_downtimes', 'paginatorLimit']));
         $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
 
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 

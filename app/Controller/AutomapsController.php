@@ -116,7 +116,6 @@ class AutomapsController extends AppController
             throw new NotFoundException(__('Invalid automap'));
         }
 
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
