@@ -71,6 +71,15 @@ class Hoststatus extends CrateModuleAppModel {
      * @return array
      */
     public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+        if (isset($conditions['Host.keywords rlike'])) {
+            $values = [];
+            foreach (explode('|', $conditions['Host.keywords rlike']) as $value) {
+                $values[] = sprintf('.*%s.*', $value);
+            }
+            unset($conditions['Host.keywords rlike']);
+            $conditions['Host.tags rlike'] = implode('|', $values);
+        }
+
         $query = [
             'joins' => [
                 [

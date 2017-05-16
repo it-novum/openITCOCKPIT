@@ -671,6 +671,10 @@ class Crate extends DboSource {
                 $operator = '~*';
             }
 
+            if ($operator === 'RLIKE' || $operator === 'rlike') {
+                $operator = '~*';
+            }
+
             if (!preg_match($operatorMatch, trim($operator)) && strpos($operator, ' ') !== false) {
                 $key = $key . ' ' . $operator;
                 $split = strrpos($key, ' ');
