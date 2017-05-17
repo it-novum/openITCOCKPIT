@@ -38,7 +38,7 @@ class Hoststatus extends CrateModuleAppModel {
      *
      * @return array
      */
-    public function byUuid($uuid = null, $options = []){
+    private function byUuidMagic($uuid = null, $options = []){
         $return = [];
 
         $_options = [
@@ -52,17 +52,37 @@ class Hoststatus extends CrateModuleAppModel {
             $options['fields'][] = 'Hoststatus.hostname';
         }
 
-        if ($uuid !== null) {
-            $hoststatus = $this->find('all', $options);
-
-            if (!empty($hoststatus)) {
-                foreach ($hoststatus as $hs) {
-                    $return[$hs['Hoststatus']['hostname']] = $hs;
-                }
-            }
+        $findType = 'all';
+        if (!is_array($uuid)) {
+            $findType = 'first';
         }
 
-        return $return;
+        $dbresult = $this->find($findType, $options);
+
+        if($findType === 'first'){
+            return [
+                'Hoststatus' => $dbresult['Hoststatus'],
+            ];
+        }
+
+        $result = [];
+        foreach($dbresult as $record){
+            $result[$record['Hoststatus']['hostname']] = [
+                'Hoststatus' => $record['Hoststatus'],
+            ];
+        }
+        return $result;
+    }
+
+    public function byUuid($uuid, $options = []){
+        return $this->byUuidMagic($uuid, $options);
+    }
+
+    public function byUuids($uuids, $options = []){
+        if(!is_array($uuids)){
+            throw new InvalidArgumentException('$uuids need to be an array!');
+        }
+        return $this->byUuidMagic($uuids, $options);
     }
 
     /**
@@ -70,7 +90,7 @@ class Hoststatus extends CrateModuleAppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
             'joins' => [
                 [

@@ -2235,6 +2235,27 @@ class HostsController extends AppController {
     }
 
     public function browser($id = null) {
+        $host = $this->Host->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Parenthost' => [
+                    'fields' => [
+                        'uuid',
+                        'name'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Host.id' => $id
+            ]
+        ]);
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        $parenthosts = $host['Parenthost'];
+        $parentHostStatus = $this->Hoststatus->byUuid(Hash::extract($host['Parenthost'], '{n}.uuid'), [
+            'conditions' => [
+                'Hoststatus.current_state > 0'
+            ]
+        ]);
         $browseByUUID = false;
         $conditionsToFind = ['Host.id' => $id];
         if (preg_match('/\-/', $id)) {
@@ -2261,16 +2282,11 @@ class HostsController extends AppController {
             $id = $_host['Host']['id'];
         }
 
-        $this->__unbindAssociations('Service');
         // $uses is not the best choise at this point.
         // due to loadModel() we get the results we need
         $this->loadModel('Service');
         $host = $this->Host->prepareForView($id);
-        $this->Service->unbindModel([
-            'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'Serviceeventcommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
-        ]);
+
 
         $containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $_host['Host']['container_id'];
@@ -2343,9 +2359,9 @@ class HostsController extends AppController {
                     'Host.name',
                 ],
             ]);
-            $hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
+      //      $hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
         } else {
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        //    $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
         }
 
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
@@ -2373,6 +2389,7 @@ class HostsController extends AppController {
                 'docuExists',
                 'ContactsInherited',
                 'parenthosts',
+                'parentHostStatus',
                 'allowEdit',
                 'ticketSystem',
             ])

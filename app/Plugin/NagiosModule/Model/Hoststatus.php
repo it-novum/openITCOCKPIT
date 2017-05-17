@@ -37,14 +37,14 @@ class Hoststatus extends NagiosModuleAppModel
     ];
 
     /**
-     * Return the host status as array for given uuid as stirng or array
+     * Return the host status as array for given uuid as string or array
      *
-     * @param          string $uuid    UUID or array $uuid you want to get host status for
-     * @param    array        $options for the find request (see cakephp's find for all options)
+     * @param   string|array $uuid    UUID or array $uuid you want to get host status for
+     * @param   array        $options for the find request (see cakephp's find for all options)
      *
      * @return array
      */
-    public function byUuid($uuid = null, $options = [])
+    private function byUuidMagic($uuid = null, $options = [])
     {
         $return = [];
 
@@ -54,22 +54,45 @@ class Hoststatus extends NagiosModuleAppModel
                 'Objects.objecttype_id' => 1,
             ],
             'fields' => [
-                'Objects.*'
+                'Hoststatus.*',
+                'Objects.name1'
             ]
         ];
 
         $options = Hash::merge($_options, $options);
 
-        if ($uuid !== null) {
-            $hoststatus = $this->find('all', $options);
-
-            if (!empty($hoststatus)) {
-                foreach ($hoststatus as $hs) {
-                    $return[$hs['Objects']['name1']] = $hs;
-                }
-            }
+        $findType = 'all';
+        if (!is_array($uuid)) {
+            $findType = 'first';
         }
 
-        return $return;
+
+        $dbresult = $this->find($findType, $options);
+
+        if($findType === 'first'){
+            return [
+                'Hoststatus' => $dbresult['Hoststatus'],
+            ];
+        }
+
+        $result = [];
+        foreach($dbresult as $record){
+            $result[$record['Objects']['name1']] = [
+                'Hoststatus' => $record['Hoststatus'],
+            ];
+        }
+        return $result;
+
+    }
+
+    public function byUuid($uuid, $options = []){
+        return $this->byUuidMagic($uuid, $options);
+    }
+
+    public function byUuids($uuids, $options = []){
+        if(!is_array($uuids)){
+            throw new InvalidArgumentException('$uuids need to be an array!');
+        }
+        return $this->byUuidMagic($uuids, $options);
     }
 }

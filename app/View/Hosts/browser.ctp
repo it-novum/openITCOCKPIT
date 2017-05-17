@@ -22,6 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+
+$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -38,13 +42,12 @@
         <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
     </div>
 <?php endif; ?>
-
 <div class="alert auto-hide alert-danger" id="flashFailed"
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>">
-            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($host['Host']['uuid'], 'is_flapping')); ?>
+        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+            <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($host['Host']['name']); ?>
             <span>
@@ -104,30 +107,30 @@
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
                             <?php echo $host['Host']['name']; ?>
-                            <strong><?php echo __('available since:') ?><?php echo $this->Time->format($this->Status->get($host['Host']['uuid'], 'last_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+                            <strong><?php echo __('available since:') ?><?php echo $this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>
-                                <strong><?php echo $this->Time->format($this->Status->get($host['Host']['uuid'], 'last_check'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+                                <strong><?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
                                 <?php
-                                if ($this->Status->get($host['Host']['uuid'], 'state_type') == 1):
-                                    echo '<span class="label text-uppercase '.$this->Status->HostStatusBackgroundColor($this->Status->sget($host['Host']['uuid'], 'current_state')).'">'.__('hard state').'</span>';
+                                if ($Hoststatus->getStateType()):
+                                    echo '<span class="label text-uppercase '.$Hoststatus->HostStatusBackgroundColor().'">'.__('hard state').'</span>';
                                 else:
-                                    echo '<span class="label text-uppercase opacity-50 '.$this->Status->HostStatusBackgroundColor($this->Status->sget($host['Host']['uuid'], 'current_state')).'" >'.__('soft state').'</span>';
+                                    echo '<span class="label text-uppercase opacity-50 '.$Hoststatus->HostStatusBackgroundColor().'" >'.__('soft state').'</span>';
                                 endif; ?>
                             </p>
 
-                            <?php if ($this->Monitoring->checkForAck($this->Status->get($host['Host']['uuid'], 'problem_has_been_acknowledged')) && !empty($acknowledged)): ?>
+                            <?php if ($Hoststatus->isAacknowledged() && !empty($acknowledged)): ?>
                                 <p>
                                     <span class="fa-stack fa-lg">
-                                        <?php if ($hoststatus[$host['Host']['uuid']]['Hoststatus']['acknowledgement_type'] == 1): ?>
-                                        <   i class="fa fa-user fa-stack-2x"></i>
+                                        <?php if ($Hoststatus->getAcknowledgementType()): ?>
+                                        <i class="fa fa-user fa-stack-2x"></i>
                                         <?php else: ?>
                                             <i class="fa fa-user-o fa-stack-2x"></i>
                                         <?php endif; ?>
                                         <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
                                     </span>
                                     <?php
-                                    if ($hoststatus[$host['Host']['uuid']]['Hoststatus']['acknowledgement_type'] == 1):
+                                    if ($Hoststatus->getAcknowledgementType()):
                                         echo __('The current status was already acknowledged by');
                                     else:
                                         echo __('The current status was already acknowledged (STICKY) by');
@@ -159,65 +162,74 @@
                                 </p>
                             <?php endif; ?>
 
-                            <?php if ($this->Monitoring->checkForDowntime($this->Status->get($host['Host']['uuid'], 'scheduled_downtime_depth'))): ?>
-                                <p>
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fa fa-power-off fa-stack-2x"></i>
-                                        <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-                                    </span>
-                                    <?php echo __('The host is currently in a planned maintenance period.'); ?>
-                                    <br/><br/>
-                                </p>
+                            <?php
+                                    if ($Hoststatus->isInDowntime()): ?>
+                                    <p>
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-power-off fa-stack-2x"></i>
+                                            <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                        </span>
+                                        <?php echo __('The host is currently in a planned maintenance period.'); ?>
+                                        <br/><br/>
+                                    </p>
+                            <?php
+                                    endif;
+                                    if (!empty($parenthosts)):
+                                        foreach ($parenthosts as $parenthost):
+                                            if (!empty($parentHostStatus[$parenthost['Host']['uuid']])):
+                                                $ParentHostStatus = new Hoststatus($parentHostStatus[$parenthost['Host']['uuid']]['Hoststatus']);
+                                            ?>
+                                            <p class="parentstatus padding-left-10">
+                                                <?php echo __('Problem with parent host'); ?> <a
+                                                        href="/hosts/browser/<?php echo $parenthost['Host']['id']; ?>"><?php echo h($parenthost['Host']['name']); ?></a> <?php echo __('detected'); ?>
+                                                <br/>
+                                                <?php $_state = $ParentHostStatus->getHumanHoststatus(); ?>
 
-                            <?php endif; ?>
+                                                <?php echo $_state['html_icon']; ?>
+                                                <span class="padding-left-5"
+                                                      style="vertical-align: middle;"><?php echo $_state['human_state']; ?></span>
+                                                <code class="no-background <?php echo $ParentHostStatus->HostStatusColor(); ?>">(<?php echo h($Hoststatus->getOutput()); ?>
+                                                    )</code>
+                                            </p>
+                                    <?php
 
-                            <?php if (!empty($parenthosts)): ?>
-                                <?php foreach ($parenthosts as $parenthost): ?>
-                                    <?php if ($this->Status->get($parenthost['Host']['uuid'], 'current_state') > 0): ?>
-                                        <p class="parentstatus padding-left-10">
-                                            <?php echo __('Problem with parent host'); ?> <a
-                                                    href="/hosts/browser/<?php echo $parenthost['Host']['id']; ?>"><?php echo h($parenthost['Host']['name']); ?></a> <?php echo __('detected'); ?>
-                                            <br/>
-                                            <?php $_state = $this->Status->humanHostStatus($parenthost['Host']['uuid'], 'javascript:void(0)', null, 'cursor:auto;'); ?>
 
-                                            <?php echo $_state['html_icon']; ?>
-                                            <span class="padding-left-5"
-                                                  style="vertical-align: middle;"><?php echo $_state['human_state']; ?></span>
-                                            <code class="no-background <?php echo $this->Status->HostStatusColor($parenthost['Host']['uuid']); ?>">(<?php echo h($this->Status->get($parenthost['Host']['uuid'], 'output')); ?>
-                                                )</code>
+                                            if ($ParentHostStatus->isInDowntime()): ?>
+                                            <p class="parentstatus">
+                                                <span class="fa-stack fa-lg">
+                                                    <i class="fa fa-power-off fa-stack-2x"></i>
+                                                    <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
+                                                </span>
+                                            <?php
+                                                echo __('The parent host'); ?>
+                                                <strong>
+                                                    <?php echo h($parenthost['Host']['name']); ?>
+                                                </strong>
+                                                <?php
+                                                echo __('is currently in a scheduled downtime'); ?>
                                         </p>
-                                    <?php endif; ?>
-                                    <?php if ($this->Monitoring->checkForDowntime($this->Status->get($parenthost['Host']['uuid'], 'scheduled_downtime_depth'))): ?>
-                                        <p class="parentstatus">
-                                            <span class="fa-stack fa-lg">
-                                                <i class="fa fa-power-off fa-stack-2x"></i>
-                                                <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-5"></i>
-                                            </span>
-                                            <?php echo __('The parent host'); ?>
-                                            <strong><?php echo h($parenthost['Host']['name']); ?></strong> <?php echo __('is currently in a scheduled downtime'); ?>
-                                        </p>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-
+                                    <?php
+                                            endif;
+                                            endif;
+                                        endforeach;
+                                     endif;
+                                     ?>
                             <table class="table table-bordered">
                                 <tbody>
                                 <tr>
                                     <td><strong><?php echo __('Current state'); ?>:</strong></td>
                                     <td>
                                         <?php
-                                        $_state = $this->Status->humanHostStatus($host['Host']['uuid'], 'javascript:void(0)', null, 'cursor:auto;');
-                                        echo $_state['html_icon'];
+                                        echo $Hoststatus->getHumanHoststatus()['html_icon'];
                                         ?>
 
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><strong><?php echo __('Flap detection'); ?>:</strong></td>
-                                    <td><?php echo $this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['html']; ?></td>
+                                    <td><?php echo $Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['html']; ?></td>
                                 </tr>
-
-                                <?php if ($this->Status->get($host['Host']['uuid'], 'notifications_enabled') == 0): ?>
+                                <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td><strong><?php echo __('Notifications'); ?>:</strong></td>
                                         <td>
@@ -231,7 +243,7 @@
 
                                 <tr>
                                     <td><strong><?php echo __('Check attempt'); ?>:</strong></td>
-                                    <td><?php echo h($this->Status->get($host['Host']['uuid'], 'current_check_attempt')); ?>
+                                    <td><?php echo h($Hoststatus->getCurrentCheckAttempts()); ?>
                                         /<?php echo h($host['Host']['max_check_attempts']); ?></td>
                                 </tr>
                                 <tr>
@@ -262,8 +274,8 @@
                                 <tr>
                                     <td><strong><?php echo __('Next check in'); ?>:</strong></td>
                                     <td>
-                                        <?php if ($host['Host']['active_checks_enabled'] == 1 && $host['Host']['satellite_id'] == 0 && $this->Status->get($host['Host']['uuid'], 'active_checks_enabled') !== null): ?>
-                                            <?php echo h($this->Time->timeAgoInWords(strtotime($this->Status->get($host['Host']['uuid'], 'next_check')), ['timezone' => $this->Auth->user('timezone')])); ?>
+                                        <?php if ($host['Host']['active_checks_enabled'] == 1 && $host['Host']['satellite_id'] == 0 && $Hoststatus->isActiveChecksEnabled() !== null): ?>
+                                            <?php echo h($this->Time->timeAgoInWords(strtotime($Hoststatus->getNextCheck()), ['timezone' => $this->Auth->user('timezone')])); ?>
                                             <?php if ($this->Status->get($host['Host']['uuid'], 'latency') > 1): ?>
                                                 <span class="text-muted"
                                                       title="<?php echo __('Check latency'); ?>">(+<?php echo $this->Status->get($host['Host']['uuid'], 'latency'); ?>
@@ -271,7 +283,7 @@
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <?php
-                                            if ($this->Status->get($host['Host']['uuid'], 'active_checks_enabled') === null):
+                                            if ($Hoststatus->isActiveChecksEnabled() === null):
                                                 echo __('Not found in monitoring');
                                             else:
                                                 echo __('n/a due to passive check');
@@ -283,14 +295,14 @@
                                 <tr>
                                     <td><strong><?php echo __('Output'); ?>:</strong></td>
                                     <td>
-                                        <code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo h($this->Status->get($host['Host']['uuid'], 'output')); ?></code>
+                                        <code class="no-background <?php echo $Hoststatus->HostStatusColor(); ?>"><?php echo h($Hoststatus->getOutput()); ?></code>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
                             <dl>
                                 <dt><?php echo __('Long output'); ?>:</dt>
-                                <?php $long_output = $this->Status->get($host['Host']['uuid'], 'long_output'); ?>
+                                <?php $long_output = $Hoststatus->getLongOutput() ?>
                                 <?php if (!empty($long_output)): ?>
                                     <!-- removing HTML tags, so that we can display a preview witout breaking the page -->
                                     <dd>
@@ -311,7 +323,7 @@
                                     </dd>
                                 <?php else: ?>
                                     <dd>
-                                        <code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo __('No long output available'); ?></code>
+                                        <code class="no-background <?php echo $Hoststatus->HostStatusColor(); ?>"><?php echo __('No long output available'); ?></code>
                                     </dd>
                                 <?php endif; ?>
                             </dl>
