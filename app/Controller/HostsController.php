@@ -266,110 +266,53 @@ class HostsController extends AppController {
     }
 
     public function notMonitored() {
-        $this->__unbindAssociations('Service');
+        $HostControllerRequest = new HostControllerRequest($this->request);
+        $HostCondition = new HostConditions();
+        $User = new User($this->Auth);
+        $HostCondition->setIncludeDisabled(false);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
 
-        $conditions = [];
-        if (!isset($this->request->params['named']['BrowserContainerId'])) {
-            $conditions = [
-                'Host.disabled' => 0,
-                'HostsToContainers.container_id' => $this->MY_RIGHTS,
-                'HostObject.name1 IS NULL',
-            ];
+        $HostCondition->setOrder($HostControllerRequest->getOrder(
+            ['Host.name' => 'asc'] //Default order
+        ));
+
+
+        if($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $this->ListFilter->buildConditions());
+            $modelName = 'Host';
         }
 
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-        if (isset($this->request->params['named']['BrowserContainerId'])) {
-            //The user set a comntainer id in the URL, may be over browser
-            $all_container_ids = Hash::merge(
-                [$this->request->params['named']['BrowserContainerId']],
-                Hash::extract(
-                    $this->Container->children(
-                        $this->request->params['named']['BrowserContainerId'],
-                        false,
-                        ['id', 'containertype_id']
-                    ),
-                    '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . ')$/].id'
-                )
-            );
-
-            $_conditions = [
-                'Host.disabled' => 0,
-                'Host.container_id' => $all_container_ids,
-            ];
-            $conditions = Hash::merge($conditions, $_conditions);
+        if($this->DbBackend->isCrateDb()) {
+            $this->loadModel('CrateModule.CrateHost');
+            $query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $this->ListFilter->buildConditions());
+            $this->CrateHost->alias = 'Host';
+            $modelName = 'CrateHost';
         }
 
-        $all_services = [];
-        $query = [
-            'conditions' => $conditions,
-            'fields' => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.description',
-                'Host.active_checks_enabled',
-                'Host.address',
-                'Host.satellite_id',
-
-                'Hosttemplate.id',
-                'Hosttemplate.uuid',
-                'Hosttemplate.name',
-                'Hosttemplate.description',
-                'Hosttemplate.active_checks_enabled',
-
-            ],
-            'order' => ['Host.name' => 'asc'],
-            'joins' => [
-                [
-                    'table' => 'nagios_objects',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'HostObject',
-                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-                ],
-                [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'group' => [
-                'Host.id',
-            ],
-        ];
-
-        $this->Host->unbindModel([
-                'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
-                'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Parenthost', 'Hostgroup'],
-                'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
-            ]
-        );
         if ($this->isApiRequest()) {
-            $all_hosts = $this->Host->find('all', $query);
-            debug($all_hosts);
+            $all_hosts = $this->${$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hosts = $this->Paginator->paginate();
+            $all_hosts = $this->Paginator->paginate($modelName,[], [key($this->Paginator->settings['order'])]);
         }
 
-        $hoststatus = [];
 
-        //distributed monitoring stuff
-        $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
-        $SatelliteModel = false;
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
-            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-        }
+        $this->set('all_hosts', $all_hosts);
+        $this->set('_serialize', ['all_hosts']);
+
+        $this->set('userRights', $this->MY_RIGHTS);
+        $this->set('myNamedFilters', $this->request->data);
+
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+
         $SatelliteNames = [];
-        if ($SatelliteModel !== false) {
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
             $SatelliteNames = $SatelliteModel->find('list');
         }
-
-        $this->set(compact(['all_hosts', 'hoststatus', 'masterInstance', 'SatelliteNames']));
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_hosts']);
+        $this->set('SatelliteNames', $SatelliteNames);
     }
 
     public function edit($id = null) {

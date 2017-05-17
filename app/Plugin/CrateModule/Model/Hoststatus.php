@@ -90,7 +90,15 @@ class Hoststatus extends CrateModuleAppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []) {
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+        if (isset($conditions['Host.keywords rlike'])) {
+            $values = [];
+            foreach (explode('|', $conditions['Host.keywords rlike']) as $value) {
+                $values[] = sprintf('.*%s.*', $value);
+            }
+            unset($conditions['Host.keywords rlike']);
+            $conditions['Host.tags rlike'] = implode('|', $values);
+        }
         $query = [
             'joins' => [
                 [
@@ -109,5 +117,4 @@ class Hoststatus extends CrateModuleAppModel {
         ];
         return $query;
     }
-
 }

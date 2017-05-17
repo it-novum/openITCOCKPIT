@@ -48,7 +48,7 @@ class Crate extends DboSource {
      *
      * @var array
      */
-    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*');
+    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL');
 
     /**
      * @var array
@@ -341,7 +341,12 @@ class Crate extends DboSource {
                             $queryTemplate = sprintf('%s WHERE %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
                         } else {
                             $hasWhere = true;
-                            $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+
+                            if($result['value'] !== null) {
+                                $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                            }else{
+                                $queryTemplate = sprintf('%s WHERE %s %s', $queryTemplate, $result['key'], $result['operator']);
+                            }
                         }
                     } else {
                         if (is_array($result['value'])) {
@@ -351,7 +356,11 @@ class Crate extends DboSource {
                             }
                             $queryTemplate = sprintf('%s AND %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
                         } else {
-                            $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                            if($result['value'] !== null) {
+                                $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                            }else{
+                                $queryTemplate = sprintf('%s AND %s %s', $queryTemplate, $result['key'], $result['operator']);
+                            }
                         }
                     }
                     $i++;
@@ -430,6 +439,9 @@ class Crate extends DboSource {
                             $attachedParameters[] = $value;
                         }
                     } else {
+                        if($result['value'] === null){
+                            continue;
+                        }
                         $query->bindValue($i++, $result['value']);
                         $attachedParameters[] = $result['value'];
                     }
@@ -639,6 +651,12 @@ class Crate extends DboSource {
      * @return array
      */
     protected function _parseKey($key, $value, Model $Model = null){
+        //$query['conditions'][] = 'Hoststatus.hostname IS NULL';
+        if(is_numeric($key)){
+            $key = $value;
+            $value = null;
+        }
+
         $operatorMatch = '/^(((' . implode(')|(', $this->_sqlOps);
         $operatorMatch .= ')\\x20?)|<[>=]?(?![^>]+>)\\x20?|[>=!]{1,3}(?!<)\\x20?)/is';
         $bound = (strpos($key, '?') !== false || (is_array($value) && strpos($key, ':') !== false));
@@ -650,6 +668,10 @@ class Crate extends DboSource {
             list($key, $operator) = explode(' ', $key, 2);
 
             if ($operator === 'LIKE' || $operator === 'like') {
+                $operator = '~*';
+            }
+
+            if ($operator === 'RLIKE' || $operator === 'rlike') {
                 $operator = '~*';
             }
 

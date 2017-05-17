@@ -1340,4 +1340,64 @@ class Host extends AppModel {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+
+            ],
+            'order' => $HostConditions->getOrder(),
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+        $query['conditions'][] = 'HostObject.name1 IS NULL';
+
+        return $query;
+    }
+
 }
