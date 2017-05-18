@@ -103,7 +103,6 @@ class Hoststatus {
     private $current_check_attempt;
 
     public function __construct($data){
-debug($data);
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
         }
