@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 
 class Hoststatus {
 
@@ -169,22 +170,8 @@ class Hoststatus {
     }
 
     public function getHumanHoststatus($href = 'javascript:void(0)', $style = ''){
-        if ($this->currentState === null) {
-            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="' . $href . '" class="btn btn-primary status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-question-circle'];
-        }
-
-        switch ($this->currentState) {
-            case 0:
-                return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'glyphicon glyphicon-ok'];
-                break;
-
-            case 1:
-                return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-exclamation'];
-                break;
-
-            default:
-                return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default status-circle" style="padding:0;' . $style . '"></a>'];
-        }
+        $Icon = new HoststatusIcon($this->currentState, $href, $style);
+        return $Icon->asArray();
     }
 
     public function getHostFlappingIconColored($class = ''){

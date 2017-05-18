@@ -22,24 +22,34 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])]); ?>
+
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+
+$Host = new Host($host);
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>">
-            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($host['Host']['uuid'], 'is_flapping')); ?>
+        <h1 class="page-title <?php echo $this->Status->HostStatusColor($Host->getUuid()); ?>">
+            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($Host->getUuid(), 'is_flapping')); ?>
             <i class="fa fa-desktop fa-fw"></i>
-            <?php echo $host['Host']['name']; ?>
+            <?php echo h($Host->getHostname()) ?>
             <span>
-				(<?php echo $host['Host']['address']; ?>)
-			</span>
+                (<?php echo h($Host->getAddress()) ?>)
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
+                <a href="<?php echo Router::url([
+                    'controller' => 'hosts',
+                    'action' => 'browser',
+                    $Host->getId()
+                ]); ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i>
+                    <?php echo $this->Html->underline('b', __('Back to Host')); ?>
                 </a>
                 <?php echo $this->element('host_browser_menu'); ?>
             </div>
@@ -47,29 +57,13 @@
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
 
-    <!-- row -->
     <div class="row">
 
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
 
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -106,7 +100,7 @@
                         <?php
                         echo $this->Form->create('statehistories', [
                             'class' => 'form-horizontal clear',
-                            'url'   => 'host/'.$host['Host']['id'] //reset the URL on submit
+                            'url' => 'host/' . $host['Host']['id'] //reset the URL on submit
                         ]);
 
                         ?>
@@ -128,29 +122,29 @@
                         <div class="btn-group">
                             <?php
                             $listoptions = [
-                                '30'  => [
+                                '30' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 30,
-                                    'human'         => 30,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 30,
+                                    'human' => 30,
+                                    'selector' => '#listoptions_limit',
                                 ],
-                                '50'  => [
+                                '50' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 50,
+                                    'human' => 50,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '100' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 100,
+                                    'human' => 100,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '300' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 300,
-                                    'human'         => 300,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 300,
+                                    'human' => 300,
+                                    'selector' => '#listoptions_limit',
                                 ],
                             ];
 
@@ -181,8 +175,8 @@
 
                         <?php
                         $state_types = [
-                            'recovery'    => __('Recovery'),
-                            'down'        => __('Down'),
+                            'recovery' => __('Recovery'),
+                            'down' => __('Down'),
                             'unreachable' => __('Unreachable'),
                         ];
                         ?>
@@ -227,12 +221,13 @@
                                     <li>
                                         <input type="hidden" value="0"
                                                name="data[Listsettings][nag_state_types][<?php echo $state_type; ?>]"/>
-                                    <li style="width: 100%;"><a href="javascript:void(0)"
-                                                                class="listoptions_checkbox text-left"><input
+                                    <li style="width: 100%;">
+                                        <a href="javascript:void(0)" class="listoptions_checkbox text-left">
+                                            <input
                                                     type="checkbox"
                                                     name="data[Listsettings][nag_state_types][<?php echo $state_type; ?>]"
-                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
-                                    </li>
+                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?>
+                                        </a>
                                     </li>
                                 <?php endforeach ?>
                             </ul>
@@ -258,9 +253,10 @@
 
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="hoststatehistory_list" class="table table-striped table-hover table-bordered smart-form"
+                        <table id="hoststatehistory_list"
+                               class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
                             <tr>
@@ -279,14 +275,30 @@
                             </thead>
                             <tbody>
                             <?php //debug($all_notification); ?>
-                            <?php foreach ($all_statehistories as $statehistory): ?>
+                            <?php foreach ($all_statehistories as $statehistory):
+                                $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost']);
+                                $StatusIcon = new HoststatusIcon($StatehistoryHost->getState());
+                                ?>
                                 <tr>
-                                    <td class="text-center"><?php echo $this->Status->humanHostStatus($host['Host']['uuid'], 'javascript:void(0)', [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $statehistory['Statehistory']['state']]]])['html_icon']; ?></td>
-                                    <td><?php echo h($this->Time->format($statehistory['Statehistory']['state_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
-                                    <td class="text-center"><?php echo h($statehistory['Statehistory']['current_check_attempt']); ?>
-                                        /<?php echo h($statehistory['Statehistory']['max_check_attempts']); ?></td>
-                                    <td class="text-center"><?php echo h($this->Status->humanServiceStateType($statehistory['Statehistory']['state_type'])); ?></td>
-                                    <td><?php echo h($statehistory['Statehistory']['output']); ?></td>
+                                    <td class="text-center">
+                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo h($this->Time->format(
+                                            $StatehistoryHost->getStateTime(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>
+                                    </td>
+                                    <td class="text-center"><?php echo h($StatehistoryHost->getCurrentCheckAttempt()); ?>
+                                        /<?php echo h($StatehistoryHost->getMaxCheckAttempts()); ?></td>
+                                    <td class="text-center">
+                                        <?php echo h($this->Status->humanServiceStateType(
+                                            $StatehistoryHost->isHardstate()
+                                        )); ?>
+                                    </td>
+                                    <td><?php echo h($StatehistoryHost->getOutput()); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -303,7 +315,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -315,18 +327,13 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
 
                 </div>
-                <!-- end widget div -->
 
             </div>
-            <!-- end widget -->
 
 
     </div>
 
-    <!-- end row -->
 
 </section>
-<!-- end widget grid -->

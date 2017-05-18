@@ -52,6 +52,8 @@ class ConstantsComponent extends Component {
             'MONITORING_NAGIOSTAT' => $monitoring . 'Module.Nagiostat',
             'MONITORING_NOTIFICATION' => $monitoring . 'Module.Notification',
             'MONITORING_SERVICECHECK' => $monitoring . 'Module.Servicecheck',
+            'MONITORING_STATEHISTORY_HOST' => $monitoring . 'Module.StatehistoryHost',
+            'MONITORING_STATEHISTORY_SERVICE' => $monitoring . 'Module.StatehistoryService',
             'MONITORING_STATEHISTORY' => $monitoring . 'Module.Statehistory',
             'MONITORING_HOSTCHECK' => $monitoring . 'Module.Hostcheck',
             'MONITORING_ACKNOWLEDGED' => $monitoring . 'Module.Acknowledged',

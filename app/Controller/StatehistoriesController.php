@@ -30,7 +30,7 @@ class StatehistoriesController extends AppController
      * use this external model to fetch the required data out of the database
      */
     public $uses = [
-        MONITORING_STATEHISTORY,
+        MONITORING_STATEHISTORY_HOST,
         MONITORING_SERVICESTATUS,
         MONITORING_HOSTSTATUS,
         'Host',
@@ -156,7 +156,6 @@ class StatehistoriesController extends AppController
             ],
         ]);
 
-
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $host['Host']['container_id'];
 
@@ -174,6 +173,10 @@ class StatehistoriesController extends AppController
             ],
         ]);
 
+
+        debug($all_statehistories = $this->StatehistoryHost->find('all', ['limit' => 50]));
+        $this->set('all_statehistories', $all_statehistories);
+        return;
 
         $requestSettings = $this->Statehistory->listSettingsHost($this->request, $host['Host']['uuid']);
 
