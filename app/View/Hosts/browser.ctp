@@ -420,7 +420,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <?php endif; ?>
                         </div>
                         <div id="tab4" class="tab-pane fade">
-                            <?php if ($this->Status->get($host['Host']['uuid'], 'active_checks_enabled') === null): ?>
+                            <?php if(!$Hoststatus->isActiveChecksEnabled()):?>
                                 <div class="alert alert-info alert-block">
                                     <a class="close" data-dismiss="alert" href="#">×</a>
                                     <h4 class="alert-heading"><i class="fa fa-info-circle"></i> <?php echo __('Host not found in monitoring'); ?></h4>
@@ -437,7 +437,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                           data-target="#nag_command_schedule_downtime"><i
                                                 class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?> </span><br/>
                                 </h5>
-                                <?php if ($this->Status->get($host['Host']['uuid'], 'current_state') > 0): ?>
+                                <?php if ($Hoststatus->currentState() > 0): ?>
                                     <h5><span class="nag_command" data-toggle="modal"
                                               data-target="#nag_command_ack_state"><i
                                                     class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?> </span><br/>

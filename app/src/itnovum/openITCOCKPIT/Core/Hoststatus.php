@@ -128,7 +128,7 @@ class Hoststatus {
         }
 
         if (isset($data['active_checks_enabled'])) {
-            $this->activeChecksEnabled = $data['active_checks_enabled'];
+            $this->activeChecksEnabled = (bool)$data['active_checks_enabled'];
         }
 
         if (isset($data['last_hard_state_change'])) {
@@ -277,7 +277,7 @@ class Hoststatus {
     }
 
     public function isActiveChecksEnabled(){
-        return (bool)$this->activeChecksEnabled;
+        return $this->activeChecksEnabled;
     }
 
     /**
