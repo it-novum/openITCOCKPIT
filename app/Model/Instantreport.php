@@ -41,8 +41,8 @@ class Instantreport extends AppModel {
     CONST STATE_HARD_ONLY = 2;
 
     CONST SEND_DAILY = 1;
-    CONST SEND_WEEKLY = 2;
-    CONST SEND_MONTHLY = 3;
+    CONST SEND_WEEKLY = 3;
+    CONST SEND_MONTHLY = 2;
     CONST SEND_YEARLY = 4;
 
     public $name = 'Instantreport';
@@ -100,6 +100,13 @@ class Instantreport extends AppModel {
         ],
     ];
     public $validate = [
+        'name' => [
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'required' => true,
+                'message' => 'This field cannot be left blank',
+            ],
+        ],
         'type' => [
             'notBlank' => [
                 'rule' => 'notBlank',
@@ -111,40 +118,6 @@ class Instantreport extends AppModel {
             'rule'     => 'notBlank',
             'message'  => 'This field cannot be left blank.',
             'required' => true,
-        ],
-        'report_format'    => [
-            'checkIfEmail'      => [
-                'rule'     => 'checkIfEmail',
-                'message'  => 'You can only select PDF option with sending emails.',
-            ]
-        ],
-        'start_date'    => [
-            'notBlankDateStart'      => [
-                'rule'     => 'notBlankDateStart',
-                'message'  => 'This field cannot be left blank',
-            ],
-            'date'          => [
-                'rule'     => ['date', 'dmy'],
-                'message'  => 'Enter a valid date',
-            ],
-            'validateDates' => [
-                'rule'     => ['validateDates', ['start_date', 'end_date']],
-                'message'  => '"To" must not be earlier than "From"',
-            ],
-        ],
-        'end_date'      => [
-            'notBlankDateEnd'      => [
-                'rule'     => 'notBlankDateEnd',
-                'message'  => 'This field cannot be left blank',
-            ],
-            'date'          => [
-                'rule'     => ['date', 'dmy'],
-                'message'  => 'Enter a valid date',
-            ],
-            'validateDates' => [
-                'rule'     => ['validateDates', ['start_date', 'end_date']],
-                'message'  => '"To" must not be earlier than "From"',
-            ],
         ],
         'Hostgroup'          => [
             'atLeastOne' => [
@@ -190,20 +163,6 @@ class Instantreport extends AppModel {
         ],
     ];
 
-    public function checkIfEmail(){
-        return $this->data['Instantreport']['send_email'] !== '1' || $this->data['Instantreport']['report_format'] == self::FORMAT_PDF;
-    }
-
-    public function beforeSave($options = []) {
-        if(isset($this->data['Instantreport']['start_date'])){
-            $this->data['Instantreport']['start_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['start_date']));
-        }
-        if(isset($this->data['Instantreport']['end_date'])){
-            $this->data['Instantreport']['end_date'] = date('Y-m-d H:i:s', strtotime($this->data['Instantreport']['end_date']));
-        }
-        return true;
-    }
-
     /*
     Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
     */
@@ -233,18 +192,6 @@ class Instantreport extends AppModel {
         return $this->data['Instantreport']['send_email'] !== '1' || !empty($this->data['Instantreport']['User']);
     }
 
-    public function notBlankDateStart(){
-        return $this->data['Instantreport']['send_email'] === '1' || !empty($this->data['Instantreport']['start_date']);
-    }
-
-    public function notBlankDateEnd(){
-        return $this->data['Instantreport']['send_email'] === '1' || !empty($this->data['Instantreport']['end_date']);
-    }
-
-    public function validateDates() {
-        return (strtotime($this->data['Instantreport']['start_date']) <= strtotime($this->data['Instantreport']['end_date']));
-    }
-
     public function notZero($fieldName)
     {
         return !($this->data[$this->name][key($fieldName)] == '0');
@@ -257,22 +204,6 @@ class Instantreport extends AppModel {
 
         return !(empty($selectedTimeperiod['Timerange']));
     }
-
-//    public function validateType(){
-//        $success = false;
-//        switch($this->data['Instantreport']['evaluation']){
-//            case self::EVALUATION_HOSTS:
-//            case self::EVALUATION_HOSTS_SERVICES:
-//                $success = in_array($this->data['Instantreport']['type'], [self::TYPE_HOSTS, self::TYPE_HOSTGROUPS]);
-//                break;
-//
-//            case self::EVALUATION_SERVICES:
-//                $success = true;
-//                break;
-//
-//        }
-//        return $success;
-//    }
 
     /**
      * Generate date for host/service objects

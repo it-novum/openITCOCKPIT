@@ -1573,16 +1573,14 @@ class AppSchema extends CakeSchema
     
     public $instantreports = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'name'            => ['type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'],
         'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
         'evaluation'      => ['type' => 'integer', 'null' => false, 'default' => null],
         'type'            => ['type' => 'integer', 'null' => false, 'default' => null],
-        'report_format'   => ['type' => 'integer', 'null' => false, 'default' => null],
         'timeperiod_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
         'reflection'      => ['type' => 'integer', 'null' => false, 'default' => null],
         'downtimes'       => ['type' => 'integer', 'null' => false, 'default' => null],
         'summary'         => ['type' => 'integer', 'null' => false, 'default' => null],
-        'start_date'      => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'end_date'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'send_email'      => ['type' => 'integer', 'null' => false, 'default' => null],
         'send_interval'   => ['type' => 'integer', 'null' => false, 'default' => null],
         'last_send_date'   => ['type' => 'datetime', 'null' => false, 'default' => null],

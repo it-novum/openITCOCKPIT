@@ -63,6 +63,11 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 ]
             );
 
+            echo $this->Form->input('name', [
+                'label'     => ['text' => __('Name')],
+                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+            ]);
+
             echo $this->Form->input('Instantreport.evaluation', [
                 'before'  => '<label class="col col-md-2 text-right">'.__('Evaluation').'</label>',
                 'type'    => 'radio',
@@ -123,32 +128,8 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10']
             ]);
 
-            echo $this->Form->input('Instantreport.report_format', [
-                    'options'          => $reportFormats,
-                    'data-placeholder' => __('Please select...'),
-                    'class'            => 'chosen',
-                    'label'            => __('Report format'),
-                    'style'            => 'width:100%;',
-                ]
-            );
-
             echo $this->Form->input('Instantreport.timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);
 
-            echo $this->Form->input('Instantreport.start_date', [
-                'div' => 'form-group required start-end-date-holder',
-                'label' => __('From'),
-                'type'  => 'text',
-                'class' => 'form-control required'
-            ]);
-            echo $this->Form->input('InstantreportStartDateVal', ['id' => 'InstantreportStartDateVal', 'type' => 'hidden', 'value' => date('d.m.Y', strtotime('-15 days'))]);
-            echo $this->Form->input('Instantreport.end_date', [
-                'div' => 'form-group required start-end-date-holder',
-                'label'    => __('To'),
-                'type'     => 'text',
-                'class'    => 'form-control required',
-                'reguired' => true
-            ]);
-            echo $this->Form->input('InstantreportEndDateVal', ['id' => 'InstantreportEndDateVal', 'type' => 'hidden', 'value' => date('d.m.Y')]);
             echo $this->Form->input('Instantreport.reflection', [
                 'options'          => $reflectionStates,
                 'data-placeholder' => __('Please select...'),
@@ -214,12 +195,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
             </div>
             <div class="well formactions"><div class="pull-right">
                     <?php
-                    if ($this->Acl->hasPermission('edit')){
-                        echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary save-submit-class', 'name' => 'save_submit']).'&nbsp;';
-                    }
-                    if($this->Acl->hasPermission('generate')):
-                        echo $this->Form->submit(__('Generate'), ['div' => false, 'class' => 'btn btn-primary generate-submit-class', 'name' => 'generate_submit']).'&nbsp;';
-                    endif;
+                    echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary save-submit-class', 'name' => 'save_submit']).'&nbsp;';
                     echo $this->Html->link(__('Cancel'), ['action' => 'index'], ['class' => 'btn btn-default']);
                     ?>
             </div></div>

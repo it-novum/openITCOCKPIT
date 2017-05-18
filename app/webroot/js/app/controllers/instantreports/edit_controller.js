@@ -39,28 +39,6 @@ App.Controllers.InstantreportsEditController = Frontend.AppController.extend({
                 });
             }
         });
-        $("#InstantreportStartDate").datepicker({
-            changeMonth: true,
-            numberOfMonths: 3,
-            todayHighlight:true,
-            weekStart:1,
-            calendarWeeks:true,
-            autoclose: true,
-            format: 'dd.mm.yyyy',
-            prevText: '<i class="fa fa-chevron-left"></i>',
-            nextText: '<i class="fa fa-chevron-right"></i>'
-        });
-        $("#InstantreportEndDate").datepicker({
-            changeMonth: true,
-            numberOfMonths: 3,
-            todayHighlight:true,
-            weekStart:1,
-            calendarWeeks:true,
-            autoclose: true,
-            format: 'dd.mm.yyyy',
-            prevText: '<i class="fa fa-chevron-left"></i>',
-            nextText: '<i class="fa fa-chevron-right"></i>'
-        });
         $('#InstantreportType').change(function(){
             self.changeInputFieldsByType();
         });
@@ -80,26 +58,9 @@ App.Controllers.InstantreportsEditController = Frontend.AppController.extend({
     changeSendMail: function(){
         if($('#InstantreportSendEmail').is(':checked')){
             $('.send-interval-holder').show();
-            $('#InstantreportStartDateVal').val($('#InstantreportStartDate').val());
-            $('#InstantreportEndDateVal').val($('#InstantreportEndDate').val());
-            $('#InstantreportStartDate').val('');
-            $('#InstantreportEndDate').val('')
-            $('#InstantreportStartDate').attr('disabled', 'disabled');
-            $('#InstantreportEndDate').attr('disabled', 'disabled');
-            $('div.start-end-date-holder > label').addClass('disabled');
             $('.generate-submit-class').hide();
-        }else{
+        }else {
             $('.send-interval-holder').hide();
-            if($('#InstantreportStartDate').val() == ''){
-                $('#InstantreportStartDate').val($('#InstantreportStartDateVal').val());
-            }
-            if($('#InstantreportEndDate').val() == ''){
-                $('#InstantreportEndDate').val($('#InstantreportEndDateVal').val());
-            }
-            $('#InstantreportStartDate').removeAttr('disabled');
-            $('#InstantreportEndDate').removeAttr('disabled');
-            $('div.start-end-date-holder > label').removeClass('disabled');
-            $('.generate-submit-class').show();
         }
     }
 });

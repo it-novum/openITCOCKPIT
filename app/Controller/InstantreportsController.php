@@ -58,17 +58,13 @@ class InstantreportsController extends AppController
             ],
             'conditions' => [
                 'Instantreport.container_id' => $this->MY_RIGHTS,
+                'Instantreport.send_email' => '0',
             ],
             'contain'    => [
-                'Container.id',
-                'Container.name',
-                'Timeperiod.name',
-                'User.firstname',
-                'User.lastname',
+                'Timeperiod.name'
             ],
         ];
 
-        $resolvedContainerNames = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_INSTANTREPORT, [], $this->hasRootPrivileges);
         if ($this->isApiRequest()) {
             $allInstantReports = $this->Instantreport->find('all', $options);
         } else {
@@ -82,15 +78,50 @@ class InstantreportsController extends AppController
 
         $evaluations = $this->Instantreport->getEvaluations();
         $types = $this->Instantreport->getTypes();
-        $reportFormats = $this->Instantreport->getReportFormats();
+
+        $this->set([
+            'allInstantReports' => $allInstantReports,
+            'evaluations' => $evaluations,
+            'types' => $types
+        ]);
+    }
+
+    public function sendEmailsList(){
+        $options = [
+            'recursive' => -1,
+            'order' => [
+                'Instantreport.id' => 'desc',
+            ],
+            'conditions' => [
+                'Instantreport.container_id' => $this->MY_RIGHTS,
+                'Instantreport.send_email' => '1',
+            ],
+            'contain'    => [
+                'Timeperiod.name',
+                'User.firstname',
+                'User.lastname',
+            ],
+        ];
+
+        if ($this->isApiRequest()) {
+            $allInstantReports = $this->Instantreport->find('all', $options);
+        } else {
+            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+            $allInstantReports = $this->Paginator->paginate();
+        }
+
+        if(empty($allInstantReports)){
+            $this->redirect(['action' => 'index']);
+        }
+
+        $evaluations = $this->Instantreport->getEvaluations();
+        $types = $this->Instantreport->getTypes();
         $sendIntervals = $this->Instantreport->getSendIntervals();
 
         $this->set([
             'allInstantReports' => $allInstantReports,
-            'resolvedContainerNames' => $resolvedContainerNames,
             'evaluations' => $evaluations,
             'types' => $types,
-            'reportFormats' => $reportFormats,
             'sendIntervals' => $sendIntervals
         ]);
 
@@ -140,10 +171,12 @@ class InstantreportsController extends AppController
                 $instantReportData = $this->Instantreport->data;
                 $this->Instantreport->saveAll();
                 if(isset($this->request->data['save_submit'])){
-                    $this->setFlash(__('Instant Report saved'));
+                    $this->setFlash(__('<a href="/instantreports/edit/%s">Instant Report</a> saved successfully', $this->Instantreport->id));
+                    if($instantReportData['Instantreport']['send_email'] === '1'){
+                        $this->redirect(['action' => 'sendEmailsList']);
+                    }
                     $this->redirect(['action' => 'index']);
                 }
-                $this->generateReport($instantReportData);
             }
         }
 
@@ -202,18 +235,6 @@ class InstantreportsController extends AppController
         $this->request->data = Hash::merge($instantReport, $this->request->data);
         unset($this->request->data['Container']);
 
-        if($this->request->data['Instantreport']['start_date'] == '0000-00-00 00:00:00'){
-            $this->request->data['Instantreport']['start_date'] = date('d.m.Y', strtotime('-15 days'));
-        }else{
-            $this->request->data['Instantreport']['start_date'] = date('d.m.Y', strtotime($this->request->data['Instantreport']['start_date']));
-        }
-
-        if($this->request->data['Instantreport']['end_date'] == '0000-00-00 00:00:00'){
-            $this->request->data['Instantreport']['end_date'] = date('d.m.Y');
-        }else{
-            $this->request->data['Instantreport']['end_date'] = date('d.m.Y', strtotime($this->request->data['Instantreport']['end_date']));
-        }
-
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
                 $this->request->data['User'] = $this->request->data['Instantreport']['User'];
@@ -255,10 +276,12 @@ class InstantreportsController extends AppController
                 $instantReportData = $this->Instantreport->data;
                 $this->Instantreport->saveAll();
                 if(isset($this->request->data['save_submit']) || $instantReportData['Instantreport']['send_email'] === '1'){
-                    $this->setFlash(__('Instant Report saved'));
+                    $this->setFlash(__('<a href="/instantreports/edit/%s">Instant Report</a> modified successfully', $instantReportData['Instantreport']['id']));
+                    if($instantReportData['Instantreport']['send_email'] === '1'){
+                        $this->redirect(['action' => 'sendEmailsList']);
+                    }
                     $this->redirect(['action' => 'index']);
                 }
-                $this->generateReport($instantReportData);
             }
 
         }
@@ -285,7 +308,7 @@ class InstantreportsController extends AppController
             'conditions' => [
                 'Instantreport.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Hostgroup.id',
                 'Host.id',
                 'Servicegroup.id',
@@ -293,31 +316,99 @@ class InstantreportsController extends AppController
             ],
         ]);
 
-        if(empty($instantReport)){
+        if (empty($instantReport)) {
             throw new NotFoundException(__('Invalid Instant report'));
         }
 
-        if($instantReport['Instantreport']['send_email'] === '1' && empty($this->cronFromDate)){
-            throw new NotFoundException(__('Instant report can not be generated while send email is active'));
-        }
+        if(!empty($this->cronFromDate)) {
+            $this->generateReport($instantReport, date('d.m.Y', $this->cronFromDate), date('d.m.Y'), Instantreport::FORMAT_PDF);
+        }else{
 
-        if (empty($this->cronFromDate) && !$this->allowedByContainerId(Hash::extract($instantReport, 'Instantreport.container_id'))) {
-            $this->render403();
-            return;
-        }
+            $options = [
+                'recursive' => -1,
+                'order' => [
+                    'Instantreport.id' => 'desc',
+                ],
+                'conditions' => [
+                    'Instantreport.container_id' => $this->MY_RIGHTS,
+                ]
+            ];
 
-        $this->generateReport($instantReport);
+            $allInstantReports = $this->Instantreport->find('all', $options);
+
+            if(empty($allInstantReports)){
+                $this->redirect(['action' => 'add']);
+            }
+
+            $reportFormats = $this->Instantreport->getReportFormats();
+
+            if ($this->request->is('post') || $this->request->is('put')) {
+                $instantReport = $this->Instantreport->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Instantreport.id' => $this->request->data['Instantreport']['id'],
+                    ],
+                    'contain' => [
+                        'Hostgroup.id',
+                        'Host.id',
+                        'Servicegroup.id',
+                        'Service.id'
+                    ],
+                ]);
+
+                if (empty($instantReport)) {
+                    throw new NotFoundException(__('Invalid Instant report'));
+                }
+
+                if (!$this->allowedByContainerId(Hash::extract($instantReport, 'Instantreport.container_id'))) {
+                    $this->render403();
+                    return;
+                }
+
+                try{
+                    if(!$this->checkDate($this->request->data['Instantreport']['start_date'])){
+                        throw new Exception('From date has invalid format');
+                    }
+
+                    if(!$this->checkDate($this->request->data['Instantreport']['end_date'])){
+                        throw new Exception('To date has invalid format');
+                    }
+
+                    if(strtotime($this->request->data['Instantreport']['end_date']) <= strtotime($this->request->data['Instantreport']['start_date'])){
+                        throw new Exception('To date must be later than from date');
+                    }
+
+                    if(!array_key_exists($this->request->data['Instantreport']['report_format'], $reportFormats)){
+                        throw new Exception('Invalid report format');
+                    }
+
+                    $this->generateReport($instantReport, $this->request->data['Instantreport']['start_date'], $this->request->data['Instantreport']['end_date'], $this->request->data['Instantreport']['report_format']);
+                }catch (Exception $exx){
+                    $this->setFlash(__($exx->getMessage()), false);
+                }
+
+            }
+
+            $this->set([
+                'id' => $id,
+                'allInstantReports' => $allInstantReports,
+                'reportFormats' => $reportFormats,
+                'reportFormats' => $reportFormats
+            ]);
+
+        }
 
     }
 
-    private function generateReport($instantReport){
-        if(empty($this->cronFromDate)){
-            $baseStartDate = date('d.m.Y', strtotime($instantReport['Instantreport']['start_date']));
-            $baseEndDate = date('d.m.Y', strtotime($instantReport['Instantreport']['end_date']));
-        }else{
-            $baseStartDate = date('d.m.Y', $this->cronFromDate);
-            $baseEndDate = date('d.m.Y');
+    private function checkDate($date){ // d.m.Y
+        $dateParts = explode('.', $date);
+        if(count($dateParts) == 3 && is_numeric($dateParts[0]) && is_numeric($dateParts[1]) && is_numeric($dateParts[2])){
+            return checkdate($dateParts[1], $dateParts[0], $dateParts[2]);
         }
+        return false;
+    }
+
+    private function generateReport($instantReport, $baseStartDate, $baseEndDate, $reportFormat){
         $startDate = $baseStartDate .' 00:00:00';
         $endDate = $baseEndDate .' 23:59:59';
         $instantReportDetails = [
@@ -341,6 +432,7 @@ class InstantreportsController extends AppController
         $endDateSqlFormat = date('Y-m-d H:i:s', strtotime($endDate));
 
         $globalDowntimes = [];
+
         if ($instantReport['Instantreport']['downtimes'] === '1') {
             $this->loadModel('Systemfailure');
             $globalDowntimes = $this->Systemfailure->find('all', [
@@ -720,7 +812,7 @@ class InstantreportsController extends AppController
             }
         }
 
-        if ($instantReport['Instantreport']['report_format'] == Instantreport::FORMAT_PDF) {
+        if ($reportFormat == Instantreport::FORMAT_PDF) {
             if(empty($this->cronFromDate)) {
                 $this->Session->write('instantReportData', $instantReportData);
                 $this->Session->write('instantReportDetails', $instantReportDetails);
@@ -729,6 +821,7 @@ class InstantreportsController extends AppController
                     'ext' => 'pdf',
                 ]);
             }else{
+
                 $binary_path = '/usr/bin/wkhtmltopdf';
                 if (file_exists('/usr/local/bin/wkhtmltopdf')) {
                     $binary_path = '/usr/local/bin/wkhtmltopdf';
@@ -1061,7 +1154,11 @@ class InstantreportsController extends AppController
             $this->setFlash(__('Could not delete Instant Report'), false);
         }
 
-        $this->redirect(['action' => 'index']);
+        if($instantreport['Instantreport']['send_email'] === '1'){
+            $this->redirect(['action' => 'sendEmailsList']);
+        }else{
+            $this->redirect(['action' => 'index']);
+        }
 
     }
 

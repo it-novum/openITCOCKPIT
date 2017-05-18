@@ -323,7 +323,7 @@ $config = [
                 'Users' => ['index'],
                 'Backups' => ['index'],
                 'Supports' => ['index', 'issue'],
-                'Instantreports' => ['index']
+                'Instantreports' => ['index', 'sendEmailsList']
             ]
 
         ]
