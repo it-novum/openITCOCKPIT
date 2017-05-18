@@ -103,6 +103,7 @@ class Hoststatus {
     private $current_check_attempt;
 
     public function __construct($data){
+debug($data);
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
         }
@@ -145,6 +146,10 @@ class Hoststatus {
 
         if (isset($data['state_type'])) {
             $this->state_type = $data['state_type'];
+        }
+
+        if (isset($data['is_hardstate'])) {
+            $this->state_type = $data['is_hardstate'];
         }
 
         if(isset($data['flap_detection_enabled'])) {
@@ -262,6 +267,13 @@ class Hoststatus {
         }
 
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHardState(){
+        return (bool)$this->state_type;
     }
 
     public function getLastHardStateChange(){

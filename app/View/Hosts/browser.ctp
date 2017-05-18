@@ -112,7 +112,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <p><?php echo __('The last system check occurred at'); ?>
                                 <strong><?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
                                 <?php
-                                if ($Hoststatus->getStateType()):
+                                if ($Hoststatus->isHardState()):
                                     echo '<span class="label text-uppercase '.$Hoststatus->HostStatusBackgroundColor().'">'.__('hard state').'</span>';
                                 else:
                                     echo '<span class="label text-uppercase opacity-50 '.$Hoststatus->HostStatusBackgroundColor().'" >'.__('soft state').'</span>';
