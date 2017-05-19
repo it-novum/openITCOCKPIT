@@ -97,6 +97,7 @@
                     $uuid = UUID::v4();
                     ?>
                     <?php
+
                     switch ($item['Mapitem']['type']) {
                         case 'host':
                             $state = $this->Mapstatus->hoststatus($item['Host']['uuid']);
@@ -243,6 +244,7 @@
                                         $gadgetColor = $this->Status->ServiceStatusColorSimple($state['state']);
                                         break;
                                 }
+
                                 $RRDGraphLink = '';
                                 if (ucfirst($gadget['Mapgadget']['type']) == 'Service' && $gadget['Mapgadget']['gadget'] == 'RRDGraph') {
                                     $Rrd = ClassRegistry::init('Rrd');
@@ -295,6 +297,9 @@
                                                     data-state='<?php echo $state['state']; ?>'
                                                     data-flapping='<?php echo (isset($state['is_flapping'])) ? $state['is_flapping'] : 0 ?>'
                                                     data-color='<?php echo $gadgetColor['hexColor']; ?>'>
+
+                                            <script> var popoverGadgetPerfdata_<?php echo $gadget['Mapgadget']['id']; ?> = <?php echo (empty($state['perfdata'])) ? '' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?></script>
+
                                         <?php endif; ?>
                                     </a>
                                 </div>
