@@ -260,12 +260,13 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         var currentData = {};
         $('.popoverGadgetTypeHidden').each(function () {
             var elementGadgetId = this.id.replace(/popoverGadgetType_/, '');
+            var perfdata = window['popoverGadgetPerfdata_'+elementGadgetId];
             if (elementGadgetId == gadgetId) {
                 currentData = {
                     currentUuid: $(this).data('uuid'),
                     currentType: $(this).data('type'),
                     currentLink: $(this).data('link'),
-                    currentPerfdata: $(this).data('perfdata'),
+                    currentPerfdata: perfdata,
                     currentState: $(this).data('state'),
                     currentFlapping: $(this).data('flapping'),
                     currentRRDGraphLink: $(this).data('rrdlink'),
