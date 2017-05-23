@@ -148,6 +148,8 @@
                                             604800  => __('Last 7 Days'),
                                             1209600 => __('Last 14 Days'),
                                             2592000 => __('Last 30 Days'),
+                                            5184000 => __('Last 60 Days'),
+                                            7776000 => __('Last 90 Days'),
                                         ];
                                         $options = [
                                             'options' => $relative_time_options,
