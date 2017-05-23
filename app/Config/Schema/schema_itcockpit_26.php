@@ -149,6 +149,7 @@ class AppSchema extends CakeSchema
         'description'     => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'uuid'    => ['column' => 'uuid', 'unique' => 1 ],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
