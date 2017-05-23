@@ -25,6 +25,7 @@
 
 $totalHostsData[0] = $totalHostsData[1] = $totalHostsData[2] = 0;
 $totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalServicesData[3] = 0;
+
 ?>
 <div class="jarviswidget">
     <header>

@@ -34,6 +34,7 @@ class InstantreportsController extends AppController
 {
 
     public $cronFromDate = '';
+    public $cronToDate = '';
     public $cronPdfName = '';
     public $layout = 'Admin.default';
     public $components = [
@@ -73,7 +74,26 @@ class InstantreportsController extends AppController
         }
 
         if(empty($allInstantReports)){
-            $this->redirect(['action' => 'add']);
+            $allInstantReports = $this->Instantreport->find('all', [
+                'recursive' => -1,
+                'order' => [
+                    'Instantreport.id' => 'desc',
+                ],
+                'conditions' => [
+                    'Instantreport.container_id' => $this->MY_RIGHTS,
+                    'Instantreport.send_email' => '1',
+                ],
+                'contain'    => [
+                    'Timeperiod.name',
+                    'User.firstname',
+                    'User.lastname',
+                ],
+            ]);
+            if(empty($allInstantReports)) {
+                $this->redirect(['action' => 'add']);
+            }else{
+                $this->redirect(['action' => 'sendEmailsList']);
+            }
         }
 
         $evaluations = $this->Instantreport->getEvaluations();
@@ -321,7 +341,7 @@ class InstantreportsController extends AppController
         }
 
         if(!empty($this->cronFromDate)) {
-            $this->generateReport($instantReport, date('d.m.Y', $this->cronFromDate), date('d.m.Y'), Instantreport::FORMAT_PDF);
+            $this->generateReport($instantReport, date('d.m.Y', $this->cronFromDate), date('d.m.Y', $this->cronToDate), Instantreport::FORMAT_PDF);
         }else{
 
             $options = [
@@ -599,9 +619,7 @@ class InstantreportsController extends AppController
                                 'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
                             ],
                             'conditions' => [
-                                'Statehistory.state_time
-                                        BETWEEN "' . $startDateSqlFormat . '"
-                                        AND "' . $endDateSqlFormat . '"',
+                                "Statehistory.state_time <= '$endDateSqlFormat'",
                             ],
                             'order' => [
                                 'Statehistory.state_time',
@@ -711,9 +729,7 @@ class InstantreportsController extends AppController
                                         'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
                                     ],
                                     'conditions' => [
-                                        'Statehistory.state_time
-                                                BETWEEN "' . $startDateSqlFormat . '"
-                                                AND "' . $endDateSqlFormat . '"',
+                                        "Statehistory.state_time <= '$endDateSqlFormat'",
                                     ],
                                 ],
                                 'Downtime' => [
@@ -738,6 +754,7 @@ class InstantreportsController extends AppController
                                 'Objects.name2' => $serviceUuid,
                             ],
                         ]);
+
                         if (!empty($stateHistoryWithObject)) {
                             if ($instantReport['Instantreport']['downtimes'] !== '1') {
                                 $timeSlices = $timeSlicesGlobal;
@@ -852,6 +869,7 @@ class InstantreportsController extends AppController
 
             }
         } else {
+
             $this->set(compact(['instantReportData', 'instantReportDetails']));
             $this->render('/Elements/load_instant_report_data');
         }

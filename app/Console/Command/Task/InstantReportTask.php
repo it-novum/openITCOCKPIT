@@ -46,8 +46,8 @@ class InstantReportTask extends AppShell implements CronjobInterface
         ]);
         $toSend = false;
         foreach($allInstantReports as $mInstantReport){
-            $fromDate = $this->Instantreport->getFromDate($mInstantReport['Instantreport']['last_send_date'], $mInstantReport['Instantreport']['send_interval']);
-            if($fromDate === false) continue;
+            $hasToBeSend = $this->Instantreport->hasToBeSend($mInstantReport['Instantreport']['last_send_date'], $mInstantReport['Instantreport']['send_interval']);
+            if($hasToBeSend === false) continue;
             if(empty($mInstantReport['User'])) continue;
             $emailsToSend = [];
             foreach ($mInstantReport['User'] as $userToSend){
@@ -57,7 +57,8 @@ class InstantReportTask extends AppShell implements CronjobInterface
             App::uses('CakePdf', 'CakePdf.Pdf');
             App::import('Controller', 'Instantreports');
             $InstantreportsController = new InstantreportsController();
-            $InstantreportsController->cronFromDate = $fromDate;
+            $InstantreportsController->cronFromDate = $this->Instantreport->reportStartTime($mInstantReport['Instantreport']['send_interval']);
+            $InstantreportsController->cronToDate = $this->Instantreport->reportEndTime($mInstantReport['Instantreport']['send_interval']);
             $InstantreportsController->cronPdfName = APP.'tmp/InstantReport_'.$mInstantReport['Instantreport']['id'].'.pdf';
             $InstantreportsController->generate($mInstantReport['Instantreport']['id']);
             $attachmentArray['InstantReport.pdf'] = [
@@ -65,7 +66,7 @@ class InstantReportTask extends AppShell implements CronjobInterface
                 'mimetype' => 'application/pdf',
             ];
             $sendIntervals = $this->Instantreport->getSendIntervals();
-            $subject = $sendIntervals[$mInstantReport['Instantreport']['send_interval']].' Instant Report [ID=#'.$mInstantReport['Instantreport']['id'].']';
+            $subject = $sendIntervals[$mInstantReport['Instantreport']['send_interval']].' Instant Report '.$mInstantReport['Instantreport']['name'];
             $Email = new CakeEmail();
             $Email->config('default');
             $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);

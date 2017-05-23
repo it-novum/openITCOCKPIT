@@ -220,7 +220,7 @@ class Instantreport extends AppModel {
      */
     public function generateInstantreportData($totalTime, $timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false)
     {
-        $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
+        $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service states => 0,1,2,3
         $stateOk = 0;
         $stateUnknown = ($objectHost) ? 2 : 3;//if the end of date in the future
         $evaluationData = $stateArray;
@@ -229,7 +229,13 @@ class Instantreport extends AppModel {
         $outageState = ($objectHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
+        $SUKASHOW = false;
+
+//        if(isset($stateHistoryWithObject[0]['Objects']['object_id']) && $stateHistoryWithObject[0]['Objects']['object_id']=='83') $SUKASHOW = true;
+//        if($SUKASHOW) debug($stateHistoryArray);
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
+//            if($SUKASHOW) debug('=====================================');
+//            if($SUKASHOW) debug($timeSlice);
             $time = $timeSlice['start'];
             if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
                 $currentState = $stateUnknown;
@@ -238,6 +244,10 @@ class Instantreport extends AppModel {
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
                 $stateTimeTimestamp = strtotime($stateHistory['state_time']);
+//                if($SUKASHOW) debug('--------------------------------------------');
+//                if($SUKASHOW) debug($stateHistory);
+//                if($SUKASHOW) debug($stateTimeTimestamp);
+//                if($SUKASHOW) debug($timeSlice);
                 if (!$setInitialState) {
                     $currentState = ($checkHardState) ? $stateHistory['last_hard_state'] : $stateHistory['last_state'];
                     $currentState = ($currentState == -1) ? 0 : $currentState;
@@ -245,11 +255,14 @@ class Instantreport extends AppModel {
                 }
                 if ($stateTimeTimestamp >= $timeSlice['end']) {
                     // if state time after time slice
+//                    if($SUKASHOW) debug('---------------break-----------------------');
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
                     $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['state_type']))) ? $stateHistory['state'] : $currentState;
-                    unset($stateHistoryArray[$key]);
+                    //unset($stateHistoryArray[$key]);
+//                    if($SUKASHOW) debug($currentState);
+//                    if($SUKASHOW) debug('---------------continue-----------------------');
                     continue;
                 }
                 if ($stateTimeTimestamp > $timeSlice['start']) {
@@ -263,16 +276,19 @@ class Instantreport extends AppModel {
                     $time = $stateTimeTimestamp;
                     unset($stateHistoryArray[$key]);
                 }
+//                if($SUKASHOW) debug('---------------end-----------------------');
             }
+
             //if outage in downtime add time for state "ok"
-            if ($currentState == $outageState && $isDowntime) {
-                $evaluationData[$stateOk] += $timeSlice['end'] - $time;
+            if ($currentState == $outageState || $isDowntime) {
+                $evaluationData[$outageState] += $timeSlice['end'] - $time;
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;
             }
+//            if($SUKASHOW) debug('=====================================');
         }
         unset($timeSlices, $stateHistoryWithObject);
-
+//        if($SUKASHOW) debug($evaluationData);
         return $evaluationData;
     }
 
@@ -320,35 +336,77 @@ class Instantreport extends AppModel {
         ];
     }
 
-    public function getFromDate($lastSent, $sendInterval){
-        $oneDay = 60 * 60 * 24;
-        switch($sendInterval){
+    public function hasToBeSend($lastSendDate, $sendInterval) {
+        $now = time();
+        $has_to_be_send = false;
+
+        if ($lastSendDate == '0000-00-00 00:00:00') {
+            return true;
+        }
+        $last_send_timestamp = strtotime($lastSendDate);
+        switch ($sendInterval) {
             case self::SEND_DAILY:
-                if($lastSent === '0000-00-00 00:00:00' || time() - $oneDay >= strtotime($lastSent)){
-                    return time() - $oneDay;
+                if (intval(date('Ymd', $now)) > intval(date('Ymd', $last_send_timestamp))) {
+                    $has_to_be_send = true;
                 }
                 break;
-
             case self::SEND_WEEKLY:
-                if($lastSent === '0000-00-00 00:00:00' || time() - 7 * $oneDay >= strtotime($lastSent)){
-                    return time() - 7 * $oneDay;
+                if (intval(date('oW', $now)) > intval(date('oW', $last_send_timestamp))) {
+                    $has_to_be_send = true;
                 }
                 break;
-
             case self::SEND_MONTHLY:
-                if($lastSent === '0000-00-00 00:00:00' || time() - 30 * $oneDay >= strtotime($lastSent)){
-                    return time() - 30 * $oneDay;
+                if (intval(date('Ym', $now)) > intval(date('Ym', $last_send_timestamp))) {
+                    $has_to_be_send = true;
                 }
                 break;
-
             case self::SEND_YEARLY:
-                if($lastSent === '0000-00-00 00:00:00' || time() - 365 * $oneDay >= strtotime($lastSent)){
-                    return time() - 365 * $oneDay;
+                if (intval(date('Y', $now)) > intval(date('Y', $last_send_timestamp))) {
+                    $has_to_be_send = true;
                 }
                 break;
         }
 
-        return false;
+        return $has_to_be_send;
+    }
+
+    public function reportStartTime($sendInterval) {
+        $now = $this->reportEndTime($sendInterval);
+        $dateNow = new DateTime(date('d.m.Y H:i:s',$now));
+        switch ($sendInterval) {
+            case self::SEND_WEEKLY:
+                $dateNow->modify('last Monday');
+                break;
+            case self::SEND_MONTHLY:
+                $dateNow->modify('first day of this month');
+                break;
+            case self::SEND_YEARLY:
+                $dateNow->modify('first day of this year');
+                break;
+        }
+        $dateNow->setTime(0, 0, 0);
+        return $dateNow->getTimestamp();
+    }
+
+    public function reportEndTime($sendInterval) {
+        $dateNow = new DateTime(date('d.m.o H:i', time()));
+        switch ($sendInterval) {
+            case self::SEND_DAILY:
+                $dateNow->modify('yesterday');
+                break;
+            case self::SEND_WEEKLY:
+                $dateNow->modify('last Sunday');
+                break;
+            case self::SEND_MONTHLY:
+                $dateNow->modify('last day of last month');
+                break;
+            case self::SEND_YEARLY:
+                $dateNow->modify('31 December last year');
+                break;
+        }
+
+        $dateNow->setTime(23, 59, 59);
+        return $dateNow->getTimestamp();
     }
 
 }
