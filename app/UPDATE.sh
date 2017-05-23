@@ -129,12 +129,12 @@ if [ "$1" = "install" ]; then
     echo "Update successfully finished"
 else
 
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ]; then
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart oitc_cmd
         systemctl restart gearman_worker
     fi
 
-    if [ $CODENAME = "xenial" ]; then
+    if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart php7.0-fpm
     fi
 

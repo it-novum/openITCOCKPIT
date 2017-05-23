@@ -105,7 +105,7 @@ class Mapeditor extends MapModuleAppModel
      *
      * @return Array the map elements
      */
-    public function mapStatus($id)
+    public function mapStatus($id, $iterations = 0)
     {
         $Mapitem = ClassRegistry::init('Mapitem');
         $Mapline = ClassRegistry::init('Mapline');
@@ -149,6 +149,22 @@ class Mapeditor extends MapModuleAppModel
                 'Mapgadget.object_id',
             ],
         ]);
+
+        $mapstatus = [];
+        if(!empty($mapElements['items'])){
+            if($iterations <= 1) {
+                $iterations++;
+                foreach ($mapElements['items'] as $item) {
+                    if ($item['Mapitem']['type'] == 'map') {
+                        $mapId = $item['Mapitem']['object_id'];
+                        $mapstatus[] = $this->mapStatus($mapId, $iterations);
+                    }
+                }
+            }
+        }
+
+
+
         //get the service ids
         $mapServices = Hash::extract($mapElements, '{s}.{n}.{s}[type=/service$/].object_id');
         //resolve the serviceids into uuids
@@ -226,8 +242,25 @@ class Mapeditor extends MapModuleAppModel
             $statusObjects['hostgroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']]);
         }
 
-        //$mapElements = Hash::filter($mapElements);
 
+        if(!empty($mapstatus)){
+            foreach ($mapstatus as $mapstate){
+                $statusObjects = array_merge_recursive($statusObjects, $mapstate);
+            }
+
+            $tmpMapstatusObj = [];
+            foreach ($statusObjects as $key => $statusObject){
+                if(!empty($statusObject)){
+                    foreach ($statusObject as $soKey => $obj){
+                        if(!empty($obj)){
+                            $tmpMapstatusObj[$key][] = $obj;
+                        }
+
+                    }
+                }
+            }
+            $statusObjects = $tmpMapstatusObj;
+        }
         return $statusObjects;
     }
 

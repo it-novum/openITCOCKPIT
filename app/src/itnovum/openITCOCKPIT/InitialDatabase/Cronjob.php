@@ -107,6 +107,24 @@ class Cronjob extends Importer
                             'end_time'   => '2015-01-16 00:43:02',
                         ],
                 ],
+            3 =>
+                [
+                    'Cronjob'      =>
+                        [
+                            'id'       => '4',
+                            'task'     => 'InstantReport',
+                            'plugin'   => 'Core',
+                            'interval' => '1440',
+                        ],
+                    'Cronschedule' =>
+                        [
+                            'id'         => '4',
+                            'cronjob_id' => '4',
+                            'is_running' => '0',
+                            'start_time' => '2015-01-16 00:43:02',
+                            'end_time'   => '2015-01-16 00:43:02',
+                        ],
+                ],
         ];
 
         return $data;

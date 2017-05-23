@@ -169,8 +169,13 @@ class AppAuthComponent extends AuthComponent
                 if($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap' && isset($options['dn'])){
                     $options['samaccountname'] = $options['dn'];
                 }
+                try{
+                    $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
+                }catch (\Adldap\Exceptions\AdldapException $ex){
+                    $this->Session->setFlash($ex->getMessage());
+                    return false;
+                }
 
-                $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
                 if ($result) {
                     $this->_setDefaults();
                     $this->Session->renew();

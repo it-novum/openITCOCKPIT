@@ -226,7 +226,12 @@ class LoginController extends AppController
                     return;
                 } else {
                     if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
-                        $this->setFlash(__('Bad username or password'), false);
+                        $sessionMessage = $this->Session->read();
+                        if(isset($sessionMessage['Message']['flash']['message'])){
+                            $this->setFlash($sessionMessage['Message']['flash']['message'], false);
+                        }else{
+                            $this->setFlash(__('Bad username or password'), false);
+                        }
                     } else {
                         $this->setFlash(__('login.username_and_password_dont_match'), false);
                     }

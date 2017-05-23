@@ -1,4 +1,3 @@
-<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -23,31 +22,31 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-namespace Model;
+App.Controllers.InstantreportsGenerateController = Frontend.AppController.extend({
 
-use Adldap\Adldap as AdldapMain;
-
-class Adldap extends AdldapMain{
-
-    protected $myPersonFilter = '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))';
-
-    public function search(){
-        require_once APP.'Model'.DS.'AdldapSearch.php';
-        return new AdldapSearch($this);
+    _initialize: function() {
+        var self = this;
+        $("#InstantreportStartDate").datepicker({
+            changeMonth: true,
+            numberOfMonths: 3,
+            todayHighlight:true,
+            weekStart:1,
+            calendarWeeks:true,
+            autoclose: true,
+            format: 'dd.mm.yyyy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        });
+        $("#InstantreportEndDate").datepicker({
+            changeMonth: true,
+            numberOfMonths: 3,
+            todayHighlight:true,
+            weekStart:1,
+            calendarWeeks:true,
+            autoclose: true,
+            format: 'dd.mm.yyyy',
+            prevText: '<i class="fa fa-chevron-left"></i>',
+            nextText: '<i class="fa fa-chevron-right"></i>'
+        });
     }
-
-    public function setPersonFilter($personFilter){
-        $this->myPersonFilter = $personFilter;
-    }
-
-    public function getMyPersonFilter(){
-        return $this->myPersonFilter;
-    }
-
-    public function connect(){
-        $this->ldapConnection->setOption(LDAP_OPT_TIMELIMIT, 1);
-        $this->ldapConnection->setOption(LDAP_OPT_NETWORK_TIMEOUT, 5);
-        return parent::connect();
-    }
-
-}
+});

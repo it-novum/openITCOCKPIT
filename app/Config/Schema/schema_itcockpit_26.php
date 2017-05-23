@@ -149,6 +149,7 @@ class AppSchema extends CakeSchema
         'description'     => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'uuid'    => ['column' => 'uuid', 'unique' => 1 ],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -1571,8 +1572,88 @@ class AppSchema extends CakeSchema
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
+    
+    public $instantreports = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'name'            => ['type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'],
+        'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'evaluation'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'type'            => ['type' => 'integer', 'null' => false, 'default' => null],
+        'timeperiod_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'reflection'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'downtimes'       => ['type' => 'integer', 'null' => false, 'default' => null],
+        'summary'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'send_email'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'send_interval'   => ['type' => 'integer', 'null' => false, 'default' => null],
+        'last_send_date'   => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
 
+    public $instantreports_to_hostgroups = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'hostgroup_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
+            'hostgroup_id' => ['column' => 'hostgroup_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
 
+    public $instantreports_to_hosts = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'host_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
+            'host_id' => ['column' => 'host_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $instantreports_to_servicegroups = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'servicegroup_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
+            'servicegroup_id' => ['column' => 'servicegroup_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $instantreports_to_services = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'service_id'      => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
+            'service_id' => ['column' => 'service_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $instantreports_to_users = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
+        'user_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
+            'user_id' => ['column' => 'user_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+    
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
         'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

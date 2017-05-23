@@ -52,14 +52,14 @@
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-file-image-o"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Instant Reports'); ?></h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                        <li class="active">
+                        <li>
                             <a href="/instantreports/index"><i class="fa fa-archive"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
+                                    class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('sendEmailsList')): ?>
-                            <li class="">
+                            <li class="active">
                                 <a href="/instantreports/sendEmailsList"><i class="fa fa-paper-plane"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
                             </li>
                         <?php endif; ?>
 
@@ -82,6 +82,9 @@
                                         echo $this->Paginator->sort('Instantreport.timeperiod_id', 'Time period'); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.summary');
                                         echo $this->Paginator->sort('Instantreport.summary', 'Summary display'); ?></th>
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.send_interval');
+                                        echo $this->Paginator->sort('Instantreport.send_interval', 'Send interval'); ?></th>
+                                    <th class="no-sort" style="width:150px;"><?= __('Send to'); ?></th>
                                     <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
                                     </th>
                                 </tr>
@@ -89,7 +92,13 @@
                                 <tbody>
                                 <?php foreach ($allInstantReports as $instantReport): ?>
                                     <?php
-                                        $allowEdit = $this->Acl->isWritableContainer($instantReport['Instantreport']['container_id']);
+                                    $allowEdit = $this->Acl->isWritableContainer($instantReport['Instantreport']['container_id']);
+                                    $usersText = '';
+                                    if(!empty($instantReport['User'])){
+                                        foreach($instantReport['User'] as $user){
+                                            $usersText .= '<div>'.$user['firstname'] . ' ' . $user['lastname'] . '</div>';
+                                        }
+                                    }
                                     ?>
                                     <tr>
                                         <td><?= $instantReport['Instantreport']['name']; ?></td>
@@ -98,6 +107,9 @@
                                         <td><?= $instantReport['Timeperiod']['name']; ?></td>
                                         <td class="text-center"><?= $instantReport['Instantreport']['summary'] === '1' ?
                                                 '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $instantReport['Instantreport']['send_interval'] > 0 ?
+                                                $sendIntervals[$instantReport['Instantreport']['send_interval']] : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
+                                        <td class="text-center"><?= $usersText !== '' ? $usersText : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
                                         <td>
                                             <div class="btn-group" style="width:52px;">
                                                 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
@@ -121,7 +133,7 @@
                                                     <?php if ($this->Acl->hasPermission('generate')): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                        class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                                    class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
