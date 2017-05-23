@@ -229,13 +229,8 @@ class Instantreport extends AppModel {
         $outageState = ($objectHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
-        $SUKASHOW = false;
 
-//        if(isset($stateHistoryWithObject[0]['Objects']['object_id']) && $stateHistoryWithObject[0]['Objects']['object_id']=='83') $SUKASHOW = true;
-//        if($SUKASHOW) debug($stateHistoryArray);
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
-//            if($SUKASHOW) debug('=====================================');
-//            if($SUKASHOW) debug($timeSlice);
             $time = $timeSlice['start'];
             if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
                 $currentState = $stateUnknown;
@@ -244,10 +239,6 @@ class Instantreport extends AppModel {
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
                 $stateTimeTimestamp = strtotime($stateHistory['state_time']);
-//                if($SUKASHOW) debug('--------------------------------------------');
-//                if($SUKASHOW) debug($stateHistory);
-//                if($SUKASHOW) debug($stateTimeTimestamp);
-//                if($SUKASHOW) debug($timeSlice);
                 if (!$setInitialState) {
                     $currentState = ($checkHardState) ? $stateHistory['last_hard_state'] : $stateHistory['last_state'];
                     $currentState = ($currentState == -1) ? 0 : $currentState;
@@ -255,14 +246,11 @@ class Instantreport extends AppModel {
                 }
                 if ($stateTimeTimestamp >= $timeSlice['end']) {
                     // if state time after time slice
-//                    if($SUKASHOW) debug('---------------break-----------------------');
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
                     $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['state_type']))) ? $stateHistory['state'] : $currentState;
                     //unset($stateHistoryArray[$key]);
-//                    if($SUKASHOW) debug($currentState);
-//                    if($SUKASHOW) debug('---------------continue-----------------------');
                     continue;
                 }
                 if ($stateTimeTimestamp > $timeSlice['start']) {
@@ -276,7 +264,6 @@ class Instantreport extends AppModel {
                     $time = $stateTimeTimestamp;
                     unset($stateHistoryArray[$key]);
                 }
-//                if($SUKASHOW) debug('---------------end-----------------------');
             }
 
             //if outage in downtime add time for state "ok"
@@ -285,10 +272,8 @@ class Instantreport extends AppModel {
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;
             }
-//            if($SUKASHOW) debug('=====================================');
         }
         unset($timeSlices, $stateHistoryWithObject);
-//        if($SUKASHOW) debug($evaluationData);
         return $evaluationData;
     }
 
