@@ -84,7 +84,6 @@ class MenuComponent extends Component
             //Dashboard is always allowed
             if ($parentNode['url']['controller'] === 'dashboard' && $parentNode['url']['action'] === 'index' && $parentNode['url']['plugin'] === 'admin') {
                 $_menu[$parentKey] = $parentNode;
-                continue;
             }
 
             if (isset($parentNode['children']) && !empty($parentNode['children'])) {
@@ -98,7 +97,6 @@ class MenuComponent extends Component
                         if (!isset($childNode['url']['plugin'])) {
                             $childNode['url']['plugin'] = '';
                         }
-
                         if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $childNode['url']['action'], $permissions)) {
                             $_childNodes[$childKey] = $childNode;
                         } else {
@@ -128,9 +126,7 @@ class MenuComponent extends Component
                 $_parentNode['children'] = $_childNodes;
                 $_menu[$parentKey] = $_parentNode;
             }
-
         }
-
         return $_menu;
     }
 
