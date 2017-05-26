@@ -82,6 +82,7 @@ Frontend.AppController = Frontend.Controller.extend({
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
+        this._updateHeaderExportRunning();
     },
 
     _initUiLibrary: function () {
@@ -222,5 +223,26 @@ Frontend.AppController = Frontend.Controller.extend({
                 self._dialog.unblockUi();
             }
         });
+    },
+
+    _updateHeaderExportRunning: function(){
+        if($('#monitoring-export-running-checker').text() == '1'){
+            setInterval(function(){
+                $.ajax({
+                    url: '/exports/getIsRunning.json',
+                    type: 'post',
+                    cache: false,
+                    dataType: 'json',
+                    complete: function (response) {
+                        var res = response.responseJSON;
+                        if (res && !$('#i-export-running-checker').hasClass('fa-spin')) {
+                            $('#i-export-running-checker').removeClass('fa-retweet').addClass('fa-spin fa-refresh txt-color-red');
+                        }else if(!res && $('#i-export-running-checker').hasClass('fa-spin')){
+                            $('#i-export-running-checker').removeClass('fa-spin fa-refresh txt-color-red').addClass('fa-retweet');
+                        }
+                    }
+                });
+            }, 3000);
+        }
     }
 });

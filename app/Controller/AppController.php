@@ -281,6 +281,19 @@ class AppController extends Controller {
                 $this->systemname = $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
             }
         }
+
+        if ($this->Session->check('FRONTEND.EXPORT_RUNNING')) {
+            $this->exportRunningHeaderInfo = $this->Session->read('FRONTEND.EXPORT_RUNNING');
+        } else {
+            $this->Session->write('FRONTEND.EXPORT_RUNNING', '');
+            $this->exportRunningHeaderInfo = '';
+            if(empty($this->systemsettings))
+                $this->systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            if (isset($this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
+                $this->Session->write('FRONTEND.EXPORT_RUNNING', $this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
+                $this->exportRunningHeaderInfo = $this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'];
+            }
+        }
     }
 
     /**
@@ -306,6 +319,7 @@ class AppController extends Controller {
         $this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
         $this->set('loggedIn', $this->Auth->loggedIn());
         $this->set('systemname', $this->systemname);
+        $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
         //$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')
         $menu = $this->Menu->compileMenu();
         $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);

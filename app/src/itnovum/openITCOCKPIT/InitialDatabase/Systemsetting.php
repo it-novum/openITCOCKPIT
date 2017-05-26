@@ -373,6 +373,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.EXPORT_RUNNING',
+                    'value'    => 'yes',
+                    'info'     => 'Show if an export is running in headarea',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'FRONTEND.MASTER_INSTANCE',
                     'value'    => 'Mastersystem',
                     'info'     => 'The name of your openITCOCKPIT main instance',

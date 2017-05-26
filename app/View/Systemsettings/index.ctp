@@ -105,6 +105,14 @@
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
+                                                            case 'FRONTEND.EXPORT_RUNNING':
+                                                                $options = [
+                                                                    'yes' => 'Show',
+                                                                    'no' => 'Do not show'
+                                                                ];
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
+                                                                break;
+
 
                                                             case 'FRONTEND.AUTH_METHOD':
                                                                 $options = [
