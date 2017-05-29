@@ -23,7 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Export extends AppModel
-{
+class Export extends AppModel {
+
+    function findByTask($task) {
+        Cache::config('extra_short', array(
+            'engine' => 'File',
+            'duration' => 3,
+            'path' => CACHE
+        ));
+
+        $model = $this;
+        return Cache::remember('export_find_by_task', function() use ($model, $task){
+            return $model->find('first', ['task' => $task]);
+        }, 'extra_short');
+    }
 
 }
