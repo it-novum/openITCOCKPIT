@@ -137,7 +137,12 @@ class ServiceStatusList extends Widget
             ],
         ];
 
-        $query = $this->QueryCache->_serviceBaseQuery($fields, $conditions, $joins);
+        $order = [
+            'Servicestatus.current_state' => 'desc',
+            'Servicestatus.last_hard_state_change' => 'desc',
+        ];
+
+        $query = $this->QueryCache->_serviceBaseQuery($fields, $conditions, $joins, $order);
 
         $services = $this->Controller->Service->find('all', $query);
         $this->Controller->viewVars['WidgetServiceStatusList'][$widget['Widget']['id']] = [

@@ -289,8 +289,8 @@ class ServicesController extends AppController {
                 'HostsToContainers.container_id',
             ],
             'order' => [
-                'Host.name' => 'asc',
-                'Service.servicename' => 'asc',
+                'Servicestatus.current_state' => 'desc',
+                'Servicestatus.last_hard_state_change' => 'desc',
             ],
             'joins' => [[
                 'table' => 'hosts',
@@ -337,6 +337,7 @@ class ServicesController extends AppController {
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_services = $this->Paginator->paginate();
+            //debug($all_services);
         }
         $hostContainers = [];
         if (!empty($all_services)) {
@@ -2376,7 +2377,6 @@ class ServicesController extends AppController {
         $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
         $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
         $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-//debug($all_services);
         $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
         $this->set('_serialize', ['all_services']);
     }

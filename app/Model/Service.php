@@ -56,6 +56,11 @@ class Service extends AppModel {
     // 		'foreignKey' => 'service_id',
     // 	],
     // ];
+    public $hasOne = [
+        'NagiosModule.Servicestatus' => [
+            'dependent' => true,
+        ],
+    ];
 
     public $hasMany = [
         'Servicecommandargumentvalue' => [

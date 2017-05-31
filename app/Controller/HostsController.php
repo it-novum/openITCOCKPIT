@@ -206,6 +206,7 @@ class HostsController extends AppController {
         $this->Host->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
 
         $query = [
+            //'recursive' => -1,
             'conditions' => $conditions,
             'fields' => [
                 'Host.id',
@@ -235,10 +236,11 @@ class HostsController extends AppController {
                 'Hosttemplate.description',
                 'Hosttemplate.active_checks_enabled',
                 'Hosttemplate.tags',
-
-                'Hoststatus.current_state',
             ],
-            'order' => ['Host.name' => 'asc'],
+            'order' => [
+                'Hoststatus.current_state' => 'desc',
+                'Hoststatus.last_hard_state_change' => 'desc',
+            ],
             'joins' => [
                 [
                     'table' => 'nagios_objects',
@@ -266,6 +268,7 @@ class HostsController extends AppController {
 
         $this->Host->unbindModel([
                 'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
+                //'hasOne' => ['NagiosModule.Hoststatus'],
                 'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Parenthost', 'Hostgroup'],
                 'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
             ]
@@ -2396,12 +2399,35 @@ class HostsController extends AppController {
                 'Service.disabled',
                 'Service.active_checks_enabled',
                 'Host.uuid',
+                'Servicestatus.current_state',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.state_type',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
             ],
             'contain' => [
                 'Host',
                 'Servicetemplate',
             ],
-            'order' => 'Service.name',
+            'order' => [
+                'Servicestatus.current_state' => 'desc',
+                'Servicestatus.last_hard_state_change' => 'desc',
+            ],
+            'joins' => [[
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'ServiceObject',
+                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+            ], [
+                'table' => 'nagios_servicestatus',
+                'type' => 'LEFT OUTER',
+                'alias' => 'Servicestatus',
+                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+            ],],
         ]);
 
 

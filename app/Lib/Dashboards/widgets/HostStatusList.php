@@ -108,7 +108,13 @@ class HostStatusList extends Widget
             'Hoststatus.scheduled_downtime_depth',
             'Hoststatus.is_flapping',
         ];
-        $query = $this->QueryCache->_hostBaseQuery($fields, $conditions);
+
+        $order = [
+            'Hoststatus.current_state' => 'desc',
+            'Hoststatus.last_hard_state_change' => 'desc',
+        ];
+
+        $query = $this->QueryCache->_hostBaseQuery($fields, $conditions, $order);
         $hosts = $this->Controller->Host->find('all', $query);
         $this->Controller->viewVars['widgetHoststatusList'][$widget['Widget']['id']] = [
             'Hosts'  => $hosts,

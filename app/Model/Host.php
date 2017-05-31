@@ -96,6 +96,11 @@ class Host extends AppModel {
             ],
             'dependent' => true,
         ],
+        'Hoststatus' => [
+            'className' => 'NagiosModule.Hoststatus',
+            'foreignKey' => 'host_object_id',
+            'dependent' => true,
+        ],
     ];
 
     public $belongsTo = [

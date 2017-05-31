@@ -582,13 +582,14 @@ class QueryCache
         return $services;
     }
 
-    public function _hostBaseQuery($fields = [], $conditions = [])
+    public function _hostBaseQuery($fields = [], $conditions = [], $order = [])
     {
         return [
             'recursive'  => -1,
             'contain'    => [],
             'fields'     => $fields,
             'conditions' => $conditions,
+            'order'      => $order,
             'joins'      => [
                 [
                     'table'      => 'nagios_objects',
@@ -615,7 +616,7 @@ class QueryCache
         ];
     }
 
-    public function _serviceBaseQuery($fields = [], $conditions = [], $joins = [])
+    public function _serviceBaseQuery($fields = [], $conditions = [], $joins = [], $order = [])
     {
         $_joins = [
             [
@@ -666,6 +667,7 @@ class QueryCache
             'contain'    => [],
             'fields'     => $fields,
             'joins'      => $joins,
+            'order'      => $order,
             'group'      => [
                 'Service.id',
             ],

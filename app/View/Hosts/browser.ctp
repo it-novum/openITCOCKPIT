@@ -531,20 +531,20 @@
                                                         <tr>
                                                             <td class="text-center width-90">
                                                                 <?php
-                                                                if ($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
-                                                                    echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
+                                                                if ($service['Servicestatus']['is_flapping'] == 1):
+                                                                    echo $this->Monitoring->serviceFlappingIconColored($service['Servicestatus']['is_flapping'], '',$service['Servicestatus']['current_state']);
                                                                 else:
                                                                     $currentState = -1;
-                                                                    if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'])) {
-                                                                        $currentState = $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'];
+                                                                    if (isset($service['Servicestatus']['current_state'])) {
+                                                                        $currentState = $service['Servicestatus']['current_state'];
                                                                     }
                                                                     echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/'.$service['Service']['id'], null, $currentState, 'color: transparent;')['html_icon'];
                                                                 endif;
                                                                 ?>
                                                             </td>
                                                             <td class="text-center">
-                                                                <?php if ($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))): ?>
-                                                                    <?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
+                                                                <?php if ($this->Monitoring->checkForAck($service['Servicestatus']['problem_has_been_acknowledged'])): ?>
+                                                                    <?php if ($service['Servicestatus']['acknowledgement_type'] == 1): ?>
                                                                         <i class="fa fa-user"
                                                                            title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                                     <?php else: ?>
@@ -554,7 +554,7 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center">
-                                                                <?php if ($this->Monitoring->checkForDowntime($this->Status->sget($service['Service']['uuid'], 'scheduled_downtime_depth'))): ?>
+                                                                <?php if ($this->Monitoring->checkForDowntime($service['Servicestatus']['scheduled_downtime_depth'])): ?>
                                                                     <i class="fa fa-power-off"></i>
                                                                 <?php endif; ?>
                                                             </td>
@@ -568,7 +568,7 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center">
-                                                                <?php if (($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                                                <?php if (($service['Servicestatus']['active_checks_enabled'] == 0 && $service['Servicestatus']['active_checks_enabled'] !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
                                                                     <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                                                 <?php endif; ?>
                                                             </td>
@@ -585,11 +585,11 @@
                                                                     <?php echo h($serviceName); ?>
                                                                 <?php endif; ?>
                                                             </td>
-                                                            <td data-original-title="<?php echo h($this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                                            <td data-original-title="<?php echo h($this->Time->format($service['Servicestatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                 data-placement="bottom" rel="tooltip" data-container="body">
-                                                                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change')))); ?>
+                                                                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($service['Servicestatus']['last_hard_state_change']))); ?>
                                                             </td>
-                                                            <td><?php echo h($this->Status->sget($service['Service']['uuid'], 'output')); ?></td>
+                                                            <td><?php echo h($service['Servicestatus']['output']); ?></td>
                                                         </tr>
                                                         <?php endif; ?>
                                                     <?php endforeach; ?>
