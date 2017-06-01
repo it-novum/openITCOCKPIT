@@ -65,6 +65,7 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
             </div>
             <div class="col-xs-6 text-right">
 				<span class="listSettings">
+                    <input type="hidden" value="<?= $widgetData['Widget']['WidgetHostStatusList']['show_filter_search'] ?>" id="filter-search-<?= $widget['Widget']['id'] ?>">
 					<?php
                     $stateSettings = [
                         'show_up'           => [

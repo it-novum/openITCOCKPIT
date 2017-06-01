@@ -87,6 +87,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 					self.lists[widgetId].data[$input.data('key')] = 1;
 				}
 			}).bind(self);
+            self.lists[widgetId].data['show_filter_search'] = self.lists[widgetId].datatable.fnSettings().oPreviousSearch.sSearch;
 			self.saveSettings(widgetId, widgetTypeId);
 		});
 		
@@ -112,11 +113,11 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 	initLists: function(){
 		var self = this;
 		$('.statusListTable').each(function(key, object){
-			this.initList(object);
+			this.initList(object, $(this).attr('data-widget-id'));
 		}.bind(this));
 	},
 	
-	initList: function(object){
+	initList: function(object, widgetId){
 		var self = this;
 		var $list = $(object);
 		
@@ -144,7 +145,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 				clearInterval(this.lists[widgetId].timer);
 			}
 		}
-		
+
 		$list.dataTable({
 			'iDisplayLength': recordsPerPage,
 			'bLengthChange': false,
@@ -169,8 +170,10 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 				this.startRotate($list);
 			}.bind(this)
 		});
+
+		self.lists[widgetId].datatable.fnFilter($('#filter-search-'+widgetId).val());
 	},
-	
+
 	calculateHeight: function($widgetContainer){
 		var height = parseInt($widgetContainer.height(), 10);
 		
