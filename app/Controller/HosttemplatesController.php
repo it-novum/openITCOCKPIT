@@ -530,6 +530,11 @@ class HosttemplatesController extends AppController {
     }
 
     public function add($hosttemplatetype_id = null) {
+        //Load Systemsettings
+        $this->Systemsetting = ClassRegistry::init('Systemsetting');
+        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $active_checks_enabled = $this->_systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
+
         //Empty variables, get fild if Model::save() fails for refill
         $_timeperiods = [];
         $_contacts = [];
@@ -579,7 +584,7 @@ class HosttemplatesController extends AppController {
         $this->Frontend->setJson('lang_and', __('and'));
 
         $this->set('back_url', $this->referer());
-        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable']));
+        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
         if ($this->request->is('post') || $this->request->is('put')) {
             //Fixing structure of $this->request->data for HATBM
             $ext_data_for_changelog = [
