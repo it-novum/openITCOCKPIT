@@ -300,8 +300,7 @@
                                                     data-showLabel='<?php echo $gadget['Mapgadget']['show_label']; ?>'
                                                     data-fontSize='<?php echo $gadget['Mapgadget']['font_size']; ?>'>
 
-                                            <script> var popoverGadgetPerfdata_<?php echo $gadget['Mapgadget']['id']; ?> = <?php echo (empty($state['perfdata'])) ? '' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?></script>
-
+                                            <script> var popoverGadgetPerfdata_<?php echo $gadget['Mapgadget']['id']; ?> = <?php echo (empty($state['perfdata'])) ? '""' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?></script>
                                         <?php endif; ?>
                                     </a>
                                 </div>
