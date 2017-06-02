@@ -99,7 +99,10 @@ class MapeditorsController extends MapModuleAppController
         $mapList = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            debug($this->request->data);
             $request = $this->Mapeditor->prepareForSave($this->request->data);
+            //debug($request);
+            //die();
             //implement deleteObsoleteRecords() in model
             $elementIdsToDelete = $this->Mapeditor->getObsoleteIds($map, $request);
 
@@ -495,7 +498,7 @@ class MapeditorsController extends MapModuleAppController
         if (!empty($mapElements['map_lines'])) {
             $this->Frontend->setJson('map_lines', Hash::Extract($mapElements['map_lines'], '{n}.Mapline'));
         }
-
+debug($mapElements['map_gadgets']);
         if (!empty($mapElements['map_gadgets'])) {
             $this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
         }

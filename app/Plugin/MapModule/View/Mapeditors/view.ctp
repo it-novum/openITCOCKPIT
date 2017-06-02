@@ -296,7 +296,9 @@
                                                     data-perfdata='<?php echo (empty($state['perfdata'])) ? '' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?>'
                                                     data-state='<?php echo $state['state']; ?>'
                                                     data-flapping='<?php echo (isset($state['is_flapping'])) ? $state['is_flapping'] : 0 ?>'
-                                                    data-color='<?php echo $gadgetColor['hexColor']; ?>'>
+                                                    data-color='<?php echo $gadgetColor['hexColor']; ?>'
+                                                    data-showLabel='<?php echo $gadget['Mapgadget']['show_label']; ?>'
+                                                    data-fontSize='<?php echo $gadget['Mapgadget']['font_size']; ?>'>
 
                                             <script> var popoverGadgetPerfdata_<?php echo $gadget['Mapgadget']['id']; ?> = <?php echo (empty($state['perfdata'])) ? '' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?></script>
 

@@ -395,6 +395,12 @@
                             <input type="hidden" data-key="transparent_background"
                                    name="data[Mapgadget][<?php echo $uuid; ?>][transparent_background]"
                                    value="<?php echo $gadget['transparent_background']; ?>"/>
+                            <input type="hidden" data-key="show_label"
+                                   name="data[Mapgadget][<?php echo $uuid; ?>][show_label]"
+                                   value="<?php echo $gadget['show_label']; ?>"/>
+                            <input type="hidden" data-key="font_size"
+                                   name="data[Mapgadget][<?php echo $uuid; ?>][font_size]"
+                                   value="<?php echo $gadget['font_size']; ?>"/>
                         </div>
                     <?php endforeach; ?>
                     <?php foreach ($map['Mapicon'] as $key => $icon): ?>
@@ -1055,14 +1061,46 @@
                                                 'content'          => 'object_id',
                                             ]
                                         );
-                                        echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput', 'element-property' => 'text', 'content' => 'x']);
-                                        echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput', 'element-property' => 'text', 'content' => 'y']);
+                                        echo $this->Form->input('x', [
+                                            'value'             => 0,
+                                            'label'             => __('Position X'),
+                                            'wrapInput'         => 'col col-xs-8',
+                                            'class'             => 'gadgetInput',
+                                            'element-property'  => 'text',
+                                            'content'           => 'x'
+                                        ]);
+                                        echo $this->Form->input('y', [
+                                            'value'             => 0,
+                                            'label'             => __('Position Y'),
+                                            'wrapInput'         => 'col col-xs-8',
+                                            'class'             => 'gadgetInput',
+                                            'element-property'  => 'text',
+                                            'content'           => 'y'
+                                        ]);
                                         echo $this->Form->fancyCheckbox('transparent_background', [
                                             'caption'          => __('Transparent Background'),
-                                            'captionGridClass' => 'col col-md-2 hidden rrdBackground',
+                                            'captionGridClass' => 'col col-md-4 hidden rrdBackground',
                                             'class'            => 'onoffswitch-checkbox gadgetInput',
                                             'wrapGridClass'    => 'col col-xs-8 hidden rrdBackground',
                                             'content'          => 'transparent_background',
+                                        ]);
+                                        echo $this->Form->fancyCheckbox('show_label', [
+                                            'caption'          => __('Show Label'),
+                                            'captionGridClass' => 'col col-md-3 hidden showLabel',
+                                            'class'            => 'onoffswitch-checkbox gadgetInput',
+                                            'wrapGridClass'    => 'col col-xs-9 hidden showLabel',
+                                            'content'          => 'show_label',
+                                        ]);
+
+                                        echo $this->Form->input('font_size', [
+                                            'value'             => 12,
+                                            'caption'           => __('Font Size'),
+                                            'captionGridClass'  => 'col col-md-3 gadgetFontSize hidden',
+                                            'wrapGridClass'     => 'col col-xs-9 gadgetFontSize hidden',
+                                            //'wrapInput'       => 'col col-xs-8',
+                                            'class'             => 'gadgetInput',
+                                            'element-property'  => 'text',
+                                            'content'           => 'font_size'
                                         ]);
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();

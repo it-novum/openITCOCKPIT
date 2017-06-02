@@ -244,7 +244,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          */
         $('#saveTextPropertiesBtn').click(function () {
             var test = self.currentText
-            console.log(test);
 
             //console.log($('#editText *'));
             // $('#editText *').filter(':input').each(function(){
@@ -477,8 +476,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          * Build up the Gadgets menu in the Panel
          */
         var gadgets = self.Gadget.availableGadgets;
-        var base64Gadgets = {};
-
 
         /* translation and scaling for every gadget must be made here by hand */
         var gadgetScale = {
@@ -739,6 +736,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $form.find('.rrdBackground').removeClass('hidden');
             }
 
+            if(self.currentGadget['gadget'] == "Text"){
+                var $form = $('#addGadget_' + type).find('form');
+                $form.find('.showLabel').removeClass('hidden');
+            }
+
             switch (type) {
                 case 'service':
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
@@ -754,6 +756,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
                     }
                     $('#addServiceGadgetTransparentBackground').prop('checked', parseInt(self.currentGadget['transparent_background']));
+                    $('#addServiceGadgetShowLabel').prop('checked', parseInt(self.currentGadget['show_label']));
+                    $('#addServiceGadgetFontSize').val(self.currentGadget['font_size']);
                     break;
             }
         });
@@ -904,7 +908,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          * Catch modal save event GADGET
          */
         $('#saveGadgetPropertiesBtn').click(function () {
-            console.log(self.currentGadget);
             $('#addGadget_' + self.currentGadget['type'] + ' *').filter(':input').each(function () {
                 if ($(this).hasClass('gadgetInput')) {
                     if ($(this).attr('type') == 'checkbox') {
@@ -1066,6 +1069,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#saveGadgetPropertiesBtn').text($('#gadgetAddSaveText').val());
 
             $('.rrdBackground').addClass('hidden');
+            $('.showLabel').addClass('hidden');
         });
 
         $('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function () {
@@ -2370,7 +2374,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             type: "POST",
             dataType: "html",
             success: function (response) {
-                console.log(response);
                 $('#background-panel').empty().html(response);
             }.bind(self)
         });

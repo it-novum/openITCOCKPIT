@@ -420,16 +420,16 @@ class MapModuleSchema extends CakeSchema
 
     public $maps = [
         'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'title'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'background'       => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'title'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'background'       => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'refresh_interval' => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'          => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $maps_to_containers = [
@@ -441,7 +441,7 @@ class MapModuleSchema extends CakeSchema
             'container_id' => ['column' => 'container_id', 'unique' => 0],
             'map_id'       => ['column' => 'map_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $mapitems = [
@@ -450,15 +450,15 @@ class MapModuleSchema extends CakeSchema
         'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'           => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $maplines = [
@@ -469,15 +469,15 @@ class MapModuleSchema extends CakeSchema
         'endX'            => ['type' => 'integer', 'null' => false, 'default' => 0],
         'endY'            => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'           => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => true, 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $mapgadgets = [
@@ -486,29 +486,31 @@ class MapModuleSchema extends CakeSchema
         'x'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'                  => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'gadget'                 => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'type'                   => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'gadget'                 => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'type'                   => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'              => ['type' => 'integer', 'null' => false, 'default' => null],
         'transparent_background' => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 5],
+        'show_label'             => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 5],
+        'font_size'              => ['type' => 'integer', 'null' => false, 'default' => 12],
         'created'                => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
 
     public $rotations = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'interval'        => ['type' => 'integer', 'null' => false, 'default' => 60],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $maps_to_rotations = [
@@ -520,7 +522,7 @@ class MapModuleSchema extends CakeSchema
             'map_id'      => ['column' => 'map_id', 'unique' => 0],
             'rotation_id' => ['column' => 'rotation_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $mapicons = [
@@ -528,13 +530,13 @@ class MapModuleSchema extends CakeSchema
         'map_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
         'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
-        'icon'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'icon'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $maptexts = [
@@ -542,14 +544,14 @@ class MapModuleSchema extends CakeSchema
         'map_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
         'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
-        'text'            => ['type' => 'string', 'length' => 256, 'null' => false, 'default' => 0, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'text'            => ['type' => 'string', 'length' => 256, 'null' => false, 'default' => 0, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'font_size'       => ['type' => 'integer', 'null' => false, 'default' => 11],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
     public $map_uploads = [
@@ -563,6 +565,6 @@ class MapModuleSchema extends CakeSchema
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 }
