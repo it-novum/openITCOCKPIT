@@ -637,7 +637,7 @@ class ServicetemplatesController extends AppController
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
         $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
-        //If servicetemplate != checkmk servicetemplate
+        //If servicetemplate != checkMK servicetemplate
         if(!(isset($this->request->params['named']['_controller']))){
             $active_checks_enabled = $this->_systemsettings['MONITORING']['MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT'];
         }else{
