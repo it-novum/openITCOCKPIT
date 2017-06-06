@@ -918,18 +918,38 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                 }
             });
-
             //update Gadget if exist
             if ($('#' + self.currentGadget['elementUuid']).length > 0) {
+                options = {};
+
                 var $currentGadget = $('#' + self.currentGadget['elementUuid']);
                 $currentGadget.children().filter(':input').each(function () {
                     var fieldKey = $(this).data('key');
                     for (var key in self.currentGadget) {
                         if (fieldKey == key) {
                             $(this).val(self.currentGadget[key]);
+                            options[key] = self.currentGadget[key];
                         }
                     }
                 });
+
+                if(typeof(self.currentGadget['font_size']) != null && typeof(self.currentGadget['show_label']) != null){
+                    options['fontSize'] = self.currentGadget['font_size'];
+                    options['showLabel'] = self.currentGadget['show_label'];
+                }
+                options['demo'] = true;
+
+                gadgetId = options['id'];
+
+                var gadgetUUID = self.getGadgetUuidFromDataUuid(self.currentGadget['elementUuid']);
+
+                var strippedId = gadgetUUID.replace(/svgContainer_/, '');
+                options['id'] = strippedId;
+                //clear the svg element
+                $('#'+gadgetUUID).children('svg').empty();
+                //redraw gadget
+                self.Gadget['draw' + self.currentGadget['gadget']](gadgetUUID, options);
+
             } else {
                 //create new gadget
                 //Set icon to map
@@ -946,6 +966,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     id: self.currentGadget['elementUuid'],
                     x: self.currentGadget['x'],
                     y: self.currentGadget['y'],
+                    showLabel:self.currentGadget['show_label'],
+                    fontSize:self.currentGadget['font_size'],
                     demo: true
                 });
                 //fill the hidden data fields for the Gadget
@@ -1124,16 +1146,18 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var containerData = {
                     gadgetId: mapGadgets[i]['id'],
                 }
+
                 self.Gadget['draw' + mapGadgets[i]['gadget']]('svgContainer_' + tempUuid, {
                     id: tempUuid,
                     x: mapGadgets[i]['x'],
                     y: mapGadgets[i]['y'],
                     containerData: containerData,
+                    fontSize: mapGadgets[i]['font_size'],
+                    showLabel: mapGadgets[i]['show_label'],
                     demo: true
                 });
                 $('#svgContainer_' + tempUuid).css({'z-index': '2'}).attr({'data-gadgetid': mapGadgets[i]['id']}).addClass('itemElement dragElement gadgetSVGContainer');
-            }
-            ;
+            };
         }
 
 
@@ -1284,6 +1308,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         $('.textElement').each(function () {
             $(this).html(self.convertBb2Html($(this).html()));
         });
+    },
+
+    getGadgetUuidFromDataUuid: function(dataFieldUuid){
+        if($('#'+dataFieldUuid).length > 0){
+            var gadgetId = $('#'+dataFieldUuid).data('gadgetid');
+            var $element = $(document).find("[data-gadgetid='"+gadgetId+"'][id^='svgContainer_']");
+            return $element.attr('id');
+        }
+        return false;
     },
 
     convertBb2Html: function (bbCode) {

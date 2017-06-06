@@ -1093,7 +1093,7 @@
                                         ]);
 
                                         echo $this->Form->input('font_size', [
-                                            'value'             => 12,
+                                            'value'             => 13,
                                             'caption'           => __('Font Size'),
                                             'captionGridClass'  => 'col col-md-3 gadgetFontSize hidden',
                                             'wrapGridClass'     => 'col col-xs-9 gadgetFontSize hidden',
