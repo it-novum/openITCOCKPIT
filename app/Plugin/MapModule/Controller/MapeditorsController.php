@@ -520,6 +520,7 @@ class MapeditorsController extends MapModuleAppController
             'isWidget',
             'icons',
         ]));
+        $this->set('_serialize', ['map', 'mapElements']);
     }
 
     public function hostUuidFromServiceUuid($serviceUuid = null)
