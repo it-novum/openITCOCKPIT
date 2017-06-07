@@ -495,7 +495,6 @@ class MapeditorsController extends MapModuleAppController
         if (!empty($mapElements['map_lines'])) {
             $this->Frontend->setJson('map_lines', Hash::Extract($mapElements['map_lines'], '{n}.Mapline'));
         }
-
         if (!empty($mapElements['map_gadgets'])) {
             $this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
         }
