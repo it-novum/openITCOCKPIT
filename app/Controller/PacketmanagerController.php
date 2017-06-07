@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 
 class PacketmanagerController extends AppController
 {
@@ -65,6 +66,8 @@ class PacketmanagerController extends AppController
             $packagemanagerRequestBuilder->getOptions(),
             $this->Proxy->getSettings()
         );
+
+         $this->set('RepositoryChecker', new RepositoryChecker());
 
         $http->sendRequest();
         if (!$http->error) {

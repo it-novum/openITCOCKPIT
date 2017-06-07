@@ -42,6 +42,8 @@
     </div>
 <?php endif; ?>
 
+<?php echo $this->element('repository_checker'); ?>
+
 <div id="error_msg"></div>
 
 <div class="jarviswidget jarviswidget-sortable" data-widget-deletebutton="false"  data-widget-colorbutton="false"
