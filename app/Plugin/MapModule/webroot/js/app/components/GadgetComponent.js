@@ -393,28 +393,34 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var containSVG = (opt.contain == null ? true : opt.contain);
         var containerData = opt.containerData || false;
         var perfdata = opt.perfdata || false;
-
+        var showLabel = (opt.showLabel == null ? true : opt.showLabel);
+        var fontSize = opt.fontSize || 13;//px
         $('#' + svgContainerId).css({'top': textY + 'px', 'left': textX + 'px', 'position': 'absolute'}).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
-        textY = 10;
+        textY = fontSize;
         textX = 0;
-
-        text = 'Perfdata';
-        value = 'not';
-        unit = 'found!';
 
         if (perfdata) {
             if (perfdata[0] != undefined) {
                 text = perfdata[0].label;
                 value = perfdata[0].current_value;
                 unit = perfdata[0].unit;
+            }else{
+                text = 'Perfdata';
+                value = 'not';
+                unit = 'found!';
             }
         }
 
         //build up the text
         var textString = '';
-        if (text.length > 0) {
+        if(showLabel == false && value.length > 0){
+            textString = value;
+            if (unit.length > 0) {
+                textString = value + ' ' + unit;
+            }
+        }else if (text.length > 0) {
             textString = text;
             if (value.length > 0) {
                 textString = text + ' ' + value;
@@ -433,7 +439,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         //draw the string
         svg.text(perfdataText, textX, textY, textString, {
             fontFamily: 'monospace, Courier New',
-            fontSize: '13px',
+            fontSize: fontSize+'px',
             fill: color,
         });
 

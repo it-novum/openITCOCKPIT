@@ -100,7 +100,6 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     'uuid': currentElementData['currentUuid'],
                     type: self.capitaliseFirstLetter(currentElementData['currentType'])
                 };
-
                 var options = {
                     id: currentElementData['currentUuid'],
                     x: mapGadgets[i]['x'], y: mapGadgets[i]['y'],
@@ -109,7 +108,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     state: state.toString(),
                     flapping: flapping,
                     RRDGraphLink: currentElementData['currentRRDGraphLink'],
-                    color: currentElementData['currentColor']
+                    color: currentElementData['currentColor'],
+                    showLabel:currentElementData['currentShowLabel'],
+                    fontSize:currentElementData['currentFontSize'],
                 }
                 //check if the RRD grah link is empty
                 if (!currentElementData['currentRRDGraphLink']) {
@@ -271,6 +272,8 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     currentFlapping: $(this).data('flapping'),
                     currentRRDGraphLink: $(this).data('rrdlink'),
                     currentColor: $(this).data('color'),
+                    currentShowLabel: $(this).data('showlabel'),
+                    currentFontSize: $(this).data('fontsize'),
                 }
             }
         });

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 
 /**
  * @property Systemsetting Systemsetting
@@ -271,6 +272,7 @@ class AdministratorsController extends AppController
         $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
         $this->Frontend->setJson('akey', $systemsetting['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
 
+        $RepositoryChecker = new RepositoryChecker();
         $this->set(compact([
             'disks',
             'memory',
@@ -280,6 +282,7 @@ class AdministratorsController extends AppController
             'mailConfig',
             'gearmanStatus',
             'recipientAddress',
+            'RepositoryChecker'
         ]));
     }
 
