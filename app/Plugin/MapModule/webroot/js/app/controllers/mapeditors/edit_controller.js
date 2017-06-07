@@ -756,8 +756,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
                     }
                     $('#addServiceGadgetTransparentBackground').prop('checked', parseInt(self.currentGadget['transparent_background']));
-                    $('#addServiceGadgetShowLabel').prop('checked', parseInt(self.currentGadget['show_label']));
-                    $('#addServiceGadgetFontSize').val(self.currentGadget['font_size']);
+
+
+                    if(self.currentGadget['show_label'] != null){
+                        $('#addServiceGadgetShowLabel').prop('checked', parseInt(self.currentGadget['show_label']));
+                    }
+
+                    if(self.currentGadget['font_size'] != null){
+                        $('#addServiceGadgetFontSize').val(self.currentGadget['font_size']);
+                    }
                     break;
             }
         });
@@ -1081,8 +1088,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $object.val('').trigger('chosen:updated');
                         break;
 
+                    case 'text':
+                        if($object.attr('id') != 'addServiceGadgetFontSize'){
+                            $object.val('');
+                        }
+                        break;
+
                     default:
-                        $object.val('');
+                        if($object.attr('id') != 'addServiceGadgetShowLabel'){
+                            $object.val('');
+                        }
                         break;
                 }
             });
