@@ -54,6 +54,8 @@ if ($isOldRepositoryInUse === true || $hasError === true): ?>
                     <br/>
                     <?php echo __('Please update your sources.list to use our new repository'); ?>
                     <br/>
+                    <code>apt-get update</code>
+                    <br/>
                     <code>apt-get install openitcockpit-release</code>
                     <br/>
                     <code>dpkg-reconfigure openitcockpit-release</code>
