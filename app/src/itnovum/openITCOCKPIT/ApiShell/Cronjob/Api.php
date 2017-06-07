@@ -73,6 +73,12 @@ class Api extends CoreApi implements ApiInterface
             //Cron does not exists, so we create it
             $this->Database->add('VersionCheck', 'Core', 1440);
         }
+
+        //Check if instantreport cronjob exists
+        if (!$this->Database->checkForCronjob('InstantReport', 'Core')) {
+            //Cron does not exists, so we create it
+            $this->Database->add('InstantReport', 'Core', 1440);
+        }
     }
 
 }

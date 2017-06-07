@@ -322,7 +322,8 @@ $config = [
                 'Usergroups' => ['index'],
                 'Users' => ['index'],
                 'Backups' => ['index'],
-                'Supports' => ['index', 'issue']
+                'Supports' => ['index', 'issue'],
+                'Instantreports' => ['index', 'sendEmailsList']
             ]
 
         ]

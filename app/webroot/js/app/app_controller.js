@@ -55,7 +55,7 @@ Frontend.AppController = Frontend.Controller.extend({
 
         var selectBoxes = $('.chosen');
         for (var i in selectBoxes) {
-            if (typeof selectBoxes[i].attributes !== 'undefined') {
+            if (typeof selectBoxes[i].attributes !== 'undefined' && selectBoxes[i].attributes !== null) {
                 var selectType = typeof selectBoxes[i].attributes['multiple'] !== 'undefined' ? 'multiple' : 'single';
                 if (selectType === 'multiple') {
                     $(selectBoxes[i]).chosen({
