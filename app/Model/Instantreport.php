@@ -267,7 +267,7 @@ class Instantreport extends AppModel {
             }
 
             //if outage in downtime add time for state "ok"
-            if ($currentState == $outageState || $isDowntime) {
+            if ($currentState == $outageState && $isDowntime) {
                 $evaluationData[$outageState] += $timeSlice['end'] - $time;
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;

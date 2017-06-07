@@ -513,9 +513,7 @@ class InstantreportsController extends AppController
                                 'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
                             ],
                             'conditions' => [
-                                'Statehistory.state_time
-										BETWEEN "'.$startDateSqlFormat.'"
-										AND "'.$endDateSqlFormat.'"',
+                                "Statehistory.state_time <= '$endDateSqlFormat'",
                             ],
                             'order'      => [
                                 'Statehistory.state_time',
