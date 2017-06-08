@@ -229,7 +229,6 @@ class Instantreport extends AppModel {
         $outageState = ($objectHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
-
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {
             $time = $timeSlice['start'];
             if ($time > strtotime('today 23:59:59')) { // ignore time_slice in the future
@@ -268,7 +267,7 @@ class Instantreport extends AppModel {
 
             //if outage in downtime add time for state "ok"
             if ($currentState == $outageState && $isDowntime) {
-                $evaluationData[$outageState] += $timeSlice['end'] - $time;
+                $evaluationData[0] += $timeSlice['end'] - $time;
             } else {
                 $evaluationData[$currentState] += $timeSlice['end'] - $time;
             }
