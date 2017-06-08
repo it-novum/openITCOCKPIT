@@ -474,6 +474,7 @@ class InstantreportsController extends AppController
         }
 
         $this->loadModel(MONITORING_OBJECTS);
+        $this->loadModel(MONITORING_STATEHISTORY);
         $this->Objects->bindModel([
             'hasMany' => [
                 'Statehistory' => [
@@ -514,8 +515,8 @@ class InstantreportsController extends AppController
                             ],
                             'conditions' => [
                                 'Statehistory.state_time
-										BETWEEN "'.$startDateSqlFormat.'"
-										AND "'.$endDateSqlFormat.'"',
+                                        BETWEEN "' . $startDateSqlFormat . '"
+                                        AND "' . $endDateSqlFormat . '"',
                             ],
                             'order'      => [
                                 'Statehistory.state_time',
@@ -545,6 +546,24 @@ class InstantreportsController extends AppController
                 ]);
 
                 if (!empty($stateHistoryWithObject)) {
+                    if(empty($stateHistoryWithObject[0]['Statehistory'])){
+                        $stateHistoryWithPrev = $this->Statehistory->find('first', [
+                            'recursive' => -1,
+                            'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
+                            'conditions' => [
+                                'AND' => [
+                                    'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
+                                    'Statehistory.state_time <= "'.$startDateSqlFormat.'"'
+                                ],
+                            ],
+                            'order' => ['Statehistory.state_time' => 'DESC'],
+
+                        ]);
+                    }
+                    if(!empty($stateHistoryWithPrev)){
+                        $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
+                    }
+//                    debug($stateHistoryWithObject);exit;
                     if ($instantReport['Instantreport']['downtimes'] !== '1') {
                         $timeSlices = $timeSlicesGlobal;
                     } else {
@@ -619,7 +638,9 @@ class InstantreportsController extends AppController
                                 'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
                             ],
                             'conditions' => [
-                                "Statehistory.state_time <= '$endDateSqlFormat'",
+                                'Statehistory.state_time
+                                        BETWEEN "' . $startDateSqlFormat . '"
+                                        AND "' . $endDateSqlFormat . '"',
                             ],
                             'order' => [
                                 'Statehistory.state_time',
@@ -648,6 +669,23 @@ class InstantreportsController extends AppController
                     ],
                 ]);
                 if (!empty($stateHistoryWithObject)) {
+                    if(empty($stateHistoryWithObject[0]['Statehistory'])){
+                        $stateHistoryWithPrev = $this->Statehistory->find('first', [
+                            'recursive' => -1,
+                            'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
+                            'conditions' => [
+                                'AND' => [
+                                    'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
+                                    'Statehistory.state_time <= "'.$startDateSqlFormat.'"'
+                                ],
+                            ],
+                            'order' => ['Statehistory.state_time' => 'DESC'],
+
+                        ]);
+                    }
+                    if(!empty($stateHistoryWithPrev)){
+                        $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
+                    }
                     if ($instantReport['Instantreport']['downtimes'] !== '1') {
                         $timeSlices = $timeSlicesGlobal;
                     } else {
@@ -729,7 +767,9 @@ class InstantreportsController extends AppController
                                         'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
                                     ],
                                     'conditions' => [
-                                        "Statehistory.state_time <= '$endDateSqlFormat'",
+                                        'Statehistory.state_time
+                                        BETWEEN "' . $startDateSqlFormat . '"
+                                        AND "' . $endDateSqlFormat . '"',
                                     ],
                                 ],
                                 'Downtime' => [
@@ -756,6 +796,23 @@ class InstantreportsController extends AppController
                         ]);
 
                         if (!empty($stateHistoryWithObject)) {
+                            if(empty($stateHistoryWithObject[0]['Statehistory'])){
+                                $stateHistoryWithPrev = $this->Statehistory->find('first', [
+                                    'recursive' => -1,
+                                    'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
+                                    'conditions' => [
+                                        'AND' => [
+                                            'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
+                                            'Statehistory.state_time <= "'.$startDateSqlFormat.'"'
+                                        ],
+                                    ],
+                                    'order' => ['Statehistory.state_time' => 'DESC'],
+
+                                ]);
+                            }
+                            if(!empty($stateHistoryWithPrev)){
+                                $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
+                            }
                             if ($instantReport['Instantreport']['downtimes'] !== '1') {
                                 $timeSlices = $timeSlicesGlobal;
                             } else {
