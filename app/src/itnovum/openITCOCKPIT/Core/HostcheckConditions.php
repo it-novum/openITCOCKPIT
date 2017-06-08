@@ -27,13 +27,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
-class StatehistoryHostConditions extends ListSettingsConditions {
+class HostcheckConditions extends ListSettingsConditions {
 
     /**
      * @var array
      */
     protected $order = [
-        'StatehistoryHost.state_time' => 'DESC'
+        'Hostcheck.start_time' => 'DESC'
     ];
 
     protected $states = [

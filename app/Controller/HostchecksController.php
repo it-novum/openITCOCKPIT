@@ -23,8 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class HostchecksController extends AppController
-{
+use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+use itnovum\openITCOCKPIT\Core\HostchecksControllerRequest;
+use itnovum\openITCOCKPIT\Core\HostcheckConditions;
+
+class HostchecksController extends AppController {
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
@@ -44,14 +47,17 @@ class HostchecksController extends AppController
         ],
     ];
 
-    public function index($id = null)
-    {
+    public function index($id = null){
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('invalid host'));
         }
 
+        //Process request and set request settings back to front end
+        $HostStates = new HostStates();
+        $HostchecksControllerRequest = new HostchecksControllerRequest($this->request, $HostStates);
+
         $host = $this->Host->find('first', [
-            'fields'     => [
+            'fields' => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -63,45 +69,43 @@ class HostchecksController extends AppController
             'conditions' => [
                 'Host.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
             ],
         ]);
 
+        //Check if user is permitted to see this object
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $host['Host']['container_id'];
-
-        //Check if user is permitted to see this object
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
 
             return;
         }
 
+        //Process conditions
+        $Conditions = new HostcheckConditions();
+        $Conditions->setLimit($HostchecksControllerRequest->getLimit());
+        $Conditions->setFrom($HostchecksControllerRequest->getFrom());
+        $Conditions->setTo($HostchecksControllerRequest->getTo());
+        $Conditions->setStates($HostchecksControllerRequest->getHostStates());
+        $Conditions->setOrder($HostchecksControllerRequest->getOrder());
+        $Conditions->setHostUuid($host['Host']['uuid']);
+
+        //Query state history records
+        $query = $this->Hostcheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_hostchecks = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
+
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+
+        //Get meta data and push to front end
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
             ],
         ]);
-
-
-        $requestSettings = $this->Hostcheck->listSettings($this->request, $host['Host']['uuid']);
-
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-        }
-
-
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-
-        $all_hostchecks = $this->Paginator->paginate();
-
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
         $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'docuExists']));
-        $this->set('StatehistoryListsettings', $requestSettings['Listsettings']);
+        $this->set('HostcheckListsettings', $HostchecksControllerRequest->getRequestSettingsForListSettings());
     }
 }

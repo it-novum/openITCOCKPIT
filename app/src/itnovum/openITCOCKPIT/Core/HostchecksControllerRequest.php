@@ -25,51 +25,29 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\ListSettingsDefaults;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
-class StatehistoryHostConditions extends ListSettingsConditions {
+class HostchecksControllerRequest extends ControllerListSettingsRequest {
 
     /**
-     * @var array
+     * @return array
      */
-    protected $order = [
-        'StatehistoryHost.state_time' => 'DESC'
-    ];
-
-    protected $states = [
-        0, 1, 2
-    ];
-
-    /**
-     * @var string
-     */
-    protected $hostUuid;
-
-    /**
-     * @param string $hostUuid
-     */
-    public function setHostUuid($hostUuid){
-        $this->hostUuid = $hostUuid;
-    }
-
-    /**
-     * @return string
-     */
-    public function getHostUuid(){
-        return $this->hostUuid;
-    }
-
-    /**
-     * @param HostStates $HostStates
-     */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 3){
-            $this->states = [];
-            return;
+    public function getRequestSettingsForListSettings(){
+        $states = $this->HostStates->asArray();
+        if(!$this->HostStates->hasRecovery() && !$this->HostStates->hasDown() && !$this->HostStates->hasUnreachable()){
+            //User disabled all check boxes or first page load
+            //Enable all to avoid empty list
+            foreach($states as $key => $value){
+                $states[$key] = true;
+            }
         }
 
-        $this->states = $HostStates->asIntegerArray();
+        return [
+            'limit' => $this->getLimit(),
+            'state_types' => $states,
+            'from' => date('d.m.Y H:i', $this->getFrom()),
+            'to' => date('d.m.Y H:i', $this->getTo())
+        ];
     }
-
 }
-

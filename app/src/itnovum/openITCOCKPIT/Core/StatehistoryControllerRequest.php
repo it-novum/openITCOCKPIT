@@ -24,65 +24,19 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
-use itnovum\openITCOCKPIT\Core\ValueObjects\ListSettingsDefaults;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 
-class StatehistoryControllerRequest {
-
-    /**
-     * @var \CakeRequest
-     */
-    private $request;
-
-    /**
-     * @var ListSettingsDefaults
-     */
-    private $ListSettingsDefaults;
-
-    /**
-     * @var HostStates
-     */
-    private $HostStates;
+class StatehistoryControllerRequest extends ControllerListSettingsRequest {
 
     /**
      * @var StateTypes
      */
-    private $StateTypes;
-
-    /**
-     * @var array
-     */
-    private $requestParameters = [];
+    protected $StateTypes;
 
     public function __construct(\CakeRequest $request, HostStates $HostStates, StateTypes $StateTypes){
-        $this->ListSettingsDefaults = new ListSettingsDefaults();
-
-        $this->HostStates = $HostStates;
         $this->StateTypes = $StateTypes;
-        $this->request = $request;
-
-        if ($this->request->is('post')) {
-            $this->requestParameters = $this->request->data;
-        }
-
-        //Parameters from URL (GET)
-        if (isset($this->request->params['named']['Listsettings'])) {
-            $this->requestParameters['Listsettings'] = $this->request->params['named']['Listsettings'];
-        }
-
-
-    }
-
-    /**
-     * @return int
-     */
-    public function getLimit(){
-        if (isset($this->requestParameters['Listsettings']['limit'])) {
-            return (int)$this->requestParameters['Listsettings']['limit'];
-        }
-        return $this->ListSettingsDefaults->getDefaultLimit();
+        parent::__construct($request, $HostStates);
     }
 
     /**
@@ -98,56 +52,6 @@ class StatehistoryControllerRequest {
             }
         }
         return $this->StateTypes;
-    }
-
-    /**
-     * @param array $defaultOrder
-     * @return array
-     */
-    public function getOrder($defaultOrder = []){
-        if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
-            return [
-                $this->request['named']['sort'] => $this->request['named']['direction']
-            ];
-        }
-
-        return $defaultOrder;
-    }
-
-    /**
-     * @return false|int
-     */
-    public function getFrom(){
-        if (isset($this->requestParameters['Listsettings']['from'])) {
-            return strtotime($this->requestParameters['Listsettings']['from']);
-        }
-        return $this->ListSettingsDefaults->getDefaultFrom();
-    }
-
-    /**
-     * @return false|int
-     */
-    public function getTo(){
-        if (isset($this->requestParameters['Listsettings']['to'])) {
-            return strtotime($this->requestParameters['Listsettings']['to']);
-        }
-        return $this->ListSettingsDefaults->getDefaultTo();
-    }
-
-    /**
-     * @return HostStates
-     */
-    public function getHostStates(){
-        $availableStates = $this->HostStates->getAvailableStateIds();
-
-        if (isset($this->requestParameters['Listsettings']['state_types'])) {
-            foreach ($this->requestParameters['Listsettings']['state_types'] as $stateName => $value) {
-                if (isset($availableStates[$stateName]) && $value == 1) {
-                    $this->HostStates->setState($availableStates[$stateName], true);
-                }
-            }
-        }
-        return $this->HostStates;
     }
 
     /**

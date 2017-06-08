@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 
-abstract class StatehistoryConditions {
+abstract class ListSettingsConditions {
 
     /**
      * @var array
@@ -44,9 +44,10 @@ abstract class StatehistoryConditions {
      */
     protected $states = [];
 
-    protected $order = [
-        'StatehistoryHost.state_time' => 'DESC'
-    ];
+    /**
+     * @var array
+     */
+    protected $order = [];
 
     /**
      * @var int
