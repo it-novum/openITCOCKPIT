@@ -342,9 +342,9 @@ class Crate extends DboSource {
                         } else {
                             $hasWhere = true;
 
-                            if($result['value'] !== null) {
+                            if ($result['value'] !== null) {
                                 $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
-                            }else{
+                            } else {
                                 $queryTemplate = sprintf('%s WHERE %s %s', $queryTemplate, $result['key'], $result['operator']);
                             }
                         }
@@ -356,9 +356,9 @@ class Crate extends DboSource {
                             }
                             $queryTemplate = sprintf('%s AND %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
                         } else {
-                            if($result['value'] !== null) {
+                            if ($result['value'] !== null) {
                                 $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $result['key'], $result['operator']);
-                            }else{
+                            } else {
                                 $queryTemplate = sprintf('%s AND %s %s', $queryTemplate, $result['key'], $result['operator']);
                             }
                         }
@@ -370,7 +370,7 @@ class Crate extends DboSource {
 
         if (!empty($queryData['array_difference'])) {
             //WHERE array_difference([1,2], Host.container_ids) != [1,2]
-            foreach($queryData['array_difference'] as $field => $values){
+            foreach ($queryData['array_difference'] as $field => $values) {
                 if ($this->columnExists($field)) {
                     $queryTemplate = sprintf(
                         '%s %s array_difference(?, %s) != ?',
@@ -438,8 +438,11 @@ class Crate extends DboSource {
                             $query->bindValue($i++, $value);
                             $attachedParameters[] = $value;
                         }
+                    }elseif (is_bool($result['value'])){
+                        $query->bindValue($i++, $result['value'], PDO::PARAM_BOOL);
+                        $attachedParameters[] = $result['value'] ? 'true' : 'false';
                     } else {
-                        if($result['value'] === null){
+                        if ($result['value'] === null) {
                             continue;
                         }
                         $query->bindValue($i++, $result['value']);
@@ -451,7 +454,7 @@ class Crate extends DboSource {
 
         if (!empty($queryData['array_difference'])) {
             //WHERE array_difference([1,2], Host.container_ids) != [1,2]
-            foreach($queryData['array_difference'] as $field => $values){
+            foreach ($queryData['array_difference'] as $field => $values) {
                 if ($this->columnExists($field)) {
                     $values = array_values($values);
                     $query->bindValue($i++, $values, PDO::PARAM_ARRAY);
@@ -652,7 +655,7 @@ class Crate extends DboSource {
      */
     protected function _parseKey($key, $value, Model $Model = null){
         //$query['conditions'][] = 'Hoststatus.hostname IS NULL';
-        if(is_numeric($key)){
+        if (is_numeric($key)) {
             $key = $value;
             $value = null;
         }
@@ -909,6 +912,18 @@ class Crate extends DboSource {
         if (count($this->_queriesLog) > $this->_queriesLogMax) {
             array_shift($this->_queriesLog);
         }
+    }
+
+    /**
+     * Translates between PHP boolean values and Database (faked) boolean values
+     * CrateDB has support for boolean values, so we dont need this
+     *
+     * @param mixed $data Value to be translated
+     * @param bool $quote Whether or not the field should be cast to a string.
+     * @return bool Converted boolean value
+     */
+    public function boolean($data, $quote = false){
+        return $data;
     }
 
 }

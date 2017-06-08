@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+
 class StatehistoryHost extends CrateModuleAppModel {
     public $useDbConfig = 'Crate';
     public $useTable = 'host_statehistory';
@@ -31,6 +33,42 @@ class StatehistoryHost extends CrateModuleAppModel {
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'StatehistoryHost.is_hardstate';
+    }
+
+
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @param array $paginatorConditions
+     * @return array
+     */
+    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []){
+        $query = [
+            'conditions' => [
+                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'state_time >' => $StatehistoryHostConditions->getFrom(),
+                'state_time <' => $StatehistoryHostConditions->getTo()
+            ],
+            'order' => $StatehistoryHostConditions->getOrder(),
+            'limit' => $StatehistoryHostConditions->getLimit(),
+        ];
+
+        if(!empty($StatehistoryHostConditions->getStates())){
+            $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
+        }
+
+        foreach($StatehistoryHostConditions->getStateTypes() as $stateType){
+            if($stateType === 0){
+                $query['conditions']['is_hardstate'] = false;
+            }
+
+            if($stateType === 1){
+                $query['conditions']['is_hardstate'] = true;
+            }
+        }
+
+        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        return $query;
     }
 
 }

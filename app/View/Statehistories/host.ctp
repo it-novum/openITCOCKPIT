@@ -24,14 +24,16 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 
 $Host = new Host($host);
+$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $this->Status->HostStatusColor($Host->getUuid()); ?>">
+        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor($Host->getUuid()); ?>">
             <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($Host->getUuid(), 'is_flapping')); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($Host->getHostname()) ?>
@@ -196,12 +198,12 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                     <li>
                                         <input type="hidden" value="0"
                                                name="data[Listsettings][state_types][<?php echo $state_type; ?>]"/>
+                                    </li>
                                     <li style="width: 100%;"><a href="javascript:void(0)"
                                                                 class="listoptions_checkbox text-left"><input
                                                     type="checkbox"
                                                     name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
                                                     value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
-                                    </li>
                                     </li>
                                 <?php endforeach ?>
                                 <li class="divider"></li>
@@ -291,8 +293,10 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                             $this->Auth->user('timezone')
                                         )); ?>
                                     </td>
-                                    <td class="text-center"><?php echo h($StatehistoryHost->getCurrentCheckAttempt()); ?>
-                                        /<?php echo h($StatehistoryHost->getMaxCheckAttempts()); ?></td>
+                                    <td class="text-center">
+                                        <?php echo h($StatehistoryHost->getCurrentCheckAttempt()); ?>
+                                        /<?php echo h($StatehistoryHost->getMaxCheckAttempts()); ?>
+                                    </td>
                                     <td class="text-center">
                                         <?php echo h($this->Status->humanServiceStateType(
                                             $StatehistoryHost->isHardstate()
