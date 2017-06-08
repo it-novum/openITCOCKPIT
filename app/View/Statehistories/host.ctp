@@ -263,16 +263,16 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state');
-                                    echo $this->Paginator->sort('Statehistory.state', __('State')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state_time');
-                                    echo $this->Paginator->sort('Statehistory.state_time', __('Date')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.current_check_attempt');
-                                    echo $this->Paginator->sort('Statehistory.current_check_attempt', __('Check attempt')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state_type');
-                                    echo $this->Paginator->sort('Statehistory.state_type', __('State type')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.output');
-                                    echo $this->Paginator->sort('Statehistory.output', __('Host output')); ?></th>
+                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'StatehistoryHost.state');
+                                    echo $this->Paginator->sort('StatehistoryHost.state', __('State')); ?></th>
+                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'StatehistoryHost.state_time');
+                                    echo $this->Paginator->sort('StatehistoryHost.state_time', __('Date')); ?></th>
+                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'StatehistoryHost.current_check_attempt');
+                                    echo $this->Paginator->sort('StatehistoryHost.current_check_attempt', __('Check attempt')); ?></th>
+                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'StatehistoryHost.state_type');
+                                    echo $this->Paginator->sort('StatehistoryHost.state_type', __('State type')); ?></th>
+                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'StatehistoryHost.output');
+                                    echo $this->Paginator->sort('StatehistoryHost.output', __('Host output')); ?></th>
                             </tr>
                             </thead>
                             <tbody>

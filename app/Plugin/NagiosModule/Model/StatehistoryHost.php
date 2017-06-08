@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+
 class StatehistoryHost extends NagiosModuleAppModel
 {
     public $useTable = 'statehistory';
@@ -38,4 +40,34 @@ class StatehistoryHost extends NagiosModuleAppModel
             'type' => 'INNER'
         ],
     ];
+
+
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @param array $paginatorConditions
+     * @return array
+     */
+    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []){
+        $query = [
+            'conditions' => [
+                'Objects.name1' => $StatehistoryHostConditions->getHostUuid(),
+                'StatehistoryHost.state_time >' => $StatehistoryHostConditions->getFrom(),
+                'StatehistoryHost.state_time <' => $StatehistoryHostConditions->getTo()
+            ],
+            'order' => $StatehistoryHostConditions->getOrder(),
+            'limit' => $StatehistoryHostConditions->getLimit(),
+        ];
+
+        if(!empty($StatehistoryHostConditions->getStates())){
+            $query['conditions']['StatehistoryHost.state'] = $StatehistoryHostConditions->getStates();
+        }
+
+        if(!empty($StatehistoryHostConditions->getStateTypes())){
+            $query['conditions']['StatehistoryHost.state_type'] = $StatehistoryHostConditions->getStateTypes();
+        }
+
+        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        return $query;
+    }
 }
