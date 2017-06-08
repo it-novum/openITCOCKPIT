@@ -56,7 +56,7 @@ $widgetData = $WidgetServiceStatusList[$widget['Widget']['id']];
                     if ($this->Acl->hasPermission('browser')):
                         $href = '/services/browser/'.$service['Service']['id'];
                     endif;
-                    echo $this->Status->humanServiceStatus($service['Service']['uuid'], $href, [$service['Service']['uuid'] => ['Servicestatus' => ['current_state' => $service['Servicestatus']['current_state']]]])['html_icon'];
+                    echo $this->Status->humanServiceStatus($service['Service']['uuid'], $href, [$service['Service']['uuid'] => ['Servicestatus' => ['current_state' => $service['Servicestatus']['last_hard_state']]]])['html_icon'];
                 endif;
                 ?>
             </td>

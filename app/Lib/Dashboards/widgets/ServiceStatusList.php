@@ -109,7 +109,7 @@ class ServiceStatusList extends Widget
             'Service.uuid',
             'Service.name',
             'Servicetemplate.name',
-            'Servicestatus.current_state',
+            'Servicestatus.last_hard_state',
             'Servicestatus.last_hard_state_change',
             'Servicestatus.problem_has_been_acknowledged',
             'Servicestatus.scheduled_downtime_depth',
