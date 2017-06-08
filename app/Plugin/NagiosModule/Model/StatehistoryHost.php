@@ -51,8 +51,8 @@ class StatehistoryHost extends NagiosModuleAppModel
         $query = [
             'conditions' => [
                 'Objects.name1' => $StatehistoryHostConditions->getHostUuid(),
-                'StatehistoryHost.state_time >' => $StatehistoryHostConditions->getFrom(),
-                'StatehistoryHost.state_time <' => $StatehistoryHostConditions->getTo()
+                'StatehistoryHost.state_time >' => date('Y-m-d H:i:s', $StatehistoryHostConditions->getFrom()),
+                'StatehistoryHost.state_time <' => date('Y-m-d H:i:s', $StatehistoryHostConditions->getTo())
             ],
             'order' => $StatehistoryHostConditions->getOrder(),
             'limit' => $StatehistoryHostConditions->getLimit(),
