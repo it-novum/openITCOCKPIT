@@ -36,10 +36,10 @@
                 echo $service['Servicetemplate']['name'];
             }
             ?><span>
-				&nbsp;<?php echo __('on'); ?>&nbsp;
-				<a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?>
+                &nbsp;<?php echo __('on'); ?>&nbsp;ﬂ
+                <a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?>
                     (<?php echo $service['Host']['address']; ?>)</a>
-			</span>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
@@ -119,7 +119,7 @@
                         <?php
                         echo $this->Form->create('notifications', [
                             'class' => 'form-horizontal clear',
-                            'url'   => 'serviceNotification/'.$service['Service']['id'] //reset the URL on submit
+                            'url' => 'serviceNotification/' . $service['Service']['id'] //reset the URL on submit
                         ]);
 
                         ?>
@@ -144,29 +144,29 @@
                         <div class="btn-group">
                             <?php
                             $listoptions = [
-                                '30'  => [
+                                '30' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 30,
-                                    'human'         => 30,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 30,
+                                    'human' => 30,
+                                    'selector' => '#listoptions_limit',
                                 ],
-                                '50'  => [
+                                '50' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 50,
+                                    'human' => 50,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '100' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 100,
+                                    'human' => 100,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '300' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 300,
-                                    'human'         => 300,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 300,
+                                    'human' => 300,
+                                    'selector' => '#listoptions_limit',
                                 ],
                             ];
 
@@ -214,9 +214,10 @@
 
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
@@ -251,7 +252,7 @@
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="/hosts/browser/<?php echo $notification['Service']['id']; ?>">
+                                        <a href="/services/browser/<?php echo $notification['Service']['id']; ?>">
                                             <?php
                                             if ($notification['Service']['name'] !== null && $notification['Service']['name'] != ''):
                                                 echo h($notification['Service']['name']);
@@ -293,7 +294,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
