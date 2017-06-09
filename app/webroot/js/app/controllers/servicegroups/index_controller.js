@@ -23,80 +23,81 @@
 //	confirmation.
 
 App.Controllers.ServicegroupsIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function() {
-		var self = this;
-		this.Masschange.setup({
-			'controller': 'servicegroups',
-			'checkboxattr': 'servicegroupname'
-		});
-		$('.select_datatable').click(function(){
-			self.fnShowHide($(this).attr('my-column'), $(this).children());
-		});
+    _initialize: function () {
+        var self = this;
+        this.Masschange.setup({
+            'controller': 'servicegroups',
+            'checkboxattr': 'servicegroupname'
+        });
+        $('.select_datatable').click(function () {
+            self.fnShowHide($(this).attr('my-column'), $(this).children());
+        });
 
-		var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
-		for ( var i = 0, len = localStorage.length; i < len; ++i ) {
-			pageUrl = localStorage.key(i);
-			dataTableValue = localStorage.getItem(pageUrl);
-			if(typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
-			dataTableValueParsed = JSON.parse(dataTableValue);
-			if(pageUrl.indexOf('DataTables_servicegroup_list_/servicegroups') !== -1){
-				if(dataTableValueParsed.time > highestTime){
-					highestTime = dataTableValueParsed.time;
-					highestValue = dataTableValue;
-				}
-			}
-		}
+        var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+        for (var i = 0, len = localStorage.length; i < len; ++i) {
+            pageUrl = localStorage.key(i);
+            dataTableValue = localStorage.getItem(pageUrl);
+            if (typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+            dataTableValueParsed = JSON.parse(dataTableValue);
+            if (pageUrl.indexOf('DataTables_servicegroup_list_/servicegroups') !== -1) {
+                if (dataTableValueParsed.time > highestTime) {
+                    highestTime = dataTableValueParsed.time;
+                    highestValue = dataTableValue;
+                }
+            }
+        }
 
-		self.setDataTableFilter(highestValue);
+        self.setDataTableFilter(highestValue);
 
-		$('#servicegroup_list').dataTable({
-			"bPaginate": false,
-			"bFilter": false,
-			"bInfo": false,
-			"bStateSave": true,
-			"aoColumnDefs" : [ {
-				"bSortable" : false,
-				"aTargets" : [ "no-sort" ]
-			}]
-		});
+        $('#servicegroup_list').dataTable({
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bStateSave": true,
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": ["no-sort"]
+            }]
+        });
 
-		this.$table = $('#servicegroup_list');
+        this.$table = $('#servicegroup_list');
 
-		//Checkboxen aktivieren
-		//Checkboxen aktivieren
-		$('.select_datatable').find('input').each(function () {
-			$(this).prop('checked', false);
-			var myCol = ($(this).parent().attr('my-column'));
-			var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
-			if (isVisible == true) {
-				$(this).prop('checked', true);
-			}
-		})
+        //Checkboxen aktivieren
+        //Checkboxen aktivieren
+        $('.select_datatable').find('input').each(function () {
+            $(this).prop('checked', false);
+            var myCol = ($(this).parent().attr('my-column'));
+            var isVisible = self.$table.dataTable().fnSettings().aoColumns[myCol].bVisible;
+            if (isVisible == true) {
+                $(this).prop('checked', true);
+            }
+        })
 
-	},
-	fnShowHide: function( iCol, inputObject){
-		/* Get the DataTables object again - this is not a recreation, just a get of the object */
-		var oTable = this.$table.dataTable();
+    },
+    fnShowHide: function (iCol, inputObject) {
+        /* Get the DataTables object again - this is not a recreation, just a get of the object */
+        var oTable = this.$table.dataTable();
 
-		var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
-		if(bVis == true){
-			inputObject.prop('checked', false);
-		}else{
-			inputObject.prop('checked', true);
-		}
-		oTable.fnSetColumnVis( iCol, bVis ? false : true );
-	},
-	setDataTableFilter: function(storageValue){
-		var currentURL = window.location.href;
-		var postTextURL = currentURL.substring(currentURL.indexOf('servicegroups') + 13);
-		localStorage.setItem('DataTables_servicegroup_list_/servicegroups'+postTextURL, storageValue);
-	}
+        var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+        if (bVis == true) {
+            inputObject.prop('checked', false);
+        } else {
+            inputObject.prop('checked', true);
+        }
+        oTable.fnSetColumnVis(iCol, bVis ? false : true);
+    },
+    setDataTableFilter: function (storageValue) {
+        var currentURL = window.location.href;
+        var postTextURL = currentURL.substring(currentURL.indexOf('servicegroups') + 13);
+        localStorage.setItem('DataTables_servicegroup_list_/servicegroups' + postTextURL, storageValue);
+    }
 });
