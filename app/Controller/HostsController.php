@@ -2177,7 +2177,12 @@ class HostsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-    public function browser($id = null){
+
+    public function browser($id = null) {
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
         $host = $this->Host->find('first', [
             'recursive' => -1,
             'contain' => [
