@@ -39,6 +39,31 @@ class AcknowledgedHost extends NagiosModuleAppModel
         ],
     ];
 
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null)
+    {
+        $return = [];
+        if ($uuid !== null) {
+            $acknowledged = $this->find('first', [
+                'conditions' => [
+                    'Objects.name1'         => $uuid,
+                    'Objects.objecttype_id' => 1,
+                ],
+                'order'      => [
+                    'AcknowledgedHost.entry_time' => 'DESC',
+                ],
+            ]);
+
+            return $acknowledged;
+
+        }
+
+        return $return;
+    }
+
 
     /**
      * @param AcknowledgedHostConditions $AcknowledgedHostConditions

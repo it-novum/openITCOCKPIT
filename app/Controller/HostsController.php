@@ -79,6 +79,7 @@ class HostsController extends AppController {
         'Contact',
         'Contactgroup',
         MONITORING_ACKNOWLEDGED,
+        MONITORING_ACKNOWLEDGED_HOST,
         'DeletedHost',
         'DeletedService',
         'Container',
@@ -2311,8 +2312,8 @@ class HostsController extends AppController {
 
 
         $acknowledged = [];
-        if (isset($hoststatus[$host['Host']['uuid']]['Hoststatus']) && $hoststatus[$host['Host']['uuid']]['Hoststatus']['problem_has_been_acknowledged'] > 0) {
-            $acknowledged = $this->Acknowledged->byHostUuid($host['Host']['uuid']);
+        if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
+            $acknowledged = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
         }
         $ticketSystem = $this->Systemsetting->find('first', [
             'conditions' => ['key' => 'TICKET_SYSTEM.URL'],

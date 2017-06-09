@@ -31,6 +31,29 @@ class AcknowledgedHost extends CrateModuleAppModel {
     public $tablePrefix = 'statusengine_';
 
     /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null){
+        $return = [];
+        if ($uuid !== null) {
+            $acknowledged = $this->find('first', [
+                'conditions' => [
+                    'hostname' => $uuid,
+                ],
+                'order' => [
+                    'AcknowledgedHost.entry_time' => 'DESC',
+                ],
+            ]);
+
+            return $acknowledged;
+
+        }
+
+        return $return;
+    }
+
+    /**
      * @param AcknowledgedHostConditions $AcknowledgedHostConditions
      * @param array $paginatorConditions
      * @return array
@@ -46,7 +69,7 @@ class AcknowledgedHost extends CrateModuleAppModel {
             'limit' => $AcknowledgedHostConditions->getLimit(),
         ];
 
-        if(!empty($AcknowledgedHostConditions->getStates())){
+        if (!empty($AcknowledgedHostConditions->getStates())) {
             $query['conditions']['state'] = $AcknowledgedHostConditions->getStates();
         }
 
