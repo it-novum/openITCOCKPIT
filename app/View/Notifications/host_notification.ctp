@@ -22,8 +22,14 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)]); ?>
+
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+
+$Host = new Host($host);
+$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)]); ?>
 <div id="error_msg"></div>
 <div class="alert auto-hide alert-success" id="flashSuccess"
      style="display:none"><?php echo __('Command sent successfully'); ?></div>
@@ -31,13 +37,13 @@
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>">
-            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($host['Host']['uuid'], 'is_flapping')); ?>
+        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor($Host->getUuid()); ?>">
+            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($Host->getUuid(), 'is_flapping')); ?>
             <i class="fa fa-desktop fa-fw"></i>
-            <?php echo $host['Host']['name']; ?>
+            <?php echo h($Host->getHostname()) ?>
             <span>
-				(<?php echo $host['Host']['address']; ?>)
-			</span>
+                (<?php echo h($Host->getAddress()) ?>)
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
@@ -52,29 +58,11 @@
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
-
-    <!-- row -->
     <div class="row">
 
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -114,7 +102,7 @@
                         <?php
                         echo $this->Form->create('notifications', [
                             'class' => 'form-horizontal clear',
-                            'url'   => 'hostNotification/'.$host['Host']['id'] //reset the URL on submit
+                            'url' => 'hostNotification/' . $host['Host']['id'] //reset the URL on submit
                         ]);
 
                         ?>
@@ -139,29 +127,29 @@
                         <div class="btn-group">
                             <?php
                             $listoptions = [
-                                '30'  => [
+                                '30' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 30,
-                                    'human'         => 30,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 30,
+                                    'human' => 30,
+                                    'selector' => '#listoptions_limit',
                                 ],
-                                '50'  => [
+                                '50' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 50,
+                                    'human' => 50,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '100' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 100,
+                                    'human' => 100,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '300' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 300,
-                                    'human'         => 300,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 300,
+                                    'human' => 300,
+                                    'selector' => '#listoptions_limit',
                                 ],
                             ];
 
@@ -203,15 +191,13 @@
                     <h2><?php echo __('Notifications'); ?> </h2>
 
                 </header>
-
-                <!-- widget div-->
                 <div>
 
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
@@ -275,7 +261,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -287,18 +273,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
-
                 </div>
-                <!-- end widget div -->
-
             </div>
-            <!-- end widget -->
-
-
     </div>
-
-    <!-- end row -->
-
 </section>
-<!-- end widget grid -->
