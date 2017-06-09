@@ -50,7 +50,7 @@ App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 		/*
 		 * Binding click events
 		 */
-		$('#submitRescheduleService').click(function(){
+		$('.submitRescheduleService').click(function(){
 			self.WebsocketSudo.send(self.WebsocketSudo.toJson('rescheduleService', [self.host_uuid, self.service_uuid, $('#nag_commandSatelliteId').val()]));
 			self.Externalcommand.refresh();
 		});

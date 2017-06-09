@@ -58,7 +58,7 @@ class Browser extends AppModel
                     'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                 ], [
                     'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT OUTER',
+                    'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ], [
@@ -116,7 +116,7 @@ class Browser extends AppModel
                 'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
             ], [
                 'table'      => 'nagios_servicestatus',
-                'type'       => 'LEFT OUTER',
+                'type'       => 'INNER',
                 'alias'      => 'Servicestatus',
                 'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
             ], [

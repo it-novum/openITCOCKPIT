@@ -32,6 +32,8 @@ app/Plugin/ArchiveMigration
 app/Plugin/AutoreportModule
 app/Plugin/AutoreportModule/webroot/tmp/*
 app/Plugin/AxiosAssyst
+app/Plugin/DataExportModule
+app/Plugin/DesignModule
 app/Plugin/DistributeModule
 app/Plugin/EventcorrelationModule
 app/Plugin/IdoitModule

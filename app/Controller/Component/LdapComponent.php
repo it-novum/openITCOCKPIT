@@ -126,6 +126,7 @@ class LdapComponent extends Component
         $makeRequest = true;
         while($makeRequest){
             $ldapUsers = $this->adldap->search()->select($selectFields)->paginate($perPage, $currentPage);
+            if(empty($ldapUsers)) break;
             foreach ($ldapUsers[1] as $ldapUser) {
                 $ableToImport = true;
                 foreach ($requiredFields as $requiredField) {

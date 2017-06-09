@@ -24,9 +24,12 @@
 //	confirmation.
 
 ?>
-<a href="<?php if (isset($ListsettingsUrlParams)): echo Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams));
-else: echo $this->here; endif; ?>" data-original-title="<?php echo __('Refresh'); ?>" data-placement="bottom"
-   rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-refresh fa-lg"></i></a>
+<?php if($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'hosts'): ?>
+<span data-original-title="<?php echo __('Reset check time'); ?>" data-placement="bottom" rel="tooltip"
+      class="btn btn-default btn-sm" data-toggle="modal" data-target="#nag_command_reschedule">
+    <i class="fa fa-refresh fa-lg"></i>
+</span>
+<?php endif; ?>
 <?php if ($this->Acl->hasPermission('view', 'documentations') && $host['Host']['host_type'] == GENERIC_HOST): ?>
     <span style="position:relative;">
         <a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"

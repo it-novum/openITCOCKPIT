@@ -2529,14 +2529,14 @@ class NagiosExportTask extends AppShell {
 
     public function verify() {
         $this->out("<info>" . __d('oitc_console', 'verifying configuration files, please standby...') . "</info>");
-        exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg'), $out);
+        exec('sudo -u '.$this->_systemsettings['MONITORING']['MONITORING.USER'].' '.Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg'), $out);
         foreach ($out as $line) {
             echo $line . PHP_EOL;
         }
     }
 
     public function returnVerifyCommand() {
-        return Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg');
+        return 'sudo -u '.$this->_systemsettings['MONITORING']['MONITORING.USER'].' '.Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' ' . Configure::read('nagios.verify') . ' ' . Configure::read('nagios.nagios_cfg');
     }
 
     public function returnReloadCommand() {

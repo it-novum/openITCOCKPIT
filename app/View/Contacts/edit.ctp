@@ -235,7 +235,7 @@
                     </div>
                 </article>
                 <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
-                    <div id="wid-id-1" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
+                    <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
 							<span class="widget-icon">
