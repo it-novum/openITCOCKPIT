@@ -2179,6 +2179,9 @@ class HostsController extends AppController {
     }
 
     public function browser($id = null) {
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
         $host = $this->Host->find('first', [
             'recursive' => -1,
             'contain' => [
