@@ -34,6 +34,7 @@ class AcknowledgementsController extends AppController {
      */
     public $uses = [
         MONITORING_ACKNOWLEDGED_HOST,
+        MONITORING_ACKNOWLEDGED,
         MONITORING_SERVICESTATUS,
         'Host',
         'Service',
@@ -65,36 +66,6 @@ class AcknowledgementsController extends AppController {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
-
-        /*
-        $service = $this->Service->find('first', [
-            'fields' => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.servicetemplate_id',
-                'Service.service_url'
-            ],
-            'conditions' => [
-                'Service.id' => $id
-            ],
-            'contain' => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address'
-                    ]
-                ]
-            ]
-        ]);*/
 
         $service = $this->Service->find('first', [
             'recursive' => -1,
@@ -145,7 +116,7 @@ class AcknowledgementsController extends AppController {
         $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 
-        $all_acknowledgements = $this->Paginator->paginate();
+        $all_acknowledgements = $this->Paginator->paginate($this->Acknowledged->alias);
 
         $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
         $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit', 'docuExists']));

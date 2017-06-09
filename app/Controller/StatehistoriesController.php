@@ -35,6 +35,7 @@ class StatehistoriesController extends AppController {
      */
     public $uses = [
         MONITORING_STATEHISTORY_HOST,
+        MONITORING_STATEHISTORY,
         MONITORING_SERVICESTATUS,
         MONITORING_HOSTSTATUS,
         'Host',
@@ -128,7 +129,7 @@ class StatehistoriesController extends AppController {
         $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
 
-        $all_statehistories = $this->Paginator->paginate();
+        $all_statehistories = $this->Paginator->paginate($this->Statehistory->alias);
         $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
         $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'allowEdit', 'docuExists']));

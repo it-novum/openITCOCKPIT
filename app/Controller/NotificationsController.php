@@ -31,7 +31,14 @@ class NotificationsController extends AppController
      * use this external model to fetch the required data out of the database
      */
     //public $uses = [MONITORING_NOTIFICATION, MONITORING_OBJECTS, 'Host', 'Service'];
-    public $uses = [MONITORING_NOTIFICATION, 'Host', MONITORING_HOSTSTATUS, 'Service', MONITORING_SERVICESTATUS, 'Documentation'];
+    public $uses = [
+        MONITORING_NOTIFICATION,
+        'Host',
+        MONITORING_HOSTSTATUS,
+        'Service',
+        MONITORING_SERVICESTATUS,
+        'Documentation'
+    ];
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
