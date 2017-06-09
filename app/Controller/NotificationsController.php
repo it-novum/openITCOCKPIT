@@ -23,14 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NotificationsController extends AppController
-{
+class NotificationsController extends AppController {
 
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    //public $uses = [MONITORING_NOTIFICATION, MONITORING_OBJECTS, 'Host', 'Service'];
     public $uses = [
         MONITORING_NOTIFICATION,
         'Host',
@@ -45,12 +43,12 @@ class NotificationsController extends AppController
     public $layout = 'Admin.default';
 
     public $listFilters = [
-        'index'               => [
+        'index' => [
             'fields' => [
                 'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
         ],
-        'hostNotification'    => [
+        'hostNotification' => [
             'fields' => [
                 'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
@@ -62,8 +60,7 @@ class NotificationsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index(){
 
         $order = $this->ListsettingsParser();
 
@@ -76,14 +73,13 @@ class NotificationsController extends AppController
         $this->set('_serialize', ['all_notification']);
     }
 
-    public function hostNotification($host_id)
-    {
+    public function hostNotification($host_id){
         if ($this->Host->exists($host_id)) {
 
             //$host = $this->Host->findById($host_id);
 
             $host = $this->Host->find('first', [
-                'fields'     => [
+                'fields' => [
                     'Host.id',
                     'Host.uuid',
                     'Host.name',
@@ -94,7 +90,7 @@ class NotificationsController extends AppController
                 'conditions' => [
                     'Host.id' => $host_id,
                 ],
-                'contain'    => [
+                'contain' => [
                     'Container',
                 ],
             ]);
@@ -125,8 +121,7 @@ class NotificationsController extends AppController
         }
     }
 
-    public function serviceNotification($service_id)
-    {
+    public function serviceNotification($service_id){
         if ($this->Service->exists($service_id)) {
             /*
             $service = $this->Service->find('first', [
@@ -158,9 +153,9 @@ class NotificationsController extends AppController
                 ]
             ]);*/
             $service = $this->Service->find('first', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Host'            => [
+                'recursive' => -1,
+                'contain' => [
+                    'Host' => [
                         'Container',
                     ],
                     'Servicetemplate' => [
@@ -204,8 +199,7 @@ class NotificationsController extends AppController
         }
     }
 
-    private function ListsettingsParser($action = 'index', $options = [])
-    {
+    private function ListsettingsParser($action = 'index', $options = []){
         //Get Parameters out of $_GET
         if (isset($this->request->params['named']['Listsettings'])) {
             $this->request->data['Listsettings'] = $this->request->params['named']['Listsettings'];
@@ -216,10 +210,10 @@ class NotificationsController extends AppController
                 $requestSettings = $this->Notification->serviceListSettings($this->request->data, $options['hostUuid'], $options['serviceUuid']);
 
                 $join = [
-                    'join'   => [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicetemplate',
+                    'join' => [
+                        'table' => 'servicetemplates',
+                        'type' => 'INNER',
+                        'alias' => 'Servicetemplate',
                         'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
                     ],
                     'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
@@ -231,7 +225,7 @@ class NotificationsController extends AppController
             case 'hostNotification':
                 $requestSettings = $this->Notification->hostListSettings($this->request->data, $options['hostUuid']);
                 $join = [
-                    'join'   => null,
+                    'join' => null,
                     'fields' => [],
                 ];
                 break;
@@ -240,7 +234,7 @@ class NotificationsController extends AppController
             default:
                 $requestSettings = $this->Notification->listSettings($this->request->data);
                 $join = [
-                    'join'   => null,
+                    'join' => null,
                     'fields' => [],
                 ];
                 break;
@@ -265,10 +259,10 @@ class NotificationsController extends AppController
         if (isset($requestSettings['Listsettings']['view'])) {
             if ($requestSettings['Listsettings']['view'] == 'serviceOnly') {
                 $join = [
-                    'join'   => [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicetemplate',
+                    'join' => [
+                        'table' => 'servicetemplates',
+                        'type' => 'INNER',
+                        'alias' => 'Servicetemplate',
                         'conditions' => 'Service.servicetemplate_id = Servicetemplate.id',
                     ],
                     'fields' => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
