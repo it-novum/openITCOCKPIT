@@ -837,7 +837,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                    class="form-control" name="data[CommitHostDowntime][from_date]">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
-                            <input type="text" id="CommitHostDowntimeFromTime" value="<?php echo date('h:m'); ?>"
+                            <input type="text" id="CommitHostDowntimeFromTime" value="<?php echo date('H:i'); ?>"
                                    class="form-control" name="data[CommitHostDowntime][from_time]">
                         </div>
                     </div>
@@ -848,11 +848,11 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             :</label>
                         <div class="col col-xs-5" style="padding-right: 0px;">
                             <input type="text" id="CommitHostDowntimeToDate"
-                                   value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control"
+                                   value="<?php echo date('d.m.Y'); ?>" class="form-control"
                                    name="data[CommitHostDowntime][to_date]">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
-                            <input type="text" id="CommitHostDowntimeToTime" value="<?php echo date('h:m'); ?>"
+                            <input type="text" id="CommitHostDowntimeToTime" value="<?php echo date('H:i', time() + (60 * 15)); ?>"
                                    class="form-control" name="data[CommitHostDowntime][to_time]">
                         </div>
                     </div>
