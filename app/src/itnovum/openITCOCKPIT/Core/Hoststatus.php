@@ -24,28 +24,86 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 
-class Hoststatus
-{
+class Hoststatus {
 
+    /**
+     * @var null|int
+     */
     private $currentState = null;
 
+    /**
+     * @var bool
+     */
     private $isFlapping;
 
+    /**
+     * @var bool
+     */
     private $problemHasBeenAcknowledged;
 
+    /**
+     * @var string
+     */
     private $scheduledDowntimeDepth;
 
+    /**
+     * @var string
+     */
     private $lastCheck;
 
+    /**
+     * @var string
+     */
     private $nextCheck;
 
+    /**
+     * @var bool
+     */
     private $activeChecksEnabled;
 
+    /**
+     * @var string
+     */
     private $lastHardStateChange;
 
-    public function __construct($data)
-    {
+    /**
+    * @var string
+    */
+    private $output;
+
+    /**
+     * @var string
+     */
+    private $long_output;
+
+    /**
+     * @var int
+     */
+    private $acknowledgement_type;
+
+    /**
+     * @var int
+     */
+    private $state_type;
+
+    /**
+     * @var bool
+     */
+    private $flap_detection_enabled;
+
+    /**
+     * @var bool
+     */
+    private $notifications_enabled;
+
+    /**
+     * @var int
+     */
+    private $current_check_attempt;
+
+    public function __construct($data){
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
         }
@@ -71,65 +129,125 @@ class Hoststatus
         }
 
         if (isset($data['active_checks_enabled'])) {
-            $this->activeChecksEnabled = $data['active_checks_enabled'];
+            $this->activeChecksEnabled = (bool)$data['active_checks_enabled'];
         }
 
         if (isset($data['last_hard_state_change'])) {
             $this->lastHardStateChange = $data['last_hard_state_change'];
         }
-    }
 
-    public function getHumanHoststatus($href = 'javascript:void(0)', $style = '')
-    {
-        if ($this->currentState === null) {
-            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="'.$href.'" class="btn btn-primary status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-question-circle'];
+        if (isset($data['acknowledgement_type'])) {
+            $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
 
-        switch ($this->currentState) {
-            case 0:
-                return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="'.$href.'" class="btn btn-success status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'glyphicon glyphicon-ok'];
-                break;
+        if (isset($data['output'])) {
+            $this->output = $data['output'];
+        }
 
-            case 1:
-                return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="'.$href.'" class="btn btn-danger status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-exclamation'];
-                break;
+        if (isset($data['state_type'])) {
+            $this->state_type = $data['state_type'];
+        }
 
-            default:
-                return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="'.$href.'" class="btn btn-default status-circle" style="padding:0;'.$style.'"></a>'];
+        if (isset($data['is_hardstate'])) {
+            $this->state_type = $data['is_hardstate'];
+        }
+
+        if(isset($data['flap_detection_enabled'])) {
+            $this->flap_detection_enabled = (bool)$data['flap_detection_enabled'];
+        }
+
+        if(isset($data['notifications_enabled'])) {
+            $this->notifications_enabled = (bool)$data['notifications_enabled'];
+        }
+
+        if(isset($data['current_check_attempt'])) {
+            $this->current_check_attempt = $data['current_check_attempt'];
+        }
+
+        if (isset($data['long_output'])) {
+            $this->long_output = $data['long_output'];
         }
     }
 
-    public function getHostFlappingIconColored($class = '')
-    {
+    public function getHumanHoststatus($href = 'javascript:void(0)', $style = ''){
+        $Icon = new HoststatusIcon($this->currentState, $href, $style);
+        return $Icon->asArray();
+    }
+
+    public function getHostFlappingIconColored($class = ''){
         $stateColors = [
             0 => 'ok',
             1 => 'critical',
             2 => '',
         ];
-
         if ($this->isFlapping() === true) {
             if ($this->currentState !== null) {
-                return '<span class="flapping_airport '.$class.' '.$stateColors[$this->currentState].'"><i class="fa fa-circle '.$stateColors[$this->currentState].'"></i> <i class="fa fa-circle-o '.$stateColors[$this->currentState].'"></i></span>';
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$this->currentState] . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
             }
 
-            return '<span class="flapping_airport text-primary '.$class.'"><i class="fa fa-circle '.$stateColors[$this->currentState].'"></i> <i class="fa fa-circle-o '.$stateColors[$this->currentState].'"></i></span>';
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$this->currentState] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$this->currentState] . '"></i></span>';
         }
-
         return '';
     }
 
-    public function currentState()
-    {
+    /**
+     * Return the CSS class for the current host status
+     * <span class="<?php echo $this->HostStatusColor($uuid); ?>"></span>
+     *
+     * @param string $uuid       of the object
+     * @param array  $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     *
+     * @return string CSS class of the color
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function HostStatusColor(){
+
+        switch ($this->currentState) {
+            case 0:
+                return 'txt-color-green';
+
+            case 1:
+                return 'txt-color-red';
+
+            default:
+                return 'txt-color-blueDark';
+        }
+
+        //no status found in database
+        return 'text-primary';
+    }
+
+    /**
+     * Return the status background color for a Host
+     *
+     * @param int $state the current status of a Host
+     *
+     * @return array which contains the human state and the css class
+     */
+    function HostStatusBackgroundColor() {
+        $state = ($this->currentState === null) ? 2 : $this->currentState;
+        $background_color = [
+            0 => 'bg-color-green',
+            1 => 'bg-color-red',
+            2 => 'bg-color-blueLight',
+        ];
+
+        return $background_color[$state];
+    }
+
+    public function currentState(){
         return $this->currentState;
     }
 
-    public function isAacknowledged()
-    {
+    public function isAacknowledged(){
         return (bool)$this->problemHasBeenAcknowledged;
     }
 
-    public function isInDowntime()
-    {
+    /**
+     * @return bool
+     */
+    public function isInDowntime(){
         if ($this->scheduledDowntimeDepth > 0) {
             return true;
         }
@@ -137,33 +255,108 @@ class Hoststatus
         return false;
     }
 
-    public function getLastHardStateChange()
-    {
+    /**
+     * @return bool
+     */
+    public function isHardState(){
+        return (bool)$this->state_type;
+    }
+
+    public function getLastHardStateChange(){
         return $this->lastHardStateChange;
     }
 
-    public function getLastCheck()
-    {
+    public function getLastCheck(){
         return $this->lastCheck;
     }
 
-    public function getNextCheck()
-    {
+    public function getNextCheck(){
         return $this->nextCheck;
     }
 
-    public function isActiveChecksEnabled()
-    {
-        return (bool)$this->activeChecksEnabled;
+    public function isActiveChecksEnabled(){
+        return $this->activeChecksEnabled;
     }
 
     /**
      * @return bool
      */
-    public function isFlapping()
-    {
+    public function isFlapping(){
         return (bool)$this->isFlapping;
     }
 
+    /**
+     * @return int
+     */
+    public function getAcknowledgementType(){
+        return $this->acknowledgement_type;
+    }
 
+    /**
+     * @return string
+     */
+    public function getOutput(){
+        return $this->output;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLongOutput(){
+        return $this->long_output;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStateType(){
+        return $this->state_type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFlapDetectionEnabled(){
+        return (bool)$this->flap_detection_enabled;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNotificationsEnabled(){
+        return (bool)$this->notifications_enabled;
+    }
+
+    public function getCurrentCheckAttempts(){
+        return $this->current_check_attempt;
+    }
+
+    /**
+     * Check if there is a difference between monitoring hoststatus flap_detection_ebabled and the itcockpit database
+     * configuration If yes it will return the current setting from $hostatus This can happen, if a user disable the
+     * flap detection with an external command, but not in the host configuration
+     *
+     * @param array $host['Host']['flap_detection_enabled']
+     *
+     * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function compareHostFlapDetectionWithMonitoring($flapDetectionEnabledFromConfig)
+    {
+        if ($flapDetectionEnabledFromConfig != $this->flap_detection_enabled) {
+            //Flapdetection was temporary en- or disabled by an external command
+            if ($this->flap_detection_enabled) {
+                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">'.__('Temporary on').'</span>', 'value' => $this->flap_detection_enabled];
+            }
+
+            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">'.__('Temporary off').'</span>', 'value' => $this->flap_detection_enabled];
+        }
+
+        if ($flapDetectionEnabledFromConfig == 1) {
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+        }
+
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+    }
 }

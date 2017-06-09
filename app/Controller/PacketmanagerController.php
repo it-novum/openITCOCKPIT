@@ -38,14 +38,6 @@ class PacketmanagerController extends AppController
 
     public function index()
     {
-        //$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
-        //$this->Frontend->setJson('websocket_port', 8081);
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
         $this->Frontend->setJson('username', $this->Auth->user('full_name'));
 
         Configure::load('version');

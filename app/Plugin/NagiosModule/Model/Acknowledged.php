@@ -57,15 +57,6 @@ class Acknowledged extends NagiosModuleAppModel
 
         }
 
-
-        /*	
-            if(!empty($acknowledged)){
-                foreach($acknowledged as $ack){
-                    $ack[$ack['Objects']['name2']] = $ack;
-                }
-            }
-        } */
-
         return $return;
     }
 

@@ -120,10 +120,6 @@ class ServiceescalationsController extends AppController
 
         $this->set('all_serviceescalations', $all_serviceescalations);
         $this->set('_serialize', ['all_serviceescalations']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)

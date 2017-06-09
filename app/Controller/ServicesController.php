@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Container $Container
@@ -87,7 +88,8 @@ class ServicesController extends AppController {
         'DeletedService',
         'Rrd',
         'Container',
-        'Documentation'
+        'Documentation',
+        'Systemsetting'
     ];
 
     public $listFilters = [
@@ -359,10 +361,6 @@ class ServicesController extends AppController {
         }
         $username = $this->Auth->user('full_name');
 
-        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-
         $this->set(compact(['all_services', 'username', 'hostContainers']));
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_services']);
@@ -378,8 +376,7 @@ class ServicesController extends AppController {
             $this->set('isFilter', false);
         }
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     public function view($id = null) {
@@ -2172,15 +2169,10 @@ class ServicesController extends AppController {
             ])
         );
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
         $this->Frontend->setJson('hostUuid', $service['Host']['uuid']);
         $this->Frontend->setJson('serviceUuid', $service['Service']['uuid']);
 
-        $queryHandler = $this->Systemsetting->findByKey('MONITORING.QUERY_HANDLER');
-        $this->set('QueryHandler', new \itnovum\openITCOCKPIT\Monitoring\QueryHandler($queryHandler['Systemsetting']['value']));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     /*
@@ -2373,10 +2365,7 @@ class ServicesController extends AppController {
 
         $username = $this->Auth->user('full_name');
 
-        $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
-//debug($all_services);
+
         $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
         $this->set('_serialize', ['all_services']);
     }

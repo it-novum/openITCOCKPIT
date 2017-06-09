@@ -48,13 +48,6 @@ class RotationsController extends MapModuleAppController
     public function index()
     {
         $all_rotations = $this->Paginator->paginate();
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
-
         $this->set(compact(['all_rotations']));
     }
 
