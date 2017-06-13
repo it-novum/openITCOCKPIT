@@ -31,6 +31,7 @@ class NotificationsController extends AppController {
      */
     public $uses = [
         MONITORING_NOTIFICATION,
+        MONITORING_NOTIFICATION_HOST,
         'Host',
         MONITORING_HOSTSTATUS,
         'Service',

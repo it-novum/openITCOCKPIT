@@ -29,11 +29,18 @@ class SyncTablesShell extends AppShell {
      */
     public $uses = [
         'Host',
-        'CrateModule.CrateHost'
+        'Contact',
+        'CrateModule.CrateHost',
+        'CrateModule.CrateContact'
     ];
 
     public function main(){
+        //$this->syncHosts();
+        $this->syncContacts();
 
+    }
+
+    public function syncHosts(){
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
             'contain' => [
@@ -71,12 +78,12 @@ class SyncTablesShell extends AppShell {
             }
 
             $active_checks_enabled = $host['Hosttemplate']['active_checks_enabled'];
-            if($host['Host']['active_checks_enabled'] !== null){
+            if ($host['Host']['active_checks_enabled'] !== null) {
                 $active_checks_enabled = $host['Host']['active_checks_enabled'];
             }
 
             $tags = $host['Hosttemplate']['tags'];
-            if($host['Host']['tags']){
+            if ($host['Host']['tags']) {
                 $tags = $host['Host']['tags'];
             }
 
@@ -96,7 +103,48 @@ class SyncTablesShell extends AppShell {
             ];
         }
 
-        debug($this->CrateHost->saveAll($crateHosts));
+        $this->CrateHost->saveAll($crateHosts);
+    }
+
+    public function syncContacts(){
+        $contacts = $this->Contact->find('all', [
+            'contain' => [
+                'HostCommands',
+                'ServiceCommands'
+            ]
+        ]);
+
+        foreach ($contacts as $contact) {
+            foreach ($contact['HostCommands'] as $hostCommand) {
+                $crateContact[] = [
+                    'CrateContact' => [
+                        'contact_id' => (int)$contact['Contact']['id'],
+                        'command_id' => (int)$hostCommand['id'],
+                        'contact_uuid' => $contact['Contact']['uuid'],
+                        'command_uuid' => $hostCommand['uuid'],
+                        'contact_name' => $contact['Contact']['name'],
+                        'command_name' => $hostCommand['name'],
+                        'is_host_command' => true
+                    ]
+                ];
+            }
+
+            foreach ($contact['ServiceCommands'] as $serviceCommand) {
+                $crateContact[] = [
+                    'CrateContact' => [
+                        'contact_id' => (int)$contact['Contact']['id'],
+                        'command_id' => (int)$serviceCommand['id'],
+                        'contact_uuid' => $contact['Contact']['uuid'],
+                        'command_uuid' => $serviceCommand['uuid'],
+                        'contact_name' => $contact['Contact']['name'],
+                        'command_name' => $serviceCommand['name'],
+                        'is_host_command' => false
+                    ]
+                ];
+            }
+        }
+
+        $this->CrateContact->saveAll($crateContact);
 
     }
 

@@ -388,7 +388,7 @@ class Notification extends NagiosModuleAppModel
 
             ],
             'order'      => $order,
-            'group'      => 'Notification.notification_id',
+            //'group'      => 'Notification.notification_id',
             'conditions' => $conditions,
             'findType'   => 'all',
 

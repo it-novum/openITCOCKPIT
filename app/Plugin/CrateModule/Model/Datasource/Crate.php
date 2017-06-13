@@ -528,6 +528,10 @@ class Crate extends DboSource {
                     $query->bindValue($i++, $value, PDO::PARAM_INT);
                     break;
 
+                case 'boolean':
+                    $query->bindValue($i++, (bool)$value, PDO::PARAM_BOOL);
+                    break;
+
                 case 'array':
                     $query->bindValue($i++, $value, PDO::PARAM_ARRAY);
                     break;
