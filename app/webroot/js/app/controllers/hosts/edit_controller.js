@@ -1077,32 +1077,35 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             if(Contact != null){
                 $('#HostContact').val('').trigger('chosen:updated');
                 for (var contactId in Contact) {
-                    $('#HostContact')
-                        .append($('<option></option>')
-                        .val(contactId)
-                        .attr('selected', 'selected')
-                        .html(Contact[contactId])).trigger('chosen:updated');
+                    if($('#HostContact option[value="'+contactId+'"]').length > 0){
+                        $('#HostContact option[value="'+contactId+'"]')
+                            .val(contactId)
+                            .prop('selected', true)
+                    }
                 }
+                $('#HostContact').trigger('chosen:updated');
             }
-
 
             //Set selected in selectbox for contact groups
             var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
             if(Contactgroup != null){
                 $('#HostContactgroup').val('').trigger('chosen:updated');
-                for(var ContactgroupId in Contactgroup){
-                    $('#HostContactgroup')
-                        .append($('<option></option>')
-                        .val(ContactgroupId)
-                        .attr('selected', 'selected')
-                        .html(Contactgroup[ContactgroupId])).trigger('chosen:updated');
+                for (var ContactgroupId in Contactgroup) {
+                    if($('#HostContactgroup option[value="'+ContactgroupId+'"]').length > 0){
+                        $('#HostContactgroup option[value="'+ContactgroupId+'"]')
+                            .val(ContactgroupId)
+                            .prop('selected', true)
+                    }
                 }
+                $('#HostContactgroup').trigger('chosen:updated');
             }
+
             $('#HostContact').prop('readonly', true);
             $('#HostContactgroup').prop('readonly', true);
         }else{
             $('#hostContactSelects').unblock();
             $('#HostContact').prop('readonly', false);
+            $('#hostContactgroupSelects').unblock();
             $('#HostContactgroup').prop('readonly', false);
         }
     },
