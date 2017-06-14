@@ -31,14 +31,14 @@ class ListSettingsDefaults {
      * @return int
      */
     public function getDefaultFrom(){
-        return time() - (3600 * 24 * 5);
+        return time() - (3600 * 24 * 30);
     }
 
     /**
      * @return int
      */
     public function getDefaultTo(){
-        return time() + (3600 * 24);
+        return time() + (3600 * 24 * 30 * 2);
     }
 
     /**
