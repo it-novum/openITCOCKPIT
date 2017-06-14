@@ -270,7 +270,6 @@ class GearmanWorkerShell extends AppShell {
                     'for_snmp_scan' => true, //Hacky but works -.-
                     'host_address' => $payload['hostaddress'],
                 ]);
-
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                 $output = null;
                 exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
@@ -286,7 +285,7 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'CheckMKProcesses':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostaddress']), $output);
+                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
                 $return = $output;
                 unset($output);
                 break;
