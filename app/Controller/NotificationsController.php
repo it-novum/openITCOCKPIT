@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
+use itnovum\openITCOCKPIT\Core\NotificationsControllerRequest;
+use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+
 class NotificationsController extends AppController {
 
     /*
@@ -51,7 +55,7 @@ class NotificationsController extends AppController {
         ],
         'hostNotification' => [
             'fields' => [
-                'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
         ],
         'serviceNotification' => [
@@ -75,50 +79,64 @@ class NotificationsController extends AppController {
     }
 
     public function hostNotification($host_id){
-        if ($this->Host->exists($host_id)) {
-
-            //$host = $this->Host->findById($host_id);
-
-            $host = $this->Host->find('first', [
-                'fields' => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.host_url',
-                    'Host.host_type'
-                ],
-                'conditions' => [
-                    'Host.id' => $host_id,
-                ],
-                'contain' => [
-                    'Container',
-                ],
-            ]);
-
-            if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.id'))) {
-                $this->render403();
-
-                return;
-            }
-
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-                'fields' => [
-                    'Hoststatus.current_state',
-                ],
-            ]);
-
-            $order = $this->ListsettingsParser('hostNotification', ['hostUuid' => $host['Host']['uuid']]);
-            //--force --doit --yes-i-know-what-i-do
-            $all_notification = $this->Paginator->paginate(null, [], $order);
-
-            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
-            $this->set(compact(['host', 'hoststatus', 'all_notification', 'docuExists']));
-
-        } else {
-            throw new NotFoundException(__('Invalid host'));
+        if (!$this->Host->exists($host_id)) {
+            throw new NotFoundException(__('invalid host'));
         }
+
+        //Process request and set request settings back to front end
+        $HostStates = new HostStates();
+        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+
+        $host = $this->Host->find('first', [
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.host_url',
+                'Host.host_type',
+                'Host.container_id'
+            ],
+            'conditions' => [
+                'Host.id' => $host_id,
+            ],
+            'contain' => [
+                'Container',
+            ],
+        ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        //Process conditions
+        $Conditions = new HostNotificationConditions();
+        $Conditions->setLimit($NotificationsControllerRequest->getLimit());
+        $Conditions->setFrom($NotificationsControllerRequest->getFrom());
+        $Conditions->setTo($NotificationsControllerRequest->getTo());
+        $Conditions->setOrder($NotificationsControllerRequest->getOrder());
+        $Conditions->setHostUuid($host['Host']['uuid']);
+
+        //Query host notification records
+        $query = $this->NotificationHost->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_notification = $this->Paginator->paginate($this->NotificationHost->alias, [], [key($this->Paginator->settings['order'])]);
+
+        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+
+        //Get meta data and push to front end
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+            'fields' => [
+                'Hoststatus.current_state',
+            ],
+        ]);
+        $this->set(compact(['host', 'all_notification', 'hoststatus', 'docuExists']));
+        $this->set('NotificationListsettings', $NotificationsControllerRequest->getRequestSettingsForListSettings());
+
     }
 
     public function serviceNotification($service_id){

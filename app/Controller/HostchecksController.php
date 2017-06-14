@@ -92,7 +92,7 @@ class HostchecksController extends AppController {
         $Conditions->setOrder($HostchecksControllerRequest->getOrder());
         $Conditions->setHostUuid($host['Host']['uuid']);
 
-        //Query state history records
+        //Query host check records
         $query = $this->Hostcheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
         $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
         $all_hostchecks = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);

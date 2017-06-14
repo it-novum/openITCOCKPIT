@@ -23,13 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Command;
+use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
 
 $Host = new Host($host);
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
-$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)]); ?>
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $NotificationListsettings])]); ?>
 <div id="error_msg"></div>
 <div class="alert auto-hide alert-success" id="flashSuccess"
      style="display:none"><?php echo __('Command sent successfully'); ?></div>
@@ -102,7 +106,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <?php
                         echo $this->Form->create('notifications', [
                             'class' => 'form-horizontal clear',
-                            'url' => 'hostNotification/' . $host['Host']['id'] //reset the URL on submit
+                            'url' => 'hostNotification/' . $Host->getId() //reset the URL on submit
                         ]);
 
                         ?>
@@ -194,57 +198,109 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+                        <?php
+                        echo $this->ListFilter->renderFilterbox($filters, [
+                            'formActionParams' => [
+                                'url' => Router::url(
+                                    Hash::merge(
+                                        $this->params['named'],
+                                        $this->params['pass'],
+                                        ['Listsettings' => $NotificationListsettings]
+                                    )
+                                ),
+                                'merge' => false
+                            ]
+                        ], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
+                        ?>
 
                         <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'state');
-                                    echo $this->Paginator->sort('state', __('State')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Host.name');
-                                    echo $this->Paginator->sort('Host.name', __('Host')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Notification.start_time');
-                                    echo $this->Paginator->sort('Notification.start_time', __('Date')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Contact.name');
-                                    echo $this->Paginator->sort('Contact.name', __('Contact')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Command.name');
-                                    echo $this->Paginator->sort('Command.name', __('Notification method')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output');
-                                    echo $this->Paginator->sort('output', __('Output')); ?></th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'NotificationHost.state');
+                                    echo $this->Paginator->sort('NotificationHost.state', __('State')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Host.name');
+                                    echo $this->Paginator->sort('Host.name', __('Host')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'NotificationHost.start_time');
+                                    echo $this->Paginator->sort('NotificationHost.start_time', __('Date')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Contact.name');
+                                    echo $this->Paginator->sort('Contact.name', __('Contact')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Command.name');
+                                    echo $this->Paginator->sort('Command.name', __('Notification method')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'NotificationHost.output');
+                                    echo $this->Paginator->sort('NotificationHost.output', __('Output')); ?>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php //debug($all_notification); ?>
-                            <?php foreach ($all_notification as $notification): ?>
+                            <?php
+                            foreach ($all_notification as $notification):
+                                $Host = new Host($notification);
+                                $NotificationHost = new NotificationHost($notification);
+                                $StatusIcon = new HoststatusIcon($NotificationHost->getState());
+                                $Command = new Command($notification['Command']);
+                                $Contact = new Contact($notification['Contact']);
+                                ?>
                                 <tr>
-                                    <td>
-                                        <center><?php echo $this->Monitoring->NotificationStatusIcon($notification['Notification']['state'], $notification['Notification']['notification_type']); ?></center>
+                                    <td class="text-center">
+                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
                                     </td>
                                     <td>
-                                        <?php if (isset($notification['Host']['name']) && $notification['Host']['name'] != null): ?>
-                                            <a href="/hosts/browser/<?php echo $notification['Host']['id']; ?>">
-                                                <?php echo h($notification['Host']['name']); ?>
+                                        <?php if ($Host->getHostname()): ?>
+                                            <a href="<?php echo Router::url([
+                                                'controller' => 'hosts',
+                                                'action' => 'browser',
+                                                $Host->getId()
+                                            ]); ?>">
+                                                <?php echo h($Host->getHostname()); ?>
                                             </a>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo h($this->Time->format($notification['Contactnotification']['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
+                                    <td>
+                                        <?php echo h($this->Time->format(
+                                            $NotificationHost->getStartTime(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>
+                                    </td>
                                     <td>
                                         <?php
                                         //Checking if the contact exists or was deleted
-                                        if (isset($notification['Contact']['id']) && $notification['Contact']['id'] != null): ?>
-                                            <a href="/contacts/edit/<?php echo $notification['Contact']['id']; ?>"><?php echo h($notification['Contact']['name']); ?></a>
+                                        if ($Contact->getId()): ?>
+                                            <a href="<?php echo Router::url([
+                                                'controller' => 'contacts',
+                                                'action' => 'edit',
+                                                $Contact->getId()]); ?>">
+                                                <?php echo h($Contact->getName()); ?>
+                                            </a>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php
                                         //Checking if the command exists or was deleted
-                                        if (isset($notification['Command']['id']) && $notification['Command']['id'] != null): ?>
-                                            <a href="/commands/edit/<?php echo $notification['Command']['id']; ?>"><?php echo h($notification['Command']['name']); ?></a>
+                                        if ($Command->getId()): ?>
+                                            <a href="<?php echo Router::url([
+                                                'controller' => 'commands',
+                                                'action' => 'edit',
+                                                $Command->getId()]); ?>">
+                                                <?php echo h($Command->getName()); ?>
+                                            </a>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?php echo h($notification['Notification']['output']); ?></td>
+                                    <td><?php echo h($NotificationHost->getOutput()); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
