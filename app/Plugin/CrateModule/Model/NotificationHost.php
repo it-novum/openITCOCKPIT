@@ -1,0 +1,103 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
+
+class NotificationHost extends CrateModuleAppModel {
+    public $useDbConfig = 'Crate';
+    public $useTable = 'host_notifications';
+    public $tablePrefix = 'statusengine_';
+
+
+    //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "notifications Table"
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+        parent::__construct($id, $table, $ds, $useDynamicAssociations);
+        $this->virtualFields['"Host.name"'] = 'Host.name';
+        $this->virtualFields['"Contact.name"'] = 'Contact.name';
+        $this->virtualFields['"Command.name"'] = 'Command.name';
+    }
+
+    /**
+     * @param HostNotificationConditions $HostNotificationConditions
+     * @param array $paginatorConditions
+     * @return array
+     */
+    public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []){
+
+        $fields = [
+            'NotificationHost.start_time',
+            'NotificationHost.state',
+            'NotificationHost.output',
+
+            'Host.id',
+            'Host.uuid',
+            'Host.name',
+            'Contact.*'
+        ];
+
+        $query = [
+            'recursive' => -1,
+            'fields' => $fields,
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'LEFT',
+                    'alias' => 'Host',
+                    'conditions' =>
+                        'Host.uuid = NotificationHost.hostname',
+                ],
+                [
+                    'table' => 'openitcockpit_contacts',
+                    'type' => 'INNER',
+                    'alias' => 'Contact',
+                    'conditions' =>
+                        'Contact.uuid = NotificationHost.contact_name'
+                ],
+                [
+                    'table' => 'openitcockpit_commands',
+                    'type' => 'INNER',
+                    'alias' => 'Command',
+                    'conditions' =>
+                        'Command.uuid = NotificationHost.command_name'
+                ]
+            ],
+
+            'conditions' => [
+                'NotificationHost.start_time >' => $HostNotificationConditions->getFrom(),
+                'NotificationHost.start_time <' => $HostNotificationConditions->getTo(),
+                'NotificationHost.hostname' => $HostNotificationConditions->getHostUuid()
+            ],
+
+            'order' => $HostNotificationConditions->getOrder(),
+            'limit' => $HostNotificationConditions->getLimit(),
+        ];
+
+        //Merge ListFilter conditions
+        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        return $query;
+    }
+
+}

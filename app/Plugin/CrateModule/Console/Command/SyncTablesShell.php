@@ -30,13 +30,16 @@ class SyncTablesShell extends AppShell {
     public $uses = [
         'Host',
         'Contact',
+        'Command',
         'CrateModule.CrateHost',
-        'CrateModule.CrateContact'
+        'CrateModule.CrateContact',
+        'CrateModule.CrateCommand'
     ];
 
     public function main(){
         //$this->syncHosts();
-        $this->syncContacts();
+        //$this->syncContacts();
+        $this->syncCommands();
 
     }
 
@@ -108,45 +111,52 @@ class SyncTablesShell extends AppShell {
 
     public function syncContacts(){
         $contacts = $this->Contact->find('all', [
-            'contain' => [
-                'HostCommands',
-                'ServiceCommands'
-            ]
+            'recursive' => -1,
         ]);
 
+        $crateContact = [];
         foreach ($contacts as $contact) {
-            foreach ($contact['HostCommands'] as $hostCommand) {
-                $crateContact[] = [
-                    'CrateContact' => [
-                        'contact_id' => (int)$contact['Contact']['id'],
-                        'command_id' => (int)$hostCommand['id'],
-                        'contact_uuid' => $contact['Contact']['uuid'],
-                        'command_uuid' => $hostCommand['uuid'],
-                        'contact_name' => $contact['Contact']['name'],
-                        'command_name' => $hostCommand['name'],
-                        'is_host_command' => true
-                    ]
-                ];
-            }
-
-            foreach ($contact['ServiceCommands'] as $serviceCommand) {
-                $crateContact[] = [
-                    'CrateContact' => [
-                        'contact_id' => (int)$contact['Contact']['id'],
-                        'command_id' => (int)$serviceCommand['id'],
-                        'contact_uuid' => $contact['Contact']['uuid'],
-                        'command_uuid' => $serviceCommand['uuid'],
-                        'contact_name' => $contact['Contact']['name'],
-                        'command_name' => $serviceCommand['name'],
-                        'is_host_command' => false
-                    ]
-                ];
-            }
+            $crateContact[] = [
+                'CrateContact' => [
+                    'id' => (int)$contact['Contact']['id'],
+                    'uuid' => $contact['Contact']['uuid'],
+                    'name' => $contact['Contact']['name'],
+                ]
+            ];
         }
 
         $this->CrateContact->saveAll($crateContact);
 
     }
+
+    public function syncCommands(){
+        $commands = $this->Command->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Command.id',
+                'Command.name',
+                'Command.uuid'
+            ],
+            'conditions' => [
+                'Command.command_type' => NOTIFICATION_COMMAND
+            ]
+        ]);
+
+        $crateCommand = [];
+        foreach ($commands as $command) {
+            $crateCommand[] = [
+                'CrateCommand' => [
+                    'id' => (int)$command['Command']['id'],
+                    'uuid' => $command['Command']['uuid'],
+                    'name' => $command['Command']['name'],
+                ]
+            ];
+        }
+
+        $this->CrateCommand->saveAll($crateCommand);
+
+    }
+
 
     public function getOptionParser(){
         $parser = parent::getOptionParser();

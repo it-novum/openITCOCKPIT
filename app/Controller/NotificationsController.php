@@ -124,8 +124,11 @@ class NotificationsController extends AppController {
         //Query host notification records
         $query = $this->NotificationHost->getQuery($Conditions, $this->Paginator->settings['conditions']);
         $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_notification = $this->Paginator->paginate($this->NotificationHost->alias, [], [key($this->Paginator->settings['order'])]);
-
+        $all_notification = $this->Paginator->paginate(
+            $this->NotificationHost->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
         //Get meta data and push to front end

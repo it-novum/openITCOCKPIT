@@ -12,12 +12,13 @@ CREATE TABLE IF NOT EXISTS openitcockpit_hosts (
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
 
 CREATE TABLE IF NOT EXISTS openitcockpit_contacts (
-  contact_id int,
-  command_id int,
-  contact_uuid string,
-  command_uuid string,
-  contact_name string,
-  command_name string,
-  is_host_command boolean
+  id int,
+  uuid string,
+  name string
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
 
+CREATE TABLE IF NOT EXISTS openitcockpit_commands (
+  id int,
+  uuid string,
+  name string
+  ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
