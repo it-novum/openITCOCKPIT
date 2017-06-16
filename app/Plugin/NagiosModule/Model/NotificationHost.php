@@ -138,13 +138,20 @@ class NotificationHost extends NagiosModuleAppModel {
             'conditions' => [
                 'NotificationHost.start_time >' => date('Y-m-d H:i:s', $HostNotificationConditions->getFrom()),
                 'NotificationHost.start_time <' => date('Y-m-d H:i:s', $HostNotificationConditions->getTo()),
-                'NotificationHost.notification_type' => 0,
-                'Objects.name1' => $HostNotificationConditions->getHostUuid()
+                'NotificationHost.notification_type' => 0
             ],
 
             'order' => $HostNotificationConditions->getOrder(),
             'limit' => $HostNotificationConditions->getLimit(),
         ];
+
+        if ($HostNotificationConditions->getHostUuid()) {
+            $query['conditions']['Objects.name1'] = $HostNotificationConditions->getHostUuid();
+        }
+
+        if ($HostNotificationConditions->hasContainerIds()) {
+            $query['conditions']['HostsToContainers.container_id'] = $HostNotificationConditions->getContainerIds();
+        }
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);

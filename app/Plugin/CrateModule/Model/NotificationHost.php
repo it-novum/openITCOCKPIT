@@ -86,13 +86,23 @@ class NotificationHost extends CrateModuleAppModel {
 
             'conditions' => [
                 'NotificationHost.start_time >' => $HostNotificationConditions->getFrom(),
-                'NotificationHost.start_time <' => $HostNotificationConditions->getTo(),
-                'NotificationHost.hostname' => $HostNotificationConditions->getHostUuid()
+                'NotificationHost.start_time <' => $HostNotificationConditions->getTo()
             ],
 
             'order' => $HostNotificationConditions->getOrder(),
             'limit' => $HostNotificationConditions->getLimit(),
         ];
+
+        if($HostNotificationConditions->getHostUuid()){
+            $query['conditions']['NotificationHost.hostname'] = $HostNotificationConditions->getHostUuid();
+        }
+
+        if ($HostNotificationConditions->hasContainerIds()) {
+            $query['array_difference'] = [
+                'Host.container_ids' =>
+                    $HostNotificationConditions->getContainerIds(),
+            ];
+        }
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);

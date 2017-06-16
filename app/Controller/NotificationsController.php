@@ -25,6 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\NotificationsControllerRequest;
+use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
 class NotificationsController extends AppController {
@@ -50,7 +51,7 @@ class NotificationsController extends AppController {
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Notification.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
             ],
         ],
         'hostNotification' => [
@@ -66,29 +67,32 @@ class NotificationsController extends AppController {
     ];
 
     public function index(){
-
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
         //Process request and set request settings back to front end
-        $HostStates = new HostStates();
         $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
 
+        //Process conditions
+        $Conditions = new HostNotificationConditions();
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setLimit($NotificationsControllerRequest->getLimit());
+        $Conditions->setFrom($NotificationsControllerRequest->getFrom());
+        $Conditions->setTo($NotificationsControllerRequest->getTo());
+        $Conditions->setOrder($NotificationsControllerRequest->getOrder());
 
-
-
-
-
-
-
-
-
-        $order = $this->ListsettingsParser();
-
-        $paginatorLimit = $this->Paginator->settings['limit'];
-
-        //--force --doit --yes-i-know-what-i-do
-        $all_notification = $this->Paginator->paginate(null, [], $order);
-        $this->set(compact(['all_notification', 'paginatorLimit']));
+        //Query notification records
+        $query = $this->NotificationHost->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_notification = $this->Paginator->paginate(
+            $this->NotificationHost->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+        $this->set('all_notification', $all_notification);
         //Data for json and xml view /notifications.json or .xml
         $this->set('_serialize', ['all_notification']);
+        $this->set('NotificationListsettings', $NotificationsControllerRequest->getRequestSettingsForListSettings());
     }
 
     public function hostNotification($host_id){
@@ -97,7 +101,6 @@ class NotificationsController extends AppController {
         }
 
         //Process request and set request settings back to front end
-        $HostStates = new HostStates();
         $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
 
         $host = $this->Host->find('first', [

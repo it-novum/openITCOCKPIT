@@ -24,43 +24,26 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-
-class NotificationsControllerRequest extends ControllerListSettingsRequest {
-
-    /**
-     * @return bool
-     */
-    public function showHostNotifications(){
-        if (isset($this->requestParameters['Listsettings']['view'])) {
-            return $this->requestParameters['Listsettings']['view'] == 'hostOnly';
-        }
-        return true;
-    }
+class ServiceNotificationConditions extends ListSettingsConditions {
 
     /**
-     * @return bool
+     * @var array
      */
-    public function showServiceNotifications(){
-        if (isset($this->requestParameters['Listsettings']['view'])) {
-            return $this->requestParameters['Listsettings']['view'] == 'serviceOnly';
-        }
-        return false;
-    }
+    protected $order = [
+        'NotificationService.start_time' => 'DESC'
+    ];
 
     /**
-     * @return array
+     * @var string
      */
-    public function getRequestSettingsForListSettings(){
-        $view = 'hostOnly';
-        if ($this->showServiceNotifications()) {
-            $view = 'serviceOnly';
-        }
+    protected $serviceUuid;
 
-        return [
-            'limit' => $this->getLimit(),
-            'from' => date('d.m.Y H:i', $this->getFrom()),
-            'to' => date('d.m.Y H:i', $this->getTo()),
-            'view' => $view
-        ];
+    /**
+     * @return string
+     */
+    public function getServiceUuid(){
+        return $this->serviceUuid;
     }
+
 }
+
