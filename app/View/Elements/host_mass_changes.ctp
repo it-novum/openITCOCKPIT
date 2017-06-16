@@ -68,7 +68,7 @@
                     </li>
                 <?php endif; ?>
                 <li>
-                    <a href="<?php echo Router::url(['controller' => 'hosts', 'action' => 'listToPdf/.pdf']); ?>"
+                    <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'listToPdf'], $this->params['named'])); ?>/.pdf"
                        id="listAsPDF"><i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a>
                 </li>
                 <?php if ($this->params['controller'] == 'hosts' && $this->params['action'] == 'index'): ?>
