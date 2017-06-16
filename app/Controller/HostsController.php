@@ -208,7 +208,7 @@ class HostsController extends AppController {
         }
 
         if ($this->isApiRequest()) {
-            $all_hosts = $this->${$modelName}->find('all', $query);
+            $all_hosts = $this->{$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
