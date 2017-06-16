@@ -129,50 +129,18 @@ $this->Paginator->options([
                                    else: echo date('d.m.Y H:i', time()); endif; ?>" name="data[Listsettings][to]">
                         </div>
 
-                        <?php
-                        $listoptions = [
-                            //'all' => [
-                            //	'submit_target' => '#listoptions_hidden_view',
-                            //	'value' => 'all',
-                            //	'human' => __('All'),
-                            //	'selector' => '#listoptions_view'
-                            //],
-                            'hostOnly' => [
-                                'submit_target' => '#listoptions_hidden_view',
-                                'value' => 'hostOnly',
-                                'human' => __('Host notifications'),
-                                'selector' => '#listoptions_view',
-                            ],
-                            'serviceOnly' => [
-                                'submit_target' => '#listoptions_hidden_view',
-                                'value' => 'serviceOnly',
-                                'human' => __('Service notifications'),
-                                'selector' => '#listoptions_view',
-                            ],
-                        ];
-
-                        $selected = __('Host notifications');
-                        if (isset($NotificationListsettings['view']) && isset($listoptions[$NotificationListsettings['view']]['human'])) {
-                            $selected = $listoptions[$NotificationListsettings['view']]['human'];
-                        }
-                        ?>
-
                         <div class="btn-group">
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <span id="listoptions_view"><?php echo $selected; ?></span> <i
-                                        class="fa fa-caret-down"></i>
+                                <span id="listoptions_view">
+                                    <?php echo __('Host notifications');; ?>
+                                </span> <i class="fa fa-caret-down"></i>
                             </button>
                             <ul class="dropdown-menu pull-right">
-                                <?php foreach ($listoptions as $listoption): ?>
-                                    <li>
-
-                                        <a href="javascript:void(0);" class="listoptions_action"
-                                           selector="<?php echo $listoption['selector']; ?>"
-                                           submit_target="<?php echo $listoption['submit_target']; ?>"
-                                           value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-
+                                <li>
+                                    <a href="<?php echo Router::url(['action' => 'services']); ?>">
+                                        <?php echo __('Service notifications'); ?>
+                                    </a>
+                                </li>
                             </ul>
                             <input type="hidden"
                                    value="<?php if (isset($NotificationListsettings['view'])): echo $NotificationListsettings['view']; endif; ?>"
@@ -265,10 +233,8 @@ $this->Paginator->options([
 
                 </header>
 
-                <!-- widget div-->
                 <div>
 
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, [
                             'formActionParams' => [
@@ -325,7 +291,7 @@ $this->Paginator->options([
                                         </td>
                                         <td>
                                             <?php if ($Host->getHostname()): ?>
-                                                <?php if ($this->Acl->hasPermission('edit', 'Hosts')): ?>
+                                                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
                                                     <a href="<?php echo Router::url([
                                                         'controller' => 'hosts',
                                                         'action' => 'browser',

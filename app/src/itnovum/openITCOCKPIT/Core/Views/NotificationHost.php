@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class NotificationHost {
+class NotificationHost extends Notification {
 
 
     /**
@@ -33,47 +33,16 @@ class NotificationHost {
      */
     private $is_host_notification;
 
-    /**
-     * @var int
-     */
-    private $state;
-
-    /**
-     * @var string
-     */
-    private $output;
-
-    /**
-     * @var int|string
-     */
-    private $start_time;
-
 
     /**
      * NotificationHost constructor.
      * @param array $data
      */
     public function __construct($data){
+        parent::__construct($data, 'NotificationHost');
         if (isset($data['NotificationHost']['notification_type'])) {
             $this->is_host_notification = (int)$data['NotificationHost']['notification_type'] === 0;
         }
-
-        if (isset($data['NotificationHost']['state'])) {
-            $this->state = (int)$data['NotificationHost']['state'];
-        }
-
-        if (isset($data['NotificationHost']['output'])) {
-            $this->output = $data['NotificationHost']['output'];
-        }
-
-        if (isset($data['Contactnotification']['start_time'])) {
-            $this->start_time = $data['Contactnotification']['start_time'];
-        }
-
-        if (isset($data['NotificationHost']['start_time'])) {
-            $this->start_time = $data['NotificationHost']['start_time'];
-        }
-
     }
 
     /**
@@ -82,27 +51,5 @@ class NotificationHost {
     public function isHostNotification(){
         return $this->is_host_notification;
     }
-
-    /**
-     * @return int
-     */
-    public function getState(){
-        return $this->state;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOutput(){
-        return $this->output;
-    }
-
-    /**
-     * @return int|string
-     */
-    public function getStartTime(){
-        return $this->start_time;
-    }
-
 
 }

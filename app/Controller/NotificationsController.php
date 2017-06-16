@@ -37,6 +37,7 @@ class NotificationsController extends AppController {
     public $uses = [
         MONITORING_NOTIFICATION,
         MONITORING_NOTIFICATION_HOST,
+        MONITORING_NOTIFICATION_SERVICE,
         'Host',
         MONITORING_HOSTSTATUS,
         'Service',
@@ -50,6 +51,15 @@ class NotificationsController extends AppController {
 
     public $listFilters = [
         'index' => [
+            'fields' => [
+                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
+                'Contact.name' => ['label' => 'Contact name', 'searchType' => 'wildcard'],
+                'Command.name' => ['label' => 'Notification method', 'searchType' => 'wildcard'],
+
+            ],
+        ],
+        'services' => [
             'fields' => [
                 'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
                 'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
@@ -90,6 +100,35 @@ class NotificationsController extends AppController {
         $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
         $all_notification = $this->Paginator->paginate(
             $this->NotificationHost->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+        $this->set('all_notification', $all_notification);
+        //Data for json and xml view /notifications.json or .xml
+        $this->set('_serialize', ['all_notification']);
+        $this->set('NotificationListsettings', $NotificationsControllerRequest->getRequestSettingsForListSettings());
+    }
+
+    public function services(){
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
+        }
+        //Process request and set request settings back to front end
+        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+
+        //Process conditions
+        $Conditions = new ServiceNotificationConditions();
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setLimit($NotificationsControllerRequest->getLimit());
+        $Conditions->setFrom($NotificationsControllerRequest->getFrom());
+        $Conditions->setTo($NotificationsControllerRequest->getTo());
+        $Conditions->setOrder($NotificationsControllerRequest->getOrder());
+
+        //Query notification records
+        $query = $this->NotificationService->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_notification = $this->Paginator->paginate(
+            $this->NotificationService->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
