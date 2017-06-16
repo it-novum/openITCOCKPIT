@@ -67,6 +67,19 @@ class NotificationsController extends AppController {
 
     public function index(){
 
+        //Process request and set request settings back to front end
+        $HostStates = new HostStates();
+        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+
+
+
+
+
+
+
+
+
+
         $order = $this->ListsettingsParser();
 
         $paginatorLimit = $this->Paginator->settings['limit'];

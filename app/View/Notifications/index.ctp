@@ -31,34 +31,18 @@
             <?php echo __('Notifications'); ?>
             <span>>
                 <?php echo __('Overview'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
 
-    <!-- row -->
     <div class="row">
 
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
 
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -358,18 +342,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
-
                 </div>
-                <!-- end widget div -->
-
             </div>
-            <!-- end widget -->
-
-
     </div>
-
-    <!-- end row -->
-
 </section>
-<!-- end widget grid -->
