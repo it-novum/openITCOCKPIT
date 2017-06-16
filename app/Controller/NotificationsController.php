@@ -52,6 +52,10 @@ class NotificationsController extends AppController {
         'index' => [
             'fields' => [
                 'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
+                'Contact.name' => ['label' => 'Contact name', 'searchType' => 'wildcard'],
+                'Command.name' => ['label' => 'Notification method', 'searchType' => 'wildcard'],
+
             ],
         ],
         'hostNotification' => [
