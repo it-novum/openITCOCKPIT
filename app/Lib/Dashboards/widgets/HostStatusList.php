@@ -103,7 +103,7 @@ class HostStatusList extends Widget
             'Host.uuid',
             'Host.name',
             'Hoststatus.current_state',
-            'Hoststatus.last_hard_state_change',
+            'Hoststatus.last_state_change',
             'Hoststatus.problem_has_been_acknowledged',
             'Hoststatus.scheduled_downtime_depth',
             'Hoststatus.is_flapping',
