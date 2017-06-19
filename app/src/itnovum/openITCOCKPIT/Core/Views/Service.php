@@ -57,6 +57,10 @@ class Service {
      */
     private $tags;
 
+    /**
+     * @var int
+     */
+    private $host_id;
 
     /**
      * Service constructor.
@@ -76,6 +80,12 @@ class Service {
             $this->servicename = $service['Service']['name'];
         }
 
+        if($this->servicename === null || $this->servicename === ''){
+            if(isset($service['Servicetemplate']['name'])){
+                $this->servicename = $service['Servicetemplate']['name'];
+            }
+        }
+
         if($servicename !== null){
             $this->servicename = $servicename;
         }
@@ -90,6 +100,10 @@ class Service {
 
         if (isset($service['Service']['tags'])) {
             $this->tags = $service['Service']['tags'];
+        }
+
+        if (isset($service['Host']['id'])) {
+            $this->host_id = (int)$service['Host']['id'];
         }
 
     }
@@ -145,6 +159,11 @@ class Service {
         return $this->tags;
     }
 
-
+    /**
+     * @return int
+     */
+    public function getHostId(){
+        return $this->host_id;
+    }
 
 }

@@ -28,40 +28,60 @@ class Servicestatus extends CrateModuleAppModel {
     public $useTable = 'servicestatus';
     public $tablePrefix = 'statusengine_';
 
+
     /**
-     * Return the service status as array for given uuid as stirng or array
+     * Return the service status as array for given uuid as string or array
      *
-     * @param          string   or array $uuid you want to get service status for
+     * @param    string $uuid UUID or array $uuid you want to get service status for
      * @param    array $options for the find request (see cakephp's find for all options)
      *
-     * @return    array
-     * @author     Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since      3.0
-     * @version    3.0.1
+     * @return array
      */
-    public function byUuid($uuid = null, $options = [])
-    {
+    private function byUuidMagic($uuid = null, $options = []){
         $return = [];
-        if ($uuid !== null) {
 
-            $_options = [
-                'conditions' => [
-                    'Servicestatus.service_description'         => $uuid,
-                ],
-            ];
+        $_options = [
+            'conditions' => [
+                'Servicestatus.service_description' => $uuid,
+            ],
+        ];
 
-            $options = Hash::merge($_options, $options);
-            $servicestatus = $this->find('all', $options);
-
-            if (!empty($servicestatus)) {
-                foreach ($servicestatus as $nagios_servicestatus) {
-                    $return[$nagios_servicestatus['Servicestatus']['service_description']] = $nagios_servicestatus;
-                }
-            }
-
+        $options = Hash::merge($_options, $options);
+        if (isset($options['fields'])) {
+            $options['fields'][] = 'Servicestatus.service_description';
         }
 
-        return $return;
+        $findType = 'all';
+        if (!is_array($uuid)) {
+            $findType = 'first';
+        }
+
+        $dbresult = $this->find($findType, $options);
+
+        if($findType === 'first'){
+            return [
+                'Servicestatus' => $dbresult['Servicestatus'],
+            ];
+        }
+
+        $result = [];
+        foreach($dbresult as $record){
+            $result[$record['Servicestatus']['service_description']] = [
+                'Servicestatus' => $record['Servicestatus'],
+            ];
+        }
+        return $result;
+    }
+
+    public function byUuid($uuid, $options = []){
+        return $this->byUuidMagic($uuid, $options);
+    }
+
+    public function byUuids($uuids, $options = []){
+        if(!is_array($uuids)){
+            throw new InvalidArgumentException('$uuids need to be an array!');
+        }
+        return $this->byUuidMagic($uuids, $options);
     }
 
 }

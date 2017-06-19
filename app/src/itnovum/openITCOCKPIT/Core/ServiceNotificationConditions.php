@@ -39,6 +39,13 @@ class ServiceNotificationConditions extends ListSettingsConditions {
     protected $serviceUuid;
 
     /**
+     * @param $uuid
+     */
+    public function setServiceUuid($uuid){
+        $this->serviceUuid = $uuid;
+    }
+
+    /**
      * @return string
      */
     public function getServiceUuid(){

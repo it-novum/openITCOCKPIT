@@ -191,6 +191,7 @@ class StatehistoriesController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping'
             ],
         ]);
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);

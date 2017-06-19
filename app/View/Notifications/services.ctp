@@ -331,7 +331,7 @@ $this->Paginator->options([
                                                     <a href="<?php echo Router::url([
                                                         'controller' => 'services',
                                                         'action' => 'browser',
-                                                        $Host->getId()]); ?>">
+                                                        $Service->getId()]); ?>">
                                                         <?php echo h($Service->getServicename()); ?>
                                                     </a>
                                                 <?php else:

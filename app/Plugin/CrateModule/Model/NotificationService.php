@@ -38,6 +38,14 @@ class NotificationService extends CrateModuleAppModel {
         $this->virtualFields['"Service.name"'] = 'Service.name';
         $this->virtualFields['"Contact.name"'] = 'Contact.name';
         $this->virtualFields['"Command.name"'] = 'Command.name';
+
+        $this->virtualFields['"Service.uuid"'] = 'Service.uuid';
+        $this->virtualFields['"Contact.uuid"'] = 'Contact.uuid';
+        $this->virtualFields['"Command.uuid"'] = 'Command.uuid';
+
+        $this->virtualFields['"Service.id"'] = 'Service.id';
+        $this->virtualFields['"Contact.id"'] = 'Contact.id';
+        $this->virtualFields['"Command.id"'] = 'Command.id';
     }
 
     /**

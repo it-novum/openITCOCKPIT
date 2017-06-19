@@ -179,6 +179,7 @@ class AcknowledgementsController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping'
             ],
         ]);
         $this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'docuExists']));

@@ -19,34 +19,54 @@
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.+
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)]); ?>
+
+use itnovum\openITCOCKPIT\Core\Views\Command;
+use itnovum\openITCOCKPIT\Core\Views\Contact;
+use itnovum\openITCOCKPIT\Core\Views\NotificationService;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+
+$Service = new Service($service);
+$Host = new Host($service);
+$Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $NotificationListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $this->Status->ServiceStatusColor($service['Service']['uuid']); ?>">
-            <?php echo $this->Monitoring->serviceFlappingIcon($this->Status->sget($service['Service']['uuid'], 'is_flapping'), 'padding-left-5'); ?>
+        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+            <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
-            <?php
-            if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-                echo $service['Service']['name'];
-            } else {
-                echo $service['Servicetemplate']['name'];
-            }
-            ?><span>
-                &nbsp;<?php echo __('on'); ?>&nbsp;ﬂ
-                <a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?>
-                    (<?php echo $service['Host']['address']; ?>)</a>
+            <?php echo h($Service->getServicename()); ?>
+            <span>
+                &nbsp;<?php echo __('on'); ?>
+                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
+                    <a href="<?php echo Router::url([
+                        'controller' => 'hosts',
+                        'action' => 'browser',
+                        $Service->getHostId()
+                    ]); ?>">
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                </a>
+                <?php else: ?>
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                <?php endif; ?>
             </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
         <h5>
             <div class="pull-right">
-                <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                <a href="<?php echo Router::url([
+                    'controller' => 'services',
+                    'action' => 'browser',
+                    $Service->getId()
+                ]); ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
                 <?php echo $this->element('service_browser_menu'); ?>
             </div>
@@ -54,29 +74,10 @@
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
-
-    <!-- row -->
     <div class="row">
-
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -87,30 +88,52 @@
                         ?>
                     </div>
                     <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
+                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
+                            <i class="fa fa-lg fa-table"></i>
+                        </a>
                         <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="0"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('State'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="1"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Host'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="2"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Service'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="3"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Date'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="4"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Contact'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="5"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Notification method'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="6"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Output'); ?></a></li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('State'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="1">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Host'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Service'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="3">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Date'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="4">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Contact'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="5">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Notification method'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="6">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Output'); ?>
+                                </a>
+                            </li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -208,76 +231,143 @@
                     <h2><?php echo __('Notifications'); ?> </h2>
 
                 </header>
-
-                <!-- widget div-->
                 <div>
 
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], $ListsettingsUrlParams)), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [
+                            'formActionParams' => [
+                                'url' => Router::url(
+                                    Hash::merge(
+                                        $this->params['named'],
+                                        $this->params['pass'],
+                                        ['Listsettings' => $NotificationListsettings]
+                                    )
+                                ), 'merge' => false
+                            ]
+                        ], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
                         <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'state');
-                                    echo $this->Paginator->sort('state', __('State')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Host.name');
-                                    echo $this->Paginator->sort('Host.name', __('Host')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.name');
-                                    echo $this->Paginator->sort('Service.name', __('Service')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Notification.start_time');
-                                    echo $this->Paginator->sort('Notification.start_time', __('Date')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Contact.name');
-                                    echo $this->Paginator->sort('Contact.name', __('Contact')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Command.name');
-                                    echo $this->Paginator->sort('Command.name', __('Notification method')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'output');
-                                    echo $this->Paginator->sort('output', __('Output')); ?></th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'state');
+                                    echo $this->Paginator->sort('state', __('State')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Host.name');
+                                    echo $this->Paginator->sort('Host.name', __('Host')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php
+                                    if ($DbBackend->isNdoUtils()) :
+                                        echo $this->Utils->getDirection($order, 'NotificationService.servicename');
+                                        echo $this->Paginator->sort('NotificationService.servicename', __('Service'));
+                                    endif;
+
+                                    if ($DbBackend->isCrateDb()):
+                                        echo $this->Utils->getDirection($order, 'Service.name');
+                                        echo $this->Paginator->sort('Service.name', __('Service'));
+                                    endif;
+                                    ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'NotificationService.start_time');
+                                    echo $this->Paginator->sort('NotificationService.start_time', __('Date')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Contact.name');
+                                    echo $this->Paginator->sort('Contact.name', __('Contact')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Command.name');
+                                    echo $this->Paginator->sort('Command.name', __('Notification method')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'NotificationService.output');
+                                    echo $this->Paginator->sort('NotificationService.output', __('Output')); ?>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php //debug($all_notification); ?>
-                            <?php foreach ($all_notification as $notification): ?>
+                            <?php foreach ($all_notification as $notification):
+                                $NotificationService = new NotificationService($notification);
+                                $StatusIcon = new ServicestatusIcon($NotificationService->getState());
+                                $Command = new Command($notification['Command']);
+                                $Contact = new Contact($notification['Contact']);
+                                ?>
                                 <tr>
-                                    <td>
-                                        <center><?php echo $this->Monitoring->NotificationStatusIcon($notification['Notification']['state'], $notification['Notification']['notification_type']); ?></center>
+                                    <td class="text-center">
+                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
                                     </td>
                                     <td>
-                                        <?php if (isset($notification['Host']['name']) && $notification['Host']['name'] != null): ?>
-                                            <a href="/hosts/browser/<?php echo $notification['Host']['id']; ?>">
-                                                <?php echo h($notification['Host']['name']); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                        <?php
+                                        if ($this->Acl->hasPermission('browser', 'Hosts')):
+                                            if ($Host->getHostname()): ?>
+                                                <a href="<?php echo Router::url([
+                                                    'controller' => 'hosts',
+                                                    'action' => 'browser',
+                                                    $Host->getId()
+                                                ]); ?>">
+                                                    <?php echo h($Host->getHostname()); ?>
+                                                </a>
+                                            <?php endif;
+                                        else:
+                                            echo h($Host->getHostname());
+                                        endif; ?>
                                     </td>
                                     <td>
-                                        <a href="/services/browser/<?php echo $notification['Service']['id']; ?>">
-                                            <?php
-                                            if ($notification['Service']['name'] !== null && $notification['Service']['name'] != ''):
-                                                echo h($notification['Service']['name']);
-                                            else:
-                                                echo h($notification['Servicetemplate']['name']);
-                                            endif;
-                                            ?>
-                                        </a>
+                                        <?php
+                                        if ($this->Acl->hasPermission('browser', 'Services')):
+                                            if ($Service->getServicename()): ?>
+                                                <a href="<?php echo Router::url([
+                                                    'controller' => 'services',
+                                                    'action' => 'browser',
+                                                    $Service->getId()
+                                                ]); ?>">
+                                                    <?php echo h($Service->getServicename()); ?>
+                                                </a>
+                                            <?php endif;
+                                        else:
+                                            echo h($Service->getServicename());
+                                        endif; ?>
                                     </td>
-                                    <td><?php echo h($this->Time->format($notification['Contactnotification']['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
+
+                                    <td><?php echo h($this->Time->format(
+                                            $NotificationService->getStartTime(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>
+                                    </td>
                                     <td>
                                         <?php
                                         //Checking if the contact exists or was deleted
-                                        if (isset($notification['Contact']['id']) && $notification['Contact']['id'] != null): ?>
-                                            <a href="/contacts/edit/<?php echo $notification['Contact']['id']; ?>"><?php echo h($notification['Contact']['name']); ?></a>
-                                        <?php endif; ?>
+                                        if ($Contact->getName()):
+                                            if ($this->Acl->hasPermission('edit', 'Contacts')): ?>
+                                                <a href="<?php echo Router::url(['controller' => 'contacts', 'action' => 'edit', $Contact->getId()]); ?>">
+                                                    <?php echo h($Contact->getName()); ?>
+                                                </a>
+                                            <?php else:
+                                                echo h($Contact->getName());
+                                            endif;
+                                        endif; ?>
                                     </td>
                                     <td>
                                         <?php
-                                        //Checking if the command exists or was deleted
-                                        if (isset($notification['Command']['id']) && $notification['Command']['id'] != null): ?>
-                                            <a href="/commands/edit/<?php echo $notification['Command']['id']; ?>"><?php echo h($notification['Command']['name']); ?></a>
-                                        <?php endif; ?>
+                                        //Checking if the contact exists or was deleted
+                                        if ($Command->getName()):
+                                            if ($this->Acl->hasPermission('edit', 'Commands')): ?>
+                                                <a href="<?php echo Router::url(['controller' => 'commands', 'action' => 'edit', $Command->getId()]); ?>">
+                                                    <?php echo h($Command->getName()); ?>
+                                                </a>
+                                            <?php else:
+                                                echo h($Command->getName());
+                                            endif;
+                                        endif; ?>
                                     </td>
-                                    <td><?php echo h($notification['Notification']['output']); ?></td>
+                                    <td><?php echo h($NotificationService->getOutput()); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -306,18 +396,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
-
                 </div>
-                <!-- end widget div -->
-
             </div>
-            <!-- end widget -->
-
-
     </div>
-
-    <!-- end row -->
-
 </section>
-<!-- end widget grid -->

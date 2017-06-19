@@ -34,9 +34,17 @@ class NotificationHost extends CrateModuleAppModel {
     //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "notifications Table"
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
-        $this->virtualFields['"Host.name"'] = 'Host.name';
+        $this->virtualFields['"Host.name"']    = 'Host.name';
         $this->virtualFields['"Contact.name"'] = 'Contact.name';
         $this->virtualFields['"Command.name"'] = 'Command.name';
+
+        $this->virtualFields['"Host.uuid"']    = 'Host.uuid';
+        $this->virtualFields['"Contact.uuid"'] = 'Contact.uuid';
+        $this->virtualFields['"Command.uuid"'] = 'Command.uuid';
+
+        $this->virtualFields['"Host.id"']    = 'Host.id';
+        $this->virtualFields['"Contact.id"'] = 'Contact.id';
+        $this->virtualFields['"Command.id"'] = 'Command.id';
     }
 
     /**

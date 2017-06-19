@@ -41,8 +41,8 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor($Host->getUuid()); ?>">
-            <?php echo $this->Monitoring->HostFlappingIcon($this->Status->get($Host->getUuid(), 'is_flapping')); ?>
+        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+            <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($Host->getHostname()) ?>
             <span>
@@ -53,8 +53,11 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
+                <a href="<?php echo Router::url([
+                    'controller' => 'hosts',
+                    'action' => 'browser',
+                    $Host->getId()]); ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
                 </a>
                 <?php echo $this->element('host_browser_menu'); ?>
             </div>
@@ -258,15 +261,20 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                         <?php echo $StatusIcon->getHtmlIcon(); ?>
                                     </td>
                                     <td>
-                                        <?php if ($Host->getHostname()): ?>
-                                            <a href="<?php echo Router::url([
-                                                'controller' => 'hosts',
-                                                'action' => 'browser',
-                                                $Host->getId()
-                                            ]); ?>">
-                                                <?php echo h($Host->getHostname()); ?>
-                                            </a>
-                                        <?php endif; ?>
+                                        <?php
+                                        if ($this->Acl->hasPermission('browser', 'Hosts')):
+                                            if ($Host->getHostname()): ?>
+                                                <a href="<?php echo Router::url([
+                                                    'controller' => 'hosts',
+                                                    'action' => 'browser',
+                                                    $Host->getId()
+                                                ]); ?>">
+                                                    <?php echo h($Host->getHostname()); ?>
+                                                </a>
+                                            <?php endif;
+                                        else:
+                                            echo h($Host->getHostname());
+                                        endif; ?>
                                     </td>
                                     <td>
                                         <?php echo h($this->Time->format(
