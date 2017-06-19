@@ -144,7 +144,12 @@ class StatehistoriesController extends AppController {
         //Process request and set request settings back to front end
         $HostStates = new HostStates();
         $StateTypes = new StateTypes();
-        $StatehistoryRequest = new StatehistoryControllerRequest($this->request, $HostStates, $StateTypes);
+        $StatehistoryRequest = new StatehistoryControllerRequest(
+            $this->request,
+            $HostStates,
+            $StateTypes,
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [

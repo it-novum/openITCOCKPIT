@@ -54,7 +54,11 @@ class HostchecksController extends AppController {
 
         //Process request and set request settings back to front end
         $HostStates = new HostStates();
-        $HostchecksControllerRequest = new HostchecksControllerRequest($this->request, $HostStates);
+        $HostchecksControllerRequest = new HostchecksControllerRequest(
+            $this->request,
+            $HostStates,
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [

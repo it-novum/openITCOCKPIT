@@ -27,6 +27,10 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
+
+$ListSettingsRenderer = new ListSettingsRenderer($AcknowledgementListsettings);
+$ListSettingsRenderer->setPaginator($this->Paginator);
 
 $Host = new Host($host);
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
@@ -102,86 +106,15 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             'class' => 'form-horizontal clear',
                             'url' => 'host/' . $host['Host']['id'] //reset the URL on submit
                         ]);
+                        echo $ListSettingsRenderer->getFromInput();
+                        echo $ListSettingsRenderer->getToInput();
+                        echo $ListSettingsRenderer->getLimitSelect();
 
-                        ?>
-
-                        <div class="widget-toolbar pull-left" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('From:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 78%;"
-                                   type="text" maxlength="255"
-                                   value="<?php echo $AcknowledgementListsettings['from']; ?>"
-                                   name="data[Listsettings][from]">
-                        </div>
-
-                        <div class="widget-toolbar pull-left" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('To:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 85%;"
-                                   type="text" maxlength="255" value="<?php echo $AcknowledgementListsettings['to']; ?>"
-                                   name="data[Listsettings][to]">
-                        </div>
-
-                        <div class="btn-group">
-                            <?php
-                            $listoptions = [
-                                '30' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 30,
-                                    'human' => 30,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '50' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 50,
-                                    'human' => 50,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '100' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 100,
-                                    'human' => 100,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '300' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 300,
-                                    'human' => 300,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                            ];
-
-                            $selected = 30;
-                            if (isset($AcknowledgementListsettings['limit']) && isset($listoptions[$AcknowledgementListsettings['limit']]['human'])) {
-                                $selected = $listoptions[$AcknowledgementListsettings['limit']]['human'];
-                            }
-                            ?>
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <span id="listoptions_limit"><?php echo $selected; ?></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php foreach ($listoptions as $listoption): ?>
-                                    <li>
-                                        <a href="javascript:void(0);" class="listoptions_action"
-                                           selector="<?php echo $listoption['selector']; ?>"
-                                           submit_target="<?php echo $listoption['submit_target']; ?>"
-                                           value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <input type="hidden"
-                                   value="<?php if (isset($AcknowledgementListsettings['limit'])): echo $AcknowledgementListsettings['limit']; endif; ?>"
-                                   id="listoptions_hidden_limit" name="data[Listsettings][limit]"/>
-                        </div>
-
-
-                        <?php
                         $state_types = [
-                            'up' => __('Up'),
                             'down' => __('Down'),
                             'unreachable' => __('Unreachable'),
                         ];
                         ?>
-
                         <div class="btn-group">
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <?php echo __('State types'); ?> <i class="fa fa-caret-down"></i>
@@ -197,21 +130,20 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                     <li>
                                         <input type="hidden" value="0"
                                                name="data[Listsettings][state_types][<?php echo $state_type; ?>]"/>
+                                    </li>
                                     <li style="width: 100%;"><a href="javascript:void(0)"
                                                                 class="listoptions_checkbox text-left"><input
                                                     type="checkbox"
                                                     name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
                                                     value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
                                     </li>
-                                    </li>
                                 <?php endforeach ?>
                             </ul>
                         </div>
 
-                        <button class="btn btn-xs btn-success toggle"><i
-                                    class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-
                         <?php
+
+                        echo $ListSettingsRenderer->getApply();
                         echo $this->Form->end();
                         ?>
                     </div>
