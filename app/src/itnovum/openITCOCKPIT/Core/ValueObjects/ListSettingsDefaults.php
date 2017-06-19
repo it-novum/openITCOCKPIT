@@ -28,6 +28,15 @@ namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 class ListSettingsDefaults {
 
     /**
+     * @var int
+     */
+    private $limit = 30;
+
+    public function __construct($limit = 30){
+        $this->limit = $limit;
+    }
+
+    /**
      * @return int
      */
     public function getDefaultFrom(){
@@ -45,7 +54,7 @@ class ListSettingsDefaults {
      * @return int
      */
     public function getDefaultLimit(){
-        return 30;
+        return $this->limit;
     }
 
 }

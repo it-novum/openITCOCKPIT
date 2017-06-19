@@ -51,8 +51,8 @@ abstract class ControllerListSettingsRequest {
      */
     protected $requestParameters = [];
 
-    public function __construct(\CakeRequest $request, HostStates $HostStates){
-        $this->ListSettingsDefaults = new ListSettingsDefaults();
+    public function __construct(\CakeRequest $request, HostStates $HostStates, $userLimit = 30){
+        $this->ListSettingsDefaults = new ListSettingsDefaults($userLimit);
 
         $this->HostStates = $HostStates;
         $this->request = $request;
