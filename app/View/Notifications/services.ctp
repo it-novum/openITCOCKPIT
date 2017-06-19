@@ -26,11 +26,13 @@
 use itnovum\openITCOCKPIT\Core\Views\Command;
 use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
 use itnovum\openITCOCKPIT\Core\Views\NotificationService;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
+
+$ListSettingsRenderer = new ListSettingsRenderer($NotificationListsettings);
+$ListSettingsRenderer->setPaginator($this->Paginator);
 
 $this->Paginator->options([
     'url' => Hash::merge(
@@ -115,28 +117,11 @@ $this->Paginator->options([
                         <?php
                         echo $this->Form->create('notifications', [
                             'class' => 'form-horizontal clear',
-                            'url' => 'index' // reset the URL on submit
+                            'url' => 'services' // reset the URL on submit
                         ]);
-
+                        echo $ListSettingsRenderer->getFromInput();
+                        echo $ListSettingsRenderer->getToInput();
                         ?>
-
-                        <div class="widget-toolbar pull-left hidden-mobile" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('From:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 78%;"
-                                   type="text" maxlength="255"
-                                   value="<?php if (isset($NotificationListsettings['from'])): echo $NotificationListsettings['from'];
-                                   else: echo date('d.m.Y H:i', strtotime('3 days ago')); endif; ?>"
-                                   name="data[Listsettings][from]">
-                        </div>
-
-                        <div class="widget-toolbar pull-left hidden-mobile" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('To:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 85%;"
-                                   type="text" maxlength="255"
-                                   value="<?php if (isset($NotificationListsettings['to'])): echo $NotificationListsettings['to'];
-                                   else: echo date('d.m.Y H:i', time()); endif; ?>" name="data[Listsettings][to]">
-                        </div>
-
                         <div class="btn-group">
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <span id="listoptions_view">
@@ -154,82 +139,10 @@ $this->Paginator->options([
                                    value="<?php if (isset($NotificationListsettings['view'])): echo $NotificationListsettings['view']; endif; ?>"
                                    id="listoptions_hidden_view" name="data[Listsettings][view]"/>
                         </div>
-
-                        <div class="btn-group">
-                            <?php
-                            $listoptions = [
-                                '5' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 5,
-                                    'human' => 5,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '10' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 10,
-                                    'human' => 10,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '25' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 25,
-                                    'human' => 25,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '50' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 50,
-                                    'human' => 50,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '100' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 100,
-                                    'human' => 100,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '150' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 150,
-                                    'human' => 150,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                                '300' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value' => 300,
-                                    'human' => 300,
-                                    'selector' => '#listoptions_limit',
-                                ],
-                            ];
-
-                            $selected = 30;
-                            if (isset($NotificationListsettings['limit']) && isset($listoptions[$NotificationListsettings['limit']]['human'])) {
-                                $selected = $listoptions[$NotificationListsettings['limit']]['human'];
-                            }
-                            ?>
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default hidden-mobile">
-                                <span id="listoptions_limit">
-                                    <?php echo $selected; ?></span> <i class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php foreach ($listoptions as $listoption): ?>
-                                    <li>
-                                        <a href="javascript:void(0);" class="listoptions_action"
-                                           selector="<?php echo $listoption['selector']; ?>"
-                                           submit_target="<?php echo $listoption['submit_target']; ?>"
-                                           value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <input type="hidden"
-                                   value="<?php if (isset($NotificationListsettings['limit'])): echo $NotificationListsettings['limit']; endif; ?>"
-                                   id="listoptions_hidden_limit" name="data[Listsettings][limit]"/>
-                        </div>
-
-                        <button class="btn btn-xs btn-success toggle hidden-mobile"><i
-                                    class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-
                         <?php
+
+                        echo $ListSettingsRenderer->getLimitSelect();
+                        echo $ListSettingsRenderer->getApply();
                         echo $this->Form->end();
                         ?>
                     </div>

@@ -84,7 +84,11 @@ class NotificationsController extends AppController {
             $this->Paginator->settings['conditions'] = [];
         }
         //Process request and set request settings back to front end
-        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+        $NotificationsControllerRequest = new NotificationsControllerRequest(
+            $this->request,
+            new HostStates(),
+            $this->userLimit
+        );
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
@@ -113,7 +117,11 @@ class NotificationsController extends AppController {
             $this->Paginator->settings['conditions'] = [];
         }
         //Process request and set request settings back to front end
-        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+        $NotificationsControllerRequest = new NotificationsControllerRequest(
+            $this->request,
+            new HostStates(),
+            $this->userLimit
+        );
 
         //Process conditions
         $Conditions = new ServiceNotificationConditions();
@@ -144,7 +152,11 @@ class NotificationsController extends AppController {
         }
 
         //Process request and set request settings back to front end
-        $NotificationsControllerRequest = new NotificationsControllerRequest($this->request, new HostStates());
+        $NotificationsControllerRequest = new NotificationsControllerRequest(
+            $this->request,
+            new HostStates(),
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [
