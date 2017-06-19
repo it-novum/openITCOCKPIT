@@ -231,6 +231,20 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <td><strong><?php echo __('Flap detection'); ?>:</strong></td>
                                     <td><?php echo $Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['html']; ?></td>
                                 </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($host['Host']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $host['Host']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td><strong><?php echo __('Notifications'); ?>:</strong></td>

@@ -213,7 +213,20 @@
                                     <td><strong><?php echo __('Flap detection'); ?>:</strong></td>
                                     <td><?php echo $this->Monitoring->compareServiceFlapDetectionWithMonitoring($service)['html']; ?></td>
                                 </tr>
-
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($service['Service']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $service['Service']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if ($this->Status->sget($service['Service']['uuid'], 'notifications_enabled') == 0): ?>
                                     <tr>
                                         <td><strong><?php echo __('Notifications'); ?>:</strong></td>
