@@ -27,6 +27,8 @@ namespace itnovum\openITCOCKPIT\Core;
 
 class NotificationsControllerRequest extends ControllerListSettingsRequest {
 
+    protected $showServiceNotifications = null;
+
     /**
      * @return bool
      */
@@ -41,10 +43,22 @@ class NotificationsControllerRequest extends ControllerListSettingsRequest {
      * @return bool
      */
     public function showServiceNotifications(){
-        if (isset($this->requestParameters['Listsettings']['view'])) {
+        if (isset($this->requestParameters['Listsettings']['view']) && $this->showServiceNotifications === null) {
             return $this->requestParameters['Listsettings']['view'] == 'serviceOnly';
         }
+
+        if($this->showServiceNotifications !== null){
+            return $this->showServiceNotifications;
+        }
+
         return false;
+    }
+
+    /**
+     * @param bool $value
+     */
+    public function setShowServiceNotifications($value){
+        $this->showServiceNotifications = $value;
     }
 
     /**

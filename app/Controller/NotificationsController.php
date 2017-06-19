@@ -61,7 +61,7 @@ class NotificationsController extends AppController {
         ],
         'services' => [
             'fields' => [
-                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'NotificationService.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
                 'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
                 'Contact.name' => ['label' => 'Contact name', 'searchType' => 'wildcard'],
                 'Command.name' => ['label' => 'Notification method', 'searchType' => 'wildcard'],
@@ -123,6 +123,7 @@ class NotificationsController extends AppController {
         $Conditions->setFrom($NotificationsControllerRequest->getFrom());
         $Conditions->setTo($NotificationsControllerRequest->getTo());
         $Conditions->setOrder($NotificationsControllerRequest->getOrder());
+        $NotificationsControllerRequest->setShowServiceNotifications(true);
 
         //Query notification records
         $query = $this->NotificationService->getQuery($Conditions, $this->Paginator->settings['conditions']);

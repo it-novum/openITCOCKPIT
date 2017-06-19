@@ -156,6 +156,7 @@ class AppController extends Controller {
 
         Configure::load('dbbackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->set('DbBackend', $this->DbBackend);
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
