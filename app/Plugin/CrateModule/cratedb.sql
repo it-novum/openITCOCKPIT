@@ -22,3 +22,12 @@ CREATE TABLE IF NOT EXISTS openitcockpit_commands (
   uuid string,
   name string
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
+
+CREATE TABLE IF NOT EXISTS openitcockpit_services (
+  id int,
+  host_id int,
+  servicetemplate_id int,
+  uuid string,
+  name string,
+  name_from_template boolean
+  ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');

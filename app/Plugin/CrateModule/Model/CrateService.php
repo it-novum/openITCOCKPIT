@@ -22,9 +22,12 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-$config = [
-    // @todo enable mysql by default!
-    //'dbbackend' => 'Nagios',
-    'dbbackend' => 'Crate',
-];
 
+
+class CrateService extends CrateModuleAppModel {
+
+    public $useDbConfig = 'Crate';
+    public $useTable = 'services';
+    public $tablePrefix = 'openitcockpit_';
+
+}

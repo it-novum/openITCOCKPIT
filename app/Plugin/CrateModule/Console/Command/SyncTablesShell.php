@@ -26,20 +26,26 @@
 class SyncTablesShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
+     * Call: oitc CrateModule.sync_tables
      */
     public $uses = [
         'Host',
+        'Service',
+        'Servicetemplate',
         'Contact',
         'Command',
         'CrateModule.CrateHost',
         'CrateModule.CrateContact',
-        'CrateModule.CrateCommand'
+        'CrateModule.CrateCommand',
+        'CrateModule.CrateService'
+
     ];
 
     public function main(){
         //$this->syncHosts();
         //$this->syncContacts();
-        $this->syncCommands();
+        //$this->syncCommands();
+        $this->syncServices();
 
     }
 
@@ -155,6 +161,54 @@ class SyncTablesShell extends AppShell {
 
         $this->CrateCommand->saveAll($crateCommand);
 
+    }
+
+    public function syncServices(){
+        $services = $this->Service->find('all', [
+            'recursive' => -1,
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.servicetemplate_id',
+                'Service.active_checks_enabled',
+                'Service.tags',
+                'Service.host_id',
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                        'Servicetemplate.active_checks_enabled',
+                        'Servicetemplate.tags',
+                    ]
+                ]
+            ]
+        ]);
+
+        $crateService = [];
+        foreach ($services as $service) {
+            $serviceName = $service['Service']['name'];
+            $nameFromTemplate = false;
+            if($serviceName === null || $serviceName === ''){
+                $serviceName = $service['Servicetemplate']['name'];
+                $nameFromTemplate = true;
+            }
+
+            $crateService[] = [
+                'CrateService' => [
+                    'id' => (int)$service['Service']['id'],
+                    'uuid' => $service['Service']['uuid'],
+                    'name' => $serviceName,
+                    'servicetemplate_id' => (int)$service['Service']['servicetemplate_id'],
+                    'host_id' => (int)$service['Service']['host_id'],
+                    'name_from_template' => $nameFromTemplate,
+                ]
+            ];
+        }
+
+        $this->CrateService->saveAll($crateService);
     }
 
 
