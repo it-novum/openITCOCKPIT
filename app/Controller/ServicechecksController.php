@@ -23,8 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServicechecksController extends AppController
-{
+use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
+use itnovum\openITCOCKPIT\Core\ServicechecksControllerRequest;
+use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
+
+class ServicechecksController extends AppController {
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
@@ -50,16 +53,16 @@ class ServicechecksController extends AppController
         ],
     ];
 
-    public function index($id = null)
-    {
+    public function index($id = null){
         if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('invalid service'));
+            throw new NotFoundException(__('Invalid service'));
         }
 
+        //Check if user is permitted to see this object
         $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Host'            => [
+            'recursive' => -1,
+            'contain' => [
+                'Host' => [
                     'Container',
                 ],
                 'Servicetemplate' => [
@@ -72,41 +75,50 @@ class ServicechecksController extends AppController
             'conditions' => [
                 'Service.id' => $id,
             ],
-
         ]);
-
-        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $service['Host']['container_id'];
-
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $this->render403();
-
             return;
         }
-
         $allowEdit = false;
-        if ($this->allowedByContainerId($containerIdsToCheck)) {
+        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $allowEdit = true;
         }
 
+        //Process request and set request settings back to front end
+        $ServicechecksControllerRequest = new ServicechecksControllerRequest(
+            $this->request,
+            new ServiceStates(),
+            $this->userLimit
+        );
+
+        //Process conditions
+        $Conditions = new ServicechecksConditions();
+        $Conditions->setLimit($ServicechecksControllerRequest->getLimit());
+        $Conditions->setFrom($ServicechecksControllerRequest->getFrom());
+        $Conditions->setTo($ServicechecksControllerRequest->getTo());
+        $Conditions->setOrder($ServicechecksControllerRequest->getOrder());
+        $Conditions->setStates($ServicechecksControllerRequest->getServiceStates());
+        $Conditions->setServiceUuid($service['Service']['uuid']);
+
+        //Query host notification records
+        $query = $this->Servicecheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_servicechecks = $this->Paginator->paginate(
+            $this->Servicecheck->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+
+        //Get meta data and push to front end
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [
                 'Servicestatus.current_state',
+                'Servicestatus.is_flapping'
             ],
         ]);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-
-
-        $requestSettings = $this->Servicecheck->listSettings($this->request, $service['Service']['uuid']);
-
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-
-        $all_servicechecks = $this->Paginator->paginate();
-
-        $this->set('ServicecheckListsettings', $requestSettings['Listsettings']);
-        $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'allowEdit', 'docuExists']));
+        $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'docuExists', 'allowEdit']));
+        $this->set('ServicecheckListsettings', $ServicechecksControllerRequest->getRequestSettingsForListSettings());
     }
 }
