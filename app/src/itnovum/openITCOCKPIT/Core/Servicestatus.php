@@ -43,7 +43,27 @@ class Servicestatus {
 
     private $lastHardStateChange;
 
+    private $last_state_change;
+
     private $processPerformanceData;
+
+    private $state_type;
+
+    private $acknowledgement_type;
+
+    private $flap_detection_enabled;
+
+    private $notifications_enabled;
+
+    private $current_check_attempt;
+
+    private $output;
+
+    private $long_output;
+
+    private $perfdata;
+
+    private $latency;
 
     public function __construct($data){
         if (isset($data['current_state'])) {
@@ -78,9 +98,60 @@ class Servicestatus {
             $this->lastHardStateChange = $data['last_hard_state_change'];
         }
 
+        if (isset($data['last_state_change'])) {
+            $this->last_state_change = $data['last_state_change'];
+        }
+
         if (isset($data['process_performance_data'])) {
             $this->processPerformanceData = $data['process_performance_data'];
         }
+
+        if (isset($data['state_type'])) {
+            $this->state_type = $data['state_type'];
+        }
+
+        if (isset($data['is_hardstate'])) {
+            $this->state_type = $data['is_hardstate'];
+        }
+
+        if (isset($data['acknowledgement_type'])) {
+            $this->acknowledgement_type = (int)$data['acknowledgement_type'];
+        }
+
+        if(isset($data['flap_detection_enabled'])) {
+            $this->flap_detection_enabled = (bool)$data['flap_detection_enabled'];
+        }
+
+        if(isset($data['notifications_enabled'])) {
+            $this->notifications_enabled = (bool)$data['notifications_enabled'];
+        }
+
+        if(isset($data['current_check_attempt'])) {
+            $this->current_check_attempt = $data['current_check_attempt'];
+        }
+
+        if (isset($data['output'])) {
+            $this->output = $data['output'];
+        }
+
+        if (isset($data['long_output'])) {
+            $this->long_output = $data['long_output'];
+        }
+
+        if (isset($data['perfdata'])) {
+            $this->perfdata = $data['perfdata'];
+        }
+
+        if (isset($data['latency'])) {
+            $this->latency = $data['latency'];
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHardState(){
+        return (bool)$this->state_type;
     }
 
     public function getHumanServicestatus($href = 'javascript:void(0)', $content = '', $style = ''){
@@ -126,14 +197,17 @@ class Servicestatus {
      * Return the CSS class for the current service status
      * <span class="<?php echo $this->ServiceStatusColor($uuid); ?>"></span>
      *
-     * @param string $uuid          of the object
-     * @param array  $servicestauts , if not given the $servicestatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param array $servicestauts , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return string CSS class of the color
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
     public function ServiceStatusColor(){
+        if($this->currentState === null){
+            return 'text-primary';
+        }
 
         switch ($this->currentState) {
             case 0:
@@ -148,9 +222,54 @@ class Servicestatus {
             default:
                 return 'txt-color-blueDark';
         }
+    }
 
-        //no status found in database
-        return 'text-primary';
+    /**
+     * Return the status background color for a Service
+     *
+     * @param int $state the current status of a Service
+     *
+     * @return array which contains the human state and the css class
+     */
+    function ServiceStatusBackgroundColor(){
+        $state = ($this->currentState === null) ? 3 : $this->currentState;
+        $background_color = [
+            0 => 'bg-color-green',
+            1 => 'bg-color-orange',
+            2 => 'bg-color-red',
+            3 => 'bg-color-blueLight',
+        ];
+
+        return $background_color[$state];
+    }
+
+    /**
+     * Check if there is a difference between monitoring hoststatus flap_detection_ebabled and the itcockpit database
+     * configuration If yes it will return the current setting from $hostatus This can happen, if a user disable the
+     * flap detection with an external command, but not in the host configuration
+     *
+     * @param array $host['Host']['flap_detection_enabled']
+     *
+     * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
+     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since  3.0
+     */
+    public function compareHostFlapDetectionWithMonitoring($flapDetectionEnabledFromConfig)
+    {
+        if ($flapDetectionEnabledFromConfig != $this->flap_detection_enabled) {
+            //Flapdetection was temporary en- or disabled by an external command
+            if ($this->flap_detection_enabled) {
+                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">'.__('Temporary on').'</span>', 'value' => $this->flap_detection_enabled];
+            }
+
+            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">'.__('Temporary off').'</span>', 'value' => $this->flap_detection_enabled];
+        }
+
+        if ($flapDetectionEnabledFromConfig == 1) {
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+        }
+
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
     }
 
     public function currentState(){
@@ -171,6 +290,10 @@ class Servicestatus {
 
     public function getLastHardStateChange(){
         return $this->lastHardStateChange;
+    }
+
+    public function getLastStateChange(){
+        return $this->last_state_change;
     }
 
     public function getLastCheck(){
@@ -194,6 +317,60 @@ class Servicestatus {
      */
     public function isFlapping(){
         return (bool)$this->isFlapping;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFlapDetectionEnabled(){
+        return (bool)$this->flap_detection_enabled;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNotificationsEnabled(){
+        return (bool)$this->notifications_enabled;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAcknowledgementType(){
+        return $this->acknowledgement_type;
+    }
+
+    public function getCurrentCheckAttempt(){
+        return $this->current_check_attempt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOutput(){
+        return $this->output;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLongOutput(){
+        return $this->long_output;
+    }
+
+    public function getPerfdata(){
+        return $this->perfdata;
+    }
+
+    public function getLatency(){
+        return $this->latency;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInMonitoring(){
+        return !is_null($this->currentState);
     }
 
 

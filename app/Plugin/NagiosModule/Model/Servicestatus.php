@@ -70,6 +70,9 @@ class Servicestatus extends NagiosModuleAppModel
         $dbresult = $this->find($findType, $options);
 
         if($findType === 'first'){
+            if(empty($dbresult)){
+                return [];
+            }
             return [
                 'Servicestatus' => $dbresult['Servicestatus'],
             ];
