@@ -26,13 +26,13 @@
 use itnovum\openITCOCKPIT\Core\Views\Command;
 use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
+use itnovum\openITCOCKPIT\Core\Views\NotificationService;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
 $ListSettingsRenderer = new ListSettingsRenderer($NotificationListsettings);
 $ListSettingsRenderer->setPaginator($this->Paginator);
-
 
 $this->Paginator->options([
     'url' => Hash::merge(
@@ -47,7 +47,7 @@ $this->Paginator->options([
             <span>>
                 <?php echo __('Overview'); ?>
             </span>
-            <div class="third_level"> <?php echo __('Hosts'); ?></div>
+            <div class="third_level"> <?php echo __('Services'); ?></div>
         </h1>
     </div>
 </div>
@@ -85,22 +85,27 @@ $this->Paginator->options([
                             </li>
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
-                                    <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Date'); ?>
+                                    <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Service'); ?>
                                 </a>
                             </li>
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="3">
-                                    <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Contact'); ?>
+                                    <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Date'); ?>
                                 </a>
                             </li>
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="4">
+                                    <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Contact'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="5">
                                     <input type="checkbox" class="pull-left"/>
                                     &nbsp; <?php echo __('Notification method'); ?>
                                 </a>
                             </li>
                             <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="5">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="6">
                                     <input type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Output'); ?>
                                 </a>
                             </li>
@@ -112,7 +117,7 @@ $this->Paginator->options([
                         <?php
                         echo $this->Form->create('notifications', [
                             'class' => 'form-horizontal clear',
-                            'url' => 'index' // reset the URL on submit
+                            'url' => 'services' // reset the URL on submit
                         ]);
                         echo $ListSettingsRenderer->getFromInput();
                         echo $ListSettingsRenderer->getToInput();
@@ -120,13 +125,13 @@ $this->Paginator->options([
                         <div class="btn-group">
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <span id="listoptions_view">
-                                    <?php echo __('Host notifications');; ?>
+                                    <?php echo __('Service notifications');; ?>
                                 </span> <i class="fa fa-caret-down"></i>
                             </button>
                             <ul class="dropdown-menu pull-right">
                                 <li>
-                                    <a href="<?php echo Router::url(['action' => 'services']); ?>">
-                                        <?php echo __('Service notifications'); ?>
+                                    <a href="<?php echo Router::url(['action' => 'index']); ?>">
+                                        <?php echo __('Host notifications'); ?>
                                     </a>
                                 </li>
                             </ul>
@@ -176,8 +181,21 @@ $this->Paginator->options([
                                         echo $this->Paginator->sort('Host.name', __('Host')); ?>
                                     </th>
                                     <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'NotificationHost.start_time');
-                                        echo $this->Paginator->sort('NotificationHost.start_time', __('Date')); ?>
+                                        <?php
+                                        if ($DbBackend->isNdoUtils()) :
+                                            echo $this->Utils->getDirection($order, 'NotificationService.servicename');
+                                            echo $this->Paginator->sort('NotificationService.servicename', __('Service'));
+                                        endif;
+
+                                        if ($DbBackend->isCrateDb()):
+                                            echo $this->Utils->getDirection($order, 'Service.name');
+                                            echo $this->Paginator->sort('Service.name', __('Service'));
+                                        endif;
+                                        ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo $this->Utils->getDirection($order, 'NotificationService.start_time');
+                                        echo $this->Paginator->sort('NotificationService.start_time', __('Date')); ?>
                                     </th>
                                     <th class="no-sort">
                                         <?php echo $this->Utils->getDirection($order, 'Contact.name');
@@ -188,16 +206,17 @@ $this->Paginator->options([
                                         echo $this->Paginator->sort('Command.name', __('Notification method')); ?>
                                     </th>
                                     <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'NotificationHost.output');
-                                        echo $this->Paginator->sort('NotificationHost.output', __('Output')); ?>
+                                        <?php echo $this->Utils->getDirection($order, 'NotificationService.output');
+                                        echo $this->Paginator->sort('NotificationService.output', __('Output')); ?>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <?php foreach ($all_notification as $notification):
                                     $Host = new Host($notification);
-                                    $NotificationHost = new NotificationHost($notification);
-                                    $StatusIcon = new HoststatusIcon($NotificationHost->getState());
+                                    $Service = Service::fromServiceNotification($notification);
+                                    $NotificationService = new NotificationService($notification);
+                                    $StatusIcon = new ServicestatusIcon($NotificationService->getState());
                                     $Command = new Command($notification['Command']);
                                     $Contact = new Contact($notification['Contact']);
                                     ?>
@@ -219,10 +238,24 @@ $this->Paginator->options([
                                                 endif;
                                             endif; ?>
                                         </td>
+                                        <td>
+                                            <?php if ($Service->getServicename()): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                                    <a href="<?php echo Router::url([
+                                                        'controller' => 'services',
+                                                        'action' => 'browser',
+                                                        $Service->getId()]); ?>">
+                                                        <?php echo h($Service->getServicename()); ?>
+                                                    </a>
+                                                <?php else:
+                                                    echo h($Service->getServicename());
+                                                endif;
+                                            endif; ?>
+                                        </td>
 
                                         <td>
                                             <?php echo $this->Time->format(
-                                                $NotificationHost->getStartTime(),
+                                                $NotificationService->getStartTime(),
                                                 $this->Auth->user('dateformat'),
                                                 false,
                                                 $this->Auth->user('timezone')); ?>
@@ -258,7 +291,7 @@ $this->Paginator->options([
                                             endif; ?>
                                         </td>
                                         <td>
-                                            <?php echo h($NotificationHost->getOutput()); ?>
+                                            <?php echo h($NotificationService->getOutput()); ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

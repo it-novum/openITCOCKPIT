@@ -22,39 +22,50 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
+namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class ListSettingsDefaults {
+class Contact {
+
 
     /**
      * @var int
      */
-    private $limit = 30;
+    private $id;
 
-    public function __construct($limit = 30){
-        $this->limit = $limit;
+    /**
+     * @var string
+     */
+    private $name;
+
+
+    /**
+     * Command constructor.
+     * @param array $data
+     */
+    public function __construct($data){
+        if (isset($data['id'])) {
+            $this->id = (int)$data['id'];
+        }
+
+        if (isset($data['name'])) {
+            $this->name = $data['name'];
+        }
+
     }
 
     /**
      * @return int
      */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
+    public function getId(){
+        return $this->id;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultLimit(){
-        return $this->limit;
+    public function getName(){
+        return $this->name;
     }
 
 }

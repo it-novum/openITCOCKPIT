@@ -92,7 +92,6 @@ class ServicechecksController extends AppController
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [
-                'Objects.name2',
                 'Servicestatus.current_state',
             ],
         ]);

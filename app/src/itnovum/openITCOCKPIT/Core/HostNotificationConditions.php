@@ -22,39 +22,34 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
+namespace itnovum\openITCOCKPIT\Core;
 
-
-class ListSettingsDefaults {
+class HostNotificationConditions extends ListSettingsConditions {
 
     /**
-     * @var int
+     * @var array
      */
-    private $limit = 30;
+    protected $order = [
+        'NotificationHost.start_time' => 'DESC'
+    ];
 
-    public function __construct($limit = 30){
-        $this->limit = $limit;
+    /**
+     * @var string
+     */
+    protected $hostUuid;
+
+    /**
+     * @param string $hostUuid
+     */
+    public function setHostUuid($hostUuid){
+        $this->hostUuid = $hostUuid;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
+    public function getHostUuid(){
+        return $this->hostUuid;
     }
-
-    /**
-     * @return int
-     */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultLimit(){
-        return $this->limit;
-    }
-
 }
+

@@ -22,39 +22,70 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
+namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class ListSettingsDefaults {
+abstract class Notification {
 
     /**
      * @var int
      */
-    private $limit = 30;
+    private $state;
 
-    public function __construct($limit = 30){
-        $this->limit = $limit;
+    /**
+     * @var string
+     */
+    private $output;
+
+    /**
+     * @var int|string
+     */
+    private $start_time;
+
+
+    /**
+     * Notification constructor.
+     * @param array $data
+     */
+    public function __construct($data, $key){
+
+        if (isset($data[$key]['state'])) {
+            $this->state = (int)$data[$key]['state'];
+        }
+
+        if (isset($data[$key]['output'])) {
+            $this->output = $data[$key]['output'];
+        }
+
+        if (isset($data['Contactnotification']['start_time'])) {
+            $this->start_time = $data['Contactnotification']['start_time'];
+        }
+
+        if (isset($data[$key]['start_time'])) {
+            $this->start_time = $data[$key]['start_time'];
+        }
+
     }
 
     /**
      * @return int
      */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
+    public function getState(){
+        return $this->state;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
+    public function getOutput(){
+        return $this->output;
     }
 
     /**
-     * @return int
+     * @return int|string
      */
-    public function getDefaultLimit(){
-        return $this->limit;
+    public function getStartTime(){
+        return $this->start_time;
     }
 
 }

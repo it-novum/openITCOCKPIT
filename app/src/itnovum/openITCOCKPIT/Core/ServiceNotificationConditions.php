@@ -22,39 +22,35 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
+namespace itnovum\openITCOCKPIT\Core;
 
-
-class ListSettingsDefaults {
+class ServiceNotificationConditions extends ListSettingsConditions {
 
     /**
-     * @var int
+     * @var array
      */
-    private $limit = 30;
+    protected $order = [
+        'NotificationService.start_time' => 'DESC'
+    ];
 
-    public function __construct($limit = 30){
-        $this->limit = $limit;
+    /**
+     * @var string
+     */
+    protected $serviceUuid;
+
+    /**
+     * @param $uuid
+     */
+    public function setServiceUuid($uuid){
+        $this->serviceUuid = $uuid;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultLimit(){
-        return $this->limit;
+    public function getServiceUuid(){
+        return $this->serviceUuid;
     }
 
 }
+

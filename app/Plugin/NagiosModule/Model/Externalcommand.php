@@ -465,7 +465,6 @@ class Externalcommand extends NagiosModuleAppModel
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
                 $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
                     'fields' => [
-                        'Objects.name2',
                         'Servicestatus.current_state',
                     ],
                 ]);
@@ -509,7 +508,6 @@ class Externalcommand extends NagiosModuleAppModel
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
         $hoststatus = $this->Hoststatus->byUuid($options['hostUuid'], [
             'fields' => [
-                'Objects.name1',
                 'Hoststatus.current_state',
             ],
         ]);
@@ -546,7 +544,6 @@ class Externalcommand extends NagiosModuleAppModel
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
                 $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
                     'fields' => [
-                        'Objects.name2',
                         'Servicestatus.current_state',
                     ],
                 ]);
@@ -601,7 +598,6 @@ class Externalcommand extends NagiosModuleAppModel
             $hoststatus = $this->Hoststatus->byUuid($hostUuids, [
                 'fields' => [
                     'Hoststatus.current_state',
-                    'Objects.name1',
                 ],
             ]);
 
@@ -656,7 +652,6 @@ class Externalcommand extends NagiosModuleAppModel
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
         $servicestatus = $this->Servicestatus->byUuid($options['serviceUuid'], [
             'fields' => [
-                'Objects.name2',
                 'Servicestatus.current_state',
             ],
         ]);
