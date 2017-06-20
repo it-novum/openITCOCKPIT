@@ -137,7 +137,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
                                     </span>
                                     <?php
-                                    if ($Hoststatus->getAcknowledgementType()):
+                                    if ($Hoststatus->getAcknowledgementType() == 1):
                                         echo __('The current status was already acknowledged by');
                                     else:
                                         echo __('The current status was already acknowledged (STICKY) by');
@@ -195,8 +195,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                             <?php echo $_state['html_icon']; ?>
                                             <span class="padding-left-5"
                                                   style="vertical-align: middle;"><?php echo $_state['human_state']; ?></span>
-                                            <code class="no-background <?php echo $ParentHostStatus->HostStatusColor(); ?>">(<?php echo h($Hoststatus->getOutput()); ?>
-                                                )</code>
+                                            <code class="no-background <?php echo $ParentHostStatus->HostStatusColor(); ?>">
+                                                (<?php echo h($Hoststatus->getOutput()); ?>)
+                                            </code>
                                         </p>
                                         <?php
 

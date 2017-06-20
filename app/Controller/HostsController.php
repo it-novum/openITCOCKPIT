@@ -2375,38 +2375,36 @@ class HostsController extends AppController {
      */
     public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true){
         $this->autoRender = false;
-        $result = $this->Host->findByUuid($uuid);
+        $result = $this->Host->find('first', [
+            'recursive' => -1,
+            'fields' => [
+                'Host.id',
+                'Host.uuid'
+            ],
+            'conditions' => [
+                'Host.uuid' => $uuid
+            ]
+        ]);
         if (!empty($result)) {
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid']);
-            if (isset($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'])) {
+            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], [
+                'fields' => [
+                    'Hoststatus.long_output'
+                ]
+            ]);
+            if (!empty($hoststatus)) {
                 if ($parseBbcode === true) {
                     if ($nl2br === true) {
-                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'], $nl2br));
+                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br));
                     } else {
-                        return $this->Bbcode->asHtml($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'], $nl2br);
+                        return $this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br);
                     }
                 }
 
-                return $hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'];
+                return $hoststatus['Hoststatus']['long_output'];
             }
         }
 
         return '';
-    }
-
-    /* !!!!!
-     * NEVER EVER CALL THIS FUNCTION !!!!!!!!
-     */
-
-    protected function resetAllUUID(){
-        throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
-
-        return false;
-        foreach ($this->Host->find('all', ['fields' => ['uuid']]) as $host) {
-            debug($host);
-            $host['Host']['uuid'] = $this->Host->createUUID();
-            $this->Host->save($host);
-        }
     }
 
 
