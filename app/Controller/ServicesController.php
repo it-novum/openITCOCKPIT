@@ -394,13 +394,10 @@ class ServicesController extends AppController {
             return;
         }
 
-        $_servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        if (isset($_servicestatus[$service['Service']['uuid']])) {
-            $servicestatus = $_servicestatus[$service['Service']['uuid']];
-        } else {
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        if (empty($servicestatus)) {
             $servicestatus = [
                 'Servicestatus' => [],
-                'Objects' => [],
             ];
         }
         $service = Hash::merge($service, $servicestatus);

@@ -251,13 +251,10 @@ class HostsController extends AppController {
             return;
         }
 
-        $_hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
-        if (isset($_hoststatus[$host['Host']['uuid']])) {
-            $hoststatus = $_hoststatus[$host['Host']['uuid']];
-        } else {
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        if (empty($hoststatus)) {
             $hoststatus = [
-                'Hoststatus' => [],
-                'Objects' => [],
+                'Hoststatus' => []  
             ];
         }
         $host = Hash::merge($host, $hoststatus);
@@ -2178,7 +2175,7 @@ class HostsController extends AppController {
     }
 
 
-    public function browser($id = null) {
+    public function browser($id = null){
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2307,11 +2304,7 @@ class HostsController extends AppController {
                     'Host.name',
                 ],
             ]);
-            //      $hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
-        } else {
-            //    $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
         }
-
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
 
