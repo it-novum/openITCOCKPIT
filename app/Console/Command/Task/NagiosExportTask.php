@@ -1161,7 +1161,6 @@ class NagiosExportTask extends AppShell {
 
     }
 
-
     /**
      * @param null $uuid
      * @param array $options with keys limit and offset
@@ -1702,7 +1701,6 @@ class NagiosExportTask extends AppShell {
 
     }
 
-
     public function exportHostgroups($uuid = null) {
         if ($uuid !== null) {
             $hostgroups = [];
@@ -2076,6 +2074,82 @@ class NagiosExportTask extends AppShell {
 
             foreach ($timeperiod['Timerange'] as $timerange) {
                 $content .= $this->addContent($weekdays[$timerange['day']], 1, $timerange['start'] . '-' . $timerange['end']);
+            }
+            $content .= $this->addContent('}', 0);
+
+            if (!$this->conf['minified']) {
+                $file->write($content);
+                $file->close();
+            }
+        }
+
+        if ($this->conf['minified']) {
+            $file->write($content);
+            $file->close();
+        }
+
+        if ($this->dm === true) {
+            foreach ($this->Satellites as $satelite) {
+                $this->exportSatTimeperiods($timeperiods, $satelite);
+            }
+        }
+    }
+
+    public function exportSatTimeperiods($timeperiods, $satelite)
+    {
+        if (!is_dir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'])) {
+            mkdir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods']);
+        }
+
+        if ($this->conf['minified']) {
+            $file = new File($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'].'timeperiods_minified'.$this->conf['suffix']);
+            if (!$file->exists()) {
+                $file->create();
+            }
+            $content = $this->fileHeader();
+        }
+
+        $date = new DateTime();
+        $weekdays = [];
+        for ($i = 1; $i <= 7; $i++) {
+            $weekdays[$date->format('N')] = strtolower($date->format('l'));
+            $date->modify('+1 day');
+        }
+
+        foreach ($timeperiods as $timeperiod) {
+            if (!$this->conf['minified']) {
+                $file = new File($this->conf['satellite_path'].$satelite['Satellite']['id'].DS.$this->conf['timeperiods'].$timeperiod['Timeperiod']['uuid'].$this->conf['suffix']);
+                $content = $this->fileHeader();
+                if (!$file->exists()) {
+                    $file->create();
+                }
+            }
+
+            $content .= $this->addContent('define timeperiod{', 0);
+            $content .= $this->addContent('timeperiod_name', 1, $timeperiod['Timeperiod']['uuid']);
+            if (strlen($timeperiod['Timeperiod']['description']) > 0) {
+                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['description']);
+            } else {
+                //Naemon 1.0.0 fix
+                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
+            }
+
+            foreach ($timeperiod['Timerange'] as $timerange) {
+                if(!empty($satelite['Satellite']['timezone']) && !($timerange['start'] == '00:00' && $timerange['end'] == '24:00')) {
+                    $remoteTimeZone = new DateTimeZone($satelite['Satellite']['timezone']);
+                    $start = new DateTime($weekdays[$timerange['day']].' '.$timerange['start']);
+                    $start = $start->setTimezone($remoteTimeZone);
+                    $end = new DateTime($weekdays[$timerange['day']].' '.$timerange['end']);
+                    $end = $end->setTimezone($remoteTimeZone);
+                    if ($start->format('l') == $end->format('l')) {
+                        $content .= $this->addContent($start->format('l'), 1, $start->format('H:i').'-'.$end->format('H:i'));
+                    } else {
+                        $content .= $this->addContent($start->format('l'), 1, $start->format('H:i').'-24:00', true);
+                        $content .= $this->addContent($end->format('l'), 1, '00:00-'.$end->format('H:i'), true);
+                    }
+                } else {
+                    $content .= $this->addContent($weekdays[$timerange['day']], 1, $timerange['start'].'-'.$timerange['end']);
+                }
             }
             $content .= $this->addContent('}', 0);
 
