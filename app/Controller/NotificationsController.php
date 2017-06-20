@@ -256,7 +256,6 @@ class NotificationsController extends AppController {
 
         //Process conditions
         $Conditions = new ServiceNotificationConditions();
-        $Conditions->setContainerIds($this->MY_RIGHTS);
         $Conditions->setLimit($NotificationsControllerRequest->getLimit());
         $Conditions->setFrom($NotificationsControllerRequest->getFrom());
         $Conditions->setTo($NotificationsControllerRequest->getTo());
