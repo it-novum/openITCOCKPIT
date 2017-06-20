@@ -32,6 +32,9 @@ use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
 use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
 $Host = new Host($host);
+if (!isset($hoststatus['Hoststatus'])):
+    $hoststatus['Hoststatus'] = [];
+endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 $ListSettingsRenderer = new ListSettingsRenderer($NotificationListsettings);
 $ListSettingsRenderer->setPaginator($this->Paginator);

@@ -33,6 +33,9 @@ $ListSettingsRenderer = new ListSettingsRenderer($HostcheckListsettings);
 $ListSettingsRenderer->setPaginator($this->Paginator);
 
 $Host = new Host($host);
+if (!isset($hoststatus['Hoststatus'])):
+    $hoststatus['Hoststatus'] = [];
+endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
 $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $HostcheckListsettings])]); ?>

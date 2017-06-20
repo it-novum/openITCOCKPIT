@@ -34,6 +34,9 @@ use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
 $Service = new Service($service);
 $Host = new Host($service);
+if (!isset($servicestatus['Servicestatus'])):
+    $servicestatus['Servicestatus'] = [];
+endif;
 $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
 $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $NotificationListsettings])]);
