@@ -83,7 +83,7 @@ class ServicesController extends AppController {
         'Servicetemplateeventcommandargumentvalue',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS,
-        MONITORING_ACKNOWLEDGED,
+        MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_OBJECTS,
         'DeletedService',
         'Rrd',
@@ -2132,11 +2132,10 @@ class ServicesController extends AppController {
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
 
-        $acknowledged = [];
         if (isset($servicestatus['Servicestatus']) && $servicestatus['Servicestatus']['problem_has_been_acknowledged'] > 0) {
-            $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-            if (!empty($acknowledged[0])) {
-                $acknowledged = $acknowledged[0];
+            $acknowledged = $this->AcknowledgedService->byUuid($service['Service']['uuid']);
+            if (empty($acknowledged)) {
+                $acknowledged = [];
             }
         }
         $ticketSystem = $this->Systemsetting->find('first', [
@@ -2366,16 +2365,6 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['all_services']);
     }
 
-    //public function pnp($id){
-    //	if(!$this->Service->exists($id)){
-    //		throw new NotFoundException(__('Invalid service'));
-    //	}
-    //
-    //	$service = $this->Service->findById($id);
-    //	$servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-    //	$acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-    //	$this->set(compact(['service', 'servicestatus', 'acknowledged']));
-    //}
 
     public function grapherSwitch($id){
         if (!$this->Service->exists($id)) {
@@ -2430,8 +2419,7 @@ class ServicesController extends AppController {
         }
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'allowEdit', 'services', 'docuExists']));
+        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists']));
     }
 
     public function grapherTemplate($id){
@@ -2447,7 +2435,6 @@ class ServicesController extends AppController {
         $service = $this->Service->findById($id);
         $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
 
         $commandUuid = $service['CheckCommand']['uuid'];
         if ($commandUuid == null || $commandUuid == '') {
@@ -2455,7 +2442,7 @@ class ServicesController extends AppController {
             $commandUuid = $servicetemplate['CheckCommand']['uuid'];
         }
 
-        $this->set(compact(['service', 'servicestatus', 'acknowledged', 'commandUuid', 'docuExists']));
+        $this->set(compact(['service', 'servicestatus', 'commandUuid', 'docuExists']));
     }
 
     public function grapherZoom($id, $ds, $newStart, $newEnd){

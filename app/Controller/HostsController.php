@@ -78,7 +78,6 @@ class HostsController extends AppController {
         'Hostcommandargumentvalue',
         'Contact',
         'Contactgroup',
-        MONITORING_ACKNOWLEDGED,
         MONITORING_ACKNOWLEDGED_HOST,
         'DeletedHost',
         'DeletedService',

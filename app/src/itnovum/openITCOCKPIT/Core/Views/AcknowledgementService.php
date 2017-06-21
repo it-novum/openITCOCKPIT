@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class AcknowledgementHost extends Acknowledgement {
-
+class AcknowledgementService extends Acknowledgement {
 
 }
