@@ -2133,23 +2133,29 @@ class NagiosExportTask extends AppShell {
                 //Naemon 1.0.0 fix
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
             }
-
-            foreach ($timeperiod['Timerange'] as $timerange) {
-                if(!empty($satelite['Satellite']['timezone']) && !($timerange['start'] == '00:00' && $timerange['end'] == '24:00')) {
+            $timeRanges = [];
+            foreach ($timeperiod['Timerange'] as $timeRange) {
+                if(!empty($satelite['Satellite']['timezone']) && !($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
                     $remoteTimeZone = new DateTimeZone($satelite['Satellite']['timezone']);
-                    $start = new DateTime($weekdays[$timerange['day']].' '.$timerange['start']);
+                    $start = new DateTime($weekdays[$timeRange['day']].' '.$timeRange['start']);
                     $start = $start->setTimezone($remoteTimeZone);
-                    $end = new DateTime($weekdays[$timerange['day']].' '.$timerange['end']);
+                    $end = new DateTime($weekdays[$timeRange['day']].' '.(($timeRange['end'] == '24:00') ? '23:59' : $timeRange['end']));
                     $end = $end->setTimezone($remoteTimeZone);
+                    if ($timeRange['end'] == '24:00') {
+                        $end = $end->add(new DateInterval('PT1M'));
+                    }
                     if ($start->format('l') == $end->format('l')) {
-                        $content .= $this->addContent($start->format('l'), 1, $start->format('H:i').'-'.$end->format('H:i'));
+                        $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i').'-'.$end->format('H:i');
                     } else {
-                        $content .= $this->addContent($start->format('l'), 1, $start->format('H:i').'-24:00', true);
-                        $content .= $this->addContent($end->format('l'), 1, '00:00-'.$end->format('H:i'), true);
+                        $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i').'-24:00';
+                        $timeRanges[strtolower($end->format('l'))][] = '00:00-'.$end->format('H:i');
                     }
                 } else {
-                    $content .= $this->addContent($weekdays[$timerange['day']], 1, $timerange['start'].'-'.$timerange['end']);
+                    $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'].'-'.$timeRange['end'];
                 }
+            }
+            foreach ($timeRanges as $day => $timeRange) {
+                $content .= $this->addContent($day, 1, implode(',', $timeRange));
             }
             $content .= $this->addContent('}', 0);
 
