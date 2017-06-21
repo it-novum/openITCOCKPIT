@@ -60,8 +60,13 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
         <h5>
             <div class="pull-right">
-                <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                <a href="<?php echo Router::url([
+                    'controller' => 'services',
+                    'action' => 'browser',
+                    $Service->getId()
+                ]); ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i>
+                    <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
                 <?php echo $this->element('service_browser_menu'); ?>
             </div>
@@ -69,29 +74,10 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
-
-    <!-- row -->
     <div class="row">
-
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -102,24 +88,40 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         ?>
                     </div>
                     <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
+                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
+                            <i class="fa fa-lg fa-table"></i>
+                        </a>
                         <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="0"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('State'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="1"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Date'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="2"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Check attempt'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="3"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Sate type'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="4"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Service output'); ?></a></li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('State'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="1">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Date'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Check attempt'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="3">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Sate type'); ?>
+                                </a>
+                            </li>
+                            <li style="width: 100%;">
+                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="4">
+                                    <input type="checkbox" class="pull-left"/>
+                                    &nbsp; <?php echo __('Service output'); ?>
+                                </a>
+                            </li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -128,7 +130,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <?php
                         echo $this->Form->create('statehistories', [
                             'class' => 'form-horizontal clear',
-                            'url'   => 'service/'.$service['Service']['id'] //reset the URL on submit
+                            'url' => 'service/' . $service['Service']['id'] //reset the URL on submit
                         ]);
 
                         ?>
@@ -150,29 +152,29 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <div class="btn-group">
                             <?php
                             $listoptions = [
-                                '30'  => [
+                                '30' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 30,
-                                    'human'         => 30,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 30,
+                                    'human' => 30,
+                                    'selector' => '#listoptions_limit',
                                 ],
-                                '50'  => [
+                                '50' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 50,
+                                    'human' => 50,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '100' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 100,
+                                    'human' => 100,
+                                    'selector' => '#listoptions_limit',
                                 ],
                                 '300' => [
                                     'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 300,
-                                    'human'         => 300,
-                                    'selector'      => '#listoptions_limit',
+                                    'value' => 300,
+                                    'human' => 300,
+                                    'selector' => '#listoptions_limit',
                                 ],
                             ];
 
@@ -204,9 +206,9 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <?php
                         $state_types = [
                             'recovery' => __('Recovery'),
-                            'warning'  => __('Warning'),
+                            'warning' => __('Warning'),
                             'critical' => __('Critical'),
-                            'unknown'  => __('Unknown'),
+                            'unknown' => __('Unknown'),
                         ];
                         ?>
 
@@ -276,32 +278,40 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
 
                 </header>
 
-                <!-- widget div-->
                 <div>
 
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="servicestatehistory_list" class="table table-striped table-hover table-bordered smart-form"
+                        <table id="servicestatehistory_list"
+                               class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state');
-                                    echo $this->Paginator->sort('Statehistory.state', __('State')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state_time');
-                                    echo $this->Paginator->sort('Statehistory.state_time', __('Date')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.current_check_attempt');
-                                    echo $this->Paginator->sort('Statehistory.current_check_attempt', __('Check attempt')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.state_type');
-                                    echo $this->Paginator->sort('Statehistory.state_type', __('State type')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Statehistory.output');
-                                    echo $this->Paginator->sort('Statehistory.output', __('Service output')); ?></th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Statehistory.state');
+                                    echo $this->Paginator->sort('Statehistory.state', __('State')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Statehistory.state_time');
+                                    echo $this->Paginator->sort('Statehistory.state_time', __('Date')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Statehistory.current_check_attempt');
+                                    echo $this->Paginator->sort('Statehistory.current_check_attempt', __('Check attempt')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Statehistory.state_type');
+                                    echo $this->Paginator->sort('Statehistory.state_type', __('State type')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Statehistory.output');
+                                    echo $this->Paginator->sort('Statehistory.output', __('Service output')); ?>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php //debug($all_notification); ?>
                             <?php foreach ($all_statehistories as $statehistory): ?>
                                 <tr>
                                     <td class="text-center"><?php echo $this->Status->humanServiceStatus($service['Service']['uuid'], 'javascript:void(0)', [$service['Service']['uuid'] => ['Servicestatus' => ['current_state' => $statehistory['Statehistory']['state']]]])['html_icon']; ?></td>
@@ -326,7 +336,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -338,18 +348,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
-
                 </div>
-                <!-- end widget div -->
-
             </div>
-            <!-- end widget -->
-
-
     </div>
-
-    <!-- end row -->
-
 </section>
-<!-- end widget grid -->
