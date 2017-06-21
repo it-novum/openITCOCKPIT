@@ -34,6 +34,7 @@ class AcknowledgementsController extends AppController {
      */
     public $uses = [
         MONITORING_ACKNOWLEDGED_HOST,
+        MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_ACKNOWLEDGED,
         MONITORING_SERVICESTATUS,
         'Host',
@@ -97,10 +98,8 @@ class AcknowledgementsController extends AppController {
                 'Service.id' => $id,
             ],
         ]);
-
         if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -108,6 +107,14 @@ class AcknowledgementsController extends AppController {
         if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $allowEdit = true;
         }
+
+
+
+
+
+
+
+
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [

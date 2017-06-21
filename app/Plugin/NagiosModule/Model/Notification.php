@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Notification
+ * @deprecated Do not you this Model anymore
+ */
 class Notification extends NagiosModuleAppModel
 {
     //public $useDbConfig = 'default';

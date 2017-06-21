@@ -60,6 +60,7 @@ class ConstantsComponent extends Component {
             'MONITORING_HOSTCHECK' => $monitoring . 'Module.Hostcheck',
             'MONITORING_ACKNOWLEDGED' => $monitoring . 'Module.Acknowledged',
             'MONITORING_ACKNOWLEDGED_HOST' => $monitoring . 'Module.AcknowledgedHost',
+            'MONITORING_ACKNOWLEDGED_SERVICE' => $monitoring . 'Module.AcknowledgedService',
             'MONITORING_CONTACTNOTIFICATION' => $monitoring . 'Module.Contactnotification',
             'MONITORING_CONTACTNOTIFICATIONMETHOD' => $monitoring . 'Module.Contactnotificationmethod',
             'MONITORING_PARENTHOST' => $monitoring . 'Module.Parenthost',

@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class Acknowledged
+ * @deprecated Do not you this Model anymore
+ */
 class Acknowledged extends NagiosModuleAppModel
 {
     //public $useDbConfig = 'nagios';
