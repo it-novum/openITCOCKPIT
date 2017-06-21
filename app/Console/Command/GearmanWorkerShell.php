@@ -31,6 +31,7 @@ class GearmanWorkerShell extends AppShell {
         'Export',
         'Host',
         'Service',
+        'Satellite'
     ];
     public $tasks = [
         'NagiosExport',
@@ -256,7 +257,34 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'CheckMKListChecks':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                if($payload['satellite_id'] !== '0'){
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/check-types');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+                    debug($output);
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                }
                 $return = $output;
                 break;
 
@@ -270,22 +298,70 @@ class GearmanWorkerShell extends AppShell {
                     'for_snmp_scan' => true, //Hacky but works -.-
                     'host_address' => $payload['hostaddress'],
                 ]);
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
-                $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                if($payload['satellite_id'] !== '0'){
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/dump-host/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+                    debug($output);
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $output = null;
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                }
                 $this->deleteMkAutochecks();
                 $return = $output;
                 unset($output);
                 break;
 
-            case 'CheckMKListChecks':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output, $returncode);
-                $return = $output;
-                unset($output);
-                break;
-
             case 'CheckMKProcesses':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                if($payload['satellite_id'] !== '0'){
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/raw-info/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+                    debug($output);
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                }
                 $return = $output;
                 unset($output);
                 break;
