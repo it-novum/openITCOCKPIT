@@ -61,8 +61,21 @@ class ServicechecksController extends AppController {
         //Check if user is permitted to see this object
         $service = $this->Service->find('first', [
             'recursive' => -1,
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.service_type',
+                'Service.service_url'
+            ],
             'contain' => [
                 'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address'
+                    ],
                     'Container',
                 ],
                 'Servicetemplate' => [
