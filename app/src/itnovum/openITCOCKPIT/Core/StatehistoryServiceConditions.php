@@ -36,7 +36,7 @@ class StatehistoryServiceConditions extends ListSettingsConditions {
      * @var array
      */
     protected $order = [
-        'StatehistoryService.start_time' => 'DESC'
+        'StatehistoryService.state_time' => 'DESC'
     ];
 
     /**

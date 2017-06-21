@@ -82,8 +82,21 @@ class StatehistoriesController extends AppController {
 
         $service = $this->Service->find('first', [
             'recursive' => -1,
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.service_type',
+                'Service.service_url'
+            ],
             'contain' => [
                 'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address'
+                    ],
                     'Container',
                 ],
                 'Servicetemplate' => [
@@ -127,7 +140,11 @@ class StatehistoriesController extends AppController {
         //Query state history records
         $query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
         $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_statehistories = $this->Paginator->paginate(null,[], [key($this->Paginator->settings['order'])]);
+        $all_statehistories = $this->Paginator->paginate(
+            $this->StatehistoryService->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
 
         //Get meta data and push to front end
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [

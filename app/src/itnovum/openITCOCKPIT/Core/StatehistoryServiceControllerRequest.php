@@ -106,9 +106,19 @@ class StatehistoryServiceControllerRequest extends ControllerListSettingsRequest
             }
         }
 
+        $stateTypes = $this->StateTypes->asArray();
+        if(!$this->StateTypes->hasSoft() && !$this->StateTypes->hasHard()){
+            //User disabled all check boxes or first page load
+            //Enable all to avoid empty list
+            foreach($stateTypes as $key => $value){
+                $stateTypes[$key] = true;
+            }
+        }
+
         return [
             'limit' => $this->getLimit(),
             'state_types' => $states,
+            'nag_state_types' => $stateTypes,
             'from' => date('d.m.Y H:i', $this->getFrom()),
             'to' => date('d.m.Y H:i', $this->getTo())
         ];
