@@ -30,7 +30,7 @@
             <?php echo __('Service downtime'); ?>
             <span>>
                 <?php echo __('create'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -136,7 +136,7 @@
                         </div>
                         <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('from_time'); ?>"
                              style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeFromTime" value="<?php echo $this->CustomValidationErrors->refill('from_time',  date('H:m')); ?>"
+                            <input type="text" id="SystemdowntimeFromTime" value="<?php echo $this->CustomValidationErrors->refill('from_time',  date('H:i')); ?>"
                                    class="form-control" name="data[Systemdowntime][from_time]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('from_time'); ?>
@@ -151,7 +151,7 @@
                             :</label>
                         <div class="col col-xs-3 col-md-3" style="padding-right: 0px;">
                             <input type="text" id="SystemdowntimeToDate"
-                                   value="<?php echo $this->CustomValidationErrors->refill('to_date', date('d.m.Y', strtotime('+3 days'))); ?>" class="form-control"
+                                   value="<?php echo $this->CustomValidationErrors->refill('to_date', date('d.m.Y')); ?>" class="form-control"
                                    name="data[Systemdowntime][to_date]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('to_date'); ?>
@@ -159,7 +159,7 @@
                         </div>
                         <div class="col col-xs-4 col-md-2 <?php echo $this->CustomValidationErrors->errorClass('to_time'); ?>"
                              style="padding-left: 0px;">
-                            <input type="text" id="SystemdowntimeToTime" value="<?php echo $this->CustomValidationErrors->refill('to_time',  date('H:m')); ?>"
+                            <input type="text" id="SystemdowntimeToTime" value="<?php echo $this->CustomValidationErrors->refill('to_time',  date('H:i', time() + 60*15)); ?>"
                                    class="form-control" name="data[Systemdowntime][to_time]">
                             <div>
                                 <?php echo $this->CustomValidationErrors->errorHTML('to_time'); ?>

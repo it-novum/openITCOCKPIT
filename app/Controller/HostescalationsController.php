@@ -115,10 +115,6 @@ class HostescalationsController extends AppController
         $this->set('all_hostescalations', $all_hostescalations);
 
         $this->set('_serialize', ['all_hostescalations']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)

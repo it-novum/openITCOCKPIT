@@ -81,12 +81,6 @@ class ServicetemplategroupsController extends AppController
         }
         $this->set(compact('all_servicetemplategroups'));
         $this->set('_serialize', ['all_servicetemplategroups']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function view($id = null)

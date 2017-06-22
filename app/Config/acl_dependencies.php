@@ -265,6 +265,9 @@ $config = [
             'Backups'               => [
                 'index' => ['checkBackupFinished'],
             ],
+            'Notifications'         => [
+                'index' => ['services'],
+            ],
         ],
         'roles_rights' => [
             'Administrator' => ['*'],

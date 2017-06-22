@@ -87,10 +87,6 @@ class ContactgroupsController extends AppController
         $this->set('all_contactgroups', $all_contactgroups);
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_contactgroups']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)

@@ -115,12 +115,6 @@ class ServicetemplatesController extends AppController
         $resolvedContainerNames = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
         $this->set(compact(['all_servicetemplates', 'resolvedContainerNames']));
         $this->set('_serialize', ['all_servicetemplates']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function view($id = null)

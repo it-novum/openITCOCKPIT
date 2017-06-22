@@ -28,6 +28,7 @@ Router::mapResources([
     'calendars',
     'servicetemplategroups',
     'MapModule.maps',
+    'MapModule.mapeditors',
     'EventcorrelationModule.eventcorrelations',
     'AutoreportModule.autoreports',
     'MkModule.mkservicedata',
