@@ -98,7 +98,6 @@ class AcknowledgementsController extends AppController {
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [
-                'Objects.name2',
                 'Servicestatus.current_state',
             ],
         ]);
@@ -130,7 +129,11 @@ class AcknowledgementsController extends AppController {
 
         //Process request and set request settings back to front end
         $HostStates = new HostStates();
-        $AcknowledgedHostControllerRequest = new AcknowledgedHostControllerRequest($this->request, $HostStates);
+        $AcknowledgedHostControllerRequest = new AcknowledgedHostControllerRequest(
+            $this->request,
+            $HostStates,
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [
@@ -179,6 +182,7 @@ class AcknowledgementsController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping'
             ],
         ]);
         $this->set(compact(['host', 'all_acknowledgements', 'hoststatus', 'docuExists']));

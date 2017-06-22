@@ -22,39 +22,34 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
+namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class ListSettingsDefaults {
+class NotificationService extends Notification {
+
 
     /**
-     * @var int
+     * @var bool
      */
-    private $limit = 30;
+    private $is_service_notification;
 
-    public function __construct($limit = 30){
-        $this->limit = $limit;
+
+    /**
+     * NotificationService constructor.
+     * @param array $data
+     */
+    public function __construct($data){
+        parent::__construct($data, 'NotificationService');
+        if (isset($data['NotificationService']['notification_type'])) {
+            $this->is_service_notification = (int)$data['NotificationService']['notification_type'] === 1;
+        }
     }
 
     /**
-     * @return int
+     * @return boolean
      */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultLimit(){
-        return $this->limit;
+    public function isServiceNotification(){
+        return $this->is_service_notification;
     }
 
 }

@@ -69,6 +69,11 @@ class Hoststatus {
     private $lastHardStateChange;
 
     /**
+     * @var string
+     */
+    private $last_state_change;
+
+    /**
     * @var string
     */
     private $output;
@@ -103,6 +108,8 @@ class Hoststatus {
      */
     private $current_check_attempt;
 
+    private $latency;
+
     public function __construct($data){
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
@@ -136,6 +143,10 @@ class Hoststatus {
             $this->lastHardStateChange = $data['last_hard_state_change'];
         }
 
+        if (isset($data['last_state_change'])) {
+            $this->last_state_change = $data['last_state_change'];
+        }
+
         if (isset($data['acknowledgement_type'])) {
             $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
@@ -166,6 +177,10 @@ class Hoststatus {
 
         if (isset($data['long_output'])) {
             $this->long_output = $data['long_output'];
+        }
+
+        if (isset($data['latency'])) {
+            $this->latency = $data['latency'];
         }
     }
 
@@ -202,6 +217,9 @@ class Hoststatus {
      * @since  3.0
      */
     public function HostStatusColor(){
+        if($this->currentState === null){
+            return 'text-primary';
+        }
 
         switch ($this->currentState) {
             case 0:
@@ -213,9 +231,6 @@ class Hoststatus {
             default:
                 return 'txt-color-blueDark';
         }
-
-        //no status found in database
-        return 'text-primary';
     }
 
     /**
@@ -264,6 +279,10 @@ class Hoststatus {
 
     public function getLastHardStateChange(){
         return $this->lastHardStateChange;
+    }
+
+    public function getLastStateChange(){
+        return $this->last_state_change;
     }
 
     public function getLastCheck(){
@@ -329,6 +348,17 @@ class Hoststatus {
 
     public function getCurrentCheckAttempts(){
         return $this->current_check_attempt;
+    }
+
+    public function getLatency(){
+        return $this->latency;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInMonitoring(){
+        return !is_null($this->currentState);
     }
 
     /**

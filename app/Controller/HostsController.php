@@ -302,13 +302,10 @@ class HostsController extends AppController {
             return;
         }
 
-        $_hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
-        if (isset($_hoststatus[$host['Host']['uuid']])) {
-            $hoststatus = $_hoststatus[$host['Host']['uuid']];
-        } else {
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        if (empty($hoststatus)) {
             $hoststatus = [
-                'Hoststatus' => [],
-                'Objects' => [],
+                'Hoststatus' => []  
             ];
         }
         $host = Hash::merge($host, $hoststatus);
@@ -2229,7 +2226,7 @@ class HostsController extends AppController {
     }
 
 
-    public function browser($id = null) {
+    public function browser($id = null){
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2358,11 +2355,7 @@ class HostsController extends AppController {
                     'Host.name',
                 ],
             ]);
-            //      $hoststatus = $this->Hoststatus->byUuid(Hash::merge([$host['Host']['uuid']], Hash::extract($parenthosts, '{n}.Host.uuid')));
-        } else {
-            //    $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
         }
-
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
 
@@ -2426,38 +2419,36 @@ class HostsController extends AppController {
      */
     public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true){
         $this->autoRender = false;
-        $result = $this->Host->findByUuid($uuid);
+        $result = $this->Host->find('first', [
+            'recursive' => -1,
+            'fields' => [
+                'Host.id',
+                'Host.uuid'
+            ],
+            'conditions' => [
+                'Host.uuid' => $uuid
+            ]
+        ]);
         if (!empty($result)) {
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid']);
-            if (isset($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'])) {
+            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], [
+                'fields' => [
+                    'Hoststatus.long_output'
+                ]
+            ]);
+            if (!empty($hoststatus)) {
                 if ($parseBbcode === true) {
                     if ($nl2br === true) {
-                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'], $nl2br));
+                        return $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br));
                     } else {
-                        return $this->Bbcode->asHtml($hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'], $nl2br);
+                        return $this->Bbcode->asHtml($hoststatus['Hoststatus']['long_output'], $nl2br);
                     }
                 }
 
-                return $hoststatus[$result['Host']['uuid']]['Hoststatus']['long_output'];
+                return $hoststatus['Hoststatus']['long_output'];
             }
         }
 
         return '';
-    }
-
-    /* !!!!!
-     * NEVER EVER CALL THIS FUNCTION !!!!!!!!
-     */
-
-    protected function resetAllUUID(){
-        throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
-
-        return false;
-        foreach ($this->Host->find('all', ['fields' => ['uuid']]) as $host) {
-            debug($host);
-            $host['Host']['uuid'] = $this->Host->createUUID();
-            $this->Host->save($host);
-        }
     }
 
 

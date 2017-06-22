@@ -102,7 +102,6 @@ class StatehistoriesController extends AppController {
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [
-                'Objects.name2',
                 'Servicestatus.current_state',
             ],
         ]);
@@ -144,7 +143,12 @@ class StatehistoriesController extends AppController {
         //Process request and set request settings back to front end
         $HostStates = new HostStates();
         $StateTypes = new StateTypes();
-        $StatehistoryRequest = new StatehistoryControllerRequest($this->request, $HostStates, $StateTypes);
+        $StatehistoryRequest = new StatehistoryControllerRequest(
+            $this->request,
+            $HostStates,
+            $StateTypes,
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [
@@ -191,6 +195,7 @@ class StatehistoriesController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping'
             ],
         ]);
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);

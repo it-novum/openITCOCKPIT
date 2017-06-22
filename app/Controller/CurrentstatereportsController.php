@@ -70,7 +70,6 @@ class CurrentstatereportsController extends AppController
                                     'Hoststatus.perfdata',
                                     'Hoststatus.output',
                                     'Hoststatus.last_state_change',
-                                    'Objects.*',
                                 ],
                             ]
                         );
@@ -80,10 +79,10 @@ class CurrentstatereportsController extends AppController
                             'address'     => $services[$serviceId]['Host']['address'],
                             'description' => $services[$serviceId]['Host']['description'],
                             'Hoststatus'  => (empty($hoststatus)) ? [] : [
-                                'current_state'     => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['current_state'],
-                                'perfdata'          => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['perfdata'],
-                                'output'            => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['output'],
-                                'last_state_change' => $hoststatus[$services[$serviceId]['Host']['uuid']]['Hoststatus']['last_state_change'],
+                                'current_state'     => $hoststatus['Hoststatus']['current_state'],
+                                'perfdata'          => $hoststatus['Hoststatus']['perfdata'],
+                                'output'            => $hoststatus['Hoststatus']['output'],
+                                'last_state_change' => $hoststatus['Hoststatus']['last_state_change'],
                             ],
                         ];
                     }
@@ -98,10 +97,10 @@ class CurrentstatereportsController extends AppController
                                 'uuid' => $services[$serviceId]['Service']['uuid'],
                             ],
                             'Servicestatus' => [
-                                'current_state'     => $servicestatus[$services[$serviceId]['Service']['uuid']]['Servicestatus']['current_state'],
-                                'perfdata'          => $servicestatus[$services[$serviceId]['Service']['uuid']]['Servicestatus']['perfdata'],
-                                'output'            => $servicestatus[$services[$serviceId]['Service']['uuid']]['Servicestatus']['output'],
-                                'last_state_change' => $servicestatus[$services[$serviceId]['Service']['uuid']]['Servicestatus']['last_state_change'],
+                                'current_state'     => $servicestatus['Servicestatus']['current_state'],
+                                'perfdata'          => $servicestatus['Servicestatus']['perfdata'],
+                                'output'            => $servicestatus['Servicestatus']['output'],
+                                'last_state_change' => $servicestatus['Servicestatus']['last_state_change'],
                             ],
                         ];
                     }

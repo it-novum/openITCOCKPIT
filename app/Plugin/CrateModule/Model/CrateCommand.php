@@ -22,39 +22,12 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
-class ListSettingsDefaults {
+class CrateCommand extends CrateModuleAppModel {
 
-    /**
-     * @var int
-     */
-    private $limit = 30;
-
-    public function __construct($limit = 30){
-        $this->limit = $limit;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultFrom(){
-        return time() - (3600 * 24 * 30);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultTo(){
-        return time() + (3600 * 24 * 30 * 2);
-    }
-
-    /**
-     * @return int
-     */
-    public function getDefaultLimit(){
-        return $this->limit;
-    }
+    public $useDbConfig = 'Crate';
+    public $useTable = 'commands';
+    public $tablePrefix = 'openitcockpit_';
 
 }

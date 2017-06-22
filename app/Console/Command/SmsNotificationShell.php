@@ -73,7 +73,6 @@ class SmsNotificationShell extends AppShell
                 $hostname = $this->getHostname($hostUuid);
                 $hoststatus = $this->Hoststatus->byUuid($hostUuid, [
                     'fields' => [
-                        'Objects.name1',
                         'Hoststatus.output',
                     ],
                 ]);
@@ -86,7 +85,7 @@ class SmsNotificationShell extends AppShell
                             escapeshellarg($this->params['contactpager']),
                             escapeshellarg($this->params['notificationtype']),
                             escapeshellarg($hostname),
-                            escapeshellarg($hoststatus[$hostUuid]['Hoststatus']['output']),
+                            escapeshellarg($hoststatus['Hoststatus']['output']),
                             escapeshellarg(date($this->config['nrpe']['date_format'])),
                             escapeshellarg($hostname),
                         ]);
@@ -105,7 +104,6 @@ class SmsNotificationShell extends AppShell
                 $servicename = $this->getServicename($serviceUuid);
                 $servicestatus = $this->Servicestatus->byUuid($serviceUuid, [
                     'fields' => [
-                        'Objects.name2',
                         'Servicestatus.output',
                     ],
                 ]);
@@ -118,7 +116,7 @@ class SmsNotificationShell extends AppShell
                             escapeshellarg($this->params['contactpager']),
                             escapeshellarg($this->params['notificationtype']),
                             escapeshellarg($hostname.'/'.$servicename),
-                            escapeshellarg($servicestatus[$serviceUuid]['Servicestatus']['output']),
+                            escapeshellarg($servicestatus['Servicestatus']['output']),
                             escapeshellarg(date($this->config['nrpe']['date_format'])),
                             escapeshellarg($hostname),
                             escapeshellarg($servicename),

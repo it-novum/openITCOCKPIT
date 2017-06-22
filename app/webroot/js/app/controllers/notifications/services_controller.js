@@ -22,21 +22,33 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.NotificationsHostNotificationController = Frontend.AppController.extend({
+App.Controllers.NotificationsServicesController = Frontend.AppController.extend({
     $table: null,
-
-    components: ['Utils'],
 
     _initialize: function () {
         var self = this;
-
-        this.Utils.flapping();
-
+        //this.showHostOrService(this.getVar('HostOrService'));
         $('.select_datatable').click(function () {
             self.fnShowHide($(this).attr('my-column'), $(this).children());
         });
 
-        $('#host_list').dataTable({
+        var highestTime = 0, highestValue, pageUrl, dataTableValue, dataTableValueParsed;
+        for (var i = 0, len = localStorage.length; i < len; ++i) {
+            pageUrl = localStorage.key(i);
+            dataTableValue = localStorage.getItem(pageUrl);
+            if (typeof dataTableValue == 'undefined' || dataTableValue == 'undefined') continue;
+            dataTableValueParsed = JSON.parse(dataTableValue);
+            if (pageUrl.indexOf('DataTables_notification_list_/notifications') !== -1) {
+                if (dataTableValueParsed.time > highestTime) {
+                    highestTime = dataTableValueParsed.time;
+                    highestValue = dataTableValue;
+                }
+            }
+        }
+
+        self.setDataTableFilter(highestValue);
+
+        $('#notification_list').dataTable({
             "bSort": false,
             "bPaginate": false,
             "bFilter": false,
@@ -68,7 +80,7 @@ App.Controllers.NotificationsHostNotificationController = Frontend.AppController
             }
         });
 
-        this.$table = $('#host_list');
+        this.$table = $('#notification_list');
 
 
         /*
@@ -80,6 +92,7 @@ App.Controllers.NotificationsHostNotificationController = Frontend.AppController
             $($this.attr('selector')).html($this.html());
             // Set selected value in hidden field, for HTLM submit
             $($this.attr('submit_target')).val($this.attr('value'));
+            //self.showHostOrService($this.attr('value'));
         });
 
         /*
@@ -114,4 +127,25 @@ App.Controllers.NotificationsHostNotificationController = Frontend.AppController
         oTable.fnSetColumnVis(iCol, bVis ? false : true);
     },
 
+    showHostOrService: function (value) {
+        // NOT IMPLEMENTED YET!
+        value = value || '';
+
+        //The user changed something in the "select box"
+        if (in_array(value, ['hostOnly', 'serviceOnly'])) {
+            if (value == 'hostOnly') {
+                $('.ServiceNotificationStateTypse').hide();
+                $('.HostNotificationStateTypse').show();
+            } else {
+                $('.HostNotificationStateTypse').hide();
+                $('.ServiceNotificationStateTypse').show();
+            }
+        }
+
+    },
+    setDataTableFilter: function (storageValue) {
+        var currentURL = window.location.href;
+        var postTextURL = currentURL.substring(currentURL.indexOf('notifications') + 13);
+        localStorage.setItem('DataTables_notification_list_/notifications' + postTextURL, storageValue);
+    }
 });

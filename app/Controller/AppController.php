@@ -132,6 +132,7 @@ class AppController extends Controller {
     public $MY_RIGHTS = [];
     public $MY_RIGHTS_LEVEL = [];
     protected $PERMISSIONS = [];
+    protected $userLimit = 25;
 
     /**
      * @var DbBackend
@@ -156,6 +157,7 @@ class AppController extends Controller {
 
         Configure::load('dbbackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->set('DbBackend', $this->DbBackend);
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
@@ -266,6 +268,7 @@ class AppController extends Controller {
             $this->Paginator->settings['limit'] = 25;
         }
 
+        $this->userLimit = (int)$this->Paginator->settings['limit'];
         $this->MY_RIGHTS = array_unique($rights);
         $this->MY_RIGHTS_LEVEL = $rights_levels;
         $this->PERMISSIONS = $permissions;
