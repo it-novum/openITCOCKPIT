@@ -2135,7 +2135,9 @@ class NagiosExportTask extends AppShell {
             }
             $timeRanges = [];
             foreach ($timeperiod['Timerange'] as $timeRange) {
-                if(!empty($satelite['Satellite']['timezone']) && !($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
+                if(empty($satelite['Satellite']['timezone']) || ($timeRange['start'] == '00:00' && $timeRange['end'] == '24:00')) {
+                    $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'].'-'.$timeRange['end'];
+                } else {
                     $remoteTimeZone = new DateTimeZone($satelite['Satellite']['timezone']);
                     $start = new DateTime($weekdays[$timeRange['day']].' '.$timeRange['start']);
                     $start = $start->setTimezone($remoteTimeZone);
@@ -2150,8 +2152,6 @@ class NagiosExportTask extends AppShell {
                         $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i').'-24:00';
                         $timeRanges[strtolower($end->format('l'))][] = '00:00-'.$end->format('H:i');
                     }
-                } else {
-                    $timeRanges[$weekdays[$timeRange['day']]][] = $timeRange['start'].'-'.$timeRange['end'];
                 }
             }
             foreach ($timeRanges as $day => $timeRange) {
