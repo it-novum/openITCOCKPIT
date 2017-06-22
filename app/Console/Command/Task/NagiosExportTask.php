@@ -2155,6 +2155,7 @@ class NagiosExportTask extends AppShell {
                 }
             }
             foreach ($timeRanges as $day => $timeRange) {
+                asort($timeRange);
                 $content .= $this->addContent($day, 1, implode(',', $timeRange));
             }
             $content .= $this->addContent('}', 0);
