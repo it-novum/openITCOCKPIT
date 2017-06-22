@@ -39,7 +39,7 @@ foreach ($this->params->named as $key => $value) {
             <?php echo __('Services'); ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>

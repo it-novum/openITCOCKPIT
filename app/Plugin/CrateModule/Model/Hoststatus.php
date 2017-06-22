@@ -100,6 +100,10 @@ class Hoststatus extends CrateModuleAppModel {
             $conditions['Host.tags rlike'] = implode('|', $values);
         }
         $query = [
+            'fields' => [
+                'Hoststatus.*',
+                'Host.*'
+            ],
             'joins' => [
                 [
                     'table' => 'openitcockpit_hosts',

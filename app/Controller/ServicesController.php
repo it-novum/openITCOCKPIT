@@ -207,7 +207,6 @@ class ServicesController extends AppController {
     ];
 
     public function index(){
-
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
         $User = new User($this->Auth);
@@ -264,6 +263,7 @@ class ServicesController extends AppController {
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            debug($all_services);
         }
 
         $this->set('all_services', $all_services);

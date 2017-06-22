@@ -24,7 +24,7 @@
 
 $config = [
     // @todo enable mysql by default!
-    'dbbackend' => 'Nagios',
-    //'dbbackend' => 'Crate',
+    //'dbbackend' => 'Nagios',
+    'dbbackend' => 'Crate',
 ];
 

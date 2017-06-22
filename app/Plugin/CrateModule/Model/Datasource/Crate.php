@@ -75,6 +75,11 @@ class Crate extends DboSource {
         'offset' => null
     );
 
+    /**
+     * @var array
+     */
+    private $fieldsInQuery = [];
+
 
     /**
      * @var array
@@ -263,12 +268,14 @@ class Crate extends DboSource {
         $this->tablePrefix = $Model->tablePrefix;
         $this->joins = $queryData['joins'];
 
+
         $this->Model = $Model;
 
         if (!isset($this->tableMetaData[$this->modelName])) {
             $this->getTableMetaInformation($this->tablePrefix . $this->tableName);
         }
 
+        $this->joinedModels = [];
         foreach ($queryData['joins'] as $join) {
             $fakeModel = new stdClass();
             $fakeModel->alias = $join['alias'];
@@ -277,7 +284,9 @@ class Crate extends DboSource {
         }
 
         if (empty($queryData['fields'])) {
-            $queryData['fields'] = ['*'];
+            $queryData['fields'] = [
+                sprintf('%s.*', $this->modelName)
+            ];
         }
 
         if (!empty($this->Model->virtualFields) && $this->findType !== 'count') {
@@ -289,10 +298,6 @@ class Crate extends DboSource {
                 );
             }
         }
-
-        //if (!empty($queryData['joins'])) {
-        //    throw new NotImplementedException('joins are not implemented now');
-        //}
 
         if (!empty($queryData['sort']) && !empty($queryData['direction'])) {
             $queryData['order'] = [
@@ -310,6 +315,39 @@ class Crate extends DboSource {
             $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix . $this->tableName, $this->modelName);
         } else {
             $queryTemplate = sprintf($queryTemplate, implode(',', $queryData['fields']), $this->tablePrefix . $this->tableName, $this->modelName);
+        }
+
+        $this->fieldsInQuery = [];
+        if ($this->findType !== 'count') {
+            $modelsInQuery = array_merge($this->joinedModels, [$this->modelName]);
+
+            foreach ($queryData['fields'] as $fieldInQuery) {
+                $fieldInQuery = trim($fieldInQuery);
+
+                foreach ($modelsInQuery as $modelInQuery) {
+                    if (strpos($fieldInQuery, $modelInQuery.'.') !== 0) {
+                        continue;
+                    }
+                    if ($fieldInQuery === sprintf('%s.*', $modelInQuery)) {
+                        //User run SELECT * FROM - add all fields
+                        foreach ($this->tableMetaData[$modelInQuery] as $column) {
+                            $this->fieldsInQuery[] = sprintf('%s.%s', $modelInQuery, $column['column_name']);
+                        }
+                    } else {
+                        $isVirtualField = false;
+                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                            if($fieldInQuery === sprintf('%s AS %s', $realField, $virtualField)){
+                                $isVirtualField = true;
+                                $this->fieldsInQuery[] = sprintf('%s.%s', $this->modelName, $virtualField);
+                            }
+                        }
+
+                        if($isVirtualField === false) {
+                            $this->fieldsInQuery[] = $fieldInQuery;
+                        }
+                    }
+                }
+            }
         }
 
         foreach ($queryData['joins'] as $join) {
@@ -787,7 +825,11 @@ class Crate extends DboSource {
      */
     public function fetchAllCrate(){
         if ($this->hasResult()) {
-            $this->_result->setFetchMode(PDO::FETCH_ASSOC);
+            if ($this->findType === 'count') {
+                $this->_result->setFetchMode(PDO::FETCH_ASSOC);
+            } else {
+                $this->_result->setFetchMode(PDO::FETCH_NUM);
+            }
             $dbResult = $this->_result->fetchAll();
 
             if ($this->findType === 'count') {
@@ -803,6 +845,14 @@ class Crate extends DboSource {
                     ]
                 ];
             }
+
+            $merge = [];
+            foreach ($dbResult as $record) {
+                $merge[] = array_combine($this->fieldsInQuery, $record);
+            }
+
+            $dbResult = $merge;
+            unset($merge);
 
             if ($this->findType === 'first' && isset($dbResult[0])) {
                 if (!empty($this->joins)) {
@@ -831,6 +881,7 @@ class Crate extends DboSource {
         $results = [];
         $fields = [];
 
+
         foreach ($this->tableMetaData[$this->modelName] as $column) {
             $fields[$this->modelName][] = $column['column_name'];
         }
@@ -841,31 +892,34 @@ class Crate extends DboSource {
             }
         }
 
-        foreach ($dbResult as $record) {
-            foreach ($record as $field => $value) {
-                $result = [];
-                foreach ($fields as $modelName => $fieldsFromModel) {
-                    $result[$modelName] = Set::classicExtract($record, '{(' . implode('|', array_values($fieldsFromModel)) . ')}');
-                }
+        foreach ($this->Model->virtualFields as $virtualField => $realField) {
+            $modelSplit = explode('.', $realField, 2);
+            $modelName = $this->modelName;
+            if (sizeof($modelSplit) == 2) {
+                $modelName = $modelSplit[0];
             }
 
-            //Check for Joind fields, with same name
-            if(!empty($this->joins)){
-                foreach ($record as $field => $value) {
-                    foreach ($this->joins as $join) {
-                        foreach ($this->tableMetaData[$join['alias']] as $column) {
-                            $ModelNameAndFieldName = sprintf('%s.%s', $join['alias'], $column['column_name']);
-                            if ($field == $ModelNameAndFieldName) {
-                                $result[$join['alias']][$column['column_name']] = $value;
-                            }
-                        }
+            $key = $modelName . '.';
+            $realColumnName = substr($realField, strlen($key));
+
+            $fields[$modelName][] = sprintf('%s AS %s', $realColumnName, $virtualField);
+        }
+
+        foreach ($dbResult as $record) {
+            $result = [];
+            foreach ($fields as $modelName => $fieldsFromModel) {
+                foreach ($fieldsFromModel as $column) {
+                    $keyInRecord = sprintf('%s.%s', $modelName, $column);
+
+                    if (isset($record[$keyInRecord])) {
+                        $result[$modelName][$column] = $record[$keyInRecord];
                     }
                 }
             }
-
-            $results[] = $result;
+            if (!empty($result)) {
+                $results[] = $result;
+            }
         }
-
 
         return $results;
     }
@@ -877,10 +931,15 @@ class Crate extends DboSource {
      */
     public function formatResultFindAll($dbResult = []){
         $result = [];
-        foreach ($dbResult as $dbRecord) {
-            $result[] = [
-                $this->modelName => $dbRecord
-            ];
+        $key = $this->modelName . '.';
+        foreach($dbResult as $i => $dbRecord){
+            $record = [];
+            foreach($dbRecord as $column => $value){
+                $realColumnName = substr($column, strlen($key));
+                $record[$this->modelName][$realColumnName] = $value;
+            }
+            unset($dbRecord[$i]);
+            $result[] = $record;
         }
         return $result;
     }
