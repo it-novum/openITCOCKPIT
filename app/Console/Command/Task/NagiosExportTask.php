@@ -2079,6 +2079,7 @@ class NagiosExportTask extends AppShell {
                 $timeranges[$timerange['day']][] = $timerange['start'] . '-' . $timerange['end'];
             }
             foreach($timeranges as $weekday => $timesArray){
+                asort($timesArray);
                 $content .= $this->addContent($weekdays[$weekday], 1, implode(',', $timesArray));
             }
 
