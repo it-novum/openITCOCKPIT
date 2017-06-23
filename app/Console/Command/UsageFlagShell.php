@@ -134,14 +134,21 @@ class UsageFlagShell extends AppShell {
 
             foreach ($elements as $moduleName => $data) {
                 foreach ($data as $modelName => $elementIds) {
-                    $this->out('<info>Save usage flags for ' . $modelName . '</info>');
+                    $this->out('<info>Save usage flags for ' . $modelName . ' in ' . $moduleName . '</info>');
                     $datasource = $this->{$modelName}->getDatasource();
                     $datasource->begin();
                     $result = [];
+
                     foreach ($elementIds as $elementId) {
                         $this->{$modelName}->id = $elementId;
-                        $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
+
+                        if($this->{$modelName}->exists($elementId)){
+                            $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
+                        }else{
+                            $this->out('<warning>'.$modelName.' with ID '.$elementId.' was not found in '.Inflector::tableize($modelName).' Table</warning>');
+                        }
                     }
+
                     //check if something could not be saved
                     if (!in_array(false, $result)) {
                         $datasource->commit();
