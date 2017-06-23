@@ -245,12 +245,37 @@ class GearmanWorkerShell extends AppShell {
                     ]);
                 }
 
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
-                $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                if($payload['satellite_id'] !== '0'){
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/dump-host/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
 
-                //Delete Check_MK autochecks
-                $this->deleteMkAutochecks();
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $output = null;
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $this->deleteMkAutochecks();
+                }
 
 
                 $return = $output;
@@ -275,7 +300,7 @@ class GearmanWorkerShell extends AppShell {
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
                     curl_setopt($ch, CURLOPT_POSTREDIR, 3);
                     $output = curl_exec($ch);
-                    debug($output);
+
                     if($output === false) {
                         echo curl_error($ch);
                     }else{
@@ -316,7 +341,7 @@ class GearmanWorkerShell extends AppShell {
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
                     curl_setopt($ch, CURLOPT_POSTREDIR, 3);
                     $output = curl_exec($ch);
-                    debug($output);
+
                     if($output === false) {
                         echo curl_error($ch);
                     }else{
@@ -327,8 +352,9 @@ class GearmanWorkerShell extends AppShell {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $output = null;
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $this->deleteMkAutochecks();
                 }
-                $this->deleteMkAutochecks();
+
                 $return = $output;
                 unset($output);
                 break;
@@ -352,7 +378,7 @@ class GearmanWorkerShell extends AppShell {
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
                     curl_setopt($ch, CURLOPT_POSTREDIR, 3);
                     $output = curl_exec($ch);
-                    debug($output);
+
                     if($output === false) {
                         echo curl_error($ch);
                     }else{
