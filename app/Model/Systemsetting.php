@@ -105,4 +105,19 @@ class Systemsetting extends AppModel
         }
         return $return;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getMasterInstanceName(){
+        return $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQueryHandlerPath(){
+        return $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+    }
+
 }

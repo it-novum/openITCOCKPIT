@@ -22,24 +22,39 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $AcknowledgementListsettings])]); ?>
+
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+
+$Service = new Service($service);
+$Host = new Host($service);
+if (!isset($servicestatus['Servicestatus'])):
+    $servicestatus['Servicestatus'] = [];
+endif;
+$Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $AcknowledgementListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $this->Status->ServiceStatusColor($service['Service']['uuid']); ?>">
-            <?php echo $this->Monitoring->serviceFlappingIcon($this->Status->sget($service['Service']['uuid'], 'is_flapping'), 'padding-left-5'); ?>
+        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+            <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
-            <?php
-            if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-                echo h($service['Service']['name']);
-            } else {
-                echo h($service['Servicetemplate']['name']);
-            }
-            ?><span>
-				&nbsp;<?php echo __('on'); ?>&nbsp;
-				<a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo h($service['Host']['name']); ?>
-                    (<?php echo h($service['Host']['address']); ?>)</a>
-			</span>
+            <?php echo h($Service->getServicename()); ?>
+            <span>
+                &nbsp;<?php echo __('on'); ?>
+                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
+                    <a href="<?php echo Router::url([
+                        'controller' => 'hosts',
+                        'action' => 'browser',
+                        $Service->getHostId()
+                    ]); ?>">
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                </a>
+                <?php else: ?>
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                <?php endif; ?>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">

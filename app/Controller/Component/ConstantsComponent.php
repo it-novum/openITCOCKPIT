@@ -33,11 +33,14 @@ class ConstantsComponent extends Component {
             define('ROOT_CONTAINER', 1);
         }
 
+        Configure::load('dbbackend');
+
         //core array
         $this->defines = [];
 
         //Monitoring Objects
-        $monitoring = 'Nagios';
+        $monitoring = Configure::read('dbbackend');
+
         $this->defines['monitoring'] = [
             //Models
             'MONITORING_HOSTSTATUS' => $monitoring . 'Module.Hoststatus',
@@ -48,10 +51,15 @@ class ConstantsComponent extends Component {
             'MONITORING_LOGENTRY' => $monitoring . 'Module.Logentry',
             'MONITORING_NAGIOSTAT' => $monitoring . 'Module.Nagiostat',
             'MONITORING_NOTIFICATION' => $monitoring . 'Module.Notification',
+            'MONITORING_NOTIFICATION_HOST' => $monitoring . 'Module.NotificationHost',
+            'MONITORING_NOTIFICATION_SERVICE' => $monitoring . 'Module.NotificationService',
             'MONITORING_SERVICECHECK' => $monitoring . 'Module.Servicecheck',
+            'MONITORING_STATEHISTORY_HOST' => $monitoring . 'Module.StatehistoryHost',
+            'MONITORING_STATEHISTORY_SERVICE' => $monitoring . 'Module.StatehistoryService',
             'MONITORING_STATEHISTORY' => $monitoring . 'Module.Statehistory',
             'MONITORING_HOSTCHECK' => $monitoring . 'Module.Hostcheck',
             'MONITORING_ACKNOWLEDGED' => $monitoring . 'Module.Acknowledged',
+            'MONITORING_ACKNOWLEDGED_HOST' => $monitoring . 'Module.AcknowledgedHost',
             'MONITORING_CONTACTNOTIFICATION' => $monitoring . 'Module.Contactnotification',
             'MONITORING_CONTACTNOTIFICATIONMETHOD' => $monitoring . 'Module.Contactnotificationmethod',
             'MONITORING_PARENTHOST' => $monitoring . 'Module.Parenthost',

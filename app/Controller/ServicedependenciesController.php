@@ -107,10 +107,6 @@ class ServicedependenciesController extends AppController
 
         $this->set('all_servicedependencies', $all_servicedependencies);
         $this->set('_serialize', ['all_servicedependencies']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)

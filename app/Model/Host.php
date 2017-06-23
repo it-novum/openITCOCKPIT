@@ -24,6 +24,7 @@
 //	confirmation.
 
 App::uses('ValidationCollection', 'Lib');
+use itnovum\openITCOCKPIT\Core\HostConditions;
 
 /**
  * @property ParentHost $ParentHost
@@ -1254,4 +1255,149 @@ class Host extends AppModel {
             return false;
         }
     }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+                'Host.tags',
+
+                'Hoststatus.current_state',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.last_hard_state_change',
+                'Hoststatus.output',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.state_type',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.acknowledgement_type',
+
+
+                'Hoststatus.current_state',
+            ],
+            'order' => $HostConditions->getOrder(),
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'INNER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ], [
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ], [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        return $query;
+    }
+
+    public function virtualFieldsForIndex(){
+        $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+
+            ],
+            'order' => $HostConditions->getOrder(),
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+        $query['conditions'][] = 'HostObject.name1 IS NULL';
+
+        return $query;
+    }
+
 }

@@ -1,0 +1,17 @@
+CRATE PDO Adapter
+Copyright 2014-2015 CRATE Technology GmbH ("Crate")
+
+Third party dependencies:
+
+=========================================================================
+
+Copyright (2014) by Roave, LLC (http://www.roave.com)
+Special thanks go to Roave for helping to write the main parts of this project.
+
+========================================================================
+
+Artax
+https://github.com/rdlowrey/Artax
+Copyright (c) 2013 Daniel Lowrey, Levi Morrison
+License: MIT (http://opensource.org/licenses/MIT)
+

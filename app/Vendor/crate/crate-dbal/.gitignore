@@ -1,0 +1,11 @@
+vendor
+build
+report
+composer.lock
+composer.phar
+.idea
+.project
+.vagrant
+docs/out
+docs/bin
+docs/.installed.cfg
