@@ -525,10 +525,8 @@ class HosttemplatesController extends AppController {
     }
 
     public function add($hosttemplatetype_id = null) {
-        //Load Systemsettings
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
-        $active_checks_enabled = $this->_systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
+        $systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
 
         //Empty variables, get fild if Model::save() fails for refill
         $_timeperiods = [];

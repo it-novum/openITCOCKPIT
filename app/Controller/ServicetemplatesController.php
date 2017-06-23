@@ -628,14 +628,11 @@ class ServicetemplatesController extends AppController
 
     public function add($servicetemplatetype_id = null)
     {
-        //Load Systemsettings
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $active_checks_enabled = false;
         //If servicetemplate != checkMK servicetemplate
-        if(!(isset($this->request->params['named']['_controller']))){
-            $active_checks_enabled = $this->_systemsettings['MONITORING']['MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT'];
-        }else{
-            $active_checks_enabled = false;
+        if($servicetemplatetype_id == GENERIC_SERVICE || $servicetemplatetype_id === null){
+            $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT'];
         }
 
         $_timeperiods = [];
