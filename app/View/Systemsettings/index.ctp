@@ -136,6 +136,8 @@
 
                                                             case 'FRONTEND.LDAP.USE_TLS':
                                                             case 'MONITORING.SINGLE_INSTANCE_SYNC':
+                                                            case 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT':
+                                                            case 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT':
                                                                 $options = [
                                                                     0 => 'False',
                                                                     1 => 'True',

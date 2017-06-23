@@ -219,7 +219,7 @@ $notification_settings = [
                                     'wrapGridClass'    => 'col col-md-1',
                                     'captionGridClass' => 'col col-md-2 no-padding',
                                     'captionClass'     => 'control-label text-left no-padding',
-                                    'checked'          => $this->CustomValidationErrors->refill('active_checks_enabled', false),
+                                    'checked'          => $this->CustomValidationErrors->refill('active_checks_enabled', $active_checks_enabled),
                                     'icon'             => '<i class="fa fa-sign-in"></i> ',
                                 ]); ?>
                             </div>

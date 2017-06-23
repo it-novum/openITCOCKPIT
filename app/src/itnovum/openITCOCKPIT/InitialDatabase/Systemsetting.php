@@ -333,6 +333,22 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT',
+                    'value'    => '1',
+                    'info'     => 'If enabled, new host templates will have active_checks enabled by default',
+                    'section'  => 'MONITORING',
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT',
+                    'value'    => '1',
+                    'info'     => 'If enabled, new service templates will have active_checks enabled by default',
+                    'section'  => 'MONITORING',
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'CRONJOB.RECURRING_DOWNTIME',
                     'value'    => '10',
                     'info'     => 'Time in minutes the cron will check for recurring downtimes',
