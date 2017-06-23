@@ -827,10 +827,11 @@ class DashboardsController extends AppController
                     ]);
                     if ($widget['DashboardTab']['user_id'] == $userId) {
                         foreach ($settings as $dbField => $value) {
-                            if ($value !== '' && $value !== null && isset($widget[$contain][$dbField])) {
+                            if ($value !== null && isset($widget[$contain][$dbField])) {
                                 $widget[$contain][$dbField] = $value;
                             }
                         }
+                        debug($widget);
                         $this->Widget->saveAll($widget);
                         $this->DashboardTab->id = $widget['DashboardTab']['id'];
                         $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));

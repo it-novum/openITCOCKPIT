@@ -63,7 +63,7 @@ $widgetData = $WidgetServiceStatusList[$widget['Widget']['id']];
             </div>
             <div class="col-xs-6 text-right">
 				<span class="listSettings">
-                    <input type="hidden" value="<?= $widgetData['Widget']['WidgetServiceStatusList ']['show_filter_search'] ?>" id="filter-search-<?= $widget['Widget']['id'] ?>">
+                    <input type="hidden" value="<?= $widgetData['Widget']['WidgetServiceStatusList']['show_filter_search'] ?>" id="filter-search-<?= $widget['Widget']['id'] ?>">
 					<?php
                     $stateSettings = [
                         'show_ok'           => [
