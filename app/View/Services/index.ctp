@@ -307,7 +307,7 @@ foreach ($this->params->named as $key => $value) {
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser')): ?>
                                                 <a href="<?php echo Router::url([
-                                                    'controller' => 'servies',
+                                                    'controller' => 'services',
                                                     'action' => 'browser',
                                                     $Service->getId()]); ?>">
                                                     <?php echo h($Service->getServicename()); ?>
@@ -319,7 +319,7 @@ foreach ($this->params->named as $key => $value) {
                                         <td
                                                 data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                 data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format($Servicestatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
                                         <td>

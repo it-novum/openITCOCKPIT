@@ -388,7 +388,7 @@ $this->Paginator->url($this->params['url']); ?>
                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                     data-placement="bottom" rel="tooltip" data-container="body">
                                                     <?php echo h($this->Utils->secondsInHumanShort(
-                                                        time() - strtotime($Servicestatus->getLastStateChange()))
+                                                        time() - $Servicestatus->getLastStateChange())
                                                     ); ?>
                                                 </td>
                                                 <td>

@@ -142,6 +142,7 @@ class Servicestatus extends CrateModuleAppModel {
                 'Servicestatus.last_check',
                 'Servicestatus.next_check',
                 'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
                 'Servicestatus.output',
                 'Servicestatus.scheduled_downtime_depth',
                 'Servicestatus.active_checks_enabled',

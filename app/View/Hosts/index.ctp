@@ -228,8 +228,8 @@ foreach ($this->params->named as $key => $value) {
                                     </th>
                                     <th class="no-sort tableStatewidth">
                                         <?php
-                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_hard_state_change');
-                                        echo $this->Paginator->sort('Hoststatus.last_hard_state_change', __('State since'));
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_state_change');
+                                        echo $this->Paginator->sort('Hoststatus.last_state_change', __('State since'));
                                         ?>
                                     </th>
                                     <th class="no-sort tableStatewidth">
@@ -372,9 +372,9 @@ foreach ($this->params->named as $key => $value) {
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo h($Host->getAddress()); ?></td>
-                                        <td data-original-title="<?php echo h($this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                        <td data-original-title="<?php echo h($this->Time->format($Hoststatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                             data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Hoststatus->getLastHardStateChange()))); ?>
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
                                         <td><?php echo h($Hoststatus->getOutput()); ?></td>

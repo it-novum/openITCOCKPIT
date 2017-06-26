@@ -278,18 +278,30 @@ class Hoststatus {
     }
 
     public function getLastHardStateChange(){
+        if(!is_numeric($this->lastHardStateChange)){
+            return strtotime($this->lastHardStateChange);
+        }
         return $this->lastHardStateChange;
     }
 
     public function getLastStateChange(){
+        if(!is_numeric($this->last_state_change)){
+            return strtotime($this->last_state_change);
+        }
         return $this->last_state_change;
     }
 
     public function getLastCheck(){
+        if(!is_numeric($this->lastCheck)){
+            return strtotime($this->lastCheck);
+        }
         return $this->lastCheck;
     }
 
     public function getNextCheck(){
+        if(!is_numeric($this->nextCheck)){
+            return strtotime($this->nextCheck);
+        }
         return $this->nextCheck;
     }
 
