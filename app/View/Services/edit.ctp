@@ -348,12 +348,10 @@ $notification_settings = [
                                 <?php
                                 $contactOptions = [
                                     'selected' => array_keys($ContactsInherited['Contact']),
-                                    'disabled' => true,
                                 ];
 
                                 $contactGroupOptions = [
                                     'selected' => array_keys($ContactsInherited['Contactgroup']),
-                                    'disabled' => true,
                                 ];
                                 ?>
                             <?php endif; ?>
