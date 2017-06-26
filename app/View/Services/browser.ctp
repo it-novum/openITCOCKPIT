@@ -246,7 +246,20 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <?php echo $Servicestatus->compareHostFlapDetectionWithMonitoring($service['Service']['flap_detection_enabled'])['html']; ?>
                                     </td>
                                 </tr>
-
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($service['Service']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $service['Service']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if (!$Servicestatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td>
