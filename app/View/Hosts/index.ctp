@@ -301,7 +301,7 @@ foreach ($this->params->named as $key => $value) {
                                         </td>
 
                                         <td class="text-center">
-                                            <?php if ($Hoststatus->isAacknowledged()): ?>
+                                            <?php if ($Hoststatus->isAcknowledged()): ?>
                                                 <?php if ($Hoststatus->getAcknowledgementType() == 1): ?>
                                                     <i class="fa fa-user fa-lg "
                                                        title="<?php echo __('Acknowledgedment'); ?>"></i>

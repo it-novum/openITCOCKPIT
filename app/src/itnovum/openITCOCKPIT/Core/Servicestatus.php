@@ -276,7 +276,7 @@ class Servicestatus {
         return $this->currentState;
     }
 
-    public function isAacknowledged(){
+    public function isAcknowledged(){
         return (bool)$this->problemHasBeenAcknowledged;
     }
 

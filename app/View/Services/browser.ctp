@@ -147,7 +147,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             </p>
 
                             <?php
-                            if ($Servicestatus->isAacknowledged() && !empty($acknowledged)):
+                            if ($Servicestatus->isAcknowledged() && !empty($acknowledged)):
                                 $AcknowledgementService = new AcknowledgementService($acknowledged['AcknowledgedService']);
                                 ?>
                                 <p>

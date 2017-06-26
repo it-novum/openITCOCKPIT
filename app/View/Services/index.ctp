@@ -262,7 +262,7 @@ foreach ($this->params->named as $key => $value) {
                                         </td>
 
                                         <td class="text-center">
-                                            <?php if ($Servicestatus->isAacknowledged()): ?>
+                                            <?php if ($Servicestatus->isAcknowledged()): ?>
                                                 <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
                                                     <i class="fa fa-user fa-lg "
                                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
