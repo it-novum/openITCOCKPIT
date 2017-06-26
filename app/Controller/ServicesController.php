@@ -254,6 +254,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->DbBackend->isCrateDb()) {
+            $this->Servicestatus->virtualFieldsForIndex();
             $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
             $modelName = 'Servicestatus';
         }
@@ -263,7 +264,6 @@ class ServicesController extends AppController {
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-            debug($all_services);
         }
 
         $this->set('all_services', $all_services);
@@ -631,7 +631,6 @@ class ServicesController extends AppController {
         if (!empty($this->request->params['pass'])) {
             $hostId = $this->request->params['pass'][0];
         }
-        //debug($hostId);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -945,9 +944,7 @@ class ServicesController extends AppController {
                 'Service.id',
             ],
         ]);
-        //debug($serviceContactsAndContactgroups);
         $ContactsInherited = $this->__inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups);
-        //debug($ContactsInherited);
         $this->Frontend->setJson('ContactsInherited', $ContactsInherited);
 
         $this->set(compact(

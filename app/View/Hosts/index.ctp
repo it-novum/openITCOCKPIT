@@ -402,8 +402,8 @@ foreach ($this->params->named as $key => $value) {
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $Host->getId()]); ?> "
-                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            <a href="<?php echo Router::url(['action' => 'edit', $Host->getId()]); ?> ">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
@@ -666,9 +666,9 @@ foreach ($this->params->named as $key => $value) {
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -709,9 +709,9 @@ foreach ($this->params->named as $key => $value) {
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">

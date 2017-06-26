@@ -325,7 +325,7 @@ class Crate extends DboSource {
                 $fieldInQuery = trim($fieldInQuery);
 
                 foreach ($modelsInQuery as $modelInQuery) {
-                    if (strpos($fieldInQuery, $modelInQuery.'.') !== 0) {
+                    if (strpos($fieldInQuery, $modelInQuery . '.') !== 0) {
                         continue;
                     }
                     if ($fieldInQuery === sprintf('%s.*', $modelInQuery)) {
@@ -335,14 +335,14 @@ class Crate extends DboSource {
                         }
                     } else {
                         $isVirtualField = false;
-                        foreach($this->Model->virtualFields as $virtualField => $realField){
-                            if($fieldInQuery === sprintf('%s AS %s', $realField, $virtualField)){
+                        foreach ($this->Model->virtualFields as $virtualField => $realField) {
+                            if ($fieldInQuery === sprintf('%s AS %s', $realField, $virtualField)) {
                                 $isVirtualField = true;
                                 $this->fieldsInQuery[] = sprintf('%s.%s', $this->modelName, $virtualField);
                             }
                         }
 
-                        if($isVirtualField === false) {
+                        if ($isVirtualField === false) {
                             $this->fieldsInQuery[] = $fieldInQuery;
                         }
                     }
@@ -368,7 +368,14 @@ class Crate extends DboSource {
             foreach ($queryData['conditions'] as $column => $condition) {
                 $result = $this->_parseKey($column, $condition, $this->Model);
                 $column = $result['key'];
-                if ($this->columnExists($column)) {
+
+                $isVirtualField = false;
+                if($this->isVirtualField($column)){
+                    $isVirtualField = true;
+                    $column = sprintf('%s%s%s', $this->startQuote, $column, $this->endQuote);
+                }
+
+                if ($this->columnExists($column) || $isVirtualField === true) {
                     if ($i === 1) {
                         if (is_array($result['value'])) {
                             $placeholders = [];
@@ -376,14 +383,14 @@ class Crate extends DboSource {
                                 $placeholders[] = '?';
                             }
                             $hasWhere = true;
-                            $queryTemplate = sprintf('%s WHERE %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
+                            $queryTemplate = sprintf('%s WHERE %s %s (%s)', $queryTemplate, $column, $result['operator'], implode(', ', $placeholders));
                         } else {
                             $hasWhere = true;
 
                             if ($result['value'] !== null) {
-                                $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                                $queryTemplate = sprintf('%s WHERE %s %s ?', $queryTemplate, $column, $result['operator']);
                             } else {
-                                $queryTemplate = sprintf('%s WHERE %s %s', $queryTemplate, $result['key'], $result['operator']);
+                                $queryTemplate = sprintf('%s WHERE %s %s', $queryTemplate, $column, $result['operator']);
                             }
                         }
                     } else {
@@ -392,12 +399,12 @@ class Crate extends DboSource {
                             foreach ($result['value'] as $value) {
                                 $placeholders[] = '?';
                             }
-                            $queryTemplate = sprintf('%s AND %s %s (%s)', $queryTemplate, $result['key'], $result['operator'], implode(', ', $placeholders));
+                            $queryTemplate = sprintf('%s AND %s %s (%s)', $queryTemplate, $column, $result['operator'], implode(', ', $placeholders));
                         } else {
                             if ($result['value'] !== null) {
-                                $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $result['key'], $result['operator']);
+                                $queryTemplate = sprintf('%s AND %s %s ?', $queryTemplate, $column, $result['operator']);
                             } else {
-                                $queryTemplate = sprintf('%s AND %s %s', $queryTemplate, $result['key'], $result['operator']);
+                                $queryTemplate = sprintf('%s AND %s %s', $queryTemplate, $column, $result['operator']);
                             }
                         }
                     }
@@ -442,11 +449,17 @@ class Crate extends DboSource {
                     $column = $this->removeModelAlias($column);
                 }
 
-
                 if ($this->columnExists($column)) {
                     $direction = $this->getDirection($direction);
                     $orderBy[] = sprintf('%s %s', $column, $direction);
                 }
+
+                if($this->isVirtualField($column)){
+                    $column = sprintf('%s%s%s', $this->startQuote, $column, $this->endQuote);
+                    $direction = $this->getDirection($direction);
+                    $orderBy[] = sprintf('%s %s', $column, $direction);
+                }
+
             }
 
             if (!empty($orderBy)) {
@@ -470,11 +483,22 @@ class Crate extends DboSource {
             foreach ($queryData['conditions'] as $column => $condition) {
                 $result = $this->_parseKey($column, $condition, $this->Model);
                 $column = $result['key'];
-                if ($this->columnExists($column)) {
+
+                $isVirtualField = false;
+                if($this->isVirtualField($column)){
+                    $isVirtualField = true;
+                }
+
+                if ($this->columnExists($column) || $isVirtualField === true) {
                     if (is_array($result['value'])) {
                         foreach ($result['value'] as $value) {
-                            $query->bindValue($i++, $value);
-                            $attachedParameters[] = $value;
+                            if (is_bool($value)) {
+                                $query->bindValue($i++, $value, PDO::PARAM_BOOL);
+                                $attachedParameters[] = $value ? 'true' : 'false';
+                            } else {
+                                $query->bindValue($i++, $value);
+                                $attachedParameters[] = $value;
+                            }
                         }
                     } elseif (is_bool($result['value'])) {
                         $query->bindValue($i++, $result['value'], PDO::PARAM_BOOL);
@@ -588,6 +612,20 @@ class Crate extends DboSource {
      * @return bool
      */
     public function isVirtualField($columnName){
+        if (isset($this->Model->virtualFields[$columnName])) {
+            return true;
+        }
+
+        $columnNameQuoted = sprintf('%s%s%s',
+            $this->startQuote,
+            $columnName,
+            $this->endQuote
+        );
+        if (isset($this->Model->virtualFields[$columnNameQuoted])) {
+            return true;
+        }
+
+
         $key = $this->modelName . '.';
         if (strpos($columnName, $key, 0) === 0) {
             $columnName = substr($columnName, strlen($key));
@@ -810,7 +848,6 @@ class Crate extends DboSource {
         $t = microtime(true);
         $this->_result = $this->__execute($query, $sql);
 
-
         if ($options['log']) {
             $this->took = round((microtime(true) - $t) * 1000, 0);
             $this->numRows = $this->affected = $this->lastAffected();
@@ -831,7 +868,6 @@ class Crate extends DboSource {
                 $this->_result->setFetchMode(PDO::FETCH_NUM);
             }
             $dbResult = $this->_result->fetchAll();
-
             if ($this->findType === 'count') {
                 $count = 0;
                 if (isset($dbResult[0]['count'])) {
@@ -932,9 +968,9 @@ class Crate extends DboSource {
     public function formatResultFindAll($dbResult = []){
         $result = [];
         $key = $this->modelName . '.';
-        foreach($dbResult as $i => $dbRecord){
+        foreach ($dbResult as $i => $dbRecord) {
             $record = [];
-            foreach($dbRecord as $column => $value){
+            foreach ($dbRecord as $column => $value) {
                 $realColumnName = substr($column, strlen($key));
                 $record[$this->modelName][$realColumnName] = $value;
             }

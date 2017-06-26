@@ -99,6 +99,15 @@ class Hoststatus extends CrateModuleAppModel {
             unset($conditions['Host.keywords rlike']);
             $conditions['Host.tags rlike'] = implode('|', $values);
         }
+
+        if(isset($conditions['Hoststatus.problem_has_been_acknowledged'])){
+            $acknowledgedCondition = [];
+            foreach($conditions['Hoststatus.problem_has_been_acknowledged'] as $condition){
+                $acknowledgedCondition[] = (bool)$condition;
+            }
+            $conditions['Hoststatus.problem_has_been_acknowledged'] = $acknowledgedCondition;
+        }
+
         $query = [
             'fields' => [
                 'Hoststatus.*',

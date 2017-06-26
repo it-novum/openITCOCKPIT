@@ -1214,7 +1214,6 @@ class Service extends AppModel {
     }
 
     public function virtualFieldsForIndex(){
-        $this->virtualFields['servicestatus'] = 'Servicestatus.current_state';
         $this->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
         $this->virtualFields['last_check'] = 'Servicestatus.last_check';
         $this->virtualFields['next_check'] = 'Servicestatus.next_check';

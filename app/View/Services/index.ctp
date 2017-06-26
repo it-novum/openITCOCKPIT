@@ -22,13 +22,19 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+
 $this->Paginator->options(['url' => $this->params['named']]);
 $filter = "/";
 foreach ($this->params->named as $key => $value) {
     if (!is_array($value)) {
-        $filter .= $key.":".$value."/";
+        $filter .= $key . ":" . $value . "/";
     }
 }
 ?>
@@ -71,7 +77,7 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Need a space for html
                         endif;
                         echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
@@ -113,121 +119,151 @@ foreach ($this->params->named as $key => $value) {
                     <div class="widget-body no-padding">
                         <?php
                         $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
+                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
-                            <table id="service_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="service_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
-                                    <th colspan="2"
-                                        class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
-                                        echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
-                                    <th class="no-sort text-center"><i class="fa fa-user fa-lg"
-                                                                       title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                    <th colspan="2" class="select_datatable no-sort">
+                                        <?php echo $this->Utils->getDirection($order, 'Servicestatus.current_state');
+                                        echo $this->Paginator->sort('Servicestatus.current_state', 'Servicestatus'); ?>
                                     </th>
-                                    <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"
-                                                                       title="<?php echo __('in Downtime'); ?>"></i>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-user fa-lg" title="<?php echo __('Acknowledgedment'); ?>"></i>
                                     </th>
-                                    <th class="no-sort text-center"><i class="fa fa fa-area-chart fa-lg"
-                                                                       title="<?php echo __('Grapher'); ?>"></i></th>
-                                    <th class="no-sort text-center"><strong
-                                                title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-power-off fa-lg" title="<?php echo __('in Downtime'); ?>"></i>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                     </th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicename');
                                         echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?></th>
-                                    <th class="no-sort tableStatewidth" title="<?php echo __('Hardstate'); ?>"><?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change');
-                                        echo $this->Paginator->sort('Service.last_hard_state_change', __('Last state change')); ?></th>
-                                    <th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.last_check');
-                                        echo $this->Paginator->sort('Service.last_check', __('Last check')); ?></th>
-                                    <th class="no-sort tableStatewidth"><?php echo $this->Utils->getDirection($order, 'Service.next_check');
-                                        echo $this->Paginator->sort('Service.next_check', __('Next check')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Service.output');
-                                        echo $this->Paginator->sort('Service.output', __('Service output')); ?></th>
-                                    <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
+                                    <th class="no-sort tableStatewidth" title="<?php echo __('Hardstate'); ?>">
+                                        <?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change');
+                                        echo $this->Paginator->sort('Service.last_hard_state_change', __('Last state change')); ?>
+                                    </th>
+                                    <th class="no-sort tableStatewidth">
+                                        <?php echo $this->Utils->getDirection($order, 'Service.last_check');
+                                        echo $this->Paginator->sort('Service.last_check', __('Last check')); ?>
+                                    </th>
+                                    <th class="no-sort tableStatewidth">
+                                        <?php echo $this->Utils->getDirection($order, 'Service.next_check');
+                                        echo $this->Paginator->sort('Service.next_check', __('Next check')); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo $this->Utils->getDirection($order, 'Service.output');
+                                        echo $this->Paginator->sort('Service.output', __('Service output')); ?>
+                                    </th>
+                                    <th class="no-sort text-center editItemWidth">
+                                        <i class="fa fa-gear fa-lg"></i>
+                                        </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php $tmp_host_name = null; ?>
-                                <?php foreach ($all_services as $service): ?>
-                                    <?php
+                                <?php
+                                $tmp_host_name = null;
+                                foreach ($all_services as $service):
+                                    $Service = new Service($service);
+                                    $Host = new Host($service);
+                                    $Servicestatus = new Servicestatus($service['Servicestatus']);
+
                                     $allowEdit = false;
                                     if ($hasRootPrivileges === true):
                                         $allowEdit = true;
                                     else:
-                                        if (isset($hostContainers[$service['Host']['id']])):
-                                            if ($this->Acl->isWritableContainer($hostContainers[$service['Host']['id']])):
+                                        if (isset($hostContainers[$Host->getId()])):
+                                            if ($this->Acl->isWritableContainer($hostContainers[$Host->getId()])):
                                                 $allowEdit = true;
                                             endif;
                                         endif;
                                     endif;
 
 
-                                    if ($tmp_host_name != $service['Host']['name']):
-                                        $tmp_host_name = $service['Host']['name'];
+                                    if ($tmp_host_name != $Host->getHostname()):
+                                        $tmp_host_name = $Host->getHostname();
                                         ?>
                                         <tr>
                                             <td class="bg-color-lightGray" colspan="13">
                                                 <?php
                                                 $href = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser', 'hosts')):
-                                                    $href = '/hosts/browser/'.$service['Host']['id'];
+                                                    $href = Router::url([
+                                                        'controller' => 'hosts',
+                                                        'action' => 'browser',
+                                                        $Host->getId()
+                                                    ]);
                                                 endif;
-                                                echo $this->Status->humanHostStatus($service['Host']['uuid'], $href, [$service['Host']['uuid'] => ['Hoststatus' => ['current_state' => $service['Hoststatus']['current_state']]]])['html_icon'];
-                                                ?>
-                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                $Hoststatus = new Hoststatus($service['Hoststatus']);
+                                                $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState(), $href);
+
+                                                echo $HoststatusIcon->getHtmlIcon();
+                                                if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a class="padding-left-5 txt-color-blueDark"
-                                                       href="<?php echo $href; ?>"><?php echo h($service['Host']['name']); ?>
-                                                        (<?php echo h($service['Host']['address']); ?>)</a>
+                                                       href="<?php echo $href; ?>">
+                                                        <?php printf(
+                                                            '%s (%s)',
+                                                            h($Host->getHostname()),
+                                                            h($Host->getAddress())); ?>
+                                                    </a>
                                                 <?php else: ?>
-                                                    <?php echo h($service['Host']['name']); ?>
+                                                    <?php echo h($Host->getHostname()); ?>
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                 <a class="pull-right txt-color-blueDark"
-                                                   href="/services/serviceList/<?php echo $service['Host']['id']; ?>"><i
-                                                            class="fa fa-list"
-                                                            title="<?php echo __('Go to Service list'); ?>"></i>
+                                                   href="<?php echo Router::url([
+                                                       'controller' => 'services',
+                                                       'action' => 'serviceList',
+                                                       $Host->getId()
+                                                   ]); ?>
+                                                   ">
+                                                    <i class="fa fa-list"
+                                                       title=" <?php echo __('Go to Service list'); ?>"></i>
                                                     <?php endif; ?>
                                             </td>
                                         </tr>
 
                                     <?php endif; ?>
                                     <tr>
-
-                                        <?php
-                                        if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
-                                            $serviceName = $service['Service']['name'];
-                                        else:
-                                            $serviceName = $service['Servicetemplate']['name'];
-                                        endif;
-                                        ?>
-
                                         <td class="text-center width-5">
                                             <?php if ($allowEdit): ?>
                                                 <input type="checkbox" class="massChange"
-                                                       servicename="<?php echo h($serviceName); ?>"
-                                                       value="<?php echo $service['Service']['id']; ?>"
-                                                       uuid="<?php echo $service['Service']['uuid']; ?>"
-                                                       host-uuid="<?php echo $service['Host']['uuid']; ?>">
+                                                       servicename="<?php echo h($Service->getServicename()); ?>"
+                                                       value="<?php echo $Service->getId(); ?>"
+                                                       uuid="<?php echo $Service->getUuid(); ?>"
+                                                       host-uuid="<?php echo $Host->getUuid(); ?>">
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
                                             <?php
-                                            if ($service['Servicestatus']['is_flapping'] == 1):
-                                                echo $this->Monitoring->serviceFlappingIconColored($service['Servicestatus']['is_flapping'], '', $service['Servicestatus']['current_state']);
+                                            if ($Servicestatus->isFlapping()):
+                                                echo $Servicestatus->getServiceFlappingIconColored();
                                             else:
                                                 $serviceHref = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser')):
-                                                    $serviceHref = '/services/browser/'.$service['Service']['id'];
+                                                    $serviceHref = Router::url([
+                                                        'controller' => 'services',
+                                                        'action' => 'browser',
+                                                        $Service->getId()
+                                                    ]);
                                                 endif;
-                                                echo $this->Status->humanServiceStatus($service['Service']['uuid'], $serviceHref, [$service['Service']['uuid'] => ['Servicestatus' => ['current_state' => $service['Servicestatus']['current_state']]]])['html_icon'];
+                                                $ServicestatusIcon = new ServicestatusIcon(
+                                                    $Servicestatus->currentState(), $serviceHref
+                                                );
+                                                echo $ServicestatusIcon->getHtmlIcon();
                                             endif;
                                             ?>
                                         </td>
 
                                         <td class="text-center">
-                                            <?php if ($this->Monitoring->checkForAck($service['Servicestatus']['problem_has_been_acknowledged'])): ?>
-                                                <?php if ($service['Servicestatus']['acknowledgement_type'] == 1): ?>
+                                            <?php if ($Servicestatus->isAacknowledged()): ?>
+                                                <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
                                                     <i class="fa fa-user fa-lg "
                                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                 <?php else: ?>
@@ -237,65 +273,78 @@ foreach ($this->params->named as $key => $value) {
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
-                                            <?php if ($this->Monitoring->checkForDowntime($service['Servicestatus']['scheduled_downtime_depth'])): ?>
+                                            <?php if ($Servicestatus->isInDowntime()): ?>
                                                 <i class="fa fa-power-off fa-lg "></i>
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
-                                            <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
+                                            <?php if ($this->Monitoring->checkForServiceGraph($Host->getUuid(), $Service->getUuid())): ?>
                                                 <?php
                                                 $graphHref = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser')):
-                                                    $graphHref = '/services/grapherSwitch/'.$service['Service']['id'];
+                                                    $graphHref = Router::url([
+                                                        'controller' => 'services',
+                                                        'action' => 'grapherSwitch',
+                                                        $Service->getId()
+                                                    ]);
                                                 endif;
                                                 ?>
-                                                <a class="txt-color-blueDark" href="<?php echo $graphHref; ?>"><i
+                                                <a class="txt-color-blueDark" href="<?php echo $graphHref; ?>">
+                                                    <i
                                                             class="fa fa-area-chart fa-lg popupGraph"
-                                                            host-uuid="<?php echo $service['Host']['uuid']; ?>"
-                                                            service-uuid="<?php echo $service['Service']['uuid']; ?>"></i></a>
+                                                            host-uuid="<?php echo $Host->getUuid(); ?>"
+                                                            service-uuid="<?php echo $Service->getUuid(); ?>"></i>
+                                                </a>
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
-                                            <?php if (($service['Servicestatus']['active_checks_enabled'] == 0 && $service['Servicestatus']['active_checks_enabled'] !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                            <?php if ($Service->isActiveChecksEnabled() === false || $Host->isSatelliteHost()): ?>
                                                 <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                             <?php endif; ?>
                                         </td>
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser')): ?>
-                                                <a href="/services/browser/<?php echo $service['Service']['id']; ?>">
-                                                    <?php echo h($serviceName); ?>
+                                                <a href="<?php echo Router::url([
+                                                    'controller' => 'servies',
+                                                    'action' => 'browser',
+                                                    $Service->getId()]); ?>">
+                                                    <?php echo h($Service->getServicename()); ?>
                                                 </a>
                                             <?php else: ?>
-                                                <?php echo h($serviceName); ?>
+                                                <?php echo h($Service->getServicename()); ?>
                                             <?php endif; ?>
                                         </td>
-                                        <td data-original-title="<?php echo h($this->Time->format($service['Servicestatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
-                                            data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($service['Servicestatus']['last_hard_state_change']))); ?>
+                                        <td
+                                                data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                                data-placement="bottom" rel="tooltip" data-container="body">
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
                                         </td>
-                                        <td><?php echo h($this->Time->format($service['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
+                                        <td><?php echo h($this->Time->format($Servicestatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
                                         <td>
                                             <?php
-                                            if ($service['Service']['active_checks_enabled'] == 1 || $service['Service']['active_checks_enabled'] === null || $service['Service']['active_checks_enabled']):
-                                                if ($service['Servicetemplate']['active_checks_enabled'] == 1):
-                                                    echo h($this->Time->format($service['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
-                                                else:
-                                                    echo __('n/a');
-                                                endif;
+                                            if ($Service->isActiveChecksEnabled() && $Host->isSatelliteHost() === false):
+                                                echo h($this->Time->format($Servicestatus->getNextCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
                                             else:
                                                 echo __('n/a');
+
                                             endif;
                                             ?>
                                         </td>
-                                        <td><?php echo h($service['Servicestatus']['output']); ?></td>
+                                        <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                                    <a href="<?php echo Router::url([
+                                                        'controller' => 'services',
+                                                        'action' => 'edit',
+                                                        $Service->getId()
+                                                    ]); ?>"
+                                                       class="btn btn-default">
+                                                        &nbsp;<i class="fa fa-cog"></i>&nbsp
+                                                    </a>
                                                 <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                                class="fa fa-cog"></i>&nbsp;</a>
+                                                    <a href="javascript:void(0);" class="btn btn-default">&n
+                                                        <i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
@@ -303,27 +352,38 @@ foreach ($this->params->named as $key => $value) {
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i
-                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'services',
+                                                                'action' => 'edit',
+                                                                $Service->getId()
+                                                            ]); ?>">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('deactivate') && $allowEdit): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $service['Service']['id']; ?>"><i
-                                                                        class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                            <a href="<?php echo Router::url([
+                                                                'controller' => 'services',
+                                                                'action' => 'deactivate',
+                                                                $Service->getId()
+                                                            ]); ?>
+                                                            "><i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                         <li>
-                                                            <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id']); ?>
+                                                            <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                                $additionalLinksList,
+                                                                $Service->getId()
+                                                            ); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this service?')); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $Service->getId()], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete this service?')); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -422,7 +482,7 @@ foreach ($this->params->named as $key => $value) {
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -497,7 +557,7 @@ foreach ($this->params->named as $key => $value) {
                     echo $this->Form->create('CommitServiceDowntime', [
                         'class' => 'form-horizontal clear',
                     ]); ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
+                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
 
                     <!-- from -->
                     <div class="form-group">
@@ -562,7 +622,7 @@ foreach ($this->params->named as $key => $value) {
                     echo $this->Form->create('CommitServiceAck', [
                         'class' => 'form-horizontal clear',
                     ]); ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
+                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
                     <?php echo $this->Form->input('sticky', ['type' => 'checkbox', 'label' => __('Sticky'), 'wrapInput' => 'col-md-offset-2 col-md-10']); ?>
                     <?php echo $this->Form->input('author', ['type' => 'hidden', 'value' => $username]) ?>
                 </div>
@@ -599,9 +659,9 @@ foreach ($this->params->named as $key => $value) {
                         'class' => 'form-horizontal clear',
                     ]); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -641,9 +701,9 @@ foreach ($this->params->named as $key => $value) {
                         'class' => 'form-horizontal clear',
                     ]); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">

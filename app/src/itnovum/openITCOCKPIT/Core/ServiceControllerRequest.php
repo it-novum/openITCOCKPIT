@@ -32,6 +32,7 @@ class ServiceControllerRequest {
      */
     private $request;
 
+
     public function __construct(\CakeRequest $request){
         $this->request = $request;
     }

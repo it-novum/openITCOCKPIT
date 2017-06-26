@@ -87,15 +87,7 @@ class Servicestatus extends CrateModuleAppModel {
     }
 
     public function virtualFieldsForIndex(){
-        $this->virtualFields['"Host.id"'] = 'Host.id';
-        $this->virtualFields['"Host.uuid"'] = 'Host.uuid';
-        $this->virtualFields['"Host.name"'] = 'Host.name';
-
-        $this->virtualFields['"Service.id"'] =  'Service.id';
-        $this->virtualFields['"Service.uuid"'] = 'Service.uuid';
-        $this->virtualFields['"Service.name"'] = 'Service.name';
-
-        $this->virtualFields['"Hoststatus.current_state"'] = 'Hoststatus.current_state';
+        $this->virtualFields['"Service.servicename"'] = 'Service.name';
 
     }
 
@@ -114,6 +106,28 @@ class Servicestatus extends CrateModuleAppModel {
             $conditions['Service.tags rlike'] = implode('|', $values);
         }
 
+        if(isset($conditions['Servicestatus.problem_has_been_acknowledged'])){
+            $acknowledgedCondition = [];
+            foreach($conditions['Servicestatus.problem_has_been_acknowledged'] as $condition){
+                $acknowledgedCondition[] = (bool)$condition;
+            }
+            $conditions['Servicestatus.problem_has_been_acknowledged'] = $acknowledgedCondition;
+        }
+
+        if(isset($conditions['Servicestatus.active_checks_enabled'])){
+            $ActiveChecksEnabledCondition = [];
+            foreach($conditions['Servicestatus.active_checks_enabled'] as $condition){
+                $ActiveChecksEnabledCondition[] = (bool)$condition;
+            }
+            $conditions['Servicestatus.active_checks_enabled'] = $ActiveChecksEnabledCondition;
+        }
+
+        if(isset($conditions['Service.servicename LIKE'])){
+            $serviceNameCondition = $conditions['Service.servicename LIKE'];
+            unset($conditions['Service.servicename LIKE']);
+            $conditions['Service.name LIKE'] = $serviceNameCondition;
+        }
+
         //todo CrateDB bug, check if LEFT join can be refactored with INNER join
         //https://github.com/crate/crate/issues/5747
         $query = [
@@ -121,8 +135,8 @@ class Servicestatus extends CrateModuleAppModel {
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
-                //'Service.active_checks_enabled',
-                //'Service.tags',
+                'Service.active_checks_enabled',
+                'Service.tags',
 
                 'Servicestatus.current_state',
                 'Servicestatus.last_check',
@@ -141,9 +155,11 @@ class Servicestatus extends CrateModuleAppModel {
                 'Host.id',
                 'Host.uuid',
                 'Host.address',
+                'Host.satellite_id',
 
                 'Hoststatus.current_state',
                 'Hoststatus.last_hard_state_change'
+
             ],
             'joins' => [
                 [
