@@ -105,7 +105,10 @@ class MenuComponent extends Component
                     unset($_parentNode['children']);
                 // special way for maps becouse the are multiple logical root elements for the "maps" element
                 } elseif ($parentNode['url']['controller'] == 'statusmaps') {
-                    if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions) || $this->checkPermissions($parentNode['url']['plugin'], 'maps', $parentNode['url']['action'], $permissions) || $this->checkPermissions($parentNode['url']['plugin'], 'rotations', $parentNode['url']['action'], $permissions)) {
+                    if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions) ||
+                        $this->checkPermissions('map_module', 'maps', $parentNode['url']['action'], $permissions) ||
+                        $this->checkPermissions('map_module', 'rotations', $parentNode['url']['action'], $permissions)
+                    ) {
                         $_parentNode = $parentNode;
                         unset($_parentNode['children']);
                     }
