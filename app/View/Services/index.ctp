@@ -147,21 +147,21 @@ foreach ($this->params->named as $key => $value) {
                                         <?php echo $this->Utils->getDirection($order, 'Service.servicename');
                                         echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?>
                                     </th>
-                                    <th class="no-sort tableStatewidth" title="<?php echo __('Hardstate'); ?>">
-                                        <?php echo $this->Utils->getDirection($order, 'Service.last_hard_state_change');
-                                        echo $this->Paginator->sort('Service.last_hard_state_change', __('Last state change')); ?>
+                                    <th class="no-sort tableStatewidth" title="<?php echo __('Soft state'); ?>">
+                                        <?php echo $this->Utils->getDirection($order, 'Servicestatus.last_state_change');
+                                        echo $this->Paginator->sort('Servicestatus.last_state_change', __('Last state change')); ?>
                                     </th>
                                     <th class="no-sort tableStatewidth">
-                                        <?php echo $this->Utils->getDirection($order, 'Service.last_check');
-                                        echo $this->Paginator->sort('Service.last_check', __('Last check')); ?>
+                                        <?php echo $this->Utils->getDirection($order, 'Servicestatus.last_check');
+                                        echo $this->Paginator->sort('Servicestatus.last_check', __('Last check')); ?>
                                     </th>
                                     <th class="no-sort tableStatewidth">
-                                        <?php echo $this->Utils->getDirection($order, 'Service.next_check');
-                                        echo $this->Paginator->sort('Service.next_check', __('Next check')); ?>
+                                        <?php echo $this->Utils->getDirection($order, 'Servicestatus.next_check');
+                                        echo $this->Paginator->sort('Servicestatus.next_check', __('Next check')); ?>
                                     </th>
                                     <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'Service.output');
-                                        echo $this->Paginator->sort('Service.output', __('Service output')); ?>
+                                        <?php echo $this->Utils->getDirection($order, 'Servicestatus.output');
+                                        echo $this->Paginator->sort('Servicestatus.output', __('Service output')); ?>
                                     </th>
                                     <th class="no-sort text-center editItemWidth">
                                         <i class="fa fa-gear fa-lg"></i>
