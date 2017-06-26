@@ -249,17 +249,20 @@ class ServicesController extends AppController {
 
         if ($this->DbBackend->isNdoUtils()) {
             $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
-            $this->Service->virtualFieldsForIndex();
+            $this->Service->virtualFieldsForIndexAndServiceList();
             $modelName = 'Service';
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $this->Servicestatus->virtualFieldsForIndex();
+            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
             $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
             $modelName = 'Servicestatus';
         }
 
         if ($this->isApiRequest()) {
+            if(isset($query['limit'])){
+                unset($query['limit']);
+            }
             $all_services = $this->{$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
@@ -2154,14 +2157,24 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $disabledServices = $this->Service->findAllByHostIdAndDisabled($host_id, 1);
-        $deletedServices = $this->DeletedService->findAllByHostId($host_id);
-        $this->Host->unbindModel([
-            'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Parenthost', 'Hostgroup'],
-            'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+        $host = $this->Host->find('first', [
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.host_url',
+                'Host.container_id',
+            ],
+            'conditions' => [
+                'Host.id' => $host_id,
+            ],
+            'contain' => [
+                'Container',
+            ],
         ]);
-        $host = $this->Host->findById($host_id);
+
+        //Check if user is permitted to see this object
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $host['Host']['container_id'];
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
@@ -2169,6 +2182,36 @@ class ServicesController extends AppController {
 
             return;
         }
+
+        $disabledServices = $this->Service->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $host_id,
+                'Service.disabled' => 1
+            ],
+            'contain' => [
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name'
+                    ]
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name'
+            ]
+        ]);
+        $deletedServices = $this->DeletedService->findAllByHostId($host_id);
+
 
         $allowEdit = false;
         if ($this->allowedByContainerId($containerIdsToCheck)) {
@@ -2178,96 +2221,42 @@ class ServicesController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
-        $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
-        $this->Service->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
-        $this->Service->virtualFields['last_check'] = 'Servicestatus.last_check';
-        $this->Service->virtualFields['next_check'] = 'Servicestatus.next_check';
-        $this->Service->virtualFields['output'] = 'Servicestatus.output';
-        $this->Service->virtualFields['hostname'] = 'Host.name';
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
 
-        $all_services = [];
-        $query = [
-//			'recursive' => -1,
-            'contain' => ['Servicetemplate'],
-            'fields' => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.description',
-                'Service.active_checks_enabled',
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request);
+        $ServiceConditions = new ServiceConditions();
+        $User = new User($this->Auth);
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $ServiceConditions->setHostId($host_id);
 
-                'Servicestatus.current_state',
-                'Servicestatus.last_check',
-                'Servicestatus.next_check',
-                'Servicestatus.last_hard_state_change',
-                'Servicestatus.output',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.active_checks_enabled',
-                'Servicestatus.state_type',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.acknowledgement_type',
-                'Servicestatus.is_flapping',
 
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-                'Servicetemplate.active_checks_enabled',
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Service.servicename' => 'asc'
+        ]));
 
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.description',
-                'Host.address',
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $this->Service->virtualFieldsForIndexAndServiceList();
+            $modelName = 'Service';
+        }
 
-                'Hoststatus.current_state',
-            ],
-            'order' => ['Service.servicename' => 'asc'],
-            'joins' => [
-                [
-                    'table' => 'hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
-                    'conditions' => 'Service.host_id = Host.id',
-                ], [
-                    'table' => 'nagios_objects',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'HostObject',
-                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-                ], [
-                    'table' => 'nagios_hoststatus',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'Hoststatus',
-                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
-                ], [
-                    'table' => 'nagios_objects',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'ServiceObject',
-                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-                ], [
-                    'table' => 'nagios_servicestatus',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'Servicestatus',
-                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-                ],
-            ],
-            'conditions' => [
-                'Host.id' => $host_id,
-            ],
-        ];
+        if ($this->DbBackend->isCrateDb()) {
+            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $modelName = 'Servicestatus';
+        }
 
         if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_services = $this->Service->find('all', $query);
+            if(isset($query['limit'])){
+                unset($query['limit']);
+            }
+            $all_services = $this->{$modelName}->find('all', $query);
         } else {
-            $activeServices = ['conditions' => [
-                'Host.id' => $host_id,
-                'Service.disabled' => 0,
-            ]];
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query, $activeServices);
-            $all_services = $this->Paginator->paginate();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $all_services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
         }
+
 
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 

@@ -218,8 +218,8 @@ $this->Paginator->url($this->params['url']); ?>
                                             <?php $order = $this->Paginator->param('order'); ?>
                                             <th class="no-sort"></th>
                                             <th class="select_datatable no-sort">
-                                                <?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
-                                                echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?>
+                                                <?php echo $this->Utils->getDirection($order, 'Servicestatus.current_state');
+                                                echo $this->Paginator->sort('Servicestatus.current_state', 'Servicestatus'); ?>
                                             </th>
                                             <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
                                             <th class="no-sort text-center">
@@ -244,8 +244,8 @@ $this->Paginator->url($this->params['url']); ?>
                                                 echo $this->Paginator->sort('Service.servicename', __('Servicename')); ?>
                                             </th>
                                             <th class="no-sort">
-                                                <?php echo $this->Utils->getDirection($order, 'Servicestatus.last_hard_state_change');
-                                                echo $this->Paginator->sort('Servicestatus.last_hard_state_change', __('Status since')); ?>
+                                                <?php echo $this->Utils->getDirection($order, 'Servicestatus.last_state_change');
+                                                echo $this->Paginator->sort('Servicestatus.last_state_change', __('Status since')); ?>
                                             </th>
                                             <th class="no-sort">
                                                 <?php echo $this->Utils->getDirection($order, 'Servicestatus.last_check');

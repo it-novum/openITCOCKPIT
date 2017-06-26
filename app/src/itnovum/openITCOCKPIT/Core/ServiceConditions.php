@@ -48,6 +48,11 @@ class ServiceConditions {
     private $order = [];
 
     /**
+     * @var int
+     */
+    private $hostId;
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -103,6 +108,20 @@ class ServiceConditions {
      */
     public function getOrder(){
         return $this->order;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHostId(){
+        return $this->hostId;
+    }
+
+    /**
+     * @param int $hostId
+     */
+    public function setHostId($hostId){
+        $this->hostId = $hostId;
     }
 
 

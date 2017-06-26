@@ -1213,12 +1213,7 @@ class Service extends AppModel {
         }
     }
 
-    public function virtualFieldsForIndex(){
-        $this->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
-        $this->virtualFields['last_check'] = 'Servicestatus.last_check';
-        $this->virtualFields['next_check'] = 'Servicestatus.next_check';
-        $this->virtualFields['output'] = 'Servicestatus.output';
-        $this->virtualFields['hostname'] = 'Host.name';
+    public function virtualFieldsForIndexAndServiceList(){
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
     }
@@ -1312,6 +1307,10 @@ class Service extends AppModel {
 
         $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if($ServiceConditions->getHostId()){
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
 
         return $query;
 

@@ -29,13 +29,5 @@ class CrateService extends CrateModuleAppModel {
     public $useTable = 'services';
     public $tablePrefix = 'openitcockpit_';
 
-    public function virtualFieldsForIndex(){
-        $this->virtualFields['"Host.id"'] = 'Host.id';
-        $this->virtualFields['"Host.uuid"'] = 'Host.uuid';
-        $this->virtualFields['"Host.name"'] = 'Host.name';
-
-        $this->virtualFields['"Hoststatus.current_state"'] = 'Hoststatus.current_state';
-
-    }
 
 }

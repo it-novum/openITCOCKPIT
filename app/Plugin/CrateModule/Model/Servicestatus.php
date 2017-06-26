@@ -86,7 +86,7 @@ class Servicestatus extends CrateModuleAppModel {
         return $this->byUuidMagic($uuids, $options);
     }
 
-    public function virtualFieldsForIndex(){
+    public function virtualFieldsForIndexAndServiceList(){
         $this->virtualFields['"Service.servicename"'] = 'Service.name';
 
     }
@@ -188,6 +188,11 @@ class Servicestatus extends CrateModuleAppModel {
             ],
             'order' => $ServiceConditions->getOrder()
         ];
+
+        if($ServiceConditions->getHostId()){
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
         return $query;
     }
 
