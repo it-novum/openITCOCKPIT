@@ -2150,7 +2150,9 @@ class NagiosExportTask extends AppShell {
                         $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i').'-'.$end->format('H:i');
                     } else {
                         $timeRanges[strtolower($start->format('l'))][] = $start->format('H:i').'-24:00';
-                        $timeRanges[strtolower($end->format('l'))][] = '00:00-'.$end->format('H:i');
+                        if($end->format('H:i') != '00:00') {
+                            $timeRanges[strtolower($end->format('l'))][] = '00:00-'.$end->format('H:i');
+                        }
                     }
                 }
             }
