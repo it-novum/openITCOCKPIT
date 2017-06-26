@@ -24,8 +24,13 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
+if(!isset($hoststatus['Hoststatus'])):
+    $hoststatus['Hoststatus'] = [];
+endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 ?>
 <div id="error_msg"></div>
@@ -132,7 +137,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         <i class="fa fa-check fa-stack-1x txt-color-green padding-left-10 padding-top-8"></i>
                                     </span>
                                     <?php
-                                    if ($Hoststatus->getAcknowledgementType()):
+                                    if ($Hoststatus->getAcknowledgementType() == 1):
                                         echo __('The current status was already acknowledged by');
                                     else:
                                         echo __('The current status was already acknowledged (STICKY) by');
@@ -190,8 +195,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                             <?php echo $_state['html_icon']; ?>
                                             <span class="padding-left-5"
                                                   style="vertical-align: middle;"><?php echo $_state['human_state']; ?></span>
-                                            <code class="no-background <?php echo $ParentHostStatus->HostStatusColor(); ?>">(<?php echo h($Hoststatus->getOutput()); ?>
-                                                )</code>
+                                            <code class="no-background <?php echo $ParentHostStatus->HostStatusColor(); ?>">
+                                                (<?php echo h($Hoststatus->getOutput()); ?>)
+                                            </code>
                                         </p>
                                         <?php
 
@@ -283,7 +289,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         $hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
                                         ?>
                                         <td>
-                                            <code class="no-background <?php echo $this->Status->HostStatusColor($host['Host']['uuid']); ?>"><?php echo $this->Monitoring->replaceCommandArguments($commandarguments, $hostCommandLine); ?></code>
+                                            <code class="no-background <?php echo $Hoststatus->HostStatusColor(); ?>">
+                                                <?php echo $this->Monitoring->replaceCommandArguments($commandarguments, $hostCommandLine); ?>
+                                            </code>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -292,14 +300,15 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <td>
                                         <?php if ($host['Host']['active_checks_enabled'] == 1 && $host['Host']['satellite_id'] == 0 && $Hoststatus->isActiveChecksEnabled() !== null): ?>
                                             <?php echo h($this->Time->timeAgoInWords(strtotime($Hoststatus->getNextCheck()), ['timezone' => $this->Auth->user('timezone')])); ?>
-                                            <?php if ($this->Status->get($host['Host']['uuid'], 'latency') > 1): ?>
+                                            <?php if ($Hoststatus->getLatency() > 1): ?>
                                                 <span class="text-muted"
-                                                      title="<?php echo __('Check latency'); ?>">(+<?php echo $this->Status->get($host['Host']['uuid'], 'latency'); ?>
-                                                    )</span>
+                                                      title="<?php echo __('Check latency'); ?>">
+                                                    (+<?php echo $Hoststatus->getLatency(); ?>)
+                                                </span>
                                             <?php endif; ?>
                                         <?php else: ?>
                                             <?php
-                                            if ($Hoststatus->isActiveChecksEnabled() === null):
+                                            if ($Hoststatus->isInMonitoring() === false):
                                                 echo __('Not found in monitoring');
                                             else:
                                                 echo __('n/a due to passive check');
@@ -444,7 +453,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <?php endif; ?>
                         </div>
                         <div id="tab4" class="tab-pane fade">
-                            <?php if (!$Hoststatus->isActiveChecksEnabled()): ?>
+                            <?php if (!$Hoststatus->isInMonitoring()): ?>
                                 <div class="alert alert-info alert-block">
                                     <a class="close" data-dismiss="alert" href="#">×</a>
                                     <h4 class="alert-heading"><i
@@ -564,24 +573,28 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     </thead>
                                                     <tbody>
                                                     <?php foreach ($services as $service):
+                                                        $_servicestatus = [];
+                                                        if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])){
+                                                            $_servicestatus = $servicestatus[$service['Service']['uuid']]['Servicestatus'];
+                                                        }
+                                                        $Servicestatus = new Servicestatus(
+                                                            $_servicestatus
+                                                        );
+                                                        $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
                                                                 <td class="text-center width-90">
                                                                     <?php
-                                                                    if ($this->Status->sget($service['Service']['uuid'], 'is_flapping') == 1):
-                                                                        echo $this->Monitoring->serviceFlappingIconColored($this->Status->sget($service['Service']['uuid'], 'is_flapping'), '', $this->Status->sget($service['Service']['uuid'], 'current_state'));
+                                                                    if ($Servicestatus->isFlapping()):
+                                                                        echo $Servicestatus->getServiceFlappingIconColored();
                                                                     else:
-                                                                        $currentState = -1;
-                                                                        if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'])) {
-                                                                            $currentState = $servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state'];
-                                                                        }
-                                                                        echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/services/browser/' . $service['Service']['id'], null, $currentState, 'color: transparent;')['html_icon'];
+                                                                        echo $ServicestatusIcon->getHtmlIcon();
                                                                     endif;
                                                                     ?>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <?php if ($this->Monitoring->checkForAck($this->Status->sget($service['Service']['uuid'], 'problem_has_been_acknowledged'))): ?>
-                                                                        <?php if ($servicestatus[$service['Service']['uuid']]['Servicestatus']['acknowledgement_type'] == 1): ?>
+                                                                    <?php if ($Servicestatus->isAacknowledged()): ?>
+                                                                        <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
                                                                             <i class="fa fa-user"
                                                                                title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                                         <?php else: ?>
@@ -591,7 +604,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                     <?php endif; ?>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <?php if ($this->Monitoring->checkForDowntime($this->Status->sget($service['Service']['uuid'], 'scheduled_downtime_depth'))): ?>
+                                                                    <?php if ($Servicestatus->isInDowntime()): ?>
                                                                         <i class="fa fa-power-off"></i>
                                                                     <?php endif; ?>
                                                                 </td>
@@ -605,7 +618,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                     <?php endif; ?>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <?php if (($this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') == 0 && $this->Status->sget($service['Service']['uuid'], 'active_checks_enabled') !== null) || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
+                                                                    <?php if ($Servicestatus->isActiveChecksEnabled() == false || (isset($service['Host']['satellite_id'])) && $service['Host']['satellite_id'] > 0): ?>
                                                                         <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
                                                                     <?php endif; ?>
                                                                 </td>
@@ -622,12 +635,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                         <?php echo h($serviceName); ?>
                                                                     <?php endif; ?>
                                                                 </td>
-                                                                <td data-original-title="<?php echo h($this->Time->format($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change'), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                                                <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
                                                                     data-container="body">
-                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($this->Status->sget($service['Service']['uuid'], 'last_hard_state_change')))); ?>
+                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
                                                                 </td>
-                                                                <td><?php echo h($this->Status->sget($service['Service']['uuid'], 'output')); ?></td>
+                                                                <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>
                                                     <?php endforeach; ?>
@@ -683,6 +696,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     </tr>
                                                     </thead>
                                                     <tbody>
+                                                    <?php $ServicestatusIconDisabled = new ServicestatusIcon(4); ?>
                                                     <?php foreach ($services as $service):
                                                         if ($service['Service']['disabled'] == 1):?>
                                                             <tr>
@@ -692,7 +706,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                     if ($this->Acl->hasPermission('browser')):
                                                                         $href = '/services/browser/' . $service['Service']['id'];
                                                                     endif;
-                                                                    echo $this->Status->humanServiceStatus($service['Service']['uuid'], $href)['html_icon'];
+                                                                    echo $ServicestatusIconDisabled->getHtmlIcon();
                                                                     ?>
                                                                 </td>
                                                                 <td class="text-center"></td>
@@ -926,12 +940,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     ]); ?>
                     <center>
                         <span class="hintmark">
-                            <?php if ($this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['value'] == 0): ?>
+                            <?php if ($Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['value'] == 0): ?>
                                 <?php echo __('Yes, i want temporarily <strong>enable</strong> flap detection.'); ?>
                             <?php else: ?>
                                 <?php echo __('Yes, i want temporarily <strong>disable</strong> flap detection.'); ?>
                             <?php endif; ?>
-                            <?php echo $this->Form->input('condition', ['type' => 'hidden', 'value' => ($this->Monitoring->compareHostFlapDetectionWithMonitoring($host)['value'] == 1) ? 0 : 1]); ?>
+                            <?php echo $this->Form->input('condition', ['type' => 'hidden', 'value' => ($Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['value'] == 1) ? 0 : 1]); ?>
                         </span>
                     </center>
 
@@ -1047,12 +1061,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     echo $this->Form->create('enableNotifications', [
                         'class' => 'form-horizontal clear',
                     ]); ?>
-                    <?php echo $this->Form->input('isEnabled', ['type' => 'hidden', 'value' => $this->Status->get($host['Host']['uuid'], 'notifications_enabled')]); ?>
+                    <?php echo $this->Form->input('isEnabled', ['type' => 'hidden', 'value' => (int)$Hoststatus->isNotificationsEnabled()]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only host'), 'hostAndServices' => __('Host including services')], 'label' => 'Notifications']); ?>
                     <center>
                         <span class="hintmark">
                             <?php
-                            if ($this->Status->get($host['Host']['uuid'], 'notifications_enabled') == 0):
+                            if ($Hoststatus->isNotificationsEnabled() == false):
                                 echo __('Yes, i want temporarily <strong>enable</strong> notifications.');
                             else:
                                 echo __('Yes, i want temporarily <strong>disable</strong> notifications.');

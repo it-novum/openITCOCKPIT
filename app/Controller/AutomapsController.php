@@ -314,14 +314,14 @@ class AutomapsController extends AppController
 
         $servicestatus = [
             'Servicestatus' => [
-                'current_state'                 => $exitCodes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state']],
-                'state_type'                    => $stateTypes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['state_type']],
-                'last_state_change'             => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'perfdata'                      => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['perfdata']),
-                'output'                        => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['output']),
-                'last_check'                    => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'scheduled_downtime_depth'      => $servicestatus[$service['Service']['uuid']]['Servicestatus']['scheduled_downtime_depth'],
-                'problem_has_been_acknowledged' => $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'],
+                'current_state'                 => $exitCodes[$servicestatus['Servicestatus']['current_state']],
+                'state_type'                    => $stateTypes[$servicestatus['Servicestatus']['state_type']],
+                'last_state_change'             => CakeTime::format($servicestatus['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'perfdata'                      => h($servicestatus['Servicestatus']['perfdata']),
+                'output'                        => h($servicestatus['Servicestatus']['output']),
+                'last_check'                    => CakeTime::format($servicestatus['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'scheduled_downtime_depth'      => $servicestatus['Servicestatus']['scheduled_downtime_depth'],
+                'problem_has_been_acknowledged' => $servicestatus['Servicestatus']['problem_has_been_acknowledged'],
             ],
         ];
 

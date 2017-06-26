@@ -23,39 +23,27 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class NagiosExportShell
+ * @property Systemsetting           $Systemsetting
+ * @property DefaultNagiosConfigTask $DefaultNagiosConfig
+ * @property NagiosExportTask        $NagiosExport
+ */
 class NagiosExportShell extends AppShell
 {
-    /*
-    public $uses = [
-        'Hosttemplate',
-        'Timeperiod',
-        'Command',
-        'Contact',
-        'Contactgroup',
-        'Container',
-        'Customvariable',
-        'Hosttemplatecommandargumentvalue',
-        'Servicetemplatecommandargumentvalue',
-        'Hostcommandargumentvalue',
-        'Servicecommandargumentvalue',
-        'Commandargument',
-        'Hostgroup',
-        'Hostescalation',
-        'Host',
-        'Macro',
-        'Servicetemplate',
-        'Service',
-        'Systemsetting',
-        'Serviceescalation',
-        'Servicegroup',
-        'Hostdependency',
-        'Servicedependency'
-    ]; */
-
+    /**
+     * @var array
+     */
     public $uses = ['Systemsetting'];
 
+    /**
+     * @var array
+     */
     public $tasks = ['DefaultNagiosConfig', 'NagiosExport'];
 
+    /**
+     * NagiosExportShell constructor.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -82,15 +70,10 @@ class NagiosExportShell extends AppShell
                 mkdir($this->conf['path']);
             }
 
-
             if (array_key_exists('all', $this->params)) {
-
                 $this->NagiosExport->beforeExportExternalTasks();
-
                 $this->NagiosExport->deleteAllConfigfiles();
-
                 $this->DefaultNagiosConfig->execute();
-
                 $this->NagiosExport->exportHosttemplates();
                 $this->NagiosExport->exportHosts();
                 $this->NagiosExport->exportCommands();
@@ -106,8 +89,6 @@ class NagiosExportShell extends AppShell
                 $this->NagiosExport->exportServicegroups();
                 $this->NagiosExport->exportHostdependencies();
                 $this->NagiosExport->exportServicedependencies();
-
-
                 $this->NagiosExport->afterExportExternalTasks();
             }
 
@@ -194,6 +175,9 @@ class NagiosExportShell extends AppShell
 
     }
 
+    /**
+     * @return ConsoleOptionParser
+     */
     public function getOptionParser()
     {
         $parser = parent::getOptionParser();
@@ -206,7 +190,6 @@ class NagiosExportShell extends AppShell
             'contactgroups'       => ['help' => "Will export all contactgroups"],
             'hosts'               => ['help' => "Will export all hosts"],
             'services'            => ['help' => "Will export all services"],
-            'hosts'               => ['help' => "Will export all hosts"],
             'timeperiods'         => ['help' => "Will export all timeperiods"],
             'hostgroups'          => ['help' => "Will export all host groups"],
             'hostescalations'     => ['help' => "Will export all hostescalations"],
@@ -215,12 +198,10 @@ class NagiosExportShell extends AppShell
             'hostdependencies'    => ['help' => "Will export all hostdependencies"],
             'servicedependencies' => ['help' => "Will export all servicedependencies"],
             'external'            => ['help' => "Will execute all external export mothodes (from modules like Check_MK)"],
-
-            'macros' => ['help' => "Will export all macros to resource.cfg"],
-
-            'all'    => ['help' => "Will rewrite all configuration files"],
-            'verify' => ['help' => "Verify all configuration data. You also can run multiple commands example: --servicetemplates --verify"],
-            'delete' => ['help' => 'Will delete all configuration files'],
+            'macros'              => ['help' => "Will export all macros to resource.cfg"],
+            'all'                 => ['help' => "Will rewrite all configuration files"],
+            'verify'              => ['help' => "Verify all configuration data. You also can run multiple commands example: --servicetemplates --verify"],
+            'delete'              => ['help' => 'Will delete all configuration files'],
         ]);
 
         return $parser;

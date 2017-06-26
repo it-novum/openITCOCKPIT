@@ -25,8 +25,13 @@
 App.Controllers.NotificationsHostNotificationController = Frontend.AppController.extend({
     $table: null,
 
+    components: ['Utils'],
+
     _initialize: function () {
         var self = this;
+
+        this.Utils.flapping();
+
         $('.select_datatable').click(function () {
             self.fnShowHide($(this).attr('my-column'), $(this).children());
         });

@@ -116,9 +116,6 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                     'background-color': 'rgb(255, 255, 255)'
                 }
             });
-            //disable contacts and contactgroups here to prevent errors on save
-            $('#HostContact, #HostContactgroup').attr('readonly', true);
-            $('#HostContact, #HostContactgroup').trigger("chosen:updated");
         }
 
         /* Contact inherit stuff */
@@ -718,7 +715,6 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
              */
             initRestoreDefault: function(){
                 //self.hosttemplateManager.deactivateRestoreFunctionality();
-
                 // console.log('initRestoreDefault()');
                 // Bind on all predefined inputs to allow to restore their defaults.
                 for(var key in self.fieldMap){
@@ -1074,41 +1070,44 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                 }
             });
 
-            //Remove selection of the select boxes
-            document.getElementById('HostContact').selectedIndex = -1;
-            document.getElementById('HostContactgroup').selectedIndex = -1;
-
             //Set selected in selectbox for contacs
-            var Contact = this.getVar('ContactsInherited').Contact;
-            if(Contact != null){
-                for(var ContactId in Contact){
-                    $('#HostContact :nth-child('+ContactId+')').prop('selected', true);
-                }
-            }
 
+            var Contact = this.getVar('ContactsInherited').Contact;
+
+            if(Contact != null){
+                $('#HostContact').val('').trigger('chosen:updated');
+                for (var contactId in Contact) {
+                    if($('#HostContact option[value="'+contactId+'"]').length > 0){
+                        $('#HostContact option[value="'+contactId+'"]')
+                            .val(contactId)
+                            .prop('selected', true)
+                    }
+                }
+                $('#HostContact').trigger('chosen:updated');
+            }
 
             //Set selected in selectbox for contact groups
             var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
             if(Contactgroup != null){
-                for(var ContactgroupId in Contactgroup){
-                    $('#HostContactgroup :nth-child('+ContactgroupId+')').prop('selected', true);
+                $('#HostContactgroup').val('').trigger('chosen:updated');
+                for (var ContactgroupId in Contactgroup) {
+                    if($('#HostContactgroup option[value="'+ContactgroupId+'"]').length > 0){
+                        $('#HostContactgroup option[value="'+ContactgroupId+'"]')
+                            .val(ContactgroupId)
+                            .prop('selected', true)
+                    }
                 }
+                $('#HostContactgroup').trigger('chosen:updated');
             }
-
 
             $('#HostContact').prop('readonly', true);
             $('#HostContactgroup').prop('readonly', true);
         }else{
             $('#hostContactSelects').unblock();
             $('#HostContact').prop('readonly', false);
+            $('#hostContactgroupSelects').unblock();
             $('#HostContactgroup').prop('readonly', false);
-
-            //Remove selection of the select boxes
-            document.getElementById('HostContact').selectedIndex = -1;
-            document.getElementById('HostContactgroup').selectedIndex = -1;
         }
-        $('#HostContact').trigger("chosen:updated");
-        $('#HostContactgroup').trigger("chosen:updated");
     },
 
     getContainerElements:function(containerId, hosttemplateId){

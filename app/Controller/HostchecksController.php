@@ -54,7 +54,11 @@ class HostchecksController extends AppController {
 
         //Process request and set request settings back to front end
         $HostStates = new HostStates();
-        $HostchecksControllerRequest = new HostchecksControllerRequest($this->request, $HostStates);
+        $HostchecksControllerRequest = new HostchecksControllerRequest(
+            $this->request,
+            $HostStates,
+            $this->userLimit
+        );
 
         $host = $this->Host->find('first', [
             'fields' => [
@@ -92,7 +96,7 @@ class HostchecksController extends AppController {
         $Conditions->setOrder($HostchecksControllerRequest->getOrder());
         $Conditions->setHostUuid($host['Host']['uuid']);
 
-        //Query state history records
+        //Query host check records
         $query = $this->Hostcheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
         $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
         $all_hostchecks = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
@@ -103,6 +107,7 @@ class HostchecksController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
             'fields' => [
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping'
             ],
         ]);
         $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'docuExists']));

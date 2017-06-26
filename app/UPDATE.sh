@@ -108,6 +108,9 @@ oitc docu_generator
 oitc copy_servicename
 oitc systemsettings_import
 
+#Set usage flag for hosts and services
+oitc usage_flag
+
 for i in "$@"; do
 	case $i in
 		--roles)

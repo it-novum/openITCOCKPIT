@@ -34,9 +34,9 @@ class StatehistoryControllerRequest extends ControllerListSettingsRequest {
      */
     protected $StateTypes;
 
-    public function __construct(\CakeRequest $request, HostStates $HostStates, StateTypes $StateTypes){
+    public function __construct(\CakeRequest $request, HostStates $HostStates, StateTypes $StateTypes, $userLimit = 25){
         $this->StateTypes = $StateTypes;
-        parent::__construct($request, $HostStates);
+        parent::__construct($request, $HostStates, $userLimit);
     }
 
     /**

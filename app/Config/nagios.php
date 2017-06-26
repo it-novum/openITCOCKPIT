@@ -56,7 +56,6 @@ $config = [
             'timeperiods'                              => 'config/timeperiods/',
             'contacts'                                 => 'config/contacts/',
             'contactgroups'                            => 'config/contactgroups/',
-            'timeperiods'                              => 'config/timeperiods/',
             'hostgroups'                               => 'config/hostgroups/',
             'hostescalations'                          => 'config/hostescalations/',
             'serviceescalations'                       => 'config/serviceescalations/',

@@ -46,7 +46,7 @@ class LoginController extends AppController
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
-        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso'){
+        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !$this->isApiRequest()){
             $result = $this->Oauth2client->connectToSSO();
             $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
             if(isset($result['redirect'])){

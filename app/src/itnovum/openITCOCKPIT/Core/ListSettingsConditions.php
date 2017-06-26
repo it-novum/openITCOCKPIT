@@ -32,6 +32,11 @@ abstract class ListSettingsConditions {
     /**
      * @var array
      */
+    protected $containerIds = [];
+
+    /**
+     * @var array
+     */
     protected $stateTypes = [];
 
     /**
@@ -144,5 +149,27 @@ abstract class ListSettingsConditions {
     public function setTo($to){
         $this->to = $to;
     }
+
+    /**
+     * @return array
+     */
+    public function getContainerIds(){
+        return $this->containerIds;
+    }
+
+    /**
+     * @param array $containerIds
+     */
+    public function setContainerIds($containerIds){
+        $this->containerIds = $containerIds;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasContainerIds(){
+        return !empty($this->containerIds);
+    }
+
 }
 

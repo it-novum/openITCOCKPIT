@@ -438,7 +438,7 @@ class Crate extends DboSource {
                             $query->bindValue($i++, $value);
                             $attachedParameters[] = $value;
                         }
-                    }elseif (is_bool($result['value'])){
+                    } elseif (is_bool($result['value'])) {
                         $query->bindValue($i++, $result['value'], PDO::PARAM_BOOL);
                         $attachedParameters[] = $result['value'] ? 'true' : 'false';
                     } else {
@@ -526,6 +526,10 @@ class Crate extends DboSource {
             switch ($this->getColumnType($field)) {
                 case 'integer':
                     $query->bindValue($i++, $value, PDO::PARAM_INT);
+                    break;
+
+                case 'boolean':
+                    $query->bindValue($i++, (bool)$value, PDO::PARAM_BOOL);
                     break;
 
                 case 'array':
@@ -844,8 +848,24 @@ class Crate extends DboSource {
                     $result[$modelName] = Set::classicExtract($record, '{(' . implode('|', array_values($fieldsFromModel)) . ')}');
                 }
             }
+
+            //Check for Joind fields, with same name
+            if(!empty($this->joins)){
+                foreach ($record as $field => $value) {
+                    foreach ($this->joins as $join) {
+                        foreach ($this->tableMetaData[$join['alias']] as $column) {
+                            $ModelNameAndFieldName = sprintf('%s.%s', $join['alias'], $column['column_name']);
+                            if ($field == $ModelNameAndFieldName) {
+                                $result[$join['alias']][$column['column_name']] = $value;
+                            }
+                        }
+                    }
+                }
+            }
+
             $results[] = $result;
         }
+
 
         return $results;
     }
