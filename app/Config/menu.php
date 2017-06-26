@@ -35,8 +35,7 @@ $config = [
         ],
 
         'maps' => [
-            // Es bleibt Dahsboards weil dashboards immer sichtbar ist.
-            'url'      => ['controller' => 'dashboards', 'action' => 'index', 'plugin' => ''],
+            'url'      => ['controller' => 'statusmaps', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Maps',
             'icon'     => 'map-marker',
             'order'    => 2,

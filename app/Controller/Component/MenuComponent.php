@@ -23,8 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class MenuComponent
+ */
 class MenuComponent extends Component
 {
+    /**
+     * @return array
+     */
     public function compileMenu()
     {
         Configure::load('menu');
@@ -76,6 +82,12 @@ class MenuComponent extends Component
         return $finalMenu;
     }
 
+    /**
+     * @param $menu
+     * @param $permissions
+     *
+     * @return array
+     */
     public function filterMenuByAcl($menu, $permissions)
     {
         $_menu = [];
@@ -84,12 +96,19 @@ class MenuComponent extends Component
             //Dashboard is always allowed
             if ($parentNode['url']['controller'] === 'dashboard' && $parentNode['url']['action'] === 'index' && $parentNode['url']['plugin'] === 'admin') {
                 $_menu[$parentKey] = $parentNode;
+                continue;
             }
 
             if (isset($parentNode['children']) && !empty($parentNode['children'])) {
                 if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
                     $_parentNode = $parentNode;
                     unset($_parentNode['children']);
+                // special way for maps becouse the are multiple logical root elements for the "maps" element
+                } elseif ($parentNode['url']['controller'] == 'statusmaps') {
+                    if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions)) {
+                        $_parentNode = $parentNode;
+                        unset($_parentNode['children']);
+                    }
                 }
                 $_childNodes = [];
                 if (!empty($parentNode['children']) && !empty($_parentNode)) {
@@ -130,12 +149,25 @@ class MenuComponent extends Component
         return $_menu;
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public function lower($string)
     {
         //return strtolower(Inflector::classify($string));
         return strtolower(str_replace('_', '', $string));
     }
 
+    /**
+     * @param string $plugin
+     * @param string $controller
+     * @param string $action
+     * @param        $permissions
+     *
+     * @return bool
+     */
     public function checkPermissions($plugin = '', $controller = '', $action = '', $permissions)
     {
         $controller = $this->lower($controller);
