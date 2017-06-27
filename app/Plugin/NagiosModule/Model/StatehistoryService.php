@@ -23,45 +23,51 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 
-class Servicecheck extends NagiosModuleAppModel
+class StatehistoryService extends NagiosModuleAppModel
 {
-    //public $useDbConfig = 'nagios';
-    public $useTable = 'servicechecks';
-    public $primaryKey = 'servicecheck_id';
+    public $useTable = 'statehistory';
+    public $primaryKey = 'statehistory_id';
     public $tablePrefix = 'nagios_';
     public $belongsTo = [
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
-            'foreignKey' => 'service_object_id',
+            'foreignKey' => 'object_id',
+            'conditions' => [
+                'Objects.objecttype_id' => 2
+            ],
+            'type' => 'INNER'
         ],
     ];
 
+
     /**
-     * @param ServicechecksConditions $ServicecheckConditions
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []){
+    public function getQuery(StatehistoryServiceConditions $StatehistoryServiceConditions, $paginatorConditions = []){
         $query = [
             'conditions' => [
-                'Objects.name2' => $ServicecheckConditions->getServiceUuid(),
-                'start_time >' => date('Y-m-d H:i:s', $ServicecheckConditions->getFrom()),
-                'start_time <' => date('Y-m-d H:i:s', $ServicecheckConditions->getTo())
+                'Objects.name2' => $StatehistoryServiceConditions->getServiceUuid(),
+                'StatehistoryService.state_time >' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()),
+                'StatehistoryService.state_time <' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getTo())
             ],
-            'order' => $ServicecheckConditions->getOrder(),
-            'limit' => $ServicecheckConditions->getLimit(),
+            'order' => $StatehistoryServiceConditions->getOrder(),
+            'limit' => $StatehistoryServiceConditions->getLimit(),
         ];
 
-        if(!empty($ServicecheckConditions->getStates())){
-            $query['conditions']['state'] = $ServicecheckConditions->getStates();
+        if(!empty($StatehistoryServiceConditions->getStates())){
+            $query['conditions']['StatehistoryService.state'] = $StatehistoryServiceConditions->getStates();
         }
 
-        //Merge ListFilter conditions
+        if(!empty($StatehistoryServiceConditions->getStateTypes())){
+            $query['conditions']['StatehistoryService.state_type'] = $StatehistoryServiceConditions->getStateTypes();
+        }
+
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
         return $query;
     }
-
 }

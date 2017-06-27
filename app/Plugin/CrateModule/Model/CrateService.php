@@ -23,11 +23,11 @@
 //  confirmation.
 
 
-
 class CrateService extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';
     public $useTable = 'services';
     public $tablePrefix = 'openitcockpit_';
+
 
 }

@@ -125,7 +125,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 endif; ?>
                             </p>
 
-                            <?php if ($Hoststatus->isAacknowledged() && !empty($acknowledged)): ?>
+                            <?php if ($Hoststatus->isAcknowledged() && !empty($acknowledged)): ?>
                                 <?php $Acknowledgement = new AcknowledgementHost($acknowledged['AcknowledgedHost']); ?>
                                 <p>
                                     <span class="fa-stack fa-lg">
@@ -593,7 +593,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                     ?>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <?php if ($Servicestatus->isAacknowledged()): ?>
+                                                                    <?php if ($Servicestatus->isAcknowledged()): ?>
                                                                         <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
                                                                             <i class="fa fa-user"
                                                                                title="<?php echo __('Acknowledgedment'); ?>"></i>

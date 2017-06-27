@@ -25,18 +25,15 @@
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 
-class Servicecheck extends NagiosModuleAppModel
-{
-    //public $useDbConfig = 'nagios';
+class Servicecheck extends CrateModuleAppModel {
+    public $useDbConfig = 'Crate';
     public $useTable = 'servicechecks';
-    public $primaryKey = 'servicecheck_id';
-    public $tablePrefix = 'nagios_';
-    public $belongsTo = [
-        'Objects' => [
-            'className'  => 'NagiosModule.Objects',
-            'foreignKey' => 'service_object_id',
-        ],
-    ];
+    public $tablePrefix = 'statusengine_';
+
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+        parent::__construct($id, $table, $ds, $useDynamicAssociations);
+        $this->virtualFields['state_type'] = 'Servicecheck.is_hardstate';
+    }
 
     /**
      * @param ServicechecksConditions $ServicecheckConditions
@@ -46,9 +43,9 @@ class Servicecheck extends NagiosModuleAppModel
     public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []){
         $query = [
             'conditions' => [
-                'Objects.name2' => $ServicecheckConditions->getServiceUuid(),
-                'start_time >' => date('Y-m-d H:i:s', $ServicecheckConditions->getFrom()),
-                'start_time <' => date('Y-m-d H:i:s', $ServicecheckConditions->getTo())
+                'service_description' => $ServicecheckConditions->getServiceUuid(),
+                'start_time >' => $ServicecheckConditions->getFrom(),
+                'start_time <' => $ServicecheckConditions->getTo()
             ],
             'order' => $ServicecheckConditions->getOrder(),
             'limit' => $ServicecheckConditions->getLimit(),

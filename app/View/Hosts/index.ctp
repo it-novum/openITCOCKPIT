@@ -228,8 +228,8 @@ foreach ($this->params->named as $key => $value) {
                                     </th>
                                     <th class="no-sort tableStatewidth">
                                         <?php
-                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_hard_state_change');
-                                        echo $this->Paginator->sort('Hoststatus.last_hard_state_change', __('State since'));
+                                        echo $this->Utils->getDirection($order, 'Hoststatus.last_state_change');
+                                        echo $this->Paginator->sort('Hoststatus.last_state_change', __('State since'));
                                         ?>
                                     </th>
                                     <th class="no-sort tableStatewidth">
@@ -301,7 +301,7 @@ foreach ($this->params->named as $key => $value) {
                                         </td>
 
                                         <td class="text-center">
-                                            <?php if ($Hoststatus->isAacknowledged()): ?>
+                                            <?php if ($Hoststatus->isAcknowledged()): ?>
                                                 <?php if ($Hoststatus->getAcknowledgementType() == 1): ?>
                                                     <i class="fa fa-user fa-lg "
                                                        title="<?php echo __('Acknowledgedment'); ?>"></i>
@@ -372,9 +372,9 @@ foreach ($this->params->named as $key => $value) {
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo h($Host->getAddress()); ?></td>
-                                        <td data-original-title="<?php echo h($this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                        <td data-original-title="<?php echo h($this->Time->format($Hoststatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                             data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Hoststatus->getLastHardStateChange()))); ?>
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
                                         <td><?php echo h($Hoststatus->getOutput()); ?></td>
@@ -402,8 +402,8 @@ foreach ($this->params->named as $key => $value) {
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $Host->getId()]); ?> "
-                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            <a href="<?php echo Router::url(['action' => 'edit', $Host->getId()]); ?> ">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
@@ -666,9 +666,9 @@ foreach ($this->params->named as $key => $value) {
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -709,9 +709,9 @@ foreach ($this->params->named as $key => $value) {
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">

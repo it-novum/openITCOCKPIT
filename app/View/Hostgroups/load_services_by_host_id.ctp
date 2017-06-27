@@ -189,7 +189,7 @@ foreach ($services as $service):
             <?php endif; ?>
         </td>
         <td>
-            <?php if ($servicestatus->isAacknowledged() && $servicestatus->currentState() > 0): ?>
+            <?php if ($servicestatus->isAcknowledged() && $servicestatus->currentState() > 0): ?>
                 <i class="fa fa-user txt-color-blue"></i>
             <?php endif; ?>
         </td>

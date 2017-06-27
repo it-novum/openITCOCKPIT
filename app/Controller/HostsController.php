@@ -78,7 +78,6 @@ class HostsController extends AppController {
         'Hostcommandargumentvalue',
         'Contact',
         'Contactgroup',
-        MONITORING_ACKNOWLEDGED,
         MONITORING_ACKNOWLEDGED_HOST,
         'DeletedHost',
         'DeletedService',
@@ -133,7 +132,7 @@ class HostsController extends AppController {
                     [
                         '0' => [
                             'name' => 'Downtime',
-                            'value' => 0,
+                            'value' => 1,
                             'label' => 'In Downtime',
                             'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
                         ],
