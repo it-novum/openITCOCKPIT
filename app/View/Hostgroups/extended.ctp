@@ -362,7 +362,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     <td search="status_since">
                                         <?php
                                         if ($hoststatus->getLastHardStateChange()):
-                                            echo h(HumanTime::secondsInHumanShort(time() - strtotime($hoststatus->getLastHardStateChange())));
+                                            echo h(HumanTime::secondsInHumanShort(time() - $hoststatus->getLastHardStateChange()));
                                         else:
                                             echo __('N/A');
                                         endif;
