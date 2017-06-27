@@ -228,7 +228,7 @@ foreach ($services as $service):
         <td search="status_since">
             <?php
             if ($servicestatus->getLastHardStateChange()):
-                echo h(HumanTime::secondsInHumanShort(time() - strtotime($servicestatus->getLastHardStateChange())));
+                echo h(HumanTime::secondsInHumanShort(time() - $servicestatus->getLastHardStateChange()));
             else:
                 echo __('N/A');
             endif;

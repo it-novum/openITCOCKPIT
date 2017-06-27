@@ -299,7 +299,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <td><strong><?php echo __('Next check in'); ?>:</strong></td>
                                     <td>
                                         <?php if ($host['Host']['active_checks_enabled'] == 1 && $host['Host']['satellite_id'] == 0 && $Hoststatus->isActiveChecksEnabled() !== null): ?>
-                                            <?php echo h($this->Time->timeAgoInWords(strtotime($Hoststatus->getNextCheck()), ['timezone' => $this->Auth->user('timezone')])); ?>
+                                            <?php echo h($this->Time->timeAgoInWords($Hoststatus->getNextCheck(), ['timezone' => $this->Auth->user('timezone')])); ?>
                                             <?php if ($Hoststatus->getLatency() > 1): ?>
                                                 <span class="text-muted"
                                                       title="<?php echo __('Check latency'); ?>">
@@ -638,7 +638,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
                                                                     data-container="body">
-                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
+                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
                                                                 </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
