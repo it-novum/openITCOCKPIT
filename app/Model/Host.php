@@ -1294,6 +1294,7 @@ class Host extends AppModel {
                 'Hoststatus.last_check',
                 'Hoststatus.next_check',
                 'Hoststatus.last_hard_state_change',
+                'Hoststatus.last_state_change',
                 'Hoststatus.output',
                 'Hoststatus.scheduled_downtime_depth',
                 'Hoststatus.active_checks_enabled',

@@ -25,13 +25,14 @@
 
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
-if(!isset($hoststatus['Hoststatus'])):
+if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
-if(!isset($servicestatus['Servicestatus'])):
+if (!isset($servicestatus['Servicestatus'])):
     $servicestatus['Servicestatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
@@ -145,7 +146,10 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 endif; ?>
                             </p>
 
-                            <?php if ($Servicestatus->isAacknowledged() && !empty($acknowledged)): ?>
+                            <?php
+                            if ($Servicestatus->isAcknowledged() && !empty($acknowledged)):
+                                $AcknowledgementService = new AcknowledgementService($acknowledged['AcknowledgedService']);
+                                ?>
                                 <p>
                                     <span class="fa-stack fa-lg">
                                         <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
@@ -161,10 +165,12 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     else:
                                         echo __('The current status was already acknowledged (STICKY) by');
                                     endif; ?>
-                                    <strong><?php echo h($acknowledged['Acknowledged']['author_name']); ?></strong> (<i
-                                            class="fa fa-clock-o"></i>
+                                    <strong>
+                                        <?php echo h($AcknowledgementService->getAuthorName()); ?>
+                                    </strong>
+                                    (<i class="fa fa-clock-o"></i>
                                     <?php
-                                    echo $this->Time->format($acknowledged['Acknowledged']['entry_time'],
+                                    echo $this->Time->format($AcknowledgementService->getEntryTime(),
                                         $this->Auth->user('dateformat'),
                                         false,
                                         $this->Auth->user('timezone')
@@ -173,15 +179,15 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     <?php echo __('with the comment '); ?>
                                     "<?php
                                     $ticketDetails = [];
-                                    if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $acknowledged['Acknowledged']['comment_data'], $ticketDetails)):
+                                    if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementService->getCommentData(), $ticketDetails)):
                                         echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
                                             $this->Html->link(
                                                 $ticketDetails[1] . ' ' . $ticketDetails[2],
                                                 $ticketSystem['Systemsetting']['value'] . $ticketDetails[3],
                                                 ['target' => '_blank']) :
-                                            $acknowledged['Acknowledged']['comment_data'];
+                                            $AcknowledgementService->getCommentData();
                                     else:
-                                        echo h($acknowledged['Acknowledged']['comment_data']);
+                                        echo h($AcknowledgementService->getCommentData());
                                     endif;
                                     ?>".
 

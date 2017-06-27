@@ -31,23 +31,6 @@ class NotificationService extends CrateModuleAppModel {
     public $tablePrefix = 'statusengine_';
 
 
-    //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "notifications Table"
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
-        parent::__construct($id, $table, $ds, $useDynamicAssociations);
-        $this->virtualFields['"Host.name"']    = 'Host.name';
-        $this->virtualFields['"Service.name"'] = 'Service.name';
-        $this->virtualFields['"Contact.name"'] = 'Contact.name';
-        $this->virtualFields['"Command.name"'] = 'Command.name';
-
-        $this->virtualFields['"Service.uuid"'] = 'Service.uuid';
-        $this->virtualFields['"Contact.uuid"'] = 'Contact.uuid';
-        $this->virtualFields['"Command.uuid"'] = 'Command.uuid';
-
-        $this->virtualFields['"Service.id"'] = 'Service.id';
-        $this->virtualFields['"Contact.id"'] = 'Contact.id';
-        $this->virtualFields['"Command.id"'] = 'Command.id';
-    }
-
     /**
      * @param ServiceNotificationConditions $ServiceNotificationConditions
      * @param array $paginatorConditions
@@ -68,9 +51,12 @@ class NotificationService extends CrateModuleAppModel {
             'Service.uuid',
             'Service.name',
 
-            'Contact.*'
+            'Contact.*',
+            'Command.*'
         ];
 
+        //todo CrateDB bug, check if LEFT join can be refactored with INNER join
+        //https://github.com/crate/crate/issues/5747
         $query = [
             'recursive' => -1,
             'fields' => $fields,

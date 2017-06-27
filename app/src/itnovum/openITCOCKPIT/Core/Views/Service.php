@@ -38,9 +38,9 @@ class Service {
     private $uuid;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $servicename;
+    private $servicename = null;
 
     /**
      * @var string
@@ -48,9 +48,9 @@ class Service {
     private $description;
 
     /**
-     * @var int|bool
+     * @var int|bool|null
      */
-    private $active_checks_enabled;
+    private $active_checks_enabled = null;
 
     /**
      * @var string
@@ -94,8 +94,12 @@ class Service {
             $this->description = $service['Service']['description'];
         }
 
-        if (isset($service['Service']['active_checks_enabled'])) {
+        if (isset($service['Service']['active_checks_enabled']) && $service['Service']['active_checks_enabled'] !== '') {
             $this->active_checks_enabled = (bool)$service['Service']['active_checks_enabled'];
+        }
+
+        if($this->active_checks_enabled === null && isset($service['Servicetemplate']['active_checks_enabled'])){
+            $this->active_checks_enabled = (bool)$service['Servicetemplate']['active_checks_enabled'];
         }
 
         if (isset($service['Service']['tags'])) {

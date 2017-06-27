@@ -235,8 +235,10 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                         )); ?>
                                     </td>
                                     <td class="text-center">
-                                        <?php echo h($StatehistoryHost->getCurrentCheckAttempt()); ?>
-                                        /<?php echo h($StatehistoryHost->getMaxCheckAttempts()); ?>
+                                        <?php printf('%s/%s',
+                                            h($StatehistoryHost->getCurrentCheckAttempt()),
+                                            h($StatehistoryHost->getMaxCheckAttempts())
+                                        ); ?>
                                     </td>
                                     <td class="text-center">
                                         <?php echo h($this->Status->humanServiceStateType(

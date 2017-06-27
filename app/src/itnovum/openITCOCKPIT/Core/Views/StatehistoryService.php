@@ -25,6 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
-class StatehistoryHost extends Statehistory {
+class StatehistoryService extends Statehistory {
 
 }

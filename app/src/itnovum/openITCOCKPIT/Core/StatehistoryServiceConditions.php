@@ -22,9 +22,53 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 
-class StatehistoryHost extends Statehistory {
+class StatehistoryServiceConditions extends ListSettingsConditions {
+
+    protected $states = [
+        0, 1, 2, 3
+    ];
+
+    /**
+     * @var array
+     */
+    protected $order = [
+        'StatehistoryService.state_time' => 'DESC'
+    ];
+
+    /**
+     * @var string
+     */
+    protected $serviceUuid;
+
+    /**
+     * @param $uuid
+     */
+    public function setServiceUuid($uuid){
+        $this->serviceUuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceUuid(){
+        return $this->serviceUuid;
+    }
+
+    /**
+     * @param ServiceStates $ServiceStates
+     */
+    public function setStates(ServiceStates $ServiceStates){
+        if (sizeof($ServiceStates->asIntegerArray()) == 4) {
+            $this->states = [];
+            return;
+        }
+
+        $this->states = $ServiceStates->asIntegerArray();
+    }
 
 }
+

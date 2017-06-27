@@ -177,6 +177,16 @@ class Host {
     }
 
     /**
+     * @return bool
+     */
+    public function isSatelliteHost(){
+        if($this->satelliteId  === null){
+            return false;
+        }
+        return ($this->satelliteId !== 0);
+    }
+
+    /**
      * @return int
      */
     public function getContainerId(){
