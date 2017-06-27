@@ -277,7 +277,7 @@ class GearmanWorkerShell extends AppShell
                     ]);
                 }
 
-                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
@@ -314,7 +314,7 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'CheckMKListChecks':
-                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
@@ -357,7 +357,7 @@ class GearmanWorkerShell extends AppShell
                     'host_address'  => $payload['hostaddress'],
                 ]);
 
-                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
@@ -395,7 +395,7 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'CheckMKProcesses':
-                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
