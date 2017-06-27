@@ -198,8 +198,7 @@ class Crate extends DboSource {
 
 
     public function connect(){
-
-        $dsn = 'crate:cratedb1.oitc.itn:4200';
+        $dsn = sprintf('crate:%s', $this->config['host']);
         $flags = [
             PDO::ATTR_TIMEOUT => $this->config['timeout']
         ];
