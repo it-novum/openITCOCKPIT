@@ -44,7 +44,6 @@ class GearmanWorkerShell extends AppShell
         'Export',
         'Host',
         'Service',
-        'Satellite'
     ];
 
     /**
@@ -244,6 +243,8 @@ class GearmanWorkerShell extends AppShell
         // Avoid "MySQL server has gone away"
         $this->Systemsetting->getDatasource()->reconnect();
 
+
+
         switch ($payload['task']) {
             case 'CheckMKSNMP':
                 $_task = new TaskCollection($this);
@@ -276,7 +277,8 @@ class GearmanWorkerShell extends AppShell
                     ]);
                 }
 
-                if($payload['satellite_id'] !== '0'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
                         'conditions' => [
@@ -312,7 +314,8 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'CheckMKListChecks':
-                if($payload['satellite_id'] !== '0'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
                         'conditions' => [
@@ -354,7 +357,8 @@ class GearmanWorkerShell extends AppShell
                     'host_address'  => $payload['hostaddress'],
                 ]);
 
-                if($payload['satellite_id'] !== '0'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
                         'conditions' => [
@@ -391,7 +395,8 @@ class GearmanWorkerShell extends AppShell
                 break;
 
             case 'CheckMKProcesses':
-                if($payload['satellite_id'] !== '0'){
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule'){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
                     $satellite = $this->Satellite->find('first', [
                         'recursive' => -1,
                         'conditions' => [
