@@ -329,7 +329,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     <td>
                                         <?php if ($Servicestatus->isActiveChecksEnabled() && $service['Host']['satellite_id'] == 0): ?>
                                             <?php echo $this->Time->timeAgoInWords(
-                                                strtotime($Servicestatus->getNextCheck()),
+                                                $Servicestatus->getNextCheck(),
                                                 ['timezone' => $this->Auth->user('timezone')]
                                             ); ?>
                                             <?php if ($Servicestatus->getLatency() > 1): ?>
