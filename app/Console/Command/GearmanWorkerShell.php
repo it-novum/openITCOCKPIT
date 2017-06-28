@@ -289,7 +289,7 @@ class GearmanWorkerShell extends AppShell
                         break;
                     }
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/dump-host/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/dump-host/'.$payload['hostuuid']);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -304,9 +304,9 @@ class GearmanWorkerShell extends AppShell
                     }
                     curl_close($ch);
                 }else{
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $output = null;
-                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
                 }
 
@@ -326,7 +326,7 @@ class GearmanWorkerShell extends AppShell
                         break;
                     }
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/check-types');
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/check-types');
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -369,7 +369,7 @@ class GearmanWorkerShell extends AppShell
                         break;
                     }
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/dump-host/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/dump-host/'.$payload['hostUuid']);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -407,7 +407,7 @@ class GearmanWorkerShell extends AppShell
                         break;
                     }
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/discover/raw-info/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/raw-info/'.$payload['hostUuid']);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
