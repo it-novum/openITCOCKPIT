@@ -48,16 +48,19 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		$('#inheritContacts').click(function(){
 			this.inherit();
 		}.bind(this));
-		
-		if(this.getVar('ContactsInherited').inherit == true){
-			$('#serviceContactSelects').block({
-				message: null,
-				overlayCSS: {
-					opacity: 0.0,
-					cursor: 'not-allowed'
-				}
-			});
-		}
+
+        var $inheritContacts = $('#inheritContacts');
+
+        if($inheritContacts.prop('checked') == true) {
+            $('#serviceContactSelects').block({
+                message: null,
+                overlayCSS: {
+                    opacity: 0.5,
+                    cursor: 'not-allowed',
+                    'background-color': 'rgb(255, 255, 255)'
+                }
+            });
+        }
 		/* Contact inherit stuff end */
 		
 		/*
@@ -955,49 +958,52 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 		});
 	},
 	
-	inherit: function(){
-		$inheritCheckbox = $('#inheritContacts');
-		if($inheritCheckbox.prop('checked') == true){
-			$('#serviceContactSelects').block({
-				message: null,
-				overlayCSS: {
-					opacity: 0.0,
-					cursor: 'not-allowed'
-				}
-			});
-			
-			//Remove selection of the select boxes
-			document.getElementById('ServiceContact').selectedIndex = -1;
-			document.getElementById('ServiceContactgroup').selectedIndex = -1;
-			
-			//Set selected in selectbox for contacs
-			var Contact = this.getVar('ContactsInherited').Contact;
-			if(Contact != null){
-				for(var ContactId in Contact){
-					$('#ServiceContact :nth-child('+ContactId+')').prop('selected', true);
-				}
-			}
+	inherit: function() {
+        $inheritCheckbox = $('#inheritContacts');
+        if ($inheritCheckbox.prop('checked') == true) {
+            $('#serviceContactSelects').block({
+                message: null,
+                overlayCSS: {
+                    opacity: 0.5,
+                    cursor: 'not-allowed',
+                    'background-color': 'rgb(255, 255, 255)'
+                }
+            });
+            var Contact = this.getVar('ContactsInherited').Contact;
 
-			//Set selected in selectbox for contact groups
-			var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
-			if(Contactgroup != null){
-				for(var ContactgroupId in Contactgroup){
-					$('#ServiceContactgroup :nth-child('+ContactgroupId+')').prop('selected', true);
-				}
-			}
+            if (Contact != null) {
+                $('#ServiceContact').val('').trigger('chosen:updated');
+                for (var contactId in Contact) {
+                    if ($('#ServiceContact option[value="' + contactId + '"]').length > 0) {
+                        $('#ServiceContact option[value="' + contactId + '"]')
+                            .val(contactId)
+                            .prop('selected', true)
+                    }
+                }
+                $('#ServiceContact').trigger('chosen:updated');
+            }
 
-			$('#ServiceContact').prop('disabled', true);
-			$('#ServiceContactgroup').prop('disabled', true);
-		}else{
-			$('#serviceContactSelects').unblock();
-			$('#ServiceContact').prop('disabled', false);
-			$('#ServiceContactgroup').prop('disabled', false);
-			
-			//Remove selection of the select boxes
-			document.getElementById('ServiceContact').selectedIndex = -1;
-			document.getElementById('ServiceContactgroup').selectedIndex = -1;
-		}
-		$('#ServiceContact').trigger("chosen:updated");
-		$('#ServiceContactgroup').trigger("chosen:updated");
-	}
+            //Set selected in selectbox for contact groups
+            var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
+            if (Contactgroup != null) {
+                $('#ServiceContactgroup').val('').trigger('chosen:updated');
+                for (var ContactgroupId in Contactgroup) {
+                    if ($('#ServiceContactgroup option[value="' + ContactgroupId + '"]').length > 0) {
+                        $('#ServiceContactgroup option[value="' + ContactgroupId + '"]')
+                            .val(ContactgroupId)
+                            .prop('selected', true)
+                    }
+                }
+                $('#ServiceContactgroup').trigger('chosen:updated');
+            }
+
+            $('#ServiceContact').prop('readonly', true);
+            $('#ServiceContactgroup').prop('readonly', true);
+        } else {
+            $('#serviceContactSelects').unblock();
+            $('#ServiceContact').prop('readonly', false);
+            $('#ServiceContactgroupSelects').unblock();
+            $('#ServiceContactgroup').prop('readonly', false);
+        }
+    }
 });

@@ -609,9 +609,7 @@ class WidgetCollectionComponent extends Component
                 $fields = [
                     'fields' => [
                         'Servicestatus.current_state',
-                        'Servicestatus.is_flapping',
-                        'Objects.name2',
-                        'Objects.objecttype_id',
+                        'Servicestatus.is_flapping'
                     ],
                 ];
                 $serviceStatus = $this->_controller->Servicestatus->byUuid($service['Service']['uuid'], $fields);
@@ -624,8 +622,8 @@ class WidgetCollectionComponent extends Component
                 //debug($serviceStatus);
                 $widgetConfiguration = [
                     'service_id'     => $widget['Widget']['service_id'],
-                    'current_state'  => $serviceStatus[$service['Service']['uuid']]['Servicestatus']['current_state'],
-                    'is_flapping'    => $serviceStatus[$service['Service']['uuid']]['Servicestatus']['is_flapping'],
+                    'current_state'  => $serviceStatus['Servicestatus']['current_state'],
+                    'is_flapping'    => $serviceStatus['Servicestatus']['is_flapping'],
                     'check_interval' => $checkInterval,
                     'host_name'      => $service['Host']['name'],
                     'service_name'   => $service['Servicetemplate']['name'],

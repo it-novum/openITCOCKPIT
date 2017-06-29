@@ -28,7 +28,7 @@ use itnovum\openITCOCKPIT\Core\ContainerRepository;
 class AutomapsController extends AppController
 {
     public $layout = 'Admin.default';
-    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, 'Systemsetting', MONITORING_ACKNOWLEDGED];
+    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, MONITORING_ACKNOWLEDGED];
     public $components = ['CustomValidationErrors'];
     public $helpers = ['CustomValidationErrors', 'Status'];
 
@@ -52,12 +52,6 @@ class AutomapsController extends AppController
         }
         $this->set(compact(['all_automaps']));
         $this->set('_serialize', ['all_automaps']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function add()
@@ -115,10 +109,6 @@ class AutomapsController extends AppController
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
         }
-
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $automap = $this->Automap->findById($id);
 
@@ -324,14 +314,14 @@ class AutomapsController extends AppController
 
         $servicestatus = [
             'Servicestatus' => [
-                'current_state'                 => $exitCodes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['current_state']],
-                'state_type'                    => $stateTypes[$servicestatus[$service['Service']['uuid']]['Servicestatus']['state_type']],
-                'last_state_change'             => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'perfdata'                      => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['perfdata']),
-                'output'                        => h($servicestatus[$service['Service']['uuid']]['Servicestatus']['output']),
-                'last_check'                    => CakeTime::format($servicestatus[$service['Service']['uuid']]['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'scheduled_downtime_depth'      => $servicestatus[$service['Service']['uuid']]['Servicestatus']['scheduled_downtime_depth'],
-                'problem_has_been_acknowledged' => $servicestatus[$service['Service']['uuid']]['Servicestatus']['problem_has_been_acknowledged'],
+                'current_state'                 => $exitCodes[$servicestatus['Servicestatus']['current_state']],
+                'state_type'                    => $stateTypes[$servicestatus['Servicestatus']['state_type']],
+                'last_state_change'             => CakeTime::format($servicestatus['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'perfdata'                      => h($servicestatus['Servicestatus']['perfdata']),
+                'output'                        => h($servicestatus['Servicestatus']['output']),
+                'last_check'                    => CakeTime::format($servicestatus['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
+                'scheduled_downtime_depth'      => $servicestatus['Servicestatus']['scheduled_downtime_depth'],
+                'problem_has_been_acknowledged' => $servicestatus['Servicestatus']['problem_has_been_acknowledged'],
             ],
         ];
 

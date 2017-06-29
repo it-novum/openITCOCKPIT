@@ -244,7 +244,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                 <?php foreach ($all_logentries as $logentry): ?>
                                     <tr>
                                         <td>
-                                            <?php echo $logentry['Logentry']['logentry_time']; ?>
+                                            <?php echo h($this->Time->format($logentry['Logentry']['logentry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>
                                         </td>
                                         <td>
                                             <?php

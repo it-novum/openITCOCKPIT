@@ -45,7 +45,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Host Groups'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -312,19 +312,19 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                         <?php $accumulatedServiceState = $ServicestatusCollection->getByHostIdEvenIfNotExists($host['Host']['id']); ?>
                                         <?php if ($accumulatedServiceState >= 0): ?>
                                             <i class="fa fa-gears
-												<?php
+                                            <?php
                                             echo $this->Status->ServiceStatusTextColor(
                                                 $accumulatedServiceState
                                             );
                                             ?>
-											"></i>
+                                            "></i>
                                         <?php endif; ?>
                                     </td>
 
                                     <td class="text-center width-15">
                                         <?php
                                         if ($hoststatus->currentState() > 0):
-                                            if ($hoststatus->isAacknowledged()): ?>
+                                            if ($hoststatus->isAcknowledged()): ?>
                                                 <i class="fa fa-user txt-color-blue"></i>
                                             <?php endif;
                                         endif;
@@ -362,7 +362,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     <td search="status_since">
                                         <?php
                                         if ($hoststatus->getLastHardStateChange()):
-                                            echo h(HumanTime::secondsInHumanShort(time() - strtotime($hoststatus->getLastHardStateChange())));
+                                            echo h(HumanTime::secondsInHumanShort(time() - $hoststatus->getLastHardStateChange()));
                                         else:
                                             echo __('N/A');
                                         endif;
@@ -569,9 +569,9 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">
@@ -612,9 +612,9 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                     ]); ?>
                     <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
                     <center>
-						<span class="hintmark">
-							<?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
-						</span>
+                        <span class="hintmark">
+                            <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
+                        </span>
                     </center>
 
                     <div class="padding-left-10 padding-top-10">

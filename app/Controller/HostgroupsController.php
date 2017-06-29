@@ -114,10 +114,6 @@ class HostgroupsController extends AppController
 
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_hostgroups']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)
@@ -145,10 +141,6 @@ class HostgroupsController extends AppController
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 

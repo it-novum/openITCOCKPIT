@@ -23,70 +23,71 @@
 //	confirmation.
 
 App.Controllers.DowntimesIndexController = Frontend.AppController.extend({
-	$table: null,
+    $table: null,
 
-	_initialize: function() {
-		var self = this;
-		$('.select_datatable').click(function(){
-			self.fnShowHide($(this).attr('my-column'), $(this).children());
-		});
+    _initialize: function () {
+        var self = this;
+        $('.select_datatable').click(function () {
+            self.fnShowHide($(this).attr('my-column'), $(this).children());
+        });
 
-		$('#host_list').dataTable({
-			"bPaginate": false,
-			"bFilter": false,
-			"bInfo": false,
-			"bStateSave": true,
-			"aoColumnDefs" : [ {
-			    "bSortable" : false,
-			    "aTargets" : [ "no-sort" ]
-			} ]
-		});
+        $('#host_list').dataTable({
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bStateSave": true,
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": ["no-sort"]
+            }]
+        });
 
-		this.$table = $('#host_list');
+        this.$table = $('#host_list');
 
-		//Mark checkbox as checked
-		$('.select_datatable').find('input').prop('checked', true);
-		
-		/*
-		 * Bind listoptions events
-		 */
-		$('.listoptions_action').click(function(){
-			$this = $(this);
-			// Set selected value in "fance selectbox"
-			$($this.attr('selector')).html($this.html());
-			// Set selected value in hidden field, for HTLM submit
-			$($this.attr('submit_target')).val($this.attr('value'));
-		});
-		
-		/*
-		 * Bind click evento to .listoptions_checkbox to make a `<a />` to a label
-		 */
-		$('.listoptions_checkbox').click(function(event){
-			$this = $(this);
-			if(event.target == event.currentTarget){
-				$checkbox = $this.find(':checkbox');
-				// Lets make t `<a />` to an 'label'
-				if($checkbox.prop('checked') == true){
-					// Checkbox is enabled, so we need to remove the 'check'
-					$checkbox.prop('checked', false);
-				}else{
-					// Checkbox is disabled, so we set the 'check'
-					$checkbox.prop('checked', true);
-				}
-			}
-		});
+        //Mark checkbox as checked
+        $('.select_datatable').find('input').prop('checked', true);
 
-	},
-	fnShowHide: function( iCol, inputObject){
-		/* Get the DataTables object again - this is not a recreation, just a get of the object */
-		var oTable = this.$table.dataTable();
+        /*
+         * Bind listoptions events
+         */
+        $('.listoptions_action').click(function () {
+            $this = $(this);
+            // Set selected value in "fance selectbox"
+            $($this.attr('selector')).html($this.html());
+            // Set selected value in hidden field, for HTLM submit
+            $($this.attr('submit_target')).val($this.attr('value'));
+        });
 
-		var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
-		if(bVis == true){
-			inputObject.prop('checked', false);
-		}else{
-			inputObject.prop('checked', true);
-		}
-		oTable.fnSetColumnVis( iCol, bVis ? false : true );
-	}
+        /*
+         * Bind click evento to .listoptions_checkbox to make a `<a />` to a label
+         */
+        $('.listoptions_checkbox').click(function (event) {
+            $this = $(this);
+            if (event.target == event.currentTarget) {
+                $checkbox = $this.find(':checkbox');
+                // Lets make t `<a />` to an 'label'
+                if ($checkbox.prop('checked') == true) {
+                    // Checkbox is enabled, so we need to remove the 'check'
+                    $checkbox.prop('checked', false);
+                } else {
+                    // Checkbox is disabled, so we set the 'check'
+                    $checkbox.prop('checked', true);
+                }
+            }
+        });
+
+    },
+    fnShowHide: function (iCol, inputObject) {
+        /* Get the DataTables object again - this is not a recreation, just a get of the object */
+        var oTable = this.$table.dataTable();
+
+        var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+        if (bVis == true) {
+            inputObject.prop('checked', false);
+        } else {
+            inputObject.prop('checked', true);
+        }
+        oTable.fnSetColumnVis(iCol, bVis ? false : true);
+    }
 });

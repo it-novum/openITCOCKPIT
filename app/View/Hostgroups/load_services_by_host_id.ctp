@@ -189,7 +189,7 @@ foreach ($services as $service):
             <?php endif; ?>
         </td>
         <td>
-            <?php if ($servicestatus->isAacknowledged() && $servicestatus->currentState() > 0): ?>
+            <?php if ($servicestatus->isAcknowledged() && $servicestatus->currentState() > 0): ?>
                 <i class="fa fa-user txt-color-blue"></i>
             <?php endif; ?>
         </td>
@@ -228,7 +228,7 @@ foreach ($services as $service):
         <td search="status_since">
             <?php
             if ($servicestatus->getLastHardStateChange()):
-                echo h(HumanTime::secondsInHumanShort(time() - strtotime($servicestatus->getLastHardStateChange())));
+                echo h(HumanTime::secondsInHumanShort(time() - $servicestatus->getLastHardStateChange()));
             else:
                 echo __('N/A');
             endif;

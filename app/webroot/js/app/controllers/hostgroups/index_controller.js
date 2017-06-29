@@ -59,6 +59,7 @@ App.Controllers.HostgroupsIndexController = Frontend.AppController.extend({
         self.setDataTableFilter(highestValue);
 
         $('#hostgroup_list').dataTable({
+            "bSort": false,
             "bPaginate": false,
             "bFilter": false,
             "bInfo": false,

@@ -201,10 +201,6 @@ class ChangelogsController extends AppController
         
         $this->set('_serialize', ['all_changes']);
 
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set(compact(['all_changes']));
     }
 }
