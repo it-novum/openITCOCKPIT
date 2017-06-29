@@ -831,7 +831,6 @@ class DashboardsController extends AppController
                                 $widget[$contain][$dbField] = $value;
                             }
                         }
-                        debug($widget);
                         $this->Widget->saveAll($widget);
                         $this->DashboardTab->id = $widget['DashboardTab']['id'];
                         $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));

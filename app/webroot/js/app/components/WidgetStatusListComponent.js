@@ -76,7 +76,7 @@ App.Components.WidgetStatusListComponent = Frontend.Component.extend({
 		
 		$(document).on('click', '.saveListSettings', function(){
 			var widgetId = $(this).data('widget-id');
-			var $inputs = $('.saveListSettings').parent().children('.listSettings').children(':input');
+			var $inputs = $('.checks-widget-'+widgetId);
 			
 			var widgetTypeId = parseInt($(this).parents('.grid-stack-item').data('widget-type-id'), 10);
 			

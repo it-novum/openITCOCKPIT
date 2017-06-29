@@ -92,7 +92,7 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
                         endif;
                         ?>
                         <i class="fa <?php echo $stateSetting['icon']; ?>"></i> <input
-                                type="checkbox" <?php echo $checked; ?> data-key="<?php echo $dbField; ?>"/>
+                                type="checkbox" <?php echo $checked; ?> data-key="<?php echo $dbField; ?>" class="checks-widget-<?php echo h($widget['Widget']['id']); ?>"/>
                         <?php
                     endforeach; ?>
 				</span>
