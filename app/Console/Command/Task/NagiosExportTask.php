@@ -2132,6 +2132,7 @@ class NagiosExportTask extends AppShell
         }
 
         foreach ($timeperiods as $timeperiod) {
+            $timeranges = [];
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['timeperiods'].$timeperiod['Timeperiod']['uuid'].$this->conf['suffix']);
                 $content = $this->fileHeader();
@@ -2150,8 +2151,14 @@ class NagiosExportTask extends AppShell
             }
 
             foreach ($timeperiod['Timerange'] as $timerange) {
-                $content .= $this->addContent($weekdays[$timerange['day']], 1, $timerange['start'].'-'.$timerange['end']);
+                $timeranges[$timerange['day']][] = $timerange['start'] . '-' . $timerange['end'];
             }
+            
+            foreach($timeranges as $weekday => $timesArray){
+                asort($timesArray);
+                $content .= $this->addContent($weekdays[$weekday], 1, implode(',', $timesArray));
+            }
+
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
@@ -2172,6 +2179,10 @@ class NagiosExportTask extends AppShell
         }
     }
 
+    /**
+     * @param $timeperiods
+     * @param $satelite
+     */
     public function exportSatTimeperiods($timeperiods, $satelite)
     {
         if (!is_dir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'])) {
@@ -2237,6 +2248,7 @@ class NagiosExportTask extends AppShell
                 asort($timeRange);
                 $content .= $this->addContent($day, 1, implode(',', $timeRange));
             }
+
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
