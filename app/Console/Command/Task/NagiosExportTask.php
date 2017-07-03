@@ -2171,8 +2171,18 @@ class NagiosExportTask extends AppShell
             $file->write($content);
             $file->close();
         }
+
+        if ($this->dm === true) {
+            foreach ($this->Satellites as $satelite) {
+                $this->exportSatTimeperiods($timeperiods, $satelite);
+            }
+        }
     }
 
+    /**
+     * @param $timeperiods
+     * @param $satelite
+     */
     public function exportSatTimeperiods($timeperiods, $satelite)
     {
         if (!is_dir($this->conf['satellite_path'] . $satelite['Satellite']['id'] . DS . $this->conf['timeperiods'])) {
