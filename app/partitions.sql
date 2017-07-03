@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS `nagios_servicechecks`;
 
 CREATE TABLE IF NOT EXISTS `nagios_servicechecks` (
-  `servicecheck_id` int(11) NOT NULL AUTO_INCREMENT,
+  `servicecheck_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
   `service_object_id` int(11) NOT NULL DEFAULT '0',
   `check_type` smallint(6) NOT NULL DEFAULT '0',
@@ -39,7 +39,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
 DROP TABLE IF EXISTS `nagios_hostchecks`;
 
 CREATE TABLE IF NOT EXISTS `nagios_hostchecks` (
-  `hostcheck_id` int(11) NOT NULL AUTO_INCREMENT,
+  `hostcheck_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
   `host_object_id` int(11) NOT NULL DEFAULT '0',
   `check_type` smallint(6) NOT NULL DEFAULT '0',
@@ -75,7 +75,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
 DROP TABLE IF EXISTS `nagios_statehistory`;
 
 CREATE TABLE IF NOT EXISTS `nagios_statehistory` (
-  `statehistory_id` int(11) NOT NULL AUTO_INCREMENT,
+  `statehistory_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
   `state_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `state_time_usec` int(11) NOT NULL DEFAULT '0',
@@ -100,7 +100,7 @@ PARTITION BY RANGE ( TO_DAYS(state_time) ) (
 DROP TABLE IF EXISTS `nagios_logentries`;
 
 CREATE TABLE IF NOT EXISTS `nagios_logentries` (
-  `logentry_id` int(11) NOT NULL AUTO_INCREMENT,
+  `logentry_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` int(11) NOT NULL DEFAULT '0',
   `logentry_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `entry_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
@@ -122,7 +122,7 @@ PARTITION BY RANGE ( TO_DAYS(entry_time) ) (
 DROP TABLE IF EXISTS `nagios_notifications`;
 
 CREATE TABLE IF NOT EXISTS `nagios_notifications` (
-  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `notification_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
   `notification_type` smallint(6) NOT NULL DEFAULT '0',
   `notification_reason` smallint(6) NOT NULL DEFAULT '0',
@@ -149,16 +149,18 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
 DROP TABLE IF EXISTS `nagios_contactnotifications`;
 
 CREATE TABLE IF NOT EXISTS `nagios_contactnotifications` (
-  `contactnotification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `contactnotification_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
-  `notification_id` int(11) NOT NULL DEFAULT '0',
+  `notification_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
   `contact_object_id` int(11) NOT NULL DEFAULT '0',
   `start_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `start_time_usec` int(11) NOT NULL DEFAULT '0',
   `end_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `end_time_usec` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`contactnotification_id`, `start_time`),
-  KEY `start_time` (`start_time`)
+  KEY `start_time` (`start_time`),
+  KEY `contact_object_id` (`contact_object_id`),
+  KEY `notification_id` (`notification_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_swedish_ci COMMENT='Historical record of contact notifications'
 PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
@@ -169,9 +171,9 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
 DROP TABLE IF EXISTS `nagios_contactnotificationmethods`;
 
 CREATE TABLE IF NOT EXISTS `nagios_contactnotificationmethods` (
-  `contactnotificationmethod_id` int(11) NOT NULL AUTO_INCREMENT,
+  `contactnotificationmethod_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `instance_id` smallint(6) NOT NULL DEFAULT '0',
-  `contactnotification_id` int(11) NOT NULL DEFAULT '0',
+  `contactnotification_id` BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
   `start_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
   `start_time_usec` int(11) NOT NULL DEFAULT '0',
   `end_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
