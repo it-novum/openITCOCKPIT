@@ -34,7 +34,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_servicechecks\G
+-- mysql> show create table openitcockpit.nagios_servicechecks\G
 
 DROP TABLE IF EXISTS `nagios_hostchecks`;
 
@@ -70,7 +70,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_hostchecks\G
+-- mysql> show create table openitcockpit.nagios_hostchecks\G
 
 DROP TABLE IF EXISTS `nagios_statehistory`;
 
@@ -95,7 +95,7 @@ PARTITION BY RANGE ( TO_DAYS(state_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_statehistory\G
+-- mysql> show create table openitcockpit.nagios_statehistory\G
 
 DROP TABLE IF EXISTS `nagios_logentries`;
 
@@ -117,7 +117,7 @@ PARTITION BY RANGE ( TO_DAYS(entry_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_logentries\G
+-- mysql> show create table openitcockpit.nagios_logentries\G
 
 DROP TABLE IF EXISTS `nagios_notifications`;
 
@@ -144,7 +144,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_notifications\G
+-- mysql> show create table openitcockpit.nagios_notifications\G
 
 DROP TABLE IF EXISTS `nagios_contactnotifications`;
 
@@ -166,7 +166,7 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_contactnotifications\G
+-- mysql> show create table openitcockpit.nagios_contactnotifications\G
 
 DROP TABLE IF EXISTS `nagios_contactnotificationmethods`;
 
@@ -187,4 +187,4 @@ PARTITION BY RANGE ( TO_DAYS(start_time) ) (
   PARTITION p_max VALUES LESS THAN (MAXVALUE)
 );
 
--- mysql> show create table itnovum_workshop.nagios_contactnotificationmethods\G
+-- mysql> show create table openitcockpit.nagios_contactnotificationmethods\G
