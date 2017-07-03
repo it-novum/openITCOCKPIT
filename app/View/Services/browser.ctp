@@ -25,13 +25,14 @@
 
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
-if(!isset($hoststatus['Hoststatus'])):
+if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
-if(!isset($servicestatus['Servicestatus'])):
+if (!isset($servicestatus['Servicestatus'])):
     $servicestatus['Servicestatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
@@ -145,7 +146,10 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 endif; ?>
                             </p>
 
-                            <?php if ($Servicestatus->isAacknowledged() && !empty($acknowledged)): ?>
+                            <?php
+                            if ($Servicestatus->isAcknowledged() && !empty($acknowledged)):
+                                $AcknowledgementService = new AcknowledgementService($acknowledged['AcknowledgedService']);
+                                ?>
                                 <p>
                                     <span class="fa-stack fa-lg">
                                         <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
@@ -161,10 +165,12 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     else:
                                         echo __('The current status was already acknowledged (STICKY) by');
                                     endif; ?>
-                                    <strong><?php echo h($acknowledged['Acknowledged']['author_name']); ?></strong> (<i
-                                            class="fa fa-clock-o"></i>
+                                    <strong>
+                                        <?php echo h($AcknowledgementService->getAuthorName()); ?>
+                                    </strong>
+                                    (<i class="fa fa-clock-o"></i>
                                     <?php
-                                    echo $this->Time->format($acknowledged['Acknowledged']['entry_time'],
+                                    echo $this->Time->format($AcknowledgementService->getEntryTime(),
                                         $this->Auth->user('dateformat'),
                                         false,
                                         $this->Auth->user('timezone')
@@ -173,15 +179,15 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     <?php echo __('with the comment '); ?>
                                     "<?php
                                     $ticketDetails = [];
-                                    if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $acknowledged['Acknowledged']['comment_data'], $ticketDetails)):
+                                    if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementService->getCommentData(), $ticketDetails)):
                                         echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
                                             $this->Html->link(
                                                 $ticketDetails[1] . ' ' . $ticketDetails[2],
                                                 $ticketSystem['Systemsetting']['value'] . $ticketDetails[3],
                                                 ['target' => '_blank']) :
-                                            $acknowledged['Acknowledged']['comment_data'];
+                                            $AcknowledgementService->getCommentData();
                                     else:
-                                        echo h($acknowledged['Acknowledged']['comment_data']);
+                                        echo h($AcknowledgementService->getCommentData());
                                     endif;
                                     ?>".
 
@@ -246,7 +252,20 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <?php echo $Servicestatus->compareHostFlapDetectionWithMonitoring($service['Service']['flap_detection_enabled'])['html']; ?>
                                     </td>
                                 </tr>
-
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($service['Service']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $service['Service']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if (!$Servicestatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td>
@@ -323,7 +342,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     <td>
                                         <?php if ($Servicestatus->isActiveChecksEnabled() && $service['Host']['satellite_id'] == 0): ?>
                                             <?php echo $this->Time->timeAgoInWords(
-                                                strtotime($Servicestatus->getNextCheck()),
+                                                $Servicestatus->getNextCheck(),
                                                 ['timezone' => $this->Auth->user('timezone')]
                                             ); ?>
                                             <?php if ($Servicestatus->getLatency() > 1): ?>

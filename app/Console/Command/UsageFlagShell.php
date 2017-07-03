@@ -68,10 +68,16 @@ class UsageFlagShell extends AppShell {
      * DO NOT MODIFY IT IF YOU DONT KNOW WHAT YOU DO!
      * @var array
      */
-    protected $modules = [
+    protected $modulesToCheck = [
         'Autoreport',
         'Eventcorrelation',
     ];
+
+    /**
+     * @var array
+     * List of all loaded modules, we need to touch
+     */
+    private $modules = [];
 
     /**
      * Hold Representations of module instances
@@ -85,12 +91,18 @@ class UsageFlagShell extends AppShell {
      */
     protected $usageFlagMapping = [];
 
+    public function _welcome(){
+        $this->hr();
+        $this->out('Setting usage_flag for hosts and services');
+        $this->hr();
+    }
 
     public function main() {
         //create Object instances
         $this->Host = new Host();
         $this->Service = new Service();
         $this->createModuleInstances();
+
 
         $this->getModuleHostAndServices($this->modules);
         $this->assignUsageFlagValue($this->moduleElements);
@@ -103,19 +115,22 @@ class UsageFlagShell extends AppShell {
      */
     protected function createModuleInstances() {
         try {
-            if(empty($this->modules)){
+            if(empty($this->modulesToCheck)){
                 throw new Exception('No Modules given! Exit');
             }
-            foreach ($this->modules as $module) {
+            foreach ($this->modulesToCheck as $module) {
                 $this->out('<info>Create Instance of ' . $module . '</info>');
                 if (!class_exists($module)) {
-                    throw new Exception('Class ' . $module . ' could not be found');
+                    $this->out('<error>Class ' . $module . ' could not be found</error>');
+                    continue;
                 }
                 $this->moduleInstances[$module] = new $module();
+                $this->modules[] = $module;
                 $this->out('<success>done!</success>');
             }
         } catch (Exception $e) {
-            $this->error($e->getMessage());
+            $this->out('<error>'.$e->getMessage().'</error>');
+            //$this->error($e->getMessage());
         }
     }
 
@@ -133,22 +148,29 @@ class UsageFlagShell extends AppShell {
             }
 
             foreach ($elements as $moduleName => $data) {
+                $this->out('<info>Save usage flags for ' . $moduleName . '</info>');
                 foreach ($data as $modelName => $elementIds) {
-                    $this->out('<info>Save usage flags for ' . $modelName . '</info>');
                     $datasource = $this->{$modelName}->getDatasource();
                     $datasource->begin();
                     $result = [];
+
                     foreach ($elementIds as $elementId) {
                         $this->{$modelName}->id = $elementId;
-                        $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
+
+                        if($this->{$modelName}->exists($elementId)){
+                            $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
+                        }else{
+                            $this->out('<warning>'.$modelName.' with ID '.$elementId.' was not found in '.Inflector::tableize($modelName).' Table</warning>');
+                        }
                     }
+
                     //check if something could not be saved
                     if (!in_array(false, $result)) {
                         $datasource->commit();
-                        $this->out('<success>done!</success>');
+                        $this->out('<success>'.$modelName.' done!</success>');
                     } else {
-                        throw new Exception('something could not be saved while processing ' . Inflector::pluralize($modelName) . '. Keep calm - nothing has been written into the Database for ' . Inflector::pluralize($modelName) . '!');
                         $datasource->rollback();
+                        throw new Exception('something could not be saved while processing ' . Inflector::pluralize($modelName) . '. Keep calm - nothing has been written into the Database for ' . Inflector::pluralize($modelName) . '!');
                     }
                 }
             }
@@ -168,8 +190,9 @@ class UsageFlagShell extends AppShell {
     protected function assignUsageFlagValue($elements) {
         try {
             foreach ($elements as $moduleName => $data) {
+                $this->out('<info>Map usage flags for ' . $moduleName . '</info>');
                 foreach ($data as $modelName => $elementIds) {
-                    $this->out('<info>Map usage flags for ' . $modelName . '</info>');
+
                     if (empty(constant(strtoupper($moduleName) . '_MODULE'))) {
                         throw new Exception('The Constant for ' . $moduleName . ' cannot not be found! Mapping cannot be processed - Exit');
                     }
@@ -184,7 +207,7 @@ class UsageFlagShell extends AppShell {
                             $this->usageFlagMapping[$modelName][$elementId] = constant(strtoupper($moduleName) . '_MODULE');
                         }
                     }
-                    $this->out('<success>done!</success>');
+                    $this->out('<success>'.$modelName.' done!</success>');
                 }
             }
         } catch (Exception $e) {
@@ -222,7 +245,7 @@ class UsageFlagShell extends AppShell {
                 }
             }
         } catch (Exception $e) {
-            $this->error($e->getMessage());
+           $this->error($e->getMessage());
         }
     }
 }

@@ -29,5 +29,9 @@ CREATE TABLE IF NOT EXISTS openitcockpit_services (
   servicetemplate_id int,
   uuid string,
   name string,
-  name_from_template boolean
+  name_from_template boolean,
+  active_checks_enabled int,
+  active_checks_enabled_from_template boolean,
+  tags string,
+  tags_from_template boolean
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');

@@ -23,9 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
+use itnovum\openITCOCKPIT\Core\AcknowledgedServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostControllerRequest;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 
 class AcknowledgementsController extends AppController {
     /*
@@ -34,6 +37,7 @@ class AcknowledgementsController extends AppController {
      */
     public $uses = [
         MONITORING_ACKNOWLEDGED_HOST,
+        MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_ACKNOWLEDGED,
         MONITORING_SERVICESTATUS,
         'Host',
@@ -50,8 +54,8 @@ class AcknowledgementsController extends AppController {
     public $listFilters = [
         'service' => [
             'fields' => [
-                'Acknowledged.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-                'Acknowledged.author_name' => ['label' => 'Author', 'searchType' => 'wildcard'],
+                'AcknowledgedService.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
+                'AcknowledgedService.author_name' => ['label' => 'Author', 'searchType' => 'wildcard'],
             ],
         ],
         'host' => [
@@ -67,10 +71,31 @@ class AcknowledgementsController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
+        //Process request and set request settings back to front end
+        $ServiceStates = new ServiceStates();
+        $AcknowledgedServiceControllerRequest = new AcknowledgedServiceControllerRequest(
+            $this->request,
+            $ServiceStates,
+            $this->userLimit
+        );
+
         $service = $this->Service->find('first', [
             'recursive' => -1,
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.service_type',
+                'Service.service_url'
+            ],
             'contain' => [
                 'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address'
+                    ],
                     'Container',
                 ],
                 'Servicetemplate' => [
@@ -84,10 +109,9 @@ class AcknowledgementsController extends AppController {
                 'Service.id' => $id,
             ],
         ]);
-
+        //Check if user is permitted to see this object
         if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -96,29 +120,35 @@ class AcknowledgementsController extends AppController {
             $allowEdit = true;
         }
 
+        //Process conditions
+        $Conditions = new AcknowledgedServiceConditions();
+        $Conditions->setLimit($AcknowledgedServiceControllerRequest->getLimit());
+        $Conditions->setFrom($AcknowledgedServiceControllerRequest->getFrom());
+        $Conditions->setTo($AcknowledgedServiceControllerRequest->getTo());
+        $Conditions->setStates($AcknowledgedServiceControllerRequest->getServiceStates());
+        $Conditions->setOrder($AcknowledgedServiceControllerRequest->getOrder());
+        $Conditions->setServiceUuid($service['Service']['uuid']);
+
+        //Query state history records
+        $query = $this->AcknowledgedService->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+        $all_acknowledgements = $this->Paginator->paginate(
+            $this->AcknowledgedService->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+
+        //Get meta data and push to front end
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
             'fields' => [
                 'Servicestatus.current_state',
+                'Servicestatus.is_flapping'
             ],
         ]);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-
-        $requestSettings = $this->Acknowledged->listSettingsService($this->request, $service['Service']['uuid']);
-
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-        }
-
-
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-
-        $all_acknowledgements = $this->Paginator->paginate($this->Acknowledged->alias);
-
-        $this->set('AcknowledgementListsettings', $requestSettings['Listsettings']);
-        $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'allowEdit', 'docuExists']));
+        $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'docuExists', 'allowEdit']));
+        $this->set('AcknowledgementListsettings', $AcknowledgedServiceControllerRequest->getRequestSettingsForListSettings());
     }
 
     public function host($id = null){

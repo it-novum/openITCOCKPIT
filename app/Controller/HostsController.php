@@ -78,7 +78,6 @@ class HostsController extends AppController {
         'Hostcommandargumentvalue',
         'Contact',
         'Contactgroup',
-        MONITORING_ACKNOWLEDGED,
         MONITORING_ACKNOWLEDGED_HOST,
         'DeletedHost',
         'DeletedService',
@@ -133,7 +132,7 @@ class HostsController extends AppController {
                     [
                         '0' => [
                             'name' => 'Downtime',
-                            'value' => 0,
+                            'value' => 1,
                             'label' => 'In Downtime',
                             'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
                         ],
@@ -141,7 +140,7 @@ class HostsController extends AppController {
                 ],
             ],
         ],
-        'notMonitored' => [
+        'notMnotMonitored' => [
             'fields' => [
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
@@ -288,7 +287,7 @@ class HostsController extends AppController {
         }
 
         if ($this->isApiRequest()) {
-            $all_hosts = $this->${$modelName}->find('all', $query);
+            $all_hosts = $this->{$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);

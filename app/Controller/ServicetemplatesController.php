@@ -628,6 +628,13 @@ class ServicetemplatesController extends AppController
 
     public function add($servicetemplatetype_id = null)
     {
+        $systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $active_checks_enabled = false;
+        //If servicetemplate != checkMK servicetemplate
+        if($servicetemplatetype_id == GENERIC_SERVICE || $servicetemplatetype_id === null){
+            $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT'];
+        }
+
         $_timeperiods = [];
         $_contacts = [];
         $_contactgroups = [];
@@ -677,6 +684,7 @@ class ServicetemplatesController extends AppController
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
 
+        $this->Frontend->set('ServicetemplateActiveChecksEnabled_', __('1'));
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
         $this->Frontend->setJson('lang_minutes', __('minutes'));
@@ -684,7 +692,7 @@ class ServicetemplatesController extends AppController
         $this->Frontend->setJson('lang_and', __('and'));
 
         $this->set('back_url', $this->referer());
-        $this->set(compact(['containers', 'commands', 'eventhandlers', 'userContainerId', 'userValues', 'Customvariable']));
+        $this->set(compact(['containers', 'commands', 'eventhandlers', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
         if ($this->request->is('post') || $this->request->is('put')) {
             //Fixing structure of $this->request->data for HABTM
 

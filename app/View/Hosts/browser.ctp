@@ -125,7 +125,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 endif; ?>
                             </p>
 
-                            <?php if ($Hoststatus->isAacknowledged() && !empty($acknowledged)): ?>
+                            <?php if ($Hoststatus->isAcknowledged() && !empty($acknowledged)): ?>
                                 <?php $Acknowledgement = new AcknowledgementHost($acknowledged['AcknowledgedHost']); ?>
                                 <p>
                                     <span class="fa-stack fa-lg">
@@ -237,6 +237,20 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <td><strong><?php echo __('Flap detection'); ?>:</strong></td>
                                     <td><?php echo $Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['html']; ?></td>
                                 </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($host['Host']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $host['Host']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td><strong><?php echo __('Notifications'); ?>:</strong></td>
@@ -285,7 +299,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <td><strong><?php echo __('Next check in'); ?>:</strong></td>
                                     <td>
                                         <?php if ($host['Host']['active_checks_enabled'] == 1 && $host['Host']['satellite_id'] == 0 && $Hoststatus->isActiveChecksEnabled() !== null): ?>
-                                            <?php echo h($this->Time->timeAgoInWords(strtotime($Hoststatus->getNextCheck()), ['timezone' => $this->Auth->user('timezone')])); ?>
+                                            <?php echo h($this->Time->timeAgoInWords($Hoststatus->getNextCheck(), ['timezone' => $this->Auth->user('timezone')])); ?>
                                             <?php if ($Hoststatus->getLatency() > 1): ?>
                                                 <span class="text-muted"
                                                       title="<?php echo __('Check latency'); ?>">
@@ -579,7 +593,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                     ?>
                                                                 </td>
                                                                 <td class="text-center">
-                                                                    <?php if ($Servicestatus->isAacknowledged()): ?>
+                                                                    <?php if ($Servicestatus->isAcknowledged()): ?>
                                                                         <?php if ($Servicestatus->getAcknowledgementType() == 1): ?>
                                                                             <i class="fa fa-user"
                                                                                title="<?php echo __('Acknowledgedment'); ?>"></i>
@@ -624,7 +638,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
                                                                     data-container="body">
-                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Servicestatus->getLastStateChange()))); ?>
+                                                                    <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
                                                                 </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>

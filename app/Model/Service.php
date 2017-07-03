@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
+
 class Service extends AppModel {
 
     public $hasAndBelongsToMany = [
@@ -1209,5 +1211,109 @@ class Service extends AppModel {
             }
             return false;
         }
+    }
+
+    public function virtualFieldsForIndexAndServiceList(){
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'conditions' => $conditions,
+            'contain' => ['Servicetemplate'],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+                'Service.tags',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.state_type',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+
+                'Hoststatus.current_state',
+
+                'HostsToContainers.container_id',
+            ],
+            'order' => $ServiceConditions->getOrder(),
+            'joins' => [[
+                'table' => 'hosts',
+                'type' => 'INNER',
+                'alias' => 'Host',
+                'conditions' => 'Service.host_id = Host.id',
+            ], [
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'HostObject',
+                'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+            ], [
+                'table' => 'nagios_hoststatus',
+                'type' => 'INNER',
+                'alias' => 'Hoststatus',
+                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+            ], [
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'ServiceObject',
+                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+            ], [
+                'table' => 'nagios_servicestatus',
+                'type' => 'LEFT OUTER',
+                'alias' => 'Servicestatus',
+                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+            ], [
+                'table' => 'hosts_to_containers',
+                'alias' => 'HostsToContainers',
+                'type' => 'LEFT',
+                'conditions' => [
+                    'HostsToContainers.host_id = Host.id',
+                ],
+            ],
+            ],
+            'group' => [
+                'Service.id',
+            ],
+        ];
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if($ServiceConditions->getHostId()){
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
     }
 }
