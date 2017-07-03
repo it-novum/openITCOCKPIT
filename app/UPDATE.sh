@@ -126,7 +126,6 @@ fi
 
 echo "Schema ok"
 
-exit;
 
 sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --file schema_itcockpit.php -s 26
 
