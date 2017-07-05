@@ -55,71 +55,64 @@ class CurrentstatereportsController extends AppController
         $this->set(compact(['services', 'userContainerId']));
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $conditions = $this->request->data('Currentstatereport.current_state');
+            if(sizeof($conditions) === 4){
+                $conditions = []; //consider all states
+            }
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
-                foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
-                    $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'], [
-                        'conditions' => [
-                            'Servicestatus.current_state' => $this->request->data('Currentstatereport.current_state'),
-                        ],
-                    ]);
-                    if (!isset($currentStateData[$services[$serviceId]['Host']['uuid']]['Host'])) {
-                        $hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'], [
-                                'fields' => [
-                                    'Hoststatus.current_state',
-                                    'Hoststatus.perfdata',
-                                    'Hoststatus.output',
-                                    'Hoststatus.last_state_change',
-                                ],
-                            ]
-                        );
-                        $currentStateData[$services[$serviceId]['Host']['uuid']]['Host'] = [
-                            'id'          => $services[$serviceId]['Host']['id'],
-                            'name'        => $services[$serviceId]['Host']['name'],
-                            'address'     => $services[$serviceId]['Host']['address'],
-                            'description' => $services[$serviceId]['Host']['description'],
-                            'Hoststatus'  => (empty($hoststatus)) ? [] : [
-                                'current_state'     => $hoststatus['Hoststatus']['current_state'],
-                                'perfdata'          => $hoststatus['Hoststatus']['perfdata'],
-                                'output'            => $hoststatus['Hoststatus']['output'],
-                                'last_state_change' => $hoststatus['Hoststatus']['last_state_change'],
-                            ],
-                        ];
+                $serviceUuids = [];
+                $hostUuids = [];
+                if(!empty($this->request->data('Currentstatereport.Service'))){
+                    foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
+                        if(!empty($services[$serviceId])){
+                            $serviceUuids[] = $services[$serviceId]['Service']['uuid'];
+                            $hostUuids[] = $services[$serviceId]['Host']['uuid'];
+                        }
                     }
+                }
+                $hostUuids = array_unique($hostUuids);
+                $currentServiceStateData = $this->Servicestatus->byUuid($serviceUuids, $conditions);
+                $currentHostStateData = $this->Hoststatus->byUuid($hostUuids);
+                foreach ($services as $serviceId => $service) {
+                    $servicestatus = $currentServiceStateData[$service['Service']['uuid']];
+                    if (!empty($currentHostStateData[$service['Host']['uuid']])) {
+                        $hoststatus = $currentHostStateData[$service['Host']['uuid']];
+                        if(!isset($currentStateData[$service['Host']['uuid']]['Host'])) {
+                            $currentStateData[$service['Host']['uuid']]['Host'] = [
+                                'id' => $service['Host']['id'],
+                                'name' => $service['Host']['name'],
+                                'address' => $service['Host']['address'],
+                                'description' => $service['Host']['description'],
+                                'Hoststatus' => (empty($hoststatus)) ? [] : [
+                                    'current_state' => $hoststatus['Hoststatus']['current_state'],
+                                    'perfdata' => $hoststatus['Hoststatus']['perfdata'],
+                                    'output' => $hoststatus['Hoststatus']['output'],
+                                    'last_state_change' => $hoststatus['Hoststatus']['last_state_change'],
+                                ],
+                            ];
+                        }
+                    }
+
                     if (!empty($servicestatus)) {
                         if (!$serviceStatusExists) {
                             $serviceStatusExists = true;
                         }
-                        $currentStateData[$services[$serviceId]['Host']['uuid']]['Host']['Services'][$services[$serviceId]['Service']['uuid']] = [
-                            'Service'       => [
-                                'name' => $services[$serviceId][0]['ServiceDescription'],
-                                'id'   => $services[$serviceId]['Service']['id'],
-                                'uuid' => $services[$serviceId]['Service']['uuid'],
+                        $currentStateData[$service['Host']['uuid']]['Host']['Services'][$service['Service']['uuid']] = [
+                            'Service' => [
+                                'name' => $service[0]['ServiceDescription'],
+                                'id' => $service['Service']['id'],
+                                'uuid' => $service['Service']['uuid'],
                             ],
                             'Servicestatus' => [
-                                'current_state'     => $servicestatus['Servicestatus']['current_state'],
-                                'perfdata'          => $servicestatus['Servicestatus']['perfdata'],
-                                'output'            => $servicestatus['Servicestatus']['output'],
+                                'current_state' => $servicestatus['Servicestatus']['current_state'],
+                                'perfdata' => $servicestatus['Servicestatus']['perfdata'],
+                                'output' => $servicestatus['Servicestatus']['output'],
                                 'last_state_change' => $servicestatus['Servicestatus']['last_state_change'],
                             ],
                         ];
                     }
-                    /*
-                    else{
-                        $currentStateData[$services[$serviceId]['Host']['uuid']]['Host']['ServicesNotMonitored'][$services[$serviceId]['Service']['uuid']] =  [
-                                'Service' => [
-                                    'name' => $services[$serviceId][0]['ServiceDescription'],
-                                    'id' => $services[$serviceId]['Service']['id']
-                            ],
-                            'Host' => [
-                                'name' => $services[$serviceId]['Host']['name'],
-                                'id' => $services[$serviceId]['Host']['id'],
-                            ]
-                        ];
-                    }
-                    */
                 }
-
                 if (!$serviceStatusExists) {
                     $this->Session->setFlash(__('No service status information within specified filter found'), 'default', ['class' => 'alert auto-hide alert-info']);
                 } else {

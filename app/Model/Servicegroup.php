@@ -84,27 +84,37 @@ class Servicegroup extends AppModel
             switch ($type) {
                 case 'all':
                     return $this->find('all', [
-                        'conditions' => [
-                            'Container.parent_id'        => array_unique(array_values($tenant)),
-                            'Container.containertype_id' => CT_SERVICEGROUP,
-                        ],
-                        'recursive'  => 1,
-                        'order'      => [
-                            'Container.name' => 'ASC',
-                        ],
+                        'recursive'  => -1,
+                        'contain' => [
+                            'Container' => [
+                                'conditions' => [
+                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.containertype_id' => CT_SERVICEGROUP,
+                                ],
+
+                                'order'      => [
+                                    'Container.name' => 'ASC',
+                                ],
+                            ]
+                        ]
                     ]);
 
                 default:
                     $return = [];
                     $results = $this->find('all', [
-                        'conditions' => [
-                            'Container.parent_id'        => array_unique(array_values($tenant)),
-                            'Container.containertype_id' => CT_SERVICEGROUP,
-                        ],
-                        'recursive'  => 1,
-                        'order'      => [
-                            'Container.name' => 'ASC',
-                        ],
+                        'recursive'  => -1,
+                        'contain' => [
+                            'Container' => [
+                                'conditions' => [
+                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.containertype_id' => CT_SERVICEGROUP,
+                                ],
+
+                                'order'      => [
+                                    'Container.name' => 'ASC',
+                                ],
+                            ]
+                        ]
                     ]);
                     foreach ($results as $result) {
                         $return[$result['Servicegroup'][$index]] = $result['Container']['name'];
