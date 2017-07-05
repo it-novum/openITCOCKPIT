@@ -52,29 +52,61 @@ class CurrentstatereportsController extends AppController
         $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
             '{n}.Service.id', '{n}'
         );
+        $selectedServices =
         $this->set(compact(['services', 'userContainerId']));
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $selectedServices = [];
             $conditions = $this->request->data('Currentstatereport.current_state');
             if(sizeof($conditions) === 4){
                 $conditions = []; //consider all states
             }
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
+
                 $serviceUuids = [];
                 $hostUuids = [];
+                $serviceIds = [];
                 if(!empty($this->request->data('Currentstatereport.Service'))){
                     foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
                         if(!empty($services[$serviceId])){
                             $serviceUuids[] = $services[$serviceId]['Service']['uuid'];
                             $hostUuids[] = $services[$serviceId]['Host']['uuid'];
+                            $serviceIds[] = $serviceId;
                         }
                     }
                 }
+                $selectedServices = $this->Service->find('all', [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Host' => [
+                            'fields' => [
+                                'Host.uuid',
+                                'Host.id',
+                                'Host.name',
+                                'Host.description',
+                                'Host.address'
+                            ]
+                        ],
+                        'Servicetemplate' => [
+                            'fields' => [
+                                'Servicetemplate.name'
+                            ]
+                        ]
+                    ],
+                    'conditions' => [
+                        'Service.id' => $serviceIds
+                    ],
+                    'fields' => [
+                        'Service.id',
+                        'Service.uuid',
+                        'Service.name'
+                    ]
+                ]);
                 $hostUuids = array_unique($hostUuids);
                 $currentServiceStateData = $this->Servicestatus->byUuid($serviceUuids, $conditions);
                 $currentHostStateData = $this->Hoststatus->byUuid($hostUuids);
-                foreach ($services as $serviceId => $service) {
+                foreach ($selectedServices as $serviceId => $service) {
                     $servicestatus = $currentServiceStateData[$service['Service']['uuid']];
                     if (!empty($currentHostStateData[$service['Host']['uuid']])) {
                         $hoststatus = $currentHostStateData[$service['Host']['uuid']];
@@ -100,7 +132,7 @@ class CurrentstatereportsController extends AppController
                         }
                         $currentStateData[$service['Host']['uuid']]['Host']['Services'][$service['Service']['uuid']] = [
                             'Service' => [
-                                'name' => $service[0]['ServiceDescription'],
+                                'name' => (!empty($service['Service']['name']))?$service['Service']['name']:$service['Servicetemplate']['name'],
                                 'id' => $service['Service']['id'],
                                 'uuid' => $service['Service']['uuid'],
                             ],
