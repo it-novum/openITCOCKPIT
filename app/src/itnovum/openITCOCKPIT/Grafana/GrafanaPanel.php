@@ -60,6 +60,11 @@ class GrafanaPanel {
     private $YAxes;
 
     /**
+     * @var GrafanaThresholdCollection
+     */
+    private $ThresholdCollection;
+
+    /**
      * @var array
      */
     private $panel = [
@@ -95,7 +100,9 @@ class GrafanaPanel {
         "targets" => [
             //Insert targets here
         ],
-        "thresholds" => [],
+        "thresholds" => [
+            //Insert thresholds here
+        ],
         "timeFrom" => null,
         "timeShift" => null,
         "title" => "",
@@ -128,11 +135,13 @@ class GrafanaPanel {
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
 
-        if($this->SeriesOverrides->hasOverrides()){
+        if ($this->SeriesOverrides->hasOverrides()) {
             $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();
         }
 
         $this->panel['yaxes'] = $this->YAxes->getAxesAsArray();
+
+        $this->panel['thresholds'] = $this->ThresholdCollection->getThresholdsAsArray();
 
         return $this->panel;
     }
@@ -148,14 +157,17 @@ class GrafanaPanel {
      * @param GrafanaTargetCollection $grafanaTargetCollection
      * @param GrafanaSeriesOverrides $SeriesOverrides
      * @param GrafanaYAxes $YAxes
+     * @param GrafanaThresholdCollection $ThresholdCollection
      */
     public function addTargets(
         GrafanaTargetCollection $grafanaTargetCollection,
         GrafanaSeriesOverrides $SeriesOverrides,
-        GrafanaYAxes $YAxes
+        GrafanaYAxes $YAxes,
+        GrafanaThresholdCollection $ThresholdCollection
     ) {
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
         $this->SeriesOverrides = $SeriesOverrides;
         $this->YAxes = $YAxes;
+        $this->ThresholdCollection = $ThresholdCollection;
     }
 }

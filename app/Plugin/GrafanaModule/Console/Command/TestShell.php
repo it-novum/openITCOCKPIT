@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
@@ -30,6 +31,8 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
+use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
+use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 
 class TestShell extends AppShell {
@@ -130,6 +133,7 @@ class TestShell extends AppShell {
             $grafanaTargetCollection = new GrafanaTargetCollection();
             foreach ($perfdata as $label => $gauge) {
 
+                $Perfdata = Perfdata::fromArray($label, $gauge);
                 $grafanaTargetCollection->addTarget(
                     new GrafanaTarget(
                         sprintf(
@@ -137,10 +141,11 @@ class TestShell extends AppShell {
                             'ibering',
                             $host['Host']['uuid'],
                             $service['uuid'],
-                            $label
+                            $Perfdata->getLabel()
                         ),
-                        new GrafanaTargetUnit($gauge['unit']),
-                        $label
+                        new GrafanaTargetUnit($Perfdata->getUnit()),
+                        new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
+                        $Perfdata->getLabel()
                     )
                 );
             }
@@ -148,7 +153,8 @@ class TestShell extends AppShell {
             $grafanaPanel->addTargets(
                 $grafanaTargetCollection,
                 new GrafanaSeriesOverrides($grafanaTargetCollection),
-                new GrafanaYAxes($grafanaTargetCollection)
+                new GrafanaYAxes($grafanaTargetCollection),
+                new GrafanaThresholdCollection($grafanaTargetCollection)
             );
             if($grafanaRow->getNumberOfPanels() === 2 && ($panelId % 2 === 0)){
                 //Row is full, create a new one

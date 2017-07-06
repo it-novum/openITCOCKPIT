@@ -45,14 +45,21 @@ class GrafanaTarget {
     private $alias = null;
 
     /**
+     * @var GrafanaThresholds
+     */
+    private $thresholds;
+
+    /**
      * GrafanaTarget constructor.
      * @param $target
      * @param GrafanaTargetUnit $grafanaTargetUnit
+     * @param GrafanaThresholds $grafanaThresholds
      * @param null $alias
      */
-    public function __construct($target, GrafanaTargetUnit $grafanaTargetUnit, $alias = null) {
+    public function __construct($target, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null) {
         $this->target = $target;
         $this->unit = $grafanaTargetUnit;
+        $this->thresholds = $grafanaThresholds;
         $this->alias = $alias;
     }
 
@@ -83,5 +90,12 @@ class GrafanaTarget {
      */
     public function getUnit(){
         return $this->unit->getUnit();
+    }
+
+    /**
+     * @return GrafanaThresholds
+     */
+    public function getThresholds() {
+        return $this->thresholds;
     }
 }
