@@ -23,24 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = [];
 
-$config = [
-    'menu' => [
-        'grafanamodule' => [
-            'url'      => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
-            'title'    => 'Grafana',
-            'icon'     => 'area-chart',
-            'order'    => 2,
-            'parent'   => 'grafana',
-            'children' => [
-                'map'      => [
-                    'url'               => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
-                    'title'             => 'Configuration',
-                    'icon'              => 'cogs',
-                    'parent_controller' => 'grafana',
-                ],
-            ],
+class GrafanaDashboardsHostgroupMembership extends GrafanaModuleAppModel {
+
+    public $useTable = 'hostgroups_to_grafanadashboards';
+    public $belongsTo = [
+        'GrafanaDashboardConfiguration' => [
+            'className' => 'GrafanaModule.GrafanaDashboardConfiguration',
+            'foreignKey' => 'configuration_id'
         ],
-    ],
-];
+        'Hostgroup' => [
+            'className'  => 'Hostgroup',
+            'foreignKey' => 'hostgroup_id'
+        ],
+    ];
+}

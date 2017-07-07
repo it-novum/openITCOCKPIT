@@ -23,24 +23,28 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = [];
 
-$config = [
-    'menu' => [
-        'grafanamodule' => [
-            'url'      => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
-            'title'    => 'Grafana',
-            'icon'     => 'area-chart',
-            'order'    => 2,
-            'parent'   => 'grafana',
-            'children' => [
-                'map'      => [
-                    'url'               => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
-                    'title'             => 'Configuration',
-                    'icon'              => 'cogs',
-                    'parent_controller' => 'grafana',
-                ],
+
+class GrafanaDashboardConfiguration extends GrafanaModuleAppModel {
+
+    public $hasMany = [
+        'GrafanaModule.GrafanaDashboardsHostgroupMembership'
+    ];
+
+    public $validate = [
+        'api_url' => [
+            'allowEmpty' => [
+                'rule' => 'notBlank',
+                'message' => 'This field cannot be left blank',
+                'required' => true,
             ],
         ],
-    ],
-];
+        'api_key' => [
+            'allowEmpty' => [
+                'rule' => 'notBlank',
+                'message' => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+    ];
+}

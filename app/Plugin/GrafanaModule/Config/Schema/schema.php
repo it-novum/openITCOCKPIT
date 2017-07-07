@@ -1,0 +1,75 @@
+<?php
+
+class GrafanaModuleSchema extends CakeSchema
+{
+
+    public function before($event = [])
+    {
+        $db = ConnectionManager::getDataSource($this->connection);
+        $db->cacheSources = false;
+/*
+        $CronjobModel = ClassRegistry::init('Cronjob');
+
+        //Check if cronjob exists
+        $result = $CronjobModel->find('first', [
+            'conditions' => [
+                'Cronjob.plugin' => 'GrafanaModule',
+                'Cronjob.task'   => 'GrafanaDashboard',
+            ],
+        ]);
+        if (empty($result)) {
+            $data = [
+                'Cronjob' => [
+                    'task'     => 'GrafanaDashboard',
+                    'plugin'   => 'GrafanaModule',
+                    'interval' => '720',
+                ],
+            ];
+            $CronjobModel->create();
+            $CronjobModel->save($data);
+        }
+*/
+        return true;
+    }
+
+    public function after($event = [])
+    {
+    }
+
+    public $grafana_dashboard_configurations = [
+        'id'                       => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'api_url'                  => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'api_key'                  => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'use_https'                => ['type' => 'integer', 'null' => false, 'length' => 1],
+        'ignore_ssl_certificate'   => ['type' => 'integer', 'null' => false, 'length' => 1],
+        'created'                  => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'                 => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'                  => [
+            'PRIMARY' => [
+                'column' => 'id',
+                'unique' => 1
+            ],
+        ],
+        'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $hostgroups_to_grafanadashboards = [
+        'id'                    => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'configuration_id'      => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'hostgroup_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'excluded'              => ['type' => 'integer', 'null' => true, 'length' => 1],
+        'indexes'              => [
+            'PRIMARY'            => [
+                'column' => 'id',
+                'unique' => 1
+            ],
+            'dashboard_id_hostgroup' => [
+                'column' => [
+                    'configuration_id',
+                    'hostgroup_id'
+                ],
+                'unique' => 1],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+}
