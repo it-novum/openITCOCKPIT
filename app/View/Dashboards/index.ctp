@@ -136,10 +136,9 @@
                     <div class="widget-body no-padding padding-top-10">
                         <div class="padding-bottom-10">
                             <div class="grid-stack">
-                                <iframe src="https://metrics.oitc.itn/dashboard/db/c355c510-5305-418b-9348-50b9281dd567?from=1499396179611&to=1499417779611&theme=light&kiosk" width="100%" onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
                                 <?php
                                 foreach ($preparedWidgets as $widget):
-                                    //echo $this->Dashboard->render($widget);
+                                    echo $this->Dashboard->render($widget);
                                 endforeach;
                                 ?>
                             </div>
