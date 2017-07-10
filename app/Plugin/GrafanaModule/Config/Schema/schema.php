@@ -36,10 +36,11 @@ class GrafanaModuleSchema extends CakeSchema
     {
     }
 
-    public $grafana_dashboard_configurations = [
+    public $grafana_configurations = [
         'id'                       => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'api_url'                  => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'api_key'                  => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'graphite_prefix'          => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'use_https'                => ['type' => 'integer', 'null' => false, 'length' => 1],
         'ignore_ssl_certificate'   => ['type' => 'integer', 'null' => false, 'length' => 1],
         'created'                  => ['type' => 'datetime', 'null' => false, 'default' => null],
@@ -53,7 +54,7 @@ class GrafanaModuleSchema extends CakeSchema
         'tableParameters'          => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $hostgroups_to_grafanadashboards = [
+    public $hostgroups_to_grafanaconfigurations = [
         'id'                    => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'configuration_id'      => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'hostgroup_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
@@ -63,7 +64,7 @@ class GrafanaModuleSchema extends CakeSchema
                 'column' => 'id',
                 'unique' => 1
             ],
-            'dashboard_id_hostgroup' => [
+            'configuration_to_hostgroup' => [
                 'column' => [
                     'configuration_id',
                     'hostgroup_id'

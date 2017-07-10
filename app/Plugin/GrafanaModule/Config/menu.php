@@ -28,14 +28,14 @@ $config = [];
 $config = [
     'menu' => [
         'grafanamodule' => [
-            'url'      => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
+            'url'      => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
             'title'    => 'Grafana',
             'icon'     => 'area-chart',
             'order'    => 2,
             'parent'   => 'grafana',
             'children' => [
                 'map'      => [
-                    'url'               => ['controller' => 'grafana_dashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
+                    'url'               => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
                     'title'             => 'Configuration',
                     'icon'              => 'cogs',
                     'parent_controller' => 'grafana',

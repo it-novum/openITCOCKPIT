@@ -22,33 +22,33 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.GrafanaDashboardsIndexController = Frontend.AppController.extend({
+App.Controllers.GrafanaConfigurationIndexController = Frontend.AppController.extend({
 
     components: ['Ajaxloader'],
 
     _initialize: function() {
         this.Ajaxloader.setup();
         var self = this;
-        $('[id^=GrafanaDashboardConfigurationHostgroup]').change(function(){
+        $('[id^=GrafanaConfigurationHostgroup]').change(function(){
             $this = $(this);
             self.refreshHostgroups($this.val(), $this, $this.attr('target'));
         });
 
-        if($('#GrafanaDashboardConfigurationHostgroup').val() !== null || $('#GrafanaDashboardConfigurationHostgroupExcluded').val() !== null){
-            $('#GrafanaDashboardConfigurationHostgroup').children().each(function(intKey, OptionObject){
-                if(in_array(OptionObject.value, $('#GrafanaDashboardConfigurationHostgroupExcluded').val())){
+        if($('#GrafanaConfigurationHostgroup').val() !== null || $('#GrafanaConfigurationHostgroupExcluded').val() !== null){
+            $('#GrafanaConfigurationHostgroup').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#GrafanaConfigurationHostgroupExcluded').val())){
                     $OptionObject = $(OptionObject);
                     $OptionObject.prop('disabled', true);
                 }
             });
-            $('#GrafanaDashboardConfigurationHostgroupExcluded').children().each(function(intKey, OptionObject){
-                if(in_array(OptionObject.value, $('#GrafanaDashboardConfigurationHostgroup').val())){
+            $('#GrafanaConfigurationHostgroupExcluded').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#GrafanaConfigurationHostgroup').val())){
                     $OptionObject = $(OptionObject);
                     $OptionObject.prop('disabled', true);
                 }
             });
-            $('#GrafanaDashboardConfigurationHostgroup').trigger("chosen:updated");
-            $('#GrafanaDashboardConfigurationHostgroupExcluded').trigger("chosen:updated");
+            $('#GrafanaConfigurationHostgroup').trigger("chosen:updated");
+            $('#GrafanaConfigurationHostgroupExcluded').trigger("chosen:updated");
         }
     },
     refreshHostgroups: function(selected_hostgroups, selectboxObject, target){
