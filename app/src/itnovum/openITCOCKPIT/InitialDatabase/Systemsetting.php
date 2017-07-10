@@ -541,6 +541,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.HIDDEN_USER_IN_CHANGELOG',
+                    'value'    => '0',
+                    'info'     => 'Hide the user name in the change log due to privacy reasons',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'CHECK_MK.BIN',
                     'value'    => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
                     'info'     => 'Path to check_mk binary',
