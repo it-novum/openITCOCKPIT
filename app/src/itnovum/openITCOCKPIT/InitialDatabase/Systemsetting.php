@@ -349,30 +349,6 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'CRONJOB.RECURRING_DOWNTIME',
-                    'value'    => '10',
-                    'info'     => 'Time in minutes the cron will check for recurring downtimes',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLEANUP_DATABASE',
-                    'value'    => '1440',
-                    'info'     => 'Time in minutes the cron will check for partitions in database and drop old partitions',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLENUP_TEMPFILES',
-                    'value'    => '10',
-                    'info'     => 'Deletes tmp files',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'      => 'SYSTEM.ADDRESS',
                     'value'    => '127.0.0.1',
                     'info'     => 'The IP address or FQDN of the system',
