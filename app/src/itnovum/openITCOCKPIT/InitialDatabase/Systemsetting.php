@@ -365,7 +365,7 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLENUP_TEMPFILES',
+                    'key'      => 'CRONJOB.CLEANUP_TEMPFILES',
                     'value'    => '10',
                     'info'     => 'Deletes tmp files',
                     'section'  => 'CRONJOB'
