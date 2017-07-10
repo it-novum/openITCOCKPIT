@@ -2773,19 +2773,14 @@ class HostsController extends AppController {
             $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
             $modelName = 'Hoststatus';
         }
-        array_push($query['fields'], 'Hoststatus.last_state_change');
 
+        if(isset($query['limit'])){
+            unset($query['limit']);
+        }
         $all_hosts = $this->{$modelName}->find('all', $query);
 
         $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts']);
 
-
-        $this->set('username', $User->getFullName());
-        $this->set('userRights', $this->MY_RIGHTS);
-        $this->set('myNamedFilters', $this->request->data);
-
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
 
         $SatelliteNames = [];
