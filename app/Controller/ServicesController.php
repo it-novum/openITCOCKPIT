@@ -2644,7 +2644,6 @@ class ServicesController extends AppController {
     public function listToPdf(){
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
-        $User = new User($this->Auth);
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -2678,149 +2677,6 @@ class ServicesController extends AppController {
 
         $this->set('all_services', $all_services);
 
-       /*
-
-
-        $this->__unbindAssociations('Host');
-
-        $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
-        $this->Service->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
-        $this->Service->virtualFields['last_check'] = 'Servicestatus.last_check';
-        $this->Service->virtualFields['next_check'] = 'Servicestatus.next_check';
-        $this->Service->virtualFields['output'] = 'Servicestatus.output';
-        $this->Service->virtualFields['hostname'] = 'Host.name';
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
-        $this->Service->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
-
-        $conditions = [
-            'Service.disabled' => 0,
-            'HostsToContainers.container_id' => $this->MY_RIGHTS,
-        ];
-        $conditions = $this->ListFilter->buildConditions($this->request->params, $conditions);
-
-        $all_services = [];
-        $query = [
-            'recursive' => -1,
-            'conditions' => $conditions,
-            'contain' => ['Servicetemplate'],
-            'fields' => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.description',
-                'Service.active_checks_enabled',
-                'Service.tags',
-                'Servicestatus.current_state',
-                'Servicestatus.last_check',
-                'Servicestatus.next_check',
-                'Servicestatus.last_hard_state_change',
-                'Servicestatus.output',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.active_checks_enabled',
-                'Servicestatus.state_type',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.acknowledgement_type',
-                'Servicestatus.is_flapping',
-                'Servicestatus.last_state_change',
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-                'Servicetemplate.active_checks_enabled',
-                'Servicetemplate.tags',
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.description',
-                'Host.address',
-                'Hoststatus.current_state',
-                'HostsToContainers.container_id',
-            ],
-            'order' => [
-                'Host.name' => 'asc',
-                'Service.servicename' => 'asc',
-            ],
-            'joins' => [[
-                'table' => 'hosts',
-                'type' => 'INNER',
-                'alias' => 'Host',
-                'conditions' => 'Service.host_id = Host.id',
-            ], [
-                'table' => 'nagios_objects',
-                'type' => 'INNER',
-                'alias' => 'HostObject',
-                'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-            ], [
-                'table' => 'nagios_hoststatus',
-                'type' => 'INNER',
-                'alias' => 'Hoststatus',
-                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
-            ], [
-                'table' => 'nagios_objects',
-                'type' => 'INNER',
-                'alias' => 'ServiceObject',
-                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-            ], [
-                'table' => 'nagios_servicestatus',
-                'type' => 'LEFT OUTER',
-                'alias' => 'Servicestatus',
-                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-            ], [
-                'table' => 'hosts_to_containers',
-                'alias' => 'HostsToContainers',
-                'type' => 'LEFT',
-                'conditions' => [
-                    'HostsToContainers.host_id = Host.id',
-                ],
-            ],
-            ],
-            'group' => [
-                'Service.id',
-            ],
-        ];
-        $all_services = $this->Service->find('all', $query);
-
-        $hostContainers = [];
-        if (!empty($all_services)) {
-            $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
-            $_hostContainers = $this->Host->find('all', [
-                'contain' => [
-                    'Container',
-                ],
-                'fields' => [
-                    'Host.id',
-                    'Container.*',
-                ],
-                'conditions' => [
-                    'Host.id' => $hostIds,
-                ],
-            ]);
-            foreach ($_hostContainers as $host) {
-                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
-            }
-        }
-        $username = $this->Auth->user('full_name');
-
-        $this->set(compact(['all_services', 'username', 'hostContainers']));
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_services']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (isset($this->request->data['Filter']['ServiceStatus']['current_state'])) {
-                $this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
-            } else {
-                $this->set('ServiceStatus.current_state', []);
-            }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
-
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-
-        unset($servicestatus);
-
-       */
         $filename = 'Services_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
@@ -2835,7 +2691,7 @@ class ServicesController extends AppController {
                 'top' => 15,
             ],
             'encoding' => 'UTF-8',
-            'download' => false, //change to ture!!
+            'download' => true,
             'binary' => $binary_path,
             'orientation' => 'portrait',
             'filename' => $filename,
