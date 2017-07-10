@@ -29,27 +29,26 @@ App.Controllers.GrafanaDashboardsIndexController = Frontend.AppController.extend
     _initialize: function() {
         this.Ajaxloader.setup();
         var self = this;
-
-        $('[id^=GrafanaHostgroup]').change(function(){
+        $('[id^=GrafanaDashboardConfigurationHostgroup]').change(function(){
             $this = $(this);
             self.refreshHostgroups($this.val(), $this, $this.attr('target'));
         });
 
-        if($('#GrafanaHostgroup').val() !== null || $('#GrafanaHostgroupExcluded').val() !== null){
-            $('#GrafanaHostgroup').children().each(function(intKey, OptionObject){
-                if(in_array(OptionObject.value, $('#GrafanaHostgroupExcluded').val())){
+        if($('#GrafanaDashboardConfigurationHostgroup').val() !== null || $('#GrafanaDashboardConfigurationHostgroupExcluded').val() !== null){
+            $('#GrafanaDashboardConfigurationHostgroup').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#GrafanaDashboardConfigurationHostgroupExcluded').val())){
                     $OptionObject = $(OptionObject);
                     $OptionObject.prop('disabled', true);
                 }
             });
-            $('#GrafanaHostgroupExcluded').children().each(function(intKey, OptionObject){
-                if(in_array(OptionObject.value, $('#GrafanaHostgroup').val())){
+            $('#GrafanaDashboardConfigurationHostgroupExcluded').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#GrafanaDashboardConfigurationHostgroup').val())){
                     $OptionObject = $(OptionObject);
                     $OptionObject.prop('disabled', true);
                 }
             });
-            $('#GrafanaHostgroup').trigger("chosen:updated");
-            $('#GrafanaHostgroupExcluded').trigger("chosen:updated");
+            $('#GrafanaDashboardConfigurationHostgroup').trigger("chosen:updated");
+            $('#GrafanaDashboardConfigurationHostgroupExcluded').trigger("chosen:updated");
         }
     },
     refreshHostgroups: function(selected_hostgroups, selectboxObject, target){

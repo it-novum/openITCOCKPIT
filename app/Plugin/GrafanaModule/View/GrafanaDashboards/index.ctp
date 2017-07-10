@@ -87,7 +87,7 @@
                                 'tag' => 'div',
                                 'class' => 'col col-xs-10 success'
                             ],
-                            'target' => '#GrafanaHostgroupExcluded'
+                            'target' => '#GrafanaDashboardConfigurationHostgroupExcluded'
                         ]);
 
                         echo $this->Form->input('GrafanaDashboardConfiguration.Hostgroup_excluded', [
@@ -101,7 +101,7 @@
                                 'tag' => 'div',
                                 'class' => 'col col-xs-10 danger'
                             ],
-                            'target' => '#GrafanaHostgroup']);
+                            'target' => '#GrafanaDashboardConfigurationHostgroup']);
                     ?>
                 </div>
             </div>
