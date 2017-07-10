@@ -140,6 +140,57 @@ class HostsController extends AppController {
                 ],
             ],
         ],
+        'listToPdf' => [
+            'fields' => [
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
+                'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+
+                'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Hoststatus.up',
+                            'value' => 1,
+                            'label' => 'Up',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                        '1' => [
+                            'name' => 'Hoststatus.down',
+                            'value' => 1,
+                            'label' => 'Down',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                        '2' => [
+                            'name' => 'Hoststatus.unreachable',
+                            'value' => 1,
+                            'label' => 'Unreachable',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                    ],
+                ],
+                'Hoststatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '1' => [
+                            'name' => 'Acknowledged',
+                            'value' => 1,
+                            'label' => 'Acknowledged',
+                            'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                        ],
+                    ],
+                ],
+                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Downtime',
+                            'value' => 1,
+                            'label' => 'In Downtime',
+                            'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
+                        ],
+                    ],
+                ],
+            ],
+        ],
         'notMnotMonitored' => [
             'fields' => [
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
@@ -2613,40 +2664,6 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
-    /*
-    * Compare two arrays with each other
-    * @param host Array
-    * @param hosttemplate Array
-    * @return $diff_array
-    *
-    * *************** Contact and contactgroups check ************
-    debug(Set::classicExtract($host, '{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}'))); 	//Host
-    debug(Set::classicExtract($hosttemplate, '{(Contact|Contactgroup)}.{n}.id'));					//Hosttemplate
-    array(
-        'Contact' => array(
-            'Contact' => array(
-                (int) 0 => '26'
-            )
-        ),
-        'Contactgroup' => array(
-            'Contactgroup' => array(
-                (int) 0 => '131',
-                (int) 1 => '132'
-            )
-        )
-    )
-    *************** Single fields in hosttemplate and host *************
-    debug(Set::classicExtract($host, 'Host.{('.implode('|', array_values(Hash::merge($fields,['name', 'description', 'address']))).')}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Hosttemplate.{('.implode('|', array_values($fields)).')}')));	//Hosttemplate
-
-    **************** Command arguments check *************
-    debug(Set::classicExtract($host, 'Hostcommandargumentvalue.{n}.{(commandargument_id|value)}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}')));	//Hostemplate
-
-    **************** Custom variables check *************
-    debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
-    */
     private function _diffWithTemplate($host, $hosttemplate){
         $diff_array = [];
         //Host-/Hosttemplate fields
@@ -2734,68 +2751,51 @@ class HostsController extends AppController {
     }
 
     public function listToPdf(){
-        $args = func_get_args();
-
-        $conditions = [
-            'Host.disabled' => 0,
-            'Host.container_id' => $this->MY_RIGHTS,
-        ];
-
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $host_ids = $args;
-                end($host_ids);
-                $last_key = key($host_ids);
-                unset($host_ids[$last_key]);
-
-                $_conditions = [
-                    'Host.id' => $host_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            } else {
-                $host_ids = $args;
-
-                $_conditions = [
-                    'Host.id' => $host_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            }
+        $HostControllerRequest = new HostControllerRequest($this->request);
+        $HostCondition = new HostConditions();
+        $User = new User($this->Auth);
+        if ($HostControllerRequest->isRequestFromBrowser() === false) {
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
         }
 
-        $hoststatus = $this->Objects->find('all', [
-            'recursive' => -1,
-            'conditions' => $conditions,
-            'fields' => [
-                'Host.name',
-                'Hoststatus.current_state',
-                'Hoststatus.last_check',
-                'Hoststatus.is_flapping',
-                'Hoststatus.next_check',
-                'Hoststatus.last_state_change',
-                'Hoststatus.problem_has_been_acknowledged',
-                'Hoststatus.scheduled_downtime_depth',
-            ],
-            'joins' => [
-                [
-                    'table' => 'hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
-                    'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1',
-                ],
-                [
-                    'table' => 'nagios_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
-                    'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                ],
-            ],
-            'order' => [
-                'Host.name ASC',
-            ],
-        ]);
-        $hostCount = count($hoststatus);
+        $HostCondition->setOrder($HostControllerRequest->getOrder(
+            ['Host.name' => 'asc'] //Default order
+        ));
 
-        $this->set(compact('hoststatus', 'hostCount'));
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $modelName = 'Hoststatus';
+        }
+        array_push($query['fields'], 'Hoststatus.last_state_change');
+
+        $all_hosts = $this->{$modelName}->find('all', $query);
+
+        $this->set('all_hosts', $all_hosts);
+        $this->set('_serialize', ['all_hosts']);
+
+
+        $this->set('username', $User->getFullName());
+        $this->set('userRights', $this->MY_RIGHTS);
+        $this->set('myNamedFilters', $this->request->data);
+
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+        }
+        $this->set('SatelliteNames', $SatelliteNames);
+
         $filename = 'Hosts_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {

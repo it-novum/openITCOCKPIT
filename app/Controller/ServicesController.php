@@ -166,28 +166,78 @@ class ServicesController extends AppController {
                         ],
                     ],
                 ],
-                /*	'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-					[
-						'0' => [
-							'name' => 'Hoststatus.up',
-							'value' => 1,
-							'label' => 'Up',
-							'data' => 'Filter.Hoststatus.current_state',
-						],
-						'1' => [
-							'name' => 'Hoststatus.down',
-							'value' => 1,
-							'label' => 'Down',
-							'data' => 'Filter.Hoststatus.current_state',
-						],
-						'2' => [
-							'name' => 'Hoststatus.unreachable',
-							'value' => 1,
-							'label' => 'Unreachable',
-							'data' => 'Filter.Hoststatus.current_state',
-						]
-					]
-				], */
+            ],
+        ],
+        'listToPdf' => [
+            'fields' => [
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
+                'Servicestatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Service.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+                'Servicestatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Servicestatus.ok',
+                            'value' => 1,
+                            'label' => 'Ok',
+                            'data' => 'Filter.Servicestatus.current_state',
+                        ],
+                        '1' => [
+                            'name' => 'Servicestatus.warning',
+                            'value' => 1,
+                            'label' => 'Warning',
+                            'data' => 'Filter.Servicestatus.current_state',
+                        ],
+                        '2' => [
+                            'name' => 'Servicestatus.critical',
+                            'value' => 1,
+                            'label' => 'Critical',
+                            'data' => 'Filter.Servicestatus.current_state',
+                        ],
+                        '3' => [
+                            'name' => 'Servicestatus.unknown',
+                            'value' => 1,
+                            'label' => 'Unknown',
+                            'data' => 'Filter.Servicestatus.current_state',
+                        ],
+                    ],
+                ],
+                'Servicestatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Not Acknowledged',
+                            'value' => 1,
+                            'label' => 'Not Acknowledged',
+                            'data' => 'Filter.Servicestatus.problem_has_been_acknowledged',
+                        ],
+                        '1' => [
+                            'name' => 'Acknowledged',
+                            'value' => 1,
+                            'label' => 'Acknowledged',
+                            'data' => 'Filter.Servicestatus.problem_has_been_acknowledged',
+                        ],
+                    ],
+                ],
+                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Downtime',
+                            'value' => 1,
+                            'label' => 'In Downtime',
+                            'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
+                        ],
+                    ],
+                ],
+                'Servicestatus.active_checks_enabled' => ['label' => 'Passive', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Passive',
+                            'value' => 1,
+                            'label' => 'Passive',
+                            'data' => 'Filter.Servicestatus.active_checks_enabled',
+                        ],
+                    ],
+                ],
             ],
         ],
         'notMonitored' => [
@@ -260,7 +310,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->isApiRequest()) {
-            if(isset($query['limit'])){
+            if (isset($query['limit'])) {
                 unset($query['limit']);
             }
             $all_services = $this->{$modelName}->find('all', $query);
@@ -356,7 +406,6 @@ class ServicesController extends AppController {
 
         $all_services = [];
         $query = [
-//			'recursive' => -1,
             'contain' => ['Servicetemplate'],
             'fields' => [
                 'Service.id',
@@ -371,7 +420,6 @@ class ServicesController extends AppController {
                 'Servicetemplate.description',
                 'Servicetemplate.active_checks_enabled',
 
-                //'HostObject.object_id',
                 'ServiceObject.object_id',
 
                 'Host.name',
@@ -379,8 +427,6 @@ class ServicesController extends AppController {
                 'Host.uuid',
                 'Host.description',
                 'Host.address',
-
-                //'Hoststatus.current_state'
             ],
             'order' => ['Host.name' => 'asc'],
             'joins' => [
@@ -482,7 +528,6 @@ class ServicesController extends AppController {
 
         $all_services = [];
         $query = [
-//			'recursive' => -1,
             'contain' => ['Servicetemplate'],
             'fields' => [
                 'Service.id',
@@ -657,7 +702,6 @@ class ServicesController extends AppController {
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
-        //container_id = 1 => ROOT
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
@@ -1215,7 +1259,6 @@ class ServicesController extends AppController {
                 }
                 $this->setFlash(__('<a href="/services/edit/%s">Service</a> modified successfully.', $this->Service->id));
                 $this->loadModel('Tenant');
-//				$this->Tenant->serviceCounter($this->Service->id, '+');
                 $redirect = $this->Service->redirect($this->request->params, ['action' => 'index']);
                 $this->redirect($redirect);
             } else {
@@ -1912,18 +1955,7 @@ class ServicesController extends AppController {
         /* $this->allowOnlyAjaxRequests(); */
 
         $this->loadModel('Host');
-
-        //this isn't the correct receiving method I think ... dont unterstand the return array ...
-        /*$services = $this->Service->find('all', [
-			'conditions' => [
-				'Service.host_id' => $host_id
-			]
-		]);
-*/
         $services = $this->Service->find('all');
-
-        //debug($services);
-
         $this->set(compact(['services']));
         $this->set('_serialize', ['services']);
     }
@@ -2229,7 +2261,6 @@ class ServicesController extends AppController {
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
         $ServiceConditions->setHostId($host_id);
 
-
         //Default order
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Service.servicename' => 'asc'
@@ -2248,7 +2279,7 @@ class ServicesController extends AppController {
         }
 
         if ($this->isApiRequest()) {
-            if(isset($query['limit'])){
+            if (isset($query['limit'])) {
                 unset($query['limit']);
             }
             $all_services = $this->{$modelName}->find('all', $query);
@@ -2266,7 +2297,6 @@ class ServicesController extends AppController {
         $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
         $this->set('_serialize', ['all_services']);
     }
-
 
     public function grapherSwitch($id){
         if (!$this->Service->exists($id)) {
@@ -2612,104 +2642,185 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf(){
-        $args = func_get_args();
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request);
+        $ServiceConditions = new ServiceConditions();
+        $User = new User($this->Auth);
+        if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
+            $ServiceConditions->setIncludeDisabled(false);
+            $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        }
+
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Host.name' => 'asc',
+            'Service.servicename' => 'asc'
+        ]));
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $this->Service->virtualFieldsForIndexAndServiceList();
+            $modelName = 'Service';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $modelName = 'Servicestatus';
+        }
+
+
+        $query = array_merge($this->Paginator->settings, $query);
+        if (isset($query['limit'])) {
+            unset($query['limit']);
+        }
+        $all_services = $this->{$modelName}->find('all', $query);
+
+
+        $this->set('all_services', $all_services);
+
+       /*
+
+
+        $this->__unbindAssociations('Host');
+
+        $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
+        $this->Service->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
+        $this->Service->virtualFields['last_check'] = 'Servicestatus.last_check';
+        $this->Service->virtualFields['next_check'] = 'Servicestatus.next_check';
+        $this->Service->virtualFields['output'] = 'Servicestatus.output';
+        $this->Service->virtualFields['hostname'] = 'Host.name';
+        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->Service->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
 
         $conditions = [
-            'Host.disabled' => 0,
-            'Host.container_id' => $this->MY_RIGHTS,
+            'Service.disabled' => 0,
+            'HostsToContainers.container_id' => $this->MY_RIGHTS,
         ];
+        $conditions = $this->ListFilter->buildConditions($this->request->params, $conditions);
 
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $service_ids = $args;
-                end($service_ids);
-                $last_key = key($service_ids);
-                unset($service_ids[$last_key]);
-                $servicestatus = $this->getSelectedServices($service_ids)['list'];
-                $serviceCount = $this->getSelectedServices($service_ids)['count'];
-            } else {
-                $service_ids = $args;
-                $servicestatus = $this->getSelectedServices($service_ids)['list'];
-                $serviceCount = $this->getSelectedServices($service_ids)['count'];
-            }
-        } else {
-            $servicestatus = $this->Objects->find('all', [
-                'recursive' => -1,
+        $all_services = [];
+        $query = [
+            'recursive' => -1,
+            'conditions' => $conditions,
+            'contain' => ['Servicetemplate'],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+                'Service.tags',
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.state_type',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+                'Servicestatus.last_state_change',
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+                'Hoststatus.current_state',
+                'HostsToContainers.container_id',
+            ],
+            'order' => [
+                'Host.name' => 'asc',
+                'Service.servicename' => 'asc',
+            ],
+            'joins' => [[
+                'table' => 'hosts',
+                'type' => 'INNER',
+                'alias' => 'Host',
+                'conditions' => 'Service.host_id = Host.id',
+            ], [
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'HostObject',
+                'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+            ], [
+                'table' => 'nagios_hoststatus',
+                'type' => 'INNER',
+                'alias' => 'Hoststatus',
+                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+            ], [
+                'table' => 'nagios_objects',
+                'type' => 'INNER',
+                'alias' => 'ServiceObject',
+                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+            ], [
+                'table' => 'nagios_servicestatus',
+                'type' => 'LEFT OUTER',
+                'alias' => 'Servicestatus',
+                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+            ], [
+                'table' => 'hosts_to_containers',
+                'alias' => 'HostsToContainers',
+                'type' => 'LEFT',
                 'conditions' => [
-                    'Host.disabled' => 0,
-                    'Host.container_id' => $this->MY_RIGHTS,
+                    'HostsToContainers.host_id = Host.id',
+                ],
+            ],
+            ],
+            'group' => [
+                'Service.id',
+            ],
+        ];
+        $all_services = $this->Service->find('all', $query);
+
+        $hostContainers = [];
+        if (!empty($all_services)) {
+            $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain' => [
+                    'Container',
                 ],
                 'fields' => [
                     'Host.id',
-                    'Host.name',
-                    'Host.address',
-                    'Hoststatus.current_state',
-                    'Hoststatus.is_flapping',
+                    'Container.*',
                 ],
-                'joins' => [
-                    [
-                        'table' => 'hosts',
-                        'type' => 'INNER',
-                        'alias' => 'Host',
-                        'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1',
-                    ],
-                    [
-                        'table' => 'nagios_hoststatus',
-                        'type' => 'INNER',
-                        'alias' => 'Hoststatus',
-                        'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                    ],
-                ],
-                'order' => [
-                    'Host.name',
+                'conditions' => [
+                    'Host.id' => $hostIds,
                 ],
             ]);
-            $serviceCount = 0;
-            foreach ($servicestatus as $key => $hostdata) {
-                $servicestatus[$key]['ServiceData'] = $this->Service->find('all', [
-                    'recursive' => -1,
-                    'fields' => [
-                        'Service.name',
-                        'Servicetemplate.name',
-                        'Servicestatus.current_state',
-                        'Servicestatus.is_flapping',
-                        'Servicestatus.next_check',
-                        'Servicestatus.last_check',
-                        'Servicestatus.last_state_change',
-                        'Servicestatus.problem_has_been_acknowledged',
-                        'Servicestatus.scheduled_downtime_depth',
-                        'Servicestatus.output',
-                    ],
-                    'conditions' => [
-                        'Service.host_id' => $hostdata['Host']['id'],
-                    ],
-                    'joins' => [
-                        [
-                            'table' => 'servicetemplates',
-                            'type' => 'INNER',
-                            'alias' => 'Servicetemplate',
-                            'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
-                        ],
-                        [
-                            'table' => 'nagios_objects',
-                            'type' => 'INNER',
-                            'alias' => 'Objects',
-                            'conditions' => 'Objects.name2 = Service.uuid',
-                        ],
-                        [
-                            'table' => 'nagios_servicestatus',
-                            'type' => 'INNER',
-                            'alias' => 'Servicestatus',
-                            'conditions' => 'Servicestatus.service_object_id = Objects.object_id',
-                        ],
-                    ],
-                ]);
-                $serviceCount += sizeof($servicestatus[$key]['ServiceData']);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
             }
         }
+        $username = $this->Auth->user('full_name');
 
-        $this->set(compact('servicestatus', 'serviceCount'));
+        $this->set(compact(['all_services', 'username', 'hostContainers']));
+        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
+        $this->set('_serialize', ['all_services']);
+
+        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
+            if (isset($this->request->data['Filter']['ServiceStatus']['current_state'])) {
+                $this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
+            } else {
+                $this->set('ServiceStatus.current_state', []);
+            }
+            $this->set('isFilter', true);
+        } else {
+            $this->set('isFilter', false);
+        }
+
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+
         unset($servicestatus);
+
+       */
         $filename = 'Services_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
@@ -2724,7 +2835,7 @@ class ServicesController extends AppController {
                 'top' => 15,
             ],
             'encoding' => 'UTF-8',
-            'download' => true,
+            'download' => false, //change to ture!!
             'binary' => $binary_path,
             'orientation' => 'portrait',
             'filename' => $filename,
@@ -2735,10 +2846,10 @@ class ServicesController extends AppController {
         ];
     }
 
-    /*
-	 * $service is from prepareForView() but ther are no names in the service contact, only ids
-	 * $_service is from $this->Service->findById, because of contact names
-	 */
+    /**
+     * $service is from prepareForView() but ther are no names in the service contact, only ids
+     * $_service is from $this->Service->findById, because of contact names
+     */
     protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups){
         if (empty($serviceContactsAndContactgroups['Contact']) && empty($serviceContactsAndContactgroups['Contactgroup'])) {
 

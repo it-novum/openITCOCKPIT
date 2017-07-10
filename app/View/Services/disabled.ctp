@@ -25,10 +25,6 @@
 ?>
 <?php
 $this->Paginator->options(['url' => $this->params['named']]);
-$filter = "/";
-foreach ($this->params->named as $key => $value) {
-    $filter .= $key.":".$value."/";
-}
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -37,7 +33,7 @@ foreach ($this->params->named as $key => $value) {
             <?php echo __('Services'); ?>
             <span>>
                 <?php echo __('Disabled'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -63,21 +59,21 @@ foreach ($this->params->named as $key => $value) {
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="/services/index<?php echo $filter; ?>"> <i class="fa fa-stethoscope"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>"> <i class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored')): ?>
                         <li class="">
-                            <a href="/services/notMonitored<?php echo $filter; ?>">
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
                                 <i class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                             </a>
                             <?php endif; ?>
                         </li>
                         <li class="active">
-                            <a href="/services/disabled<?php echo $filter; ?>">
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
                                 <i class="fa fa-plug"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                             </a>

@@ -24,12 +24,10 @@
 //	confirmation.
 ?>
 <head>
-
     <?php
     //PDF Output
     $css = [
         'css/vendor/bootstrap/css/bootstrap.css',
-        //'css/vendor/bootstrap/css/bootstrap-theme.css',
         'smartadmin/css/font-awesome.css',
         'smartadmin/css/smartadmin-production.css',
         'smartadmin/css/your_style.css',
@@ -37,13 +35,9 @@
         'css/bootstrap_pdf.css',
         'css/pdf_list_style.css',
     ];
-    ?>
-
-    <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT.$cssFile; ?>"/>
     <?php endforeach; ?>
-
 </head>
 <body>
 <div class="well">
@@ -63,7 +57,7 @@
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: '.$hostCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: '.count($all_hosts)); ?>
         </div>
     </div>
     <div class="padding-top-10">
@@ -80,7 +74,7 @@
             </tr>
             </thead>
             <tbody>
-            <?php foreach ($hoststatus as $k => $host): ?>
+            <?php foreach ($all_hosts as $host): ?>
                 <tr>
                     <td class="text-center font-lg">
                         <?php
@@ -122,7 +116,7 @@
                 </tr>
             <?php endforeach; ?>
 
-            <?php if (empty($hoststatus)): ?>
+            <?php if (empty($all_hosts)): ?>
                 <div class="noMatch">
                     <center>
                         <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>

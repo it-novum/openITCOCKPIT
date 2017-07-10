@@ -87,6 +87,29 @@ class ServicestatusIcon {
     /**
      * @return string
      */
+    public function getTextColor(){
+        if ($this->state === null) {
+            return 'txt-primary';
+        }
+
+        switch ($this->state) {
+            case 0:
+                return 'txt-color-green';
+
+            case 1:
+                return 'warning';
+
+            case 2:
+                return 'txt-color-red';
+
+            default:
+                return 'txt-color-blueLight';
+        }
+    }
+
+    /**
+     * @return string
+     */
     public function getHumanState(){
         if ($this->state === null) {
             return __('Not found in monitoring');
@@ -106,6 +129,14 @@ class ServicestatusIcon {
             $state = 4;
         }
         return sprintf($template, $this->href, $this->stateColors[$state], $this->style);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPdfIcon(){
+        $template = '<i class="fa fa-square %s"></i>';
+        return sprintf($template, $this->getTextColor());
     }
 
     /**

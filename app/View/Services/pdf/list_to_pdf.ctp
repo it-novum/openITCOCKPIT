@@ -22,36 +22,32 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<head>
 
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+
+?>
+
+
+<head>
     <?php
     //PDF Output
     $css = [
-        /*
-            'css/vendor/bootstrap/css/bootstrap.css',
-            'smartadmin/css/font-awesome.css',
-            'smartadmin/css/smartadmin-production.css',
-            'css/bootstrap_pdf.css',
-        */
-
         'css/vendor/bootstrap/css/bootstrap.css',
-        //'/css/vendor/bootstrap/css/bootstrap-theme.css',
         'smartadmin/css/font-awesome.css',
         'smartadmin/css/smartadmin-production.css',
         'smartadmin/css/your_style.css',
         'css/app.css',
         'css/bootstrap_pdf.css',
         'css/pdf_list_style.css',
-
     ];
-    ?>
-
-    <?php
     foreach ($css as $cssFile): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT.$cssFile; ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
-
 </head>
 <body>
 <div class="well padding-20">
@@ -71,7 +67,7 @@
     </div>
     <div class="row margin-top-10 padding-left-20 font-sm">
         <div class="text-left">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Services: '.$serviceCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Services: ' . count($all_services)); ?>
         </div>
     </div>
     <div class="margin-top-10">
@@ -89,80 +85,97 @@
             </tr>
             </thead>
             <tbody>
-            <?php if (!empty($servicestatus)): ?>
-                <?php foreach ($servicestatus as $k => $service): ?>
-                    <!-- Host -->
-                    <tr>
-                        <td class="bg-color-lightGray font-md" colspan="8">
-                            <?php
-                            if (isset($service['Host']['Hoststatus'][0]['Hoststatus'])):
-                                if ($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'] == 1):
-                                    echo $this->Monitoring->hostFlappingIconColored($service['Host']['Hoststatus'][0]['Hoststatus']['is_flapping'], '', $service['Host']['Hoststatus'][0]['Hoststatus']['current_state']);
-                                else:
-                                    echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($service['Host']['Hoststatus'][0]['Hoststatus']['current_state']).'"></i>';
-                                endif;
-                            else:
-                                echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor().'"></i>';
-                            endif;
-                            ?>
-                            <span class="font-md"><?php echo $service['Host']['name']; ?>
-                                (<?php echo $service['Host']['address']; ?>)</span>
-                        </td>
-                    </tr>
-                    <?php if (!empty($service['ServiceData'])): ?>
-                        <?php foreach ($service['ServiceData'] as $key => $servicedata): ?>
-                            <!-- Status -->
-                            <tr class="font-xs">
-                                <td class="text-center">
-                                    <?php
-                                    if ($servicedata['Servicestatus']['is_flapping'] == 1):
-                                        echo $this->Monitoring->serviceFlappingIconColored($servicedata['Servicestatus']['is_flapping'], '', $servicedata['Servicestatus']['current_state']);
-                                    else:
-                                        echo '<i class="fa fa-square '.$this->Status->ServiceStatusTextColor($servicedata['Servicestatus']['current_state']).'"></i>';
-                                    endif;
-                                    ?>
-                                </td>
-                                <!-- ACK -->
-                                <td class="text-center">
-                                    <?php if ($servicedata['Servicestatus']['problem_has_been_acknowledged'] > 0): ?>
-                                        <i class="fa fa-user fa-lg"></i>
-                                    <?php endif; ?>
-                                </td>
-                                <!-- downtime -->
-                                <td class="text-center">
-                                    <?php if ($servicedata['Servicestatus']['scheduled_downtime_depth'] > 0): ?>
-                                        <i class="fa fa-power-off fa-lg"></i>
-                                    <?php endif; ?>
-                                </td>
-                                <!-- name -->
-                                <td>
-                                    <?php if (!empty($servicedata['Service']['name'])) {
-                                        echo $servicedata['Service']['name'];
-                                    } else {
-                                        echo $servicedata['Servicetemplate']['name'];
-                                    }
-                                    ?>
-                                </td>
-                                <!-- Status Since -->
-                                <td>
-                                    <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($servicedata['Servicestatus']['last_state_change']))); ?>
-                                </td>
-                                <!-- Last check -->
-                                <td><?php echo $this->Time->format($servicedata['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
-                                </td>
-                                <!-- Next check -->
-                                <td><?php echo $this->Time->format($servicedata['Servicestatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
-                                </td>
-                                <td class="wrapWords"><?php echo $servicedata['Servicestatus']['output']; ?></td>
-                                <!-- klasse machen -->
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
+            <?php
+            if (!empty($all_services)):
+                $tmp_host_name = null;
+                foreach ($all_services as $service):
+                    $Service = new Service($service);
+                    $Host = new Host($service);
+                    $Servicestatus = new Servicestatus($service['Servicestatus']);
+                    $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
+
+
+                    if ($tmp_host_name != $Host->getHostname()):
+                        $tmp_host_name = $Host->getHostname();
+                        $Hoststatus = new Hoststatus($service['Hoststatus']);
+                        $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
+                        ?>
+                        <!-- Host -->
                         <tr>
-                            <td class="text-center font-xs"
-                                colspan="8"><?php echo __('This host has no Services'); ?></td>
+                            <td class="bg-color-lightGray font-md" colspan="8">
+                                <?php
+                                if ($Hoststatus->isFlapping()):
+                                    echo $Hoststatus->getHostFlappingIconColored();
+                                else:
+                                    echo $HoststatusIcon->getPdfIcon();
+                                endif;
+                                ?>
+                                <span class="font-md">
+                                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                                </span>
+                            </td>
                         </tr>
                     <?php endif; ?>
+                    <?php if (!empty($service['Service'])): ?>
+                    <!-- Status -->
+                    <tr class="font-xs">
+                        <td class="text-center">
+                            <?php
+                            if ($Servicestatus->isFlapping()):
+                                echo $Servicestatus->getServiceFlappingIconColored();
+                            else:
+                                echo $ServicestatusIcon->getPdfIcon();
+                            endif;
+                            ?>
+                        </td>
+                        <!-- ACK -->
+                        <td class="text-center">
+                            <?php if ($Servicestatus->isAcknowledged()): ?>
+                                <i class="fa fa-user fa-lg"></i>
+                            <?php endif; ?>
+                        </td>
+                        <!-- downtime -->
+                        <td class="text-center">
+                            <?php if ($Servicestatus->isInDowntime()): ?>
+                                <i class="fa fa-power-off fa-lg"></i>
+                            <?php endif; ?>
+                        </td>
+                        <!-- name -->
+                        <td>
+                            <?php echo h($Service->getServicename()); ?>
+                        </td>
+                        <!-- Status Since -->
+                        <td>
+                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
+                        </td>
+                        <!-- Last check -->
+                        <td>
+                            <?php echo $this->Time->format(
+                                $Servicestatus->getLastCheck(),
+                                $this->Auth->user('dateformat'),
+                                false,
+                                $this->Auth->user('timezone')
+                            ); ?>
+                        </td>
+                        <!-- Next check -->
+                        <td>
+                            <?php echo $this->Time->format(
+                                $Servicestatus->getNextCheck(),
+                                $this->Auth->user('dateformat'),
+                                false,
+                                $this->Auth->user('timezone')
+                            ); ?>
+                        </td>
+                        <td class="wrapWords">
+                            <?php echo h($Servicestatus->getOutput()); ?>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <tr>
+                        <td class="text-center font-xs"
+                            colspan="8"><?php echo __('This host has no Services'); ?></td>
+                    </tr>
+                <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>

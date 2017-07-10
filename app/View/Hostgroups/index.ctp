@@ -167,13 +167,6 @@
                         <?php echo $this->element('hostgroup_mass_changes'); ?>
 
                         <div style="padding: 5px 10px;">
-                            <?php /*
-                            <div class="row">
-                                <div class="col-xs-12 col-md-3">
-                                    <a href="<?php echo Router::url(['controller' => 'hostgroups', 'action' => 'listToPdf/.pdf']); ?>" id="listAsPDF" class="pointer" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a>
-                                </div>
-                            </div>
-                            */ ?>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
