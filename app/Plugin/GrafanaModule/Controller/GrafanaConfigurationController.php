@@ -60,19 +60,27 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
+        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'GrafanaConfigurationHostgroupMembership'
+            ]
+        ]);
         if ($this->request->is('post') || $this->request->is('put')) {
-            $hostgroups = (is_array($this->request->data('GrafanaConfiguration.Hostgroup'))) ? $this->request->data('GrafanaConfiguration.Hostgroup') : [];
-            $hostgroups_excluded = (is_array($this->request->data('GrafanaConfiguration.Hostgroup_excluded'))) ? $this->request->data('GrafanaConfiguration.Hostgroup_excluded') : [];
+            $_hostgroups = (is_array($this->request->data('GrafanaConfiguration.Hostgroup'))) ? $this->request->data('GrafanaConfiguration.Hostgroup') : [];
+            $_hostgroups_excluded = (is_array($this->request->data('GrafanaConfiguration.Hostgroup_excluded'))) ? $this->request->data('GrafanaConfiguration.Hostgroup_excluded') : [];
 
             $this->GrafanaConfiguration->set($this->request->data);
             if ($this->GrafanaConfiguration->validates()) {
                 $this->request->data['GrafanaConfiguration']['id'] = 1;
                 $this->request->data['GrafanaConfigurationHostgroupMembership'] = $this->GrafanaConfiguration->parseHostgroupMembershipData(
-                    $hostgroups,
-                    $hostgroups_excluded
+                    $_hostgroups,
+                    $_hostgroups_excluded
                 );
+
                 /* Delete old hostgroup associations */
                 $this->GrafanaConfigurationHostgroupMembership->deleteAll(true);
+
                 if ($this->GrafanaConfiguration->saveAll($this->request->data)) {
                     $this->setFlash(__('Configuration saved successfully'));
                 } else {
@@ -84,20 +92,14 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                     'plugin' => 'grafana_module'
                 ]);
             }
+        } else {
+            if (!empty($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'])) {
+                $grafanaConfiguration['GrafanaConfiguration']['Hostgroup'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id');
+                $grafanaConfiguration['GrafanaConfiguration']['Hostgroup_excluded'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id');
+            }
         }
-        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'GrafanaConfigurationHostgroupMembership'
-            ]
-        ]);
 
-        if (!empty($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'])) {
-            $grafanaConfiguration['GrafanaConfiguration']['Hostgroup'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id');
-            $grafanaConfiguration['GrafanaConfiguration']['Hostgroup_excluded'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id');
-        }
         $this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
-
-        $this->set(compact(['grafanaConfiguration', 'hostgroups']));
+        $this->set(compact(['hostgroups']));
     }
 }

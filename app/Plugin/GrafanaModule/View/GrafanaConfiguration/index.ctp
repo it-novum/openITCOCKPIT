@@ -62,7 +62,7 @@
                             'captionClass' => 'control-label',
                             'checked' => $this->CustomValidationErrors->refill(
                                 'use_https',
-                                (isset($grafanaConfiguration['GrafanaConfiguration']['use_https'])) ? $grafanaConfiguration['GrafanaConfiguration']['use_https'] : 1
+                                (isset($this->request->data['GrafanaConfiguration']['use_https'])) ? $this->request->data['GrafanaConfiguration']['use_https'] : 1
                             )
                         ]);
                         ?>
@@ -76,7 +76,7 @@
                             'captionClass' => 'control-label',
                             'checked' => $this->CustomValidationErrors->refill(
                                 'ignore_ssl_certificate',
-                                (isset($grafanaConfiguration['GrafanaConfiguration']['ignore_ssl_certificate'])) ? $grafanaConfiguration['GrafanaConfiguration']['ignore_ssl_certificate'] : 1
+                                (isset($this->request->data['GrafanaConfiguration']['ignore_ssl_certificate'])) ? $this->request->data['GrafanaConfiguration']['ignore_ssl_certificate'] : 1
                             )
                         ]);
                         ?>
