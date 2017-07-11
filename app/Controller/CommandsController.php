@@ -77,10 +77,6 @@ class CommandsController extends AppController
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
         }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
     }
@@ -102,10 +98,6 @@ class CommandsController extends AppController
         } else {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
         }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
@@ -129,10 +121,6 @@ class CommandsController extends AppController
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
         }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
     }
@@ -154,10 +142,6 @@ class CommandsController extends AppController
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
         }
         $this->set('_serialize', ['all_commands']);
         $this->set(compact(['all_commands']));
@@ -181,10 +165,6 @@ class CommandsController extends AppController
     {
         $userId = $this->Auth->user('id');
         $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-        $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-        $this->loadModel('Systemsetting');
-        $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-        $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
         $this->set('command_types', $this->getCommandTypes());
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -239,12 +219,6 @@ class CommandsController extends AppController
             $this->set(compact(['command', 'command_types']));
             $this->set('_serialize', ['command', 'command_types']);
             $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-            //$this->Frontend->setJson('websocket_host', env('HTTP_HOST'));
-            //$this->Frontend->setJson('websocket_port', 8081);
-            $this->Frontend->setJson('websocket_url', 'wss://'.env('HTTP_HOST').'/sudo_server');
-            $this->loadModel('Systemsetting');
-            $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-            $this->Frontend->setJson('akey', $key['Systemsetting']['value']);
             $this->Frontend->setJson('command_id', $id);
 
             if ($this->request->is('post') || $this->request->is('put')) {

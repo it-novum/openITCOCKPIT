@@ -22,6 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Hoststatus;
+
 ?>
 <ol class="breadcrumb">
     <li></li> <!-- leading / -->
@@ -29,12 +33,12 @@
     if ($currentContainer['Container']['parent_id'] != null):
         foreach ($parents as $parent):
             if ($parent['Container']['containertype_id'] == CT_GLOBAL):
-                echo '<li>'.$this->Html->link($parent['Container']['name'], 'index/'.$parent['Container']['id']).'</li>';
+                echo '<li>' . $this->Html->link($parent['Container']['name'], 'index/' . $parent['Container']['id']) . '</li>';
             else:
                 if (in_array($parent['Container']['id'], $MY_RIGHTS_WITH_TENANT)):
-                    echo '<li>'.$this->Html->link($parent['Container']['name'], ['action' => 'tenantBrowser', $parent['Container']['id']]).'</li>';
+                    echo '<li>' . $this->Html->link($parent['Container']['name'], ['action' => 'tenantBrowser', $parent['Container']['id']]) . '</li>';
                 else:
-                    echo '<li class="active">'.h($currentContainer['Container']['name']).'</li>';
+                    echo '<li class="active">' . h($currentContainer['Container']['name']) . '</li>';
                 endif;
             endif;
         endforeach;
@@ -82,7 +86,7 @@
                     if ($state_total > 0):
                         $overview_chart = $this->PieChart->createPieChart($state_array_host);
                         echo $this->Html->image(
-                            '/img/charts/'.$overview_chart
+                            '/img/charts/' . $overview_chart
                         );
                         $state_colors = [
                             'ok',
@@ -94,14 +98,14 @@
                             foreach ($state_array_host as $state => $state_count):?>
                                 <div class="col-md-4 no-padding">
                                     <a href="<?php echo Router::url([
-                                        'controller'                                  => 'hosts',
-                                        'action'                                      => 'index',
-                                        'plugin'                                      => '',
-                                        'Filter.Hoststatus.current_state['.$state.']' => 1,
-                                        'BrowserContainerId'                          => $currentContainer['Container']['id'],
+                                        'controller' => 'hosts',
+                                        'action' => 'index',
+                                        'plugin' => '',
+                                        'Filter.Hoststatus.current_state[' . $state . ']' => 1,
+                                        'BrowserContainerId' => $currentContainer['Container']['id'],
                                     ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
-                                        <?php echo $state_count.' ('.round($state_count / $state_total * 100, 2).' %)'; ?>
+                                        <?php echo $state_count . ' (' . round($state_count / $state_total * 100, 2) . ' %)'; ?>
                                     </a>
                                 </div>
                             <?php endforeach; ?>
@@ -129,7 +133,7 @@
                         $overview_chart = $this->PieChart->createPieChart($state_array_service);
 
                         echo $this->Html->image(
-                            '/img/charts/'.$overview_chart
+                            '/img/charts/' . $overview_chart
                         );
                         $state_colors = [
                             'ok',
@@ -143,9 +147,9 @@
                             foreach ($state_array_service as $state => $state_count):?>
                                 <div class="col-md-3 no-padding">
                                     <a href="<?php echo Router::url([
-                                        'controller'         => 'services',
-                                        'action'             => 'index',
-                                        'plugin'             => '', 'Filter.Servicestatus.current_state['.$state.']' => 1,
+                                        'controller' => 'services',
+                                        'action' => 'index',
+                                        'plugin' => '', 'Filter.Servicestatus.current_state[' . $state . ']' => 1,
                                         'BrowserContainerId' => $currentContainer['Container']['id'],
                                     ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
@@ -158,7 +162,7 @@
                                             endif;
                                         endif;
                                         ?>
-                                        <?php echo $state_count.' ('.round($state_count / $state_total * 100, 2).' %)'; ?>
+                                        <?php echo $state_count . ' (' . round($state_count / $state_total * 100, 2) . ' %)'; ?>
                                     </a>
                                 </div>
                             <?php endforeach; ?>
@@ -182,7 +186,8 @@
                 <div class="widget-body no-padding">
                     <div class="mobile_table">
                         <?php if (!empty($hosts)): ?>
-                            <table id="host-list-datatables" class="table table-striped table-hover table-bordered smart-form">
+                            <table id="host-list-datatables"
+                                   class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -198,6 +203,9 @@
                                 <tbody>
                                 <?php foreach ($hosts as $host): ?>
                                     <?php
+                                    $Host = new Host($host);
+                                    $Hoststatus = new Hoststatus($host['Hoststatus']);
+
                                     //Better performance, than run all the Hash::extracts if not necessary
                                     $hasEditPermission = false;
                                     if ($hasRootPrivileges === true):
@@ -211,21 +219,21 @@
                                     <tr>
                                         <td class="text-center width-75">
                                             <?php
-                                            if ($host['Hoststatus']['is_flapping'] == 1):
-                                                echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus']['is_flapping'], '', $host['Hoststatus']['current_state']);
+                                            if ($Hoststatus->isFlapping() == 1):
+                                                echo $Hoststatus->getHostFlappingIconColored();
                                             else:
                                                 $href = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser', 'hosts')):
-                                                    $href = '/hosts/browser/'.$host['Host']['id'];
+                                                    $href = '/hosts/browser/' . $Host->getId();
                                                 endif;
-                                                echo $this->Status->humanHostStatus($host['Host']['uuid'], $href, [$host['Host']['uuid'] => ['Hoststatus' => ['current_state' => $host['Hoststatus']['current_state']]]])['html_icon'];
+                                                echo $Hoststatus->getHumanHoststatus($href)['html_icon'];
                                             endif;
                                             ?>
                                         </td>
                                         <td class="width-50">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission): ?>
-                                                    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"
+                                                    <a href="/hosts/edit/<?php echo $Host->getId(); ?>"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
@@ -237,14 +245,14 @@
                                                 <ul class="dropdown-menu">
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission): ?>
                                                         <li>
-                                                            <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"><i
+                                                            <a href="/hosts/edit/<?php echo $Host->getId(); ?>"><i
                                                                         class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                         <li>
-                                                            <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i
+                                                            <a href="/services/serviceList/<?php echo $Host->getId(); ?>"><i
                                                                         class="fa fa-list"></i> <?php echo __('Service list'); ?>
                                                             </a>
                                                         </li>
@@ -252,13 +260,16 @@
 
                                                     <?php
                                                     if ($this->Acl->hasPermission('edit', 'hosts') && $hasEditPermission):
-                                                        echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+                                                        echo $this->AdditionalLinks->renderAsListItems(
+                                                            $additionalLinksList,
+                                                            $Host->getId()
+                                                        );
                                                     endif;
                                                     ?>
                                                     <?php if ($this->Acl->hasPermission('delete', 'hosts') && $hasEditPermission): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'hosts', 'action' => 'delete', $host['Host']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'hosts', 'action' => 'delete', $Host->getId()], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -267,18 +278,32 @@
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+                                                <a href="/hosts/browser/<?php echo $Host->getId(); ?>">
+                                                    <?php echo h($Host->getHostname()); ?>
+                                                </a>
                                             <?php else: ?>
-                                                <?php echo h($host['Host']['name']); ?>
+                                                <?php echo h($Host->getHostname()); ?>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo h($host['Host']['address']); ?></td>
-                                        <td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                        <td><?php echo h($Host->getAddress()); ?></td>
+                                        <td data-original-title="<?php echo h($this->Time->format(
+                                            $Hoststatus->getLastHardStateChange(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>"
                                             data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_hard_state_change']))); ?>
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Hoststatus->getLastHardStateChange()))); ?>
                                         </td>
-                                        <td><?php echo h($this->Time->format($host['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
-                                        <td><?php echo h($host['Hoststatus']['output']); ?></td>
+                                        <td>
+                                            <?php echo h($this->Time->format(
+                                                $Hoststatus->getLastCheck(),
+                                                $this->Auth->user('dateformat'),
+                                                false,
+                                                $this->Auth->user('timezone')
+                                            )); ?>
+                                        </td>
+                                        <td><?php echo h($Hoststatus->getOutput()); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                                 </tbody>
@@ -296,7 +321,7 @@
                                 <div class="col-sm-6">
                                     <?php if (!empty($hosts)): ?>
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     <?php endif; ?>
                                 </div>
                                 <div class="col-sm-6 text-right">

@@ -135,8 +135,15 @@ class Nagiostat extends NagiosModuleAppModel
     public function command()
     {
         Configure::load('nagios');
-
-        return Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagiostats').' -D \''.$this->delimiter.'\' -m -d '.implode(',', $this->MRTG);
+        return sprintf(
+            '%s%s%s -c %s -D "%s" -m -d %s',
+            Configure::read('nagios.basepath'),
+            Configure::read('nagios.bin'),
+            Configure::read('nagios.nagiostats'),
+            Configure::read('nagios.nagios_cfg'),
+            $this->delimiter,
+            implode(',', $this->MRTG)
+        );
     }
 
     public function mergeResult($result)

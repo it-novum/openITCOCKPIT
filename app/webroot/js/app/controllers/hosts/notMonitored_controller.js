@@ -23,53 +23,54 @@
 //	confirmation.
 
 App.Controllers.HostsNotMonitoredController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
-	
-	components: ['Utils', 'Masschange'],
-	
-	_initialize: function(){
-		var self = this;
-		this.Masschange.setup({
-			'controller': 'hosts',
-			'group': 'hostgroups',
-			'extendUrl': '/_controller:hosts/_action:notMonitored'
-		});
-		this.Utils.flapping();
-		$('.select_datatable').click(function(){
-			self.fnShowHide($(this).attr('my-column'), $(this).children());
-		});
-		
-		$('#host_list').dataTable({
-			"bPaginate": false,
-			"bFilter": false,
-			"bInfo": false,
-			"bStateSave": true,
-			"aoColumnDefs" : [ {
-			    "bSortable" : false,
-			    "aTargets" : [ "no-sort" ]
-			} ]
-		});
-		
-		this.$table = $('#host_list');
-		
-		//Checkboxen aktivieren
-		$('.select_datatable').find('input').prop('checked', true);
-		
-	},
-	fnShowHide: function( iCol, inputObject){
-		/* Get the DataTables object again - this is not a recreation, just a get of the object */
-		var oTable = this.$table.dataTable();
-	
-		var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
-		if(bVis == true){
-			inputObject.prop('checked', false);
-		}else{
-			inputObject.prop('checked', true);
-		}
-		oTable.fnSetColumnVis( iCol, bVis ? false : true );
-	}
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
+
+    components: ['Utils', 'Masschange'],
+
+    _initialize: function () {
+        var self = this;
+        this.Masschange.setup({
+            'controller': 'hosts',
+            'group': 'hostgroups',
+            'extendUrl': '/_controller:hosts/_action:notMonitored'
+        });
+        this.Utils.flapping();
+        $('.select_datatable').click(function () {
+            self.fnShowHide($(this).attr('my-column'), $(this).children());
+        });
+
+        $('#host_list').dataTable({
+            "bSort": false,
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bStateSave": true,
+            "aoColumnDefs": [{
+                "bSortable": false,
+                "aTargets": ["no-sort"]
+            }]
+        });
+
+        this.$table = $('#host_list');
+
+        //Checkboxen aktivieren
+        $('.select_datatable').find('input').prop('checked', true);
+
+    },
+    fnShowHide: function (iCol, inputObject) {
+        /* Get the DataTables object again - this is not a recreation, just a get of the object */
+        var oTable = this.$table.dataTable();
+
+        var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+        if (bVis == true) {
+            inputObject.prop('checked', false);
+        } else {
+            inputObject.prop('checked', true);
+        }
+        oTable.fnSetColumnVis(iCol, bVis ? false : true);
+    }
 });

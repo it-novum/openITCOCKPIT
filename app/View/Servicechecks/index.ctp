@@ -22,31 +22,56 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $ServicecheckListsettings])]); ?>
+
+use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\Servicecheck;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+
+$Service = new Service($service);
+$Host = new Host($service);
+if (!isset($servicestatus['Servicestatus'])):
+    $servicestatus['Servicestatus'] = [];
+endif;
+$Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+$ListSettingsRenderer = new ListSettingsRenderer($ServicecheckListsettings);
+
+
+$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $ServicecheckListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $this->Status->ServiceStatusColor($service['Service']['uuid']); ?>">
-            <?php echo $this->Monitoring->serviceFlappingIcon($this->Status->sget($service['Service']['uuid'], 'is_flapping'), 'padding-left-5'); ?>
+        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+            <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
-            <?php
-            if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-                echo $service['Service']['name'];
-            } else {
-                echo $service['Servicetemplate']['name'];
-            }
-            ?><span>
-				&nbsp;<?php echo __('on'); ?>&nbsp;
-				<a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?>
-                    (<?php echo $service['Host']['address']; ?>)</a>
-			</span>
+            <?php echo h($Service->getServicename()); ?>
+            <span>
+                &nbsp;<?php echo __('on'); ?>
+                <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
+                    <a href="<?php echo Router::url([
+                        'controller' => 'hosts',
+                        'action' => 'browser',
+                        $Service->getHostId()
+                    ]); ?>">
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                </a>
+                <?php else: ?>
+                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                <?php endif; ?>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
         <h5>
             <div class="pull-right">
-                <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
-                            class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                <a href="<?php echo Router::url([
+                    'controller' => 'services',
+                    'action' => 'browser',
+                    $Service->getId()
+                ]); ?>" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i>
+                    <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
                 <?php echo $this->element('service_browser_menu'); ?>
             </div>
@@ -54,29 +79,10 @@
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
-
-    <!-- row -->
     <div class="row">
-
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -116,85 +122,18 @@
                         <?php
                         echo $this->Form->create('servicechecks', [
                             'class' => 'form-horizontal clear',
-                            'url'   => 'index/'.$service['Service']['id'] //reset the URL on submit
+                            'url' => 'index/' . $Service->getId() //reset the URL on submit
                         ]);
 
-                        ?>
+                        echo $ListSettingsRenderer->getFromInput();
+                        echo $ListSettingsRenderer->getToInput();
+                        echo $ListSettingsRenderer->getLimitSelect();
 
-                        <div class="widget-toolbar pull-left" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('From:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 78%;"
-                                   type="text" maxlength="255" value="<?php echo $ServicecheckListsettings['from']; ?>"
-                                   name="data[Listsettings][from]">
-                        </div>
-
-                        <div class="widget-toolbar pull-left" role="menu">
-                            <span style="line-height: 32px;" class="pull-left"><?php echo __('To:'); ?></span>
-                            <input class="form-control text-center pull-left margin-left-10" style="width: 85%;"
-                                   type="text" maxlength="255" value="<?php echo $ServicecheckListsettings['to']; ?>"
-                                   name="data[Listsettings][to]">
-                        </div>
-
-                        <div class="btn-group">
-                            <?php
-                            $listoptions = [
-                                '30'  => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 30,
-                                    'human'         => 30,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '50'  => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '100' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '300' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 300,
-                                    'human'         => 300,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                            ];
-
-                            $selected = 30;
-                            if (isset($ServicecheckListsettings['limit']) && isset($listoptions[$ServicecheckListsettings['limit']]['human'])) {
-                                $selected = $listoptions[$ServicecheckListsettings['limit']]['human'];
-                            }
-                            ?>
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <span id="listoptions_limit"><?php echo $selected; ?></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php foreach ($listoptions as $listoption): ?>
-                                    <li>
-                                        <a href="javascript:void(0);" class="listoptions_action"
-                                           selector="<?php echo $listoption['selector']; ?>"
-                                           submit_target="<?php echo $listoption['submit_target']; ?>"
-                                           value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <input type="hidden"
-                                   value="<?php if (isset($ServicecheckListsettings['limit'])): echo $ServicecheckListsettings['limit']; endif; ?>"
-                                   id="listoptions_hidden_limit" name="data[Listsettings][limit]"/>
-                        </div>
-
-
-                        <?php
                         $state_types = [
-                            'recovery' => __('Recovery'),
-                            'warning'  => __('Warning'),
+                            'ok' => __('Ok'),
+                            'warning' => __('Warning'),
                             'critical' => __('Critical'),
-                            'unknown'  => __('Unknown'),
+                            'unknown' => __('Unknown'),
                         ];
                         ?>
 
@@ -213,24 +152,24 @@
                                     <li>
                                         <input type="hidden" value="0"
                                                name="data[Listsettings][state_types][<?php echo $state_type; ?>]"/>
-                                    <li style="width: 100%;"><a href="javascript:void(0)"
-                                                                class="listoptions_checkbox text-left"><input
-                                                    type="checkbox"
-                                                    name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
-                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
                                     </li>
+                                    <li style="width: 100%;">
+                                        <a href="javascript:void(0)" class="listoptions_checkbox text-left">
+                                            <input type="checkbox"
+                                                   name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
+                                                   value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?>
+                                        </a>
                                     </li>
                                 <?php endforeach ?>
                             </ul>
                         </div>
-
-                        <button class="btn btn-xs btn-success toggle"><i
-                                    class="fa fa-check"></i> <?php echo __('Apply'); ?></button>
-
                         <?php
+
+                        echo $ListSettingsRenderer->getApply();
                         echo $this->Form->end();
                         ?>
                     </div>
+
 
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
@@ -238,43 +177,75 @@
                     <h2><?php echo __('Check history'); ?> </h2>
 
                 </header>
-
-                <!-- widget div-->
                 <div>
-
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $ServicecheckListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $ServicecheckListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="servicechecks_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                        <table id="servicechecks_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.state');
-                                    echo $this->Paginator->sort('Servicecheck.state', __('State')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.start_time');
-                                    echo $this->Paginator->sort('Servicecheck.start_time', __('Date')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.current_check_attempt');
-                                    echo $this->Paginator->sort('Servicecheck.current_check_attempt', __('Check attempt')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.state_type');
-                                    echo $this->Paginator->sort('Servicecheck.state_type', __('State type')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.output');
-                                    echo $this->Paginator->sort('Servicecheck.output', __('Service output')); ?></th>
-                                <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicecheck.perfdata');
-                                    echo $this->Paginator->sort('Servicecheck.perfdata', __('Performance data')); ?></th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.state');
+                                    echo $this->Paginator->sort('Servicecheck.state', __('State')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.start_time');
+                                    echo $this->Paginator->sort('Servicecheck.start_time', __('Date')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.current_check_attempt');
+                                    echo $this->Paginator->sort('Servicecheck.current_check_attempt', __('Check attempt')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.state_type');
+                                    echo $this->Paginator->sort('Servicecheck.state_type', __('State type')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.output');
+                                    echo $this->Paginator->sort('Servicecheck.output', __('Service output')); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <?php echo $this->Utils->getDirection($order, 'Servicecheck.perfdata');
+                                    echo $this->Paginator->sort('Servicecheck.perfdata', __('Performance data')); ?>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php //debug($all_notification); ?>
-                            <?php foreach ($all_servicechecks as $servicecheck): ?>
+                            <?php foreach ($all_servicechecks as $servicecheck):
+                                $Servicecheck = new Servicecheck($servicecheck['Servicecheck']);
+                                $StatusIcon = new ServicestatusIcon($Servicecheck->getState());
+                                ?>
                                 <tr>
-                                    <td class="text-center"><?php echo $this->Status->humanServiceStatus($service['Service']['uuid'], 'javascript:void(0)', [$service['Service']['uuid'] => ['Servicestatus' => ['current_state' => $servicecheck['Servicecheck']['state']]]])['html_icon']; ?></td>
-                                    <td><?php echo h($this->Time->format($servicecheck['Servicecheck']['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
-                                    <td class="text-center"><?php echo h($servicecheck['Servicecheck']['current_check_attempt']); ?>
-                                        /<?php echo h($servicecheck['Servicecheck']['max_check_attempts']); ?></td>
-                                    <td class="text-center"><?php echo h($this->Status->humanServiceStateType($servicecheck['Servicecheck']['state_type'])); ?></td>
-                                    <td><?php echo h($servicecheck['Servicecheck']['output']); ?></td>
-                                    <td><?php echo h($servicecheck['Servicecheck']['perfdata']); ?></td>
+                                    <td class="text-center">
+                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo h($this->Time->format(
+                                            $Servicecheck->getStartTime(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php printf('%s/%s',
+                                            h($Servicecheck->getCurrentCheckAttempt()),
+                                            h($Servicecheck->getMaxCheckAttempts())
+                                        ); ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php echo h($this->Status->humanServiceStateType(
+                                            $Servicecheck->isHardstate()
+                                        )); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo h($Servicecheck->getOutput()); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo h($Servicecheck->getPerfdata()); ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>
@@ -291,7 +262,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -303,18 +274,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- end widget content -->
-
                 </div>
-                <!-- end widget div -->
-
             </div>
-            <!-- end widget -->
-
-
     </div>
-
-    <!-- end row -->
-
 </section>
-<!-- end widget grid -->

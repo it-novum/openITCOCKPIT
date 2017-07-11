@@ -1,0 +1,99 @@
+======================
+CHANGES for crate-dbal
+======================
+
+Unreleased
+==========
+
+2017/02/06 0.3.1
+================
+
+ - Fixed an issue that ignored provided ``UNIQUE`` constraints. The client now
+   throws an exception and informs the user to use the ``PRIMARY KEY``
+   constraint instead.
+
+2016/11/07 0.3.0
+================
+
+ - Updated crate-pdo to ``0.6.0`` which includes following changes:
+
+   - Expose ``getServerVersion()`` and ``getServerInfo()`` on the PDO implementation
+     which return the version number of the Crate server connected to.
+
+   - Fix: having the same named parameter multiple times in a prepared SQL
+     statement caused incorrect parameter substitution with bound values.
+
+   - Fixed an issue that occur if parameters are passed in a different order
+     than specified in the sql statement.
+
+   - Updated dependency: guzzlehttp/guzzle to ~6.0
+     WARNING: This is a backward incompatible change!
+
+   - Support for multiple hosts in DSN connection string
+
+   - Added support for using a default schema in PDO connection
+     via ``/schema`` suffix in connection string.
+
+2016/01/12 0.2.1
+================
+
+ - updated crate-pdo to ``0.3.1`` which includes following changes:
+
+   - Added support for PHP 7
+
+2015/05/08 0.2.0
+================
+
+ - updated crate-pdo to ``0.2.1`` which includes following changes:
+
+   - Support guzzle http basic auth
+     through doctrine dbal connection user credentials
+
+2015/02/11 0.1.1
+================
+
+ - add support for latest (up to 2.5.1) Doctrine version
+
+2015/01/08 0.1.0
+================
+
+ - updated dependency ``crate-pdo 0.1.0`` which includes following
+   changes:
+
+   - Fix performance issues by switching http client library to
+     ``guzzle``.
+
+2014/12/19 0.0.5
+================
+
+ - updated dependency ``crate-pdo 0.0.7`` which includes following changes:
+
+   - Fix: Literals containing a `:` character were misinterpreted as
+     named parameters.
+
+   - Nailed dependency versions of amphp/artax and amphp/amp
+     to prevent composer from fetching newer, incompatible releases
+
+2014/11/27 0.0.4
+================
+
+ - updated dependency ``crate-pdo 0.0.5``, this version will support
+   crate ``array`` and ``object`` data types
+
+2014/10/30 0.0.3
+================
+
+ - updated dependency ``crate-pdo 0.0.4``
+
+2014/10/27 0.0.2
+================
+
+ - updated dependencies:
+   - php 5.5
+   - crate-pdo 0.0.3
+
+2014/10/27 0.0.1
+================
+
+ - initial release
+   see ``README.rst`` for supported types, limitations and not supported DBAL features

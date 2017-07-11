@@ -67,7 +67,6 @@ class LocationsController extends AppController
         }
         $this->set(compact(['all_locations', 'container']));
         $this->set('_serialize', ['all_locations']);
-        $this->_isFilter();
     }
 
     public function view($id = null)
@@ -187,12 +186,4 @@ class LocationsController extends AppController
         }
     }
 
-    private function _isFilter()
-    {
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
-    }
 }

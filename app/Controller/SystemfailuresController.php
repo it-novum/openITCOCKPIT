@@ -55,12 +55,6 @@ class SystemfailuresController extends AppController
         $all_systemfailures = $this->Paginator->paginate();
 
         $this->set(compact(['all_systemfailures']));
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function add()
