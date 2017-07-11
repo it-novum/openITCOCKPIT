@@ -373,7 +373,7 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'FRONTEND.EXPORT_RUNNING',
+                    'key'      => 'FRONTEND.SHOW_EXPORT_RUNNING',
                     'value'    => 'yes',
                     'info'     => 'Show if an export is running in headarea',
                     'section'  => 'FRONTEND'

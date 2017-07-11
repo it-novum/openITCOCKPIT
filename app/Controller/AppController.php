@@ -270,30 +270,21 @@ class AppController extends Controller {
      * @return void
      */
     protected function _beforeAction() {
+        $this->systemsettings = $this->Systemsetting->findAsArray();
+
         if ($this->Session->check('FRONTEND.SYSTEMNAME')) {
             $this->systemname = $this->Session->read('FRONTEND.SYSTEMNAME');
         } else {
             $this->Session->write('FRONTEND.SYSTEMNAME', '');
             $this->systemname = '';
-            $this->systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
             if (isset($this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
                 $this->Session->write('FRONTEND.SYSTEMNAME', $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
                 $this->systemname = $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
             }
         }
 
-        if ($this->Session->check('FRONTEND.EXPORT_RUNNING')) {
-            $this->exportRunningHeaderInfo = $this->Session->read('FRONTEND.EXPORT_RUNNING');
-        } else {
-            $this->Session->write('FRONTEND.EXPORT_RUNNING', '');
-            $this->exportRunningHeaderInfo = '';
-            if(empty($this->systemsettings))
-                $this->systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            if (isset($this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
-                $this->Session->write('FRONTEND.EXPORT_RUNNING', $this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
-                $this->exportRunningHeaderInfo = $this->systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'];
-            }
-        }
+        $this->exportRunningHeaderInfo = isset($this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING']) ? $this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes' : false;
+
     }
 
     /**
@@ -315,11 +306,15 @@ class AppController extends Controller {
         if (!$this->request->is('ajax')) {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
+
+//        $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
+        $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
+//        $this->Frontend->setJson('exportWebsocketKey', $this->systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
+
         ClassRegistry::addObject('AuthComponent', $this->Auth);
         $this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
         $this->set('loggedIn', $this->Auth->loggedIn());
         $this->set('systemname', $this->systemname);
-        $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
         //$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')
         $menu = $this->Menu->compileMenu();
         $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);

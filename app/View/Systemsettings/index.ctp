@@ -105,10 +105,10 @@
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
-                                                            case 'FRONTEND.EXPORT_RUNNING':
+                                                            case 'FRONTEND.SHOW_EXPORT_RUNNING':
                                                                 $options = [
-                                                                    'yes' => 'Show',
-                                                                    'no' => 'Do not show'
+                                                                    'yes' => 'True',
+                                                                    'no' => 'False'
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;

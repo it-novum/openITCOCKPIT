@@ -82,7 +82,7 @@ Frontend.AppController = Frontend.Controller.extend({
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
-        this._updateHeaderExportRunning();
+
     },
 
     _initUiLibrary: function () {
@@ -108,7 +108,7 @@ Frontend.AppController = Frontend.Controller.extend({
      * @return void
      */
     _initialize: function () {
-
+        this._updateHeaderExportRunning();
     },
 
     /**
@@ -226,7 +226,21 @@ Frontend.AppController = Frontend.Controller.extend({
     },
 
     _updateHeaderExportRunning: function(){
-        if($('#monitoring-export-running-checker').text() == '1'){
+        if(this.getVar('exportRunningHeaderInfo')){
+            console.log(this.getVar('websocket_url'));
+            this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
+            this.WebsocketSudo.connect();
+
+            this.WebsocketSudo._success = function(e){
+                return true;
+            }.bind(this)
+
+            this.WebsocketSudo._callback = function(transmitted){
+                console.log(transmitted);
+            }.bind(this);
+
+
+
             setInterval(function(){
                 $.ajax({
                     url: '/exports/getIsRunning.json',

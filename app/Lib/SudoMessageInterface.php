@@ -113,6 +113,15 @@ class SudoMessageInterface implements MessageComponentInterface
                 $this->send('done', 'dispatcher');
             }
         }
+
+        foreach($this->clients as $client){
+            $client->send(json_encode([
+                'type'    => 'server_message',
+                'time'    => date('Y-m-d H:i:s'),
+                'user'    => 'Server',
+                'message' => 'Das ist ein Test',
+            ]));
+        }
     }
 
     public function onMessage(ConnectionInterface $from, $msg)
