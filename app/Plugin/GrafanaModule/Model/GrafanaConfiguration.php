@@ -24,7 +24,6 @@
 //	confirmation.
 
 
-
 class GrafanaConfiguration extends GrafanaModuleAppModel {
 
     public $hasMany = [
@@ -82,5 +81,58 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         }
 
         return $hostgroupMembershipsForGrafanaConfiguration;
+    }
+
+    /**
+     * @param array $hostsUnfiltered
+     * @param array $includedHostgroups
+     * @param array $excludedHostgroups
+     * @return array filtered host ids
+     */
+    public function filterResults($hostsUnfiltered, $includedHostgroups = [], $excludedHostgroups = []) {
+        $filteredHostIds = [];
+        if (empty($includedHostgroups) && empty($excludedHostgroups)) {
+            return Hash::extract($hostsUnfiltered, '{n}.Host.id');
+        }
+        foreach ($hostsUnfiltered as $host) {
+            if (empty($host['Hostgroup']) && empty($host['Hosttemplate']['Hostgroup'])) {
+                continue;
+            }
+            $hostHostgroups = Hash::extract(
+                (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $host['Hosttemplate']['Hostgroup'],
+                (!empty($host['Hostgroup'])) ? '{n}.id' : 'Hosttemplate.Hostgroup.{n}.id'
+            );
+            if ($this->chechIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) &&
+                $this->chechIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups)
+            ) {
+                $filteredHostIds[] = $host['Host']['id'];
+
+            }
+        }
+        return $filteredHostIds;
+    }
+
+    /**
+     * @param $hostHostgroups
+     * @param $includedHostgroups
+     * @return bool
+     */
+    public function chechIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) {
+        if (empty($includedHostgroups)) {
+            return true;
+        }
+        return !empty(array_intersect($hostHostgroups, $includedHostgroups));
+    }
+
+    /**
+     * @param $hostHostgroups
+     * @param $excludedHostgroups
+     * @return bool
+     */
+    public function chechIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups) {
+        if (empty($excludedHostgroups)) {
+            return true;
+        }
+        return empty(array_intersect($hostHostgroups, $excludedHostgroups));
     }
 }
