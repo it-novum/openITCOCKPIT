@@ -55,11 +55,11 @@ class GrafanaDashboard {
         'annotations' => [
             'list' => []
         ],
-        "editable" => true,
+        "editable" => false, // testing true
         "gnetId" => null,
         "graphTooltip" => 0,
-        "hideControls" => false,
-        //"id" => 15,
+        "hideControls" => true, // testing false
+        "id" => null,
         "links" => [],
         "rows" => [
             //Insert rows here
@@ -74,7 +74,7 @@ class GrafanaDashboard {
             "from" => "now-6h",
             "to" => "now"
         ],
-        /*
+
         "timepicker" => [
             "refresh_intervals" => [
                 "5s",
@@ -100,28 +100,28 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
-        */
+
         "timezone" => "browser",
         "title" => "",
-        //"version" => 10
+        "version" => 0,
     ];
 
     /**
      * @return string
      */
-    public function getGrafanaDashboardJson(){
+    public function getGrafanaDashboardJson() {
         $this->grafanaDashboardDataArray['title'] = $this->title;
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['hideControls'] = $this->hideControls;
 
-        return json_encode($this->grafanaDashboardDataArray/*, JSON_PRETTY_PRINT*/);
+        return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
     }
 
     /**
      * @param string $title
      */
-    public function setTitle($title){
+    public function setTitle($title) {
         $this->title = $title;
     }
 

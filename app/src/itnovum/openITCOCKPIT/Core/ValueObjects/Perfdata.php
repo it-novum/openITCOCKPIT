@@ -126,6 +126,11 @@ class Perfdata {
         return $this->label;
     }
 
+    public function getReplacedLabel(){
+        $pattern = '/[^a-zA-Z^0-9\-\.]/';
+        return preg_replace($pattern, '_', $this->label);
+    }
+
     /**
      * @return int
      */

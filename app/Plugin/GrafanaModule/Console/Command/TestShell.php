@@ -65,13 +65,15 @@ class TestShell extends AppShell {
         'Rrd'
     ];
 
+    public $tasks = ['GrafanaModule.GrafanaDashboard'];
+
     public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
         /*
          * Lof of space for your experimental code :)
          */
-        $host = $this->Host->find('first', [
+  /*      $host = $this->Host->find('first', [
             'conditions' => [
                 'Host.id' => 1,
             ],
@@ -112,7 +114,6 @@ class TestShell extends AppShell {
         $grafanaDashboard->setHideControls(false);
 
         $panelId = 1;
-
         $grafanaRow = new GrafanaRow();
         foreach ($host['Service'] as $service) {
             $isRowFull = false;
@@ -121,11 +122,11 @@ class TestShell extends AppShell {
                 $serviceName = $service['Servicetemplate']['name'];
             }
             if (!isset($servicestatus[$service['uuid']]['Servicestatus']['perfdata'])) {
+                $panelId++;
                 continue;
             }
 
             $perfdata = $this->Rrd->parsePerfData($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
-
 
             $grafanaPanel = new GrafanaPanel($panelId);
             $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
@@ -138,16 +139,17 @@ class TestShell extends AppShell {
                     new GrafanaTarget(
                         sprintf(
                             '%s.%s.%s.%s',
-                            'ibering',
+                            'mp_grafana',
                             $host['Host']['uuid'],
                             $service['uuid'],
-                            $Perfdata->getLabel()
+                            $Perfdata->getReplacedLabel()
                         ),
                         new GrafanaTargetUnit($Perfdata->getUnit()),
                         new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
                         $Perfdata->getLabel()
                     )
                 );
+
             }
 
             $grafanaPanel->addTargets(
@@ -165,14 +167,17 @@ class TestShell extends AppShell {
                 $grafanaRow->addPanel($grafanaPanel);
             }
 
-            $panelId++;
-            if(sizeof($host['Service']) == $panelId && $isRowFull === false){
+            if((sizeof($host['Service']) == $panelId && $isRowFull === false)){
                 $grafanaDashboard->addRow($grafanaRow);
             }
+            $panelId++;
         }
+*/
 
-        debug($grafanaDashboard->getGrafanaDashboardJson());
+        //debug($grafanaDashboard->getGrafanaDashboardJson());
 
+
+        $this->GrafanaDashboard->execute();
     }
 
     public function getOptionParser() {
