@@ -321,7 +321,7 @@ class AppController extends Controller {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
         $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
-        
+
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);
         } else {

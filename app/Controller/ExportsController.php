@@ -171,20 +171,4 @@ class ExportsController extends AppController {
         $this->set('result', $result);
         $this->set('_serialize', ['result']);
     }
-
-    public function getIsRunning(){
-        $this->autoRender = false;
-        if ($this->request->is('ajax')){
-            $exportRunning = true;
-            $result = $this->Export->findByTask('export_started');
-            if (empty($result)) {
-                $exportRunning = false;
-            } else {
-                if ($result['Export']['finished'] == 1) {
-                    $exportRunning = false;
-                }
-            }
-            return json_encode($exportRunning);
-        }
-    }
 }

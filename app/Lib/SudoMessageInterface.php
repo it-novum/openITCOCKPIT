@@ -42,6 +42,8 @@ class SudoMessageInterface implements MessageComponentInterface
         //$this->tasks = [];
 
         $this->async = [];
+
+        $this->lastExportCheck = time();
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -84,6 +86,9 @@ class SudoMessageInterface implements MessageComponentInterface
     {
         $this->readSocket();
 
+        $this->isExportRunning();
+
+
         if (empty($this->async)) {
             return;
         }
@@ -112,15 +117,6 @@ class SudoMessageInterface implements MessageComponentInterface
                 unset($this->async[$id]);
                 $this->send('done', 'dispatcher');
             }
-        }
-
-        foreach($this->clients as $client){
-            $client->send(json_encode([
-                'type'    => 'server_message',
-                'time'    => date('Y-m-d H:i:s'),
-                'user'    => 'Server',
-                'message' => 'Das ist ein Test',
-            ]));
         }
     }
 
@@ -430,6 +426,27 @@ class SudoMessageInterface implements MessageComponentInterface
                 $this->requestor = $old_requestor;
                 break;
 
+        }
+    }
+
+    private function isExportRunning(){
+        if((time() - $this->lastExportCheck) > 3){
+            $exportRunning = true;
+            $result = $this->Cake->Export->findByTask('export_started');
+            if (empty($result)) {
+                $exportRunning = false;
+            } else {
+                if ($result['Export']['finished'] == 1) {
+                    $exportRunning = false;
+                }
+            }
+            foreach($this->clients as $client){
+                $client->send(json_encode([
+                    'type'    => 'dispatcher',
+                    'running' => $exportRunning,
+                ]));
+            }
+            $this->lastExportCheck = time();
         }
     }
 
