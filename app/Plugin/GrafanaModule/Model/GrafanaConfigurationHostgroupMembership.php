@@ -24,27 +24,17 @@
 //	confirmation.
 
 
+class GrafanaConfigurationHostgroupMembership extends GrafanaModuleAppModel {
 
-class GrafanaDashboardConfiguration extends GrafanaModuleAppModel {
-
-    public $hasMany = [
-        'GrafanaModule.GrafanaDashboardsHostgroupMembership'
-    ];
-
-    public $validate = [
-        'api_url' => [
-            'allowEmpty' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank',
-                'required' => true,
-            ],
+    public $useTable = 'hostgroups_to_grafanaconfigurations';
+    public $belongsTo = [
+        'GrafanaConfiguration' => [
+            'className' => 'GrafanaModule.GrafanaConfiguration',
+            'foreignKey' => 'configuration_id'
         ],
-        'api_key' => [
-            'allowEmpty' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank',
-                'required' => true,
-            ],
+        'Hostgroup' => [
+            'className'  => 'Hostgroup',
+            'foreignKey' => 'hostgroup_id'
         ],
     ];
 }
