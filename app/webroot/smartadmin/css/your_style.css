@@ -1478,3 +1478,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	padding-right:5px;
 	content: "\f096";
 }
+
+#copyAll{
+	color:#333;
+	text-decoration: none;
+}
