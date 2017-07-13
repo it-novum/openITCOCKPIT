@@ -143,7 +143,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
 
     /**
      * @param $grafanaApiConfiguration
-     * @return bool|Client
+     * @return Client|string    Either a Instance of Client or the Exception message
      */
     public function testConnection($grafanaApiConfiguration){
         $client = new Client([
@@ -167,5 +167,43 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         if ($response->getStatusCode() == 200) {
             return $client;
         }
+    }
+
+    public function getDashboard($uuid){
+        $uuid = 'c36b8048-93ce-4385-ac19-ab5c90574b77';
+
+        if(empty($uuid)){
+            return;
+        }
+
+        $grafanaConfiguration = $this->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'GrafanaConfigurationHostgroupMembership'
+            ]
+        ]);
+        if (empty($grafanaConfiguration)) {
+            $this->out('<error>No Grafana configuration found</error>');
+        }
+        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+        $client = $this->testConnection($GrafanaApiConfiguration);
+
+        $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $uuid);
+
+        try {
+            $response = $this->client->send($request);
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $responseBody = $response->getBody()->getContents();
+            $this->out('<error>' . $responseBody . '</error>');
+        }
+
+        if ($response->getStatusCode() == 200) {
+            $body = $response->getBody();
+            $response = json_decode($body->getContents());
+            debug($response);
+        }
+
     }
 }

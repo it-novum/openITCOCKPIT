@@ -61,30 +61,6 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         $this->out('Done');
     }
 
-    /*public function testConnection() {
-
-        $this->client = new Client([
-            'headers' => [
-                'authorization' => 'Bearer ' . $this->GrafanaApiConfiguration->getApiKey()
-            ],
-            'verify' => $this->GrafanaApiConfiguration->isIgnoreSslCertificate()]);
-        $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/org');
-        try {
-            $response = $this->client->send($request);
-        } catch (Exception $e) {
-            $response = $e->getResponse();
-            $responseBody = $response->getBody()->getContents();
-            $this->out('<error>' . $responseBody . '</error>');
-            return false;
-        }
-
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            $response = json_decode($body->getContents());
-            return true;
-        }
-    }*/
-
     public function createDashboard() {
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
