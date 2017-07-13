@@ -24,6 +24,11 @@
 //	confirmation.
 
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
+
 class GrafanaConfiguration extends GrafanaModuleAppModel {
 
     public $hasMany = [
@@ -102,8 +107,8 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
                 (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $host['Hosttemplate']['Hostgroup'],
                 (!empty($host['Hostgroup'])) ? '{n}.id' : 'Hosttemplate.Hostgroup.{n}.id'
             );
-            if ($this->chechIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) &&
-                $this->chechIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups)
+            if ($this->checkIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) &&
+                $this->checkIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups)
             ) {
                 $filteredHostIds[] = $host['Host']['id'];
 
@@ -117,7 +122,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
      * @param $includedHostgroups
      * @return bool
      */
-    public function chechIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) {
+    public function checkIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) {
         if (empty($includedHostgroups)) {
             return true;
         }
@@ -129,10 +134,38 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
      * @param $excludedHostgroups
      * @return bool
      */
-    public function chechIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups) {
+    public function checkIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups) {
         if (empty($excludedHostgroups)) {
             return true;
         }
         return empty(array_intersect($hostHostgroups, $excludedHostgroups));
+    }
+
+    /**
+     * @param $grafanaApiConfiguration
+     * @return bool|Client
+     */
+    public function testConnection($grafanaApiConfiguration){
+        $client = new Client([
+            'headers' => [
+                'authorization' => 'Bearer ' . $grafanaApiConfiguration->getApiKey()
+            ],
+            'verify' => $grafanaApiConfiguration->isIgnoreSslCertificate()]);
+        $request = new Request('GET', $grafanaApiConfiguration->getApiUrl() . '/org');
+
+        try {
+            $response = $client->send($request);
+        } catch (Exception $e) {
+            if($e instanceof ClientException){
+                $response = $e->getResponse();
+                $responseBody = $response->getBody()->getContents();
+                return $responseBody;
+            }
+            return $e->getMessage();
+        }
+
+        if ($response->getStatusCode() == 200) {
+            return $client;
+        }
     }
 }

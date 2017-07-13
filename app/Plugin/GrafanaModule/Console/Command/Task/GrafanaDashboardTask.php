@@ -30,19 +30,6 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         'GrafanaModule.GrafanaConfigurationHostgroupMembership'
     ];
 
-
-    /*
-    public $grafanaHost = 'https://metrics.oitc.itn/api';
-    public $grafanaApiKey = 'eyJrIjoiMnYxdUlnWEQyazdPSVg4aEVxeVhycmVlUlAzSW1zMDIiLCJuIjoib3BlbklUQyIsImlkIjoxfQ==';
-    public $grafanaUrl;
-    public $graphitePrefix = 'mp_grafana';
-    public $https = true;
-    public $verifySSL = false;
-
-
-    public $hostgroups = [6];
-    public $hostgroupsExclude = [];
-*/
     public $client = [];
 
     /**
@@ -62,16 +49,19 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         }
         $this->GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $this->out('Check Connection to Grafana');
-        if ($this->testConnection()) {
+        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration);
+
+        if ($this->client instanceof Client) {
             $this->out('<success>Connection check successful</success>');
             $this->createDashboard();
         } else {
+            $this->out('<error>'.$this->client.'</error>');
             $this->out('<error>Connection check failed</error>');
         }
         $this->out('Done');
     }
 
-    public function testConnection() {
+    /*public function testConnection() {
 
         $this->client = new Client([
             'headers' => [
@@ -93,7 +83,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             $response = json_decode($body->getContents());
             return true;
         }
-    }
+    }*/
 
     public function createDashboard() {
         $hosts = $this->Host->find('all', [
