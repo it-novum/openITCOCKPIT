@@ -97,7 +97,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
     public function filterResults($hostsUnfiltered, $includedHostgroups = [], $excludedHostgroups = []) {
         $filteredHostIds = [];
         if (empty($includedHostgroups) && empty($excludedHostgroups)) {
-            return Hash::extract($hostsUnfiltered, '{n}.Host.id');
+            return Hash::combine($hostsUnfiltered, '{n}.Host.id', '{n}.Host');
         }
         foreach ($hostsUnfiltered as $host) {
             if (empty($host['Hostgroup']) && empty($host['Hosttemplate']['Hostgroup'])) {
@@ -110,7 +110,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
             if ($this->checkIntersectForIncludedHostgroups($hostHostgroups, $includedHostgroups) &&
                 $this->checkIntersectForExcludedHostgroups($hostHostgroups, $excludedHostgroups)
             ) {
-                $filteredHostIds[] = $host['Host']['id'];
+                $filteredHostIds[$host['Host']['id']] = $host['Host'];
 
             }
         }

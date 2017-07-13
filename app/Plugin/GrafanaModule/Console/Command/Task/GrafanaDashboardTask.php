@@ -27,7 +27,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         MONITORING_SERVICESTATUS,
         'Rrd',
         'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaConfigurationHostgroupMembership'
+        'GrafanaModule.GrafanaConfigurationHostgroupMembership',
+        'GrafanaModule.GrafanaDashboard'
     ];
 
     public $client = [];
@@ -55,7 +56,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             $this->out('<success>Connection check successful</success>');
             $this->createDashboard();
         } else {
-            $this->out('<error>'.$this->client.'</error>');
+            $this->out('<error>' . $this->client . '</error>');
             $this->out('<error>Connection check failed</error>');
         }
         $this->out('Done');
@@ -65,7 +66,9 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
             'fields' => [
-                'Host.id'
+                'Host.id',
+                'Host.uuid',
+                'Host.name'
             ],
             'contain' => [
                 'Hostgroup' => [
@@ -82,15 +85,18 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 ]
             ]
         ]);
-        $hostIds = [];
+        $filteredHosts = [];
         if (!empty($hosts)) {
-            $hostIds = $this->GrafanaConfiguration->filterResults(
+            $filteredHosts = $this->GrafanaConfiguration->filterResults(
                 $hosts,
                 $this->GrafanaApiConfiguration->getIncludedHostgroups(),
                 $this->GrafanaApiConfiguration->getExcludedHostgroups()
             );
         }
-        foreach ($hostIds as $id) {
+        if (!empty($filteredHosts)) {
+            $this->GrafanaDashboard->deleteAll(true);
+        }
+        foreach ($filteredHosts as $id => $hostData) {
             $json = $this->getJsonForImport($id);
             if ($json) {
                 $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
@@ -104,6 +110,15 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
                 if ($response->getStatusCode() == 200) {
                     $this->out('<success>Dashboard for host with id ' . $id . ' created</success>');
+                    $this->GrafanaDashboard->create();
+                    $this->GrafanaDashboard->save([
+                        'GrafanaDashboard' => [
+                            'configuration_id' => 1,
+                            'host_id'=> $id,
+                            'host_uuid' => $hostData['uuid'],
+                            'host_name' => $hostData['name']
+                        ]
+                    ]);
                 }
             }
         }

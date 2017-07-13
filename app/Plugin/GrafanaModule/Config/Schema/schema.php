@@ -60,8 +60,8 @@ class GrafanaModuleSchema extends CakeSchema
         'configuration_id'      => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'hostgroup_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'excluded'              => ['type' => 'integer', 'null' => true, 'length' => 1],
-        'indexes'              => [
-            'PRIMARY'            => [
+        'indexes'               => [
+            'PRIMARY'           => [
                 'column' => 'id',
                 'unique' => 1
             ],
@@ -71,6 +71,21 @@ class GrafanaModuleSchema extends CakeSchema
                     'hostgroup_id'
                 ],
                 'unique' => 1],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $grafana_dashboards = [
+        'id'                    => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'configuration_id'      => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'host_id'               => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'host_uuid'             => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'host_name'             => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'indexes'              => [
+            'PRIMARY'            => [
+                'column' => 'id',
+                'unique' => 1
+            ],
         ],
         'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
