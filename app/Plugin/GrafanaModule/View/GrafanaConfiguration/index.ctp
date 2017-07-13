@@ -4,6 +4,8 @@
 // This file is licensed under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 // The license agreement and license key were sent with the order confirmation.
 ?>
+<div class="alert auto-hide alert-success" style="display:none;"
+     id="flashMessage"></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -92,7 +94,7 @@
                         'style' => 'width:100%;',
                         'label' => __('<i class="fa fa-plus-square text-success"></i> Dashboard Style'),
                     ]);
-                    
+
                     echo $this->Form->input('GrafanaConfiguration.Hostgroup', [
                         'options' => $hostgroups,
                         'class' => 'chosen',
@@ -121,9 +123,12 @@
                         'target' => '#GrafanaConfigurationHostgroup'
                     ]);
                     ?>
+                    <button type="button" id="runGrafanaConnectionTest"
+                            class="btn btn-primary text-center pull-right"><?php echo __('Check Grafana Connection'); ?></button>
                 </div>
             </div>
         </div>
+
         <?php echo $this->Form->formActions(); ?>
     </div>
 </div>

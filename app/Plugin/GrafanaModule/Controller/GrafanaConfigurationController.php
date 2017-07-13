@@ -24,6 +24,9 @@
 //	confirmation.
 
 
+use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+
 class GrafanaConfigurationController extends GrafanaModuleAppController {
 
     public $layout = 'Admin.default';
@@ -101,5 +104,30 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
         $this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
         $this->set(compact(['hostgroups']));
+    }
+
+    public function testGrafanaConnection(){
+        $this->autoRender = false;
+        $this->allowOnlyAjaxRequests();
+        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'GrafanaConfigurationHostgroupMembership'
+            ]
+        ]);
+        if (empty($grafanaConfiguration)) {
+            $this->out('<error>No Grafana configuration found</error>');
+        }
+        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration);
+
+        if ($client instanceof Client) {
+            $status = ['status' => true];
+        } else {
+            $status = ['status' => false];
+        }
+
+        echo json_encode($status);
     }
 }

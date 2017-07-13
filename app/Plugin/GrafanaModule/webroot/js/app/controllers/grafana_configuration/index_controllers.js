@@ -50,7 +50,38 @@ App.Controllers.GrafanaConfigurationIndexController = Frontend.AppController.ext
             $('#GrafanaConfigurationHostgroup').trigger("chosen:updated");
             $('#GrafanaConfigurationHostgroupExcluded').trigger("chosen:updated");
         }
+
+        $('#runGrafanaConnectionTest').click(function(){
+            $.ajax({
+                url: "/grafana_module/grafana_configuration/testGrafanaConnection/",
+                type: "POST",
+                error: function(){},
+                success: self.grafanaConnectionCallbackComplete,
+            });
+        });
     },
+
+    grafanaConnectionCallbackComplete: function(data){
+        $flashMessageContainer = $('#flashMessage');
+        var msg = '';
+        var alertClass = '';
+        var data = JSON.parse(data);
+        if(data.status){
+            msg = 'Connection test successful';
+            alertClass = 'alert-success';
+            if($flashMessageContainer.hasClass('alert-danger')){
+                $flashMessageContainer.removeClass('alert-danger');
+            }
+        }else{
+            alertClass = 'alert-danger';
+            msg = 'Connection test unsuccessful';
+            if($flashMessageContainer.hasClass('alert-success')){
+                $flashMessageContainer.removeClass('alert-success');
+            }
+        }
+        $flashMessageContainer.addClass(alertClass).html(msg).show();
+    },
+
     refreshHostgroups: function(selected_hostgroups, selectboxObject, target){
         //Disable the selected option in $target selectbox, to avoid duplicate selections
         for (var key in selected_hostgroups){
