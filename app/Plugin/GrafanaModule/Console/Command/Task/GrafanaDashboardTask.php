@@ -164,8 +164,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         }
         $grafanaDashboard = new GrafanaDashboard();
         $grafanaDashboard->setTitle($host['Host']['uuid']);
-        $grafanaDashboard->setEditable(true);
-        $grafanaDashboard->setHideControls(false);
+        $grafanaDashboard->setEditable(false);
+        $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $internalServiceId = 0;
         $grafanaRow = new GrafanaRow();

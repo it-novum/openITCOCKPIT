@@ -145,7 +145,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
      * @param $grafanaApiConfiguration
      * @return Client|string    Either a Instance of Client or the Exception message
      */
-    public function testConnection($grafanaApiConfiguration){
+    public function testConnection($grafanaApiConfiguration) {
         $client = new Client([
             'headers' => [
                 'authorization' => 'Bearer ' . $grafanaApiConfiguration->getApiKey()
@@ -156,7 +156,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         try {
             $response = $client->send($request);
         } catch (Exception $e) {
-            if($e instanceof ClientException){
+            if ($e instanceof ClientException) {
                 $response = $e->getResponse();
                 $responseBody = $response->getBody()->getContents();
                 return $responseBody;
@@ -169,10 +169,10 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         }
     }
 
-    public function getDashboard($uuid){
+    public function getDashboard($uuid) {
         $uuid = 'c36b8048-93ce-4385-ac19-ab5c90574b77';
 
-        if(empty($uuid)){
+        if (empty($uuid)) {
             return;
         }
 
@@ -204,6 +204,5 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
             $response = json_decode($body->getContents());
             debug($response);
         }
-
     }
 }

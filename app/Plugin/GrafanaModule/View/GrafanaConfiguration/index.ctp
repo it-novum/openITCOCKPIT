@@ -43,8 +43,8 @@
                      * ??? Exclude Hostgroups
                      * */
                     echo $this->Form->input('GrafanaConfiguration.api_url', [
-                        'label' => __('Grafana API URL'),
-                        'placeholder' => __('metrics.example.org/api')
+                        'label' => __('Grafana URL'),
+                        'placeholder' => __('metrics.example.org')
                     ]);
                     echo $this->Form->input('GrafanaConfiguration.api_key', [
                         'label' => __('Grafana API Key'),

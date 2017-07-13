@@ -2306,6 +2306,21 @@ class HostsController extends AppController {
         }
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
+        $grafanaDashboard = null;
+        if (in_array('GrafanaModule', CakePlugin::loaded())) {
+            $this->loadModel('GrafanaModule.GrafanaDashboard');
+            $this->loadModel('GrafanaModule.GrafanaConfiguration');
+            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+            $GrafanaDashboardExists = false;
+            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
+                $GrafanaDashboardExists = true;
+                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
+                $this->set('GrafanaConfiguration', $GrafanaConfiguration);
+            }
+        }
+        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+
 
         $acknowledged = [];
         if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
@@ -2347,6 +2362,7 @@ class HostsController extends AppController {
                 'ticketSystem',
                 'mainContainer',
                 'sharedContainers',
+                'grafanaDashboard'
             ])
         );
 

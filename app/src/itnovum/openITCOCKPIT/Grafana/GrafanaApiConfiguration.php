@@ -64,6 +64,16 @@ class GrafanaApiConfiguration {
     private $excludedHostgroups;
 
     /**
+     * @var string
+     */
+    private $dashboardStyle = 'light';
+
+    /**
+     * @var null|string
+     */
+    private $hostUuid = null;
+
+    /**
      * GrafanaConfiguration constructor.
      * @param $apiUrl
      * @param $apiKey
@@ -80,7 +90,8 @@ class GrafanaApiConfiguration {
         $useHttps,
         $ignorSslCertificate,
         $includedHostgroups = [],
-        $excludedHostgroups = []
+        $excludedHostgroups = [],
+        $dashboardStyle = 'light'
     ) {
         $this->apiUrl = $apiUrl;
         $this->apiKey = $apiKey;
@@ -89,6 +100,7 @@ class GrafanaApiConfiguration {
         $this->ignoreSslCertificate = (bool)$ignorSslCertificate;
         $this->includedHostgroups = $includedHostgroups;
         $this->excludedHostgroups = $excludedHostgroups;
+        $this->dashboardStyle = $dashboardStyle;
     }
 
     /**
@@ -117,6 +129,11 @@ class GrafanaApiConfiguration {
         if (!empty($configuration['GrafanaConfiguration']['use_https'])) {
             $useHttps = $configuration['GrafanaConfiguration']['use_https'];
         }
+        if (!empty($configuration['GrafanaConfiguration']['dashboard_style'])) {
+            $dashboardStyle = $configuration['GrafanaConfiguration']['dashboard_style'];
+        }
+
+
         if (!empty($configuration['GrafanaConfigurationHostgroupMembership'])) {
             $includedHostgroup = \Hash::combine(
                 $configuration['GrafanaConfigurationHostgroupMembership'],
@@ -129,7 +146,7 @@ class GrafanaApiConfiguration {
                 '{n}[excluded=1].hostgroup_id'
             );
         }
-        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $ignorSslCertificate, $includedHostgroups, $excludedHostgroups);
+        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $ignorSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
     }
 
     /**
@@ -178,6 +195,37 @@ class GrafanaApiConfiguration {
      * @return string
      */
     public function getApiUrl() {
-        return (($this->isUseHttps())?'https://':'http://').$this->apiUrl;
+        return sprintf(
+            '%s%s/api',
+            $this->isUseHttps() ? 'https://' : 'http://',
+            $this->apiUrl
+        );
+    }
+
+    public function getUiUrl(){
+        return sprintf(
+            '%s%s',
+            $this->isUseHttps() ? 'https://' : 'http://',
+            $this->apiUrl
+        );
+    }
+
+    /**
+     * @param $uuid
+     */
+    public function setHostUuid($uuid) {
+        $this->hostUuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIframeUrl() {
+        return sprintf(
+            '%s/dashboard/db/%s?theme=%s&kiosk',
+            $this->getUiUrl(),
+            $this->hostUuid,
+            $this->dashboardStyle
+        );
     }
 }
