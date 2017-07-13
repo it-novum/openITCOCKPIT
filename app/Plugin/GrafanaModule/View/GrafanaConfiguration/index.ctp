@@ -82,6 +82,17 @@
                         ?>
                     </div>
                     <?php
+                    echo $this->Form->input('GrafanaConfiguration.dashboard_style', [
+                        'options' => [
+                            'dark' => 'dark',
+                            'light' => 'light'
+                        ],
+                        'class' => 'chosen',
+                        'multiple' => false,
+                        'style' => 'width:100%;',
+                        'label' => __('<i class="fa fa-plus-square text-success"></i> Dashboard Style'),
+                    ]);
+                    
                     echo $this->Form->input('GrafanaConfiguration.Hostgroup', [
                         'options' => $hostgroups,
                         'class' => 'chosen',

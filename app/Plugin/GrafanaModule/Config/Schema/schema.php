@@ -43,6 +43,7 @@ class GrafanaModuleSchema extends CakeSchema
         'graphite_prefix'          => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'use_https'                => ['type' => 'integer', 'null' => false, 'length' => 1],
         'ignore_ssl_certificate'   => ['type' => 'integer', 'null' => false, 'length' => 1],
+        'dashboard_style'          => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'created'                  => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'                 => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                  => [
