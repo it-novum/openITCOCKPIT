@@ -41,7 +41,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $AcknowledgementListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
             <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($Host->getHostname()) ?>

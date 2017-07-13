@@ -1483,3 +1483,15 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	color:#333;
 	text-decoration: none;
 }
+
+.login-copyright {
+	background-color: #fff;
+}
+
+.service_table_host_header {
+	background-color: #EEEEEE;
+}
+
+.status_headline {
+	margin: 12px 0 28px;
+}

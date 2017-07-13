@@ -192,7 +192,7 @@ foreach ($this->params->named as $key => $value) {
                                         $tmp_host_name = $Host->getHostname();
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="13">
+                                            <td class="service_table_host_header" colspan="13">
                                                 <?php
                                                 $href = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser', 'hosts')):
