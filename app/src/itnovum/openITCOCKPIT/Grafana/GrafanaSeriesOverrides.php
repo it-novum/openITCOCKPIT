@@ -27,6 +27,7 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+
 class GrafanaSeriesOverrides {
 
     /**
@@ -44,7 +45,7 @@ class GrafanaSeriesOverrides {
                 /** @var GrafanaTarget $target */
                 if ($target->getAlias()) {
                     $override = [
-                        'alias' => $target->getAlias(),
+                        'alias' => '\\'.$target->getAlias(),
                         'yaxis' => sizeof($this->overrides) + 1
                     ];
                 } else {
