@@ -62,24 +62,13 @@ App.Controllers.GrafanaConfigurationIndexController = Frontend.AppController.ext
     },
 
     grafanaConnectionCallbackComplete: function(data){
-        $flashMessageContainer = $('#flashMessage');
-        var msg = '';
-        var alertClass = '';
+        $checkConnetionButton = $('#runGrafanaConnectionTest');
         var data = JSON.parse(data);
         if(data.status){
-            msg = 'Connection test successful';
-            alertClass = 'alert-success';
-            if($flashMessageContainer.hasClass('alert-danger')){
-                $flashMessageContainer.removeClass('alert-danger');
-            }
+            $checkConnetionButton.switchClass('btn-primary', 'btn-success');
         }else{
-            alertClass = 'alert-danger';
-            msg = 'Connection test unsuccessful';
-            if($flashMessageContainer.hasClass('alert-success')){
-                $flashMessageContainer.removeClass('alert-success');
-            }
+            $checkConnetionButton.switchClass('btn-primary', 'btn-danger');
         }
-        $flashMessageContainer.addClass(alertClass).html(msg).show();
     },
 
     refreshHostgroups: function(selected_hostgroups, selectboxObject, target){

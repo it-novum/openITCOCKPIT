@@ -67,8 +67,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             'recursive' => -1,
             'fields' => [
                 'Host.id',
-                'Host.uuid',
-                'Host.name'
+                'Host.uuid'
             ],
             'contain' => [
                 'Hostgroup' => [
@@ -115,8 +114,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                         'GrafanaDashboard' => [
                             'configuration_id' => 1,
                             'host_id'=> $id,
-                            'host_uuid' => $hostData['uuid'],
-                            'host_name' => $hostData['name']
+                            'host_uuid' => $hostData['uuid']
                         ]
                     ]);
                 }

@@ -24,3 +24,44 @@
 //	confirmation.
 
 $config = [];
+$config = [
+    'associations' => [
+        //'callbacks' => ['beforeFind', 'beforeDelete'],
+        'Host'    => [ // In wich model do we need the association
+            'callbacks' => ['beforeDelete'], // in wich AppModel callback we want to set our binding
+            'hasOne'    => [
+                'GrafanaDashboard' => [
+                    'className'    => 'GrafanaModule.GrafanaDashboard',
+                    'foreignKey'   => 'host_id',
+                    'dependent'    => true,
+                    'conditions'   => '',
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+            ],
+        ],
+        'Hostgroup' => [ // In wich model do we need the association
+            'callbacks' => ['beforeDelete'],
+            'hasOne'    => [ // Type of the association (this is cake default syntax for Model::bindModel())
+                'GrafanaConfigurationHostgroupMembership' => [
+                    'className'    => 'GrafanaModule.GrafanaConfigurationHostgroupMembership',
+                    'foreignKey'   => 'hostgroup_id',
+                    'dependent'    => true,
+                    'conditions'   => '',
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+            ],
+        ],
+    ],
+];
