@@ -1271,20 +1271,6 @@ class AppSchema extends CakeSchema
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-
-    public $satellites = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'address'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
-        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
     public $deleted_services = [
         'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
