@@ -172,7 +172,6 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
 
         foreach ($host['Service'] as $service) {
-            $internalServiceId++;
             $isRowFull = false;
             $serviceName = $service['name'];
             if ($serviceName === null || $serviceName === '') {
@@ -220,10 +219,11 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 $grafanaRow->addPanel($grafanaPanel);
             }
 
-            if ((sizeof($host['Service']) == $internalServiceId && $isRowFull === false)) {
-                $grafanaDashboard->addRow($grafanaRow);
-            }
+
             $panelId++;
+        }
+        if ($grafanaRow->getNumberOfPanels() > 0 && $isRowFull === false) {
+            $grafanaDashboard->addRow($grafanaRow);
         }
         return $grafanaDashboard->getGrafanaDashboardJson();
     }

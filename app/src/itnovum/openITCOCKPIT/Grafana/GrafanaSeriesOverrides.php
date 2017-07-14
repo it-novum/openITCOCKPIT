@@ -28,6 +28,7 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 
 
+
 class GrafanaSeriesOverrides {
 
     /**
@@ -41,20 +42,28 @@ class GrafanaSeriesOverrides {
      */
     public function __construct(GrafanaTargetCollection $targetCollection) {
         if ($targetCollection->canDisplayUnits() && sizeof($targetCollection->getUnits()) === 2) {
+            $units = [];
             foreach ($targetCollection->getTargets() as $target) {
                 /** @var GrafanaTarget $target */
-                if ($target->getAlias()) {
-                    $override = [
-                        'alias' => '\\'.$target->getAlias(),
-                        'yaxis' => sizeof($this->overrides) + 1
-                    ];
-                } else {
-                    $override = [
-                        'alias' => $target->getTarget(),
-                        'yaxis' => sizeof($this->overrides) + 1
-                    ];
+
+                //Avoid > 2 Y-Axes
+                if (!isset($units[$target->getUnit()])) {
+                    $units[$target->getUnit()] = true;
+                    if ($target->getAlias()) {
+                        $alias = str_replace('/', '\/', $target->getAlias());
+                        $override = [
+                            'alias' => $alias,
+                            'yaxis' => sizeof($this->overrides) + 1
+                        ];
+                    } else {
+                        $alias = str_replace('/', '\/', $target->getTarget());
+                        $override = [
+                            'alias' => $alias,
+                            'yaxis' => sizeof($this->overrides) + 1
+                        ];
+                    }
+                    $this->overrides[] = $override;
                 }
-                $this->overrides[] = $override;
             }
         }
     }
