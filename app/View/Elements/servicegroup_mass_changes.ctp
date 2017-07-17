@@ -37,7 +37,7 @@
                         class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a></div>
     <?php endif; ?>
     <div class="col-xs-12 col-md-2"><a
-                href="<?php echo Router::url(['controller' => 'servicegroups', 'action' => 'listToPdf/.pdf']); ?>"
+                href="<?php echo Router::url(array_merge(['controller' => 'servicegroups', 'action' => 'listToPdf/.pdf'], $this->params['named'])); ?>/.pdf"
                 style="text-decoration: none; color:#333;" id="listAsPDF"><i
                     class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF') ?></a></div>
 

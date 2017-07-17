@@ -242,14 +242,6 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 			$('#editDetailAll').attr('href', 'javascript:void(0);');
 		}
 	},
-
-	createListAsPDFAllHref: function(){
-		if(this.selectedIds.length > 0){
-			$('#listAsPDF').attr('href', '/'+this.controller+'/listToPdf/'+this.selectedIds.join('/')+this.extendUrl+'/.pdf');
-		}else{
-			$('#listAsPDF').attr('href', '/'+this.controller+'/listToPdf/.pdf');
-		}
-	},
 	
 	fetchHostnames: function(){
 		var html = '<br />';
