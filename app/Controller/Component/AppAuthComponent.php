@@ -176,6 +176,10 @@ class AppAuthComponent extends AuthComponent
                     return false;
                 }
 
+                if(empty($user) || !isset($user['User'])){
+                    return false;
+                }
+
                 if ($result) {
                     $this->_setDefaults();
                     $this->Session->renew();
@@ -357,3 +361,4 @@ class AppAuthComponent extends AuthComponent
         return $this->UserRights->userHasRight($this->user(), $right);
     }
 }
+
