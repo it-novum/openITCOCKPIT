@@ -121,7 +121,7 @@ class UsageFlagShell extends AppShell {
             foreach ($this->modulesToCheck as $module) {
                 $this->out('<info>Create Instance of ' . $module . '</info>');
                 if (!class_exists($module)) {
-                    $this->out('<error>Class ' . $module . ' could not be found</error>');
+                    $this->out('<error>Class ' . $module . ' could not be found - skipping</error>');
                     continue;
                 }
                 $this->moduleInstances[$module] = new $module();
@@ -176,7 +176,7 @@ class UsageFlagShell extends AppShell {
             }
             $this->out('<success>Saving usage flags successfully finished!</success>');
         } catch (Exception $e) {
-            $this->error($e->getMessage());
+            $this->out($e->getMessage());
         }
     }
 
@@ -245,7 +245,7 @@ class UsageFlagShell extends AppShell {
                 }
             }
         } catch (Exception $e) {
-           $this->error($e->getMessage());
+           $this->out('<info>'.$e->getMessage().'</info>');
         }
     }
 }
