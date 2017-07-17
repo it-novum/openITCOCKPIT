@@ -138,7 +138,7 @@
                         <?php if (empty($all_rotations)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>
