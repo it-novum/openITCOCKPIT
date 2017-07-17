@@ -142,7 +142,6 @@ App.Components.MasschangeComponent = Frontend.Component.extend({
 		this.createCopyAllHref();
 		this.createDisableAllHref();
 		this.createAppendGroupAllHref();
-		this.createListAsPDFAllHref();
 	},
 	
 	createDeleteAllHref: function(){
