@@ -23,8 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class MenuComponent
+ */
 class MenuComponent extends Component
 {
+    /**
+     * @return array
+     */
     public function compileMenu()
     {
         Configure::load('menu');
@@ -76,6 +82,12 @@ class MenuComponent extends Component
         return $finalMenu;
     }
 
+    /**
+     * @param $menu
+     * @param $permissions
+     *
+     * @return array
+     */
     public function filterMenuByAcl($menu, $permissions)
     {
         $_menu = [];
@@ -91,6 +103,15 @@ class MenuComponent extends Component
                 if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
                     $_parentNode = $parentNode;
                     unset($_parentNode['children']);
+                // special way for maps becouse the are multiple logical root elements for the "maps" element
+                } elseif ($parentNode['url']['controller'] == 'statusmaps') {
+                    if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions) ||
+                        $this->checkPermissions('map_module', 'maps', $parentNode['url']['action'], $permissions) ||
+                        $this->checkPermissions('map_module', 'rotations', $parentNode['url']['action'], $permissions)
+                    ) {
+                        $_parentNode = $parentNode;
+                        unset($_parentNode['children']);
+                    }
                 }
                 $_childNodes = [];
                 if (!empty($parentNode['children']) && !empty($_parentNode)) {
@@ -98,7 +119,6 @@ class MenuComponent extends Component
                         if (!isset($childNode['url']['plugin'])) {
                             $childNode['url']['plugin'] = '';
                         }
-
                         if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $childNode['url']['action'], $permissions)) {
                             $_childNodes[$childKey] = $childNode;
                         } else {
@@ -128,18 +148,29 @@ class MenuComponent extends Component
                 $_parentNode['children'] = $_childNodes;
                 $_menu[$parentKey] = $_parentNode;
             }
-
         }
-
         return $_menu;
     }
 
+    /**
+     * @param $string
+     *
+     * @return string
+     */
     public function lower($string)
     {
         //return strtolower(Inflector::classify($string));
         return strtolower(str_replace('_', '', $string));
     }
 
+    /**
+     * @param string $plugin
+     * @param string $controller
+     * @param string $action
+     * @param        $permissions
+     *
+     * @return bool
+     */
     public function checkPermissions($plugin = '', $controller = '', $action = '', $permissions)
     {
         $controller = $this->lower($controller);
