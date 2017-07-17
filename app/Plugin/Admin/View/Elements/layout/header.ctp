@@ -91,9 +91,6 @@
             <span> <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
                       data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet" id="i-export-running-checker"></i></a></span>
         </div>
-        <?php if($exportRunningHeaderInfo) :?>
-            <span id="monitoring-export-running-checker" class="hidden">1</span>
-        <?php endif; ?>
         <div class="btn-header pull-right hidden-mobile hidden-tablet">
             <span><a href="javascript:void(0);" id="globalServertime" style="font-weight:normal;"
                      data-render-utc="<?php echo time(); ?>"
