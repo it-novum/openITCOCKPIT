@@ -61,7 +61,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
             <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
             <?php
@@ -206,7 +206,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             <?php endif; ?>
                             <?php if ($Hoststatus->currentState() > 0): ?>
                                 <p class="parentstatus padding-left-10">
-                                    <?php echo __('problem with associated host'); ?> <a
+                                    <?php echo __('Problem with associated host'); ?> <a
                                             href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo h($service['Host']['name']); ?></a> <?php echo __('detected'); ?>
                                     <br/>
                                     <?php

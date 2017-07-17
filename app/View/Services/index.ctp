@@ -192,7 +192,7 @@ foreach ($this->params->named as $key => $value) {
                                         $tmp_host_name = $Host->getHostname();
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="13">
+                                            <td class="service_table_host_header" colspan="13">
                                                 <?php
                                                 $href = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser', 'hosts')):
@@ -417,9 +417,9 @@ foreach ($this->params->named as $key => $value) {
 
                             <div class="col-xs-12 col-md-2">
                                 <?php if ($this->Acl->hasPermission('copy')): ?>
-                                    <a href="javascript:void(0);" id="copyAll"
-                                       style="text-decoration: none; color:#333;"><i
-                                                class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?></a>
+                                    <a href="javascript:void(0);" id="copyAll">
+                                       <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+                                    </a>
                                 <?php endif; ?>
                             </div>
                             <div class="col-xs-12 col-md-2">

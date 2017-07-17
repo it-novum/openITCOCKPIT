@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 App::uses('Validation', 'Utility');
 
 
@@ -298,9 +300,10 @@ class LoginController extends AppController
         $Email->emailFormat('both');
         $Email->template('template-onetimetoken', 'template-onetimetoken')->viewVars(['onetimetoken' => $onetimetoken]);
 
+        $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/logo_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
