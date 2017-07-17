@@ -16,26 +16,10 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-class Export extends AppModel {
-
-    function findByTask($task) {
-        Cache::config('extra_short', array(
-            'engine' => 'File',
-            'duration' => 3,
-            'path' => CACHE
-        ));
-
-        $model = $this;
-        return Cache::remember('export_find_by_task', function() use ($model, $task){
-            return $model->find('first', ['task' => $task]);
-        }, 'extra_short');
-    }
-
+class Export extends AppModel{
 }
