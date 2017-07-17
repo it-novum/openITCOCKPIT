@@ -80,53 +80,6 @@ mysqldump --defaults-extra-file=/etc/mysql/debian.cnf --databases $dbc_dbname --
     --ignore-table=$dbc_dbname.nagios_timeperiods \
 > $BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
-
-echo "Checking MySQL Schema..."
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_logentries' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_logentries from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_logentries CHANGE logentry_id logentry_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT;"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_hostchecks' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_hostchecks from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_hostchecks CHANGE hostcheck_id hostcheck_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT;"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_statehistory' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_statehistory from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_statehistory CHANGE statehistory_id statehistory_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT;"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_notifications' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_notifications from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_notifications CHANGE notification_id notification_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT;"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_contactnotifications' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_contactnotifications from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_contactnotifications CHANGE contactnotification_id contactnotification_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, CHANGE notification_id notification_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0';"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_contactnotificationmethods' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_contactnotificationmethods from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_contactnotificationmethods CHANGE contactnotificationmethod_id contactnotificationmethod_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, CHANGE contactnotification_id contactnotification_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0';"
-fi
-
-COLUMN_TYPE=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='${dbc_dbname}' AND TABLE_NAME='nagios_servicechecks' AND EXTRA LIKE '%auto_increment%';" -B -s)
-if [ "$COLUMN_TYPE" == "int" ] ; then
-    echo "Convert table nagios_servicechecks from int to bigint(20) unsigned. This could take awhile..."
-    mysql "--defaults-extra-file=$INIFILE" -e "ALTER TABLE nagios_servicechecks CHANGE servicecheck_id servicecheck_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT;"
-fi
-
-echo "Schema ok"
-
-
 sudo -g www-data "${APPDIR}/Console/cake" schema update -y --connection default --file schema_itcockpit.php -s 26
 
 for PLUGIN in $(ls -1 "${APPDIR}/Plugin"); do
