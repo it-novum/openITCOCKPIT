@@ -159,6 +159,7 @@ class Servicestatus extends CrateModuleAppModel {
                 'Host.satellite_id',
 
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping',
                 'Hoststatus.last_hard_state_change'
 
             ],
