@@ -211,7 +211,7 @@
                         </table>
                     </div>
                     <?php if (empty($all_services)): ?>
-                        <center><?php echo __('search.noVal'); ?></center>
+                        <center><?php echo __('No entries match the selection'); ?></center>
                     <?php endif; ?>
                 </div>
                 <!-- end widget content -->
