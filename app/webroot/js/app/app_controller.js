@@ -79,10 +79,10 @@ Frontend.AppController = Frontend.Controller.extend({
                 }
             }
         }
+        this._updateHeaderExportRunning();
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
-
     },
 
     _initUiLibrary: function () {
@@ -108,7 +108,7 @@ Frontend.AppController = Frontend.Controller.extend({
      * @return void
      */
     _initialize: function () {
-        this._updateHeaderExportRunning();
+
     },
 
     /**
