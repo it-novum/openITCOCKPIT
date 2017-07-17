@@ -23,10 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
+$Logo = new Logo();
 ?>
 
 <head>
@@ -53,7 +56,7 @@ use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
             <?php echo __('Hosts'); ?>
         </div>
         <div class="col-md-3 text-left">
-            <img src="<?php echo WWW_ROOT; ?>/img/logo.png" width="200"/>
+            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
         </div>
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">

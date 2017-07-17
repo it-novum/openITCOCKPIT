@@ -27,7 +27,7 @@
 </div>
 <hr>
 <footer>
-    <div class="navbar bg-color-white">
+    <div class="navbar login-copyright">
         <ul class="nav navbar-nav">
             <li>
                 <a href="http://www.it-novum.com">&copy; it-novum GmbH 2005 - <?php echo date('Y'); ?></a>

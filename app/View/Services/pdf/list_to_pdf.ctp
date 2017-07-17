@@ -29,7 +29,9 @@ use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
+$Logo = new Logo();
 ?>
 
 
@@ -57,7 +59,7 @@ use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
             <?php echo __('Services'); ?>
         </div>
         <div class="col-md-3 text-left">
-            <img src="<?php echo WWW_ROOT; ?>/img/logo.png" width="200"/>
+            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
         </div>
     </div>
     <div class="row  margin-top-10 padding-left-20 font-sm">

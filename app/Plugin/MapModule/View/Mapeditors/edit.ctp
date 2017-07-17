@@ -312,7 +312,7 @@
             <br>
             <br>
             <!-- Map draw container -->
-            <div id="MapContainer" class="well" style="overflow: scroll;">
+            <div id="MapContainer" class="well" style="overflow: auto;">
 
                 <!-- The background image will be inserted here -->
                 <div id="jsPlumb_playground" class="resetMargin MapPlaygroundStyle" style="<?php echo $css; ?>">

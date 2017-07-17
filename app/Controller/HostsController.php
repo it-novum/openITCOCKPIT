@@ -3077,6 +3077,7 @@ class HostsController extends AppController {
         $allServicetemplategroups = $this->Servicetemplategroup->find('all', [
             'fields' => ['Servicetemplategroup.id', 'Container.name'],
         ]);
+        $serviceTemplateGroups = [];
         foreach ($allServicetemplategroups as $servicetemplategroup) {
             $serviceTemplateGroups[$servicetemplategroup['Servicetemplategroup']['id']] = $servicetemplategroup['Container']['name'];
 

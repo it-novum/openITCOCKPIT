@@ -52,6 +52,10 @@ Debian 8 - Jessie
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
+Debian 9 - Stretch
+````
+echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' > /etc/apt/sources.list.d/openitcockpit.list
+````
 ````
 apt-get update
 apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-npcd,-message}
@@ -74,6 +78,10 @@ echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > 
 Debian 8 - Jessie
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+````
+Debian 9 - Stretch
+````
+echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
 ````
 apt-get update

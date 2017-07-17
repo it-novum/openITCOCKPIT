@@ -44,7 +44,15 @@ app/Plugin/MkModule
 app/Plugin/SAPModule
 app/Plugin/MaximoModule
 app/Plugin/DesignModule
+app/Plugin/AlfrescoModule
+app/Plugin/LinuxBasicMonitoringModule
+app/Plugin/NWCModule
+app/Plugin/PostgresModule
+app/Plugin/WMIModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
 tests
+app/webroot/img/logo_custom.png
+app/webroot/img/logo_small_custom.png
+

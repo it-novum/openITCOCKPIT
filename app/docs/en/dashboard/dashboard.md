@@ -227,10 +227,10 @@ Shows you services with different states in a listing,
 which automatically browses through the pages after the configured interval.
 
 You can configure the following:
-* **Services per page** - How many rows a page has.
-* **Refresh interval (min)** - After the refresh interval the service date reloads.
+* **Pause and scroll direction** - Pause the animation and choose wether the services are faded in from right to left or bottom to top.
 * **Paging interval (secs)** - After the interval the widget will browse to the next page.
-* **State colors** - Displays only the services with the ticked states.
+* **States to show** - Displays only the services with the selected states.
+* **Show acknowledged or services in downtime** - Choose if acknowledged services and/or services in downtime should be displayed.
 * **Search** - Search through the available services.
 
 Click on <a class="btn btn-xs btn-primary">Save</a> to save your widget configuration.

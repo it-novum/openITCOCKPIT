@@ -26,6 +26,8 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 class UsersController extends AppController
 {
     public $layout = 'Admin.default';
@@ -51,8 +53,6 @@ class UsersController extends AppController
         'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
         'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
         'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
-        'User.role'      => ['label' => 'Role', 'searchType' => 'select', 'type' => 'select'],
-        'User.status'    => ['label' => 'Status', 'searchType' => 'select', 'type' => 'select'],
     ]]];
 
 
@@ -430,9 +430,10 @@ class UsersController extends AppController
         $Email->emailFormat('both');
         $Email->template('template-resetpassword', 'template-resetpassword')->viewVars(['newPassword' => $newPassword]);
 
+        $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/logo_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
