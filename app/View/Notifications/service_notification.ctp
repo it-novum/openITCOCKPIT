@@ -45,7 +45,7 @@ $ListSettingsRenderer->setPaginator($this->Paginator);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
             <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
             <?php echo h($Service->getServicename()); ?>

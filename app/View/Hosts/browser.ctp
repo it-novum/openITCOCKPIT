@@ -52,7 +52,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
             <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($host['Host']['name']); ?>
