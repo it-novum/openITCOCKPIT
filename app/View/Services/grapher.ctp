@@ -107,6 +107,13 @@ $rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path.$service['Host
 if($rrd_structure_datasources):
     foreach ($graphs as $graph):
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
+            $critValue = isset($rrd_structure_datasource['crit']) ? $rrd_structure_datasource['crit'] : '';
+            $warnValue = isset($rrd_structure_datasource['warn']) ? $rrd_structure_datasource['warn'] : '';
+            if(!$showThresholds){
+                unset($rrd_structure_datasource['crit']);
+                unset($rrd_structure_datasource['warn']);
+            }
+
             $imageUrl = $Rrd->createRrdGraph($rrd_structure_datasource, [
                 'host_uuid'    => $service['Host']['uuid'],
                 'service_uuid' => $service['Service']['uuid'],
@@ -164,16 +171,16 @@ if($rrd_structure_datasources):
                                     <td class="padding-right-10 bold"><?php echo __('Current value'); ?></td>
                                     <td><?php echo $rrd_structure_datasource['act']; ?></td>
                                 </tr>
-                                <?php if ($rrd_structure_datasource['warn'] != ''): ?>
+                                <?php if ($warnValue != ''): ?>
                                     <tr>
                                         <td class="padding-right-10 bold"><?php echo __('Warning'); ?></td>
-                                        <td><?php echo $rrd_structure_datasource['warn']; ?></td>
+                                        <td><?php echo $warnValue; ?></td>
                                     </tr>
                                 <?php endif; ?>
-                                <?php if ($rrd_structure_datasource['crit'] != ''): ?>
+                                <?php if ($critValue != ''): ?>
                                     <tr>
                                         <td class="padding-right-10 bold"><?php echo __('Critical'); ?></td>
-                                        <td><?php echo $rrd_structure_datasource['crit']; ?></td>
+                                        <td><?php echo $critValue; ?></td>
                                     </tr>
                                 <?php endif; ?>
                             </table>
@@ -224,6 +231,14 @@ if($rrd_structure_datasources):
                 endforeach;
                 ?>
                 </ul>
+                <hr />
+                <div class="row">
+                    <?php echo $this->Form->fancyCheckbox('hide-show-thresholds', [
+                        'caption' => _('Display thresholds'),
+                        'checked' => $showThresholds,
+                        'captionGridClass' => 'col col-md-2 no-padding'
+                    ]); ?>
+                </div>
             </div>
         </div>
     </div>
