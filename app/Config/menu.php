@@ -31,12 +31,6 @@ $config = [
             'icon'     => 'dashboard',
             'order'    => 1,
             'children' => [
-                /*'tacticalOverview' => [
-                    'url' => ['controller' => 'dashboard', 'plugin' => 'admin', 'action' => 'tacticalOverview'],
-                    'title' => 'Tactical Overview',
-                    'icon' => 'cube',
-                    'parent_controller' => 'Administrators'
-                    ]*/
             ],
         ],
 
@@ -60,10 +54,7 @@ $config = [
                 ],
             ],
         ],
-
         'admin' => [
-            // Das aber irgendwie gepfusche?!
-            //'url' => ['plugin' => 'proxy', 'controller' => 'index'],
             'url'      => ['controller' => 'changelogs', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Administration',
             'icon'     => 'cogs',
@@ -137,10 +128,7 @@ $config = [
                 ],
             ],
         ],
-
         'itc'           => [
-            // Das aber irgendwie gepfusche?!
-            //'url' => ['plugin' => 'proxy', 'controller' => 'index'],
             'url'      => ['controller' => 'hosts', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Basic Monitoring',
             'icon'     => 'cogs',
@@ -242,12 +230,6 @@ $config = [
                     'icon'              => 'location-arrow',
                     'parent_controller' => 'itc',
                 ],
-                /*'itc_devicegroups' => [
-                    'url' => ['controller' => 'devicegroups', 'action' => 'index'],
-                    'title' => 'Device Groups',
-                    'icon' => 'cloud',
-                    'parent_controller' => 'itc'
-                ],*/
                 'itc_graphgenerator'       => [
                     'url'               => ['controller' => 'graphgenerators', 'action' => 'index'],
                     'title'             => 'Graph Generator',
@@ -288,8 +270,6 @@ $config = [
             ],
         ],
         'itc_expert'    => [
-            // Das aber irgendwie gepfusche?!
-            //'url' => ['plugin' => 'proxy', 'controller' => 'index'],
             'url'      => ['controller' => 'macros', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Expert Monitoring',
             'icon'     => 'fire',
@@ -365,14 +345,6 @@ $config = [
             'icon'  => 'book',
             'order' => 6,
         ],
-
-        'support' => [
-            'url'   => ['controller' => 'documentations', 'action' => 'wiki', 'plugin' => ''],
-            'title' => 'Support',
-            'icon'  => 'book',
-            'order' => 999,
-        ],
-
         'support'     => [
             'url'      => ['controller' => 'supports', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Support',
