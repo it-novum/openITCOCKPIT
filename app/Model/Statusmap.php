@@ -25,39 +25,7 @@
 
 class Statusmap extends AppModel
 {
-    public $hasOne = ['Cronschedule'];
 
-    var $validate = [
-        'task'     => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-            ],
-        ],
-        'plugin'   => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-            ],
-        ],
-        'interval' => [
-            'notBlank' => [
-                'rule'     => 'notBlank',
-                'message'  => 'This field cannot be left blank.',
-                'required' => true,
-            ],
-            'numeric'  => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs to be numeric.',
-            ],
-            'notZero'  => [
-                'rule'     => ['comparison', '>', 0],
-                'message'  => 'Please enter a number > 0.',
-                'required' => true,
-            ],
-        ],
-    ];
+    public $useTable = false;
 
 }
