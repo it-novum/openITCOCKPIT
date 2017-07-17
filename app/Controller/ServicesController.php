@@ -2351,7 +2351,8 @@ class ServicesController extends AppController {
         }
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists']));
+        $showThresholds = is_null($this->Session->read('service_thresholds_'.$id)) ? '1' : $this->Session->read('service_thresholds_'.$id);
+        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'showThresholds']));
     }
 
     public function grapherTemplate($id){
@@ -2377,10 +2378,12 @@ class ServicesController extends AppController {
         $this->set(compact(['service', 'servicestatus', 'commandUuid', 'docuExists']));
     }
 
-    public function grapherZoom($id, $ds, $newStart, $newEnd){
+    public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds) {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
+
+        $this->Session->write('service_thresholds_'.$id, $showThresholds);
 
         //Avoid RRD errors
         if ($newStart > $newEnd) {
@@ -2409,6 +2412,11 @@ class ServicesController extends AppController {
         $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             if ($rrd_structure_datasource['ds'] == $ds):
+                if($showThresholds !== '1') {
+                    unset($rrd_structure_datasource['crit']);
+                    unset($rrd_structure_datasource['warn']);
+                }
+
                 $imageUrl = $this->Rrd->createRrdGraph($rrd_structure_datasource, [
                     'host_uuid' => $service['Host']['uuid'],
                     'service_uuid' => $service['Service']['uuid'],
@@ -2416,7 +2424,7 @@ class ServicesController extends AppController {
                     'start' => $newStart,
                     'end' => $newEnd,
                     'label' => $service['Host']['name'] . ' / ' . $service['Servicetemplate']['name'],
-                ]);
+                ], [], true);
                 if (!isset($imageUrl['diskPath'])) {
                     //The image is broken, i gues we have an RRD error here, so we render the RRD return text into an image and send it to the browser.
                     $errorImage = $this->createGrapherErrorPng($imageUrl);
