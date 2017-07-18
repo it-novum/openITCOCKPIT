@@ -281,18 +281,24 @@ class AppController extends Controller {
      * beforeFilter() Replacement for sub controllers.
      * @return void
      */
-    protected function _beforeAction(){
+
+    protected function _beforeAction() {
+        $this->systemsettings = $this->Systemsetting->findAsArray();
+
+
         if ($this->Session->check('FRONTEND.SYSTEMNAME')) {
             $this->systemname = $this->Session->read('FRONTEND.SYSTEMNAME');
         } else {
             $this->Session->write('FRONTEND.SYSTEMNAME', '');
             $this->systemname = '';
-            $this->systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
             if (isset($this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
                 $this->Session->write('FRONTEND.SYSTEMNAME', $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
                 $this->systemname = $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
             }
         }
+
+        $this->exportRunningHeaderInfo = isset($this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING']) ? $this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes' : false;
+
     }
 
     /**
@@ -314,6 +320,7 @@ class AppController extends Controller {
         if (!$this->request->is('ajax')) {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
+        $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);
@@ -331,6 +338,7 @@ class AppController extends Controller {
             $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
 
         }
+
 
         ClassRegistry::addObject('AuthComponent', $this->Auth);
         $this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
