@@ -135,7 +135,7 @@ class GrafanaApiConfiguration {
 
 
         if (!empty($configuration['GrafanaConfigurationHostgroupMembership'])) {
-            $includedHostgroup = \Hash::combine(
+            $includedHostgroups = \Hash::combine(
                 $configuration['GrafanaConfigurationHostgroupMembership'],
                 '{n}[excluded=0].hostgroup_id',
                 '{n}[excluded=0].hostgroup_id'
