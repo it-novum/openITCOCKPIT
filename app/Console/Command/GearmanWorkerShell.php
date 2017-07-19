@@ -442,6 +442,9 @@ class GearmanWorkerShell extends AppShell
                     case 'jessie':
                         $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
                         break;
+                    case 'stretch':
+                        $repo = 'packages.openitcockpit.com/repositories/stretch stretch';
+                        break;
                 }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');
                 fwrite($file, 'deb https://secret:'.$payload['key'].'@'.$repo.'  main'.PHP_EOL);
