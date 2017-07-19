@@ -47,6 +47,7 @@ app/Plugin/DesignModule
 app/Plugin/AlfrescoModule
 app/Plugin/LinuxBasicMonitoringModule
 app/Plugin/NWCModule
+app/Plugin/NrpeModule
 app/Plugin/PostgresModule
 app/Plugin/WMIModule
 app/Lib/AvailableVersion.php
