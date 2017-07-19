@@ -38,7 +38,7 @@ $plugin_version = '1.5';
 <?php echo $this->element('repository_checker'); ?>
 
 <div id="error_msg"></div>
-<?php if (isset($data) && version_compare($data->version, $openITCVersion) > 0 || 1): ?>
+<?php if (isset($data) && version_compare($data->version, $openITCVersion) > 0): ?>
     <div class="alert alert-info alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h5 class="alert-heading"><i class="fa fa-fire"></i> <?php echo __('New Version!'); ?></h5>
