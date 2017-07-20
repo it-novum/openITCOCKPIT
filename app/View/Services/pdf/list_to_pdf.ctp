@@ -89,7 +89,7 @@ $Logo = new Logo();
             <tbody>
             <?php
             if (!empty($all_services)):
-                $tmp_host_name = null;
+                $tmp_host_uuid = null;
                 foreach ($all_services as $service):
                     $Service = new Service($service);
                     $Host = new Host($service);
@@ -97,8 +97,8 @@ $Logo = new Logo();
                     $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
 
 
-                    if ($tmp_host_name != $Host->getHostname()):
-                        $tmp_host_name = $Host->getHostname();
+                    if ($tmp_host_uuid != $Host->getUuid()):
+                        $tmp_host_uuid = $Host->getUuid();
                         $Hoststatus = new Hoststatus($service['Hoststatus']);
                         $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                         ?>
