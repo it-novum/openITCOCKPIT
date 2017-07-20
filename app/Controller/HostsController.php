@@ -1613,6 +1613,7 @@ class HostsController extends AppController {
                         'Host.own_contacts',
                         'Host.own_contactgroups',
                         'Host.own_customvariables',
+                        'Host.satellite_id'
                     ],
                     'contain' => [
                         'Parenthost' => [
