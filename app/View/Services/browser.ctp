@@ -557,7 +557,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 </div>
                             <?php else: ?>
                                 <h5><?php
-                                    echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
+                                    echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id'], 'id' => 'nag_commandSatelliteId']); ?>
                                     <span class="nag_command submitRescheduleService">
                                         <i class="fa fa-refresh"></i>
                                         <?php echo __('Reset check time'); ?>
