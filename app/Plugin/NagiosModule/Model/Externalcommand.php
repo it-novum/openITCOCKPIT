@@ -1150,14 +1150,38 @@ class Externalcommand extends NagiosModuleAppModel
     private function _write($content = '', $satellite_id = 0)
     {
         if ($satellite_id > 0) {
-            //Host or service on SAT system or command for $SAT$_nagios.cmd
-            $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-            $sat = $this->Satellite->findById($satellite_id);
-            if (isset($sat['Satellite']['name'])) {
-                $file = fopen('/opt/openitc/nagios/var/rw/'.md5($sat['Satellite']['name']).'_nagios.cmd', 'a+');
-                fwrite($file, $this->_prefix().$content.PHP_EOL);
-                fclose($file);
+            //Loading distributed Monitoring support, if plugin is loaded/installed
+            $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+                return strpos($value, 'Module') !== false;
+            });
+
+            if (in_array('DistributeModule', $modulePlugins)) {
+                //DistributeModule is loaded and installed...
+                //Host or service on SAT system or command for $SAT$_nagios.cmd
+                $Satellite = ClassRegistry::init('DistributeModule.Satellite');
+
+                //Host or service on SAT system or command for $SAT$_nagios.cmd
+                $result = $Satellite->find('first', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Satellite.id' => $satellite_id
+                    ],
+                    'fields' => [
+                        'Satellite.id',
+                        'Satellite.name'
+                    ]
+                ]);
+                if (isset($result['Satellite']['name'])) {
+                    $file = fopen('/opt/openitc/nagios/var/rw/'.md5($result['Satellite']['name']).'_nagios.cmd', 'a+');
+                    fwrite($file, $this->_prefix().$content.PHP_EOL);
+                    fclose($file);
+                }
+                unset($result);
+
+            }else{
+                return false;
             }
+
         } else {
             //Host or service from master system or command for master nagios.cmd
             if ($this->_is_resource()) {
