@@ -165,7 +165,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 </thead>
                                 <tbody>
                                 <?php
-                                $tmp_host_name = null;
+                                $tmp_host_uuid = null;
                                 foreach ($all_services as $service):
                                     $Service = new Service($service);
                                     $Host = new Host($service);
@@ -183,8 +183,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     endif;
 
 
-                                    if ($tmp_host_name != $Host->getHostname()):
-                                        $tmp_host_name = $Host->getHostname();
+                                    if ($tmp_host_uuid != $Host->getUuid()):
+                                        $tmp_host_uuid = $Host->getUuid();
                                         ?>
                                         <tr>
                                             <td class="service_table_host_header" colspan="13">
