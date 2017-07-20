@@ -62,11 +62,16 @@ App.Controllers.GrafanaConfigurationIndexController = Frontend.AppController.ext
     },
 
     grafanaConnectionCallbackComplete: function(data){
-        $checkConnetionButton = $('#runGrafanaConnectionTest');
+        var $checkConnetionButton = $('#runGrafanaConnectionTest');
+        var $flashMessage = $('#flashMessage');
+        $flashMessage.hide();
+        $flashMessage.html();
         var data = JSON.parse(data);
+        console.log(data);
         if(data.status){
             $checkConnetionButton.switchClass('btn-primary', 'btn-success');
         }else{
+            $flashMessage.switchClass('alert-success', 'alert-danger').html(data.msg.message).show();
             $checkConnetionButton.switchClass('btn-primary', 'btn-danger');
         }
     },

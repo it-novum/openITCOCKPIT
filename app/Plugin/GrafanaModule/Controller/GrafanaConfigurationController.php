@@ -115,9 +115,6 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
-        if (empty($grafanaConfiguration)) {
-            $this->out('<error>No Grafana configuration found</error>');
-        }
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
         $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration);
@@ -125,7 +122,10 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         if ($client instanceof Client) {
             $status = ['status' => true];
         } else {
-            $status = ['status' => false];
+            $status = [
+                'status' => false,
+                'msg' => json_decode($client)
+            ];
         }
 
         echo json_encode($status);
