@@ -1119,8 +1119,6 @@ class DashboardsController extends AppController
 
     public function saveGrafanaId(){
         $this->autoRender = false;
-
-        debug($this->request->data);
         if (isset($this->request->data['dashboard']['widgetId'])) {
             $widgetId = $this->request->data['dashboard']['widgetId'];
             $hostId = $this->request->data['dashboard']['hostId'];
@@ -1131,10 +1129,8 @@ class DashboardsController extends AppController
                 if($this->Widget->save($widget)){
                     $this->DashboardTab->id = $widget['DashboardTab']['id'];
                     $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                    //redirect
                     return $this->redirect(['action' => 'index', $tabId]);
                 }else{
-                    //setflash
                     return $this->redirect(['action' => 'index']);
                 }
             }
