@@ -35,49 +35,7 @@ App.Components.WidgetGrafanaComponent = Frontend.Component.extend({
             var $object = $(e.target);
             var widgetId = parseInt($object.data('widget-id'), 10);
             var hostId = parseInt($object.val(), 10);
-            self.saveGrafanaId(widgetId, hostId);
+            $('#grafanaSelectHost').chosen();
         }.bind(this));
     },
-
-    saveGrafanaId: function(widgetId, hostId){
-        console.log('save grafana id fired');
-        this.Ajaxloader.show();
-        $.ajax({
-            url: "/dashboards/saveGrafanaId",
-            type: "POST",
-            data: {widgetId: widgetId, hostId: hostId},
-            error: function(){},
-            success: function(response){
-console.log('ajax success');
-                this.Ajaxloader.hide();
-                this.refresh(widgetId);
-            }.bind(this),
-            complete: function(response) {
-            }
-        });
-    },
-
-    refresh: function(widgetId){
-        var $wrapper = this.maps[widgetId].wrapper;
-        var $mapBody = $wrapper.parents('.map-body').parent();
-        $wrapper.html('<div class="text-center padding-top-50"><h1><i class="fa fa-cog fa-lg fa-spin"></i></h1></div>');
-        this.Ajaxloader.show();
-        $.ajax({
-            url: "/dashboards/refresh",
-            type: "POST",
-            data: {widgetId: widgetId},
-            error: function(){},
-            success: function(response){
-                if(response != ''){
-                    $mapBody.html(response);
-                   // this.initMap($mapBody.find('.mapContainer'));
-                    $('.chosen').chosen();
-                }
-                this.Ajaxloader.hide();
-            }.bind(this),
-            complete: function(response) {
-            }
-        });
-    }
-
 });

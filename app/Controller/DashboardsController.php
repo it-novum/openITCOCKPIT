@@ -1119,23 +1119,23 @@ class DashboardsController extends AppController
 
     public function saveGrafanaId(){
         $this->autoRender = false;
-       /* if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-*/
+
         debug($this->request->data);
         if (isset($this->request->data['dashboard']['widgetId'])) {
-
             $widgetId = $this->request->data['dashboard']['widgetId'];
             $hostId = $this->request->data['dashboard']['hostId'];
-            $userId = $this->Auth->user('id');
+            $tabId = $this->request->data['dashboard']['tabId'];
             if ($this->Widget->exists($widgetId)) {
                 $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['host_id'] = $hostId;
-                    $this->Widget->save($widget);
+                $widget['Widget']['host_id'] = $hostId;
+                if($this->Widget->save($widget)){
                     $this->DashboardTab->id = $widget['DashboardTab']['id'];
                     $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+                    //redirect
+                    return $this->redirect(['action' => 'index', $tabId]);
+                }else{
+                    //setflash
+                    return $this->redirect(['action' => 'index']);
                 }
             }
         }
