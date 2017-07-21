@@ -2462,6 +2462,7 @@ class ServicesController extends AppController {
         $rrd_path = Configure::read('rrd.path');
 
         //Loading template
+        $templateSettings = [];
         require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
 
         foreach ($templateSettings as $key => $templateSetting):
