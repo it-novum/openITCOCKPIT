@@ -110,7 +110,7 @@ $config = [
             ],
             'Hosts'            => [
                 'view',
-            ],
+            ]
         ],
         'dependencies'   => [
             'Automaps'              => [

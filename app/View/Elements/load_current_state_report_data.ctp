@@ -22,6 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
+$Logo = new Logo();
 ?>
 <div class="jarviswidget">
     <header>
@@ -39,7 +43,7 @@
             </div>
             <div class="col-md-3 text-left">
                 <?php
-                echo $this->Html->image('logo.png',
+                echo $this->Html->image($Logo->getLogoForHtmlHelper(),
                     ['width' => '200']
                 ); ?>
             </div>

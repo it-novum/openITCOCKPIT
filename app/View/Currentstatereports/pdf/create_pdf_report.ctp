@@ -22,6 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
+$Logo = new Logo();
 ?>
 <head>
     <?php
@@ -53,7 +57,7 @@
                 echo h('('.__('Date: ').$this->Time->format(time(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')).')'); ?>
             </div>
             <div class="col-md-3 text-left">
-                <img src="<?php echo WWW_ROOT; ?>img/logo.png" width="200"/>
+                <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
             </div>
             <div class="col-md-12 padding-20">
                 <?php

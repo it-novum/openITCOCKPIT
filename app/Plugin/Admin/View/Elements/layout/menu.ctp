@@ -49,10 +49,6 @@ $isActive = function ($item, $current, $hasChildren = false, $isParent = true) {
 };
 
 $isActiveAction = function ($item, $current, $isActiveController = false, $use_parent = true) {
-    //if($item['url']['action'] == $current['action'] && $isActiveController) {
-    //	return true;
-    //}
-
     if ($use_parent === true) {
         if (isset($item['parent_controller'])) {
             if (($item['url']['action'] == $current['action'] && $item['url']['controller'] == $current['controller'])) {

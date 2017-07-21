@@ -349,30 +349,6 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'CRONJOB.RECURRING_DOWNTIME',
-                    'value'    => '10',
-                    'info'     => 'Time in minutes the cron will check for recurring downtimes',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLEANUP_DATABASE',
-                    'value'    => '1440',
-                    'info'     => 'Time in minutes the cron will check for partitions in database and drop old partitions',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLENUP_TEMPFILES',
-                    'value'    => '10',
-                    'info'     => 'Deletes tmp files',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'      => 'SYSTEM.ADDRESS',
                     'value'    => '127.0.0.1',
                     'info'     => 'The IP address or FQDN of the system',
@@ -384,6 +360,14 @@ class Systemsetting extends Importer
                     'key'      => 'FRONTEND.SYSTEMNAME',
                     'value'    => 'openITCOCKPIT',
                     'info'     => 'The name of your system',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'FRONTEND.SHOW_EXPORT_RUNNING',
+                    'value'    => 'yes',
+                    'info'     => 'Show if an export is running in headarea',
                     'section'  => 'FRONTEND'
                 ],
             ],
@@ -536,6 +520,14 @@ class Systemsetting extends Importer
                     'key'      => 'FRONTEND.CERT.DEFAULT_USER_EMAIL',
                     'value'    => 'default.user@email.de',
                     'info'     => 'Default user E-mail address to be used if no E-mail address was found during the login with certificate',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'FRONTEND.HIDDEN_USER_IN_CHANGELOG',
+                    'value'    => '0',
+                    'info'     => 'Hide the user name in the change log due to privacy reasons',
                     'section'  => 'FRONTEND'
                 ],
             ],

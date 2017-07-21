@@ -72,9 +72,9 @@ $widgetData = $widgetHoststatusList[$widget['Widget']['id']];
                 endif;
                 ?>
             </td>
-            <td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_hard_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+            <td data-original-title="<?php echo h($this->Time->format($host['Hoststatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                 data-placement="bottom" rel="tooltip" data-container="body">
-                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_hard_state_change']))); ?>
+                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus']['last_state_change']))); ?>
             </td>
         </tr>
     <?php endforeach; ?>

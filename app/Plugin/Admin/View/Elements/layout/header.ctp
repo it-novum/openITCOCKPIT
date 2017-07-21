@@ -89,7 +89,7 @@
         </div>
         <div class="btn-header pull-right">
             <span> <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet"></i></a></span>
+                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet" id="i-export-running-checker"></i></a></span>
         </div>
         <div class="btn-header pull-right hidden-mobile hidden-tablet">
             <span><a href="javascript:void(0);" id="globalServertime" style="font-weight:normal;"

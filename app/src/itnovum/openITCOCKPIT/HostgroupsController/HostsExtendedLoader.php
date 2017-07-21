@@ -230,6 +230,7 @@ class HostsExtendedLoader
             'conditions' => [
                 'Container.id' => $this->containerIds,
             ],
+	    'group' => 'Host.id'
         ];
 
         if (!$this->hostgroupId !== null) {

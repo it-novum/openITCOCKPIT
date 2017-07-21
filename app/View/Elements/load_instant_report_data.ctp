@@ -23,9 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 $totalHostsData[0] = $totalHostsData[1] = $totalHostsData[2] = 0;
 $totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalServicesData[3] = 0;
-
+$Logo = new Logo();
 ?>
 <div class="jarviswidget">
     <header>
@@ -47,7 +49,7 @@ $totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalSe
             </div>
             <div class="col-md-3 text-left">
                 <?php
-                echo $this->Html->image('logo.png',
+                echo $this->Html->image($Logo->getLogoForHtmlHelper(),
                     ['width' => '200']
                 ); ?>
             </div>

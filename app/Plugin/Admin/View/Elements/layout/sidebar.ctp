@@ -38,23 +38,22 @@
         endif;
         ?>
         <span>
-			<a data-html="true" data-original-title="<?php echo __('Edit profile'); ?>" data-placement="right"
+            <a data-html="true" data-original-title="<?php echo __('Edit profile'); ?>" data-placement="right"
                rel="tooltip" href="/profile/edit">
-				<img class="online" alt="me" src="<?php echo $img; ?>"> 
-				<span style="max-width: 142px;">
-					<?php echo h($this->Auth->user('full_name')); ?>
-				</span>
-			</a>
+                <img class="online" alt="me" src="<?php echo $img; ?>">
+                <span style="max-width: 142px;">
+                    <?php echo h($this->Auth->user('full_name')); ?>
+              </span>
+           </a>
             <?php if ($hasRootPrivileges === true): ?>
                 <span class="text-info pull-right" style="margin-top: 11px;">
-					&nbsp;
-					<i class="fa fa-lg fa-trophy"
+                    <i class="fa fa-lg fa-trophy"
                        style="color:#FFD700; text-shadow: 0px 0px 9px rgba(255, 255, 0, 0.50)" id="userRootIcon"
                        data-html="true" data-original-title="<?php echo __('Administrator privileges'); ?>"
                        data-placement="right" rel="tooltip"></i>
-				</span>
+                </span>
             <?php endif; ?>
-		</span>
+        </span>
     </div>
     <nav>
         <?php echo $this->element('Admin.layout/menu'); ?>

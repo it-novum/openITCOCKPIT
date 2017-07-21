@@ -243,6 +243,8 @@ class GearmanWorkerShell extends AppShell
         // Avoid "MySQL server has gone away"
         $this->Systemsetting->getDatasource()->reconnect();
 
+
+
         switch ($payload['task']) {
             case 'CheckMKSNMP':
                 $_task = new TaskCollection($this);
@@ -275,17 +277,72 @@ class GearmanWorkerShell extends AppShell
                     ]);
                 }
 
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -II -v '.escapeshellarg($payload['hostuuid']), $output, $returncode);
-                $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -D '.escapeshellarg($payload['hostuuid']), $output, $returncode);
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/dump-host/'.$payload['hostuuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
 
-                //Delete Check_MK autochecks
-                $this->deleteMkAutochecks();
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    $output = null;
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
+                    $this->deleteMkAutochecks();
+                }
+
                 $return = $output;
                 break;
 
             case 'CheckMKListChecks':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -L', $output, $returncode);
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/check-types');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                }
                 $return = $output;
                 unset($output);
                 break;
@@ -299,16 +356,75 @@ class GearmanWorkerShell extends AppShell
                     'for_snmp_scan' => true, //Hacky but works -.-
                     'host_address'  => $payload['hostaddress'],
                 ]);
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -II -v '.escapeshellarg($payload['hostUuid']), $output, $returncode);
-                $output = null;
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -D '.escapeshellarg($payload['hostUuid']), $output, $returncode);
-                $this->deleteMkAutochecks();
+
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/dump-host/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $output = null;
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
+                    $this->deleteMkAutochecks();
+                }
+
                 $return = $output;
                 unset($output);
                 break;
 
             case 'CheckMKProcesses':
-                exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'].' -d '.escapeshellarg($payload['hostUuid']), $output);
+                if($payload['satellite_id'] !== '0' && is_dir(APP.'Plugin'.DS.'DistributeModule')){
+                    $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+                    $satellite = $this->Satellite->find('first', [
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Satellite.id' => $payload['satellite_id']
+                        ]
+                    ]);
+                    if(empty($satellite)){
+                        break;
+                    }
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'].'/nagios/discover/raw-info/'.$payload['hostUuid']);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+                    $output = curl_exec($ch);
+
+                    if($output === false) {
+                        echo curl_error($ch);
+                    }else{
+                        $output = json_decode($output);
+                    }
+                    curl_close($ch);
+                }else{
+                    exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                }
+
                 $return = $output;
                 unset($output);
                 break;
@@ -325,6 +441,9 @@ class GearmanWorkerShell extends AppShell
                         break;
                     case 'jessie':
                         $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
+                        break;
+                    case 'stretch':
+                        $repo = 'packages.openitcockpit.com/repositories/stretch stretch';
                         break;
                 }
                 $file = fopen('/etc/apt/sources.list.d/openitcockpit.list', 'w+');

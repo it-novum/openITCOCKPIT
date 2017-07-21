@@ -63,6 +63,7 @@ $widgetData = $WidgetServiceStatusList[$widget['Widget']['id']];
             </div>
             <div class="col-xs-6 text-right">
 				<span class="listSettings">
+                    <input type="hidden" value="<?= $widgetData['Widget']['WidgetServiceStatusList']['show_filter_search'] ?>" id="filter-search-<?= $widget['Widget']['id'] ?>">
 					<?php
                     $stateSettings = [
                         'show_ok'           => [
@@ -92,7 +93,7 @@ $widgetData = $WidgetServiceStatusList[$widget['Widget']['id']];
                         endif;
                         ?>
                         <i class="fa <?php echo $stateSetting['icon']; ?>"></i> <input
-                                type="checkbox" <?php echo $checked; ?> data-key="<?php echo $dbField; ?>"/>
+                                type="checkbox" <?php echo $checked; ?> data-key="<?php echo $dbField; ?>" class="checks-widget-<?php echo h($widget['Widget']['id']); ?>"/>
                         <?php
                     endforeach; ?>
 				</span>

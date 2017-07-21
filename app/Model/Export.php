@@ -16,14 +16,10 @@
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-
-class Export extends AppModel
-{
-
+class Export extends AppModel{
 }
