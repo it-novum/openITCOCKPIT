@@ -2927,4 +2927,37 @@ class ServicesController extends AppController {
     public function checkcommand(){
         return null;
     }
+
+    public function ajaxGetByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            if(strpos($this->request->data['term'], '/') === false){
+                $conditions = [
+                    'OR' => [
+                        ['Host.name LIKE' => '%'.$this->request->data['term'].'%'],
+                        ['Service.ServiceDescription LIKE' => '%'.$this->request->data['term'].'%'],
+                    ]
+                ];
+            }else{
+                $hostServiceArr = explode('/', $this->request->data['term'], 2);
+                $conditions = [
+                    ['Host.name LIKE' => '%'.$hostServiceArr[0].'%'],
+                    ['Service.ServiceDescription LIKE' => '%'.$hostServiceArr[1].'%'],
+                ];
+            }
+
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $services = $this->Service->getAjaxServices($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($services as $hostName => $serviceArr){
+                $returnHtml .= '<optgroup label="'.$hostName.'">';
+                foreach($serviceArr as $serviceId => $serviceName){
+                    $returnHtml .= '<option value="'.$serviceId.'" '.(in_array($serviceId, $selectedArr)?'selected':'').'>'.$serviceName.'</option>';
+                }
+                $returnHtml .= '</optgroup>';
+            }
+            return $returnHtml;
+        }
+    }
 }

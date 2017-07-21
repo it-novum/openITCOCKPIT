@@ -52,6 +52,7 @@ Frontend.AppController = Frontend.Controller.extend({
         this._dom = $('div.controller.' + this._frontendData.controller + '_' + this._frontendData.action);
         this.$ = this._dom.find.bind(this._dom);
         this.Time.setup();
+        var arrayOfItnAjax = {};
 
         var selectBoxes = $('.chosen');
         for (var i in selectBoxes) {
@@ -77,8 +78,50 @@ Frontend.AppController = Frontend.Controller.extend({
                         width: '100%' // Makes the graph responsive.
                     });
                 }
+
+                if(typeof selectBoxes[i].attributes['itn-ajax'] !== 'undefined' && typeof selectBoxes[i].attributes['id'] !== 'undefined'){
+                    arrayOfItnAjax[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax'].value;
+                }
             }
         }
+
+        var myItnTimeout;
+        var lastTyped = '';
+        var itnAjaxLoading = false;
+        $('.chosen-container').bind('keyup',function(event) {
+            var currentItnAjaxId = $(this).attr('id').replace('_chosen', '');
+            var termInput = $('#'+currentItnAjaxId+'_chosen input');
+            var termInputValue = termInput.val();
+            if(itnAjaxLoading){
+                $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');
+            }
+            if(lastTyped == termInputValue)
+                return false;
+
+            lastTyped = termInputValue;
+            clearTimeout(myItnTimeout);
+            if (typeof arrayOfItnAjax[currentItnAjaxId] === 'undefined' || termInputValue.length < 1)
+                return false;
+
+            $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');
+            itnAjaxLoading = true;
+            myItnTimeout = setTimeout(function () {
+                if (termInputValue.length >= 1) {
+                    $.ajax({
+                        method: 'POST',
+                        url: arrayOfItnAjax[currentItnAjaxId],
+                        data: {term: termInputValue, selected: $('#' + currentItnAjaxId).val()},
+                        success: function (data) {
+                            $('#' + currentItnAjaxId).html(data).trigger('chosen:updated');
+                            termInput.val(termInputValue).width(((termInputValue.length + 1) * 8) + 'px');
+                            itnAjaxLoading = false;
+                        }
+                    });
+                }
+            }, 1000);
+
+        });
+
         this._updateHeaderExportRunning();
         this._initComponents();
         this._initialize(); // Intented to be overwritten.

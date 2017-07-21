@@ -176,7 +176,7 @@ $config = [
                 'delete'   => ['mass_delete'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxGetByTerm'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -215,7 +215,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate' => ['mass_deactivate'],
-                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
+                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'ajaxGetByTerm'],
                 'browser'    => ['servicesByHostId', 'longOutputByUuid'],
                 'delete'     => ['mass_delete'],
                 'add'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],

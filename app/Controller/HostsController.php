@@ -3104,4 +3104,19 @@ class HostsController extends AppController {
         $this->set(compact(['servicetemplategroup', 'host']));
         $this->set('_serialize', ['servicetemplategroup', 'host']);
     }
+
+    public function ajaxGetByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%'];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return $returnHtml;
+        }
+    }
 }
