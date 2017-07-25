@@ -176,7 +176,7 @@ $config = [
                 'delete'   => ['mass_delete'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxGetByTerm'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxGetByTerm', 'ajaxGetGenericByTerm'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],

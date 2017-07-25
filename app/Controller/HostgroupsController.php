@@ -359,8 +359,7 @@ class HostgroupsController extends AppController
             $containerId = $this->request->data('Container.parent_id');
         }
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        $hosts = $this->Host->getAjaxHosts($containerIds, [], $hostgroup['Host']);
         $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         if ($this->request->data('Hostgroup.Host')) {
             foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
@@ -530,7 +529,7 @@ class HostgroupsController extends AppController
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Container.parent_id');
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+            $hosts = $this->Host->getAjaxHosts($containerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
             $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         }
         $this->set(compact(['containers', 'hosts', 'hosttemplates']));
@@ -543,11 +542,12 @@ class HostgroupsController extends AppController
 
         if($containerId == ROOT_CONTAINER){
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         }else{
-            $hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER, $containerId], 'list');
+            $containerIds = [ROOT_CONTAINER, $containerId];
         }
+        $hosts = $this->Host->getAjaxHosts($containerIds);
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
+
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }

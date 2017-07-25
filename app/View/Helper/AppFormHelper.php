@@ -173,8 +173,9 @@ class AppFormHelper extends BoostCakeFormHelper
                     }
                 }
             }
-            if($ajaxElements < AppModel::ITN_AJAX_LIMIT){
+            if($ajaxElements !== 0 && $ajaxElements < AppModel::ITN_AJAX_LIMIT){
                 unset($options['itn-ajax']);
+                unset($options['itn-ajax-depends']);
             }
         }
 

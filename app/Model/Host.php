@@ -263,8 +263,10 @@ class Host extends AppModel {
             foreach($hostsIncluding as $hostIncluding){
                 $formattedHosts[] = $hostIncluding['id'];
             }
-        }else{
+        }elseif(is_array($hostsIncluding)){
             $formattedHosts = $hostsIncluding;
+        }else{
+            $formattedHosts = [$hostsIncluding];
         }
 
         if(!empty($formattedHosts) && !empty(array_diff($formattedHosts, array_keys($hosts)))){

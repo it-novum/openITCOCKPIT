@@ -97,6 +97,8 @@ $notification_settings = [
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 'style' => 'width: 100%',
                                 'value' => $hostId,
+                                'itn-ajax' => '/Hosts/ajaxGetGenericByTerm'
+
                             ]);
                             echo $this->Form->input('Service.servicetemplate_id', [
                                 'options' => $this->Html->chosenPlaceholder($servicetemplates),

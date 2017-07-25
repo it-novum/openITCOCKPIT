@@ -306,14 +306,14 @@ class ServicegroupsController extends AppController
             $_servicetemplates = [];
             if ($this->request->data['Container']['parent_id'] > 0) {
                 $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id'], $this->hasRootPrivileges);
-                $_services = $this->Service->servicesByHostContainerIds($containerIds);
+                $services = $this->Service->getAjaxServices($containerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
                 $_servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds);
             }
 
             //Fix that duplicate hostnames dont overwrite the array key!!
-            foreach ($_services as $service) {
-                $services[$service['Host']['id']][$service['Host']['name']][$service['Service']['id']] = $service['Host']['name'].'/'.$service[0]['ServiceDescription'];
-            }
+//            foreach ($_services as $service) {
+//                $services[$service['Host']['id']][$service['Host']['name']][$service['Service']['id']] = $service['Host']['name'].'/'.$service[0]['ServiceDescription'];
+//            }
             $ext_data_for_changelog = [];
             App::uses('UUID', 'Lib');
             $this->request->data['Servicegroup']['uuid'] = UUID::v4();
@@ -393,10 +393,13 @@ class ServicegroupsController extends AppController
     {
         $this->allowOnlyAjaxRequests();
 
-        $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
-            'forOptiongroup' => true,
-        ]);
-        $services = $this->Service->makeItJavaScriptAble($services);
+//        $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
+//            'forOptiongroup' => true,
+//        ]);
+//        debug($services);
+        $services = $this->Service->getAjaxServices([ROOT_CONTAINER, $containerId]);
+//        debug($services);exit;
+//        $services = $this->Service->makeItJavaScriptAble($services);
 
         $data = ['services' => $services];
         $this->set($data);

@@ -3109,12 +3109,43 @@ class HostsController extends AppController {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['term'])){
             $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%'];
-            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId']) && !empty($this->request->data['containerId'])) {
+                if ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
             $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
             $returnHtml = '';
             foreach($hosts as $hostId => $hostName){
-                $returnHtml .= '<option value="'.$hostId.'" '.(in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return $returnHtml;
+        }
+    }
+
+    public function ajaxGetGenericByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%', 'Host.host_type' => GENERIC_HOST];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId']) && !empty($this->request->data['containerId'])) {
+                if ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
             }
             return $returnHtml;
         }
