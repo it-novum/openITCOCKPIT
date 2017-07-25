@@ -67,7 +67,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-npcd,-message}
+apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 **openITCOCKPIT Nagios 4:**
