@@ -67,14 +67,15 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
 
         $serverURL = trim($serverAndPort[0]);
         $serverPort = trim($serverAndPort[1]);
-        $serverProtocol =trim($serverParts[1]);
-        $serverSSL = (isset($serverParts[2]) && trim($serverParts[2]) === 'ssl');
+        $serverProtocol = trim($serverParts[1]);
+        $serverSSL = in_array('ssl', $serverParts);
+        $serverNoValidateCert = in_array('novalidate-cert', $serverParts);
 
         if($serverProtocol != 'imap'){
             return ['success' => '<red>Error</red>', 'messages' => ['Only IMAP protocol is supported.']];
         }
 
-        $mailbox = new \JJG\Imap($serverURL, $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'], $serverPort, $serverProtocol, $serverSSL, 'INBOX');
+        $mailbox = new \JJG\Imap($serverURL, $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'], $serverPort, $serverProtocol, $serverSSL, $serverNoValidateCert, 'INBOX');
         if(!empty($mailbox->error)){
             return ['success' => '<red>Error</red>', 'messages' => [$mailbox->error]];
         }
@@ -94,7 +95,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
                 if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
                     $this->Externalcommand->setHostAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
-                        'author' => $messArr['sender'],
+                        'author' => isset($messArr['sender']) && !empty($messArr['sender']) ? $messArr['sender'] : (isset($messArr['from']) && !empty($messArr['from']) ? $messArr['from'] : 'Unknown author'),
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1,
                         'type' => 'hostOnly'
@@ -104,7 +105,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
                     $this->Externalcommand->setServiceAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                         'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
-                        'author' => $messArr['sender'],
+                        'author' => isset($messArr['sender']) && !empty($messArr['sender']) ? $messArr['sender'] : (isset($messArr['from']) && !empty($messArr['from']) ? $messArr['from'] : 'Unknown author'),
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1
                     ]);

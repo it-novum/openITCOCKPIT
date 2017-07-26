@@ -37,6 +37,7 @@ class Imap {
     private $protocol;
     private $folder;
     private $ssl;
+    private $novalidateCert;
 
     private $baseAddress;
     private $address;
@@ -65,7 +66,7 @@ class Imap {
      *
      * @return (empty)
      */
-    public function __construct($host, $user, $pass, $port, $protocol = 'imap', $ssl = true, $folder = 'INBOX') {
+    public function __construct($host, $user, $pass, $port, $protocol = 'imap', $ssl = true, $novalidateCert = false, $folder = 'INBOX') {
         if ((!isset($host)) || (!isset($user)) || (!isset($pass)) || (!isset($protocol)) || (!isset($port))) {
             throw new \Exception("Error: All Constructor values require a non NULL input.");
         }
@@ -77,8 +78,9 @@ class Imap {
         $this->protocol = $protocol;
         $this->folder = $folder;
         $this->ssl = $ssl;
+        $this->novalidateCert = $novalidateCert;
 
-        $this->changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $folder);
+        $this->changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $novalidateCert, $folder);
     }
 
     /**
@@ -90,7 +92,7 @@ class Imap {
      * @return (empty)
      */
     public function changeFolder($folderName) {
-        $this->address = '{' . $this->host . ':' . $this->port . '/'.$this->protocol.($this->ssl?'/ssl':'').'}' . $folderName;
+        $this->address = '{' . $this->host . ':' . $this->port . '/'.$this->protocol.($this->ssl?'/ssl':'').($this->novalidateCert?'/novalidate-cert':'').'}' . $folderName;
         $this->reconnect();
     }
 
@@ -106,8 +108,8 @@ class Imap {
      *
      * @throws Exception when IMAP can't connect.
      */
-    public function changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $folder) {
-        $baseAddress = '{' . $host . ':' . $port . '/'.$protocol.($ssl?'/ssl':'').'}';
+    public function changeLoginInfo($host, $user, $pass, $port, $protocol, $ssl, $novalidateCert, $folder) {
+        $baseAddress = '{' . $host . ':' . $port . '/'.$protocol.($ssl?'/ssl':'').($novalidateCert?'/novalidate-cert':'').'}';
         $address = $baseAddress . $folder;
 
         // Set the new address and the base address.
@@ -267,7 +269,8 @@ class Imap {
      */
     public function moveMessage($messageId, $folder) {
         $messageRange = $messageId . ':' . $messageId;
-        return imap_mail_move($this->mailbox, $messageRange, '{sslmail.webguyz.net:143/imap}Questionable');
+        $baseAddress = '{' . $this->host . ':' . $this->port . '/'.$this->protocol.($this->ssl?'/ssl':'').($this->novalidateCert?'/novalidate-cert':'').'}';
+        return imap_mail_move($this->mailbox, $messageRange, $baseAddress.$folder);
     }
 
     /**

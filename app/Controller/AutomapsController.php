@@ -328,7 +328,7 @@ class AutomapsController extends AppController
         $acknowledged = [];
         if ($servicestatus['Servicestatus']['problem_has_been_acknowledged'] == 1) {
             $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-            $acknowledged = __('The current status was already acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
+            $acknowledged = __('The current status was acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
         }
 
 
