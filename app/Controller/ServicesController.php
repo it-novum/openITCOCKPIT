@@ -2302,11 +2302,40 @@ class ServicesController extends AppController {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
-        $service = $this->Service->findById($id);
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.command_id'
+                    ],
+                    'CheckCommand' => [
+                        'fields' => [
+                            'CheckCommand.id',
+                            'CheckCommand.uuid'
+                        ]
+                    ]
+                ],
+                'CheckCommand' => [
+                    'fields' => [
+                        'CheckCommand.id',
+                        'CheckCommand.uuid'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.command_id'
+            ]
+        ]);
+
         $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid == null || $commandUuid == '') {
-            $servicetemplate = $this->Servicetemplate->findById($service['Service']['servicetemplate_id']);
-            $commandUuid = $servicetemplate['CheckCommand']['uuid'];
+        if ($commandUuid === null || $commandUuid === '') {
+            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
         }
 
         if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
@@ -2321,20 +2350,57 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->unbindModel([
-            'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.address',
+                        'Host.container_id'
+                    ],
+                    'Container'
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Service.service_type',
+                'Service.service_url'
+            ]
         ]);
 
-        $service = $this->Service->findById($id);
-        $hostContainerId = $service['Host']['container_id'];
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
+            $this->render403();
+            return;
+        }
+
+        $allowEdit = false;
+        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            $allowEdit = true;
+        }
+
         $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
         $services = $this->Service->find('all', [
             'recursive' => -1,
             'conditions' => [
-                'Service.host_id' => $service['Host']['id']
+                'Service.host_id' => $service['Host']['id'],
+                'Service.disabled' => 0
             ],
             'contain' => [
                 'Servicetemplate'
@@ -2345,10 +2411,6 @@ class ServicesController extends AppController {
             ]
         ]);
 
-        $allowEdit = false;
-        if ($this->allowedByContainerId($hostContainerId)) {
-            $allowEdit = true;
-        }
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $showThresholds = is_null($this->Session->read('service_thresholds_'.$id)) ? '1' : $this->Session->read('service_thresholds_'.$id);
@@ -2360,22 +2422,88 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->unbindModel([
-            'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                        'Servicetemplate.command_id'
+                    ],
+                    'CheckCommand' => [
+                        'fields' => [
+                            'CheckCommand.id',
+                            'CheckCommand.uuid'
+                        ]
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.address',
+                        'Host.container_id'
+                    ],
+                    'Container'
+                ],
+                'CheckCommand' => [
+                    'fields' => [
+                        'CheckCommand.id',
+                        'CheckCommand.uuid'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Service.service_type',
+                'Service.service_url',
+                'Service.command_id'
+            ]
         ]);
-        $service = $this->Service->findById($id);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
 
-        $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid == null || $commandUuid == '') {
-            $servicetemplate = $this->Servicetemplate->findById($service['Service']['servicetemplate_id']);
-            $commandUuid = $servicetemplate['CheckCommand']['uuid'];
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
+            $this->render403();
+            return;
         }
 
-        $this->set(compact(['service', 'servicestatus', 'commandUuid', 'docuExists']));
+        $allowEdit = false;
+        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            $allowEdit = true;
+        }
+
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+
+        $services = $this->Service->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $service['Host']['id'],
+                'Service.disabled' => 0
+            ],
+            'contain' => [
+                'Servicetemplate'
+            ],
+            'fields' => [
+                'Service.id',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+            ]
+        ]);
+
+        $commandUuid = $service['CheckCommand']['uuid'];
+        if ($commandUuid === null || $commandUuid === '') {
+            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
+        }
+
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'commandUuid']));
+
     }
 
     public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds) {
