@@ -54,16 +54,24 @@ class NagiosNotificationTask extends AppShell
             $Email->replyTo([$replyToVal => $replyToVal]);
         }
 
+        switch($parameters['notificationtype']){
+            case 'RECOVERY':
+                $prefix = '+';
+                break;
+
+            case 'PROBLEM':
+                $prefix = '-';
+                break;
+
+            case 'ACKNOWLEDGEMENT':
+                $prefix = 'ack';
+                break;
+
+            default:
+                $prefix = '';
+        }
+
         //$Email->from('localhost@testv3.com');
-        $prefix = '';
-        if ($parameters['notificationtype'] == 'RECOVERY') {
-            $prefix = '+';
-        }
-
-        if ($parameters['notificationtype'] == 'PROBLEM') {
-            $prefix = '-';
-        }
-
         //$Email->to('christian.michel@it-novum.com');
         //$Email->to('daniel.ziegler@it-novum.com');
         $Email->subject($prefix.' | Host: '.$parameters['hostname'].' is '.$parameters['hoststate']);
@@ -99,16 +107,25 @@ class NagiosNotificationTask extends AppShell
         if(!empty($replyToVal)){
             $Email->replyTo([$replyToVal => $replyToVal]);
         }
+
+        switch($parameters['notificationtype']){
+            case 'RECOVERY':
+                $prefix = '+';
+                break;
+
+            case 'PROBLEM':
+                $prefix = '-';
+                break;
+
+            case 'ACKNOWLEDGEMENT':
+                $prefix = 'ack';
+                break;
+
+            default:
+                $prefix = '';
+        }
+
         //$Email->from('localhost@testv3.com');
-        $prefix = '';
-        if ($parameters['notificationtype'] == 'RECOVERY') {
-            $prefix = '+';
-        }
-
-        if ($parameters['notificationtype'] == 'PROBLEM') {
-            $prefix = '-';
-        }
-
         //$Email->to('daniel.ziegler@it-novum.com');
         //$Email->to('christian.michel@it-novum.com');
         $Email->subject($prefix.' | Service: '.$parameters['servicedesc'].' ('.$parameters['hostname'].') is '.$parameters['servicestate']);

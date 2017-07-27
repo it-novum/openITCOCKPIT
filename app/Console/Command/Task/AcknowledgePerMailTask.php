@@ -87,15 +87,17 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
             $this->out('Received ' . (count($myEmails)) . ' email(s)...   ');
             foreach ($myEmails as $myEmailId) {
                 $messArr = $mailbox->getMessage($myEmailId);
-                $this->out('Parsing email from '.((isset($messArr['sender']) && !empty($messArr['sender']))?$messArr['sender']:$messArr['from']));
+                $this->out('Parsing email from '.(!empty($messArr['sender']) ? $messArr['sender'] : $messArr['from']));
                 $parsedValues = $this->parseAckInformation($messArr['body']);
                 $mailbox->deleteMessage($myEmailId);
                 if (empty($parsedValues)) continue;
+                $from = strip_tags(str_replace(['"', "'"], '', $messArr['from']));
+                $author = !empty($messArr['sender']) ? $messArr['sender'] : (!empty($from) ? $from : 'Unknown author');
                 $acknowledged++;
                 if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
                     $this->Externalcommand->setHostAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
-                        'author' => isset($messArr['sender']) && !empty($messArr['sender']) ? $messArr['sender'] : (isset($messArr['from']) && !empty($messArr['from']) ? $messArr['from'] : 'Unknown author'),
+                        'author' => $author,
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1,
                         'type' => 'hostOnly'
@@ -105,7 +107,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
                     $this->Externalcommand->setServiceAck([
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                         'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
-                        'author' => isset($messArr['sender']) && !empty($messArr['sender']) ? $messArr['sender'] : (isset($messArr['from']) && !empty($messArr['from']) ? $messArr['from'] : 'Unknown author'),
+                        'author' => $author,
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1
                     ]);
@@ -122,12 +124,13 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
     }
 
     private function getStringBetween($string, $start, $end){
-        $string = ' ' . $string;
-        $ini = strpos($string, $start);
-        if ($ini == 0) return '';
+        $str = str_replace(["\r", "\n"], '', $string);
+        $ini = mb_strpos($str, $start);
+        if ($ini === false) return '';
         $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-        return substr($string, $ini, $len);
+        $len = mb_strpos($str, $end);
+        if ($end === false)  return '';
+        return mb_substr($str, $ini, $len - $ini);
     }
 
     private function parseAckInformation($ackString){
