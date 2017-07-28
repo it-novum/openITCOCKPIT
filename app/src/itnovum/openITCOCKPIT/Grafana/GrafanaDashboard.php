@@ -51,6 +51,11 @@ class GrafanaDashboard {
     /**
      * @var array
      */
+    private $tags = [];
+
+    /**
+     * @var array
+     */
     private $grafanaDashboardDataArray = [
         'annotations' => [
             'list' => []
@@ -114,6 +119,7 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['hideControls'] = $this->hideControls;
+        $this->grafanaDashboardDataArray['tags'] = $this->tags;
 
         return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
     }
@@ -127,6 +133,10 @@ class GrafanaDashboard {
 
     public function addRow(GrafanaRow $grafanaRow) {
         $this->rows[] = $grafanaRow->getRowAsArray();
+    }
+
+    public function setTags($tags){
+        $this->tags[] = $tags;
     }
 
     /**

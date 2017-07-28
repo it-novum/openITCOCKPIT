@@ -126,9 +126,9 @@ if(!empty($widgetData['Widget']['Widget']['id'])){
     <div class="grafanaWrapper">
         <?php
         if ($GrafanaDashboardExists): ?>
-            <div class="grafanaContainer" data-id-map="<?php echo $grafanaHostId; ?>">
+            <div class="grafanaContainer" data-id-map="<?php echo $grafanaHostId; ?>" style="height:100%">
                 <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
+                         frameBorder="0"></iframe>
             </div>
         <?php else: ?>
             <div class="mapContainer" data-id-map="0">

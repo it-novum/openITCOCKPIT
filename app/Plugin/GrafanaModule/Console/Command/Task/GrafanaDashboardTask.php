@@ -16,6 +16,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 
 class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
@@ -32,6 +33,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
     ];
 
     public $client = [];
+
+    public $tag = null;
 
     /**
      * @var GrafanaConfiguration
@@ -54,6 +57,12 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
         if ($this->client instanceof Client) {
             $this->out('<success>Connection check successful</success>');
+            //get Tag name
+            //$tag = GrafanaTag::getTag();
+            $tag = new GrafanaTag();
+            $this->tag = $tag->getTag();
+            //delete previous dashboards
+            $this->deleteDashboards($this->tag);
             $this->createDashboard();
         } else {
             $this->out('<error>' . $this->client . '</error>');
@@ -97,6 +106,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         }
         foreach ($filteredHosts as $id => $hostData) {
             $json = $this->getJsonForImport($id);
+
             if ($json) {
                 $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
@@ -163,6 +173,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         $grafanaDashboard = new GrafanaDashboard();
         $grafanaDashboard->setTitle($host['Host']['uuid']);
         $grafanaDashboard->setEditable(false);
+        $grafanaDashboard->setTags($this->tag);
         $grafanaDashboard->setHideControls(true);
         $panelId = 1;
         $internalServiceId = 0;
@@ -224,5 +235,54 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             $grafanaDashboard->addRow($grafanaRow);
         }
         return $grafanaDashboard->getGrafanaDashboardJson();
+    }
+
+
+    private function getGrafanaDashboardsByTag($tag){
+        try {
+            $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/search?tag='.$tag);
+            $response = $this->client->send($request);
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+            $responseBody = $response->getBody()->getContents();
+            $this->out('<error>' . $responseBody . '</error>');
+        }
+        if($response->getStatusCode() == 200){
+            $body = $response->getBody();
+            $response = json_decode($body->getContents());
+            return $response;
+        }
+    }
+
+    /**
+     * Delete all Dashboards with the given tag
+     * @param $tag
+     */
+    private function deleteDashboards($tag){
+        try{
+            if(empty($tag)){
+                throw new Exception('No Tag given');
+            }
+
+            $json = $this->getGrafanaDashboardsByTag($tag);
+            $dashboardsToDelete = Hash::extract($json, '{n}.title');
+
+            foreach ($dashboardsToDelete as $dashboardSlug){
+                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $dashboardSlug);
+                $response = $this->client->send($request);
+
+                if($response->getStatusCode() == 200){
+                    $body = $response->getBody();
+                    $response = json_decode($body->getContents());
+                    $this->out('<success>Dashboard '.$dashboardSlug.' deleted!</success>');
+                }
+            }
+        }catch(Exception $e){
+            $this->out('<error>'.$e->getMessage().'</error>');
+        }catch(BadRequestException $e){
+            $response = $e->getResponse();
+            $responseBody = $response->getBody()->getContents();
+            $this->out('<error>' . $responseBody . '</error>');
+        }
     }
 }
