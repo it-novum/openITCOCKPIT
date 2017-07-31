@@ -126,9 +126,8 @@ if(!empty($widgetData['Widget']['Widget']['id'])){
     <div class="grafanaWrapper">
         <?php
         if ($GrafanaDashboardExists): ?>
-            <div class="grafanaContainer" data-id-map="<?php echo $grafanaHostId; ?>" style="height:100%">
-                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                         frameBorder="0"></iframe>
+            <div class="grafanaContainer" data-id-map="<?php echo $grafanaHostId; ?>">
+                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%" frameBorder="0" onload="this.height=(screen.height+15);"></iframe>
             </div>
         <?php else: ?>
             <div class="mapContainer" data-id-map="0">
@@ -136,9 +135,5 @@ if(!empty($widgetData['Widget']['Widget']['id'])){
             </div>
         <?php endif; ?>
     </div>
-    <script>
-        function resizeIframe(obj) {
-            obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-        }
-    </script>
+
 </div>
