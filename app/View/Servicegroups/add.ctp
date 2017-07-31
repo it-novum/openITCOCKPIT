@@ -57,7 +57,7 @@
             echo $this->Form->input('Container.name', ['label' => __('Servicegroup name')]);
             echo $this->Form->input('Servicegroup.description', ['label' => __('Description')]);
             echo $this->Form->input('Servicegroup.servicegroup_url', ['label' => __('Servicegroup URL')]);
-            if (empty($services)):
+//            if (empty($services)):
                 echo $this->Form->input('Servicegroup.Service', [
                     'options'          => $services,
                     'class'            => 'chosen optgroup_show',
@@ -68,13 +68,13 @@
                     'itn-ajax' => '/Services/ajaxGetByTerm',
                     'itn-ajax-container' => '#ContainerParentId',
                 ]);
-            else:
-                echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
-                    'label'    => __('Services'),
-                    'options'  => $services,
-                    'required' => true,
-                ]);
-            endif;
+//            else:
+//                echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
+//                    'label'    => __('Services'),
+//                    'options'  => $services,
+//                    'required' => true,
+//                ]);
+//            endif;
             echo $this->Form->input('Servicegroup.Servicetemplate', [
                 'options' => $servicetemplates,
                 'class' => 'chosen',

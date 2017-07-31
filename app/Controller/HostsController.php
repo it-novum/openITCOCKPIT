@@ -3110,8 +3110,10 @@ class HostsController extends AppController {
         if ($this->request->is('ajax') && isset($this->request->data['term'])){
             $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%'];
             $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            if(isset($this->request->data['containerId']) && !empty($this->request->data['containerId'])) {
-                if ($this->request->data['containerId'] == ROOT_CONTAINER) {
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
                     $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
                 } else {
                     $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
@@ -3133,8 +3135,10 @@ class HostsController extends AppController {
         if ($this->request->is('ajax') && isset($this->request->data['term'])){
             $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%', 'Host.host_type' => GENERIC_HOST];
             $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            if(isset($this->request->data['containerId']) && !empty($this->request->data['containerId'])) {
-                if ($this->request->data['containerId'] == ROOT_CONTAINER) {
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
                     $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
                 } else {
                     $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];

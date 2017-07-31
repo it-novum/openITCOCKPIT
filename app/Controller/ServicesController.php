@@ -2949,8 +2949,22 @@ class ServicesController extends AppController {
             }
 
             $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            $services = $this->Service->getAjaxServices($userContainerIds, $conditions, $selectedArr);
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, $conditions, $selectedArr);
+            $services = [];
+            foreach($servicesNotFixed as $serviceNotFixed){
+                $services = array_merge($services, $serviceNotFixed);
+            }
             $returnHtml = '';
             foreach($services as $hostName => $serviceArr){
                 $returnHtml .= '<optgroup label="'.$hostName.'">';

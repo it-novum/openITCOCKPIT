@@ -902,8 +902,11 @@ class Service extends AppModel {
             }
         }
 
-        return Hash::combine($services, ['%s', '{n}.Service.id'], ['%s/%s', '{n}.Host.name', '{n}.Service.ServiceDescription'], '{n}.Host.name');
-
+        $returnValue = [];
+        foreach($services as $serviceArray){
+            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'].'/'.$serviceArray['Service']['ServiceDescription'];
+        }
+        return $returnValue;
     }
 
     public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
