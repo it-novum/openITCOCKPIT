@@ -42,6 +42,8 @@ class SudoMessageInterface implements MessageComponentInterface
         //$this->tasks = [];
 
         $this->async = [];
+
+        $this->lastExportCheck = time();
     }
 
     public function onOpen(ConnectionInterface $conn)
@@ -83,6 +85,9 @@ class SudoMessageInterface implements MessageComponentInterface
     public function eventLoop()
     {
         $this->readSocket();
+
+        $this->isExportRunning();
+
 
         if (empty($this->async)) {
             return;
@@ -286,6 +291,13 @@ class SudoMessageInterface implements MessageComponentInterface
 
             case 'submitDeleteHostDowntime':
                 $this->Cake->Externalcommand->deleteHostDowntime($msg->data[0]);
+                if(isset($msg->data[1])){ // deleting service downtimes too
+                    $servicesArr = explode(',', $msg->data[1]);
+                    foreach($servicesArr as $serviceDowntimeId){
+                        if($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
+                        $this->Cake->Externalcommand->deleteServiceDowntime($serviceDowntimeId);
+                    }
+                }
                 break;
 
             case 'submitDeleteServiceDowntime':
@@ -414,6 +426,27 @@ class SudoMessageInterface implements MessageComponentInterface
                 $this->requestor = $old_requestor;
                 break;
 
+        }
+    }
+
+    private function isExportRunning(){
+        if((time() - $this->lastExportCheck) > 3){
+            $exportRunning = true;
+            $result = $this->Cake->Export->findByTask('export_started');
+            if (empty($result)) {
+                $exportRunning = false;
+            } else {
+                if ($result['Export']['finished'] == 1) {
+                    $exportRunning = false;
+                }
+            }
+            foreach($this->clients as $client){
+                $client->send(json_encode([
+                    'type'    => 'dispatcher',
+                    'running' => $exportRunning,
+                ]));
+            }
+            $this->lastExportCheck = time();
         }
     }
 

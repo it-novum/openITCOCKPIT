@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Http;
+
 App::uses('Folder', 'Utility');
 App::uses('HttpSocket', 'Network/Http');
 App::import('Controller', 'MapModule.BackgroundUploads');
@@ -199,7 +201,12 @@ class NagvisMigrationShell extends AppShell {
         $pass = $this->in('Please Enter the Password for user ' . $user . ' on ' . $host);
         $frontendUser = $this->in('Please Enter a valid Frontend user on ' . $host);
         $frontendPass = $this->in('Please Enter the Password for user ' . $frontendUser . ' on ' . $host);
-        $https = $this->in('using SSL for Frontend Login ?',['y', 'n'], 'n');
+        $https = $this->in('Using SSL for Frontend Login ?',['y', 'n'], 'n');
+        $sslVerification = '';
+        if($https == 'y'){
+            $sslVerification = $this->in('Disable SSL verification? (mostly needed with self-signed certificates)',['y', 'n'], 'n');
+        }
+
 
         return [
             'host' => $host,
@@ -208,6 +215,7 @@ class NagvisMigrationShell extends AppShell {
             'frontendUser' => $frontendUser,
             'frontendPass' => $frontendPass,
             'https' => $https,
+            'sslVerification' => $sslVerification,
         ];
     }
 
@@ -288,16 +296,28 @@ class NagvisMigrationShell extends AppShell {
             $pass = $this->hostData['frontendPass'];
             $host = $this->hostData['host'];
             $https = $this->hostData['https'];
+            $noSSLVerify = $this->hostData['sslVerification'];
             $protocol = 'http';
+            $options = [];
             if ($https == 'y') {
                 $protocol = 'https';
+                if($noSSLVerify == 'y'){
+                    $options = [
+                        'CURLOPT_SSL_VERIFYPEER' => false,
+                        'CURLOPT_SSL_VERIFYHOST' => 0
+                    ];
+                }
             }
 
-            $socket = new HttpSocket();
+            $url = $protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename;
+            $http = new Http($url, $options);
+            $http->sendRequest();
+            if(!empty($http->data)){
+                return json_decode($http->data);
+            }else{
+                throw new Exception($http->getLastError()['error']);
+            }
 
-            $response = $socket->post($protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename);
-
-            return json_decode($response->body);
         }catch (Exception $e){
             $this->error($e->getMessage());
         }

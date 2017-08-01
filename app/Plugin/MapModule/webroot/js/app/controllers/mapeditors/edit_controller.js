@@ -244,7 +244,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          */
         $('#saveTextPropertiesBtn').click(function () {
             var test = self.currentText
-            console.log(test);
 
             //console.log($('#editText *'));
             // $('#editText *').filter(':input').each(function(){
@@ -477,8 +476,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          * Build up the Gadgets menu in the Panel
          */
         var gadgets = self.Gadget.availableGadgets;
-        var base64Gadgets = {};
-
 
         /* translation and scaling for every gadget must be made here by hand */
         var gadgetScale = {
@@ -739,6 +736,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $form.find('.rrdBackground').removeClass('hidden');
             }
 
+            if(self.currentGadget['gadget'] == "Text"){
+                var $form = $('#addGadget_' + type).find('form');
+                $form.find('.showLabel').removeClass('hidden');
+            }
+
             switch (type) {
                 case 'service':
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
@@ -754,6 +756,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
                     }
                     $('#addServiceGadgetTransparentBackground').prop('checked', parseInt(self.currentGadget['transparent_background']));
+
+
+                    if(self.currentGadget['show_label'] != null){
+                        $('#addServiceGadgetShowLabel').prop('checked', parseInt(self.currentGadget['show_label']));
+                    }
+
+                    if(self.currentGadget['font_size'] != null){
+                        $('#addServiceGadgetFontSize').val(self.currentGadget['font_size']);
+                    }
                     break;
             }
         });
@@ -904,7 +915,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          * Catch modal save event GADGET
          */
         $('#saveGadgetPropertiesBtn').click(function () {
-            console.log(self.currentGadget);
             $('#addGadget_' + self.currentGadget['type'] + ' *').filter(':input').each(function () {
                 if ($(this).hasClass('gadgetInput')) {
                     if ($(this).attr('type') == 'checkbox') {
@@ -915,18 +925,38 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                 }
             });
-
             //update Gadget if exist
             if ($('#' + self.currentGadget['elementUuid']).length > 0) {
+                options = {};
+
                 var $currentGadget = $('#' + self.currentGadget['elementUuid']);
                 $currentGadget.children().filter(':input').each(function () {
                     var fieldKey = $(this).data('key');
                     for (var key in self.currentGadget) {
                         if (fieldKey == key) {
                             $(this).val(self.currentGadget[key]);
+                            options[key] = self.currentGadget[key];
                         }
                     }
                 });
+
+                if(typeof(self.currentGadget['font_size']) != null && typeof(self.currentGadget['show_label']) != null){
+                    options['fontSize'] = self.currentGadget['font_size'];
+                    options['showLabel'] = self.currentGadget['show_label'];
+                }
+                options['demo'] = true;
+
+                gadgetId = options['id'];
+
+                var gadgetUUID = self.getGadgetUuidFromDataUuid(self.currentGadget['elementUuid']);
+
+                var strippedId = gadgetUUID.replace(/svgContainer_/, '');
+                options['id'] = strippedId;
+                //clear the svg element
+                $('#'+gadgetUUID).children('svg').empty();
+                //redraw gadget
+                self.Gadget['draw' + self.currentGadget['gadget']](gadgetUUID, options);
+
             } else {
                 //create new gadget
                 //Set icon to map
@@ -943,6 +973,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     id: self.currentGadget['elementUuid'],
                     x: self.currentGadget['x'],
                     y: self.currentGadget['y'],
+                    showLabel:self.currentGadget['show_label'],
+                    fontSize:self.currentGadget['font_size'],
                     demo: true
                 });
                 //fill the hidden data fields for the Gadget
@@ -1056,8 +1088,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $object.val('').trigger('chosen:updated');
                         break;
 
+                    case 'text':
+                        if($object.attr('id') != 'addServiceGadgetFontSize'){
+                            $object.val('');
+                        }
+                        break;
+
                     default:
-                        $object.val('');
+                        if($object.attr('id') != 'addServiceGadgetShowLabel'){
+                            $object.val('');
+                        }
                         break;
                 }
             });
@@ -1066,6 +1106,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#saveGadgetPropertiesBtn').text($('#gadgetAddSaveText').val());
 
             $('.rrdBackground').addClass('hidden');
+            $('.showLabel').addClass('hidden');
         });
 
         $('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function () {
@@ -1120,16 +1161,18 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var containerData = {
                     gadgetId: mapGadgets[i]['id'],
                 }
+
                 self.Gadget['draw' + mapGadgets[i]['gadget']]('svgContainer_' + tempUuid, {
                     id: tempUuid,
                     x: mapGadgets[i]['x'],
                     y: mapGadgets[i]['y'],
                     containerData: containerData,
+                    fontSize: mapGadgets[i]['font_size'],
+                    showLabel: mapGadgets[i]['show_label'],
                     demo: true
                 });
                 $('#svgContainer_' + tempUuid).css({'z-index': '2'}).attr({'data-gadgetid': mapGadgets[i]['id']}).addClass('itemElement dragElement gadgetSVGContainer');
-            }
-            ;
+            };
         }
 
 
@@ -1280,6 +1323,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         $('.textElement').each(function () {
             $(this).html(self.convertBb2Html($(this).html()));
         });
+    },
+
+    getGadgetUuidFromDataUuid: function(dataFieldUuid){
+        if($('#'+dataFieldUuid).length > 0){
+            var gadgetId = $('#'+dataFieldUuid).data('gadgetid');
+            var $element = $(document).find("[data-gadgetid='"+gadgetId+"'][id^='svgContainer_']");
+            return $element.attr('id');
+        }
+        return false;
     },
 
     convertBb2Html: function (bbCode) {
@@ -2370,7 +2422,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             type: "POST",
             dataType: "html",
             success: function (response) {
-                console.log(response);
                 $('#background-panel').empty().html(response);
             }.bind(self)
         });

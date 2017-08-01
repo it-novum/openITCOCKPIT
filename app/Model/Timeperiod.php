@@ -139,7 +139,9 @@ class Timeperiod extends AppModel
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $this->Container->getPath($container_id);
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                if(isset($path[1]['Container']['id'])) {
+                    $tenantContainerIds[] = $path[1]['Container']['id'];
+                }
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }

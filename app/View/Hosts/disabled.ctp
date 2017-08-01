@@ -26,11 +26,6 @@
 <?php
 
 $this->Paginator->options(['url' => $this->params['named']]);
-$filter = "/";
-foreach ($this->params->named as $key => $value) {
-    $filter .= $key.":".$value."/";
-}
-
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -39,7 +34,7 @@ foreach ($this->params->named as $key => $value) {
             <?php echo __('Hosts') ?>
             <span>>
                 <?php echo __('Disabled'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -69,24 +64,24 @@ foreach ($this->params->named as $key => $value) {
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="/hosts/index<?php echo $filter; ?>"><i class="fa fa-stethoscope"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored')): ?>
                             <li class="">
-                                <a href="/hosts/notMonitored<?php echo $filter; ?>"><i class="fa fa-user-md"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="/hosts/disabled<?php echo $filter; ?>"><i class="fa fa-power-off"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i class="fa fa-power-off"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                         </li>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
                             <li>
-                                <a href="/deleted_hosts/index<?php echo $filter; ?>"><i class="fa fa-trash-o"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
                         <?php endif; ?>
@@ -99,7 +94,7 @@ foreach ($this->params->named as $key => $value) {
                         echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
                         ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-bordered smart-form" style="">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>

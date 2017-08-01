@@ -6,6 +6,12 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
 {
+    public static $files = array (
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'i' => 
         array (
@@ -14,6 +20,21 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         'S' => 
         array (
             'Symfony\\Component\\Filesystem\\' => 29,
+        ),
+        'P' => 
+        array (
+            'Psr\\Http\\Message\\' => 17,
+        ),
+        'G' => 
+        array (
+            'GuzzleHttp\\Psr7\\' => 16,
+            'GuzzleHttp\\Promise\\' => 19,
+            'GuzzleHttp\\' => 11,
+        ),
+        'D' => 
+        array (
+            'Doctrine\\Common\\Cache\\' => 22,
+            'Doctrine\\Common\\' => 16,
         ),
         'A' => 
         array (
@@ -30,9 +51,70 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'GuzzleHttp\\Psr7\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/psr7/src',
+        ),
+        'GuzzleHttp\\Promise\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/promises/src',
+        ),
+        'GuzzleHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Doctrine\\Common\\Cache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/cache/lib/Doctrine/Common/Cache',
+        ),
+        'Doctrine\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/doctrine/common/lib/Doctrine/Common',
+        ),
         'Adldap\\' => 
         array (
             0 => __DIR__ . '/..' . '/adldap/adldap/src',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'D' => 
+        array (
+            'Doctrine\\DBAL\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/dbal/lib',
+            ),
+            'Doctrine\\Common\\Lexer\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/lexer/lib',
+            ),
+            'Doctrine\\Common\\Inflector\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/inflector/lib',
+            ),
+            'Doctrine\\Common\\Collections\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/collections/lib',
+            ),
+            'Doctrine\\Common\\Annotations\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/doctrine/annotations/lib',
+            ),
+        ),
+        'C' => 
+        array (
+            'Crate\\DBAL' => 
+            array (
+                0 => __DIR__ . '/..' . '/crate/crate-dbal/src',
+            ),
+            'Crate\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/crate/crate-pdo/src',
+            ),
         ),
     );
 
@@ -41,6 +123,7 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

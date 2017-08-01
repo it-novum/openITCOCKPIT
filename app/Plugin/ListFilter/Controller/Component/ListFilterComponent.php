@@ -255,12 +255,19 @@ class ListFilterComponent extends Component
                                 foreach ($value as $_value) {
                                     $conditions['OR'][] = $model.'.'.$field.' LIKE "%'.$_value.'%"';
                                 }
+                                debug($conditions);
                             } else {
                                 $conditions[$model.'.'.$field.' LIKE'] = '%'.$value.'%';
                             }
 
                             break;
 
+                        case 'wildcardMulti':
+                            if(!is_array($value)){
+                                $value = [$value];
+                            }
+                            $conditions[$model.'.'.$field.' rlike'] = implode('|', $value);
+                            break;
                         case 'greater':
                             $conditions[$model.'.'.$field.' >='] = $value[0];
                             break;

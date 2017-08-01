@@ -241,7 +241,7 @@
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="recurringdowntimes_list" class="table table-striped table-bordered smart-form"
+                            <table id="recurringdowntimes_list" class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -341,6 +341,7 @@
                                         <td>
                                             <?php
                                             $days = explode(',', $systemdowntime['Systemdowntime']['weekdays']);
+                                            $days = Hash::filter($days);
                                             $_days = [];
                                             foreach ($days as $day):
                                                 $_days[] = $weekdays[$day];
@@ -363,7 +364,7 @@
                                         <td><?php echo $systemdowntime['Systemdowntime']['to_time']; ?></td>
                                         <td class="text-center">
                                             <?php
-                                            if ($this->Acl->hasPermission('delete', 'systemdowntimes')):
+                                            if ($this->Acl->hasPermission('delete', 'systemdowntimes') && $systemdowntime['canDelete']):
                                                 echo $this->Utils->deleteButton(null, $systemdowntime['Systemdowntime']['id']);
                                             endif;
                                             ?>

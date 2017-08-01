@@ -32,6 +32,13 @@ class Systemdowntime extends AppModel
             'rule'    => ['checkDowntimeSettings'],
             'message' => 'An error occurred',
         ],
+        'object_id'  => [
+            'multiple' => [
+                'rule'    => ['multiple', ['min' => 1]],
+                'message' => 'Please select at least 1 object',
+                'required' => true,
+            ],
+        ],
         'from_date'    => [
             'notBlank' => [
                 'rule'     => 'notBlank',
@@ -41,6 +48,11 @@ class Systemdowntime extends AppModel
             'date'     => [
                 'rule'    => ['date', 'dmy'],
                 'message' => 'Please enter a valid date',
+            ],
+            'comparison' => [
+                'rule'     => ['dateComparison'],
+                'message' => 'The "from" date must occur before the "to" date 123',
+                'required' => true
             ],
         ],
         'from_time'    => [
@@ -53,6 +65,11 @@ class Systemdowntime extends AppModel
                 'rule'    => 'time',
                 'message' => 'Please enter a valid time',
             ],
+            'comparison' => [
+                'rule'     => ['timeComparison'],
+                'message' => 'The "from" time must occur before the "to" time',
+                'required' => true
+            ],
         ],
         'to_date'      => [
             'notBlank' => [
@@ -63,6 +80,16 @@ class Systemdowntime extends AppModel
             'date'     => [
                 'rule'    => ['date', 'dmy'],
                 'message' => 'Please enter a valid date',
+            ],
+            'checkPastDate' => [
+                'rule'=> ['checkPastDate'],
+                'message' => 'The "to" date/time should be in the future and not the past',
+                'required' => true
+            ],
+            'comparison' => [
+                'rule'     => ['dateComparison'],
+                'message' => 'The "from" date must occur before the "to" date',
+                'required' => true
             ],
         ],
         'to_time'      => [
@@ -75,6 +102,11 @@ class Systemdowntime extends AppModel
                 'rule'    => 'time',
                 'message' => 'Please enter a valid time',
             ],
+            'comparison' => [
+                'rule'     => ['timeComparison'],
+                'message' => 'The "from" time must occur before the "to" time',
+                'required' => true
+            ],
         ],
         'comment'      => [
             'notBlank' => [
@@ -83,27 +115,30 @@ class Systemdowntime extends AppModel
                 'required' => true,
             ],
         ],
+        'weekdays'                       => [
+            'atLeastOne' => [
+                'rule'     => ['atLeastOne'],
+                'message'  => 'You must specify at least one week day or day of month',
+                'required' => true,
+            ],
+        ],
+        'day_of_month'                  => [
+            'atLeastOne' => [
+                'rule'     => ['atLeastOne'],
+                'message'  => 'You must specify at least one week day or day of month',
+                'required' => true,
+            ],
+        ],
     ];
 
     public function checkDowntimeSettings()
     {
         if (isset($this->data['Systemdowntime']['downtimetype'])) {
-            //switch($this->data['Systemdowntime']['downtimetype']){
-            //	case 'host':
-            //	case 'hostgroup':
-            if (!is_numeric($this->data['Systemdowntime']['object_id']) || $this->data['Systemdowntime']['object_id'] == '' || $this->data['Systemdowntime']['object_id'] == null) {
-                return false;
-            }
-
             if ($this->data['Systemdowntime']['is_recurring'] == 1) {
                 return $this->validateRecurring($this->data);
             }
-
             return true;
-            //		break;
-            //}
         }
-
         return false;
     }
 
@@ -153,7 +188,7 @@ class Systemdowntime extends AppModel
             'conditions'   => [],
             'default'      => [
                 'recursive' => -1,
-                'fields'    => ['Systemdowntime.*', 'Host.*', 'Hostgroup.*', 'Service.*', 'Servicetemplate.*', 'Container.*'],
+                'fields'    => ['Systemdowntime.*', 'Host.*', 'Hostgroup.*', 'Service.*', 'Servicetemplate.*', 'Container.*', 'ServiceHost.container_id'],
                 'joins'     => [
                     [
                         'table'      => 'hosts',
@@ -167,6 +202,13 @@ class Systemdowntime extends AppModel
                         'type'       => 'LEFT',
                         'alias'      => 'Service',
                         'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_SERVICE.' AND Service.id = Systemdowntime.object_id)',
+                    ],
+
+                    [
+                        'table'      => 'hosts',
+                        'type'       => 'LEFT',
+                        'alias'      => 'ServiceHost',
+                        'conditions' => '(Systemdowntime.objecttype_id = '.OBJECT_SERVICE.' AND Service.host_id = ServiceHost.id)',
                     ],
 
                     [
@@ -200,7 +242,6 @@ class Systemdowntime extends AppModel
             $return['paginator']['order'] = [$requestParams['named']['sort'] => $requestParams['named']['direction']];
         }
 
-
         if (isset($requestData['Listsettings']['limit']) && is_numeric($requestData['Listsettings']['limit'])) {
             $return['paginator']['limit'] = $requestData['Listsettings']['limit'];
             $return['Listsettings']['limit'] = $return['paginator']['limit'];
@@ -208,5 +249,46 @@ class Systemdowntime extends AppModel
 
 
         return $return;
+    }
+
+    /**
+     * Custom Validation Rule: Ensures a selected date is in the past.
+     *
+     * @param array $check Contains the value passed from the view to be validated
+     * @return boolean False if in the future, True otherwise
+     */
+    public function checkPastDate() {
+        if($this->data[$this->name]['is_recurring']){
+            return true;
+        }
+        return CakeTime::fromString($this->data[$this->alias]['to_date'].' '.$this->data[$this->alias]['to_time']) > time();
+    }
+
+    function dateComparison() {
+        if($this->data[$this->name]['is_recurring']){
+            return true;
+        }
+        return Validation::comparison(CakeTime::fromString($this->data[$this->alias]['from_date']), '<=', CakeTime::fromString($this->data[$this->alias]['to_date']));
+    }
+
+    function timeComparison() {
+        if($this->data[$this->name]['is_recurring']){
+            return Validation::comparison($this->data[$this->alias]['from_time'], '<', $this->data[$this->alias]['to_time']);
+        }
+        if(Validation::comparison($this->data[$this->alias]['from_date'], '==', $this->data[$this->alias]['to_date'])){
+            return Validation::comparison($this->data[$this->alias]['from_time'], '<', $this->data[$this->alias]['to_time']);
+        }
+        return true;
+    }
+
+    /*
+    Custom validation rule for recurring downtimes
+    */
+    public function atLeastOne()
+    {
+        if(!$this->data[$this->name]['is_recurring']){
+            return true;
+        }
+        return !empty($this->data[$this->name]['weekdays']) || !empty($this->data[$this->name]['day_of_month']);
     }
 }

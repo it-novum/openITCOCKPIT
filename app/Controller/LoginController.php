@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 App::uses('Validation', 'Utility');
 
 
@@ -46,7 +48,7 @@ class LoginController extends AppController
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
-        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso'){
+        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !$this->isApiRequest()){
             $result = $this->Oauth2client->connectToSSO();
             $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
             if(isset($result['redirect'])){
@@ -162,7 +164,7 @@ class LoginController extends AppController
 
             $__user = null;
             if (isset($this->data['User']['auth_method']) && $this->data['User']['auth_method'] == 'ldap') {
-                $__user = $this->User->findBySamaccountname($this->data['User']['samaccountname']);
+                $__user = $this->User->findBySamaccountname(strtolower($this->data['User']['samaccountname']));
             }
 
             if (!isset($this->request->data['User']['auth_method'])) {
@@ -226,7 +228,12 @@ class LoginController extends AppController
                     return;
                 } else {
                     if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
-                        $this->setFlash(__('Bad username or password'), false);
+                        $sessionMessage = $this->Session->read();
+                        if(isset($sessionMessage['Message']['flash']['message'])){
+                            $this->setFlash($sessionMessage['Message']['flash']['message'], false);
+                        }else{
+                            $this->setFlash(__('Bad username or password'), false);
+                        }
                     } else {
                         $this->setFlash(__('login.username_and_password_dont_match'), false);
                     }
@@ -293,9 +300,10 @@ class LoginController extends AppController
         $Email->emailFormat('both');
         $Email->template('template-onetimetoken', 'template-onetimetoken')->viewVars(['onetimetoken' => $onetimetoken]);
 
+        $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],

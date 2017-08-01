@@ -56,6 +56,7 @@ class Changelog extends AppModel
                 'ServiceTimeperiod' => '{(id|name)}',
                 'HostCommands'      => '{n}.{(id|name)}',
                 'ServiceCommands'   => '{n}.{(id|name)}',
+                'Customvariable'                           => '{n}.{(id|name|value)}',
             ],
             'contactgroup'    => [
                 'Contactgroup' => '{(description)}',
@@ -98,6 +99,11 @@ class Changelog extends AppModel
                 'Container'         => '{(name)}',
                 'Service'           => '{n}.{(id|name)}',
                 'Servicetemplate'   => '{n}.{(id|name)}',
+            ],
+            'servicetemplategroup'    => [
+                'Servicetemplategroup'      => '{(description)}',
+                'Container'         => '{(name)}',
+                'Servicetemplate'   => '{n}.{(id|template_name)}',
             ],
             'host'            => [
                 'Host'                     => '{(name|address|description|check_interval|retry_interval|max_check_attempts|notification_interval|notify_on_|flap_detection_notifications_enabled|notes|priority|tags|host_url|active_checks_enabled).*}',

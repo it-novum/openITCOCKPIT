@@ -100,7 +100,6 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     'uuid': currentElementData['currentUuid'],
                     type: self.capitaliseFirstLetter(currentElementData['currentType'])
                 };
-
                 var options = {
                     id: currentElementData['currentUuid'],
                     x: mapGadgets[i]['x'], y: mapGadgets[i]['y'],
@@ -109,7 +108,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     state: state.toString(),
                     flapping: flapping,
                     RRDGraphLink: currentElementData['currentRRDGraphLink'],
-                    color: currentElementData['currentColor']
+                    color: currentElementData['currentColor'],
+                    showLabel:currentElementData['currentShowLabel'],
+                    fontSize:currentElementData['currentFontSize'],
                 }
                 //check if the RRD grah link is empty
                 if (!currentElementData['currentRRDGraphLink']) {
@@ -260,16 +261,19 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         var currentData = {};
         $('.popoverGadgetTypeHidden').each(function () {
             var elementGadgetId = this.id.replace(/popoverGadgetType_/, '');
+            var perfdata = window['popoverGadgetPerfdata_'+elementGadgetId];
             if (elementGadgetId == gadgetId) {
                 currentData = {
                     currentUuid: $(this).data('uuid'),
                     currentType: $(this).data('type'),
                     currentLink: $(this).data('link'),
-                    currentPerfdata: $(this).data('perfdata'),
+                    currentPerfdata: perfdata,
                     currentState: $(this).data('state'),
                     currentFlapping: $(this).data('flapping'),
                     currentRRDGraphLink: $(this).data('rrdlink'),
                     currentColor: $(this).data('color'),
+                    currentShowLabel: $(this).data('showlabel'),
+                    currentFontSize: $(this).data('fontsize'),
                 }
             }
         });

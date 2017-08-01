@@ -132,7 +132,7 @@ class ChangelogsController extends AppController
                         'copy' => [
                             'name'  => 'copy',
                             'value' => 1,
-                            'label' => 'copy',
+                            'label' => '<i class="fa fa-copy txt-color-blue"></i> copy',
                             'data'  => 'Filter.Changelog.action',
                         ],
                         'delete' => [
@@ -191,6 +191,9 @@ class ChangelogsController extends AppController
             ],
         ];
 
+        $result = $this->Systemsetting->findByKey('FRONTEND.HIDDEN_USER_IN_CHANGELOG');
+        $showUser = !(bool)$result['Systemsetting']['value'];
+
         $this->Paginator->settings = $query;
         if ($this->isApiRequest()) {
             $this->Paginator->settings['limit'] = 250;
@@ -201,10 +204,7 @@ class ChangelogsController extends AppController
         
         $this->set('_serialize', ['all_changes']);
 
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
         $this->set(compact(['all_changes']));
+        $this->set('showUser', $showUser);
     }
 }

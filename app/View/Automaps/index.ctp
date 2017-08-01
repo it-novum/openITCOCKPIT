@@ -43,7 +43,9 @@
                 <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                     <header>
                         <div class="widget-toolbar" role="menu">
-                            <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                        <?php if ($this->Acl->hasPermission('add')): ?>                            
+                             <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                        <?php endif; ?>
                             <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                             <?php
                             if ($isFilter):
@@ -65,7 +67,7 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="automaps_list" class="table table-striped table-bordered" style="">
+                                <table id="automaps_list" class="table table-striped table-hover table-bordered" style="">
                                     <thead>
                                     <tr>
                                         <th class="no-sort"><?php echo __('Name'); ?></th>
@@ -79,6 +81,17 @@
                                     </thead>
                                     <tbody>
                                     <?php foreach ($all_automaps as $automap): ?>
+                                        <?php
+                                        //Better performance, than run all the Hash::extracts if not necessary
+                                        $hasEditPermission = false;
+                                        if ($hasRootPrivileges === true):
+                                            $hasEditPermission = true;
+                                        else:
+                                            if ($this->Acl->isWritableContainer($automap['Automap']['container_id'])):
+                                                $hasEditPermission = true;
+                                            endif;
+                                        endif;
+                                        ?>
                                         <tr>
                                             <td>
                                                 <a href="/<?php echo $this->params['controller']; ?>/view/<?php echo $automap['Automap']['id']; ?>"><?php echo h($automap['Automap']['name']); ?></a>
@@ -94,11 +107,14 @@
                                                     <span class="label label-danger"><?php echo __('No'); ?></span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="text-center"><a
+                                            <td class="text-center">
+                                                <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+                                                <a
                                                         href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $automap['Automap']['id']; ?>"
                                                         data-original-title="<?php echo __('Edit'); ?>"
                                                         data-placement="left" rel="tooltip" data-container="body"><i
                                                             id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a>
+                                                <?php endif; ?>
                                             </td>
 
                                         </tr>

@@ -105,7 +105,7 @@ class Mapeditor extends MapModuleAppModel
      *
      * @return Array the map elements
      */
-    public function mapStatus($id)
+    public function mapStatus($id, $iterations = 0)
     {
         $Mapitem = ClassRegistry::init('Mapitem');
         $Mapline = ClassRegistry::init('Mapline');
@@ -149,6 +149,22 @@ class Mapeditor extends MapModuleAppModel
                 'Mapgadget.object_id',
             ],
         ]);
+
+        $mapstatus = [];
+        if(!empty($mapElements['items'])){
+            if($iterations <= 1) {
+                $iterations++;
+                foreach ($mapElements['items'] as $item) {
+                    if ($item['Mapitem']['type'] == 'map') {
+                        $mapId = $item['Mapitem']['object_id'];
+                        $mapstatus[] = $this->mapStatus($mapId, $iterations);
+                    }
+                }
+            }
+        }
+
+
+
         //get the service ids
         $mapServices = Hash::extract($mapElements, '{s}.{n}.{s}[type=/service$/].object_id');
         //resolve the serviceids into uuids
@@ -226,8 +242,25 @@ class Mapeditor extends MapModuleAppModel
             $statusObjects['hostgroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']]);
         }
 
-        //$mapElements = Hash::filter($mapElements);
 
+        if(!empty($mapstatus)){
+            foreach ($mapstatus as $mapstate){
+                $statusObjects = array_merge_recursive($statusObjects, $mapstate);
+            }
+
+            $tmpMapstatusObj = [];
+            foreach ($statusObjects as $key => $statusObject){
+                if(!empty($statusObject)){
+                    foreach ($statusObject as $soKey => $obj){
+                        if(!empty($obj)){
+                            $tmpMapstatusObj[$key][] = $obj;
+                        }
+
+                    }
+                }
+            }
+            $statusObjects = $tmpMapstatusObj;
+        }
         return $statusObjects;
     }
 
@@ -257,7 +290,7 @@ class Mapeditor extends MapModuleAppModel
             'joins'      => [
                 [
                     'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
                 ],
@@ -315,7 +348,7 @@ class Mapeditor extends MapModuleAppModel
                 ],
                 [
                     'table'      => 'nagios_servicestatus',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
                 ],
@@ -324,7 +357,7 @@ class Mapeditor extends MapModuleAppModel
             $joins = [
                 [
                     'table'      => 'nagios_servicestatus',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
                 ],
@@ -509,14 +542,34 @@ class Mapeditor extends MapModuleAppModel
 
         $HostgroupHostUuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
 
-        foreach ($HostgroupHostUuids as $key => $hostUuid) {
-            $conditions = [
-                'Objects.name1'     => $hostUuid,
-                'Objects.is_active' => 1,
-            ];
-            $hostgroupstatus[0]['Host'][$key]['Hoststatus'] = $this->_hoststatus($conditions, $hostFields);
+        $hoststatusMapping = [];
+        $servicestatusMapping = [];
 
-            $hostgroupstatus[0]['Host'][$key]['Servicestatus'] = $this->_servicestatus($conditions, $serviceFields);
+        foreach ($hostgroupstatus as $hgKey => $hostgroup) {
+            foreach ($HostgroupHostUuids as $key => $hostUuid) {
+                $conditions = [
+                    'Objects.name1' => $hostUuid,
+                    'Objects.is_active' => 1,
+                ];
+
+                if(empty($hoststatusMapping[$hostUuid])){
+                    $hoststatusMapping[$hostUuid] = $this->_hoststatus($conditions, $hostFields);
+                    $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
+                }else{
+                    $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
+                }
+
+                if(empty($servicestatusMapping[$hostUuid])){
+                    $servicestatusMapping[$hostUuid] = $this->_servicestatus($conditions, $serviceFields);
+                    $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
+                }else{
+                    $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
+                }
+
+                $hostgroupstatus[$hgKey]['Host'][$key]['Hoststatus'] = $hostgroupHostStatus;
+
+                $hostgroupstatus[$hgKey]['Host'][$key]['Servicestatus'] = $hostgroupServiceStatus;
+            }
         }
 
         return $hostgroupstatus;

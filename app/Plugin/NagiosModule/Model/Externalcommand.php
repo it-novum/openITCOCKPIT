@@ -465,7 +465,6 @@ class Externalcommand extends NagiosModuleAppModel
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
                 $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
                     'fields' => [
-                        'Objects.name2',
                         'Servicestatus.current_state',
                     ],
                 ]);
@@ -509,7 +508,6 @@ class Externalcommand extends NagiosModuleAppModel
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
         $hoststatus = $this->Hoststatus->byUuid($options['hostUuid'], [
             'fields' => [
-                'Objects.name1',
                 'Hoststatus.current_state',
             ],
         ]);
@@ -546,7 +544,6 @@ class Externalcommand extends NagiosModuleAppModel
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
                 $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
                     'fields' => [
-                        'Objects.name2',
                         'Servicestatus.current_state',
                     ],
                 ]);
@@ -601,7 +598,6 @@ class Externalcommand extends NagiosModuleAppModel
             $hoststatus = $this->Hoststatus->byUuid($hostUuids, [
                 'fields' => [
                     'Hoststatus.current_state',
-                    'Objects.name1',
                 ],
             ]);
 
@@ -656,7 +652,6 @@ class Externalcommand extends NagiosModuleAppModel
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
         $servicestatus = $this->Servicestatus->byUuid($options['serviceUuid'], [
             'fields' => [
-                'Objects.name2',
                 'Servicestatus.current_state',
             ],
         ]);
@@ -747,6 +742,53 @@ class Externalcommand extends NagiosModuleAppModel
         $options = Hash::merge($_options, $options);
         //Nagios workaround -.-
         $this->Hostgroup = ClassRegistry::init('Hostgroup');
+        $this->Host = ClassRegistry::init('Host');
+        $hostgroup = $this->Hostgroup->find('first', [
+            'recursive' => -1,
+            'contain'    => [
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                    ],
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id'
+                    ]
+                ],
+            ],
+            'conditions' => [
+                'Hostgroup.uuid' => $options['hostgroupUuid']
+            ]
+        ]);
+        $hostIds = [];
+        if(!empty($hostgroup['Host'])){
+            $hostIds = Hash::extract($hostgroup['Host'], '{n}.id');
+        }
+        $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
+        $hostsByHosttemplateIds = $this->Host->find('all', [
+            'recursive' => -1,
+            'contain' => [
+                'Hostgroup',
+                'Hosttemplate' => [
+                    'Hostgroup' => [
+                        'conditions' => [
+                            'Hostgroup.id' => $hostgroup['Hostgroup']['id']
+                        ]
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Host.hosttemplate_id' => $hostTemlateIds,
+                'NOT' => [
+                    'Host.id' => $hostIds
+                ]
+            ],
+            'fields' => [
+                'Host.uuid'
+            ]
+        ]);
 
         switch ($options['downtimetype']) {
             case 0:
@@ -755,12 +797,20 @@ class Externalcommand extends NagiosModuleAppModel
                  */
                 //Host only and may be this will work some day
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
-
                 //Nagios workaround
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => 0,
+                    ]);
+                }
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -774,9 +824,7 @@ class Externalcommand extends NagiosModuleAppModel
                 //Host inc services and may be this will work some day
                 //$this->_write('SCHEDULE_HOSTGROUP_HOST_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
                 //$this->_write(' SCHEDULE_HOSTGROUP_SVC_DOWNTIME;'.$options['hostgroupUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment']);
-
                 //Nagios workaround
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
@@ -787,15 +835,32 @@ class Externalcommand extends NagiosModuleAppModel
                         'downtimetype' => 1,
                     ]);
                 }
-
-
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => 1,
+                    ]);
+                }
                 break;
 
             default:
-                $hostgroup = $this->Hostgroup->findByUuid($options['hostgroupUuid']);
                 foreach ($hostgroup['Host'] as $host) {
                     $this->setHostDowntime([
                         'hostUuid'     => $host['uuid'],
+                        'start'        => $options['start'],
+                        'end'          => $options['end'],
+                        'comment'      => $options['comment'],
+                        'author'       => $options['author'],
+                        'downtimetype' => $options['downtimetype'],
+                    ]);
+                }
+                foreach ($hostsByHosttemplateIds as $hostUuidFromHosttemplate) {
+                    $this->setHostDowntime([
+                        'hostUuid'     => $hostUuidFromHosttemplate['Host']['uuid'],
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -1085,14 +1150,38 @@ class Externalcommand extends NagiosModuleAppModel
     private function _write($content = '', $satellite_id = 0)
     {
         if ($satellite_id > 0) {
-            //Host or service on SAT system or command for $SAT$_nagios.cmd
-            $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-            $sat = $this->Satellite->findById($satellite_id);
-            if (isset($sat['Satellite']['name'])) {
-                $file = fopen('/opt/openitc/nagios/var/rw/'.md5($sat['Satellite']['name']).'_nagios.cmd', 'a+');
-                fwrite($file, $this->_prefix().$content.PHP_EOL);
-                fclose($file);
+            //Loading distributed Monitoring support, if plugin is loaded/installed
+            $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+                return strpos($value, 'Module') !== false;
+            });
+
+            if (in_array('DistributeModule', $modulePlugins)) {
+                //DistributeModule is loaded and installed...
+                //Host or service on SAT system or command for $SAT$_nagios.cmd
+                $Satellite = ClassRegistry::init('DistributeModule.Satellite');
+
+                //Host or service on SAT system or command for $SAT$_nagios.cmd
+                $result = $Satellite->find('first', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Satellite.id' => $satellite_id
+                    ],
+                    'fields' => [
+                        'Satellite.id',
+                        'Satellite.name'
+                    ]
+                ]);
+                if (isset($result['Satellite']['name'])) {
+                    $file = fopen('/opt/openitc/nagios/var/rw/'.md5($result['Satellite']['name']).'_nagios.cmd', 'a+');
+                    fwrite($file, $this->_prefix().$content.PHP_EOL);
+                    fclose($file);
+                }
+                unset($result);
+
+            }else{
+                return false;
             }
+
         } else {
             //Host or service from master system or command for master nagios.cmd
             if ($this->_is_resource()) {

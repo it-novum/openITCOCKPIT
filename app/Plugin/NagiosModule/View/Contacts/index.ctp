@@ -115,7 +115,7 @@
                     <!-- widget content -->
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false); ?>
-                        <table id="contact_list" class="table table-striped table-bordered smart-form" style="">
+                        <table id="contact_list" class="table table-striped table-hover table-bordered smart-form" style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
@@ -213,7 +213,7 @@
                         <?php if (empty($all_contacts)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>

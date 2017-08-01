@@ -45,6 +45,7 @@ class Servicetemplate extends AppModel
         'Servicetemplategroup' => [
             'joinTable'  => 'servicetemplates_to_servicetemplategroups',
             'foreignKey' => 'servicetemplate_id',
+            'associationForeignKey' => 'servicetemplategroup_id',
             'unique'     => true,
             'dependent'  => true,
         ],
@@ -369,7 +370,7 @@ class Servicetemplate extends AppModel
     {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
-                if (in_array($request_key, $this->notification_options[$notification_type]) && $request_value == 1) {
+                if (in_array($request_key, $this->notification_options[$notification_type], true) && $request_value == 1) {
                     return true;
                 }
             }

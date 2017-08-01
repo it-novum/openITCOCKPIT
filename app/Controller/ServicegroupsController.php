@@ -110,10 +110,6 @@ class ServicegroupsController extends AppController
 
         $this->set(compact(['all_servicegroups']));
         $this->set('_serialize', ['all_servicegroups']);
-        $this->set('isFilter', false);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        }
     }
 
     public function view($id = null)
@@ -371,7 +367,6 @@ class ServicegroupsController extends AppController
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
-                    debug($changelog_data);
                 }
 
                 if ($isJsonRequest) {

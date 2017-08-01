@@ -59,8 +59,9 @@
                             <?php
                             echo $this->Form->input('Contact.'.$key.'.name', ['value' => $contact['Contact']['name'], 'label' => __('Contact name'), 'required' => true]);
                             echo $this->Form->input('Contact.'.$key.'.description', ['value' => $contact['Contact']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Contact.'.$key.'.email', ['value' => $contact['Contact']['email'], 'label' => __('Description'), 'required' => true]);
+                            echo $this->Form->input('Contact.'.$key.'.email', ['value' => $contact['Contact']['email'], 'label' => __('E-Mail'), 'required' => true]);
                             echo $this->Form->input('Contact.'.$key.'.phone', ['value' => $contact['Contact']['phone'], 'label' => __('Phone'), 'required' => true]);
+                            echo $this->Form->input('Contact.'.$key.'.source', ['value' => $contact['Contact']['id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

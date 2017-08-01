@@ -152,6 +152,8 @@
                             'action'                                         => 'index',
                             'plugin'                                         => '',
                             'Filter.Servicestatus.current_state['.$state.']' => 1,
+                            'sort'                                           => 'Servicestatus.last_state_change',
+                            'direction'                                      => 'desc'
                         ]); ?>">
                             <i class="fa fa-square <?php echo $stateColors[$state] ?>"></i>
                             <?php echo $stateCount.' ('.round($stateCount / $widgetServiceStateArray180['total'] * 100, 2).' %)'; ?>

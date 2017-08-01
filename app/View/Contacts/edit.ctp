@@ -235,7 +235,7 @@
                     </div>
                 </article>
                 <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
-                    <div id="wid-id-1" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
+                    <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
 							<span class="widget-icon">
@@ -305,6 +305,37 @@
                     </div>
                 </article>
             </div>
+
+            <div class="row margin-bottom-10">
+                <div class="col-xs-12">
+                    <br/>
+                    <legend class="font-sm"></legend>
+
+                    <!-- Host macro settings -->
+                    <div class="host-macro-settings">
+                        <span class="note pull-left"><?php echo __('Contact macro settings'); ?>:</span>
+                        <br class="clearfix"/>
+                        <br/>
+                        <?php if (isset($customVariableValidationError)): ?>
+                            <div class="text-danger"><?php echo $customVariableValidationError; ?></div>
+                        <?php endif; ?>
+                        <?php if (isset($customVariableValidationErrorValue)): ?>
+                            <div class="text-danger"><?php echo $customVariableValidationErrorValue; ?></div>
+                        <?php endif; ?>
+                        <?php
+                        $customVariableMerger = new \itnovum\openITCOCKPIT\Core\CustomVariableMerger(
+                            $contact['Customvariable'], []
+                        );
+                        $mergedCustomVariables = $customVariableMerger->getCustomVariablesMergedAsRepository();
+                        ?>
+                        <?php $this->CustomVariables->setup('CONTACT', OBJECT_CONTACT, $mergedCustomVariables->getAllCustomVariablesAsArray()); ?>
+                        <?php echo $this->CustomVariables->prepare(); ?>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+
+
             <?php echo $this->Form->formActions(); ?>
         </div>
     </div>

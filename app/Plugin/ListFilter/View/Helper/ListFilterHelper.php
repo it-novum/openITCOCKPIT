@@ -307,7 +307,7 @@ class ListFilterHelper extends AppHelper
     public function button($title = null)
     {
         if (!$title) {
-            $title = __('list_filter.search');
+            $title = __('Filter');
         }
 
         return $this->Form->submit(__($title), ['div' => false, 'class' => 'btn btn-mini btn-primary']);

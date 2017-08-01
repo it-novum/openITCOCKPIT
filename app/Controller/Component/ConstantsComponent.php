@@ -33,11 +33,14 @@ class ConstantsComponent extends Component {
             define('ROOT_CONTAINER', 1);
         }
 
+        Configure::load('dbbackend');
+
         //core array
         $this->defines = [];
 
         //Monitoring Objects
-        $monitoring = 'Nagios';
+        $monitoring = Configure::read('dbbackend');
+
         $this->defines['monitoring'] = [
             //Models
             'MONITORING_HOSTSTATUS' => $monitoring . 'Module.Hoststatus',
@@ -48,10 +51,16 @@ class ConstantsComponent extends Component {
             'MONITORING_LOGENTRY' => $monitoring . 'Module.Logentry',
             'MONITORING_NAGIOSTAT' => $monitoring . 'Module.Nagiostat',
             'MONITORING_NOTIFICATION' => $monitoring . 'Module.Notification',
+            'MONITORING_NOTIFICATION_HOST' => $monitoring . 'Module.NotificationHost',
+            'MONITORING_NOTIFICATION_SERVICE' => $monitoring . 'Module.NotificationService',
             'MONITORING_SERVICECHECK' => $monitoring . 'Module.Servicecheck',
+            'MONITORING_STATEHISTORY_HOST' => $monitoring . 'Module.StatehistoryHost',
+            'MONITORING_STATEHISTORY_SERVICE' => $monitoring . 'Module.StatehistoryService',
             'MONITORING_STATEHISTORY' => $monitoring . 'Module.Statehistory',
             'MONITORING_HOSTCHECK' => $monitoring . 'Module.Hostcheck',
             'MONITORING_ACKNOWLEDGED' => $monitoring . 'Module.Acknowledged',
+            'MONITORING_ACKNOWLEDGED_HOST' => $monitoring . 'Module.AcknowledgedHost',
+            'MONITORING_ACKNOWLEDGED_SERVICE' => $monitoring . 'Module.AcknowledgedService',
             'MONITORING_CONTACTNOTIFICATION' => $monitoring . 'Module.Contactnotification',
             'MONITORING_CONTACTNOTIFICATIONMETHOD' => $monitoring . 'Module.Contactnotificationmethod',
             'MONITORING_PARENTHOST' => $monitoring . 'Module.Parenthost',
@@ -88,6 +97,7 @@ class ConstantsComponent extends Component {
             'OBJECT_SERVICEESCALATION' => 1 << 18,
             'OBJECT_HOSTDEPENDENCY' => 1 << 19,
             'OBJECT_SERVICEDEPENDENCY' => 1 << 20,
+            'OBJECT_INSTANTREPORT' => 1 << 21,
         ];
         $this->define($this->defines['objects']);
 
@@ -108,11 +118,11 @@ class ConstantsComponent extends Component {
         //Container definitions and properties
         $this->defines['containers'] = [
             "GLOBAL_CONTAINER" => [
-                'properties' => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_NODE ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
+                'properties' => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_NODE ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_INSTANTREPORT,
                 'container_type' => CT_GLOBAL,
             ],
             "TENANT_CONTAINER" => [
-                'properties' => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
+                'properties' => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_INSTANTREPORT,
                 'container_type' => CT_TENANT,
             ],
             "LOCATION_CONTAINER" => [
@@ -128,7 +138,7 @@ class ConstantsComponent extends Component {
                 'container_type' => CT_NODE
             ],*/
             "NODE_CONTAINER" => [
-                'properties' => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
+                'properties' => OBJECT_USER ^ OBJECT_NODE ^ OBJECT_LOCATION ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_INSTANTREPORT,
                 'container_type' => CT_NODE,
             ],
             "CONTACTGROUP_CONTAINER" => [

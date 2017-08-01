@@ -26,6 +26,8 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 class UsersController extends AppController
 {
     public $layout = 'Admin.default';
@@ -51,19 +53,13 @@ class UsersController extends AppController
         'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
         'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
         'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
-        'User.role'      => ['label' => 'Role', 'searchType' => 'select', 'type' => 'select'],
-        'User.status'    => ['label' => 'Status', 'searchType' => 'select', 'type' => 'select'],
     ]]];
 
 
     public function index()
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
+
         $this->loadModel('Container');
         $options = [
             'recursive'  => -1,
@@ -255,7 +251,8 @@ class UsersController extends AppController
                 $this->request->data['User']['email'] = $ldapUser['mail'];
                 $this->request->data['User']['firstname'] = $ldapUser['givenname'];
                 $this->request->data['User']['lastname'] = $ldapUser['sn'];
-                $this->request->data['User']['samaccountname'] = $ldapUser['samaccountname'];
+                $this->request->data['User']['samaccountname'] = strtolower($ldapUser['samaccountname']);
+                $this->request->data['User']['ldap_dn'] = $ldapUser['dn'];
             }
         }
 
@@ -433,9 +430,10 @@ class UsersController extends AppController
         $Email->emailFormat('both');
         $Email->template('template-resetpassword', 'template-resetpassword')->viewVars(['newPassword' => $newPassword]);
 
+        $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],

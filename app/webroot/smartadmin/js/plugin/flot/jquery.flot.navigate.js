@@ -179,15 +179,11 @@ Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-L
             plot.pan({ left: prevPageX - e.pageX,
                        top: prevPageY - e.pageY });
         }
-
+        
         function bindEvents(plot, eventHolder) {
             var o = plot.getOptions();
-            if (o.zoom.interactive === true || o.zoom.interactive === 1) {
+            if (o.zoom.interactive) {
                 eventHolder[o.zoom.trigger](onZoomClick);
-                eventHolder.mousewheel(onMouseWheel);
-            } else if (o.zoom.interactive.zoomclick) {
-                eventHolder[o.zoom.trigger](onZoomClick);
-            } else if (o.zoom.interactive.mousewheel) {
                 eventHolder.mousewheel(onMouseWheel);
             }
 

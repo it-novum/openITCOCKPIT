@@ -92,7 +92,7 @@ $notification_settings = [
                         <div id="tab1" class="tab-pane fade active in">
                             <span class="note"><?php echo __('Basic configuration'); ?>:</span>
                             <?php
-                            if ($hasRootPrivileges):
+                            if ($hasRootPrivileges || !$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
                                 echo $this->Form->input('container_id', [
                                         'options'          => $this->Html->chosenPlaceholder($containers),
                                         'data-placeholder' => __('Please select...'),
@@ -102,18 +102,7 @@ $notification_settings = [
                                         'style'            => 'width: 100%',
                                         'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                    ]
-                                );
-                            elseif (!$hasRootPrivileges && $servicetemplate['Container']['id'] != ROOT_CONTAINER):
-                                echo $this->Form->input('container_id', [
-                                        'options'          => $this->Html->chosenPlaceholder($containers),
-                                        'data-placeholder' => __('Please select...'),
-                                        'multiple'         => false,
-                                        'selected'         => $this->request->data['Servicetemplate']['container_id'],
-                                        'class'            => 'chosen col col-xs-12',
-                                        'style'            => 'width: 100%',
-                                        'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                        'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                        'help'      => count($servicetemplate['Service']) > 0 ? __('There are Services using this Service Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:
@@ -197,6 +186,18 @@ $notification_settings = [
                                     <?php endif; ?>
                                 </div>
                             </div>
+
+                            <!-- key words -->
+                            <?php
+                            echo $this->Form->input('tags', [
+                                'label'     => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'class'     => 'form-control tagsinput',
+                                'data-role' => 'tagsinput',
+                                'value'     => $this->request->data['Servicetemplate']['tags'],
+                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                            ]);
+                            ?>
+
                             <!-- notification settings -->
                             <span class="note"><?php echo __('Notification settings'); ?>:</span>
                             <?php
@@ -424,16 +425,6 @@ $notification_settings = [
                             <!-- expert settings -->
                             <span class="note pull-left"><?php echo __('Expert settings'); ?>:</span>
                             <br class="clearfix"/>
-                            <!-- key words -->
-                            <?php
-                            echo $this->Form->input('tags', [
-                                'label'     => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'class'     => 'form-control tagsinput',
-                                'data-role' => 'tagsinput',
-                                'value'     => $this->request->data['Servicetemplate']['tags'],
-                                'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                            ]);
-                            ?>
                             <?php echo $this->Form->fancyCheckbox('flap_detection_enabled', [
                                 'caption'          => __('Flap detection'),
                                 'wrapGridClass'    => 'col col-md-1',

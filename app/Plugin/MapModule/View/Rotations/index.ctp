@@ -70,7 +70,7 @@
                         <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false, true); ?>
                         <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
                         <div class="mobile_table">
-                            <table id="datatable_fixed_column" class="table table-striped table-bordered smart-form">
+                            <table id="datatable_fixed_column" class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -138,7 +138,7 @@
                         <?php if (empty($all_rotations)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>

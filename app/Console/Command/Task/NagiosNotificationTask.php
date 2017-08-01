@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 class NagiosNotificationTask extends AppShell
 {
 
@@ -69,9 +71,10 @@ class NagiosNotificationTask extends AppShell
         $Email->emailFormat('both');
         $Email->template('template-itn-std-host', 'template-itn-std-host')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings]);
 
+        $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
@@ -86,6 +89,7 @@ class NagiosNotificationTask extends AppShell
 
     public function serviceNotification($parameters = [])
     {
+        $Logo = new Logo();
         $Email = new CakeEmail();
         $Email->config('default');
         //$Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => ['MONITORING']['MONITORING.FROM_NAME']]);
@@ -112,9 +116,10 @@ class NagiosNotificationTask extends AppShell
         $Email->emailFormat('both');
         //$Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings]);
 
+
         $Email->attachments([
             'logo.png' => [
-                'file'      => APP.'webroot/img/oitc_small.png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
@@ -138,7 +143,12 @@ class NagiosNotificationTask extends AppShell
             $hosttmpdir_path = '/tmp/'.$parameters['hostUuid'];
             $hosttmpdir = new Folder($hosttmpdir_path, true, 0777);
 
-            $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
+
+            $attachments['logo.png'] = [
+                'file' => $Logo->getSmallLogoDiskPath(),
+                'mimetype' => 'image/png',
+                'contentId' => '100'
+            ];
 
             // draw graph for every datasource of the service 
             foreach ($rrdds as $ds) {
@@ -162,7 +172,11 @@ class NagiosNotificationTask extends AppShell
             //print_r($mailgraph_files);
 
         } else {
-            $attachments['logo.png'] = ['file' => APP.'webroot/img/oitc_small.png', 'mimetype' => 'image/png', 'contentId' => '100'];
+            $attachments['logo.png'] = [
+                'file' => $Logo->getSmallLogoDiskPath(),
+                'mimetype' => 'image/png',
+                'contentId' => '100'
+            ];
         }
         // debug($attachments);
         // send attachments

@@ -44,4 +44,10 @@ class Adldap extends AdldapMain{
         return $this->myPersonFilter;
     }
 
+    public function connect(){
+        $this->ldapConnection->setOption(LDAP_OPT_TIMELIMIT, 1);
+        $this->ldapConnection->setOption(LDAP_OPT_NETWORK_TIMEOUT, 5);
+        return parent::connect();
+    }
+
 }

@@ -37,7 +37,12 @@ $notification_settings = [
     'notify_on_flapping' => 'fa-random',
     'notify_on_downtime' => 'fa-clock-o',
 ];
-$hostSharingPermissions = new HostSharingPermissions($host['Host']['container_id'], $hasRootPrivileges, $_host['Container'], $MY_RIGHTS);
+$hostSharingPermissions = new HostSharingPermissions(
+    $host['Host']['container_id'],
+    $hasRootPrivileges,
+    Hash::extract($_host['Container'], '{n}.id'),
+    $MY_RIGHTS
+);
 $allowSharing = $hostSharingPermissions->allowSharing();
 ?>
 <div class="row">
@@ -72,14 +77,14 @@ $allowSharing = $hostSharingPermissions->allowSharing();
             <span class="onoffswitch-title" rel="tooltip" data-placement="top"
                   data-original-title="<?php echo __('auto DNS lookup'); ?>"><i class="fa fa-search"></i></span>
             <span class="onoffswitch">
-					<input type="checkbox" id="autoDNSlookup" checked="checked" class="onoffswitch-checkbox"
-                           name="onoffswitch">
-					<label for="autoDNSlookup" class="onoffswitch-label">
-						<span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>"
-                              class="onoffswitch-inner"></span>
-						<span class="onoffswitch-switch"></span>
-					</label>
-				</span>
+                <input type="checkbox" id="autoDNSlookup" checked="checked" class="onoffswitch-checkbox"
+                       name="onoffswitch">
+                <label for="autoDNSlookup" class="onoffswitch-label">
+                    <span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>"
+                          class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </span>
         </div>
 
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
@@ -95,6 +100,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                 <a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-terminal"></i> <span
                             class="hidden-mobile hidden-tablet"> <?php echo __('Expert settings'); ?> </span></a>
             </li>
+
+            <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
         </ul>
     </header>
     <div>
@@ -177,14 +184,14 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                 );
                             endif;
                             if ($this->Acl->hasPermission('sharing') && $allowSharing) {
-                                if($host['Host']['host_type'] == GENERIC_HOST){
+                                if ($host['Host']['host_type'] == GENERIC_HOST) {
                                     echo $this->Form->input('shared_container', [
-                                            'options'   => $this->Html->chosenPlaceholder($sharingContainers),
-                                            'multiple'  => true,
-                                            'selected'  => $sharedContainers,
-                                            'class'     => 'chosen',
-                                            'style'     => 'width: 100%',
-                                            'label'     => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                            'options' => $this->Html->chosenPlaceholder($sharingContainers),
+                                            'multiple' => true,
+                                            'selected' => $sharedContainers,
+                                            'class' => 'chosen',
+                                            'style' => 'width: 100%',
+                                            'label' => ['text' => __('Shared containers'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                             'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                         ]
                                     );
@@ -300,7 +307,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <!-- key words -->
                             <?php echo $this->Form->input(
                                 'tags', [
-                                    'label' => ['text' => __('Label'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'label' => ['text' => __('Tags'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'class' => 'form-control tagsinput',
                                     'data-role' => 'tagsinput',
                                     'value' => $host['Host']['tags'],
@@ -670,6 +677,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             <?php endif; ?>
 
                         </div>
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
 
                     </div> <!-- close tab-content -->
                 </div> <!-- close col -->

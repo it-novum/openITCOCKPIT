@@ -81,12 +81,6 @@ class ServicetemplategroupsController extends AppController
         }
         $this->set(compact('all_servicetemplategroups'));
         $this->set('_serialize', ['all_servicetemplategroups']);
-
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function view($id = null)
@@ -111,6 +105,7 @@ class ServicetemplategroupsController extends AppController
 
     public function add()
     {
+        $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         } else {
@@ -119,15 +114,46 @@ class ServicetemplategroupsController extends AppController
 
         $servicetemplates = [];
         if ($this->request->is('post') || $this->request->is('put')) {
+            $ext_data_for_changelog = [];
             App::uses('UUID', 'Lib');
+            if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
+                foreach ($this->request->data['Servicetemplategroup']['Servicetemplate'] as $servicetemplate_id) {
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'recursive'    => -1,
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.template_name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id'   => $servicetemplate_id,
+                        'template_name' => $servicetemplate['Servicetemplate']['template_name'],
+                    ];
+                }
+            }
             $this->request->data['Servicetemplategroup']['uuid'] = UUID::v4();
             $this->request->data['Container']['containertype_id'] = CT_SERVICETEMPLATEGROUP;
             $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
 
             if ($this->Servicetemplategroup->saveAll($this->request->data)) {
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Servicetemplategroup->id,
+                    OBJECT_SERVICETEMPLATEGROUP,
+                    $this->request->data('Container.parent_id'),
+                    $userId,
+                    $this->request->data['Container']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
                 if ($this->request->ext == 'json') {
                     $this->serializeId();
-
                     return;
                 }
                 $this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
@@ -153,19 +179,66 @@ class ServicetemplategroupsController extends AppController
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
-
-        $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-
+        $userId = $this->Auth->user('id');
+        $servicetemplategroup = $this->Servicetemplategroup->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.template_name',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => [
+                'Servicetemplategroup.id' => $id,
+            ],
+        ]);
+        $ext_data_for_changelog = [];
         if (!$this->allowedByContainerId(Hash::extract($servicetemplategroup, 'Container.parent_id'))) {
             $this->render403();
-
             return;
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
+                foreach ($this->request->data['Servicetemplategroup']['Servicetemplate'] as $servicetemplate_id) {
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'contain'    => [],
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.template_name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id'   => $servicetemplate_id,
+                        'template_name' => $servicetemplate['Servicetemplate']['template_name'],
+                    ];
+                }
+            }
             $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
             $this->request->data['Container']['id'] = $this->request->data['Servicetemplategroup']['container_id'];
+
             if ($this->Servicetemplategroup->saveAll($this->request->data)) {
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Servicetemplategroup->id,
+                    OBJECT_SERVICETEMPLATEGROUP,
+                    $this->request->data('Container.parent_id'),
+                    $userId,
+                    $this->request->data['Container']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog),
+                    $servicetemplategroup
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
                 $this->setFlash(__('<a href="/servicetemplategroups/edit/%s">Servicetemplategroup</a> successfully saved', $this->Servicetemplategroup->id));
                 $this->redirect(['action' => 'index']);
             }
@@ -580,6 +653,7 @@ class ServicetemplategroupsController extends AppController
 
     public function delete($id = null)
     {
+        $userId = $this->Auth->user('id');
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
@@ -594,12 +668,24 @@ class ServicetemplategroupsController extends AppController
 
             return;
         }
-
-        $this->Servicetemplategroup->id = $id;
-        if ($this->Servicetemplategroup->delete()) {
+        if ($this->Container->delete($servicetemplategroup['Servicetemplategroup']['container_id'], true)) {
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                $this->params['action'],
+                $this->params['controller'],
+                $id,
+                OBJECT_SERVICETEMPLATEGROUP,
+                $servicetemplategroup['Container']['parent_id'],
+                $userId,
+                $servicetemplategroup['Container']['name'],
+                $servicetemplategroup
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
             $this->setFlash(__('Servicetemplategroup deleted'));
             $this->redirect(['action' => 'index']);
         }
+
         $this->setFlash(__('Could not delete servicetemplategroup'), false);
         $this->redirect(['action' => 'index']);
     }

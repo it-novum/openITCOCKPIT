@@ -222,7 +222,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="logentries_list" class="table table-striped table-bordered smart-form" style="">
+                            <table id="logentries_list" class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -244,7 +244,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                 <?php foreach ($all_logentries as $logentry): ?>
                                     <tr>
                                         <td>
-                                            <?php echo $logentry['Logentry']['logentry_time']; ?>
+                                            <?php echo h($this->Time->format($logentry['Logentry']['logentry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>
                                         </td>
                                         <td>
                                             <?php

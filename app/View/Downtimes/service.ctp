@@ -275,7 +275,7 @@
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="servicedowntimes_list" class="table table-striped table-bordered smart-form"
+                            <table id="servicedowntimes_list" class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -351,7 +351,7 @@
                                         </td>
                                         <td class="text-center">
                                             <?php if (strtotime($downtime['Downtime']['scheduled_end_time']) > time() && $downtime['Downtime']['was_cancelled'] == 0): ?>
-                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'downtimes') && $downtime['canDelete']): ?>
                                                     <a class="btn btn-danger btn-xs delete_downtime"
                                                        href="javascript:void(0)"
                                                        internal-downtime-id="<?php echo h($downtime['Downtime']['internal_downtime_id']); ?>"

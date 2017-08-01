@@ -104,7 +104,7 @@
                             <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
                             <div id="tab1" class="tab-pane fade active in">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -133,7 +133,7 @@
                                 <?php if (empty($all_commands['check'])): ?>
                                     <div class="noMatch">
                                         <center>
-                                            <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                         </center>
                                     </div>
                                 <?php endif; ?>
@@ -141,7 +141,7 @@
 
                             <div id="tab2" class="tab-pane fade">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -167,7 +167,7 @@
                                 <?php if (empty($all_commands['notify'])): ?>
                                     <div class="noMatch">
                                         <center>
-                                            <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                         </center>
                                     </div>
                                 <?php endif; ?>
@@ -175,7 +175,7 @@
 
                             <div id="tab3" class="tab-pane fade">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -201,7 +201,7 @@
                                 <?php if (empty($all_commands['handle'])): ?>
                                     <div class="noMatch">
                                         <center>
-                                            <span class="txt-color-red italic"><?php echo __('search.noVal'); ?></span>
+                                            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
                                         </center>
                                     </div>
                                 <?php endif; ?>

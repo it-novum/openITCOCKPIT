@@ -33,14 +33,15 @@
                     class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('copy')): ?>
-            <a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;"><i
-                        class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?></a>
+            <a href="javascript:void(0);" id="copyAll" >
+                <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+            </a>
         <?php endif; ?>
     </div>
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
             <a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i
-                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete host templates'); ?></a>
+                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
         <?php endif; ?>
     </div>
 

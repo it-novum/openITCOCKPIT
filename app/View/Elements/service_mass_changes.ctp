@@ -31,9 +31,8 @@
                     class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
     <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
                     class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
-    <div class="col-xs-12 col-md-2"><a href="javascript:void(0);" id="copyAll"
-                                       style="text-decoration: none; color:#333;"><i
-                    class="fa fa-lg fa-files-o"></i> <?php echo __('Copy to host'); ?></a></div>
+    <div class="col-xs-12 col-md-2"><a href="javascript:void(0);" id="copyAll">
+            <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy to host'); ?></a></div>
     <div class="col-xs-12 col-md-2"><a href="javascript:void(0);" id="deleteAll" class="txt-color-red"
                                        style="text-decoration: none;"> <i
                     class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a></div>

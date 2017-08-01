@@ -35,6 +35,8 @@ $plugin_version = '1.5';
     </div>
 </div>
 
+<?php echo $this->element('repository_checker'); ?>
+
 <div id="error_msg"></div>
 <?php if (isset($data) && version_compare($data->version, $openITCVersion) > 0): ?>
     <div class="alert alert-info alert-block">
@@ -238,11 +240,6 @@ $plugin_version = '1.5';
                         <?php echo __('Update packages'); ?>
                         <br/>
                         <code>apt-get dist-upgrade</code>
-                    </li>
-                    <li>
-                        <?php echo __('Execute openITCOCKPIT update process and follow instructions'); ?>
-                        <br/>
-                        <code>openitcockpit-update</code>
                     </li>
                 </ol>
             </div>

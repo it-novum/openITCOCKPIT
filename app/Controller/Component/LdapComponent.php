@@ -91,24 +91,6 @@ class LdapComponent extends Component
     {
         $allUsers = $this->findAllUser(true);
         return isset($allUsers[$username]) ? $allUsers[$username] : null;
-
-        /*
-        $fields = ['samaccountname', 'mail', 'memberof', 'department', 'displayname', 'telephonenumber', 'primarygroupid', 'objectsid', 'sn', 'givenname'];
-        $ldapResult = $this->adldap->user()->info($username, $fields);
-        //pr($ldapResult); //use pr() becasue cakes debug() will not work on ldap results!!!
-        $return = [];
-        foreach ($fields as $fieldName) {
-            if (isset($ldapResult[0][$fieldName][0])) {
-                $return[$fieldName] = $ldapResult[0][$fieldName][0];
-            }
-        }
-
-        if (isset($return['objectsid'])) {
-            //Objectid destroys cakes debug() and i guess we dont need this
-            unset($return['objectsid']);
-        }
-
-        return $return; */
     }
 
     public function userExists($username)
@@ -130,13 +112,21 @@ class LdapComponent extends Component
 
     public function findAllUser($allData = false)
     {
+        $ldapType = isset($this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE']) ? $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] : 'adldap';
         $returnUsers = [];
-        $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+        if($ldapType === 'openldap'){
+            $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+            $selectFields = ['uid', 'mail', 'sn', 'givenname', 'displayname', 'dn'];
+        }else{
+            $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+            $selectFields = ['samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn'];
+        }
         $perPage = 900;
         $currentPage = 0;
         $makeRequest = true;
         while($makeRequest){
-            $ldapUsers = $this->adldap->search()->select(['samaccountname', 'mail', 'sn', 'givenname', 'displayname'])->paginate($perPage, $currentPage);
+            $ldapUsers = $this->adldap->search()->select($selectFields)->paginate($perPage, $currentPage);
+            if(empty($ldapUsers)) break;
             foreach ($ldapUsers[1] as $ldapUser) {
                 $ableToImport = true;
                 foreach ($requiredFields as $requiredField) {
@@ -146,6 +136,10 @@ class LdapComponent extends Component
                 }
 
                 if ($ableToImport) {
+                    if($ldapType === 'openldap'){
+                        $ldapUser['samaccountname'] = $ldapUser['uid'];
+                    }
+
                     if($allData){
                         $returnUsers[$ldapUser['samaccountname']] = $ldapUser;
                     }else {

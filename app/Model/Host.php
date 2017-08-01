@@ -24,11 +24,13 @@
 //	confirmation.
 
 App::uses('ValidationCollection', 'Lib');
+use itnovum\openITCOCKPIT\Core\HostConditions;
 
 /**
  * @property ParentHost $ParentHost
  */
 class Host extends AppModel {
+
     public $hasAndBelongsToMany = [
         'Container' => [
             'className' => 'Container',
@@ -65,8 +67,8 @@ class Host extends AppModel {
             'joinTable' => 'hosts_to_hostgroups',
             'foreignKey' => 'host_id',
             'associationForeignKey' => 'hostgroup_id',
-            'unique'                => true,
-            'dependent'             => true,
+            'unique' => true,
+            'dependent' => true,
         ],
     ];
 
@@ -211,23 +213,6 @@ class Host extends AppModel {
             ],
 
         ],
-        /*
-                'priority' => [
-                    'notBlank' => [
-                        'rule'    => 'notBlank',
-                        'message' => 'This field cannot be left blank.',
-                        'required' => true
-                    ],
-                    'range' => [
-                        'rule' => ['range', 0, 6],
-                        'message' => 'This value must be between 1 and 5'
-                    ],
-                    'numeric' => [
-                        'rule' => 'numeric',
-                        'message' => 'This value needs to be numeric'
-                    ]
-                ],
-        */
     ];
 
     /**
@@ -346,17 +331,17 @@ class Host extends AppModel {
         return Hash::diff($host_values, $hosttemplate_values);
     }
 
-    public function prepareForCompare($prepare_array = [], $prepare = false)
-    {
+    public function prepareForCompare($prepare_array = [], $prepare = false) {
         $keysForArraySort = ['Contact', 'Contactgroup', 'Hostgroup']; //sort array for array diff
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
+
         if (!$prepare) {
             if(!is_array($prepare_array)) return [];
             $currentKey = key($prepare_array);
-            if(!in_array($currentKey, $keysForArraySort, true)){
+            if (!in_array($currentKey, $keysForArraySort, true)) {
                 return $prepare_array;
             }
-            if(is_array($prepare_array[$currentKey][$currentKey])){
+            if (is_array($prepare_array[$currentKey][$currentKey])) {
                 sort($prepare_array[$currentKey][$currentKey]);
             }
             return $prepare_array;
@@ -364,7 +349,7 @@ class Host extends AppModel {
         $new_array = [];
         if (is_array($prepare_array)) {
             foreach ($prepare_array as $key => $data) {
-                if(is_array($data)){
+                if (is_array($data)) {
                     sort($data);
                 }
                 $new_array[$key][$key] = $data;
@@ -521,10 +506,10 @@ class Host extends AppModel {
                 'hosttemplate_id' => $hostTemplateId,
                 'container_id' => $containerId,
                 /* Set Contact/Contactgroup for custom validation rule*/
-                'Contact'         => $requestData['Host']['Contact'],
-                'Contactgroup'    => $requestData['Host']['Contactgroup'],
-                'Hostgroup'       => $requestData['Host']['Hostgroup'],
-                'Parenthost'      => $requestData['Parenthost']['Parenthost'],
+                'Contact' => $requestData['Host']['Contact'],
+                'Contactgroup' => $requestData['Host']['Contactgroup'],
+                'Hostgroup' => $requestData['Host']['Hostgroup'],
+                'Parenthost' => $requestData['Parenthost']['Parenthost'],
             ],
             'Container' => [
                 'Container' => $containerIds,
@@ -621,8 +606,8 @@ class Host extends AppModel {
                             'fields' => ['human_name'],
                         ],
                     ],
-                    'Hostgroup'                     => [
-                        'fields'    => ['id'],
+                    'Hostgroup' => [
+                        'fields' => ['id'],
                         'Container' => [
                             'fields' => [
                                 'name',
@@ -688,9 +673,9 @@ class Host extends AppModel {
         }
 
         $hostgroups = [];
-        if(!empty($host['Hostgroup'])){
+        if (!empty($host['Hostgroup'])) {
             $hostgroups = Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id');
-        }elseif(empty($host['Hostgroup']) && !(empty($host['Hosttemplate']['Hostgroup']))){
+        } elseif (empty($host['Hostgroup']) && !(empty($host['Hosttemplate']['Hostgroup']))) {
             $hostgroups = Hash::combine($host['Hosttemplate']['Hostgroup'], '{n}.id', '{n}.id');
         }
 
@@ -702,11 +687,11 @@ class Host extends AppModel {
             'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
             'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
             'Hostcommandargumentvalue' => $hostcommandargumentvalue,
-            'Hosttemplate'             => $host['Hosttemplate'],
-            'Hostgroup'                => $hostgroups,
-            'CheckCommand'             => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
-            'CheckPeriod'              => (!is_null($host['Host']['check_period_id'])) ? $host['CheckPeriod'] : $host['Hosttemplate']['CheckPeriod'],
-            'NotifyPeriod'             => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],
+            'Hosttemplate' => $host['Hosttemplate'],
+            'Hostgroup' => $hostgroups,
+            'CheckCommand' => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
+            'CheckPeriod' => (!is_null($host['Host']['check_period_id'])) ? $host['CheckPeriod'] : $host['Hosttemplate']['CheckPeriod'],
+            'NotifyPeriod' => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],
         ];
 
         return $host;
@@ -798,6 +783,9 @@ class Host extends AppModel {
         return $redirect;
     }
 
+
+    public $additionalValidationRules = [];
+    public $additionalData = [];
 
     public function beforeValidate($options = []) {
         $params = Router::getParams();
@@ -1069,21 +1057,21 @@ class Host extends AppModel {
             'Host' => [],
             'Service' => [],
         ];
-        foreach ($moduleConstants as $moduleName => $value){
-            if($this->checkUsageFlag($host['Host']['id'], $value)){
+        foreach ($moduleConstants as $moduleName => $value) {
+            if ($this->checkUsageFlag($host['Host']['id'], $value)) {
                 $usedBy['Host'][$this->humanizeModuleConstantName($moduleName)][] = $host['Host']['id'];
             }
 
-            if(!empty($serviceIds)){
-                foreach ($serviceIds as $serviceId){
-                    if($this->Service->checkUsageFlag($serviceId, $value)){
+            if (!empty($serviceIds)) {
+                foreach ($serviceIds as $serviceId) {
+                    if ($this->Service->checkUsageFlag($serviceId, $value)) {
                         $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
                     }
                 }
             }
         }
 
-        if(empty($usedBy['Host']) && empty($usedBy['Service'])){
+        if (empty($usedBy['Host']) && empty($usedBy['Service'])) {
             return true;
         }
 
@@ -1091,7 +1079,7 @@ class Host extends AppModel {
         return false;
     }
 
-    public function humanizeModuleConstantName($name){
+    public function humanizeModuleConstantName($name) {
         return preg_replace('/_MODULE/', '', $name);
     }
 
@@ -1246,7 +1234,7 @@ class Host extends AppModel {
      * @param $moduleValue
      * @return bool
      */
-    public function checkUsageFlag($hostId,$moduleValue){
+    public function checkUsageFlag($hostId, $moduleValue) {
         $result = $this->find('first', [
             'recursive' => -1,
             'conditions' => [
@@ -1258,13 +1246,159 @@ class Host extends AppModel {
             ]
         ]);
 
-        if(!empty($result)){
+        if (!empty($result)) {
             $result = $result['Host']['usage_flag'];
             $this->currentUsageFlag = $result;
-            if($result & $moduleValue){
+            if ($result & $moduleValue) {
                 return true;
             }
             return false;
         }
     }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+                'Host.tags',
+
+                'Hoststatus.current_state',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.last_hard_state_change',
+                'Hoststatus.last_state_change',
+                'Hoststatus.output',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.state_type',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.acknowledgement_type',
+
+
+                'Hoststatus.current_state',
+            ],
+            'order' => $HostConditions->getOrder(),
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'INNER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ], [
+                    'table' => 'nagios_hoststatus',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ], [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        return $query;
+    }
+
+    public function virtualFieldsForIndex(){
+        $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+
+            ],
+            'order' => $HostConditions->getOrder(),
+            'joins' => [
+                [
+                    'table' => 'nagios_objects',
+                    'type' => 'LEFT OUTER',
+                    'alias' => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group' => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+        $query['conditions'][] = 'HostObject.name1 IS NULL';
+
+        return $query;
+    }
+
 }

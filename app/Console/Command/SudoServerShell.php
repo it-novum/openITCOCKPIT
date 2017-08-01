@@ -37,7 +37,7 @@ App::import('Model', 'Export');
 class SudoServerShell extends AppShell
 {
 
-    public $uses = [MONITORING_EXTERNALCOMMAND, MONITORING_NAGIOSTAT, 'Systemsetting'];
+    public $uses = [MONITORING_EXTERNALCOMMAND, MONITORING_NAGIOSTAT, 'Systemsetting', 'Export'];
     //public $tasks = ['NagiosExport'];
     //public $tasks = ['SudoWorker'];
 

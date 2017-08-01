@@ -827,7 +827,7 @@ class DashboardsController extends AppController
                     ]);
                     if ($widget['DashboardTab']['user_id'] == $userId) {
                         foreach ($settings as $dbField => $value) {
-                            if ($value !== '' && $value !== null && isset($widget[$contain][$dbField])) {
+                            if ($value !== null && isset($widget[$contain][$dbField])) {
                                 $widget[$contain][$dbField] = $value;
                             }
                         }

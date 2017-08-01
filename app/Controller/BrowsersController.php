@@ -48,7 +48,7 @@ class BrowsersController extends AppController {
         'paginator',
     ];
 
-    function index() {
+    function index(){
         $top_node = $this->Container->findById(ROOT_CONTAINER);
         $parents = $this->Container->getPath($top_node['Container']['parent_id']);
 
@@ -82,7 +82,7 @@ class BrowsersController extends AppController {
     }
 
 
-    function tenantBrowser($id) {
+    function tenantBrowser($id){
         if (!$this->Container->exists($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
@@ -136,13 +136,14 @@ class BrowsersController extends AppController {
 
             $query = $this->Browser->hostsQuery($lookupIds);
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $hostsForCounter = $this->Host->find('all', $query);
             $hosts = $this->Paginator->paginate('Host');
-            //$hosts = $this->Host->find('all', $query);
             $query = $this->Browser->serviceQuery($lookupIds);
             $services = $this->Service->find('all', $query);
         }
-        $state_array_host = $this->Browser->countHoststate($hosts);
+        $state_array_host = $this->Browser->countHoststate($hostsForCounter);
         $state_array_service = $this->Browser->countServicestate($services);
+
         $currentContainer = $this->Container->findById($id);
         $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
         $this->set(compact([
@@ -157,12 +158,12 @@ class BrowsersController extends AppController {
     }
 
     public function refreshBrowser(){
-        if(!$this->request->is('post')){
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
         $currentFlag = $this->Auth->user('recursive_browser');
-        if($this->request->is('post') || $this->request->is('put')){
+        if ($this->request->is('post') || $this->request->is('put')) {
             $this->User->id = $this->Auth->user('id');
             /*if($this->User->saveField('recursive_browser',$recursive)){
                 $this->setFlash(__('Recursive flag saved'));
@@ -173,7 +174,7 @@ class BrowsersController extends AppController {
         }
     }
 
-    protected function __getTenants() {
+    protected function __getTenants(){
         return $this->Tenant->tenantsByContainerId(
             array_merge(
                 $this->MY_RIGHTS, array_keys(

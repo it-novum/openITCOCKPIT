@@ -47,12 +47,6 @@ class MacrosController extends AppController
         $this->set(compact(['all_macros']));
         $this->set('_serialize', ['all_macros']);
 
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
-
         //Checking if the user delete a macro
         $macrosToDelete = [];
         if (!empty($all_macros) && !empty($this->request->data)) {

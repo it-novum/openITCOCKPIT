@@ -333,26 +333,18 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'CRONJOB.RECURRING_DOWNTIME',
-                    'value'    => '10',
-                    'info'     => 'Time in minutes the cron will check for recurring downtimes',
-                    'section'  => 'CRONJOB'
+                    'key'      => 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT',
+                    'value'    => '1',
+                    'info'     => 'If enabled, new host templates will have active_checks enabled by default',
+                    'section'  => 'MONITORING',
                 ],
             ],
             [
                 'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLEANUP_DATABASE',
-                    'value'    => '1440',
-                    'info'     => 'Time in minutes the cron will check for partitions in database and drop old partitions',
-                    'section'  => 'CRONJOB'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'      => 'CRONJOB.CLENUP_TEMPFILES',
-                    'value'    => '10',
-                    'info'     => 'Deletes tmp files',
-                    'section'  => 'CRONJOB'
+                    'key'      => 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT',
+                    'value'    => '1',
+                    'info'     => 'If enabled, new service templates will have active_checks enabled by default',
+                    'section'  => 'MONITORING',
                 ],
             ],
             [
@@ -373,6 +365,14 @@ class Systemsetting extends Importer
             ],
             [
                 'Systemsetting' => [
+                    'key'      => 'FRONTEND.SHOW_EXPORT_RUNNING',
+                    'value'    => 'yes',
+                    'info'     => 'Show if an export is running in headarea',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'      => 'FRONTEND.MASTER_INSTANCE',
                     'value'    => 'Mastersystem',
                     'info'     => 'The name of your openITCOCKPIT main instance',
@@ -385,6 +385,14 @@ class Systemsetting extends Importer
                     'value'    => 'session',
                     'info'     => 'The authentication method that shoud be used for login',
                     'section'  => 'FRONTEND',
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'FRONTEND.LDAP.TYPE',
+                    'value'    => 'adldap',
+                    'info'     => 'LDAP server type',
+                    'section'  => 'FRONTEND'
                 ],
             ],
             [
@@ -512,6 +520,14 @@ class Systemsetting extends Importer
                     'key'      => 'FRONTEND.CERT.DEFAULT_USER_EMAIL',
                     'value'    => 'default.user@email.de',
                     'info'     => 'Default user E-mail address to be used if no E-mail address was found during the login with certificate',
+                    'section'  => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'      => 'FRONTEND.HIDDEN_USER_IN_CHANGELOG',
+                    'value'    => '0',
+                    'info'     => 'Hide the user name in the change log due to privacy reasons',
                     'section'  => 'FRONTEND'
                 ],
             ],

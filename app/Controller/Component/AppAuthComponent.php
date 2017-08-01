@@ -151,16 +151,35 @@ class AppAuthComponent extends AuthComponent
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
+                if(isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE){
+                    return false;
+                }
                 $_options = [];
+                if (isset($user['User']['ldap_dn'])) {
+                    $_options['dn'] = $user['User']['ldap_dn'];
+                }
                 if (isset($this->request->data['User']['samaccountname'])) {
-                    $_options['samaccountname'] = $this->request->data['User']['samaccountname'];
+                    $_options['samaccountname'] = strtolower($this->request->data['User']['samaccountname']);
                 }
                 if (isset($this->request->data['User']['password'])) {
                     $_options['sampassword'] = $this->request->data['User']['password'];
                 }
                 $options = Hash::merge($_options, $options);
 
-                $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
+                if($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap' && isset($options['dn'])){
+                    $options['samaccountname'] = $options['dn'];
+                }
+                try{
+                    $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
+                }catch (\Adldap\Exceptions\AdldapException $ex){
+                    $this->Session->setFlash($ex->getMessage());
+                    return false;
+                }
+
+                if(empty($user) || !isset($user['User'])){
+                    return false;
+                }
+
                 if ($result) {
                     $this->_setDefaults();
                     $this->Session->renew();
@@ -342,3 +361,4 @@ class AppAuthComponent extends AuthComponent
         return $this->UserRights->userHasRight($this->user(), $right);
     }
 }
+

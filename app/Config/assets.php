@@ -64,12 +64,16 @@ $config = [
             '/smartadmin/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js',
             '/smartadmin/js/plugin/sparkline/jquery.sparkline.min.js',
             '/smartadmin/js/plugin/flot/jquery.flot.cust.js',
+            '/smartadmin/js/plugin/flot/jquery.flot.time.js',
             '/smartadmin/js/plugin/jquery-validate/jquery.validate.min.js',
             '/smartadmin/js/plugin/flot/jquery.flot.orderBar.js',
             '/smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
             '/smartadmin/js/plugin/flot/jquery.flot.pie.min.js',
             '/smartadmin/js/plugin/flot/jquery.flot.resize.js',
             '/smartadmin/js/plugin/flot/jquery.flot.navigate.js',
+            '/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
+            '/smartadmin/js/plugin/flot/jquery.flot.selection.js',
+
 //			'/smartadmin/js/plugin/flot/jquery.flot.time.js', // timezones for jQuery flot
             '/smartadmin/js/plugin/colorpicker/bootstrap-colorpicker.min.js',
             'app/shortcuts.js',

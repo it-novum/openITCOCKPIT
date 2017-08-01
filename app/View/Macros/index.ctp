@@ -65,7 +65,7 @@
                         ]);
                         ?>
                         <div class="mobile_table">
-                            <table id="macrosTable" class="table table-striped table-bordered smart-form" style="">
+                            <table id="macrosTable" class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>

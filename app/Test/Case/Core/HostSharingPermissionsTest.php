@@ -120,39 +120,8 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
                 'container_id' => '10',
             ],
             'Container' => [
-                'id'               => '1',
-                'containertype_id' => '1',
-                'name'             => 'root',
-                'parent_id'        => null,
-                'lft'              => '1',
-                'rght'             => '10',
-                0                  => [
-                    'id'               => '4',
-                    'containertype_id' => '1',
-                    'name'             => 'root',
-                    'parent_id'        => null,
-                    'lft'              => '1',
-                    'rght'             => '10',
-                    'HostsToContainer' => [
-                        'id'           => '26',
-                        'host_id'      => '3',
-                        'container_id' => '4',
-                    ],
-                ],
-                1                  => [
-                    'id'               => '10',
-                    'containertype_id' => '5',
-                    'name'             => 'Container 10',
-                    'parent_id'        => '3',
-                    'lft'              => '5',
-                    'rght'             => '8',
-                    'HostsToContainer' => [
-                        'id'           => '27',
-                        'host_id'      => '3',
-                        'container_id' => '10',
-                    ],
-                ],
-            ],
+                4,10
+            ]
         ];
 
         return $data;
@@ -162,17 +131,7 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
     {
         $host = $this->getHostNotRootContainerSharedToNonRootContainer();
         $host['Container'][] = [
-            'id'               => '1',
-            'containertype_id' => '5',
-            'name'             => 'root',
-            'parent_id'        => null,
-            'lft'              => '5',
-            'rght'             => '8',
-            'HostsToContainer' => [
-                'id'           => '27',
-                'host_id'      => '3',
-                'container_id' => '1',
-            ],
+            27
         ];
 
         return $host;
@@ -185,39 +144,8 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
                 'container_id' => '1',
             ],
             'Container' => [
-                'id'               => '1',
-                'containertype_id' => '1',
-                'name'             => 'root',
-                'parent_id'        => null,
-                'lft'              => '1',
-                'rght'             => '10',
-                0                  => [
-                    'id'               => '1',
-                    'containertype_id' => '1',
-                    'name'             => 'root',
-                    'parent_id'        => null,
-                    'lft'              => '1',
-                    'rght'             => '10',
-                    'HostsToContainer' => [
-                        'id'           => '26',
-                        'host_id'      => '3',
-                        'container_id' => '1',
-                    ],
-                ],
-                1                  => [
-                    'id'               => '4',
-                    'containertype_id' => '5',
-                    'name'             => 'subContainerTenantA',
-                    'parent_id'        => '3',
-                    'lft'              => '5',
-                    'rght'             => '8',
-                    'HostsToContainer' => [
-                        'id'           => '27',
-                        'host_id'      => '3',
-                        'container_id' => '4',
-                    ],
-                ],
-            ],
+                4
+            ]
         ];
 
         return $data;

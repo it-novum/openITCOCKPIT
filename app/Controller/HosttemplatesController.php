@@ -47,7 +47,8 @@ class HosttemplatesController extends AppController {
         'Commandargument',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
-        'Hostgroup'
+        'Hostgroup',
+        'Documentation'
     ];
     public $layout = 'Admin.default';
 
@@ -107,11 +108,6 @@ class HosttemplatesController extends AppController {
 
         $this->set(compact(['all_hosttemplates']));
         $this->set('_serialize', ['all_hosttemplates']);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
-        }
     }
 
     public function view($id = null) {
@@ -529,6 +525,9 @@ class HosttemplatesController extends AppController {
     }
 
     public function add($hosttemplatetype_id = null) {
+        $systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        $active_checks_enabled = $systemsettings['MONITORING']['MONITORING.HOST_CHECK_ACTIVE_DEFAULT'];
+
         //Empty variables, get fild if Model::save() fails for refill
         $_timeperiods = [];
         $_contacts = [];
@@ -578,7 +577,7 @@ class HosttemplatesController extends AppController {
         $this->Frontend->setJson('lang_and', __('and'));
 
         $this->set('back_url', $this->referer());
-        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable']));
+        $this->set(compact(['containers', 'commands', 'userContainerId', 'userValues', 'Customvariable', 'active_checks_enabled']));
         if ($this->request->is('post') || $this->request->is('put')) {
             //Fixing structure of $this->request->data for HATBM
             $ext_data_for_changelog = [
@@ -832,6 +831,14 @@ class HosttemplatesController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
+                //Delete Documentation record if exists
+                $documentation = $this->Documentation->findByUuid($hosttemplate['Hosttemplate']['uuid']);
+                if (isset($documentation['Documentation']['id'])) {
+                    $this->Documentation->delete($documentation['Documentation']['id']);
+                    unset($documentation);
+                }
+
+
                 //Hosttemplate deleted, now we need to delete all hosts + services that are using this template
                 $this->loadModel('Host');
                 $hosts = $this->Host->find('all', [
@@ -885,6 +892,13 @@ class HosttemplatesController extends AppController {
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
+                    }
+
+                    //Delete Documentation record if exists
+                    $documentation = $this->Documentation->findByUuid($hosttemplate['Hosttemplate']['uuid']);
+                    if (isset($documentation['Documentation']['id'])) {
+                        $this->Documentation->delete($documentation['Documentation']['id']);
+                        unset($documentation);
                     }
 
                     //Hosttemplate deleted, now we need to delete all hosts + services that are using this template

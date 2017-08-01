@@ -71,7 +71,7 @@
                     <div class="widget-body no-padding">
                         <!--						--><?php //echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-bordered">
+                            <table id="host_list" class="table table-striped table-hover table-bordered">
                                 <!--							<table id="host_list" class="table table-striped table-bordered smart-form">-->
                                 <thead>
                                 <tr>
@@ -146,7 +146,6 @@
                             <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
                                             class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span>
                             </div>
-                            <!--<div class="col-xs-12 col-md-2"><a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;"><i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?></a></div>-->
                             <div class="col-xs-12 col-md-2"><a href="javascript:void(0);" id="deleteAll"
                                                                class="txt-color-red" style="text-decoration: none;"> <i
                                             class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a></div>

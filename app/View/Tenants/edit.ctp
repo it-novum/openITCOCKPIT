@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-home"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('tenant'); ?></h2>
+        <h2><?php echo $this->action == 'edit' ? 'Edit ' : 'Add ' ?><?php echo __('tenant'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
                 <a href="javascript:void(0);" id="deleteAll" class="btn btn-danger btn-xs"

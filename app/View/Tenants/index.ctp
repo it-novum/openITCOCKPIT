@@ -66,7 +66,7 @@
                         <div class="tab-content">
                             <div class="mobile_table">
                                 <table id="datatable_fixed_column"
-                                       class="table table-striped table-bordered smart-form">
+                                       class="table table-striped table-hover table-bordered smart-form">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
