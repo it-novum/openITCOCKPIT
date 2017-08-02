@@ -32,6 +32,7 @@ app/Plugin/ArchiveMigration
 app/Plugin/AutoreportModule
 app/Plugin/AutoreportModule/webroot/tmp/*
 app/Plugin/AxiosAssyst
+app/Plugin/DiscoveryModule
 app/Plugin/DataExportModule
 app/Plugin/DesignModule
 app/Plugin/DistributeModule
@@ -43,7 +44,6 @@ app/Plugin/MassenversandDeModule
 app/Plugin/MkModule
 app/Plugin/SAPModule
 app/Plugin/MaximoModule
-app/Plugin/DesignModule
 app/Plugin/AlfrescoModule
 app/Plugin/LinuxBasicMonitoringModule
 app/Plugin/NWCModule
