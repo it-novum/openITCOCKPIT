@@ -11,7 +11,7 @@ So easy that everyone can use it: create your entire monitoring configuration wi
 ![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
 
 # System requirements
-* Ubuntu Linux (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 8 "jessie"
+* Ubuntu Linux 64 bit (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 64 bit (8 "jessie" and 9 "stretch")
 * 2 CPU cores (x86-64)
 * 2 GB RAM
 * 15 GB space
