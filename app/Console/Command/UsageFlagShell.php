@@ -37,6 +37,11 @@ App::import('Model', 'EventcorrelationModule.Eventcorrelation');
 
 class UsageFlagShell extends AppShell {
 
+    public $uses = [
+        'Host',
+        'Service',
+    ];
+
     /**
      * contains all ids of the host and services used by the modules
      * array(
@@ -91,7 +96,7 @@ class UsageFlagShell extends AppShell {
      */
     protected $usageFlagMapping = [];
 
-    public function _welcome(){
+    public function _welcome() {
         $this->hr();
         $this->out('Setting usage_flag for hosts and services');
         $this->hr();
@@ -103,8 +108,14 @@ class UsageFlagShell extends AppShell {
         $this->Service = new Service();
         $this->createModuleInstances();
 
-
         $this->getModuleHostAndServices($this->modules);
+
+        $params = $this->params;
+        if(array_key_exists('fixAssigned', $params)){
+            //fix the falsely assigned usage flags
+            $this->fixAssignedUsageFlags();
+        }
+        //set usage flags for host and services which are used in Modules
         $this->assignUsageFlagValue($this->moduleElements);
         $this->saveUsageFlag($this->moduleElements);
     }
@@ -115,7 +126,7 @@ class UsageFlagShell extends AppShell {
      */
     protected function createModuleInstances() {
         try {
-            if(empty($this->modulesToCheck)){
+            if (empty($this->modulesToCheck)) {
                 throw new Exception('No Modules given! Exit');
             }
             foreach ($this->modulesToCheck as $module) {
@@ -129,7 +140,7 @@ class UsageFlagShell extends AppShell {
                 $this->out('<success>done!</success>');
             }
         } catch (Exception $e) {
-            $this->out('<error>'.$e->getMessage().'</error>');
+            $this->out('<error>' . $e->getMessage() . '</error>');
             //$this->error($e->getMessage());
         }
     }
@@ -157,17 +168,17 @@ class UsageFlagShell extends AppShell {
                     foreach ($elementIds as $elementId) {
                         $this->{$modelName}->id = $elementId;
 
-                        if($this->{$modelName}->exists($elementId)){
+                        if ($this->{$modelName}->exists($elementId)) {
                             $result[] = $this->{$modelName}->saveField('usage_flag', $this->usageFlagMapping[$modelName][$elementId]);
-                        }else{
-                            $this->out('<warning>'.$modelName.' with ID '.$elementId.' was not found in '.Inflector::tableize($modelName).' Table</warning>');
+                        } else {
+                            $this->out('<warning>' . $modelName . ' with ID ' . $elementId . ' was not found in ' . Inflector::tableize($modelName) . ' Table</warning>');
                         }
                     }
 
                     //check if something could not be saved
                     if (!in_array(false, $result)) {
                         $datasource->commit();
-                        $this->out('<success>'.$modelName.' done!</success>');
+                        $this->out('<success>' . $modelName . ' done!</success>');
                     } else {
                         $datasource->rollback();
                         throw new Exception('something could not be saved while processing ' . Inflector::pluralize($modelName) . '. Keep calm - nothing has been written into the Database for ' . Inflector::pluralize($modelName) . '!');
@@ -207,7 +218,7 @@ class UsageFlagShell extends AppShell {
                             $this->usageFlagMapping[$modelName][$elementId] = constant(strtoupper($moduleName) . '_MODULE');
                         }
                     }
-                    $this->out('<success>'.$modelName.' done!</success>');
+                    $this->out('<success>' . $modelName . ' done!</success>');
                 }
             }
         } catch (Exception $e) {
@@ -245,7 +256,188 @@ class UsageFlagShell extends AppShell {
                 }
             }
         } catch (Exception $e) {
-           $this->out('<info>'.$e->getMessage().'</info>');
+            $this->out('<info>' . $e->getMessage() . '</info>');
         }
+    }
+
+    protected function fixAssignedUsageFlags(){
+        if(empty($this->moduleElements)){
+            $this->error('Got no IDs from modules');
+            return;
+        }
+
+        $allUsedHostIds = $this->getAllUsedHostIds();
+        $allUsedServiceIds = $this->getAllUsedServiceIds();
+
+        $allIds = [
+            'Host' => $allUsedHostIds,
+            'Service' => $allUsedServiceIds
+        ];
+
+        $IdsToReset = $this->diffWithModuleObjects($this->moduleElements, $allIds);
+
+        $this->resetUsageFlag($IdsToReset);
+    }
+
+    protected function resetUsageFlag($data = []){
+        try{
+
+            foreach($data as $modelName => $elementData){
+                $this->out('<info>Reset usage flags for '.$modelName.'</info>');
+
+                $datasource = $this->{$modelName}->getDatasource();
+                $datasource->begin();
+                foreach($elementData as $id => $element){
+                    $this->{$modelName}->id = $id;
+
+                    if ($this->{$modelName}->exists($id)) {
+                        $result[] = $this->{$modelName}->saveField('usage_flag', $element['new_flag']);
+                    } else {
+                        $this->out('<warning>' . $modelName . ' with ID ' . $id . ' was not found in ' . Inflector::tableize($modelName) . ' Table</warning>');
+                    }
+                }
+
+                //check if something could not be saved
+                if (!in_array(false, $result)) {
+                    $datasource->commit();
+                    $this->out('<success>' . $modelName . ' done!</success>');
+                } else {
+                    $datasource->rollback();
+                    throw new Exception('Something could not be saved while processing ' . Inflector::pluralize($modelName) . '. Keep calm - nothing has been written into the Database for ' . Inflector::pluralize($modelName) . '!');
+                }
+            }
+
+
+
+
+        }catch(Exception $e){
+            $this->out('<error>'.$e->getMessage().'</error>');
+            return;
+        }
+    }
+
+    /**
+     * Retreives all Host Ids where the usage_flag is greater than 0
+     * @return array
+     */
+    protected function getAllUsedHostIds() {
+        $this->out('<info>Retrieving all Host IDs</info>');
+        $hosts = $this->Host->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Host.usage_flag >' => 0
+            ],
+            'fields' => [
+                'Host.id',
+                'Host.usage_flag'
+            ]
+        ]);
+        $this->out('<success>done!</success>');
+        return Hash::combine($hosts, '{n}.Host.id', '{n}.Host');
+    }
+
+    /**
+     * Retreives all Service Ids where the usage_flag is greater than 0
+     * @return array
+     */
+    protected function getAllUsedServiceIds() {
+        $this->out('<info>Retrieving all Service IDs</info>');
+        $services = $this->Service->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.usage_flag >' => 0
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.usage_flag'
+            ]
+        ]);
+
+        $this->out('<success>done!</success>');
+        return Hash::combine($services, '{n}.Service.id', '{n}.Service');
+    }
+
+    /**
+     * returns an array with all objects of the given type which are not used by any module.
+     *
+     * @param array $moduleObjectIds
+     * @param array $allObjectIds
+     * @param $currentModelName
+     * @return array|bool array with all not used objects or false on failure
+     */
+    protected function diffWithModuleObjects($usedModuleIds = [], $allUsedIds = []) {
+        try {
+            if (empty($usedModuleIds) || empty($allUsedIds)) {
+                throw new Exception('insufficient parameters for diff with module objects');
+            }
+
+            /**
+             * @TODO the following lines look really bad .. they may need a refactoring
+             */
+
+            $diff = [];
+            foreach ($allUsedIds as $currentModelName => $data){
+                foreach ($data as $elementData){
+                    foreach ($usedModuleIds as $moduleName => $moduleData){
+                        $currentModelConstantValue = constant(strtoupper($moduleName) . '_MODULE');
+                        $idIsInModule = in_array($elementData['id'], $moduleData[$currentModelName]);
+
+                        //compare if the current element is in use by a module AND also compare Bitwise - eg. if the
+                        //element has a usage flag of 3 but is just in use by one module
+                        if(!$idIsInModule && ((int)$currentModelConstantValue) & (int)$elementData['usage_flag']){
+                            //element is not in use by the current module
+                            $diff[$moduleName][$currentModelName][$elementData['id']] = [
+                                'id' => $elementData['id'],
+                                'new_flag' => null,
+                                'current_flag' => $elementData['usage_flag']
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $mapping = [];
+            foreach ($diff as $moduleName => $data){
+                foreach ($data as $modelName => $elementData){
+                    $currentModelConstantValue = constant(strtoupper($moduleName) . '_MODULE');
+                    foreach ($elementData as $Id) {
+                        if(isset($mapping[$modelName][$Id['id']])){
+                            //sum
+                            $mapping[$modelName][$Id['id']] = $mapping[$modelName][$Id['id']] + $currentModelConstantValue;
+                        }else{
+                            $mapping[$modelName][$Id['id']] = $currentModelConstantValue;
+                        }
+                    }
+                }
+            }
+
+            $return  = [];
+            foreach ($diff as $data){
+                foreach ($data as $modelName => $elementData){
+                    foreach ($elementData as $elementKey => $elementProperties){
+                        if(!isset($return[$modelName][$elementKey])){
+                            if(!empty($mapping[$modelName][$elementKey])){
+                                $elementProperties['new_flag'] = ( $elementProperties['current_flag'] - $mapping[$modelName][$elementKey]);
+                            }
+                            $return[$modelName][$elementKey] = $elementProperties;
+                        }
+                    }
+                }
+            }
+
+            return $return;
+
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    public function getOptionParser() {
+        $parser = parent::getOptionParser();
+        $parser->addOptions([
+            'fixAssigned' => ['help' => __d('oitc_console', 'Fix Hosts and Services where a flag is assigned but not in use by any module')],
+        ]);
+
+        return $parser;
     }
 }
