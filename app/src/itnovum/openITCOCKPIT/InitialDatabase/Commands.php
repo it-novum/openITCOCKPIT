@@ -787,7 +787,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                         [
                             'id'           => '24',
                             'name'         => 'check_mk_active',
-                            'command_line' => 'python /opt/openitc/nagios/3rd/check_mk/var/check_mk/precompiled/$HOSTNAME$.py',
+                            'command_line' => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk $HOSTNAME$',
                             'command_type' => '1',
                             'human_args'   => null,
                             'uuid'         => 'e02cbbc7-aa72-42e2-b7c6-fb4fb7b6519b',
