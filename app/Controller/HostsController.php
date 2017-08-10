@@ -47,7 +47,8 @@ use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
  */
-class HostsController extends AppController {
+class HostsController extends AppController
+{
     public $layout = 'Admin.default';
     public $components = [
         'Paginator',
@@ -128,12 +129,18 @@ class HostsController extends AppController {
                         ],
                     ],
                 ],
-                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
                     [
                         '0' => [
                             'name' => 'Downtime',
                             'value' => 1,
                             'label' => 'In Downtime',
+                            'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
+                        ],
+                        '1' => [
+                            'name' => 'Not in Downtime',
+                            'value' => 1,
+                            'label' => 'Not in Downtime',
                             'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
                         ],
                     ],
@@ -179,12 +186,18 @@ class HostsController extends AppController {
                         ],
                     ],
                 ],
-                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
                     [
                         '0' => [
                             'name' => 'Downtime',
                             'value' => 1,
                             'label' => 'In Downtime',
+                            'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
+                        ],
+                        '1' => [
+                            'name' => 'Not in Downtime',
+                            'value' => 1,
+                            'label' => 'Not in Downtime',
                             'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
                         ],
                     ],
@@ -207,7 +220,8 @@ class HostsController extends AppController {
         ],
     ];
 
-    public function index(){
+    public function index()
+    {
         $HostControllerRequest = new HostControllerRequest($this->request);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
@@ -284,7 +298,8 @@ class HostsController extends AppController {
         $this->set('SatelliteNames', $SatelliteNames);
     }
 
-    public function view($id = null){
+    public function view($id = null)
+    {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -304,7 +319,7 @@ class HostsController extends AppController {
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
         if (empty($hoststatus)) {
             $hoststatus = [
-                'Hoststatus' => []  
+                'Hoststatus' => []
             ];
         }
         $host = Hash::merge($host, $hoststatus);
@@ -313,7 +328,8 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
-    public function notMonitored(){
+    public function notMonitored()
+    {
         $HostControllerRequest = new HostControllerRequest($this->request);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
@@ -363,7 +379,8 @@ class HostsController extends AppController {
         $this->set('SatelliteNames', $SatelliteNames);
     }
 
-    public function edit($id = null){
+    public function edit($id = null)
+    {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
         $userId = $this->Auth->user('id');
@@ -810,7 +827,8 @@ class HostsController extends AppController {
     }
 
 
-    public function sharing($id = null){
+    public function sharing($id = null)
+    {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $userId = $this->Auth->user('id');
 
@@ -857,7 +875,8 @@ class HostsController extends AppController {
         $this->set(compact(['host', 'containers', 'sharingContainers']));
     }
 
-    public function edit_details($host_id = null){
+    public function edit_details($host_id = null)
+    {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -980,7 +999,8 @@ class HostsController extends AppController {
         $this->set(compact(['contacts', 'contactgroups']));
     }
 
-    public function add(){
+    public function add()
+    {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         //Empty variables, get field if Model::save() fails for refill
         $_hosttemplates = [];
@@ -1326,7 +1346,8 @@ class HostsController extends AppController {
         $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands', 'containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
     }
 
-    public function getSharingContainers($containerId = null, $jsonOutput = true){
+    public function getSharingContainers($containerId = null, $jsonOutput = true)
+    {
         if ($jsonOutput) {
             $this->autoRender = false;
         }
@@ -1341,7 +1362,8 @@ class HostsController extends AppController {
 
     }
 
-    public function disabled(){
+    public function disabled()
+    {
         //$this->__unbindAssociations('Service');
         if (!isset($this->request->params['named']['BrowserContainerId'])) {
             $conditions = [
@@ -1408,7 +1430,8 @@ class HostsController extends AppController {
         $this->set('_serialize', ['disabledHosts']);
     }
 
-    public function deactivate($id = null, $return = false){
+    public function deactivate($id = null, $return = false)
+    {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -1443,7 +1466,8 @@ class HostsController extends AppController {
         return false;
     }
 
-    public function mass_deactivate($id = null){
+    public function mass_deactivate($id = null)
+    {
         $flash = '';
         foreach (func_get_args() as $host_id) {
             $host = $this->Host->findById($host_id);
@@ -1466,7 +1490,8 @@ class HostsController extends AppController {
     }
 
 
-    public function enable($id = null){
+    public function enable($id = null)
+    {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -1488,7 +1513,8 @@ class HostsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    public function delete($id = null){
+    public function delete($id = null)
+    {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -1528,7 +1554,8 @@ class HostsController extends AppController {
      * Call: mass_delete(1,5,10,15);
      * Or as HTML URL: /hosts/mass_delete/3/6/5/4/8/2/1/9
      */
-    public function mass_delete($id = null){
+    public function mass_delete($id = null)
+    {
         $msgCollect = [];
         foreach (func_get_args() as $host_id) {
             if ($this->Host->exists($host_id)) {
@@ -1565,7 +1592,8 @@ class HostsController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    public function copy($id = null){
+    public function copy($id = null)
+    {
         $userId = $this->Auth->user('id');
         $validationErrors = [];
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -2226,7 +2254,8 @@ class HostsController extends AppController {
     }
 
 
-    public function browser($id = null){
+    public function browser($id = null)
+    {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2417,7 +2446,8 @@ class HostsController extends AppController {
      *
      * @return string
      */
-    public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true){
+    public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true)
+    {
         $this->autoRender = false;
         $result = $this->Host->find('first', [
             'recursive' => -1,
@@ -2452,7 +2482,8 @@ class HostsController extends AppController {
     }
 
 
-    public function gethostbyname(){
+    public function gethostbyname()
+    {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['hostname']) && $this->request->data['hostname'] != '') {
             $ip = gethostbyname($this->request->data['hostname']);
@@ -2465,7 +2496,8 @@ class HostsController extends AppController {
         echo '';
     }
 
-    public function gethostbyaddr(){
+    public function gethostbyaddr()
+    {
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['address']) && filter_var($this->request->data['address'], FILTER_VALIDATE_IP)) {
             $fqdn = gethostbyaddr($this->request->data['address']);
@@ -2478,7 +2510,8 @@ class HostsController extends AppController {
         echo '';
     }
 
-    public function loadHosttemplate($hosttemplate_id = null){
+    public function loadHosttemplate($hosttemplate_id = null)
+    {
         $this->allowOnlyAjaxRequests();
 
         $this->loadModel('Hosttemplate');
@@ -2509,14 +2542,16 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplate']);
     }
 
-    public function addCustomMacro($counter){
+    public function addCustomMacro($counter)
+    {
         $this->allowOnlyAjaxRequests();
 
         $this->set('objecttype_id', OBJECT_HOST);
         $this->set('counter', $counter);
     }
 
-    public function loadTemplateMacros($hosttemplate_id = null){
+    public function loadTemplateMacros($hosttemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2549,7 +2584,8 @@ class HostsController extends AppController {
         $this->set('hosttemplate', $hosttemplate);
     }
 
-    public function loadParametersByCommandId($command_id = null, $hosttemplate_id = null){
+    public function loadParametersByCommandId($command_id = null, $hosttemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2582,7 +2618,8 @@ class HostsController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
-    public function loadArguments($command_id = null, $hosttemplate_id = null){
+    public function loadArguments($command_id = null, $hosttemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2614,7 +2651,8 @@ class HostsController extends AppController {
         $this->set('commandarguments', $commandarguments);
     }
 
-    public function loadArgumentsAdd($command_id = null){
+    public function loadArgumentsAdd($command_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2631,7 +2669,8 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
-    public function loadHosttemplatesArguments($hosttemplate_id = null){
+    public function loadHosttemplatesArguments($hosttemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -2665,7 +2704,8 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
-    private function _diffWithTemplate($host, $hosttemplate){
+    private function _diffWithTemplate($host, $hosttemplate)
+    {
         $diff_array = [];
         //Host-/Hosttemplate fields
         $fields = [
@@ -2733,11 +2773,13 @@ class HostsController extends AppController {
     }
 
     //This function return the controller name
-    protected function controller(){
+    protected function controller()
+    {
         return 'HostsController';
     }
 
-    public function getHostByAjax($id = null){
+    public function getHostByAjax($id = null)
+    {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2751,7 +2793,8 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
-    public function listToPdf(){
+    public function listToPdf()
+    {
         $HostControllerRequest = new HostControllerRequest($this->request);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
@@ -2775,7 +2818,7 @@ class HostsController extends AppController {
             $modelName = 'Hoststatus';
         }
 
-        if(isset($query['limit'])){
+        if (isset($query['limit'])) {
             unset($query['limit']);
         }
         $all_hosts = $this->{$modelName}->find('all', $query);
@@ -2822,7 +2865,8 @@ class HostsController extends AppController {
      * $host is from prepareForView() but ther are no names in the service contact, only ids
      * $_host is from $this->Host->findById, because of contact names
      */
-    protected function __inheritContactsAndContactgroups($host, $_host = []){
+    protected function __inheritContactsAndContactgroups($host, $_host = [])
+    {
         $diffExists = 0;
         if ($host['Host']['own_contacts'] == 0 && $host['Host']['own_contactgroups'] == 0) {
             $ContactsCombined = Hash::combine($host['Hosttemplate']['Contact'], '{n}.id', '{n}.id');
@@ -2912,7 +2956,8 @@ class HostsController extends AppController {
         ];
     }
 
-    public function ping(){
+    public function ping()
+    {
         $this->allowOnlyAjaxRequests();
         $output = [];
         exec('ping ' . escapeshellarg($this->getNamedParameter('address', '')) . ' -c 4 -W 5', $output);
@@ -2926,7 +2971,8 @@ class HostsController extends AppController {
      *    Works if $this->request->data = array(
      *        'Host' => array(
      */
-    public function addParentHosts(){
+    public function addParentHosts()
+    {
         $this->allowOnlyPostRequests();
         $data = $this->request->data;
 
@@ -2952,7 +2998,8 @@ class HostsController extends AppController {
     }
 
 
-    public function loadElementsByContainerId($container_id = null, $host_id = 0){
+    public function loadElementsByContainerId($container_id = null, $host_id = 0)
+    {
         $hosttemplate_type = GENERIC_HOST;
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -3005,11 +3052,13 @@ class HostsController extends AppController {
     }
 
     //Acl
-    public function checkcommand(){
+    public function checkcommand()
+    {
         return null;
     }
 
-    public function allocateServiceTemplateGroup($host_id = 0){
+    public function allocateServiceTemplateGroup($host_id = 0)
+    {
 
         //Form got submitted
         if (!empty($this->request->data)) {
@@ -3092,7 +3141,8 @@ class HostsController extends AppController {
 
     }
 
-    public function getServiceTemplatesfromGroup($stg_id = 0){
+    public function getServiceTemplatesfromGroup($stg_id = 0)
+    {
         if (!$this->Servicetemplategroup->exists($stg_id)) {
             throw new NotFoundException(__('Invalid Servicetemplategroup'));
         }

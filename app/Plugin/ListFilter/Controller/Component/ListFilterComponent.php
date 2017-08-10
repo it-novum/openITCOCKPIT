@@ -16,18 +16,18 @@ class ListFilterComponent extends Component
 
     public $defaultListFilter = [
         // Typ des Eingabefelds
-        'type'           => 'text',
+        'type' => 'text',
         // Wenn es ein SELECT ist, dann hier die möglichen Werte als K=>V einfügen
-        'options'        => [],
+        'options' => [],
         // Formularfeld anzeigen. Bei Specials dieses einfach auf false setzen
-        'showFormField'  => true,
+        'showFormField' => true,
         // In Selects auch einen leeren Eintrag anzeigen
-        'empty'          => true,
+        'empty' => true,
         // Wenn der Wert mit einem speziellen DB-Feld verglichen werden soll (z.B. 'DATE(Log.created)')
         'conditionField' => '',
         // Zusätzliche Optionen für $this->Form->input(). Bei betweenDates können getrennte Optionen für from/to übergeben werden
-        'inputOptions'   => [],
-        'searchType'     => 'wildcard',
+        'inputOptions' => [],
+        'searchType' => 'wildcard',
     ];
 
     public function startup(Controller $controller)
@@ -115,13 +115,13 @@ class ListFilterComponent extends Component
 
                         //list() is dangerous in php7: http://php.net/manual/de/function.list.php
                         $list = explode('.', $arg);
-                        if(isset($list[0])){
+                        if (isset($list[0])) {
                             $filter = $list[0];
                         }
-                        if(isset($list[1])){
+                        if (isset($list[1])) {
                             $model = $list[1];
                         }
-                        if(isset($list[2])){
+                        if (isset($list[2])) {
                             $field = $list[2];
                         }
                         if (substr($arg, -1) == ']') {
@@ -172,10 +172,10 @@ class ListFilterComponent extends Component
                             if ($options['searchType'] == 'wildcard') {
                                 $value = "%{$value}%";
                                 $value = str_replace('*', '%', $value);
-                                $conditionField = $conditionField.' LIKE';
+                                $conditionField = $conditionField . ' LIKE';
                             } // Zwischen 2 Daten suchen
                             else if ($options['searchType'] == 'betweenDates') {
-                                $conditionField = 'DATE('.$conditionField.')';
+                                $conditionField = 'DATE(' . $conditionField . ')';
                                 if ($betweenDate == 'from') {
                                     $operator = '>=';
                                     #$this->Controller->data['Filter'][$model][$field . '_to'] = '';
@@ -186,17 +186,17 @@ class ListFilterComponent extends Component
                                 if (!empty($options['conditionField'])) {
                                     $conditionField = $options['conditionField'];
                                 }
-                                $conditionField .= ' '.$operator;
+                                $conditionField .= ' ' . $operator;
 
                                 // Workaround für FormHelper-Notices (Ticket #218)
                                 $otherKey = $betweenDate == 'from' ? '_to' : '_from';
-                                if (empty($this->Controller->data['Filter'][$model][$field.$otherKey])) {
+                                if (empty($this->Controller->data['Filter'][$model][$field . $otherKey])) {
                                     // $this->Controller->data['Filter'][$model][$field . $otherKey] = array('year' => null, 'month' => null, 'day' => null);
                                 }
 
                                 list($year, $month, $day) = explode('-', $value);
                                 $viewValue = compact('year', 'month', 'day');
-                                $field .= '_'.$betweenDate;
+                                $field .= '_' . $betweenDate;
                             }
                             $filters[$conditionField] = $value;
                             $this->Controller->request->data['Filter'][$model][$field] = $viewValue;
@@ -246,34 +246,43 @@ class ListFilterComponent extends Component
             foreach ($filterArray as $model => $_field) {
                 foreach ($_field as $field => $value) {
                     $searchType = 'wildcard';
-                    if (isset($listFilterSettings[$model.'.'.$field]['searchType'])) {
-                        $searchType = $listFilterSettings[$model.'.'.$field]['searchType'];
+                    if (isset($listFilterSettings[$model . '.' . $field]['searchType'])) {
+                        $searchType = $listFilterSettings[$model . '.' . $field]['searchType'];
                     }
                     switch ($searchType) {
                         case 'wildcard':
                             if (is_array($value)) {
                                 foreach ($value as $_value) {
-                                    $conditions['OR'][] = $model.'.'.$field.' LIKE "%'.$_value.'%"';
+                                    $conditions['OR'][] = $model . '.' . $field . ' LIKE "%' . $_value . '%"';
                                 }
                                 debug($conditions);
                             } else {
-                                $conditions[$model.'.'.$field.' LIKE'] = '%'.$value.'%';
+                                $conditions[$model . '.' . $field . ' LIKE'] = '%' . $value . '%';
                             }
 
                             break;
 
                         case 'wildcardMulti':
-                            if(!is_array($value)){
+                            if (!is_array($value)) {
                                 $value = [$value];
                             }
-                            $conditions[$model.'.'.$field.' rlike'] = implode('|', $value);
+                            $conditions[$model . '.' . $field . ' rlike'] = implode('|', $value);
                             break;
+
                         case 'greater':
-                            $conditions[$model.'.'.$field.' >='] = $value[0];
+                            $conditions[$model . '.' . $field . ' >='] = $value[0];
                             break;
 
                         case 'lesser':
-                            $conditions[$model.'.'.$field.' <='] = $value[0];
+                            $conditions[$model . '.' . $field . ' <='] = $value[0];
+                            break;
+
+                        case 'downtime':
+                            if (isset($value[1])) {
+                                $conditions[$model . '.' . $field . ' ='] = 0;
+                            } else {
+                                $conditions[$model . '.' . $field . ' >='] = $value[0];
+                            }
                             break;
 
                         default:
@@ -285,7 +294,7 @@ class ListFilterComponent extends Component
                                 }
                                 $value = $_value;
                             }
-                            $conditions[$model.'.'.$field] = $value;
+                            $conditions[$model . '.' . $field] = $value;
                             break;
                     }
                 }

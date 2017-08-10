@@ -48,7 +48,8 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property DeletedService $DeletedService
  * @property Rrd $Rrd
  */
-class ServicesController extends AppController {
+class ServicesController extends AppController
+{
     public $layout = 'Admin.default';
     public $components = [
         'Paginator',
@@ -146,12 +147,18 @@ class ServicesController extends AppController {
                         ],
                     ],
                 ],
-                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
                     [
                         '0' => [
                             'name' => 'Downtime',
                             'value' => 1,
                             'label' => 'In Downtime',
+                            'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
+                        ],
+                        '1' => [
+                            'name' => 'Not in Downtime',
+                            'value' => 1,
+                            'label' => 'Not in Downtime',
                             'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
                         ],
                     ],
@@ -218,12 +225,18 @@ class ServicesController extends AppController {
                         ],
                     ],
                 ],
-                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                'Servicestatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
                     [
                         '0' => [
                             'name' => 'Downtime',
                             'value' => 1,
                             'label' => 'In Downtime',
+                            'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
+                        ],
+                        '1' => [
+                            'name' => 'Not in Downtime',
+                            'value' => 1,
+                            'label' => 'Not in Downtime',
                             'data' => 'Filter.Servicestatus.scheduled_downtime_depth',
                         ],
                     ],
@@ -256,7 +269,8 @@ class ServicesController extends AppController {
         ],
     ];
 
-    public function index(){
+    public function index()
+    {
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
         $User = new User($this->Auth);
@@ -348,7 +362,8 @@ class ServicesController extends AppController {
 
     }
 
-    public function view($id = null){
+    public function view($id = null)
+    {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -375,7 +390,8 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['service']);
     }
 
-    public function notMonitored(){
+    public function notMonitored()
+    {
         $this->__unbindAssociations('Host');
 
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
@@ -491,7 +507,8 @@ class ServicesController extends AppController {
         }
     }
 
-    public function disabled(){
+    public function disabled()
+    {
         $this->__unbindAssociations('Host');
 
         $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
@@ -631,7 +648,8 @@ class ServicesController extends AppController {
         }
     }
 
-    public function add(){
+    public function add()
+    {
         $userId = $this->Auth->user('id');
         $Customvariable = [];
         $customFieldsToRefill = [
@@ -827,7 +845,8 @@ class ServicesController extends AppController {
         }
     }
 
-    public function edit($id = null){
+    public function edit($id = null)
+    {
         $userId = $this->Auth->user('id');
         $this->Service->id = $id;
         if (!$this->Service->exists()) {
@@ -1267,7 +1286,8 @@ class ServicesController extends AppController {
         }
     }
 
-    public function delete($id = null){
+    public function delete($id = null)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1316,7 +1336,8 @@ class ServicesController extends AppController {
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_delete($id = null){
+    public function mass_delete($id = null)
+    {
         $msgCollect = [];
         foreach (func_get_args() as $service_id) {
             if ($this->Service->exists($service_id)) {
@@ -1362,7 +1383,8 @@ class ServicesController extends AppController {
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function copy($id = null){
+    public function copy($id = null)
+    {
         $userId = $this->Auth->user('id');
         $servicesToCopy = [];
         $servicesCantCopy = [];
@@ -1721,7 +1743,8 @@ class ServicesController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-    public function deactivate($id = null){
+    public function deactivate($id = null)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1735,7 +1758,8 @@ class ServicesController extends AppController {
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function mass_deactivate($id = null){
+    public function mass_deactivate($id = null)
+    {
         foreach (func_get_args() as $service_id) {
             if ($this->Service->exists($service_id)) {
                 $service = $this->Service->findById($service_id);
@@ -1746,13 +1770,15 @@ class ServicesController extends AppController {
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    protected function __disable($service){
+    protected function __disable($service)
+    {
         $service['Service']['disabled'] = 1;
 
         return $this->Service->save($service);
     }
 
-    public function enable($id = null){
+    public function enable($id = null)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -1767,7 +1793,8 @@ class ServicesController extends AppController {
         $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
     }
 
-    public function loadContactsAndContactgroups($container_id = null){
+    public function loadContactsAndContactgroups($container_id = null)
+    {
         $this->allowOnlyAjaxRequests();
 
         $result = [
@@ -1793,7 +1820,8 @@ class ServicesController extends AppController {
 
     }
 
-    public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null){
+    public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null)
+    {
         $this->allowOnlyAjaxRequests();
 
         $test = [];
@@ -1832,7 +1860,8 @@ class ServicesController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
-    public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null){
+    public function loadNagParametersByCommandId($command_id = null, $servicetemplate_id = null)
+    {
         $this->allowOnlyAjaxRequests();
 
         $test = [];
@@ -1871,7 +1900,8 @@ class ServicesController extends AppController {
         $this->set(compact('commandarguments'));
     }
 
-    public function loadArgumentsAdd($command_id = null){
+    public function loadArgumentsAdd($command_id = null)
+    {
         $this->allowOnlyAjaxRequests();
         $this->loadModel('Commandargument');
 
@@ -1886,7 +1916,8 @@ class ServicesController extends AppController {
         $this->render('load_arguments');
     }
 
-    public function loadServicetemplatesArguments($servicetemplate_id = null){
+    public function loadServicetemplatesArguments($servicetemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1918,7 +1949,8 @@ class ServicesController extends AppController {
         $this->render('load_arguments');
     }
 
-    public function loadTemplateData($servicetemplate_id = null){
+    public function loadTemplateData($servicetemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1944,14 +1976,16 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['servicetemplate']);
     }
 
-    public function addCustomMacro($counter){
+    public function addCustomMacro($counter)
+    {
         $this->allowOnlyAjaxRequests();
 
         $this->set('objecttype_id', OBJECT_SERVICE);
         $this->set('counter', $counter);
     }
 
-    public function loadServices($host_id){
+    public function loadServices($host_id)
+    {
         /* $this->allowOnlyAjaxRequests(); */
 
         $this->loadModel('Host');
@@ -1960,7 +1994,8 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['services']);
     }
 
-    public function loadTemplateMacros($servicetemplate_id = null){
+    public function loadTemplateMacros($servicetemplate_id = null)
+    {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -1993,7 +2028,8 @@ class ServicesController extends AppController {
         $this->set('servicetemplate', $servicetemplate);
     }
 
-    function browser($id = null){
+    function browser($id = null)
+    {
         $browseByUUID = false;
         $conditionsToFind = ['Service.id' => $id];
         if (preg_match('/\-/', $id)) {
@@ -2153,7 +2189,8 @@ class ServicesController extends AppController {
 	debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
 	*/
 
-    public function servicesByHostId($host_id = null){
+    public function servicesByHostId($host_id = null)
+    {
         $this->autoRender = false;
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
@@ -2184,7 +2221,8 @@ class ServicesController extends AppController {
         $this->render('load_services');
     }
 
-    public function serviceList($host_id){
+    public function serviceList($host_id)
+    {
         if (!$this->Host->exists($host_id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2298,7 +2336,8 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['all_services']);
     }
 
-    public function grapherSwitch($id){
+    public function grapherSwitch($id)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2316,7 +2355,8 @@ class ServicesController extends AppController {
         return $this->redirect('/services/grapher/' . $service['Service']['id']);
     }
 
-    public function grapher($id){
+    public function grapher($id)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2351,11 +2391,12 @@ class ServicesController extends AppController {
         }
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        $showThresholds = is_null($this->Session->read('service_thresholds_'.$id)) ? '1' : $this->Session->read('service_thresholds_'.$id);
+        $showThresholds = is_null($this->Session->read('service_thresholds_' . $id)) ? '1' : $this->Session->read('service_thresholds_' . $id);
         $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'showThresholds']));
     }
 
-    public function grapherTemplate($id){
+    public function grapherTemplate($id)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2378,12 +2419,13 @@ class ServicesController extends AppController {
         $this->set(compact(['service', 'servicestatus', 'commandUuid', 'docuExists']));
     }
 
-    public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds) {
+    public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Session->write('service_thresholds_'.$id, $showThresholds);
+        $this->Session->write('service_thresholds_' . $id, $showThresholds);
 
         //Avoid RRD errors
         if ($newStart > $newEnd) {
@@ -2412,7 +2454,7 @@ class ServicesController extends AppController {
         $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             if ($rrd_structure_datasource['ds'] == $ds):
-                if($showThresholds !== '1') {
+                if ($showThresholds !== '1') {
                     unset($rrd_structure_datasource['crit']);
                     unset($rrd_structure_datasource['warn']);
                 }
@@ -2442,7 +2484,8 @@ class ServicesController extends AppController {
         endforeach;
     }
 
-    public function grapherZoomTemplate($id, $ds, $newStart, $newEnd, $commandUuid){
+    public function grapherZoomTemplate($id, $ds, $newStart, $newEnd, $commandUuid)
+    {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
@@ -2498,7 +2541,8 @@ class ServicesController extends AppController {
         endforeach;
     }
 
-    public function createGrapherErrorPng($error){
+    public function createGrapherErrorPng($error)
+    {
         $img = imagecreatetruecolor(947, 173);
         imagesavealpha($img, true);
         $background = imagecolorallocatealpha($img, 255, 110, 110, 0);
@@ -2520,7 +2564,8 @@ class ServicesController extends AppController {
      *
      * @return string
      */
-    function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true){
+    function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true)
+    {
         $this->autoRender = false;
         $result = $this->Service->find('first', [
             'recursive' => -1,
@@ -2554,7 +2599,8 @@ class ServicesController extends AppController {
         return '';
     }
 
-    public function getSelectedServices($ids){
+    public function getSelectedServices($ids)
+    {
         $servicestatus = $this->Service->find('all', [
             'recursive' => -1,
             'fields' => [
@@ -2569,6 +2615,7 @@ class ServicesController extends AppController {
                 'Servicestatus.last_state_change',
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.no_downtime_depth',
                 'Servicestatus.output',
             ],
             'conditions' => [
@@ -2649,7 +2696,8 @@ class ServicesController extends AppController {
         return $ret;
     }
 
-    public function listToPdf(){
+    public function listToPdf()
+    {
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
@@ -2714,7 +2762,8 @@ class ServicesController extends AppController {
      * $service is from prepareForView() but ther are no names in the service contact, only ids
      * $_service is from $this->Service->findById, because of contact names
      */
-    protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups){
+    protected function __inheritContactsAndContactgroups($service, $serviceContactsAndContactgroups)
+    {
         if (empty($serviceContactsAndContactgroups['Contact']) && empty($serviceContactsAndContactgroups['Contactgroup'])) {
 
             //Check servicetemplate for contacts
@@ -2760,7 +2809,8 @@ class ServicesController extends AppController {
     /**
      * @return array
      */
-    protected function getChangelogDataForAdd(){
+    protected function getChangelogDataForAdd()
+    {
         $changelogData = [];
         if ($this->request->data('Service.Contact')) {
             if ($contactsForChangelog = $this->Contact->find('list', [
@@ -2924,7 +2974,8 @@ class ServicesController extends AppController {
     }
 
     //Acl
-    public function checkcommand(){
+    public function checkcommand()
+    {
         return null;
     }
 }
