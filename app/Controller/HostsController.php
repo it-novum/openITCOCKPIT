@@ -127,6 +127,12 @@ class HostsController extends AppController
                             'label' => 'Acknowledged',
                             'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
                         ],
+                        '0' => [
+                            'name' => 'Not Acknowledged',
+                            'value' => 1,
+                            'label' => 'Not Acknowledged',
+                            'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                        ],
                     ],
                 ],
                 'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
@@ -182,6 +188,12 @@ class HostsController extends AppController
                             'name' => 'Acknowledged',
                             'value' => 1,
                             'label' => 'Acknowledged',
+                            'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                        ],
+                        '0' => [
+                            'name' => 'Not Acknowledged',
+                            'value' => 1,
+                            'label' => 'Not Acknowledged',
                             'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
                         ],
                     ],
