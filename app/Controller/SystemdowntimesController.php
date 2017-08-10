@@ -116,7 +116,8 @@ class SystemdowntimesController extends AppController
     public function addHostdowntime()
     {
         $selected = $this->request->data('Systemdowntime.object_id');
-
+        $preselectedDowntimetype=$this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
         $customFildsToRefill = [
