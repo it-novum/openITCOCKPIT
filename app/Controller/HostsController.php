@@ -2406,6 +2406,9 @@ class HostsController extends AppController {
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
         $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+
+        $preselectedDowntimetype=$this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
     }
 
     /**
