@@ -98,7 +98,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
+                                    <th colspan="2" class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
                                         echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-user fa-lg"></i></th>
                                     <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"></i></th>
@@ -116,6 +116,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 <?php $tmp_host_name = null; ?>
                                 <?php foreach ($all_services as $service): ?>
                                     <?php
+                                    $Service = new Service($service);
+                                    $Host = new Host($service);
                                     $allowEdit = false;
                                     if ($hasRootPrivileges === true):
                                         $allowEdit = true;
@@ -131,7 +133,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         $tmp_host_name = $service['Host']['name'];
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="12">
+                                            <td class="bg-color-lightGray" colspan="13">
                                                 <?php
                                                 $hostHref = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser')):
@@ -152,6 +154,21 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <?php endif; ?>
                                     <tr>
+                                        <td class="text-center width-5">
+                                            <?php
+                                            $serviceName = $service['Service']['name'];
+                                            if ($serviceName === null || $serviceName === ''):
+                                                $serviceName = $service['Servicetemplate']['name'];
+                                            endif;
+                                            ?>
+                                            <?php if ($allowEdit): ?>
+                                                <input type="checkbox" class="massChange"
+                                                       servicename="<?php echo $serviceName; ?>"
+                                                       value="<?php echo $service['Service']['id']; ?>"
+                                                       uuid="<?php echo $service['Service']['uuid']; ?>"
+                                                       host-uuid="<?php echo $service['Host']['uuid']; ?>">
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="text-center">
                                             <?php
                                             $href = 'javascript:void(0);';
@@ -185,11 +202,6 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         </td>
                                         <td>
                                             <?php
-                                            $serviceName = $service['Service']['name'];
-                                            if ($serviceName === null || $serviceName === ''):
-                                                $serviceName = $service['Servicetemplate']['name'];
-                                            endif;
-
                                             if ($this->Acl->hasPermission('browser')):?>
                                                 <a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
                                             <?php else: ?>
@@ -252,7 +264,34 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 </center>
                             </div>
                         <?php endif; ?>
+                        <div class="padding-top-10"></div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-2 text-muted">
+                                <center><span id="selectionCount"></span></center>
+                            </div>
+                            <div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i
+                                            class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span>
+                            </div>
+                            <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
+                                            class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span>
+                            </div>
 
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('copy')): ?>
+                                    <a href="javascript:void(0);" id="copyAll">
+                                        <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                    <a href="javascript:void(0);" id="deleteAll" class="txt-color-red"
+                                       style="text-decoration: none;"> <i
+                                                class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                            <!-- hidden fields for multi language -->
+                        </div>
                         <div style="padding: 5px 10px;">
                             <div class="row">
                                 <div class="col-sm-6">
