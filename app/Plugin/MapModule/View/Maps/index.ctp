@@ -31,34 +31,17 @@
             <?php echo __('Map'); ?>
             <span>>
                 <?php echo __('Overview'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
 
-    <!-- row -->
     <div class="row">
 
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
-                <!-- widget options:
-                usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                data-widget-colorbutton="false"
-                data-widget-editbutton="false"
-                data-widget-togglebutton="false"
-                data-widget-deletebutton="false"
-                data-widget-fullscreenbutton="false"
-                data-widget-custombutton="false"
-                data-widget-collapsed="true"
-                data-widget-sortable="false"
-
-                -->
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('New'), '/'.$this->params['plugin'].'/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
@@ -74,14 +57,8 @@
                     <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
                     <h2>Maps </h2>
                 </header>
-                <!-- widget div-->
                 <div>
-                    <!-- widget edit box -->
-                    <div class="jarviswidget-editbox">
-                        <!-- This area used as dropdown edit box -->
-                    </div>
-                    <!-- end widget edit box -->
-                    <!-- widget content -->
+
                     <div class="widget-body no-padding">
                         <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false, true); ?>
                         <table id="contactgroup_list" class="table table-striped table-hover table-bordered smart-form" style="">
@@ -101,9 +78,9 @@
                             <?php foreach ($all_maps as $map): ?>
                                 <?php
                                 $myContainers = [];
-                                foreach ($map['Container'] as $mContainer) {
+                                foreach ($map['Container'] as $mContainer):
                                     $myContainers[] = $mContainer['id'];
-                                }
+                                endforeach;
                                 $allowEdit = $this->Acl->isWritableContainer($myContainers); ?>
                                 <tr>
                                     <td class="text-center">
@@ -171,7 +148,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
@@ -184,10 +161,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- end widget div -->
             </div>
-            <!-- end widget -->
     </div>
-    <!-- end row -->
 </section>
-<!-- end widget grid -->
