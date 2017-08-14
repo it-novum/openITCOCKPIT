@@ -44,7 +44,7 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('New'), '/'.$this->params['plugin'].'/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                        <?php echo $this->Html->link(__('New'), '/' . $this->params['plugin'] . '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
                         <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
                         <?php
                         if ($isFilter):
@@ -60,8 +60,9 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false, true); ?>
-                        <table id="contactgroup_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false, true); ?>
+                        <table id="contactgroup_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
@@ -98,7 +99,7 @@
                                     <td>
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                <a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"
+                                                <a href="/<?php echo $this->params['plugin'] . '/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"
                                                    class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php else: ?>
                                                 <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
@@ -109,18 +110,19 @@
                                             <ul class="dropdown-menu pull-right">
                                                 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i
+                                                        <a href="/<?php echo $this->params['plugin'] . '/mapeditors'; ?>/edit/<?php echo $map['Map']['id']; ?>"><i
                                                                     class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i
-                                                                class="fa fa-edit"></i> <?php echo __('Edit'); ?></a>
+                                                        <a href="/<?php echo $this->params['plugin'] . '/' . $this->params['controller']; ?>/edit/<?php echo $map['Map']['id']; ?>"><i
+                                                                    class="fa fa-edit"></i> <?php echo __('Edit'); ?>
+                                                        </a>
                                                     </li>
                                                     <li class="divider"></li>
                                                 <?php endif; ?>
                                                 <li>
-                                                    <a href="/<?php echo $this->params['plugin'].'/mapeditors'; ?>/view/<?php echo $map['Map']['id']; ?>"><i
+                                                    <a href="/<?php echo $this->params['plugin'] . '/mapeditors'; ?>/view/<?php echo $map['Map']['id']; ?>"><i
                                                                 class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                                 </li>
                                                 <li>
@@ -131,7 +133,7 @@
                                                 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                     <li class="divider"></li>
                                                     <li>
-                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'maps', 'action' => 'delete', $map['Map']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'maps', 'action' => 'delete', $map['Map']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                     </li>
                                                 <?php endif; ?>
                                             </ul>
