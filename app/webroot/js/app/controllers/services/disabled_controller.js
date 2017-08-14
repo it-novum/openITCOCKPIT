@@ -22,7 +22,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.ServicesNotMonitoredController = Frontend.AppController.extend({
+App.Controllers.ServicesDisabledController = Frontend.AppController.extend({
 
 
     $table: null,

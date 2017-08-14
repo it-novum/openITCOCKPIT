@@ -311,4 +311,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
                 </div>
             </div>
     </div>
+    <input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>"/>
+    <input type="hidden" id="delete_message_h2"
+           value="<?php echo __('Do you really want delete the selected services?'); ?>"/>
+    <input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>
+    <input type="hidden" id="message_no" value="<?php echo __('No'); ?>"/>
 </section>
