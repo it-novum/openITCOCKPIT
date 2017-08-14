@@ -31,7 +31,7 @@
             <?php echo __('Map'); ?>
             <span>>
                 <?php echo __('Rotations'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -43,7 +43,7 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('New'), '/'.$this->params['plugin'].'/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                        <?php echo $this->Html->link(__('New'), '/' . $this->params['plugin'] . '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
                         <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
                         <?php
                         if ($isFilter):
@@ -55,22 +55,13 @@
                     <h2 class="hidden-mobile"><?php echo __('Map rotations'); ?></h2>
                 </header>
 
-                <!-- widget div-->
                 <div>
 
-                    <!-- widget edit box -->
-                    <div class="jarviswidget-editbox">
-                        <!-- This area used as dropdown edit box -->
-
-                    </div>
-                    <!-- end widget edit box -->
-
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> '.__('search'), false, false, true); ?>
-                        <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false, true); ?>
                         <div class="mobile_table">
-                            <table id="datatable_fixed_column" class="table table-striped table-hover table-bordered smart-form">
+                            <table id="datatable_fixed_column"
+                                   class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -90,7 +81,7 @@
                                         <td><?php echo h($rotation['Rotation']['interval']); ?></td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="/<?php echo $this->params['plugin'].'/'.$this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>"
+                                                <a href="/<?php echo $this->params['plugin'] . '/' . $this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>"
                                                    class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
@@ -125,7 +116,7 @@
                                                     </li>
                                                     <li class="divider"></li>
                                                     <li>
-                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'rotations', 'action' => 'delete', $rotation['Rotation']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'rotations', 'action' => 'delete', $rotation['Rotation']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -148,7 +139,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="dataTables_info" style="line-height: 32px;"
-                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing').' {:page} '.__('of').' {:pages}, '.__('paginator.overall').' {:count} '.__('entries')); ?></div>
+                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('paginator.showing') . ' {:page} ' . __('of') . ' {:pages}, ' . __('paginator.overall') . ' {:count} ' . __('entries')); ?></div>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <div class="dataTables_paginate paging_bootstrap">
