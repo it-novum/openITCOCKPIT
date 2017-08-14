@@ -24,8 +24,8 @@
 //	confirmation.
 
 use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-class RecurringDowntimesTask extends AppShell implements CronjobInterface
-{
+
+class RecurringDowntimesTask extends AppShell implements CronjobInterface {
     public $uses = [
         'Systemsetting',
         'Systemdowntimes',
@@ -37,8 +37,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
 
     public $_systemsettings = [];
 
-    function execute($quiet = false)
-    {
+    function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
 
@@ -47,7 +46,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         $this->out('Create recurring downtimes...', false);
 
         if (!file_exists($this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'])) {
-            $this->out('<error>Error: File '.$this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'].' does not exists!</error>');
+            $this->out('<error>Error: File ' . $this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'] . ' does not exists!</error>');
             $this->hr();
 
             return false;
@@ -58,8 +57,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         $this->hr();
     }
 
-    public function recurringDowntimes()
-    {
+    public function recurringDowntimes() {
         $all_downtimes = $this->Systemdowntimes->find('all');
         $future =
         $statusdat = $this->parseStatusDat();
@@ -86,7 +84,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                     if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
                         switch ($downtime['Systemdowntimes']['objecttype_id']) {
                             case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
+                                $host = $this->Host->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Host.id',
+                                        'Host.uuid'
+                                    ]
+                                ]);
                                 if (empty($host)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -95,7 +102,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostDowntime([
                                     'hostUuid'     => $host['Host']['uuid'],
                                     'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'       => $downtime['Systemdowntimes']['author'],
                                     'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -103,7 +110,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
+                                $hostgroup = $this->Hostgroup->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Hostgroup.id',
+                                        'Hostgroup.uuid'
+                                    ]
+                                ]);
                                 if (empty($hostgroup)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -112,7 +128,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostgroupDowntime([
                                     'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
                                     'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'        => $downtime['Systemdowntimes']['author'],
                                     'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -120,7 +136,24 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
+                                $service = $this->Service->find('first', [
+                                    'recursive'  => -1,
+                                    'contain'    => [
+                                        'Host' => [
+                                            'fields' => [
+                                                'Host.id',
+                                                'Host.uuid'
+                                            ]
+                                        ]
+                                    ],
+                                    'conditions' => [
+                                        'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Service.id',
+                                        'Service.uuid'
+                                    ]
+                                ]);
                                 if (empty($service)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -132,7 +165,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                     'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
                                     'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                 ]);
                                 break;
                         }
@@ -148,7 +181,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                     if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
                         switch ($downtime['Systemdowntimes']['objecttype_id']) {
                             case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
+                                $host = $this->Host->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Host.id',
+                                        'Host.uuid'
+                                    ]
+                                ]);
                                 if (empty($host)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -157,7 +199,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostDowntime([
                                     'hostUuid'     => $host['Host']['uuid'],
                                     'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'       => $downtime['Systemdowntimes']['author'],
                                     'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -165,7 +207,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
+                                $hostgroup = $this->Hostgroup->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Hostgroup.id',
+                                        'Hostgroup.uuid'
+                                    ]
+                                ]);
                                 if (empty($hostgroup)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -174,7 +225,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostgroupDowntime([
                                     'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
                                     'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'        => $downtime['Systemdowntimes']['author'],
                                     'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -182,7 +233,24 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
+                                $service = $this->Service->find('first', [
+                                    'recursive'  => -1,
+                                    'contain'    => [
+                                        'Host' => [
+                                            'fields' => [
+                                                'Host.id',
+                                                'Host.uuid'
+                                            ]
+                                        ]
+                                    ],
+                                    'conditions' => [
+                                        'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Service.id',
+                                        'Service.uuid'
+                                    ]
+                                ]);
                                 if (empty($service)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -194,7 +262,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                     'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
                                     'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                 ]);
                                 break;
                         }
@@ -210,7 +278,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                     if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
                         switch ($downtime['Systemdowntimes']['objecttype_id']) {
                             case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
+                                $host = $this->Host->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Host.id',
+                                        'Host.uuid'
+                                    ]
+                                ]);
                                 if (empty($host)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -219,7 +296,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostDowntime([
                                     'hostUuid'     => $host['Host']['uuid'],
                                     'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'       => $downtime['Systemdowntimes']['author'],
                                     'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -227,7 +304,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
+                                $hostgroup = $this->Hostgroup->find('first', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Hostgroup.id',
+                                        'Hostgroup.uuid'
+                                    ]
+                                ]);
                                 if (empty($hostgroup)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -236,7 +322,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 $this->Externalcommand->setHostgroupDowntime([
                                     'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
                                     'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     'author'        => $downtime['Systemdowntimes']['author'],
                                     'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
@@ -244,7 +330,24 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                 break;
 
                             case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
+                                $service = $this->Service->find('first', [
+                                    'recursive'  => -1,
+                                    'contain'    => [
+                                        'Host' => [
+                                            'fields' => [
+                                                'Host.id',
+                                                'Host.uuid'
+                                            ]
+                                        ]
+                                    ],
+                                    'conditions' => [
+                                        'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Service.id',
+                                        'Service.uuid'
+                                    ]
+                                ]);
                                 if (empty($service)) {
                                     // The object for recurring downtime was deleted, so we delete the downtime
                                     $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
@@ -256,7 +359,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                                     'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
                                     'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
                                     'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
+                                    'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                 ]);
                                 break;
                         }
@@ -268,10 +371,9 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         }
     }
 
-    public function checkStatusDatForDowntime($statusdat, $downtime_id, $comment)
-    {
+    public function checkStatusDatForDowntime($statusdat, $downtime_id, $comment) {
         foreach ($statusdat as $record) {
-            if ($record['comment'] == 'AUTO['.$downtime_id.']: '.$comment) {
+            if ($record['comment'] == 'AUTO[' . $downtime_id . ']: ' . $comment) {
                 return true;
             }
         }
@@ -279,8 +381,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         return false;
     }
 
-    public function parseStatusDat()
-    {
+    public function parseStatusDat() {
         $this->monitoringLog = $this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'];
         $return = [];
         $saveContent = false;
