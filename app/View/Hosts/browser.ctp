@@ -384,6 +384,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                    value="<?php echo $host['Host']['uuid']; ?>"><br/>
                             <strong><?php echo __('IP address'); ?>:</strong>
                             <code><?php echo h($host['Host']['address']); ?></code><br/>
+                            <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
                             <strong><?php echo __('Description'); ?>:</strong><br/>
                             <i class="txt-color-blue"><?php echo h($host['Host']['description']); ?></i>
                         </div>
