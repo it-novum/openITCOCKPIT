@@ -496,6 +496,7 @@ class InstantreportsController extends AppController
         $instantReportDetails['onlyHosts'] = $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS;
         $instantReportDetails['onlyServices'] = $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES;
         $instantReportDetails['summary'] = $instantReport['Instantreport']['summary'] === '1';
+        $instantReportDetails['name'] = $instantReport['Instantreport']['name'];
         $instantReportData = [];
 
         if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
@@ -912,7 +913,7 @@ class InstantreportsController extends AppController
                     'download'           => false,
                     'binary'             => $binary_path,
                     'orientation'        => 'portrait',
-                    'filename'           => 'InstantReport.pdf',
+                    'filename'           => sprintf('InstantReport_%s.pdf', $instantReport['Instantreport']['name']),
                     'no-pdf-compression' => '*',
                     'image-dpi'          => '900',
                     'background'         => true,
@@ -1238,8 +1239,13 @@ class InstantreportsController extends AppController
     }
 
     public function createPdfReport(){
+        $instantReportDetails = $this->Session->read('instantReportDetails');
+        $reportName = '';
+        if(isset($instantReportDetails['name'])){
+            $reportName = $instantReportDetails['name'];
+        }
         $this->set('instantReportData', $this->Session->read('instantReportData'));
-        $this->set('instantReportDetails', $this->Session->read('instantReportDetails'));
+        $this->set('instantReportDetails', $instantReportDetails);
         if ($this->Session->check('instantReportData')) {
             $this->Session->delete('instantReportData');
         }
@@ -1263,7 +1269,7 @@ class InstantreportsController extends AppController
             'download'           => true,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
-            'filename'           => 'Instantreport.pdf',
+            'filename'           => sprintf('Instantreport_%s.pdf', $reportName),
             'no-pdf-compression' => '*',
             'image-dpi'          => '900',
             'background'         => true,
