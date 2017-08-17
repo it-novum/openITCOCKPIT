@@ -190,6 +190,9 @@ class AutomapsController extends AppController
                 'Host.disabled'                  => 0,
                 'Host.name REGEXP'               => $automap['Automap']['host_regex'],
             ],
+            'order' => [
+                'Host.name ASC'
+            ]
         ]);
 
         $services = $this->Service->find('all', [
@@ -251,6 +254,10 @@ class AutomapsController extends AppController
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex'],
                 $conditions,
             ],
+            'order' => [
+                'Host.name ASC',
+                ' IF(Service.name IS NULL, Servicetemplate.name, Service.name) ASC'
+            ]
         ]);
 
         $username = $this->Auth->user('full_name');
