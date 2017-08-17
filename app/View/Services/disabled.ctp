@@ -92,7 +92,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
+                                    <th colspan="2" class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
                                         echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-user fa-lg"></i></th>
                                     <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"></i></th>
@@ -109,6 +109,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 <tbody>
                                 <?php $tmp_host_name = null; ?>
                                 <?php foreach ($all_services as $service):
+                                    $Service = new Service($service);
+                                    $Host = new Host($service);
                                     $allowEdit = false;
                                     if ($hasRootPrivileges === true):
                                         $allowEdit = true;
@@ -131,7 +133,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                             endif;
                                             ?>
                                             <td class="bg-color-lightGray"
-                                                colspan="12"><?php echo $this->Status->humanHostStatus($service['Host']['uuid'], $hostHref, [$service['Host']['uuid'] => ['Hoststatus' => ['current_state' => $service['Hoststatus']['current_state']]]])['html_icon']; ?>
+                                                colspan="13"><?php echo $this->Status->humanHostStatus($service['Host']['uuid'], $hostHref, [$service['Host']['uuid'] => ['Hoststatus' => ['current_state' => $service['Hoststatus']['current_state']]]])['html_icon']; ?>
                                                 <a class="padding-left-5 txt-color-blueDark"
                                                    href="<?php echo $hostHref; ?>"><?php echo h($service['Host']['name']); ?>
                                                     (<?php echo h($service['Host']['address']); ?>)</a>
@@ -146,6 +148,21 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <?php endif; ?>
                                     <tr>
+                                        <td class="text-center width-5">
+                                            <?php
+                                            $serviceName = $service['Service']['name'];
+                                            if ($serviceName === null || $serviceName === ''):
+                                                $serviceName = $service['Servicetemplate']['name'];
+                                            endif;
+                                            ?>
+                                            <?php if ($allowEdit): ?>
+                                                <input type="checkbox" class="massChange"
+                                                       servicename="<?php echo $serviceName; ?>"
+                                                       value="<?php echo $service['Service']['id']; ?>"
+                                                       uuid="<?php echo $service['Service']['uuid']; ?>"
+                                                       host-uuid="<?php echo $service['Host']['uuid']; ?>">
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="text-center">
                                             <?php
                                             $href = 'javascript:void(0);';
@@ -242,7 +259,34 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 </center>
                             </div>
                         <?php endif; ?>
+                        <div class="padding-top-10"></div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-2 text-muted">
+                                <center><span id="selectionCount"></span></center>
+                            </div>
+                            <div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i
+                                            class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span>
+                            </div>
+                            <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
+                                            class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span>
+                            </div>
 
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('copy')): ?>
+                                    <a href="javascript:void(0);" id="copyAll">
+                                        <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                    <a href="javascript:void(0);" id="deleteAll" class="txt-color-red"
+                                       style="text-decoration: none;"> <i
+                                                class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                            <!-- hidden fields for multi language -->
+                        </div>
                         <div style="padding: 5px 10px;">
                             <div class="row">
                                 <div class="col-sm-6">
@@ -262,4 +306,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
                 </div>
             </div>
     </div>
+    <input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>"/>
+    <input type="hidden" id="delete_message_h2"
+           value="<?php echo __('Do you really want delete the selected services?'); ?>"/>
+    <input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>
+    <input type="hidden" id="message_no" value="<?php echo __('No'); ?>"/>
 </section>
