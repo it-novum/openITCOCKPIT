@@ -52,6 +52,7 @@ class GearmanWorkerShell extends AppShell
     public $tasks = [
         'NagiosExport',
         'DefaultNagiosConfig',
+        'IdoitModule.Synchronisation',
     ];
 
     public function main()
@@ -594,6 +595,10 @@ class GearmanWorkerShell extends AppShell
                     'Export.task' => 'export_sync_sat_config_'.$payload['Satellite']['Satellite']['id'],
                 ]);
                 $return = ['task' => $payload['task']];
+                break;
+
+            case 'idoit_sync':
+                $this->Synchronisation->runImport($payload['isCron'], $payload['authUser']);
                 break;
 
             case 'make_sql_backup':
