@@ -662,6 +662,25 @@ class GearmanWorkerShell extends AppShell
 
                 $return = $state;
                 break;
+            case 'NmapDiscovery':
+                $nmapScan = $this->loadModel('DiscoveryModule.NmapScan');
+                if(!empty($payload['scanId'])){
+                    $nmapScan->id = $payload['scanId'];
+                }
+
+                $discoveryResult = null;
+                if(!empty($payload['path']) && !empty($payload['filename']) && !empty($payload['cidrAddress'])) {
+                    $discoveryResult = shell_exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['cidrAddress']));
+                }
+                if(!empty($discoveryResult)){
+                    if($nmapScan->saveField('finished', 1)){
+                        echo 'NMAP Scan finished successfully';
+                    }else{
+                        echo 'NMAP Scan cant be finished';
+                    }
+                }
+                $return = [$discoveryResult];
+                break;
         }
 
         return serialize($return);
