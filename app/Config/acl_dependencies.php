@@ -68,6 +68,7 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
+                'ajaxGetByTerm'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -110,6 +111,8 @@ $config = [
             ],
             'Hosts'            => [
                 'view',
+                'ajaxGetByTerm',
+                'ajaxGetGenericByTerm'
             ]
         ],
         'dependencies'   => [
@@ -176,7 +179,7 @@ $config = [
                 'delete'   => ['mass_delete'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxGetByTerm', 'ajaxGetGenericByTerm'],
+                'index'      => ['getHostByAjax', 'listToPdf'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -215,7 +218,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate' => ['mass_deactivate'],
-                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'ajaxGetByTerm'],
+                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
                 'browser'    => ['servicesByHostId', 'longOutputByUuid'],
                 'delete'     => ['mass_delete'],
                 'add'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],

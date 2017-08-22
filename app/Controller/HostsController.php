@@ -3151,7 +3151,7 @@ class HostsController extends AppController {
             foreach($hosts as $hostId => $hostName){
                 $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
             }
-            return $returnHtml;
+            return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
         }
     }
 }

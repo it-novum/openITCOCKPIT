@@ -199,7 +199,7 @@ class ServicegroupsController extends AppController
         } else {
             $containerIds[] = $this->request->data['Container']['parent_id'];
         }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds, true);
 
         array_unshift($containerIds, ROOT_CONTAINER);
         $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], $servicegroup['Service']);

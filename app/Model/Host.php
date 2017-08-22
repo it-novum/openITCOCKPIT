@@ -255,7 +255,8 @@ class Host extends AppModel {
                 'Host.id',
                 'Host.name',
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit' => self::ITN_AJAX_LIMIT,
+            'group' => 'Host.id'
         ]);
 
         $formattedHosts = [];

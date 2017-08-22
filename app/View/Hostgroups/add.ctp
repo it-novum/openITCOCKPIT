@@ -67,7 +67,7 @@
                 'multiple' => true,
                 'style' => 'width:100%;',
                 'label' => __('Hosts'),
-                'data-placeholder' => __('Please choose a host'),
+                'data-placeholder' => __('Please, start typing...'),
                 'itn-ajax' => '/Hosts/ajaxGetByTerm',
                 'itn-ajax-container' => '#ContainerParentId',
             ]);

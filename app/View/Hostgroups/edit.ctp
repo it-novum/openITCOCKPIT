@@ -98,7 +98,7 @@
                     'multiple'         => true,
                     'style'            => 'width:100%;',
                     'label'            => __('Hosts'),
-                    'data-placeholder' => __('Please choose a host'),
+                    'data-placeholder' => __('Please, start typing...'),
                     'selected'         => $this->request->data['Host'],
                     'itn-ajax' => '/Hosts/ajaxGetByTerm',
                     'itn-ajax-container' => '#ContainerParentId',

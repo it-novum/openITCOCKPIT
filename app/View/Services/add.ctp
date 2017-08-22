@@ -91,7 +91,7 @@ $notification_settings = [
                             <?php
                             echo $this->Form->input('Service.host_id', [
                                 'options' => $this->Html->chosenPlaceholder($hosts),
-                                'data-placeholder' => __('Please select...'),
+                                'data-placeholder' => __('Please, start typing...'),
                                 'class' => 'chosen',
                                 'label' => ['text' => __('Host'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
