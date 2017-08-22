@@ -29,7 +29,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         'Rrd',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
-        'GrafanaModule.GrafanaDashboard'
+        'GrafanaModule.GrafanaDashboard',
+        'Proxy'
     ];
 
     public $client = [];
@@ -53,7 +54,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         }
         $this->GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $this->out('Check Connection to Grafana');
-        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration);
+        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $this->Proxy->getSettings());
 
         if ($this->client instanceof Client) {
             $this->out('<success>Connection check successful</success>');

@@ -145,12 +145,25 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
      * @param $grafanaApiConfiguration
      * @return Client|string    Either a Instance of Client or the Exception message
      */
-    public function testConnection($grafanaApiConfiguration) {
-        $client = new Client([
+    public function testConnection($grafanaApiConfiguration, $proxySettings) {
+        $options = [
             'headers' => [
                 'authorization' => 'Bearer ' . $grafanaApiConfiguration->getApiKey()
             ],
-            'verify' => $grafanaApiConfiguration->isIgnoreSslCertificate()]);
+            'verify' => $grafanaApiConfiguration->isIgnoreSslCertificate()
+        ];
+        if ($grafanaApiConfiguration->isUseProxy() && !(empty($proxySettings['ipaddress'])&empty($proxySettings['port']))) {
+            $options['proxy'] = [
+                'http'  => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']),
+                'https' => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port'])
+            ];
+        }else{
+            $options['proxy'] = [
+                'http'  => false,
+                'https' => false
+            ];
+        }
+        $client = new Client($options);
         $request = new Request('GET', $grafanaApiConfiguration->getApiUrl() . '/org');
 
         try {
@@ -187,7 +200,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         }
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        $client = $this->testConnection($GrafanaApiConfiguration);
+        $client = $this->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
 
         $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $uuid);
 

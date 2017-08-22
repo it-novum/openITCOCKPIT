@@ -51,6 +51,11 @@ class GrafanaApiConfiguration {
     /**
      * @var bool
      */
+    private $useProxy;
+
+    /**
+     * @var bool
+     */
     private $ignoreSslCertificate;
 
     /**
@@ -88,6 +93,7 @@ class GrafanaApiConfiguration {
         $apiKey,
         $graphitePrefix,
         $useHttps,
+        $useProxy,
         $ignorSslCertificate,
         $includedHostgroups = [],
         $excludedHostgroups = [],
@@ -97,6 +103,7 @@ class GrafanaApiConfiguration {
         $this->apiKey = $apiKey;
         $this->graphitePrefix = $graphitePrefix;
         $this->useHttps = (bool)$useHttps;
+        $this->useProxy = (bool)$useProxy;
         $this->ignoreSslCertificate = (bool)$ignorSslCertificate;
         $this->includedHostgroups = $includedHostgroups;
         $this->excludedHostgroups = $excludedHostgroups;
@@ -112,11 +119,10 @@ class GrafanaApiConfiguration {
         $apiKey = null;
         $graphitePrefix = null;
         $useHttps = true;
+        $useProxy = true;
         $ignorSslCertificate = false;
         $includedHostgroups = [];
         $excludedHostgroups = [];
-
-
         if (!empty($configuration['GrafanaConfiguration']['api_url'])) {
             $apiUrl = $configuration['GrafanaConfiguration']['api_url'];
         }
@@ -126,13 +132,18 @@ class GrafanaApiConfiguration {
         if (!empty($configuration['GrafanaConfiguration']['graphite_prefix'])) {
             $graphitePrefix = $configuration['GrafanaConfiguration']['graphite_prefix'];
         }
-        if (!empty($configuration['GrafanaConfiguration']['use_https'])) {
+        if (isset($configuration['GrafanaConfiguration']['use_https'])) {
             $useHttps = $configuration['GrafanaConfiguration']['use_https'];
+        }
+        if (isset($configuration['GrafanaConfiguration']['use_proxy'])) {
+            $useProxy = $configuration['GrafanaConfiguration']['use_proxy'];
+        }
+        if (isset($configuration['GrafanaConfiguration']['ignore_ssl_certificate'])) {
+            $ignorSslCertificate = $configuration['GrafanaConfiguration']['ignore_ssl_certificate'];
         }
         if (!empty($configuration['GrafanaConfiguration']['dashboard_style'])) {
             $dashboardStyle = $configuration['GrafanaConfiguration']['dashboard_style'];
         }
-
 
         if (!empty($configuration['GrafanaConfigurationHostgroupMembership'])) {
             $includedHostgroups = \Hash::combine(
@@ -146,7 +157,7 @@ class GrafanaApiConfiguration {
                 '{n}[excluded=1].hostgroup_id'
             );
         }
-        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $ignorSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
+        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $useProxy, $ignorSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
     }
 
     /**
@@ -168,6 +179,13 @@ class GrafanaApiConfiguration {
      */
     public function isUseHttps() {
         return $this->useHttps;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseProxy() {
+        return $this->useProxy;
     }
 
     /**

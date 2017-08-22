@@ -35,7 +35,8 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         'Hostgroup',
         'Container',
         'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaConfigurationHostgroupMembership'
+        'GrafanaModule.GrafanaConfigurationHostgroupMembership',
+        'Proxy'
     ];
 
     public $components = [
@@ -58,7 +59,8 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         $customFieldsToRefill = [
             'GrafanaConfiguration' => [
                 'use_https',
-                'ignore_ssl_certificate'
+                'ignore_ssl_certificate',
+                'use_proxy'
             ]
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
@@ -117,14 +119,14 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         ]);
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration);
-
+        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
         if ($client instanceof Client) {
             $status = ['status' => true];
         } else {
+            $client = (json_decode($client))?json_decode($client):['message' => $client];
             $status = [
                 'status' => false,
-                'msg' => json_decode($client)
+                'msg' => $client
             ];
         }
 

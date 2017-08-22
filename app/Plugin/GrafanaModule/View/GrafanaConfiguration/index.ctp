@@ -71,6 +71,20 @@
                     </div>
                     <div class="form-group">
                         <?php
+                        echo $this->Form->fancyCheckbox('GrafanaConfiguration.use_proxy', [
+                            'caption' => __('Use Proxy'),
+                            'wrapGridClass' => 'col col-xs-10',
+                            'captionGridClass' => 'col col-md-2',
+                            'captionClass' => 'control-label',
+                            'checked' => $this->CustomValidationErrors->refill(
+                                'use_proxy',
+                                (isset($this->request->data['GrafanaConfiguration']['use_proxy'])) ? $this->request->data['GrafanaConfiguration']['use_proxy'] : 1
+                            )
+                        ]);
+                        ?>
+                    </div>
+                    <div class="form-group">
+                        <?php
                         echo $this->Form->fancyCheckbox('GrafanaConfiguration.ignore_ssl_certificate', [
                             'caption' => __('Ignore SSL Certificate'),
                             'wrapGridClass' => 'col col-xs-10',

@@ -67,7 +67,7 @@ App.Controllers.GrafanaConfigurationIndexController = Frontend.AppController.ext
         $flashMessage.hide();
         $flashMessage.html();
         var data = JSON.parse(data);
-        console.log(data);
+        //console.log(data);
         if(data.status){
             $checkConnetionButton.switchClass('btn-primary', 'btn-success');
         }else{

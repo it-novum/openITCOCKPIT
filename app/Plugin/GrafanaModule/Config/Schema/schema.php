@@ -7,7 +7,7 @@ class GrafanaModuleSchema extends CakeSchema
     {
         $db = ConnectionManager::getDataSource($this->connection);
         $db->cacheSources = false;
-/*
+
         $CronjobModel = ClassRegistry::init('Cronjob');
 
         //Check if cronjob exists
@@ -28,7 +28,7 @@ class GrafanaModuleSchema extends CakeSchema
             $CronjobModel->create();
             $CronjobModel->save($data);
         }
-*/
+
         return true;
     }
 
@@ -42,6 +42,7 @@ class GrafanaModuleSchema extends CakeSchema
         'api_key'                  => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'graphite_prefix'          => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'use_https'                => ['type' => 'integer', 'null' => false, 'length' => 1],
+        'use_proxy'                => ['type' => 'integer', 'null' => false, 'length' => 1],
         'ignore_ssl_certificate'   => ['type' => 'integer', 'null' => false, 'length' => 1],
         'dashboard_style'          => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'created'                  => ['type' => 'datetime', 'null' => false, 'default' => null],
