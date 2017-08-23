@@ -269,14 +269,7 @@ class Rrd extends AppModel {
             array_push($_rrd_options, '--color');
             array_push($_rrd_options, $color);
         }
-
-
-        if (isset($rrd_structure_datasource['warn']) && isset($rrd_structure_datasource['crit']) && $rrd_structure_datasource['warn'] > 0 && $rrd_structure_datasource['crit'] > 0 && $showThreshold === true) {
-            $__rrd_options = [
-                'LINE1:' . $rrd_structure_datasource['warn'] . '#FFFF00:' . __('Warning'),
-                'LINE1:' . $rrd_structure_datasource['crit'] . '#FF0000:' . __('Critical'),
-            ];
-            $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
+        
         if($showThreshold){
             if (isset($rrd_structure_datasource['warn']) && $rrd_structure_datasource['warn'] > 0){
                 $__rrd_options = [
