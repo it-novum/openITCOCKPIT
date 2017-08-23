@@ -28,7 +28,7 @@ use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
-if(!isset($hoststatus['Hoststatus'])):
+if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
@@ -95,6 +95,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                         <li class="">
                             <a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ($GrafanaDashboardExists): ?>
+                        <li class="">
+                            <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span></a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -240,15 +246,15 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 <tr>
                                     <td><strong><?php echo __('Priority'); ?>:</strong></td>
                                     <td>
-                                        <?php if(isset($host['Host']['priority'])):?>
+                                        <?php if (isset($host['Host']['priority'])): ?>
                                             <?php for ($i = 1; $i < 6; $i++): ?>
-                                                <?php if($i <= $host['Host']['priority']):?>
+                                                <?php if ($i <= $host['Host']['priority']): ?>
                                                     <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
-                                                <?php else:?>
+                                                <?php else: ?>
                                                     <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
                                                 <?php endif;
                                             endfor; ?>
-                                        <?php endif;?>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
@@ -493,6 +499,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 </h5>
                             <?php endif; ?>
                         </div>
+                        <?php if ($GrafanaDashboardExists): ?>
+                            <div id="tab5" class="tab-pane fade">
+                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
+                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <!-- end widget body text-->
                     <!-- widget footer -->
@@ -575,7 +587,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tbody>
                                                     <?php foreach ($services as $service):
                                                         $_servicestatus = [];
-                                                        if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])){
+                                                        if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])) {
                                                             $_servicestatus = $servicestatus[$service['Service']['uuid']]['Servicestatus'];
                                                         }
                                                         $Servicestatus = new Servicestatus(
