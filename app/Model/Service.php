@@ -818,19 +818,109 @@ class Service extends AppModel {
         return false;
     }
 
-    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
+    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []){
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $this->virtualFields['ServiceDescription'] = 'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name)';
+
         $_conditions = [
             'Host.container_id' => $containerIds,
             'Host.disabled' => 0,
             'Service.disabled' => 0,
         ];
+        $conditions = Hash::merge($_conditions, $conditions);
+        $services = $this->find('all', [
+            'recursive' => -1,
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.name',
+                    ],
+                ],
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.ServiceDescription'
+            ],
+            'order' => [
+                'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
+            ],
+            'conditions' => $conditions,
+            'limit' => self::ITN_AJAX_LIMIT
+        ]);
 
+        $formattedServices = [];
+        if(!empty($servicesIncluding) && is_array($servicesIncluding[0])){
+            foreach($servicesIncluding as $serviceIncluding){
+                $formattedServices[] = $serviceIncluding['id'];
+            }
+        }else{
+            $formattedServices = $servicesIncluding;
+        }
+
+        $servicesIds = [];
+        foreach($services as $service){
+            $servicesIds[] = $service['Service']['id'];
+        }
+
+        if(!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))){
+            $selectedCondition = ['Service.id' => array_diff($formattedServices, $servicesIds)];
+            $selectedServices = $this->find('all', [
+                'recursive' => -1,
+                'contain' => [
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.name'
+                        ],
+                    ],
+                    'Host' => [
+                        'fields' => [
+                            'Host.name',
+                        ],
+                    ],
+                ],
+                'fields' => [
+                    'Service.id',
+                    'Service.ServiceDescription'
+                ],
+                'order' => [
+                    'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
+                ],
+                'conditions' => Hash::merge($selectedCondition, $_conditions),
+            ]);
+
+            if(!empty($selectedServices)){
+                $services = array_merge($selectedServices, $services);
+            }
+        }
+
+        $returnValue = [];
+        foreach($services as $serviceArray){
+            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'].'/'.$serviceArray['Service']['ServiceDescription'];
+        }
+        return $returnValue;
+    }
+
+    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
 
         $containerIds = array_unique($containerIds);
 
+        $_conditions = [
+            'Host.container_id' => $containerIds,
+            'Host.disabled' => 0,
+            'Service.disabled' => 0,
+        ];
         $conditions = Hash::merge($_conditions, $conditions);
 
         $result = $this->find('all', [
