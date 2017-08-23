@@ -87,9 +87,10 @@ class PackagemanagerRequestBuilder
      */
     public function getUrl()
     {
-        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
-            return sprintf($this->baseUrl, $this->internalAddress, $this->license);
-        }
+// ITC-1350
+//        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+//            return sprintf($this->baseUrl, $this->internalAddress, $this->license);
+//        }
 
         return sprintf($this->baseUrl, $this->externalAddress, $this->license);
     }
@@ -99,9 +100,10 @@ class PackagemanagerRequestBuilder
      */
     public function getUrlForLicenseCheck()
     {
-        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
-            return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
-        }
+// ITC-1350
+//        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+//            return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
+//        }
 
         return sprintf($this->checkLicenseUrl, $this->externalAddress, $this->license);
     }
@@ -111,9 +113,10 @@ class PackagemanagerRequestBuilder
      */
     public function getOptions()
     {
-        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
-            return $this->internalOptions;
-        }
+// ITC-1350
+//        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
+//            return $this->internalOptions;
+//        }
 
         return $this->externalOptions;
     }

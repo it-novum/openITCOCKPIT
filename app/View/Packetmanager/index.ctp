@@ -241,11 +241,6 @@ $plugin_version = '1.5';
                         <br/>
                         <code>apt-get dist-upgrade</code>
                     </li>
-                    <li>
-                        <?php echo __('Execute openITCOCKPIT update process and follow instructions'); ?>
-                        <br/>
-                        <code>openitcockpit-update</code>
-                    </li>
                 </ol>
             </div>
             <div class="modal-footer">

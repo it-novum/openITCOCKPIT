@@ -30,12 +30,6 @@
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
 $this->Paginator->options(['url' => $this->params['named']]);
-$filter = "/";
-foreach ($this->params->named as $key => $value) {
-    if (!is_array($value)) {
-        $filter .= $key . ":" . $value . "/";
-    }
-}
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -151,24 +145,24 @@ foreach ($this->params->named as $key => $value) {
                     <h2 class="hidden-mobile"><?php echo __('Hosts'); ?></h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
-                            <a href="/hosts/index<?php echo $filter; ?>"><i class="fa fa-stethoscope"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts', '')): ?>
                             <li class="">
-                                <a href="/hosts/notMonitored<?php echo $filter; ?>"><i class="fa fa-user-md"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts', '')): ?>
                             <li>
-                                <a href="/hosts/disabled<?php echo $filter; ?>"><i class="fa fa-power-off"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts', '')): ?>
                             <li>
-                                <a href="/deleted_hosts/index<?php echo $filter; ?>"><i class="fa fa-trash-o"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
                         <?php endif; ?>

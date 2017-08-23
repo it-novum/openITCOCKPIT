@@ -1263,6 +1263,8 @@ class Service extends AppModel {
                 'Host.address',
 
                 'Hoststatus.current_state',
+                'Hoststatus.is_flapping',
+                'Hoststatus.last_hard_state_change',
 
                 'HostsToContainers.container_id',
             ],

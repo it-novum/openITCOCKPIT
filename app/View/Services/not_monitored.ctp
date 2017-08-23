@@ -25,10 +25,6 @@
 ?>
 <?php
 $this->Paginator->options(['url' => $this->params['named']]);
-$filter = "/";
-foreach ($this->params->named as $key => $value) {
-    $filter .= $key.":".$value."/";
-}
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -37,7 +33,7 @@ foreach ($this->params->named as $key => $value) {
             <?php echo __('Services'); ?>
             <span>>
                 <?php echo __('Not monitored'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -68,20 +64,20 @@ foreach ($this->params->named as $key => $value) {
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="/services/index<?php echo $filter; ?>"> <i class="fa fa-stethoscope"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>"> <i class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="/services/notMonitored<?php echo $filter; ?>">
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
                                 <i class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li class="">
-                                <a href="/services/disabled<?php echo $filter; ?>">
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
                                     <i class="fa fa-plug"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                                 </a>
@@ -102,7 +98,7 @@ foreach ($this->params->named as $key => $value) {
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
+                                    <th colspan="2" class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Service.servicestatus');
                                         echo $this->Paginator->sort('Service.servicestatus', 'Servicestatus'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-user fa-lg"></i></th>
                                     <th class="no-sort text-center"><i class="fa fa-power-off fa-lg"></i></th>
@@ -120,6 +116,8 @@ foreach ($this->params->named as $key => $value) {
                                 <?php $tmp_host_name = null; ?>
                                 <?php foreach ($all_services as $service): ?>
                                     <?php
+                                    $Service = new Service($service);
+                                    $Host = new Host($service);
                                     $allowEdit = false;
                                     if ($hasRootPrivileges === true):
                                         $allowEdit = true;
@@ -135,7 +133,7 @@ foreach ($this->params->named as $key => $value) {
                                         $tmp_host_name = $service['Host']['name'];
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="12">
+                                            <td class="bg-color-lightGray" colspan="13">
                                                 <?php
                                                 $hostHref = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser')):
@@ -156,6 +154,21 @@ foreach ($this->params->named as $key => $value) {
 
                                     <?php endif; ?>
                                     <tr>
+                                        <td class="text-center width-5">
+                                            <?php
+                                            $serviceName = $service['Service']['name'];
+                                            if ($serviceName === null || $serviceName === ''):
+                                                $serviceName = $service['Servicetemplate']['name'];
+                                            endif;
+                                            ?>
+                                            <?php if ($allowEdit): ?>
+                                                <input type="checkbox" class="massChange"
+                                                       servicename="<?php echo $serviceName; ?>"
+                                                       value="<?php echo $service['Service']['id']; ?>"
+                                                       uuid="<?php echo $service['Service']['uuid']; ?>"
+                                                       host-uuid="<?php echo $service['Host']['uuid']; ?>">
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="text-center">
                                             <?php
                                             $href = 'javascript:void(0);';
@@ -189,11 +202,6 @@ foreach ($this->params->named as $key => $value) {
                                         </td>
                                         <td>
                                             <?php
-                                            $serviceName = $service['Service']['name'];
-                                            if ($serviceName === null || $serviceName === ''):
-                                                $serviceName = $service['Servicetemplate']['name'];
-                                            endif;
-
                                             if ($this->Acl->hasPermission('browser')):?>
                                                 <a href="/services/browser/<?php echo $service['Service']['id']; ?>"><?php echo h($serviceName); ?></a>
                                             <?php else: ?>
@@ -256,7 +264,34 @@ foreach ($this->params->named as $key => $value) {
                                 </center>
                             </div>
                         <?php endif; ?>
+                        <div class="padding-top-10"></div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-2 text-muted">
+                                <center><span id="selectionCount"></span></center>
+                            </div>
+                            <div class="col-xs-12 col-md-2 "><span id="selectAll" class="pointer"><i
+                                            class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span>
+                            </div>
+                            <div class="col-xs-12 col-md-2"><span id="untickAll" class="pointer"><i
+                                            class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span>
+                            </div>
 
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('copy')): ?>
+                                    <a href="javascript:void(0);" id="copyAll">
+                                        <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                    <a href="javascript:void(0);" id="deleteAll" class="txt-color-red"
+                                       style="text-decoration: none;"> <i
+                                                class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+                                <?php endif; ?>
+                            </div>
+                            <!-- hidden fields for multi language -->
+                        </div>
                         <div style="padding: 5px 10px;">
                             <div class="row">
                                 <div class="col-sm-6">
@@ -276,4 +311,9 @@ foreach ($this->params->named as $key => $value) {
                 </div>
             </div>
     </div>
+    <input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>"/>
+    <input type="hidden" id="delete_message_h2"
+           value="<?php echo __('Do you really want delete the selected services?'); ?>"/>
+    <input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>
+    <input type="hidden" id="message_no" value="<?php echo __('No'); ?>"/>
 </section>

@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Contacts'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('contact'); ?></h2>
+        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?> <?php echo __('contact'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -66,12 +66,16 @@
             echo $this->Form->input('Contact.name');
             echo $this->Form->input('Contact.description');
 
-            $options = [];
+            $options = [
+                'placeholder' => __('username@example.org')
+            ];
             if ($isLdap === true):
                 $options['readonly'] = true;
             endif;
             echo $this->Form->input('Contact.email', $options);
-            echo $this->Form->input('Contact.phone');
+            echo $this->Form->input('Contact.phone', [
+                'placeholder' => '0049123456789'
+            ]);
             ?>
             <br/>
             <div class="row">
@@ -97,17 +101,19 @@
                     <div id="wid-id-1" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
-							<span class="widget-icon">
-								<i class="fa fa-desktop"></i>
-							</span>
+                            <span class="widget-icon">
+                                <i class="fa fa-desktop"></i>
+                            </span>
                             <h2><?php echo __('Notification (Host)'); ?></h2>
                         </header>
                         <div role="content" style="min-height:400px;">
                             <div class="widget-body">
                                 <div>
                                     <?php echo $this->Form->input('host_timeperiod_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'], 'style' => 'width: 100%']); ?>
-                                    <?php echo $this->Form->input('Contact.HostCommands', ['options'  => $this->Html->chosenPlaceholder($notification_commands), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'],
-                                                                                           'multiple' => true, 'style' => 'width: 100%']); ?>
+                                    <?php echo $this->Form->input('Contact.HostCommands', [
+                                        'options'  => $this->Html->chosenPlaceholder($notification_commands), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'],
+                                        'multiple' => true, 'style' => 'width: 100%'
+                                    ]); ?>
                                     <?php echo $this->Form->fancyCheckbox('host_notifications_enabled', [
                                         'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
@@ -129,7 +135,7 @@
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                                 'caption' => ucfirst(preg_replace('/notify_host_/', '', $notification_setting)),
-                                                'icon'    => '<i class="fa '.$icon.'"></i> ',
+                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
                                             ]); ?>
                                             <div class="clearfix"></div>
                                         </div>
@@ -143,17 +149,19 @@
                     <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
-							<span class="widget-icon">
-								<i class="fa fa-gear"></i>
-							</span>
+                            <span class="widget-icon">
+                                <i class="fa fa-gear"></i>
+                            </span>
                             <h2><?php echo __('Notification (Service)'); ?></h2>
                         </header>
                         <div role="content" style="min-height:400px;">
                             <div class="widget-body">
                                 <div>
                                     <?php echo $this->Form->input('service_timeperiod_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'], 'style' => 'width: 100%']); ?>
-                                    <?php echo $this->Form->input('Contact.ServiceCommands', ['options'  => $this->Html->chosenPlaceholder($notification_commands), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'],
-                                                                                              'multiple' => true, 'style' => 'width: 100%']); ?>
+                                    <?php echo $this->Form->input('Contact.ServiceCommands', [
+                                        'options'  => $this->Html->chosenPlaceholder($notification_commands), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'],
+                                        'multiple' => true, 'style' => 'width: 100%'
+                                    ]); ?>
                                     <?php echo $this->Form->fancyCheckbox('service_notifications_enabled', [
                                         'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
@@ -175,7 +183,7 @@
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                                 'caption' => ucfirst(preg_replace('/notify_service_/', '', $notification_setting)),
-                                                'icon'    => '<i class="fa '.$icon.'"></i> ',
+                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
                                             ]); ?>
                                             <div class="clearfix"></div>
                                         </div>

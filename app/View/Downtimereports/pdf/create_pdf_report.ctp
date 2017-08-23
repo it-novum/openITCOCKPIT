@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
+$Logo = new Logo()
 ?>
 <head>
     <?php
@@ -58,7 +61,7 @@
                 ?>
             </div>
             <div class="col-md-3 text-left">
-                <img src="<?php echo WWW_ROOT; ?>img/logo.png" width="200"/>
+                <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
             </div>
         </div>
         <?php

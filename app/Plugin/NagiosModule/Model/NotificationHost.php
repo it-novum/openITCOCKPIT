@@ -141,6 +141,10 @@ class NotificationHost extends NagiosModuleAppModel {
                 'NotificationHost.notification_type' => 0
             ],
 
+            'group' => [
+                'Contactnotification.contactnotification_id'
+            ],
+
             'order' => $HostNotificationConditions->getOrder(),
             'limit' => $HostNotificationConditions->getLimit(),
         ];

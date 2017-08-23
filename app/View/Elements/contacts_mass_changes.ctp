@@ -40,8 +40,9 @@
     </div>
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('delete')): ?>
-            <a href="javascript:void(0);" id="deleteAll" class="txt-color-red" style="text-decoration: none;"> <i
-                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+            <a href="javascript:void(0);" id="deleteAll" class="txt-color-red" >
+                <i class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?>
+            </a>
         <?php endif; ?>
     </div>
     <div class="col-xs-12 col-md-4"></div>

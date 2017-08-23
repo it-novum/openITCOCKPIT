@@ -52,7 +52,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
             <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($host['Host']['name']); ?>
@@ -560,12 +560,13 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <div class="widget-body">
                                         <div class="custom-scroll">
                                             <?php if (!empty($services)): ?>
-                                                <table class="table table-bordered table-hover"
+                                                <table class="table table-bordered table-hover smart-form"
                                                        id="host_browser_service_table">
                                                     <thead>
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
                                                         <th><?php echo __('Servicestatus'); ?></th>
+                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
                                                         <th class="text-center"><i class="fa fa-user"
                                                                                    title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                         </th>
@@ -603,6 +604,55 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                         echo $ServicestatusIcon->getHtmlIcon();
                                                                     endif;
                                                                     ?>
+                                                                </td>
+                                                                <td class="width-50">
+                                                                    <div class="btn-group">
+                                                                        <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
+                                                                            <a href="<?php echo Router::url([
+                                                                                'controller' => 'services',
+                                                                                'action' => 'edit',
+                                                                                $service['Service']['id']
+                                                                            ]); ?>" class="btn btn-default">&nbsp;<i
+                                                                                        class="fa fa-cog"></i>&nbsp;
+                                                                            </a>
+                                                                        <?php else: ?>
+                                                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                                        class="fa fa-cog"></i>&nbsp;</a>
+                                                                        <?php endif; ?>
+                                                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                                                           class="btn btn-default dropdown-toggle"><span
+                                                                                    class="caret"></span></a>
+                                                                        <ul class="dropdown-menu">
+                                                                            <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
+                                                                                <li>
+                                                                                    <a href="<?php echo Router::url([
+                                                                                        'controller' => 'services',
+                                                                                        'action' => 'edit',
+                                                                                        $service['Service']['id']
+                                                                                    ]); ?>">
+                                                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                            <?php if ($this->Acl->hasPermission('deactivate', 'services') && $allowEdit): ?>
+                                                                                <li>
+                                                                                    <a href="<?php echo Router::url([
+                                                                                        'controller' => 'services',
+                                                                                        'action' => 'deactivate',
+                                                                                        $service['Service']['id']
+                                                                                    ]); ?>">
+                                                                                        <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                            <?php if ($this->Acl->hasPermission('delete', 'services') && $allowEdit): ?>
+                                                                                <li class="divider"></li>
+                                                                                <li>
+                                                                                    <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                        </ul>
+                                                                    </div>
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <?php if ($Servicestatus->isAcknowledged()): ?>

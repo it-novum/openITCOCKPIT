@@ -31,12 +31,7 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 $this->Paginator->options(['url' => $this->params['named']]);
-$filter = "/";
-foreach ($this->params->named as $key => $value) {
-    if (!is_array($value)) {
-        $filter .= $key . ":" . $value . "/";
-    }
-}
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -93,12 +88,12 @@ foreach ($this->params->named as $key => $value) {
                     <h2 class="hidden-mobile"><?php echo __('Services'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
-                            <a href="/services/index<?php echo $filter; ?>"> <i class="fa fa-stethoscope"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>"> <i class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored')): ?>
                             <li class="">
-                                <a href="/services/notMonitored<?php echo $filter; ?>">
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
                                     <i class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                                 </a>
@@ -106,7 +101,7 @@ foreach ($this->params->named as $key => $value) {
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li class="">
-                                <a href="/services/disabled<?php echo $filter; ?>">
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
                                     <i class="fa fa-plug"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                                 </a>
@@ -170,7 +165,7 @@ foreach ($this->params->named as $key => $value) {
                                 </thead>
                                 <tbody>
                                 <?php
-                                $tmp_host_name = null;
+                                $tmp_host_uuid = null;
                                 foreach ($all_services as $service):
                                     $Service = new Service($service);
                                     $Host = new Host($service);
@@ -188,11 +183,11 @@ foreach ($this->params->named as $key => $value) {
                                     endif;
 
 
-                                    if ($tmp_host_name != $Host->getHostname()):
-                                        $tmp_host_name = $Host->getHostname();
+                                    if ($tmp_host_uuid != $Host->getUuid()):
+                                        $tmp_host_uuid = $Host->getUuid();
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="13">
+                                            <td class="service_table_host_header" colspan="13">
                                                 <?php
                                                 $href = 'javascript:void(0);';
                                                 if ($this->Acl->hasPermission('browser', 'hosts')):
@@ -417,9 +412,9 @@ foreach ($this->params->named as $key => $value) {
 
                             <div class="col-xs-12 col-md-2">
                                 <?php if ($this->Acl->hasPermission('copy')): ?>
-                                    <a href="javascript:void(0);" id="copyAll"
-                                       style="text-decoration: none; color:#333;"><i
-                                                class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?></a>
+                                    <a href="javascript:void(0);" id="copyAll">
+                                       <i class="fa fa-lg fa-files-o"></i> <?php echo __('Copy'); ?>
+                                    </a>
                                 <?php endif; ?>
                             </div>
                             <div class="col-xs-12 col-md-2">
@@ -436,9 +431,9 @@ foreach ($this->params->named as $key => $value) {
                                        class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
                                     <ul class="dropdown-menu">
                                         <li>
-                                            <a href="<?php echo Router::url(['controller' => 'services', 'action' => 'listToPdf/.pdf']); ?>"
+                                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'listToPdf'], $this->params['named'])); ?>/.pdf"
                                                id="listAsPDF"><i
-                                                        class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF') ?>
+                                                        class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                             </a>
                                         </li>
                                         <?php if ($this->Acl->hasPermission('edit')): ?>

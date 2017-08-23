@@ -408,6 +408,7 @@ class AppSchema extends CakeSchema
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'task' => ['column' => ['task', 'text', 'finished', 'successfully'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -1447,6 +1448,7 @@ class AppSchema extends CakeSchema
         'show_unknown'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
         'indexes'            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'KEY'     => ['column' => 'widget_id', 'unique' => 1],
@@ -1463,6 +1465,7 @@ class AppSchema extends CakeSchema
         'show_unreachable'   => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
         'indexes'            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'KEY'     => ['column' => 'widget_id', 'unique' => 1],

@@ -32,4 +32,9 @@ if (Configure::read('debug') == 0 && file_exists(WWW_ROOT.'js/app_build.js') && 
 echo $this->fetch('meta');
 echo $this->fetch('css');
 echo $this->fetch('script');
-?>
+
+$DesignModule = APP.'Plugin'.DS.'DesignModule'.DS.'webroot'.DS.'css'.DS.'style.css';
+if(file_exists($DesignModule)){
+    echo $this->Html->css('/design_module/css/style.css');
+}
+

@@ -79,6 +79,7 @@ Frontend.AppController = Frontend.Controller.extend({
                 }
             }
         }
+        this._updateHeaderExportRunning();
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
@@ -222,5 +223,24 @@ Frontend.AppController = Frontend.Controller.extend({
                 self._dialog.unblockUi();
             }
         });
+    },
+
+    _updateHeaderExportRunning: function(){
+        if(this.getVar('exportRunningHeaderInfo')){
+            this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
+            this.WebsocketSudo.connect();
+
+            this.WebsocketSudo._success = function(e){
+                return true;
+            }.bind(this)
+
+            this.WebsocketSudo._dispatcher = function(transmitted){
+                if(transmitted.running && !$('#i-export-running-checker').hasClass('fa-spin')){
+                    $('#i-export-running-checker').removeClass('fa-retweet').addClass('fa-spin fa-refresh txt-color-red');
+                }else if(!transmitted.running && $('#i-export-running-checker').hasClass('fa-spin')){
+                    $('#i-export-running-checker').removeClass('fa-spin fa-refresh txt-color-red').addClass('fa-retweet');
+                }
+            }.bind(this);
+        }
     }
 });
