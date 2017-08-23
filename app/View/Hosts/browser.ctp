@@ -162,7 +162,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                 ['target' => '_blank']) :
                                             $Acknowledgement->getCommentData();
                                     else:
-                                        echo h($Acknowledgement->getCommentData());
+                                        echo $this->Bbcode->asHtml(h($Acknowledgement->getCommentData()));
                                     endif;
                                     ?>".
 
