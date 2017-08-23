@@ -52,6 +52,9 @@ Frontend.AppController = Frontend.Controller.extend({
         this._dom = $('div.controller.' + this._frontendData.controller + '_' + this._frontendData.action);
         this.$ = this._dom.find.bind(this._dom);
         this.Time.setup();
+        var arrayOfItnAjax = {};
+        var arrayOfMultiples = {};
+        var arrayOfContainers = {};
 
         var selectBoxes = $('.chosen');
         for (var i in selectBoxes) {
@@ -67,6 +70,9 @@ Frontend.AppController = Frontend.Controller.extend({
                         select_all_buttons: true,
                         width: '100%' // Makes the graph responsive.
                     });
+                    if(typeof selectBoxes[i].attributes['id'] !== 'undefined'){
+                        arrayOfMultiples[selectBoxes[i].attributes['id'].value] = 1;
+                    }
                 } else {
                     $(selectBoxes[i]).chosen({
                         placeholder_text_single: 'Please choose',
@@ -77,8 +83,60 @@ Frontend.AppController = Frontend.Controller.extend({
                         width: '100%' // Makes the graph responsive.
                     });
                 }
+
+                if(typeof selectBoxes[i].attributes['itn-ajax'] !== 'undefined' && typeof selectBoxes[i].attributes['id'] !== 'undefined'){
+                    arrayOfItnAjax[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax'].value;
+                    if(typeof selectBoxes[i].attributes['itn-ajax-container'] !== 'undefined'){
+                        arrayOfContainers[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-container'].value;
+                    }
+                }
             }
         }
+
+        var myItnTimeout;
+        var lastTyped = '';
+        var itnAjaxLoading = false;
+        $('.chosen-container').bind('keyup',function(event) {
+            var currentItnAjaxId = $(this).attr('id').replace('_chosen', '');
+            var termInput = $('#'+currentItnAjaxId+'_chosen input');
+            var termInputValue = termInput.val();
+            if (typeof arrayOfItnAjax[currentItnAjaxId] === 'undefined' || termInputValue.length < 1)
+                return false;
+
+            var isMultiple = typeof arrayOfMultiples[currentItnAjaxId] !== 'undefined';
+            var containerId = typeof arrayOfContainers[currentItnAjaxId] !== 'undefined' ? arrayOfContainers[currentItnAjaxId] : '';
+            if(itnAjaxLoading){
+                $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');
+            }
+            if(lastTyped == termInputValue)
+                return false;
+
+            lastTyped = termInputValue;
+            clearTimeout(myItnTimeout);
+
+            $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');
+            itnAjaxLoading = true;
+            myItnTimeout = setTimeout(function () {
+                if (termInputValue.length >= 1) {
+                    $.ajax({
+                        method: 'POST',
+                        url: arrayOfItnAjax[currentItnAjaxId],
+                        data: {term: termInputValue, selected: $('#' + currentItnAjaxId).val(), 'containerId': $(containerId).val()},
+                        success: function (data) {
+                            $('#' + currentItnAjaxId).html(data).trigger('chosen:updated');
+                            termInput.val(termInputValue);
+                            if(isMultiple){
+                                termInput.width(((termInputValue.length + 1) * 8) + 'px');
+                            }
+                            itnAjaxLoading = false;
+                        }
+                    });
+                }
+            }, 1000);
+
+        });
+
+        this._updateHeaderExportRunning();
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
@@ -222,5 +280,24 @@ Frontend.AppController = Frontend.Controller.extend({
                 self._dialog.unblockUi();
             }
         });
+    },
+
+    _updateHeaderExportRunning: function(){
+        if(this.getVar('exportRunningHeaderInfo')){
+            this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
+            this.WebsocketSudo.connect();
+
+            this.WebsocketSudo._success = function(e){
+                return true;
+            }.bind(this)
+
+            this.WebsocketSudo._dispatcher = function(transmitted){
+                if(transmitted.running && !$('#i-export-running-checker').hasClass('fa-spin')){
+                    $('#i-export-running-checker').removeClass('fa-retweet').addClass('fa-spin fa-refresh txt-color-red');
+                }else if(!transmitted.running && $('#i-export-running-checker').hasClass('fa-spin')){
+                    $('#i-export-running-checker').removeClass('fa-spin fa-refresh txt-color-red').addClass('fa-retweet');
+                }
+            }.bind(this);
+        }
     }
 });

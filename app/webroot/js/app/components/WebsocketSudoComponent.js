@@ -41,7 +41,10 @@ App.Components.WebsocketSudoComponent = Frontend.Component.extend({
 	},
 	
 	connect: function() {
-		this._connection = new WebSocket(this._wsUrl);
+
+		if(this._connection === null) {
+            this._connection = new WebSocket(this._wsUrl);
+        }
 		this._connection.onopen = this._onConnectionOpen.bind(this);
 		this._connection.onmessage = this._onResponse.bind(this);
 		this._connection.onerror = this._onError.bind(this);

@@ -408,6 +408,7 @@ class AppSchema extends CakeSchema
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'task' => ['column' => ['task', 'text', 'finished', 'successfully'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -1275,20 +1276,6 @@ class AppSchema extends CakeSchema
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-
-    public $satellites = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'name'            => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'address'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
-        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
-    ];
-
     public $deleted_services = [
         'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'uuid'               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -1465,6 +1452,7 @@ class AppSchema extends CakeSchema
         'show_unknown'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
         'indexes'            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'KEY'     => ['column' => 'widget_id', 'unique' => 1],
@@ -1481,6 +1469,7 @@ class AppSchema extends CakeSchema
         'show_unreachable'   => ['type' => 'boolean', 'null' => false, 'default' => '1'],
         'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
         'indexes'            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'KEY'     => ['column' => 'widget_id', 'unique' => 1],

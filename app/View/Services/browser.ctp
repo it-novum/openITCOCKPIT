@@ -61,7 +61,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="page-title <?php echo $Servicestatus->ServiceStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
             <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
             <i class="fa fa-cog fa-fw"></i>
             <?php
@@ -206,7 +206,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             <?php endif; ?>
                             <?php if ($Hoststatus->currentState() > 0): ?>
                                 <p class="parentstatus padding-left-10">
-                                    <?php echo __('problem with associated host'); ?> <a
+                                    <?php echo __('Problem with associated host'); ?> <a
                                             href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo h($service['Host']['name']); ?></a> <?php echo __('detected'); ?>
                                     <br/>
                                     <?php
@@ -252,7 +252,20 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <?php echo $Servicestatus->compareHostFlapDetectionWithMonitoring($service['Service']['flap_detection_enabled'])['html']; ?>
                                     </td>
                                 </tr>
-
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if(isset($service['Service']['priority'])):?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if($i <= $service['Service']['priority']):?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else:?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif;?>
+                                    </td>
+                                </tr>
                                 <?php if (!$Servicestatus->isNotificationsEnabled()): ?>
                                     <tr>
                                         <td>
@@ -544,7 +557,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 </div>
                             <?php else: ?>
                                 <h5><?php
-                                    echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id']]); ?>
+                                    echo $this->Form->input('satellite_id', ['type' => 'hidden', 'value' => $service['Host']['satellite_id'], 'id' => 'nag_commandSatelliteId']); ?>
                                     <span class="nag_command submitRescheduleService">
                                         <i class="fa fa-refresh"></i>
                                         <?php echo __('Reset check time'); ?>

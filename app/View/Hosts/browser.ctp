@@ -28,7 +28,7 @@ use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
-if(!isset($hoststatus['Hoststatus'])):
+if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
@@ -52,7 +52,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="page-title <?php echo $Hoststatus->HostStatusColor(); ?>">
+        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
             <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
             <i class="fa fa-desktop fa-fw"></i>
             <?php echo h($host['Host']['name']); ?>
@@ -95,6 +95,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                         <li class="">
                             <a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ($GrafanaDashboardExists): ?>
+                        <li class="">
+                            <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span></a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -236,6 +242,20 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 <tr>
                                     <td><strong><?php echo __('Flap detection'); ?>:</strong></td>
                                     <td><?php echo $Hoststatus->compareHostFlapDetectionWithMonitoring($host['Host']['flap_detection_enabled'])['html']; ?></td>
+                                </tr>
+                                <tr>
+                                    <td><strong><?php echo __('Priority'); ?>:</strong></td>
+                                    <td>
+                                        <?php if (isset($host['Host']['priority'])): ?>
+                                            <?php for ($i = 1; $i < 6; $i++): ?>
+                                                <?php if ($i <= $host['Host']['priority']): ?>
+                                                    <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
+                                                <?php else: ?>
+                                                    <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                <?php endif;
+                                            endfor; ?>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                                 <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
                                     <tr>
@@ -479,6 +499,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 </h5>
                             <?php endif; ?>
                         </div>
+                        <?php if ($GrafanaDashboardExists): ?>
+                            <div id="tab5" class="tab-pane fade">
+                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
+                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <!-- end widget body text-->
                     <!-- widget footer -->
@@ -534,12 +560,13 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <div class="widget-body">
                                         <div class="custom-scroll">
                                             <?php if (!empty($services)): ?>
-                                                <table class="table table-bordered table-hover"
+                                                <table class="table table-bordered table-hover smart-form"
                                                        id="host_browser_service_table">
                                                     <thead>
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
                                                         <th><?php echo __('Servicestatus'); ?></th>
+                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
                                                         <th class="text-center"><i class="fa fa-user"
                                                                                    title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                         </th>
@@ -560,7 +587,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tbody>
                                                     <?php foreach ($services as $service):
                                                         $_servicestatus = [];
-                                                        if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])){
+                                                        if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])) {
                                                             $_servicestatus = $servicestatus[$service['Service']['uuid']]['Servicestatus'];
                                                         }
                                                         $Servicestatus = new Servicestatus(
@@ -577,6 +604,55 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                         echo $ServicestatusIcon->getHtmlIcon();
                                                                     endif;
                                                                     ?>
+                                                                </td>
+                                                                <td class="width-50">
+                                                                    <div class="btn-group">
+                                                                        <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
+                                                                            <a href="<?php echo Router::url([
+                                                                                'controller' => 'services',
+                                                                                'action' => 'edit',
+                                                                                $service['Service']['id']
+                                                                            ]); ?>" class="btn btn-default">&nbsp;<i
+                                                                                        class="fa fa-cog"></i>&nbsp;
+                                                                            </a>
+                                                                        <?php else: ?>
+                                                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                                        class="fa fa-cog"></i>&nbsp;</a>
+                                                                        <?php endif; ?>
+                                                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                                                           class="btn btn-default dropdown-toggle"><span
+                                                                                    class="caret"></span></a>
+                                                                        <ul class="dropdown-menu">
+                                                                            <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
+                                                                                <li>
+                                                                                    <a href="<?php echo Router::url([
+                                                                                        'controller' => 'services',
+                                                                                        'action' => 'edit',
+                                                                                        $service['Service']['id']
+                                                                                    ]); ?>">
+                                                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                            <?php if ($this->Acl->hasPermission('deactivate', 'services') && $allowEdit): ?>
+                                                                                <li>
+                                                                                    <a href="<?php echo Router::url([
+                                                                                        'controller' => 'services',
+                                                                                        'action' => 'deactivate',
+                                                                                        $service['Service']['id']
+                                                                                    ]); ?>">
+                                                                                        <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                                                    </a>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                            <?php if ($this->Acl->hasPermission('delete', 'services') && $allowEdit): ?>
+                                                                                <li class="divider"></li>
+                                                                                <li>
+                                                                                    <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                                </li>
+                                                                            <?php endif; ?>
+                                                                        </ul>
+                                                                    </div>
                                                                 </td>
                                                                 <td class="text-center">
                                                                     <?php if ($Servicestatus->isAcknowledged()): ?>

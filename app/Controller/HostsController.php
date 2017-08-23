@@ -140,7 +140,58 @@ class HostsController extends AppController {
                 ],
             ],
         ],
-        'notMonitored' => [
+        'listToPdf' => [
+            'fields' => [
+                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
+                'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
+                'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+
+                'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Hoststatus.up',
+                            'value' => 1,
+                            'label' => 'Up',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                        '1' => [
+                            'name' => 'Hoststatus.down',
+                            'value' => 1,
+                            'label' => 'Down',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                        '2' => [
+                            'name' => 'Hoststatus.unreachable',
+                            'value' => 1,
+                            'label' => 'Unreachable',
+                            'data' => 'Filter.Hoststatus.current_state',
+                        ],
+                    ],
+                ],
+                'Hoststatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                    [
+                        '1' => [
+                            'name' => 'Acknowledged',
+                            'value' => 1,
+                            'label' => 'Acknowledged',
+                            'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                        ],
+                    ],
+                ],
+                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                    [
+                        '0' => [
+                            'name' => 'Downtime',
+                            'value' => 1,
+                            'label' => 'In Downtime',
+                            'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'notMnotMonitored' => [
             'fields' => [
                 'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
@@ -287,7 +338,7 @@ class HostsController extends AppController {
         }
 
         if ($this->isApiRequest()) {
-            $all_hosts = $this->${$modelName}->find('all', $query);
+            $all_hosts = $this->{$modelName}->find('all', $query);
         } else {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $all_hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
@@ -1562,6 +1613,7 @@ class HostsController extends AppController {
                         'Host.own_contacts',
                         'Host.own_contactgroups',
                         'Host.own_customvariables',
+                        'Host.satellite_id'
                     ],
                     'contain' => [
                         'Parenthost' => [
@@ -2306,6 +2358,21 @@ class HostsController extends AppController {
         }
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
+        $grafanaDashboard = null;
+        if (in_array('GrafanaModule', CakePlugin::loaded())) {
+            $this->loadModel('GrafanaModule.GrafanaDashboard');
+            $this->loadModel('GrafanaModule.GrafanaConfiguration');
+            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+            $GrafanaDashboardExists = false;
+            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
+                $GrafanaDashboardExists = true;
+                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
+                $this->set('GrafanaConfiguration', $GrafanaConfiguration);
+            }
+        }
+        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+
 
         $acknowledged = [];
         if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
@@ -2347,6 +2414,7 @@ class HostsController extends AppController {
                 'ticketSystem',
                 'mainContainer',
                 'sharedContainers',
+                'grafanaDashboard'
             ])
         );
 
@@ -2613,40 +2681,6 @@ class HostsController extends AppController {
         $this->render('load_arguments');
     }
 
-    /*
-    * Compare two arrays with each other
-    * @param host Array
-    * @param hosttemplate Array
-    * @return $diff_array
-    *
-    * *************** Contact and contactgroups check ************
-    debug(Set::classicExtract($host, '{(Contact|Contactgroup)}.{(Contact|Contactgroup)}.{n}'))); 	//Host
-    debug(Set::classicExtract($hosttemplate, '{(Contact|Contactgroup)}.{n}.id'));					//Hosttemplate
-    array(
-        'Contact' => array(
-            'Contact' => array(
-                (int) 0 => '26'
-            )
-        ),
-        'Contactgroup' => array(
-            'Contactgroup' => array(
-                (int) 0 => '131',
-                (int) 1 => '132'
-            )
-        )
-    )
-    *************** Single fields in hosttemplate and host *************
-    debug(Set::classicExtract($host, 'Host.{('.implode('|', array_values(Hash::merge($fields,['name', 'description', 'address']))).')}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Hosttemplate.{('.implode('|', array_values($fields)).')}')));	//Hosttemplate
-
-    **************** Command arguments check *************
-    debug(Set::classicExtract($host, 'Hostcommandargumentvalue.{n}.{(commandargument_id|value)}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Hosttemplatecommandargumentvalue.{n}.{(commandargument_id|value)}')));	//Hostemplate
-
-    **************** Custom variables check *************
-    debug(Set::classicExtract($host, 'Customvariable.{n}.{(name|value)}'));	//Host
-    debug(Set::classicExtract($hosttemplate, 'Customvariable.{n}.{(name|value)}'));	//Hosttemplate
-    */
     private function _diffWithTemplate($host, $hosttemplate){
         $diff_array = [];
         //Host-/Hosttemplate fields
@@ -2734,68 +2768,46 @@ class HostsController extends AppController {
     }
 
     public function listToPdf(){
-        $args = func_get_args();
-
-        $conditions = [
-            'Host.disabled' => 0,
-            'Host.container_id' => $this->MY_RIGHTS,
-        ];
-
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $host_ids = $args;
-                end($host_ids);
-                $last_key = key($host_ids);
-                unset($host_ids[$last_key]);
-
-                $_conditions = [
-                    'Host.id' => $host_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            } else {
-                $host_ids = $args;
-
-                $_conditions = [
-                    'Host.id' => $host_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            }
+        $HostControllerRequest = new HostControllerRequest($this->request);
+        $HostCondition = new HostConditions();
+        $User = new User($this->Auth);
+        if ($HostControllerRequest->isRequestFromBrowser() === false) {
+            $HostCondition->setIncludeDisabled(false);
+            $HostCondition->setContainerIds($this->MY_RIGHTS);
         }
 
-        $hoststatus = $this->Objects->find('all', [
-            'recursive' => -1,
-            'conditions' => $conditions,
-            'fields' => [
-                'Host.name',
-                'Hoststatus.current_state',
-                'Hoststatus.last_check',
-                'Hoststatus.is_flapping',
-                'Hoststatus.next_check',
-                'Hoststatus.last_state_change',
-                'Hoststatus.problem_has_been_acknowledged',
-                'Hoststatus.scheduled_downtime_depth',
-            ],
-            'joins' => [
-                [
-                    'table' => 'hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
-                    'conditions' => 'Objects.name1 = Host.uuid AND Objects.objecttype_id = 1',
-                ],
-                [
-                    'table' => 'nagios_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
-                    'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                ],
-            ],
-            'order' => [
-                'Host.name ASC',
-            ],
-        ]);
-        $hostCount = count($hoststatus);
+        $HostCondition->setOrder($HostControllerRequest->getOrder(
+            ['Host.name' => 'asc'] //Default order
+        ));
 
-        $this->set(compact('hoststatus', 'hostCount'));
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $modelName = 'Hoststatus';
+        }
+
+        if(isset($query['limit'])){
+            unset($query['limit']);
+        }
+        $all_hosts = $this->{$modelName}->find('all', $query);
+
+        $this->set('all_hosts', $all_hosts);
+
+        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+        }
+        $this->set('SatelliteNames', $SatelliteNames);
+
         $filename = 'Hosts_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
@@ -3082,6 +3094,7 @@ class HostsController extends AppController {
         $allServicetemplategroups = $this->Servicetemplategroup->find('all', [
             'fields' => ['Servicetemplategroup.id', 'Container.name'],
         ]);
+        $serviceTemplateGroups = [];
         foreach ($allServicetemplategroups as $servicetemplategroup) {
             $serviceTemplateGroups[$servicetemplategroup['Servicetemplategroup']['id']] = $servicetemplategroup['Container']['name'];
 
@@ -3107,5 +3120,55 @@ class HostsController extends AppController {
         $servicetemplategroup = $this->Servicetemplategroup->findById($stg_id);
         $this->set(compact(['servicetemplategroup', 'host']));
         $this->set('_serialize', ['servicetemplategroup', 'host']);
+    }
+
+    public function ajaxGetByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%'];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return $returnHtml;
+        }
+    }
+
+    public function ajaxGetGenericByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%', 'Host.host_type' => GENERIC_HOST];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
+        }
     }
 }

@@ -155,6 +155,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 
         $('#host_browser_service_table').dataTable({
             "bPaginate": false,
+            "aaSorting": [],
             "bFilter": true,
             "bInfo": false,
             "bStateSave": true
@@ -162,6 +163,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 
         $('#host_browser_disabled_service_table').dataTable({
             "bPaginate": false,
+            "aaSorting": [],
             "bFilter": true,
             "bInfo": false,
             "bStateSave": true

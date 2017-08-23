@@ -85,7 +85,7 @@
         <div class="widget-body">
             <br>
             <!-- Map draw container -->
-            <div id="MapContainer" class="well" style="overflow: scroll;">
+            <div id="MapContainer" class="well" style="overflow: auto;">
 
                 <div id="jsPlumb_playground" class="resetMargin" style="min-height:600px; <?php echo $css; ?>">
                     <?php App::uses('UUID', 'Lib'); ?>

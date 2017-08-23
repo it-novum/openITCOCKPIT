@@ -635,7 +635,38 @@ class DocumentationsController extends AppController
                     ],
                 ],
             ],
+	   'other_modules' => [
+       'name' => ('other modules'),
+       'directory' => 'other_modules',
+       'children' => [
+         'LinuxBasicMonitoringModule' => [
+           'name' => __('LinuxBasicMonitoringModule'),
+           'description' => 'Linux basic monitoring module with nrpe',
+           'file' => 'LinuxBasicMonitoringModule',
+         ],
+         'NWCModule' => [
+           'name' => __('NWCModul'),
+           'description' => 'Network monitoring with nwc_health',
+           'file' => 'NWCModul',
+         ],
+         'WMIModule' => [
+           'name' => __('WMIModule'),
+           'description' => 'Windows monitoring with WMI',
+           'file' => 'WMIModule',
+         ],
+         'PostgresModule' => [
+           'name' => __('PostgresModule'),
+           'description' => 'Postgres monitoring with nrpe',
+           'file' => 'PostgresModule',
+         ],
+         'AlfrescoModule' => [
+           'name' => __('AlfrescoModule'),
+           'description' => 'Alfresco frontend and jmx monitoring',
+           'file' => 'AlfrescoModule',
+         ],
 
+       ],
+	   ],
             'contribute_dev' => [
                 'name'      => ('Contribute and develop'),
                 'directory' => 'contribute',

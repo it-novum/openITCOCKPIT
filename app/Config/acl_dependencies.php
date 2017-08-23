@@ -68,6 +68,7 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
+                'ajaxGetByTerm'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -110,7 +111,9 @@ $config = [
             ],
             'Hosts'            => [
                 'view',
-            ],
+                'ajaxGetByTerm',
+                'ajaxGetGenericByTerm'
+            ]
         ],
         'dependencies'   => [
             'Automaps'              => [

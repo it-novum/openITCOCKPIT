@@ -23,13 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Rrd extends AppModel
-{
+class Rrd extends AppModel {
     var $useTable = false;
     public $rrd_path = null;
 
-    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null)
-    {
+    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null) {
         $result = [];
 
         App::uses('Folder', 'Utility');
@@ -39,26 +37,26 @@ class Rrd extends AppModel
             return $result;
         }
 
-        $perfdata_dir = new Folder($rrd_path.$host_uuid);
-        $perfdata_files = $perfdata_dir->find($service_uuid.'.(xml|rrd)', true);
+        $perfdata_dir = new Folder($rrd_path . $host_uuid);
+        $perfdata_files = $perfdata_dir->find($service_uuid . '.(xml|rrd)', true);
         if (!isset($perfdata_files[0]) || !isset($perfdata_files[1])) {
             return $result;
         }
-        $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd().'/'.$perfdata_files[1])];
-        $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd().'/'.$perfdata_files[0], $options);
+        $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd() . '/' . $perfdata_files[1])];
+        $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd() . '/' . $perfdata_files[0], $options);
 
-        if(!empty($xml_data['xml_data']) && !is_null($service_value)){ // ignoring other values if $service_value is set
+        if (!empty($xml_data['xml_data']) && !is_null($service_value)) { // ignoring other values if $service_value is set
             $neededIndex = null;
             $notNeededIndexes = [];
-            foreach($xml_data['xml_data'] as $xmlIndex => $xmlArr){
-                if($service_value === $xmlArr['ds']){
+            foreach ($xml_data['xml_data'] as $xmlIndex => $xmlArr) {
+                if ($service_value === $xmlArr['ds']) {
                     $neededIndex = intval($xmlArr['ds']);
                     continue;
                 }
                 $notNeededIndexes[$xmlIndex] = $xmlArr['ds'];
             }
-            if(isset($perfdata_from_rrd['data'][$neededIndex]) && !empty($notNeededIndexes)){ // we found needed value, we can unset the other values
-                foreach($notNeededIndexes as  $notNeededIndex => $notNeededDS){
+            if (isset($perfdata_from_rrd['data'][$neededIndex]) && !empty($notNeededIndexes)) { // we found needed value, we can unset the other values
+                foreach ($notNeededIndexes as $notNeededIndex => $notNeededDS) {
                     unset($xml_data['xml_data'][$notNeededIndex]);
                     unset($perfdata_from_rrd['data'][$notNeededDS]);
                 }
@@ -69,14 +67,13 @@ class Rrd extends AppModel
         return array_merge($xml_data, $perfdata_from_rrd);
     }
 
-    public function getPerfDataStructure($xml_path)
-    {
+    public function getPerfDataStructure($xml_path) {
         App::uses('Xml', 'Utility');
         $rrd_structure = [];
         try {
             $xml_rrd = Xml::build($xml_path); // Here will throw a Exception
         } catch (XmlException $e) {
-           return false;
+            return false;
         }
         $xml_rrd_as_array = Xml::toArray($xml_rrd);
 
@@ -126,11 +123,10 @@ class Rrd extends AppModel
      *
      * @return array
      */
-    public function getPerfDataStructureByHostAndServiceUuid($host_uuid, $service_uuid)
-    {
+    public function getPerfDataStructureByHostAndServiceUuid($host_uuid, $service_uuid) {
         $perfdataStructure = [];
         if ($this->isValidHostAndServiceUuid($host_uuid, $service_uuid)) {
-            $path = $this->rrd_path.$host_uuid.'/'.$service_uuid.'.xml';
+            $path = $this->rrd_path . $host_uuid . '/' . $service_uuid . '.xml';
             $perfdataStructure = $this->getPerfDataStructure($path);
         }
 
@@ -142,8 +138,7 @@ class Rrd extends AppModel
      *
      * @return array
      */
-    public function getPerfDataStructures($host_and_service_uuids)
-    {
+    public function getPerfDataStructures($host_and_service_uuids) {
         $result = [];
         foreach ($host_and_service_uuids as $host_uuid => $services) {
             foreach ($services as $service_uuid) {
@@ -155,11 +150,10 @@ class Rrd extends AppModel
         return $result;
     }
 
-    public function getPerfDataFromRrd($rrd_path = null, $options = [])
-    {
+    public function getPerfDataFromRrd($rrd_path = null, $options = []) {
         $_options = [
-            'start'     => time() - (24 * 3600 * 31),
-            'end'       => time(),
+            'start' => time() - (24 * 3600 * 31),
+            'end' => time(),
             'step_size' => 60,
         ];
         $_options = Hash::merge($_options, $options);
@@ -201,26 +195,24 @@ class Rrd extends AppModel
         return $perf_data_filtered;
     }
 
-    public function isValidHostUuid($host_uuid)
-    {
+    public function isValidHostUuid($host_uuid) {
         App::uses('Folder', 'Utility');
         if (!isset($this->rrd_path)) {
             $this->rrd_path = Configure::read('rrd.path');
         }
 
-        return UUID::is_valid($host_uuid) && is_dir($this->rrd_path.$host_uuid);
+        return UUID::is_valid($host_uuid) && is_dir($this->rrd_path . $host_uuid);
     }
 
-    public function isValidHostAndServiceUuid($host_uuid, $service_uuid)
-    {
+    public function isValidHostAndServiceUuid($host_uuid, $service_uuid) {
         App::uses('Folder', 'Utility');
         if (!isset($this->rrd_path) || $this->rrd_path == null) {
             $this->rrd_path = Configure::read('rrd.path');
         }
 
-        $base_path = $this->rrd_path.$host_uuid.'/'.$service_uuid;
-        $xml_file_name = $base_path.'.xml';
-        $rrd_file_name = $base_path.'.rrd';
+        $base_path = $this->rrd_path . $host_uuid . '/' . $service_uuid;
+        $xml_file_name = $base_path . '.xml';
+        $rrd_file_name = $base_path . '.rrd';
 
         if (UUID::is_valid($service_uuid) && UUID::is_valid($host_uuid) &&
             file_exists($xml_file_name) && file_exists($rrd_file_name)
@@ -232,9 +224,8 @@ class Rrd extends AppModel
         return false;
     }
 
-    public function createRrdGraph($rrd_structure_datasource, $options, $rrd_options = [], $showThreshold = false)
-    {
-        putenv('TZ='.AuthComponent::user('timezone'));
+    public function createRrdGraph($rrd_structure_datasource, $options, $rrd_options = [], $showThreshold = false) {
+        putenv('TZ=' . AuthComponent::user('timezone'));
         $unit = ' ';
         if (!empty($rrd_structure_datasource['unit'])) {
             $unit = $rrd_structure_datasource['unit'];
@@ -254,19 +245,19 @@ class Rrd extends AppModel
             '--width', $width,
 
             '--border', 1,
-            '--title='.(isset($options['label']) ? $options['label'] : $rrd_structure_datasource['label']),
-            '--vertical-label='.$unit,
+            '--title=' . (isset($options['label']) ? $options['label'] : $rrd_structure_datasource['label']),
+            '--vertical-label=' . $unit,
             '--imgformat', 'PNG',
-            'DEF:var0='.$options['path'].$options['host_uuid'].DS.$options['service_uuid'].'.rrd:'.$rrd_structure_datasource['ds'].':AVERAGE',
-            'AREA:var0#5CB85C90:'.preg_replace('/[^a-zA-Z^0-9\-\.]/', ' ', $rrd_structure_datasource['label']),
+            'DEF:var0=' . $options['path'] . $options['host_uuid'] . DS . $options['service_uuid'] . '.rrd:' . $rrd_structure_datasource['ds'] . ':AVERAGE',
+            'AREA:var0#5CB85C90:' . preg_replace('/[^a-zA-Z^0-9\-\.]/', ' ', $rrd_structure_datasource['label']),
             'LINE1:var0#5CB85C',
-            'VDEF:ds'.$rrd_structure_datasource['ds'].'avg=var0,AVERAGE',
-            'GPRINT:ds'.$rrd_structure_datasource['ds'].'avg:'.__('Average').'\:%6.2lf %S',
-            'VDEF:ds'.$rrd_structure_datasource['ds'].'min=var0,MINIMUM',
-            'GPRINT:ds'.$rrd_structure_datasource['ds'].'min:'.__('Minimum').'\:%6.2lf %S',
-            'VDEF:ds'.$rrd_structure_datasource['ds'].'max=var0,MAXIMUM',
-            'GPRINT:ds'.$rrd_structure_datasource['ds'].'max:'.__('Maximum').'\:%6.2lf %S',
-            'CDEF:predict='.(3600 * 24).',-31,900,var0,PREDICT',
+            'VDEF:ds' . $rrd_structure_datasource['ds'] . 'avg=var0,AVERAGE',
+            'GPRINT:ds' . $rrd_structure_datasource['ds'] . 'avg:' . __('Average') . '\:%6.2lf %S',
+            'VDEF:ds' . $rrd_structure_datasource['ds'] . 'min=var0,MINIMUM',
+            'GPRINT:ds' . $rrd_structure_datasource['ds'] . 'min:' . __('Minimum') . '\:%6.2lf %S',
+            'VDEF:ds' . $rrd_structure_datasource['ds'] . 'max=var0,MAXIMUM',
+            'GPRINT:ds' . $rrd_structure_datasource['ds'] . 'max:' . __('Maximum') . '\:%6.2lf %S',
+            'CDEF:predict=' . (3600 * 24) . ',-31,900,var0,PREDICT',
             'LINE2:predict#337AB7:Trend Prediction',
         ];
         if (is_array($color)) {
@@ -279,30 +270,36 @@ class Rrd extends AppModel
             array_push($_rrd_options, $color);
         }
 
-
-        if (isset($rrd_structure_datasource['warn']) && isset($rrd_structure_datasource['crit']) && $rrd_structure_datasource['warn'] > 0 && $rrd_structure_datasource['crit'] > 0 && $showThreshold === true) {
-            $__rrd_options = [
-                'LINE1:'.$rrd_structure_datasource['warn'].'#FFFF00:'.__('Warning'),
-                'LINE1:'.$rrd_structure_datasource['crit'].'#FF0000:'.__('Critical'),
-            ];
-            $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
+        if($showThreshold){
+            if (isset($rrd_structure_datasource['warn']) && $rrd_structure_datasource['warn'] > 0){
+                $__rrd_options = [
+                    'LINE1:'.$rrd_structure_datasource['warn'].'#FFFF00:'.__('Warning')
+                ];
+                $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
+            }
+            if (isset($rrd_structure_datasource['crit']) && $rrd_structure_datasource['crit'] > 0){
+                $__rrd_options = [
+                    'LINE1:'.$rrd_structure_datasource['crit'].'#FF0000:'.__('Critical')
+                ];
+                $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
+            }
         }
 
         if (empty($rrd_options)) {
             $rrd_options = $_rrd_options;
         }
 
-        $targetPath = WWW_ROOT.'img'.DS.'graphs';
+        $targetPath = WWW_ROOT . 'img' . DS . 'graphs';
 
         if (!is_dir($targetPath)) {
             mkdir($targetPath);
         }
-        $fileName = md5(rand().time().rand()).'.png';
-        $ret = rrd_graph($targetPath.DS.$fileName, $rrd_options);
+        $fileName = md5(rand() . time() . rand()) . '.png';
+        $ret = rrd_graph($targetPath . DS . $fileName, $rrd_options);
         if ($ret) {
             return [
-                'webPath'  => DS.'img'.DS.'graphs'.DS.$fileName,
-                'diskPath' => $targetPath.DS.$fileName,
+                'webPath' => DS . 'img' . DS . 'graphs' . DS . $fileName,
+                'diskPath' => $targetPath . DS . $fileName,
             ];
         } else {
             return rrd_error();
@@ -311,21 +308,20 @@ class Rrd extends AppModel
         return false;
     }
 
-    public function createRrdGraphFromTemplate($rrdOptions)
-    {
-        $targetPath = WWW_ROOT.'img'.DS.'graphs';
+    public function createRrdGraphFromTemplate($rrdOptions) {
+        $targetPath = WWW_ROOT . 'img' . DS . 'graphs';
 
-        putenv('TZ='.AuthComponent::user('timezone'));
+        putenv('TZ=' . AuthComponent::user('timezone'));
 
         if (!is_dir($targetPath)) {
             mkdir($targetPath);
         }
-        $fileName = md5(rand().time().rand()).'.png';
-        $ret = rrd_graph($targetPath.DS.$fileName, $rrdOptions);
+        $fileName = md5(rand() . time() . rand()) . '.png';
+        $ret = rrd_graph($targetPath . DS . $fileName, $rrdOptions);
         if ($ret) {
             return [
-                'webPath'  => DS.'img'.DS.'graphs'.DS.$fileName,
-                'diskPath' => $targetPath.DS.$fileName,
+                'webPath' => DS . 'img' . DS . 'graphs' . DS . $fileName,
+                'diskPath' => $targetPath . DS . $fileName,
             ];
         } else {
             return rrd_error();
@@ -339,58 +335,57 @@ class Rrd extends AppModel
      * This function fixes the given start and end time based on the given resolution.
      *
      * @param int $start Timestamp
-     * @param int $end   Timestamp
+     * @param int $end Timestamp
      * @param int $resolution
      *
      * @return Array The fixed start and end values for the given resolution.
      */
-    protected function fixResolution($start, $end, $resolution)
-    {
+    protected function fixResolution($start, $end, $resolution) {
         $fixed_start = $this->fixValueForResolution($start, $resolution);
         $fixed_end = $this->fixValueForResolution($end, $resolution);
 
         return [$fixed_start, $fixed_end];
     }
 
-    private function fixValueForResolution($value, $resolution)
-    {
+    private function fixValueForResolution($value, $resolution) {
         return ((int)($value / $resolution)) * $resolution;
     }
 
-    public function parsePerfData($perfdata)
-    {
-        //debug($perfdata);
-        $p = $perfdata;
+    public function parsePerfData($perfdata_string) {
         $perfdata = [];
-        $skeleton = ['current', 'unit', 'warn', 'crit', 'min', 'max'];
-
-        foreach (explode(" ", $p) as $DS) {
-            $i = 2;
-            foreach (explode(';', $DS) as $value) {
+        $perfdataFiltered = [];
+        $perf_data_structure = [ 'current', 'unit', 'warn', 'crit', 'min', 'max'];
+        $i = 0;
+        foreach (explode(" ", $perfdata_string) as $data_set) {
+            foreach (explode(';', $data_set) as $value) {
                 if (preg_match('/=/', $value)) {
                     $s = preg_split('/=/', $value);
-                    //Einheit auslesen
-                    $zahl = '';
-                    $unit = '';
-                    foreach (str_split($s[1]) as $char) {
-                        if ($char == '.' || $char == ',' || ($char >= '0' && $char <= '9')) {
-                            $zahl .= $char;
-                        } else {
-                            $unit .= $char;
+                    if (isset($s[0])) {
+                        //$perfdata[$i][] = $s[0];
+                        $number = '';
+                        $unit = '';
+                        foreach (str_split($s[1]) as $char) {
+                            if ($char == '.' || $char == ',' || ($char >= '0' && $char <= '9')) {
+                                $number .= $char;
+                            } else {
+                                $unit .= $char;
+                            }
                         }
+                        $perfdata[$i][] = str_replace(',', '.', $number);
+                        $perfdata[$i][] = $unit;
+                        continue;
                     }
-                    $perfdata[$s[0]][$skeleton[0]] = str_replace(',', '.', $zahl);
-                    $perfdata[$s[0]][$skeleton[1]] = $unit;
-                    continue;
                 }
-                $perfdata[$s[0]][$skeleton[$i]] = $value;
-                $i++;
+                if (isset($s[0])) {
+                    $perfdata[$i][] = $value;
+                }
             }
-            unset($s);
+            if (isset($s[0])) {
+                $perfdataFiltered[$s[0]] = array_combine($perf_data_structure, array_merge($perfdata[$i], ((sizeof($perf_data_structure) - sizeof($perfdata[$i])) > 0) ? array_fill(sizeof($perfdata[$i]), (sizeof($perf_data_structure) - sizeof($perfdata[$i])), '') : []));
+                unset($s);
+            }
+            $i++;
         }
-
-        //debug($perfdata);
-        return ($perfdata);
+        return ($perfdataFiltered);
     }
-
 }

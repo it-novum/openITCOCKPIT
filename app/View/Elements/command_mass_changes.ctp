@@ -33,7 +33,7 @@
                     class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('add', 'commands')): ?>
-            <a href="javascript:void(0);" id="copyAll" style="text-decoration: none; color:#333;">
+            <a href="javascript:void(0);" id="copyAll" >
                 <i class="fa fa-lg fa-files-o"></i> <?= __('Copy'); ?>
             </a>
         <?php endif; ?>

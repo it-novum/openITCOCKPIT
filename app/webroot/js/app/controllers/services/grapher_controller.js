@@ -35,9 +35,15 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 		 * Bind click event for resetZoom
 		 */
 
+		$('#hide-show-thresholds').change(function(){
+            localStorage.setItem('service_show_tresholds_'+$(this).attr('data-service'), $(this).is(':checked') ? '1' : '0');
+            $('.resetZoom').click();
+		});
+
 		$('.resetZoom').click(function(){
 			var $this = $(this);
-			self.resetZoom($this.attr('start'), $this.attr('end'), $this.attr('ds'), $this.attr('service_id'), $this);
+			var showThresholds = $('#hide-show-thresholds').is(':checked') ? '1' : '0';
+			self.resetZoom($this.attr('start'), $this.attr('end'), $this.attr('ds'), $this.attr('service_id'), $this, showThresholds);
 			$this.parent().hide();
 		});
 
@@ -76,7 +82,8 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 				$img.attr('start', newGraphStart);
 				$img.attr('end', newGraphEnd);
 				$img.parent().parent().find('.grapherLoader').show();
-				$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + parseInt(newGraphStart) + '/' + parseInt(newGraphEnd));
+                var showThresholds = $('#hide-show-thresholds').is(':checked') ? '1' : '0';
+				$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + parseInt(newGraphStart) + '/' + parseInt(newGraphEnd) + '/' + showThresholds);
 
 				return false;
 			}
@@ -86,7 +93,7 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 		/*
 		 * Create imgAreaSelect ongraph images
 		 */
-		//Avoid that we create the imgAreSelect befor the borwser finished image loading
+		//Avoid that we create the imgAreSelect before the browser finished image loading
 		$('.zoomSelection').load(function(){
 			$('.zoomSelection').each(function(key, object){
 				/* Every datasource (ds) can hase his own height, depends on legend and stuff.
@@ -142,16 +149,17 @@ App.Controllers.ServicesGrapherController = Frontend.AppController.extend({
 		$img.attr('start', newGraphStart);
 		$img.attr('end', newGraphEnd);
 		$img.parent().parent().find('.grapherLoader').show();
-		$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + newGraphStart + '/' + newGraphEnd);
+        var showThresholds = $('#hide-show-thresholds').is(':checked') ? '1' : '0';
+		$img.attr('src', '/services/grapherZoom/'+encodeURIComponent($img.attr('service_id')) + '/' + encodeURIComponent($img.attr('ds')) + '/' + newGraphStart + '/' + newGraphEnd + '/' + showThresholds);
 	},
 
-	resetZoom: function(start, end, ds, service_id, objectThis){
+	resetZoom: function(start, end, ds, service_id, objectThis, showThresholds){
 		objectThis.parent().parent().find('.graphTime').html(date('d.m.Y H:i', start) + ' - ' + date('d.m.Y H:i', end));
 		objectThis.parent().parent().parent().find('.grapherLoader').show();
 
 		var $img = objectThis.parent().parent().parent().find('.zoomSelection');
 		$img.attr('start', start);
 		$img.attr('end', end);
-		$img.attr('src', '/services/grapherZoom/'+encodeURIComponent(service_id) + '/' + encodeURIComponent(ds) + '/' + start + '/' + end);
+		$img.attr('src', '/services/grapherZoom/'+encodeURIComponent(service_id) + '/' + encodeURIComponent(ds) + '/' + start + '/' + end + '/' + showThresholds);
 	}
 });

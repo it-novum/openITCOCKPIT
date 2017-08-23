@@ -81,6 +81,23 @@ class HoststatusIcon {
 
     }
 
+    public function getTextColor(){
+        if ($this->state === null) {
+            return 'txt-primary';
+        }
+
+        switch ($this->state) {
+            case 0:
+                return 'txt-color-green';
+
+            case 1:
+                return 'txt-color-red';
+
+            default:
+                return 'txt-color-blueLight';
+        }
+    }
+
     /**
      * @return string
      */
@@ -103,6 +120,14 @@ class HoststatusIcon {
             $state = 3;
         }
         return sprintf($template, $this->href, $this->stateColors[$state], $this->style);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPdfIcon(){
+        $template = '<i class="fa fa-square %s"></i>';
+        return sprintf($template, $this->getTextColor());
     }
 
     /**

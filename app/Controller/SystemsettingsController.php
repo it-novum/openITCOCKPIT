@@ -40,6 +40,9 @@ class SystemsettingsController extends AppController
                 if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
                     $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
                 }
+                if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
+                    $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
+                }
 
 
                 $this->setFlash(__('Settings saved successfully'));
