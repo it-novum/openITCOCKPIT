@@ -269,7 +269,7 @@ class Rrd extends AppModel {
             array_push($_rrd_options, '--color');
             array_push($_rrd_options, $color);
         }
-        
+
         if($showThreshold){
             if (isset($rrd_structure_datasource['warn']) && $rrd_structure_datasource['warn'] > 0){
                 $__rrd_options = [

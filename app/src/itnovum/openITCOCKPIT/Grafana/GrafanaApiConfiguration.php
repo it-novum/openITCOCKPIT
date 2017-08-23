@@ -120,7 +120,7 @@ class GrafanaApiConfiguration {
         $graphitePrefix = null;
         $useHttps = true;
         $useProxy = true;
-        $ignorSslCertificate = false;
+        $ignoreSslCertificate = false;
         $includedHostgroups = [];
         $excludedHostgroups = [];
         if (!empty($configuration['GrafanaConfiguration']['api_url'])) {
@@ -139,7 +139,7 @@ class GrafanaApiConfiguration {
             $useProxy = $configuration['GrafanaConfiguration']['use_proxy'];
         }
         if (isset($configuration['GrafanaConfiguration']['ignore_ssl_certificate'])) {
-            $ignorSslCertificate = $configuration['GrafanaConfiguration']['ignore_ssl_certificate'];
+            $ignoreSslCertificate = $configuration['GrafanaConfiguration']['ignore_ssl_certificate'];
         }
         if (!empty($configuration['GrafanaConfiguration']['dashboard_style'])) {
             $dashboardStyle = $configuration['GrafanaConfiguration']['dashboard_style'];
@@ -157,7 +157,7 @@ class GrafanaApiConfiguration {
                 '{n}[excluded=1].hostgroup_id'
             );
         }
-        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $useProxy, $ignorSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
+        return new self($apiUrl, $apiKey, $graphitePrefix, $useHttps, $useProxy, $ignoreSslCertificate, $includedHostgroups, $excludedHostgroups, $dashboardStyle);
     }
 
     /**
@@ -192,7 +192,7 @@ class GrafanaApiConfiguration {
      * @return bool
      */
     public function isIgnoreSslCertificate() {
-        return $this->ignoreSslCertificate;
+        return !$this->ignoreSslCertificate;
     }
 
     /**
