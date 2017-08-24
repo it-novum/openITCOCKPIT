@@ -327,9 +327,9 @@ $this->Paginator->options([
                                         <td>
                                             <?php
                                             if ($Downtime->wasCancelled()):
-                                                echo __('No');
-                                            else:
                                                 echo __('Yes');
+                                            else:
+                                                echo __('No');
                                             endif;
                                             ?>
                                         </td>

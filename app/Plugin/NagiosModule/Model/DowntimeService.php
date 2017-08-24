@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
 
 class DowntimeService extends NagiosModuleAppModel {
@@ -41,41 +41,55 @@ class DowntimeService extends NagiosModuleAppModel {
     //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "downtimehistory Table"
     public $downtime_type = '1,2';
 
-    public function getQuery(DowntimeHostConditions $Conditions, $paginatorConditions) {
+    public function getQuery(DowntimeServiceConditions $Conditions, $paginatorConditions) {
         $query = [
-            'recursive'  => -1,
-            'fields'     => [
-                'DowntimeHost.author_name',
-                'DowntimeHost.comment_data',
-                'DowntimeHost.entry_time',
-                'DowntimeHost.scheduled_start_time',
-                'DowntimeHost.scheduled_end_time',
-                'DowntimeHost.duration',
-                'DowntimeHost.was_started',
-                'DowntimeHost.internal_downtime_id',
-                'DowntimeHost.downtimehistory_id',
-                'DowntimeHost.was_cancelled',
-
+            'recursive' => -1,
+            'fields'    => [
+                'DowntimeService.author_name',
+                'DowntimeService.comment_data',
+                'DowntimeService.entry_time',
+                'DowntimeService.scheduled_start_time',
+                'DowntimeService.scheduled_end_time',
+                'DowntimeService.duration',
+                'DowntimeService.was_started',
+                'DowntimeService.internal_downtime_id',
+                'DowntimeService.downtimehistory_id',
+                'DowntimeService.was_cancelled',
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
-
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.servicetemplate_id',
+                'Servicetemplate.id',
+                'Servicetemplate.name',
                 'HostsToContainers.container_id',
-
             ],
-            'joins'      => [
+            'joins'     => [
                 [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
                     'alias'      => 'Objects',
-                    'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                    'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
                 ],
-
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Objects.name2',
+                ],
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
+                ],
                 [
                     'table'      => 'hosts',
                     'type'       => 'INNER',
                     'alias'      => 'Host',
-                    'conditions' => 'Host.uuid = Objects.name1',
+                    'conditions' => 'Host.id = Service.host_id',
                 ],
                 [
                     'table'      => 'hosts_to_containers',
@@ -86,12 +100,12 @@ class DowntimeService extends NagiosModuleAppModel {
                     ],
                 ],
             ],
-            'group'      => 'DowntimeHost.downtimehistory_id',
+            'group'      => 'DowntimeService.downtimehistory_id',
             'order'      => $Conditions->getOrder(),
             'limit'      => $Conditions->getLimit(),
             'conditions' => [
-                'DowntimeHost.scheduled_start_time >' => date('Y-m-d H:i:s', $Conditions->getFrom()),
-                'DowntimeHost.scheduled_start_time <' => date('Y-m-d H:i:s', $Conditions->getTo())
+                'DowntimeService.scheduled_start_time >' => date('Y-m-d H:i:s', $Conditions->getFrom()),
+                'DowntimeService.scheduled_start_time <' => date('Y-m-d H:i:s', $Conditions->getTo())
             ]
         ];
 
@@ -100,13 +114,12 @@ class DowntimeService extends NagiosModuleAppModel {
         }
 
         if ($Conditions->hideExpired()) {
-            $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+            $query['conditions']['DowntimeService.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
         }
 
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
-
         return $query;
     }
 
