@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\DowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 
 class DowntimesController extends AppController {
 
@@ -58,7 +59,7 @@ class DowntimesController extends AppController {
         ],
         'service' => [
             'fields' => [
-                'Host.name'             => ['label' => 'Host', 'searchType' => 'wildcard'],
+                'Host.name'                    => ['label' => 'Host', 'searchType' => 'wildcard'],
                 'DowntimeService.author_name'  => ['label' => 'User', 'searchType' => 'wildcard'],
                 'DowntimeService.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
             ],
@@ -98,15 +99,18 @@ class DowntimesController extends AppController {
 
         foreach ($all_downtimes as $key => $downtime) {
             $Downtime = new Downtime($downtime['DowntimeHost']);
+            $Host = new Host($downtime);
             $all_downtimes[$key]['canDelete'] = false;
-            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
-                $all_downtimes[$key]['canDelete'] = true;
-                $serviceDowntimes = $this->DowntimeService->getServiceDowntimesByHostAndDowntime($downtime['Host']['id'], $Downtime);
-                $all_downtimes[$key]['servicesDown'] = '0';
-                $internalServiceDowntimeIds = Hash::extract($serviceDowntimes, '{n}.DowntimeService.internal_downtime_id');
+            foreach ($Host->getContainerIds() as $containerId) {
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
+                    $all_downtimes[$key]['canDelete'] = true;
+                    $serviceDowntimes = $this->DowntimeService->getServiceDowntimesByHostAndDowntime($downtime['Host']['id'], $Downtime);
+                    $all_downtimes[$key]['servicesDown'] = '0';
+                    $internalServiceDowntimeIds = Hash::extract($serviceDowntimes, '{n}.DowntimeService.internal_downtime_id');
 
-                if (!empty($internalServiceDowntimeIds)) {
-                    $all_downtimes[$key]['servicesDown'] = implode(',', $internalServiceDowntimeIds);
+                    if (!empty($internalServiceDowntimeIds)) {
+                        $all_downtimes[$key]['servicesDown'] = implode(',', $internalServiceDowntimeIds);
+                    }
                 }
             }
         }
@@ -149,11 +153,13 @@ class DowntimesController extends AppController {
             [key($this->Paginator->settings['order'])]
         );
 
-        foreach($all_downtimes as $key => $downtime){
-            if(isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT){
-                $all_downtimes[$key]['canDelete'] = true;
-            }else{
+        foreach ($all_downtimes as $key => $downtime) {
+            $Host = new Host($downtime);
+            foreach ($Host->getContainerIds() as $containerId) {
                 $all_downtimes[$key]['canDelete'] = false;
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId]) && $this->MY_RIGHTS_LEVEL[$containerId] == WRITE_RIGHT) {
+                    $all_downtimes[$key]['canDelete'] = true;
+                }
             }
         }
 

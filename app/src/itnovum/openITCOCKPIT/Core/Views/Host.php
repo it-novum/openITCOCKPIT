@@ -78,7 +78,7 @@ class Host {
     private $tags;
 
 
-    public function __construct($host){
+    public function __construct($host) {
         if (isset($host['Host']['id'])) {
             $this->id = $host['Host']['id'];
         }
@@ -116,6 +116,14 @@ class Host {
             $this->containerIds = \Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         }
 
+        if (isset($host['HostsToContainers'])) {
+            //MySQL
+            $this->containerIds = [];
+            foreach ($host['HostsToContainers'] as $container_id) {
+                $this->containerIds[] = $container_id;
+            }
+        }
+
         if (isset($host['Host']['container_ids'])) {
             //CrateDB
             $this->containerIds = $host['Host']['container_ids'];
@@ -130,57 +138,57 @@ class Host {
     /**
      * @return string
      */
-    public function getId(){
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getUuid(){
+    public function getUuid() {
         return $this->uuid;
     }
 
     /**
      * @return string
      */
-    public function getHostname(){
+    public function getHostname() {
         return $this->hostname;
     }
 
     /**
      * @return string
      */
-    public function getAddress(){
+    public function getAddress() {
         return $this->address;
     }
 
     /**
      * @return string
      */
-    public function getDescription(){
+    public function getDescription() {
         return $this->description;
     }
 
     /**
      * @return bool|int
      */
-    public function isActiveChecksEnabled(){
+    public function isActiveChecksEnabled() {
         return $this->active_checks_enabled;
     }
 
     /**
      * @return int
      */
-    public function getSatelliteId(){
+    public function getSatelliteId() {
         return $this->satelliteId;
     }
 
     /**
      * @return bool
      */
-    public function isSatelliteHost(){
-        if($this->satelliteId  === null){
+    public function isSatelliteHost() {
+        if ($this->satelliteId === null) {
             return false;
         }
         return ($this->satelliteId !== 0);
@@ -189,24 +197,23 @@ class Host {
     /**
      * @return int
      */
-    public function getContainerId(){
+    public function getContainerId() {
         return $this->containerId;
     }
 
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         return $this->containerIds;
     }
 
     /**
      * @return string
      */
-    public function getTags(){
+    public function getTags() {
         return $this->tags;
     }
-
 
 
 }

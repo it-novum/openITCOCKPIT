@@ -50,15 +50,13 @@ class NotificationHost extends CrateModuleAppModel {
             'Command.*',
         ];
 
-        //todo CrateDB bug, check if LEFT join can be refactored with INNER join
-        //https://github.com/crate/crate/issues/5747
         $query = [
             'recursive' => -1,
             'fields' => $fields,
             'joins' => [
                 [
                     'table' => 'openitcockpit_hosts',
-                    'type' => 'LEFT',
+                    'type' => 'INNER',
                     'alias' => 'Host',
                     'conditions' =>
                         'Host.uuid = NotificationHost.hostname',
