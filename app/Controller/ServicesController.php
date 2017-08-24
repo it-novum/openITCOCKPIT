@@ -294,6 +294,7 @@ class ServicesController extends AppController {
         //Default order
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Host.name' => 'asc',
+            'Host.id' => 'asc',
             'Service.servicename' => 'asc'
         ]));
 
