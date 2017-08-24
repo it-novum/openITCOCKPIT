@@ -50,6 +50,7 @@ app/Plugin/NWCModule
 app/Plugin/NrpeModule
 app/Plugin/PostgresModule
 app/Plugin/WMIModule
+app/Plugin/PagerdutyModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md

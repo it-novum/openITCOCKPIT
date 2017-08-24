@@ -48,6 +48,8 @@ class ConstantsComponent extends Component {
             'MONITORING_OBJECTS' => $monitoring . 'Module.Objects',
             'MONITORING_EXTERNALCOMMAND' => $monitoring . 'Module.Externalcommand',
             'MONITORING_DOWNTIME' => $monitoring . 'Module.Downtime',
+            'MONITORING_DOWNTIME_HOST' => $monitoring . 'Module.DowntimeHost',
+            'MONITORING_DOWNTIME_SERVICE' => $monitoring . 'Module.DowntimeService',
             'MONITORING_LOGENTRY' => $monitoring . 'Module.Logentry',
             'MONITORING_NAGIOSTAT' => $monitoring . 'Module.Nagiostat',
             'MONITORING_NOTIFICATION' => $monitoring . 'Module.Notification',
