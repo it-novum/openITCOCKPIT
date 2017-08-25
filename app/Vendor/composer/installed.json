@@ -22,7 +22,7 @@
             "mockery/mockery": "0.9.*",
             "phpunit/phpunit": "4.6.*"
         },
-        "time": "2015-06-16 12:41:10",
+        "time": "2015-06-16T12:41:10+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -76,7 +76,7 @@
         "require": {
             "php": ">=5.5.9"
         },
-        "time": "2017-03-26 15:47:15",
+        "time": "2017-03-26T15:47:15+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -133,7 +133,7 @@
             "phpunit/phpunit": "~4.0",
             "squizlabs/php_codesniffer": "~1.5.2"
         },
-        "time": "2017-04-06 10:37:10",
+        "time": "2017-04-06T10:37:10+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -171,7 +171,7 @@
         "require": {
             "php": ">=5.3.2"
         },
-        "time": "2014-09-09 13:34:57",
+        "time": "2014-09-09T13:34:57+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -230,7 +230,7 @@
         "require-dev": {
             "phpunit/phpunit": "4.*"
         },
-        "time": "2015-11-06 14:35:42",
+        "time": "2015-11-06T14:35:42+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -299,7 +299,7 @@
         "require-dev": {
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2015-04-14 22:21:58",
+        "time": "2015-04-14T22:21:58+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -372,7 +372,7 @@
             "predis/predis": "~1.0",
             "satooshi/php-coveralls": "~0.6"
         },
-        "time": "2016-10-29 11:16:17",
+        "time": "2016-10-29T11:16:17+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -441,7 +441,7 @@
             "doctrine/cache": "1.*",
             "phpunit/phpunit": "4.*"
         },
-        "time": "2015-08-31 12:32:49",
+        "time": "2015-08-31T12:32:49+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -514,7 +514,7 @@
         "require-dev": {
             "phpunit/phpunit": "~4.8|~5.0"
         },
-        "time": "2016-11-30 16:50:46",
+        "time": "2016-11-30T16:50:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -589,7 +589,7 @@
         "suggest": {
             "symfony/console": "For helpful console commands such as SQL execution and import of files."
         },
-        "time": "2017-02-08 12:53:47",
+        "time": "2017-02-08T12:53:47+00:00",
         "bin": [
             "bin/doctrine-dbal"
         ],
@@ -654,7 +654,7 @@
         "require": {
             "php": ">=5.3.0"
         },
-        "time": "2016-08-06 14:39:51",
+        "time": "2016-08-06T14:39:51+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -713,7 +713,7 @@
         "require-dev": {
             "phpunit/phpunit": "~4.0"
         },
-        "time": "2017-03-20 17:10:46",
+        "time": "2017-03-20T17:10:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -776,7 +776,7 @@
         "require-dev": {
             "phpunit/phpunit": "^4.0"
         },
-        "time": "2016-12-20 10:07:11",
+        "time": "2016-12-20T10:07:11+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -833,7 +833,7 @@
             "phpunit/phpunit": "^4.0",
             "psr/log": "^1.0"
         },
-        "time": "2017-02-28 22:50:30",
+        "time": "2017-02-28T22:50:30+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -896,7 +896,7 @@
             "phpunit/phpunit": "~4.0",
             "squizlabs/php_codesniffer": "~1.5.2"
         },
-        "time": "2017-04-07 13:26:54",
+        "time": "2017-04-07T13:26:54+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -915,6 +915,125 @@
             "database",
             "dbal",
             "doctrine"
+        ]
+    },
+    {
+        "name": "ddeboer/transcoder",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ddeboer/transcoder.git",
+            "reference": "8781195ad1334add26dca66a4a823b7973639754"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ddeboer/transcoder/zipball/8781195ad1334add26dca66a4a823b7973639754",
+            "reference": "8781195ad1334add26dca66a4a823b7973639754",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.0"
+        },
+        "suggest": {
+            "ext-iconv": "For using the IconvTranscoder",
+            "ext-mbstring": "For using the MbTranscoder"
+        },
+        "time": "2015-01-23T14:32:33+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Ddeboer\\Transcoder\\": "src/",
+                "Ddeboer\\Transcoder\\Tests\\": "tests/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "David de Boer",
+                "email": "david@ddeboer.nl"
+            },
+            {
+                "name": "Community contributors",
+                "homepage": "https://github.com/ddeboer/transcoder/graphs/contributors"
+            }
+        ],
+        "description": "Better encoding conversion for PHP",
+        "keywords": [
+            "charset",
+            "encoding",
+            "iconv",
+            "iso",
+            "mb",
+            "multibyte",
+            "utf-8"
+        ]
+    },
+    {
+        "name": "ddeboer/imap",
+        "version": "0.5.2",
+        "version_normalized": "0.5.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ddeboer/imap.git",
+            "reference": "b1939740d62e427a8105312a3fb574deb62dcf68"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ddeboer/imap/zipball/b1939740d62e427a8105312a3fb574deb62dcf68",
+            "reference": "b1939740d62e427a8105312a3fb574deb62dcf68",
+            "shasum": ""
+        },
+        "require": {
+            "ddeboer/transcoder": "~1",
+            "ext-imap": "*",
+            "php": ">=5.4.0"
+        },
+        "require-dev": {
+            "ext-iconv": "*",
+            "ext-mbstring": "*",
+            "phpunit/phpunit": "~4.0"
+        },
+        "time": "2015-12-03T13:23:36+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Ddeboer\\Imap\\": "src/",
+                "Ddeboer\\Imap\\Tests\\": "tests/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "David de Boer",
+                "email": "david@ddeboer.nl"
+            },
+            {
+                "name": "Community contributors",
+                "homepage": "https://github.com/ddeboer/imap/graphs/contributors"
+            }
+        ],
+        "description": "Object-oriented IMAP for PHP",
+        "keywords": [
+            "email",
+            "imap",
+            "mail"
         ]
     }
 ]

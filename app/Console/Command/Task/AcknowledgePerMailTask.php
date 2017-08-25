@@ -22,9 +22,11 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-App::import('Vendor', 'Imap/Imap');
+App::import('Vendor', 'ddeboer/imap/src/Server');
 
+use Ddeboer\Imap\Server;
 use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+
 class AcknowledgePerMailTask extends AppShell implements CronjobInterface
 {
     public $uses = ['NagiosModule.Externalcommand', 'Systemsetting'];
@@ -70,61 +72,56 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $serverProtocol = trim($serverParts[1]);
         $serverSSL = in_array('ssl', $serverParts);
         $serverNoValidateCert = in_array('novalidate-cert', $serverParts);
+        $serverOptions = '/'.$serverProtocol.($serverSSL?'/ssl':'').($serverNoValidateCert?'/novalidate-cert':'');
 
         if($serverProtocol != 'imap'){
             return ['success' => '<red>Error</red>', 'messages' => ['Only IMAP protocol is supported.']];
         }
 
-        $mailbox = new \JJG\Imap($serverURL, $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'], $serverPort, $serverProtocol, $serverSSL, $serverNoValidateCert, 'INBOX');
-        if(!empty($mailbox->error)){
-            return ['success' => '<red>Error</red>', 'messages' => [$mailbox->error]];
-        }
-        $myEmails = $mailbox->searchForEmails();
+        $server = new Server($serverURL, $serverPort, $serverOptions);
+        $connection = $server->authenticate($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS'], $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD']);
+        $mailbox = $connection->getMailbox('INBOX');
         $acks = [];
         $success = '<green>Ok</green>';
         $acknowledged = 0;
-        if($myEmails !== false) {
-            $this->out('Received ' . (count($myEmails)) . ' email(s)...   ');
-            foreach ($myEmails as $myEmailId) {
-                $messArr = $mailbox->getMessage($myEmailId);
-                $this->out('Parsing email from '.(!empty($messArr['sender']) ? $messArr['sender'] : $messArr['from']));
-                $parsedValues = $this->parseAckInformation($messArr['body']);
-//                $mailbox->deleteMessage($myEmailId);
-                if (empty($parsedValues)) continue;
-                $from = strip_tags(str_replace(['"', "'"], '', $messArr['from']));
-                $author = !empty($messArr['sender']) ? $messArr['sender'] : (!empty($from) ? $from : 'Unknown author');
-                $acknowledged++;
-                if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                    $this->Externalcommand->setHostAck([
-                        'hostUuid' => $parsedValues['ACK_HOSTUUID'],
-                        'author' => $author,
-                        'comment' => __('Acknowledged per mail'),
-                        'sticky' => 1,
-                        'type' => 'hostOnly'
-                    ]);
-                    $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
-                } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                    $this->Externalcommand->setServiceAck([
-                        'hostUuid' => $parsedValues['ACK_HOSTUUID'],
-                        'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
-                        'author' => $author,
-                        'comment' => __('Acknowledged per mail'),
-                        'sticky' => 1
-                    ]);
-                    $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
-                }
+        foreach($mailbox->getMessages() as $message){
+            $this->out('Parsing email from '.$message->getFrom()->getAddress());
+            $parsedValues = $this->parseAckInformation($message->getBodyText());
+            if (empty($parsedValues)) continue;
+            $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();
+            $acknowledged++;
+            if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
+                $this->Externalcommand->setHostAck([
+                    'hostUuid' => $parsedValues['ACK_HOSTUUID'],
+                    'author' => $author,
+                    'comment' => __('Acknowledged per mail'),
+                    'sticky' => 1,
+                    'type' => 'hostOnly'
+                ]);
+                $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
+            } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
+                $this->Externalcommand->setServiceAck([
+                    'hostUuid' => $parsedValues['ACK_HOSTUUID'],
+                    'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
+                    'author' => $author,
+                    'comment' => __('Acknowledged per mail'),
+                    'sticky' => 1
+                ]);
+                $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
             }
+            $message->delete();
         }
+        $mailbox->expunge();
 
         if($acknowledged == 0){
             $acks = ['No hosts and services were acknowledged'];
         }
-        $mailbox->disconnect();
+        $connection->close();
         return ['success' => $success, 'messages' => $acks];
     }
 
     private function getStringBetween($string, $start, $end){
-        $str = str_replace(["\r", "\n"], '', $string);
+        $str = str_replace(["\r", "\n", '>'], '', $string);
         $ini = mb_strpos($str, $start);
         if ($ini === false) return '';
         $ini += strlen($start);
