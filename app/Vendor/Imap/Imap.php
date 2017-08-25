@@ -169,36 +169,7 @@ class Imap {
             // Get the raw headers.
             $raw_header = imap_fetchheader($this->mailbox, $messageId);
 
-            // Detect whether the message is an autoresponse.
-            $autoresponse = $this->detectAutoresponder($raw_header);
-
-            // Get some basic variables.
-            $deleted = ($details->Deleted == 'D');
-            $answered = ($details->Answered == 'A');
-            $draft = ($details->Draft == 'X');
-
-            // Get the message body.
-            $body = imap_fetchbody($this->mailbox, $messageId, 1.2);
-            if (!strlen($body) > 0) {
-                $body = imap_fetchbody($this->mailbox, $messageId, 1);
-            }
-
-            // Get the message body encoding.
-            $encoding = $this->getEncodingType($messageId);
-
-            // Decode body into plaintext (8bit, 7bit, and binary are exempt).
-            if ($encoding == 'BASE64') {
-                $body = $this->decodeBase64($body);
-            }
-            elseif ($encoding == 'QUOTED-PRINTABLE') {
-                $body = $this->decodeQuotedPrintable($body);
-            }
-            elseif ($encoding == '8BIT') {
-                $body = $this->decode8Bit($body);
-            }
-            elseif ($encoding == '7BIT') {
-                $body = $this->decode7Bit($body);
-            }
+            $fetchedBody = utf8_encode(quoted_printable_decode(imap_body($this->mailbox, $messageId)));;
 
             // Build the message.
             $message = array(
@@ -211,13 +182,8 @@ class Imap {
                 'sender' => isset($details->senderaddress) ? $details->senderaddress : '',
                 'date_sent' => $details->date,
                 'subject' => $details->subject,
-                'deleted' => $deleted,
-                'answered' => $answered,
-                'draft' => $draft,
-                'body' => $body,
-                'original_encoding' => $encoding,
-                'size' => $details->Size,
-                'auto_response' => $autoresponse,
+                'body' => $fetchedBody,
+                'size' => $details->Size
             );
         }
         else {

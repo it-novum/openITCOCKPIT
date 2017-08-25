@@ -89,7 +89,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
                 $messArr = $mailbox->getMessage($myEmailId);
                 $this->out('Parsing email from '.(!empty($messArr['sender']) ? $messArr['sender'] : $messArr['from']));
                 $parsedValues = $this->parseAckInformation($messArr['body']);
-                $mailbox->deleteMessage($myEmailId);
+//                $mailbox->deleteMessage($myEmailId);
                 if (empty($parsedValues)) continue;
                 $from = strip_tags(str_replace(['"', "'"], '', $messArr['from']));
                 $author = !empty($messArr['sender']) ? $messArr['sender'] : (!empty($from) ? $from : 'Unknown author');
