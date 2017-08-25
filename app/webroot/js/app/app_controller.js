@@ -42,6 +42,8 @@ Frontend.AppController = Frontend.Controller.extend({
      * @return void
      */
     baseComponents: ['ListFilter', 'ImageChooser', 'FileChooser', 'WebsocketSudo', 'Time'],
+    ajaxSelectedHosts: {},
+    ajaxSelectedServices: {},
 
     /**
      * Initializer
@@ -49,12 +51,14 @@ Frontend.AppController = Frontend.Controller.extend({
      * @return void
      */
     _init: function () {
+        var self = this;
         this._dom = $('div.controller.' + this._frontendData.controller + '_' + this._frontendData.action);
         this.$ = this._dom.find.bind(this._dom);
         this.Time.setup();
         var arrayOfItnAjax = {};
         var arrayOfMultiples = {};
         var arrayOfContainers = {};
+        var arrayOfSelected = {};
 
         var selectBoxes = $('.chosen');
         for (var i in selectBoxes) {
@@ -89,6 +93,9 @@ Frontend.AppController = Frontend.Controller.extend({
                     if(typeof selectBoxes[i].attributes['itn-ajax-container'] !== 'undefined'){
                         arrayOfContainers[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-container'].value;
                     }
+                    if(typeof selectBoxes[i].attributes['itn-ajax-selected-type'] !== 'undefined'){
+                        arrayOfSelected[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-selected-type'].value;
+                    }
                 }
             }
         }
@@ -97,6 +104,7 @@ Frontend.AppController = Frontend.Controller.extend({
         var lastTyped = '';
         var itnAjaxLoading = false;
         $('.chosen-container').bind('keyup',function(event) {
+
             var currentItnAjaxId = $(this).attr('id').replace('_chosen', '');
             var termInput = $('#'+currentItnAjaxId+'_chosen input');
             var termInputValue = termInput.val();
@@ -105,6 +113,14 @@ Frontend.AppController = Frontend.Controller.extend({
 
             var isMultiple = typeof arrayOfMultiples[currentItnAjaxId] !== 'undefined';
             var containerId = typeof arrayOfContainers[currentItnAjaxId] !== 'undefined' ? arrayOfContainers[currentItnAjaxId] : '';
+            var ajaxType;
+            if(arrayOfItnAjax[currentItnAjaxId].indexOf('Host') !== -1){
+                ajaxType = 'host';
+                self.ajaxSelectedHosts[0] = $('#' + currentItnAjaxId).val();
+            }else{
+                ajaxType = 'service';
+                self.ajaxSelectedServices[0] = $('#' + currentItnAjaxId).val();
+            }
             if(itnAjaxLoading){
                 $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');
             }
@@ -121,7 +137,7 @@ Frontend.AppController = Frontend.Controller.extend({
                     $.ajax({
                         method: 'POST',
                         url: arrayOfItnAjax[currentItnAjaxId],
-                        data: {term: termInputValue, selected: $('#' + currentItnAjaxId).val(), 'containerId': $(containerId).val()},
+                        data: {term: termInputValue, selected: ajaxType==='host' ? self.ajaxSelectedHosts : self.ajaxSelectedServices, 'containerId': $(containerId).val()},
                         success: function (data) {
                             $('#' + currentItnAjaxId).html(data).trigger('chosen:updated');
                             termInput.val(termInputValue);
