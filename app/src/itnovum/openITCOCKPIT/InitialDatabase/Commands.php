@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-class Commands extends Importer
-{
+class Commands extends Importer {
 
     /**
      * @property \Command $Model
@@ -35,8 +34,7 @@ class Commands extends Importer
     /**
      * @return bool
      */
-    public function import()
-    {
+    public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
@@ -51,8 +49,7 @@ class Commands extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data = [
             0  =>
                 [
@@ -60,7 +57,7 @@ class Commands extends Importer
                         [
                             'id'           => '1',
                             'name'         => 'host-notify-by-cake',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$HOSTACKAUTHOR$" --hostackcomment "$HOSTACKCOMMENT$"',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$HOSTACKAUTHOR$" --hostackcomment "$HOSTACKCOMMENT$" --format "both"',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'a13ff7f1-0642-4a11-be05-9931ca98da10',
@@ -75,7 +72,7 @@ class Commands extends Importer
                         [
                             'id'           => '2',
                             'name'         => 'service-notify-by-cake',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$SERVICEACKAUTHOR$" --serviceackcomment "$SERVICEACKCOMMENT$"',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$SERVICEACKAUTHOR$" --serviceackcomment "$SERVICEACKCOMMENT$" --format "both"',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'a517bbb6-f299-4b57-9865-a4e0b70597e4',
