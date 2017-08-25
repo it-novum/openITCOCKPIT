@@ -460,7 +460,11 @@
             <div class="content notification_type">
                 <table>
                     <tr>
-                        <td><img src="cid:100" height="30" width="120"/></td>
+                        <td>
+                            <?php if (!$parameters['no-attachments']): ?>
+                                <img src="cid:100" height="30" width="120"/>
+                            <?php endif; ?>
+                        </td>
                         <td align="right"><h6 class="collapse"><?php echo __('openITCOCKPIT Notification'); ?></h6></td>
                     </tr>
                     <tr>
@@ -502,13 +506,13 @@
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong><?php
-                                                echo __('The current status was already acknowledged by %s ', $parameters['serviceackauthor']);
+                                                echo __('The current status was already acknowledged by %s ',$parameters['serviceackauthor']);
                                                 echo __('with the comment "');
-                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $parameters['serviceackcomment'], $ticketDetails)):
-                                                    echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
+                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/',$parameters['serviceackcomment'],$ticketDetails)):
+                                                    echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2])) ?
                                                         $this->Html->link(
-                                                            $ticketDetails[1].' '.$ticketDetails[2],
-                                                            $_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'].$ticketDetails[3],
+                                                            $ticketDetails[1] . ' ' . $ticketDetails[2],
+                                                            $_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'] . $ticketDetails[3],
                                                             ['target' => '_blank']) : $parameters['serviceackcomment'];
                                                 else:
                                                     echo h($parameters['serviceackcomment']);
@@ -550,15 +554,16 @@
                             <p class="lead"> <?php echo h($parameters['serviceoutput']); ?> </p>
                             <br/>
                             <table class="social" width="100%">
-                                <?php foreach ($contentIDs as $contentID): ?>
-                                    <tr>
-                                        <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image'
-                                                 width="560" height="180"/></td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                <?php if (!$parameters['no-attachments']): ?>
+                                    <?php foreach ($contentIDs as $contentID): ?>
+                                        <tr>
+                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image' width="560" height="180"/></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </table>
                             <br/><br/>
-                            <?php if($parameters['servicestate'] != 'OK'): ?>
+                            <?php if ($parameters['servicestate'] != 'OK'): ?>
                                 --- BEGIN ACK INFORMATION ---
                                 ACK_HOSTNAME: <?php echo h($parameters['hostname']);
                                 echo PHP_EOL; ?>
@@ -627,18 +632,18 @@ TICKET_NOTIFICATIONTYPE: SERVICE
 TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
 
-<?php if($parameters['servicestate'] != 'OK'): ?>
+<?php if ($parameters['servicestate'] != 'OK'): ?>
 --- BEGIN ACK2 INFORMATION ---
 ACK_HOSTNAME: <?php echo h($parameters['hostname']);
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_SERVICEDESC: <?php echo $parameters['servicedesc'];
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_SERVICEUUID: <?php echo $parameters['serviceUuid'];
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_STATE: <?php echo h($parameters['servicestate']);
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_NOTIFICATIONTYPE: SERVICE
 --- END ACK2 INFORMATION ---
 <?php endif; ?>
