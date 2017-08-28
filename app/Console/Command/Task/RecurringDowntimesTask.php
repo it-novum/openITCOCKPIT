@@ -61,7 +61,6 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
     public function recurringDowntimes()
     {
         $all_downtimes = $this->Systemdowntimes->find('all');
-        $future =
         $statusdat = $this->parseStatusDat();
         foreach ($all_downtimes as $downtime) {
             $weekdays = [];
