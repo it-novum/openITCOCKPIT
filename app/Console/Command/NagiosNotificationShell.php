@@ -62,6 +62,9 @@ class NagiosNotificationShell extends AppShell {
                 $parameters['hostUuid'] = $parameters['hostname'];
                 $parameters['hostname'] = $service['hostname'];
                 $parameters['hostdescription'] = $service['hostdescription'];
+                $parameters['serviceType'] = (int)$service['serviceType'];
+                $parameters['hostId'] = $service['hostId'];
+                $parameters['serviceId'] = $service['serviceId'];
                 $this->NagiosNotification->serviceNotification($parameters);
             }
         }
@@ -246,6 +249,7 @@ class NagiosNotificationShell extends AppShell {
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
+                'Service.service_type'
             ],
             'contain'    => [
                 'Servicetemplate' => [
@@ -270,7 +274,15 @@ class NagiosNotificationShell extends AppShell {
             $service['Service']['name'] = $service['Servicetemplate']['name'];
         }
 
-        return ['serviceUuid' => $service['Service']['uuid'],'servicedesc' => $service['Service']['name'],'hostname' => $service['Host']['name'],'hostdescription' => $service['Host']['description']];
+        return [
+            'serviceUuid' => $service['Service']['uuid'],
+            'servicedesc' => $service['Service']['name'],
+            'hostname' => $service['Host']['name'],
+            'hostdescription' => $service['Host']['description'],
+            'serviceType' => $service['Service']['service_type'],
+            'hostId' => $service['Host']['id'],
+            'serviceId' => $service['Service']['id']
+        ];
     }
 
     public function dump($mixed) {
