@@ -45,17 +45,34 @@ Output: <?php echo h($parameters['serviceoutput']); ?>
 
 
 
+
 --- BEGIN TICKET SYSTEM INFORMATION ---
-TICKET_HOSTNAME: <?php echo h($parameters['hostname']); ?>
-
-TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; ?>
-
-TICKET_SERVICEDESC: <?php echo $parameters['servicedesc']; ?>
-
-TICKET_SERVICEUUID: <?php echo $parameters['serviceUuid']; ?>
-
-TICKET_STATE: <?php echo h($parameters['servicestate']); ?>
-
+TICKET_HOSTNAME: <?php echo h($parameters['hostname']);
+echo PHP_EOL; ?>
+TICKET_HOSTUUID: <?php echo $parameters['hostUuid'];
+echo PHP_EOL; ?>
+TICKET_SERVICEDESC: <?php echo $parameters['servicedesc'];
+echo PHP_EOL; ?>
+TICKET_SERVICEUUID: <?php echo $parameters['serviceUuid'];
+echo PHP_EOL; ?>
+TICKET_STATE: <?php echo h($parameters['servicestate']);
+echo PHP_EOL; ?>
 TICKET_NOTIFICATIONTYPE: SERVICE
 TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
+
+<?php if ($parameters['servicestate'] != 'OK'): ?>
+--- BEGIN ACK2 INFORMATION ---
+ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+    echo PHP_EOL; ?>
+ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+    echo PHP_EOL; ?>
+ACK_SERVICEDESC: <?php echo $parameters['servicedesc'];
+    echo PHP_EOL; ?>
+ACK_SERVICEUUID: <?php echo $parameters['serviceUuid'];
+    echo PHP_EOL; ?>
+ACK_STATE: <?php echo h($parameters['servicestate']);
+    echo PHP_EOL; ?>
+ACK_NOTIFICATIONTYPE: SERVICE
+--- END ACK2 INFORMATION ---
+<?php endif; ?>
