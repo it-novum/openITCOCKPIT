@@ -119,6 +119,7 @@ class NagiosNotificationTask extends AppShell {
             $Email->replyTo([$replyToVal => $replyToVal]);
         }
 
+
         switch ($parameters['notificationtype']) {
             case 'CUSTOM':
                 $prefix = 'C';
@@ -143,7 +144,6 @@ class NagiosNotificationTask extends AppShell {
                 $prefix = '?';
                 break;
         }
-
 
         $Email->subject($prefix . ' | Service: ' . $parameters['servicedesc'] . ' (' . $parameters['hostname'] . ') is ' . $parameters['servicestate']);
 

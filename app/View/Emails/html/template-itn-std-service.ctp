@@ -506,7 +506,7 @@
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong><?php
-                                                echo __('The current status was already acknowledged by %s ',$parameters['serviceackauthor']);
+                                                echo __('The current status was acknowledged by %s ',$parameters['serviceackauthor']);
                                                 echo __('with the comment "');
                                                 if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/',$parameters['serviceackcomment'],$ticketDetails)):
                                                     echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2])) ?
@@ -557,7 +557,8 @@
                                 <?php if (!$parameters['no-attachments']): ?>
                                     <?php foreach ($contentIDs as $contentID): ?>
                                         <tr>
-                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image' width="560" height="180"/></td>
+                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image'
+                                                     width="560" height="180"/></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>

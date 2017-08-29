@@ -507,7 +507,7 @@
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong><?php
-                                                echo __('The current status was already acknowledged by %s ',$parameters['hostackauthor']);
+                                                echo __('The current status was acknowledged by %s ',$parameters['hostackauthor']);
                                                 echo __('with the comment "');
                                                 ?>
                                                 <?php
