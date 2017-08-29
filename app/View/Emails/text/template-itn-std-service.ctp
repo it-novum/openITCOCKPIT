@@ -23,20 +23,39 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-foreach ($parameters as $parameter):
-    if (!is_array($parameter))
-        echo $parameter."\n";
-endforeach;
 ?>
+Service <?php echo h($parameters['servicedesc']); ?> on Host <?php echo h($parameters['hostname']); ?>
+
+
+Time: <?php echo date('H:i:s T'); ?>
+
+Hostname: <?php echo h($parameters['hostname']); ?>
+
+Hostdescription: <?php echo h($parameters['hostdescription']); ?>
+
+Hostaddress: <?php echo h($parameters['hostaddress']); ?>
+
+Servicename: <?php echo h($parameters['servicedesc']); ?>
+
+State: <?php echo h($parameters['servicestate']); ?>
+
+
+Output: <?php echo h($parameters['serviceoutput']); ?>
+
+
 
 
 --- BEGIN TICKET SYSTEM INFORMATION ---
 TICKET_HOSTNAME: <?php echo h($parameters['hostname']); ?>
+
 TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; ?>
+
 TICKET_SERVICEDESC: <?php echo $parameters['servicedesc']; ?>
+
 TICKET_SERVICEUUID: <?php echo $parameters['serviceUuid']; ?>
+
 TICKET_STATE: <?php echo h($parameters['servicestate']); ?>
+
 TICKET_NOTIFICATIONTYPE: SERVICE
 TICKET_COMMAND_NUMBER: 34
 --- END TICKET SYSTEM INFORMATION ---
-
