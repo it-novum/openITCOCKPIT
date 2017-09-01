@@ -187,7 +187,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                                 ['target' => '_blank']) :
                                             $AcknowledgementService->getCommentData();
                                     else:
-                                        echo h($AcknowledgementService->getCommentData());
+                                        echo $this->Bbcode->asHtml(h($AcknowledgementService->getCommentData()));
                                     endif;
                                     ?>".
 
