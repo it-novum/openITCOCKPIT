@@ -34,7 +34,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
             <?php echo __('Hosts') ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -140,8 +140,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 <tbody>
                                 <?php foreach ($deletedHosts as $host): ?>
                                     <tr>
-                                        <td><?php echo $host['DeletedHost']['name']; ?></td>
-                                        <td><?php echo $host['DeletedHost']['uuid']; ?></td>
+                                        <td><?php echo h($host['DeletedHost']['name']); ?></td>
+                                        <td><?php echo h($host['DeletedHost']['uuid']); ?></td>
                                         <td><?php echo $this->Time->format($host['DeletedHost']['created'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
                                         <td class="text-center">
                                             <?php if ($host['DeletedHost']['deleted_perfdata'] == 1): ?>
