@@ -116,10 +116,18 @@ Frontend.AppController = Frontend.Controller.extend({
             var ajaxType;
             if(arrayOfItnAjax[currentItnAjaxId].indexOf('Host') !== -1){
                 ajaxType = 'host';
-                self.ajaxSelectedHosts[0] = $('#' + currentItnAjaxId).val();
+                if(isMultiple) {
+                    self.ajaxSelectedHosts = $('#' + currentItnAjaxId).val();
+                }else{
+                    self.ajaxSelectedHosts[0] = $('#' + currentItnAjaxId).val();
+                }
             }else{
                 ajaxType = 'service';
-                self.ajaxSelectedServices[0] = $('#' + currentItnAjaxId).val();
+                if(isMultiple) {
+                    self.ajaxSelectedServices = $('#' + currentItnAjaxId).val();
+                }else{
+                    self.ajaxSelectedServices[0] = $('#' + currentItnAjaxId).val();
+                }
             }
             if(itnAjaxLoading){
                 $('#'+currentItnAjaxId+'_chosen li.no-results').text('Loading...');

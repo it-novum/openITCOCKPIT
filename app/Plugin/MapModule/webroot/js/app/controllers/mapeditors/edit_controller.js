@@ -834,7 +834,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#addElement_servicegroup').hide();
             $('#addElement_map').hide();
             $('#ElementWizardModal').modal('hide');
-            console.log(self.ajaxSelectedHosts);
         });
 
         /*
@@ -1998,7 +1997,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $('#ElementWizardChoseType').trigger("chosen:updated");
                 $('#ElementWizardChoseType').trigger("change");
             }
-            console.log(self.current);
         }
     },
 

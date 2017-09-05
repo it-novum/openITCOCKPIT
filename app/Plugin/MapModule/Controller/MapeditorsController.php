@@ -135,10 +135,18 @@ class MapeditorsController extends MapModuleAppController
         $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
         $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
 
+        $selectedHosts = $selectedServices = [];
+        foreach($map['Mapitem'] as $mapItem){
+            if($mapItem['type'] === 'host'){
+                $selectedHosts[] = $mapItem['object_id'];
+            }elseif($mapItem['type'] === 'service'){
+                $selectedServices[] = $mapItem['object_id'];
+            }
+        }
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerIdsToCheck);
+        $hosts = $this->Host->getAjaxHosts($userContainerIds, [], $selectedHosts);
 
-        $hosts = $this->Host->getAjaxHosts($userContainerIds);
-        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds);
+        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], $selectedServices);
         $services = [];
         foreach($servicesNotFixed as $serviceNotFixed){
             $services = array_merge($services, $serviceNotFixed);
