@@ -39,8 +39,6 @@ class Hoststatus extends CrateModuleAppModel {
      * @return array
      */
     private function byUuidMagic($uuid = null, $options = []){
-        $return = [];
-
         $_options = [
             'conditions' => [
                 'Hoststatus.hostname' => $uuid,
@@ -58,6 +56,10 @@ class Hoststatus extends CrateModuleAppModel {
         }
 
         $dbresult = $this->find($findType, $options);
+
+        if (empty($dbresult)) {
+            return false;
+        }
 
         if($findType === 'first'){
             return [
