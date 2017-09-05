@@ -52,11 +52,11 @@ if (!empty($mapstatus['cumulated_type_key'])) {
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Map Name'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $mapinfo['Map']['name']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($mapinfo['Map']['name']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Map Title'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $mapinfo['Map']['title']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($mapinfo['Map']['title']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
