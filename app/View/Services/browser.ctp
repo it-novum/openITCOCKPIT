@@ -123,7 +123,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                 <div class="widget-body no-pwing">
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo $service['Service']['name']; ?> <strong><?php echo __('Last state change') ?>
+                            <?php echo h($service['Service']['name']); ?> <strong><?php echo __('Last state change') ?>
                                 : <?php echo $this->Time->format(
                                     $Servicestatus->getLastStateChange(),
                                     $this->Auth->user('dateformat'),

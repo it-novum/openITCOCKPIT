@@ -118,7 +118,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     <!-- widget body text-->
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo $host['Host']['name']; ?>
+                            <?php echo h($host['Host']['name']); ?>
                             <strong><?php echo __('available since:') ?><?php echo $this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>

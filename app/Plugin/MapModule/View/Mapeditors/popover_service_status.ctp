@@ -51,15 +51,15 @@ if (empty($servicestatus)) {
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Host Name'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $hostName; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($hostName); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Service Name'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $serviceName; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($serviceName); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $serviceDescr; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($serviceDescr); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('State'); ?></td>
@@ -67,26 +67,26 @@ if (empty($servicestatus)) {
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['output']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['output']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['long_output']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['long_output']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['current_check_attempt'].'/'.$servicestatusField['max_check_attempts']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['current_check_attempt'].'/'.$servicestatusField['max_check_attempts']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_check']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['last_check']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['next_check']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['next_check']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo $servicestatusField['last_state_change']; ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['last_state_change']); ?></td>
     </tr>
 </table>
