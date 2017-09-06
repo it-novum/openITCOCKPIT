@@ -151,8 +151,67 @@ class NagiosExportTask extends AppShell
                 if (!is_dir($this->conf['satellite_path'].$satellite['Satellite']['id'].DS.$this->conf['config'])) {
                     mkdir($this->conf['satellite_path'].$satellite['Satellite']['id'].DS.$this->conf['config']);
                 }
+
+                $sqliteDB = new \PDO('sqlite:'.$this->conf['satellite_path'].$satellite['Satellite']['id'].DS.'sqlite3.db');
+                $sqliteDB->setAttribute(PDO::ATTR_ERRMODE,
+                                       PDO::ERRMODE_EXCEPTION);
+
+                $sqliteDB->exec("CREATE TABLE IF NOT EXISTS uuid_mapping (
+                    uuid VARCHAR PRIMARY KEY, 
+                    name VARCHAR , 
+                    type SMALLINT )");
+
+                // Type Defination:
+                // 1 = Host;
+                // 2 = Service;
+                // 3 = Host group;
+                // 4 = Service group;
+                // 5 = Host escalation;
+                // 6 = Service escalation;
+                // 7 = Host dependency;
+                // 8 = Service dependency;
+                // 9 = Timeperiod;
+                // 10 = Contact;
+                // 11 = Contact group;
+                // 12 = Command;
+                // 13 = HostTemplate;
+                // 14 = ServiceTemplate;
             }
 
+        }
+    }
+
+    /**
+     * @param int $satellite
+     * @param array $values
+     * @param int $type
+     */
+    protected function writeSQLite($satellite, $values, $type) {
+        $sqliteDB = new \PDO('sqlite:'.$this->conf['satellite_path'].$satellite.DS.'sqlite3.db');
+        $sqliteDB->setAttribute(PDO::ATTR_ERRMODE,
+                                PDO::ERRMODE_EXCEPTION);
+
+        $delete = 'DELETE FROM uuid_mapping WHERE type = :type';
+        $stmt = $sqliteDB->prepare($delete);
+        $stmt->bindParam(':type', $type);
+        $stmt->execute();
+
+        $sql = 'INSERT INTO uuid_mapping (uuid, name, type) VALUES ';
+        $insertQuery = [];
+        $insertData = [];
+        $n = 0;
+        foreach ($values as $line) {
+            $insertQuery[] = '(:uuid' . $n . ', :name' . $n . ', :type' . $n . ')';
+            $insertData['uuid' . $n] = $line['uuid'];
+            $insertData['name' . $n] = $line['name'];
+            $insertData['type' . $n] = $type;
+            $n++;
+        }
+
+        if (!empty($insertQuery)) {
+            $sql .= implode(', ', $insertQuery);
+            $stmt = $sqliteDB->prepare($sql);
+            $stmt->execute($insertData);
         }
     }
 
@@ -170,6 +229,7 @@ class NagiosExportTask extends AppShell
                 'contain'   => [],
                 'fields'    => [
                     'id',
+                    'name',
                     'uuid',
                     'command_line',
                 ],
@@ -188,6 +248,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
+        $sqlitePayload = [];
         foreach ($commands as $command) {
             if (!empty($command['Command']['command_line'])) {
 
@@ -209,12 +270,22 @@ class NagiosExportTask extends AppShell
                     $file->write($content);
                     $file->close();
                 }
+
+                if($this->dm === true) {
+                    $sqlitePayload[] = ['uuid' => $command['Command']['uuid'], 'name' => $command['Command']['name']];
+                }
             }
         }
 
         if ($this->conf['minified'] == true) {
             $file->write($content);
             $file->close();
+        }
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 12);
+            }
         }
     }
 
@@ -252,6 +323,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
+        $sqlitePayload = [];
         foreach ($contacts as $contact) {
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['contacts'].$contact['Contact']['uuid'].$this->conf['suffix']);
@@ -290,11 +362,21 @@ class NagiosExportTask extends AppShell
                 $file->write($content);
                 $file->close();
             }
+
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $contact['Contact']['uuid'], 'name' => $contact['Contact']['name']];
+            }
         }
 
         if ($this->conf['minified']) {
             $file->write($content);
             $file->close();
+        }
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 10);
+            }
         }
     }
 
@@ -316,6 +398,11 @@ class NagiosExportTask extends AppShell
                             'Contact.uuid',
                         ],
                     ],
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                        ],
+                    ],
                 ],
             ]);
         }
@@ -332,7 +419,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
-
+        $sqlitePayload = [];
         foreach ($contactgroups as $contactgroup) {
             if (!empty($contactgroup['Contact'])) {
                 if (!$this->conf['minified']) {
@@ -352,11 +439,22 @@ class NagiosExportTask extends AppShell
                     $file->write($content);
                     $file->close();
                 }
+
+                if($this->dm === true) {
+                    $sqlitePayload[] = ['uuid' => $contactgroup['Contactgroup']['uuid'], 'name' => $contactgroup['Container']['name']];
+                }
             }
         }
+
         if ($this->conf['minified']) {
             $file->write($content);
             $file->close();
+        }
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 11);
+            }
         }
     }
 
@@ -397,6 +495,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
+        $sqlitePayload = [];
         foreach ($hosttemplates as $hosttemplate) {
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['hosttemplates'].$hosttemplate['Hosttemplate']['uuid'].$this->conf['suffix']);
@@ -492,11 +591,21 @@ class NagiosExportTask extends AppShell
                 $file->close();
             }
 
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $hosttemplate['Hosttemplate']['uuid'], 'name' => $hosttemplate['Hosttemplate']['name']];
+            }
+
         }
 
         if ($this->conf['minified']) {
             $file->write($content);
             $file->close();
+        }
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 13);
+            }
         }
     }
 
@@ -616,7 +725,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
-
+        $sqlitePayload = [];
         foreach ($hosts as $host) {
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['hosts'].$host['Host']['uuid'].$this->conf['suffix']);
@@ -834,7 +943,6 @@ class NagiosExportTask extends AppShell
                 $file->close();
             }
 
-
             if ($this->dm === true && $host['Host']['satellite_id'] > 0) {
                 //Generate config file for sat nagios
                 $this->exportSatHost($host, $host['Host']['satellite_id'], $commandarguments);
@@ -853,6 +961,7 @@ class NagiosExportTask extends AppShell
                         $this->dmConfig[$host['Host']['satellite_id']]['Hostgroup'][$hostgroup['uuid']][] = $host['Host']['uuid'];
                     }
                 }
+                $sqlitePayload[$host['Host']['satellite_id']][] = ['uuid' => $host['Host']['uuid'], 'name' => $host['Host']['name']];
             }
 
             if (isset($commandarguments)) {
@@ -870,12 +979,20 @@ class NagiosExportTask extends AppShell
         }
 
         $this->deleteHostPerfdata();
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($sqlitePayload as $satellite => $payloads) {
+                foreach ($payloads as $payload) {
+                    $this->writeSQLite($satellite, $payload, 1);
+                }
+            }
+        }
     }
 
     /**
-     * @param $host
-     * @param $satelliteId
-     * @param $commandarguments
+     * @param array $host
+     * @param int   $satelliteId
+     * @param array $commandarguments
      */
     public function exportSatHost($host, $satelliteId, $commandarguments)
     {
@@ -1080,6 +1197,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
+        $sqlitePayload = [];
         foreach ($_servicetemplates as $servicetemplates) {
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['servicetemplates'].$servicetemplates['Servicetemplate']['uuid'].$this->conf['suffix']);
@@ -1205,6 +1323,10 @@ class NagiosExportTask extends AppShell
                 $file->write($content);
                 $file->close();
             }
+
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $servicetemplates['Servicetemplate']['uuid'], 'name' => $servicetemplates['Servicetemplate']['name']];
+            }
         }
 
         if ($this->conf['minified']) {
@@ -1212,6 +1334,11 @@ class NagiosExportTask extends AppShell
             $file->close();
         }
 
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 14);
+            }
+        }
     }
 
     /**
@@ -1249,6 +1376,7 @@ class NagiosExportTask extends AppShell
             ],
         ]);
 
+        $sqlitePayload = [];
         foreach ($hosts as $host) {
             $services = $this->Service->find('all', [
                 'recursive'  => -1,
@@ -1531,6 +1659,12 @@ class NagiosExportTask extends AppShell
                             $this->dmConfig[$host['Host']['satellite_id']]['Servicegroup'][$servicegroup['uuid']][] = $host['Host']['uuid'].','.$service['Service']['uuid'];
                         }
                     }
+                    if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
+                        $sqlitePayload[$host['Host']['satellite_id']][] = ['uuid' => $service['Service']['uuid'], 'name' => $service['Service']['name']];
+                    } else {
+                        $sqlitePayload[$host['Host']['satellite_id']][] = ['uuid' => $service['Service']['uuid'], 'name' =>  $service['Servicetemplate']['name']];
+                    }
+
                 }
 
                 if (isset($commandarguments)) {
@@ -1553,6 +1687,14 @@ class NagiosExportTask extends AppShell
         }
 
         $this->deleteServicePerfdata();
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($sqlitePayload as $satellite => $payloads) {
+                foreach ($payloads as $payload) {
+                    $this->writeSQLite($satellite, $payload, 2);
+                }
+            }
+        }
     }
 
     /**
@@ -1760,7 +1902,7 @@ class NagiosExportTask extends AppShell
 
 
     /**
-     * @param null|string $uid
+     * @param null|string $uuid
      */
     public function exportHostgroups($uuid = null) {
         if ($uuid !== null) {
@@ -1789,6 +1931,7 @@ class NagiosExportTask extends AppShell
             $content = $this->fileHeader();
         }
 
+        $sqlitePayload = [];
         foreach ($hostgroups as $hostgroup) {
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'].$this->conf['hostgroups'].$hostgroup['Hostgroup']['uuid'].$this->conf['suffix']);
@@ -1807,10 +1950,18 @@ class NagiosExportTask extends AppShell
                 $file->write($content);
                 $file->close();
             }
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $hostgroup['Hostgroup']['uuid'], 'name' => $hostgroup['Hostgroup']['description']];
+            }
         }
         if ($this->conf['minified']) {
             $file->write($content);
             $file->close();
+        }
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 3);
+            }
         }
     }
 
@@ -1837,6 +1988,7 @@ class NagiosExportTask extends AppShell
             mkdir($this->conf['path'].$this->conf['servicegroups']);
         }
 
+        $sqlitePayload = [];
         foreach ($servicegroups as $servicegroup) {
             $file = new File($this->conf['path'].$this->conf['servicegroups'].$servicegroup['Servicegroup']['uuid'].$this->conf['suffix']);
             $content = $this->fileHeader();
@@ -1851,6 +2003,16 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('}', 0);
             $file->write($content);
             $file->close();
+
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $servicegroup['Servicegroup']['uuid'], 'name' => $servicegroup['Servicegroup']['description']];
+            }
+        }
+
+        if($this->dm === true && !empty($sqlitePayload)) {
+            foreach ($this->Satellites as $satellite) {
+                $this->writeSQLite($satellite['Satellite']['id'], $sqlitePayload, 4);
+            }
         }
     }
 
@@ -2131,6 +2293,7 @@ class NagiosExportTask extends AppShell
             $date->modify('+1 day');
         }
 
+        $sqlitePayload = [];
         foreach ($timeperiods as $timeperiod) {
             $timeranges = [];
             if (!$this->conf['minified']) {
@@ -2165,6 +2328,9 @@ class NagiosExportTask extends AppShell
                 $file->write($content);
                 $file->close();
             }
+            if($this->dm === true) {
+                $sqlitePayload[] = ['uuid' => $timeperiod['Timeperiod']['uuid'], 'name' => $timeperiod['Timeperiod']['name']];
+            }
         }
 
         if ($this->conf['minified']) {
@@ -2175,6 +2341,9 @@ class NagiosExportTask extends AppShell
         if ($this->dm === true) {
             foreach ($this->Satellites as $satelite) {
                 $this->exportSatTimeperiods($timeperiods, $satelite);
+                if(!empty($sqlitePayload)) {
+                    $this->writeSQLite($satelite['Satellite']['id'], $sqlitePayload, 9);
+                }
             }
         }
     }
