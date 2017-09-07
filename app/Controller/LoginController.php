@@ -222,7 +222,7 @@ class LoginController extends AppController
                 }
             } else {
                 if ($redirectBack) {
-                    $this->Session->setFlash(__('login.username_and_password_dont_match'), 'layout/header_auth_flash', [], 'header_auth');
+                    $this->setFlash(__('login.username_and_password_dont_match'), false);
                     $this->redirect($this->request->referer());
 
                     return;

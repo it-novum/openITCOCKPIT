@@ -17,8 +17,8 @@
 <div class="container" id="main-container">
     <div class="row">
         <div class="controller <?php echo $this->name ?>_<?php echo $this->action ?>">
-            <?php echo $this->Session->flash(); ?>
-            <?php echo $this->Session->flash('auth'); ?>
+            <?php echo $this->Flash->render(); ?>
+            <?php echo $this->Flash->render('auth'); ?>
             <?php echo $content_for_layout; ?>
         </div>
     </div>
