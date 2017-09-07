@@ -263,7 +263,7 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define contact{', 0);
             $content .= $this->addContent('contact_name', 1, $contact['Contact']['uuid']);
-            $content .= $this->addContent('alias', 1, $contact['Contact']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($contact['Contact']['description']));
             $content .= $this->addContent('host_notifications_enabled', 1, $contact['Contact']['host_notifications_enabled']);
             $content .= $this->addContent('service_notifications_enabled', 1, $contact['Contact']['service_notifications_enabled']);
             $content .= $this->addContent('host_notification_period', 1, $contact['HostTimeperiod']['uuid']);
@@ -345,7 +345,9 @@ class NagiosExportTask extends AppShell
 
                 $content .= $this->addContent('define contactgroup{', 0);
                 $content .= $this->addContent('contactgroup_name', 1, $contactgroup['Contactgroup']['uuid']);
-                $content .= $this->addContent('alias', 1, $contactgroup['Contactgroup']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                    $contactgroup['Contactgroup']['description']
+                ));
                 $content .= $this->addContent('members', 1, implode(',', Hash::extract($contactgroup['Contact'], '{n}.uuid')));
                 $content .= $this->addContent('}', 0);
                 if (!$this->conf['minified']) {
@@ -417,8 +419,12 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('use', 1, '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc');
             $content .= $this->addContent('host_name', 1, $hosttemplate['Hosttemplate']['uuid']);
             $content .= $this->addContent('name', 1, $hosttemplate['Hosttemplate']['uuid']);
-            $content .= $this->addContent('display_name', 1, $hosttemplate['Hosttemplate']['name']);
-            $content .= $this->addContent('alias', 1, $hosttemplate['Hosttemplate']['description']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $hosttemplate['Hosttemplate']['name']
+            ));
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                $hosttemplate['Hosttemplate']['description']
+            ));
 
             $content .= $this->nl();
             $content .= $this->addContent(';Check settings:', 1);
@@ -635,12 +641,12 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define host{', 0);
             $content .= $this->addContent('use', 1, $host['Hosttemplate']['uuid']);
             $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
-            $content .= $this->addContent('display_name', 1, $host['Host']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host['Host']['name']));
             $content .= $this->addContent('address', 1, $host['Host']['address']);
 
 
             if ($host['Host']['description'] !== null && $host['Host']['description'] !== '')
-                $content .= $this->addContent('alias', 1, $host['Host']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host['Host']['description']));
 
             //Check if the host hase parent hosts and if they are active!
             if (!empty($host['Parenthost'])) {
@@ -898,12 +904,12 @@ class NagiosExportTask extends AppShell
         $content .= $this->addContent('define host{', 0);
         $content .= $this->addContent('use', 1, $host['Hosttemplate']['uuid']);
         $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
-        $content .= $this->addContent('display_name', 1, $host['Host']['name']);
+        $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host['Host']['name']));
         $content .= $this->addContent('address', 1, $host['Host']['address']);
 
 
         if ($host['Host']['description'] !== null && $host['Host']['description'] !== '')
-            $content .= $this->addContent('alias', 1, $host['Host']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host['Host']['description']));
 
         if (!empty($host['Parenthost'])) {
 
@@ -1099,7 +1105,9 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('register', 1, 0);
             $content .= $this->addContent('use', 1, '689bfdd01af8a21c4a4706c5117849c2fc2c3f38');
             $content .= $this->addContent('name', 1, $servicetemplates['Servicetemplate']['uuid']);
-            $content .= $this->addContent('display_name', 1, $servicetemplates['Servicetemplate']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $servicetemplates['Servicetemplate']['name']
+            ));
             $content .= $this->addContent('service_description', 1, $servicetemplates['Servicetemplate']['uuid']);
 
             $content .= $this->nl();
@@ -1308,9 +1316,13 @@ class NagiosExportTask extends AppShell
 
                 $content .= $this->addContent('name', 1, $service['Service']['uuid']);
                 if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-                    $content .= $this->addContent('display_name', 1, $service['Service']['name']);
+                    $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                        $service['Service']['name'])
+                    );
                 } else {
-                    $content .= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+                    $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                        $service['Servicetemplate']['name'])
+                    );
                 }
 
                 $content .= $this->addContent('service_description', 1, $service['Service']['uuid']);
@@ -1587,9 +1599,13 @@ class NagiosExportTask extends AppShell
 
         $content .= $this->addContent('name', 1, $service['Service']['uuid']);
         if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-            $content .= $this->addContent('display_name', 1, $service['Service']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $service['Service']['name']
+            ));
         } else {
-            $content .= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $service['Servicetemplate']['name']
+            ));
         }
 
         $content .= $this->addContent('service_description', 1, $service['Service']['uuid']);
@@ -1800,7 +1816,7 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define hostgroup{', 0);
             $content .= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $hostgroup['Hostgroup']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($hostgroup['Hostgroup']['description']));
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
@@ -1846,7 +1862,9 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define servicegroup{', 0);
             $content .= $this->addContent('servicegroup_name', 1, $servicegroup['Servicegroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $servicegroup['Servicegroup']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                $servicegroup['Servicegroup']['description']
+            ));
 
             $content .= $this->addContent('}', 0);
             $file->write($content);
@@ -2144,7 +2162,7 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define timeperiod{', 0);
             $content .= $this->addContent('timeperiod_name', 1, $timeperiod['Timeperiod']['uuid']);
             if (strlen($timeperiod['Timeperiod']['description']) > 0) {
-                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($timeperiod['Timeperiod']['description']));
             } else {
                 //Naemon 1.0.0 fix
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
@@ -2216,7 +2234,7 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define timeperiod{', 0);
             $content .= $this->addContent('timeperiod_name', 1, $timeperiod['Timeperiod']['uuid']);
             if (strlen($timeperiod['Timeperiod']['description']) > 0) {
-                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($timeperiod['Timeperiod']['description']));
             } else {
                 //Naemon 1.0.0 fix
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
@@ -3011,5 +3029,12 @@ class NagiosExportTask extends AppShell
         ];
 
         return $return;
+    }
+
+    public function escapeLastBackslash($str = ''){
+        if(mb_substr($str, -1) === '\\'){
+            $str = sprintf('%s\\', $str); //Add a \ to the end of the string - because last char is a \
+        }
+        return $str;
     }
 }

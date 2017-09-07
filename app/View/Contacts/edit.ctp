@@ -54,7 +54,7 @@
     <div>
         <?php
         $contactContainerIds = [];
-        if(isset($this->request->data['Container']['Container'])):
+        if (isset($this->request->data['Container']['Container'])):
             $contactContainerIds = $this->request->data['Container']['Container'];
         else:
             $contactContainerIds = Hash::extract($this->request->data, 'Container.{n}.id');
@@ -69,12 +69,12 @@
 
             if ($hasRootPrivileges):
                 echo $this->Form->input('Container', [
-                        'options' => $containers,
+                        'options'  => $containers,
                         'multiple' => true,
-                        'class' => 'chosen',
-                        'style' => 'width: 100%',
-                        'label' => __('Container'),
-                        'div' => [
+                        'class'    => 'chosen',
+                        'style'    => 'width: 100%',
+                        'label'    => __('Container'),
+                        'div'      => [
                             'class' => 'form-group required',
                         ],
                     ]
@@ -85,19 +85,19 @@
                 //Not root user, contact is in a container, that the user can not see (above in the tree)
             ):
                 echo $this->Form->input('Container', [
-                        'options' => $containers,
+                        'options'  => $containers,
                         'multiple' => true,
-                        'class' => 'chosen',
-                        'style' => 'width: 100%',
-                        'label' => __('Container'),
-                        'div' => [
+                        'class'    => 'chosen',
+                        'style'    => 'width: 100%',
+                        'label'    => __('Container'),
+                        'div'      => [
                             'class' => 'form-group required',
                         ],
                         'disabled' => true
                     ]
                 );
 
-                foreach($contactContainerIds as $contactContainerId):
+                foreach ($contactContainerIds as $contactContainerId):
                     echo sprintf('<input type="hidden" name="data[Container][Container][]" value="%s" />', $contactContainerId);
                 endforeach;
 
@@ -108,12 +108,12 @@
                 // Not root user but contact only in user containers
             ):
                 echo $this->Form->input('Container', [
-                        'options' => $containers,
+                        'options'  => $containers,
                         'multiple' => true,
-                        'class' => 'chosen',
-                        'style' => 'width: 100%',
-                        'label' => __('Container'),
-                        'div' => [
+                        'class'    => 'chosen',
+                        'style'    => 'width: 100%',
+                        'label'    => __('Container'),
+                        'div'      => [
                             'class' => 'form-group required',
                         ],
                     ]
@@ -141,27 +141,34 @@
 
             echo $this->Form->input('name', ['value' => $this->request->data['Contact']['name']]);
             echo $this->Form->input('Contact.description', ['value' => $this->request->data['Contact']['description']]);
-            echo $this->Form->input('Contact.email', ['value' => $this->request->data['Contact']['email']]);
-            echo $this->Form->input('Contact.phone', ['value' => $this->request->data['Contact']['phone']]);
+            echo $this->Form->input('Contact.email', [
+                'value'       => $this->request->data['Contact']['email'],
+                'placeholder' => __('username@example.org')
+            ]);
+            echo $this->Form->input('Contact.phone', [
+                'value'       => $this->request->data['Contact']['phone'],
+                'placeholder' => '0049123456789'
+            ]);
             echo $this->Form->input('Contact.id', ['type' => 'hidden', 'value' => $contact['Contact']['id']]);
             ?>
             <br/>
             <div class="row">
                 <?php $notification_settings = [
-                    'host' => [
-                        'notify_host_recovery' => 'fa-square txt-color-greenLight',
-                        'notify_host_down' => 'fa-square txt-color-redLight',
+                    'host'    => [
+                        'notify_host_recovery'    => 'fa-square txt-color-greenLight',
+                        'notify_host_down'        => 'fa-square txt-color-redLight',
                         'notify_host_unreachable' => 'fa-square txt-color-blueDark',
-                        'notify_host_flapping' => 'fa-random',
-                        'notify_host_downtime' => 'fa-clock-o',
+                        'notify_host_flapping'    => 'fa-random',
+                        'notify_host_downtime'    => 'fa-clock-o',
                     ],
                     'service' => [
                         'notify_service_recovery' => 'fa-square txt-color-greenLight',
-                        'notify_service_warning' => 'fa-square txt-color-orange',
-                        'notify_service_unknown' => 'fa-square txt-color-blueDark',
+                        'notify_service_warning'  => 'fa-square txt-color-orange',
+                        'notify_service_unknown'  => 'fa-square txt-color-blueDark',
                         'notify_service_critical' => 'fa-square txt-color-redLight',
                         'notify_service_flapping' => 'fa-random',
-                        'notify_service_downtime' => 'fa-clock-o'],
+                        'notify_service_downtime' => 'fa-clock-o'
+                    ],
                 ];
                 ?>
                 <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
@@ -178,34 +185,34 @@
                                 <div>
                                     <?php
                                     echo $this->Form->input('host_timeperiod_id', [
-                                        'options' => $this->Html->chosenPlaceholder($_timeperiods),
-                                        'selected' => $this->request->data['Contact']['host_timeperiod_id'],
-                                        'class' => 'select2 col-xs-8 chosen',
+                                        'options'   => $this->Html->chosenPlaceholder($_timeperiods),
+                                        'selected'  => $this->request->data['Contact']['host_timeperiod_id'],
+                                        'class'     => 'select2 col-xs-8 chosen',
                                         'wrapInput' => 'col col-xs-8',
-                                        'label' => [
+                                        'label'     => [
                                             'class' => 'col col-md-4 control-label text-left',
                                         ],
-                                        'style' => 'width: 100%',
+                                        'style'     => 'width: 100%',
                                     ]);
 
                                     echo $this->Form->input('Contact.HostCommands', [
-                                        'type' => 'select',
-                                        'options' => $this->Html->chosenPlaceholder($notification_commands),
-                                        'selected' => $this->request->data['Contact']['HostCommands'],
-                                        'class' => 'select2 col-xs-8 chosen',
+                                        'type'      => 'select',
+                                        'options'   => $this->Html->chosenPlaceholder($notification_commands),
+                                        'selected'  => $this->request->data['Contact']['HostCommands'],
+                                        'class'     => 'select2 col-xs-8 chosen',
                                         'wrapInput' => 'col col-xs-8',
-                                        'label' => [
+                                        'label'     => [
                                             'class' => 'col col-md-4 control-label text-left',
                                         ],
-                                        'multiple' => true,
-                                        'style' => 'width: 100%',
+                                        'multiple'  => true,
+                                        'style'     => 'width: 100%',
                                     ]);
 
                                     echo $this->Form->fancyCheckbox('host_notifications_enabled', [
-                                        'caption' => __('Notifications enabled'),
+                                        'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
-                                        'captionClass' => 'control-label text-left no-padding',
-                                        'checked' => (boolean)$this->request->data['Contact']['host_notifications_enabled'],
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => (boolean)$this->request->data['Contact']['host_notifications_enabled'],
                                     ]); ?>
 
                                 </div>
@@ -223,7 +230,7 @@
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                                 'caption' => ucfirst(preg_replace('/notify_host_/', '', $notification_setting)),
-                                                'icon' => '<i class="fa ' . $icon . '"></i> ',
+                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
                                                 'checked' => (boolean)$this->request->data['Contact'][$notification_setting],
                                             ]); ?>
                                             <div class="clearfix"></div>
@@ -248,34 +255,34 @@
                                 <div>
                                     <?php
                                     echo $this->Form->input('service_timeperiod_id', [
-                                        'options' => $this->Html->chosenPlaceholder($_timeperiods),
-                                        'selected' => $this->request->data['Contact']['service_timeperiod_id'],
-                                        'class' => 'select2 col-xs-8 chosen',
+                                        'options'   => $this->Html->chosenPlaceholder($_timeperiods),
+                                        'selected'  => $this->request->data['Contact']['service_timeperiod_id'],
+                                        'class'     => 'select2 col-xs-8 chosen',
                                         'wrapInput' => 'col col-xs-8',
-                                        'label' => [
+                                        'label'     => [
                                             'class' => 'col col-md-4 control-label text-left',
                                         ],
-                                        'style' => 'width: 100%',
+                                        'style'     => 'width: 100%',
                                     ]);
 
                                     echo $this->Form->input('Contact.ServiceCommands', [
-                                        'type' => 'select',
-                                        'options' => $this->Html->chosenPlaceholder($notification_commands),
-                                        'selected' => $this->request->data['Contact']['ServiceCommands'],
-                                        'class' => 'select2 col-xs-8 chosen',
+                                        'type'      => 'select',
+                                        'options'   => $this->Html->chosenPlaceholder($notification_commands),
+                                        'selected'  => $this->request->data['Contact']['ServiceCommands'],
+                                        'class'     => 'select2 col-xs-8 chosen',
                                         'wrapInput' => 'col col-xs-8',
-                                        'label' => [
+                                        'label'     => [
                                             'class' => 'col col-md-4 control-label text-left',
                                         ],
-                                        'multiple' => true,
-                                        'style' => 'width: 100%',
+                                        'multiple'  => true,
+                                        'style'     => 'width: 100%',
                                     ]);
 
                                     echo $this->Form->fancyCheckbox('service_notifications_enabled', [
-                                        'caption' => __('Notifications enabled'),
+                                        'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
-                                        'captionClass' => 'control-label text-left no-padding',
-                                        'checked' => (boolean)$this->request->data['Contact']['service_notifications_enabled'],
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => (boolean)$this->request->data['Contact']['service_notifications_enabled'],
                                     ]); ?>
 
                                 </div>
@@ -293,7 +300,7 @@
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                                 'caption' => ucfirst(preg_replace('/notify_service_/', '', $notification_setting)),
-                                                'icon' => '<i class="fa ' . $icon . '"></i> ',
+                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
                                                 'checked' => (boolean)$this->request->data['Contact'][$notification_setting],
                                             ]); ?>
                                             <div class="clearfix"></div>

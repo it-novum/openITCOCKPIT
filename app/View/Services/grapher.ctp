@@ -60,7 +60,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
         <h5>
             <div class="pull-right">
-                <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
+                <a href="/services/browser/<?php echo $Service->getId(); ?>" class="btn btn-primary btn-sm"><i
                             class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
                 <?php echo $this->element('service_browser_menu'); ?>
@@ -214,7 +214,7 @@ if($rrd_structure_datasources):
                         <i class="fa fa-desktop"></i> Host
                     </li>
                     <li>
-                        <a href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo $service['Host']['name']; ?></a>
+                        <a href="/hosts/browser/<?php echo $Host->getId(); ?>"><?php echo $service['Host']['name']; ?></a>
                     </li>
                     <li class="divider"></li>
                 </ul>
@@ -225,7 +225,7 @@ if($rrd_structure_datasources):
                 <?php
                 foreach ($services as $currentService): ?>
                     <li>
-                        <a href="/services/grapher/<?php echo $currentService['Service']['id']; ?>"><?php echo $currentService[0]['ServiceName']; ?></a>
+                        <a href="/services/grapherSwitch/<?php echo $currentService['Service']['id']; ?>"><?php echo h($currentService[0]['ServiceName']); ?></a>
                     </li>
                 <?php
                 endforeach;

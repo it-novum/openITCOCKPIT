@@ -2364,6 +2364,21 @@ class HostsController extends AppController {
         }
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
+        $grafanaDashboard = null;
+        if (in_array('GrafanaModule', CakePlugin::loaded())) {
+            $this->loadModel('GrafanaModule.GrafanaDashboard');
+            $this->loadModel('GrafanaModule.GrafanaConfiguration');
+            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+            $GrafanaDashboardExists = false;
+            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
+                $GrafanaDashboardExists = true;
+                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
+                $this->set('GrafanaConfiguration', $GrafanaConfiguration);
+            }
+        }
+        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+
 
         $acknowledged = [];
         if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
@@ -2405,6 +2420,7 @@ class HostsController extends AppController {
                 'ticketSystem',
                 'mainContainer',
                 'sharedContainers',
+                'grafanaDashboard'
             ])
         );
 
@@ -3113,5 +3129,55 @@ class HostsController extends AppController {
         $servicetemplategroup = $this->Servicetemplategroup->findById($stg_id);
         $this->set(compact(['servicetemplategroup','host']));
         $this->set('_serialize',['servicetemplategroup','host']);
+    }
+
+    public function ajaxGetByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%'];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return $returnHtml;
+        }
+    }
+
+    public function ajaxGetGenericByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            $conditions = ['Host.name LIKE' => '%'.$this->request->data['term'].'%', 'Host.host_type' => GENERIC_HOST];
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
+            $returnHtml = '';
+            foreach($hosts as $hostId => $hostName){
+                $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
+            }
+            return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
+        }
     }
 }

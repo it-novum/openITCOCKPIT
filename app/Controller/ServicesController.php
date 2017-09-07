@@ -688,17 +688,18 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, true);
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
         }
-        $hosts = $this->Host->find('list', [
-            'conditions' => [
-                'Host.host_type' => GENERIC_HOST,
-                'Host.container_id' => $myRights
-            ]
-        ]);
+
+        if(is_null($hostId)){
+            $includingHost = isset($this->request->data['Service']['host_id']) ? $this->request->data['Service']['host_id'] : [];
+        }else{
+            $includingHost = [$hostId];
+        }
+        $hosts = $this->Host->getAjaxHosts($myRights, ['Host.host_type' => GENERIC_HOST], $includingHost);
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
@@ -2302,11 +2303,40 @@ class ServicesController extends AppController {
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
-        $service = $this->Service->findById($id);
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.command_id'
+                    ],
+                    'CheckCommand' => [
+                        'fields' => [
+                            'CheckCommand.id',
+                            'CheckCommand.uuid'
+                        ]
+                    ]
+                ],
+                'CheckCommand' => [
+                    'fields' => [
+                        'CheckCommand.id',
+                        'CheckCommand.uuid'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.command_id'
+            ]
+        ]);
+
         $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid == null || $commandUuid == '') {
-            $servicetemplate = $this->Servicetemplate->findById($service['Service']['servicetemplate_id']);
-            $commandUuid = $servicetemplate['CheckCommand']['uuid'];
+        if ($commandUuid === null || $commandUuid === '') {
+            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
         }
 
         if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
@@ -2321,20 +2351,57 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->unbindModel([
-            'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.address',
+                        'Host.container_id'
+                    ],
+                    'Container'
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Service.service_type',
+                'Service.service_url'
+            ]
         ]);
 
-        $service = $this->Service->findById($id);
-        $hostContainerId = $service['Host']['container_id'];
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
+            $this->render403();
+            return;
+        }
+
+        $allowEdit = false;
+        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            $allowEdit = true;
+        }
+
         $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
         $services = $this->Service->find('all', [
             'recursive' => -1,
             'conditions' => [
-                'Service.host_id' => $service['Host']['id']
+                'Service.host_id' => $service['Host']['id'],
+                'Service.disabled' => 0
             ],
             'contain' => [
                 'Servicetemplate'
@@ -2345,10 +2412,6 @@ class ServicesController extends AppController {
             ]
         ]);
 
-        $allowEdit = false;
-        if ($this->allowedByContainerId($hostContainerId)) {
-            $allowEdit = true;
-        }
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $showThresholds = is_null($this->Session->read('service_thresholds_'.$id)) ? '1' : $this->Session->read('service_thresholds_'.$id);
@@ -2360,22 +2423,88 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $this->Service->unbindModel([
-            'hasAndBelongsToMany' => ['Servicegroup', 'Contact', 'Contactgroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                        'Servicetemplate.command_id'
+                    ],
+                    'CheckCommand' => [
+                        'fields' => [
+                            'CheckCommand.id',
+                            'CheckCommand.uuid'
+                        ]
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.address',
+                        'Host.container_id'
+                    ],
+                    'Container'
+                ],
+                'CheckCommand' => [
+                    'fields' => [
+                        'CheckCommand.id',
+                        'CheckCommand.uuid'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Service.service_type',
+                'Service.service_url',
+                'Service.command_id'
+            ]
         ]);
-        $service = $this->Service->findById($id);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
 
-        $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid == null || $commandUuid == '') {
-            $servicetemplate = $this->Servicetemplate->findById($service['Service']['servicetemplate_id']);
-            $commandUuid = $servicetemplate['CheckCommand']['uuid'];
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
+            $this->render403();
+            return;
         }
 
-        $this->set(compact(['service', 'servicestatus', 'commandUuid', 'docuExists']));
+        $allowEdit = false;
+        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            $allowEdit = true;
+        }
+
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+
+        $services = $this->Service->find('all', [
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $service['Host']['id'],
+                'Service.disabled' => 0
+            ],
+            'contain' => [
+                'Servicetemplate'
+            ],
+            'fields' => [
+                'Service.id',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+            ]
+        ]);
+
+        $commandUuid = $service['CheckCommand']['uuid'];
+        if ($commandUuid === null || $commandUuid === '') {
+            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
+        }
+
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'commandUuid']));
+
     }
 
     public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds) {
@@ -2462,6 +2591,7 @@ class ServicesController extends AppController {
         $rrd_path = Configure::read('rrd.path');
 
         //Loading template
+        $templateSettings = [];
         require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
 
         foreach ($templateSettings as $key => $templateSetting):
@@ -2926,5 +3056,52 @@ class ServicesController extends AppController {
     //Acl
     public function checkcommand(){
         return null;
+    }
+
+    public function ajaxGetByTerm(){
+        $this->autoRender = false;
+        if ($this->request->is('ajax') && isset($this->request->data['term'])){
+            if(strpos($this->request->data['term'], '/') === false){
+                $conditions = [
+                    'OR' => [
+                        ['Host.name LIKE' => '%'.$this->request->data['term'].'%'],
+                        ['Service.ServiceDescription LIKE' => '%'.$this->request->data['term'].'%'],
+                    ]
+                ];
+            }else{
+                $hostServiceArr = explode('/', $this->request->data['term'], 2);
+                $conditions = [
+                    ['Host.name LIKE' => '%'.$hostServiceArr[0].'%'],
+                    ['Service.ServiceDescription LIKE' => '%'.$hostServiceArr[1].'%'],
+                ];
+            }
+
+            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
+            if(isset($this->request->data['containerId'])) {
+                if($this->request->data['containerId'] === '0'){
+                    $userContainerIds = [];
+                }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                } else {
+                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
+                }
+            }else {
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            }
+            $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, $conditions, $selectedArr);
+            $services = [];
+            foreach($servicesNotFixed as $serviceNotFixed){
+                $services = array_merge($services, $serviceNotFixed);
+            }
+            $returnHtml = '';
+            foreach($services as $hostName => $serviceArr){
+                $returnHtml .= '<optgroup label="'.$hostName.'">';
+                foreach($serviceArr as $serviceId => $serviceName){
+                    $returnHtml .= '<option value="'.$serviceId.'" '.(in_array($serviceId, $selectedArr)?'selected':'').'>'.$serviceName.'</option>';
+                }
+                $returnHtml .= '</optgroup>';
+            }
+            return $returnHtml;
+        }
     }
 }
