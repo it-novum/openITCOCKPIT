@@ -281,6 +281,9 @@ class HostsController extends AppController {
         $this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
         $this->set('masterInstance',$this->Systemsetting->getMasterInstanceName());
 
+        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
