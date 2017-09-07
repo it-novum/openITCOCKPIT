@@ -27,6 +27,8 @@ App::uses('Model', 'Model');
 
 
 class AppModel extends Model {
+    const ITN_AJAX_LIMIT = 50;
+
     public $actsAs = ['Containable', 'DynamicAssociations'];
     protected $lastInsertedIds = [];
     protected $lastInsertedData = [];

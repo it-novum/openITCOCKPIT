@@ -23,15 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CronjobsShell extends AppShell
-{
+class CronjobsShell extends AppShell {
     public $uses = [
         'Cronjob',
         'Cronschedule',
     ];
 
-    public function main()
-    {
+    public function main() {
+        $fp = fopen('/var/run/oitc_cronjob.lock', 'wb');
+        if (!$fp || !flock($fp, LOCK_EX | LOCK_NB)) {
+            $this->out('openITCOCKPIT cronjob already running!');
+            fclose($fp);
+            exit(1);
+        }
         //Configure::load('nagios');
         $this->parser = $this->getOptionParser();
         $this->force = false;
@@ -63,10 +67,10 @@ class CronjobsShell extends AppShell
             }
 
         }
+        fclose($fp);
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'force' => ['short' => 'f', 'help' => __d('oitc_console', 'All cronjobs will be forced to execute!')],
@@ -75,8 +79,7 @@ class CronjobsShell extends AppShell
         return $parser;
     }
 
-    public function scheduleCronjob($cronjob)
-    {
+    public function scheduleCronjob($cronjob) {
 
         //Flag the cronjob as is_running in DB and set start_time
         $cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
@@ -106,7 +109,7 @@ class CronjobsShell extends AppShell
         } else {
             try {
                 $_task = new TaskCollection($this);
-                $extTask = $_task->load($cronjob['Cronjob']['plugin'].'.'.$cronjob['Cronjob']['task']);
+                $extTask = $_task->load($cronjob['Cronjob']['plugin'] . '.' . $cronjob['Cronjob']['task']);
                 $extTask->execute($this->quiet);
             } catch (Exception $e) {
                 debug($e);
@@ -126,8 +129,7 @@ class CronjobsShell extends AppShell
 
     }
 
-    public function m2s($minutes)
-    {
+    public function m2s($minutes) {
         return $minutes * 60;
     }
 }

@@ -462,7 +462,11 @@
             <div class="content notification_type">
                 <table>
                     <tr>
-                        <td><img src="cid:100" height="30" width="120"/></td>
+                        <td>
+                            <?php if (!$parameters['no-attachments']): ?>
+                                <img src="cid:100" height="30" width="120"/>
+                            <?php endif; ?>
+                        </td>
                         <td align="right"><h6 class="collapse"><?php echo __('openITCOCKPIT Notification'); ?></h6></td>
                     </tr>
                     <tr>
@@ -490,9 +494,9 @@
                     <tr>
                         <td>
                             <h5>&nbsp;<?php echo __('Host'); ?> <span><a
-                                        href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host'
-                                        style="text-decoration:none"
-                                        class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span>
+                                            href='https://<?php echo $_systemsettings['SYSTEM']['SYSTEM.ADDRESS'] ?>/forward/index/uuid:<?php echo $parameters['hostUuid'] ?>/action:browser/model:Host'
+                                            style="text-decoration:none"
+                                            class="<?php echo h($parameters['hoststate']); ?>"><?php echo h($parameters['hostname']); ?></a></span>
                             </h5>
                             <hr noshade width="560" size="3" align="left">
                             <br>
@@ -503,15 +507,15 @@
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong><?php
-                                                echo __('The current status was already acknowledged by %s ', $parameters['hostackauthor']);
+                                                echo __('The current status was already acknowledged by %s ',$parameters['hostackauthor']);
                                                 echo __('with the comment "');
                                                 ?>
                                                 <?php
-                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $parameters['hostackcomment'], $ticketDetails)):
-                                                    echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
+                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/',$parameters['hostackcomment'],$ticketDetails)):
+                                                    echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2])) ?
                                                         $this->Html->link(
-                                                            $ticketDetails[1].' '.$ticketDetails[2],
-                                                            $_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'].$ticketDetails[3],
+                                                            $ticketDetails[1] . ' ' . $ticketDetails[2],
+                                                            $_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'] . $ticketDetails[3],
                                                             ['target' => '_blank']) : $parameters['hostackcomment'];
                                                 else:
                                                     echo h($parameters['hostackcomment']);
@@ -548,7 +552,7 @@
                             <strong><?php echo __('Output'); ?>:</strong>
                             <p class="lead"> <?php echo h($parameters['hostoutput']); ?> </p>
                             <br/><br/>
-                            <?php if($parameters['hoststate'] != 'UP'): ?>
+                            <?php if ($parameters['hoststate'] != 'UP'): ?>
                                 --- BEGIN ACK INFORMATION ---
                                 ACK_HOSTNAME: <?php echo h($parameters['hostname']);
                                 echo PHP_EOL; ?>
@@ -613,16 +617,16 @@ TICKET_NOTIFICATIONTYPE: HOST
 TICKET_COMMAND_NUMBER: 33
 --- END TICKET SYSTEM INFORMATION ---
 
-<?php if($parameters['hoststate'] != 'UP'): ?>
+<?php if ($parameters['hoststate'] != 'UP'): ?>
 --- BEGIN ACK2 INFORMATION ---
 ACK_HOSTNAME: <?php echo h($parameters['hostname']);
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_SERVICEDESC:
 ACK_SERVICEUUID:
 ACK_STATE: <?php echo h($parameters['hoststate']);
-echo PHP_EOL; ?>
+    echo PHP_EOL; ?>
 ACK_NOTIFICATIONTYPE: HOST
 --- END ACK2 INFORMATION ---
 <?php endif; ?>

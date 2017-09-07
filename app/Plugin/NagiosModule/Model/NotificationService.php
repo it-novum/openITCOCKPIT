@@ -166,6 +166,10 @@ class NotificationService extends NagiosModuleAppModel {
                 'NotificationService.notification_type' => 1
             ],
 
+            'group' => [
+                'Contactnotification.contactnotification_id'
+            ],
+
             'order' => $ServiceNotificationConditions->getOrder(),
             'limit' => $ServiceNotificationConditions->getLimit(),
         ];

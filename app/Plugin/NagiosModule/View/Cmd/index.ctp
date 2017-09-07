@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('External Commands'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
