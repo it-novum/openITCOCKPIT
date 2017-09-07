@@ -398,6 +398,22 @@ class MapstatusHelper extends AppHelper {
                     if (empty($mapstatus['hoststatus'][0])) {
                         continue;
                     }
+
+
+                    //ACK should be shown as OK
+                    foreach ($mapstatus['hoststatus'][0] as $key => $hoststate){
+                        if($hoststate['Hoststatus']['problem_has_been_acknowledged'] == 1){
+                            $mapstatus['hoststatus'][0][$key]['Hoststatus']['current_state'] = '0';
+                        }
+                        if(!empty($hoststate['Servicestatus'])){
+                            foreach ($hoststate['Servicestatus'] as $sKey => $servicestate){
+                                if($servicestate['Servicestatus']['problem_has_been_acknowledged'] == 1){
+                                    $mapstatus['hoststatus'][0][$key]['Servicestatus'][$sKey]['Servicestatus']['current_state'] = '0';
+                                }
+                            }
+                        }
+                    }
+
                     $hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
                     $servicestates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
 
@@ -409,7 +425,16 @@ class MapstatusHelper extends AppHelper {
                     if (empty($mapstatus['servicestatus'][0])) {
                         continue;
                     }
+
+                    //ACK should be shown as OK
+                    foreach($mapstatus['servicestatus'] as $key => $mapstate){
+                        if($mapstate['Servicestatus']['problem_has_been_acknowledged'] == 1){
+                            $mapstatus['servicestatus'][$key]['Servicestatus']['current_state'] = '0';
+                        }
+                    }
+
                     $servicestates = Hash::extract($mapstatus['servicestatus'], '{n}.Servicestatus.current_state');
+
                     $cumulative_service_state['Service']['Service'] = Hash::apply($servicestates, '{n}', 'max');
                     break;
                 case 'hostgroupstatus':

@@ -178,7 +178,7 @@ class Mapeditor extends MapModuleAppModel
             ],
         ]);
         //get the servicestatus
-        $statusObjects['servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceUuids]);
+        $statusObjects['servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceUuids], ['Servicestatus.problem_has_been_acknowledged']);
 
         //get the host ids
         $mapHosts = Hash::extract($mapElements, '{s}.{n}.{s}[type=/host$/].object_id');
@@ -194,11 +194,11 @@ class Mapeditor extends MapModuleAppModel
         ]);
         //get the hoststatus
         $statusObjects['hoststatus'] = [
-            $this->_hoststatus(['Objects.name1' => $hostUuids]),
+            $this->_hoststatus(['Objects.name1' => $hostUuids], ['Hoststatus.problem_has_been_acknowledged']),
         ];
         //get the servicestatus for every host
         foreach ($statusObjects['hoststatus'][0] as $key => $hoststatusObject) {
-            $statusObjects['hoststatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']]);
+            $statusObjects['hoststatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']], ['Servicestatus.problem_has_been_acknowledged']);
 
         }
 
