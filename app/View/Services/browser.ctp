@@ -37,6 +37,7 @@ if (!isset($servicestatus['Servicestatus'])):
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
+$ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
 
 ?>
 <div id="error_msg"></div>
@@ -123,13 +124,18 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                 <div class="widget-body no-pwing">
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo $service['Service']['name']; ?> <strong><?php echo __('Last state change') ?>
-                                : <?php echo $this->Time->format(
+                            <?php echo h($service['Service']['name']); ?>
+                            <strong>
+                                <?php
+                                echo __('is %s since:', $ServicestatusIcon->getHumanState());
+                                echo $this->Time->format(
                                     $Servicestatus->getLastStateChange(),
                                     $this->Auth->user('dateformat'),
                                     false,
                                     $this->Auth->user('timezone')
-                                ); ?></strong>
+                                );
+                                ?>
+                            </strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>
                                 <strong><?php echo $this->Time->format(
@@ -255,15 +261,15 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                 <tr>
                                     <td><strong><?php echo __('Priority'); ?>:</strong></td>
                                     <td>
-                                        <?php if(isset($service['Service']['priority'])):?>
+                                        <?php if (isset($service['Service']['priority'])): ?>
                                             <?php for ($i = 1; $i < 6; $i++): ?>
-                                                <?php if($i <= $service['Service']['priority']):?>
+                                                <?php if ($i <= $service['Service']['priority']): ?>
                                                     <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
-                                                <?php else:?>
+                                                <?php else: ?>
                                                     <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
                                                 <?php endif;
                                             endfor; ?>
-                                        <?php endif;?>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <?php if (!$Servicestatus->isNotificationsEnabled()): ?>
