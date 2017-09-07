@@ -2252,8 +2252,8 @@ class ServicesController extends AppController {
         }
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
+        $hosts = $this->Host->getAjaxHosts($containerIds, [], [$host_id]);
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();

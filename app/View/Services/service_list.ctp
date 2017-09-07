@@ -71,11 +71,13 @@ $this->Paginator->url($this->params['url']); ?>
                         'label' => false,
                         'wrapInput' => 'col col-xs-12',
                         'style' => 'width: 100%',
+                        'itn-ajax' => '/Hosts/ajaxGetByTerm'
                     ]);
                     ?>
                 </div>
                 <div class="col col-xs-4" style="padding-left:0;">
                     <div class="btn-group pull-left" style="padding-top: 2px;">
+                        <a href="javascript:void(0);" class="btn btn-default btn-xs" id="apply-service-list-change"><?= __('Apply') ?></a>
                         <?php if ($this->Acl->hasPermission('edit', 'hosts') && $allowEdit): ?>
                             <a href="<?php echo Router::url([
                                 'controller' => 'hosts',

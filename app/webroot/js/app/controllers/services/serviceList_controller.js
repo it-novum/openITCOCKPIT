@@ -42,8 +42,8 @@ App.Controllers.ServicesServiceListController = Frontend.AppController.extend({
 		/*
 		 * Bind change event on serviceListHostId
 		 */
-		$('#serviceListHostId').change(function(){
-			window.location = '/services/serviceList/'+$(this).val();
+		$(document).on('click', '#apply-service-list-change', function() {
+			window.location = '/services/serviceList/'+$('#serviceListHostId').val();
 		});
 		
 		
