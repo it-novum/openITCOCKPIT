@@ -151,13 +151,13 @@ class ServicesController extends AppController {
                 'Servicestatus.scheduled_downtime_depth'      => [
                     'label' => 'In Downtime','type' => 'checkbox','searchType' => 'downtime','options' =>
                         [
-                            '0' => [
+                            '1' => [
                                 'name'  => 'Downtime',
                                 'value' => 1,
                                 'label' => 'In Downtime',
                                 'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
                             ],
-                            '1' => [
+                            '0' => [
                                 'name'  => 'Not in Downtime',
                                 'value' => 1,
                                 'label' => 'Not in Downtime',

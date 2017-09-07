@@ -273,14 +273,6 @@ class ListFilterComponent extends Component {
                             $conditions[$model . '.' . $field . ' <='] = $value[0];
                             break;
 
-                        case 'downtime':
-                            if (isset($value[1])) {
-                                $conditions[$model . '.' . $field . ' ='] = 0;
-                            } else {
-                                $conditions[$model . '.' . $field . ' >='] = $value[0];
-                            }
-                            break;
-
                         default:
                             if (is_array($value)) {
                                 $_value = [];
