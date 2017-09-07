@@ -1495,3 +1495,16 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .status_headline {
 	margin: 12px 0 28px;
 }
+
+.label-forced {
+	display: inline!important;
+	padding: .2em .6em .3em!important;
+	font-size: 75%!important;
+	font-weight: 700!important;
+	line-height: 1!important;
+	color: #fff!important;
+	text-align: center!important;
+	white-space: nowrap!important;
+	vertical-align: baseline!important;
+	border-radius: .25em!important;
+}

@@ -129,6 +129,7 @@ $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                 <?php
                                 echo __('is %s since: ', $ServicestatusIcon->getHumanState());
                                 echo $this->Time->format(
+
                                     $Servicestatus->getLastStateChange(),
                                     $this->Auth->user('dateformat'),
                                     false,

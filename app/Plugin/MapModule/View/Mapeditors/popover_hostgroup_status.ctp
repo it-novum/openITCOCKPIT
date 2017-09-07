@@ -117,8 +117,8 @@ $serviceAmount = array_sum($serviceAmountperHost);
             <?php $key = $host['uuid']; ?>
             <tr>
                 <!-- Hostname -->
-                <td title="<?php echo $host['name']; ?>">
-                    <?php echo $host['name']; ?>
+                <td title="<?php echo h($host['name']); ?>">
+                    <?php echo h($host['name']); ?>
                 </td>
                 <!-- State -->
                 <?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state']; ?>
