@@ -27,7 +27,7 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 class NagiosNotificationTask extends AppShell {
 
-    public $uses = ['Rrd','Systemsetting'];
+    public $uses = ['Rrd','Systemsetting', MONITORING_SERVICESTATUS];
 
     public function construct() {
         $this->_systemsettings = $this->Systemsetting->findAsArray();
@@ -144,6 +144,20 @@ class NagiosNotificationTask extends AppShell {
                 break;
         }
 
+        if($parameters['serviceType'] === EVK_SERVICE && CakePlugin::loaded('EventcorrelationModule')) {
+            $this->loadModel('EventcorrelationModule.Eventcorrelation');
+            $serviceStateArray = [
+                'OK' => 0,
+                'WARNING' => 1,
+                'CRITICAL' => 2,
+                'UNKNOWN' => 3
+            ];
+            $evcTree = $this->Eventcorrelation->getEvcTreeData($parameters['hostId'], []);
+            $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'));
+            $servicestatus[$parameters['serviceUuid']]['current_state'] = $parameters['servicestate'];
+            $parameters['evcTree'] = $evcTree;
+            $parameters['servicestatus'] = $servicestatus;
+        }
 
         $Email->subject($prefix . ' | Service: ' . $parameters['servicedesc'] . ' (' . $parameters['hostname'] . ') is ' . $parameters['servicestate']);
 
