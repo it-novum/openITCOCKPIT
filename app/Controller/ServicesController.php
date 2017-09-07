@@ -2973,7 +2973,7 @@ class ServicesController extends AppController {
                 }
                 $returnHtml .= '</optgroup>';
             }
-            return $returnHtml;
+            return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : $returnHtml;
         }
     }
 }
