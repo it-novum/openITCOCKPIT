@@ -26,12 +26,14 @@
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+$HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -119,7 +121,16 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
                             <?php echo h($host['Host']['name']); ?>
-                            <strong><?php echo __('available since:') ?><?php echo $this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+                            <strong>
+                                <?php echo __('is %s since:', $HoststatusIcon->getHumanState()) ?>
+
+                                <?php echo $this->Time->format(
+                                    $Hoststatus->getLastHardStateChange(),
+                                    $this->Auth->user('dateformat'),
+                                    false,
+                                    $this->Auth->user('timezone')
+                                ); ?>
+                            </strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>
                                 <strong><?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
@@ -566,7 +577,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
                                                         <th><?php echo __('Servicestatus'); ?></th>
-                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i>
+                                                        </th>
                                                         <th class="text-center"><i class="fa fa-user"
                                                                                    title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                         </th>
@@ -616,10 +628,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                                         class="fa fa-cog"></i>&nbsp;
                                                                             </a>
                                                                         <?php else: ?>
-                                                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                            <a href="javascript:void(0);"
+                                                                               class="btn btn-default">&nbsp;<i
                                                                                         class="fa fa-cog"></i>&nbsp;</a>
                                                                         <?php endif; ?>
-                                                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                                                        <a href="javascript:void(0);"
+                                                                           data-toggle="dropdown"
                                                                            class="btn btn-default dropdown-toggle"><span
                                                                                     class="caret"></span></a>
                                                                         <ul class="dropdown-menu">

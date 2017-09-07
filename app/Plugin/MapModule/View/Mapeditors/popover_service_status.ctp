@@ -71,7 +71,7 @@ if (empty($servicestatus)) {
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
-        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['long_output']); ?></td>
+        <td class="col-md-9 col-xs-9"><?php echo h($servicestatusField['perfdata']); ?></td>
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
