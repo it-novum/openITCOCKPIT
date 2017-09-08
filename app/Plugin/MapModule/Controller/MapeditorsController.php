@@ -143,7 +143,7 @@ class MapeditorsController extends MapModuleAppController
                 $selectedServices[] = $mapItem['object_id'];
             }
         }
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerIdsToCheck);
+        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $hosts = $this->Host->getAjaxHosts($userContainerIds, [], $selectedHosts);
 
         $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], $selectedServices);
