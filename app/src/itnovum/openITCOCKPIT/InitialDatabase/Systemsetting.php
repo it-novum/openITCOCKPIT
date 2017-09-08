@@ -529,14 +529,6 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
-                    'key'     => 'FRONTEND.AUTOMATIC_PAGE_REFRESH',
-                    'value'   => '0',
-                    'info'    => 'Set seconds for automatic site refresh, set 0 to turn off.',
-                    'section' => 'FRONTEND'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'     => 'CHECK_MK.BIN',
                     'value'   => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
                     'info'    => 'Path to check_mk binary',
