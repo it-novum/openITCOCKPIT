@@ -91,25 +91,31 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
                 $mailbox->deleteMessage($myEmailId);
                 if (empty($parsedValues)) continue;
                 $acknowledged++;
+                openlog('Ack per mail ', LOG_CONS | LOG_NDELAY | LOG_PID, LOG_USER | LOG_PERROR);
                 if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                    $this->Externalcommand->setHostAck([
+                    $hostAckArray = [
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                         'author' => $messArr['sender'],
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1,
                         'type' => 'hostOnly'
-                    ]);
+                    ];
+                    syslog(LOG_INFO, json_encode($hostAckArray));
+                    $this->Externalcommand->setHostAck($hostAckArray);
                     $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
                 } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                    $this->Externalcommand->setServiceAck([
+                    $serviceAckArray = [
                         'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                         'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
                         'author' => $messArr['sender'],
                         'comment' => __('Acknowledged per mail'),
                         'sticky' => 1
-                    ]);
+                    ];
+                    syslog(LOG_INFO, json_encode($serviceAckArray));
+                    $this->Externalcommand->setServiceAck($serviceAckArray);
                     $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
                 }
+                closelog();
             }
         }
 
