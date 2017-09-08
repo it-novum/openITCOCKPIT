@@ -145,7 +145,7 @@ Frontend.AppController = Frontend.Controller.extend({
                     $.ajax({
                         method: 'POST',
                         url: arrayOfItnAjax[currentItnAjaxId],
-                        data: {term: termInputValue, selected: ajaxType==='host' ? self.ajaxSelectedHosts : self.ajaxSelectedServices, 'containerId': $(containerId).val()},
+                        data: {term: termInputValue, selected: ajaxType==='host' ? self.ajaxSelectedHosts : self.ajaxSelectedServices, 'containerId': $(containerId).val(), isMultiple : isMultiple},
                         success: function (data) {
                             $('#' + currentItnAjaxId).html(data).trigger('chosen:updated');
                             termInput.val(termInputValue);

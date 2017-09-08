@@ -2973,7 +2973,11 @@ class ServicesController extends AppController {
                 }
                 $returnHtml .= '</optgroup>';
             }
-            return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : $returnHtml;
+            if(!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true'){
+                return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : $returnHtml;
+            }else{
+                return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
+            }
         }
     }
 }
