@@ -98,6 +98,11 @@ App.Controllers.ServicechecksIndexController = Frontend.AppController.extend({
             }
         });
 
+        /* After you click a value, it prevents the closure of drop-down */
+        $('.stayOpenOnClick').click(function (event) {
+            event.stopPropagation();
+        });
+
     },
     fnShowHide: function (iCol, inputObject) {
         /* Get the DataTables object again - this is not a recreation, just a get of the object */

@@ -99,7 +99,7 @@ App.Controllers.StatehistoriesServiceController = Frontend.AppController.extend(
         });
 
         /* After you click a value, it prevents the closure of drop-down */
-        $('.dropdown-menu').click(function (event) {
+        $('.stayOpenOnClick').click(function (event) {
             event.stopPropagation();
         });
 
