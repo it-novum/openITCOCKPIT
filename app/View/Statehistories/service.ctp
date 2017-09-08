@@ -98,7 +98,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
                             <i class="fa fa-lg fa-table"></i>
                         </a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
+                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
                                     <input type="checkbox" class="pull-left"/>
@@ -160,7 +160,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <?php echo __('State types'); ?> <i class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <?php
                                 foreach ($state_types as $state_type => $name):
                                     $checked = '';
