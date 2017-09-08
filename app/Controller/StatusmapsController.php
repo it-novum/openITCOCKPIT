@@ -101,8 +101,8 @@ class StatusmapsController extends AppController
             //$status = $this->clickHostStatus($parenthost['Parenthost']['uuid'], 1);
             $mystatusmap['nodes'][$key] = [
                 'id'            => $parenthost['Parenthost']['id'],
-                'label'         => $parenthost['Parenthost']['name'],
-                'ip'            => $parenthost['Parenthost']['address'],
+                'label'         => h($parenthost['Parenthost']['name']),
+                'ip'            => h($parenthost['Parenthost']['address']),
                 'uuid'          => $parenthost['Parenthost']['uuid'],
                 'size'          => ($key < 3) ? 5 : 3,
                 'current_state' => ($key == 0) ? 0 : $status,
@@ -163,6 +163,11 @@ class StatusmapsController extends AppController
                 ],
             ],
         ]);
+
+        if(isset($hoststatus[0]['Host']['name'])){
+            $hoststatus[0]['Host']['name'] = h($hoststatus[0]['Host']['name']);
+        }
+
         if ($return) {
             return ($hoststatus);
         }

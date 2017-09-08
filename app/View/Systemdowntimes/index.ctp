@@ -83,7 +83,7 @@
                     <div class="widget-toolbar" role="menu">
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                     class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
+                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         my-column="0"><input type="checkbox" class="pull-left"/>
                                     &nbsp; <?php echo __('Object type'); ?></a></li>
@@ -206,7 +206,7 @@
                                 <span id="listoptions_limit"><?php echo $selected; ?></span> <i
                                         class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <?php foreach ($listoptions as $listoption): ?>
                                     <li>
                                         <a href="javascript:void(0);" class="listoptions_action"
@@ -239,9 +239,10 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="recurringdowntimes_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="recurringdowntimes_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -335,8 +336,10 @@
                                         </td>
                                         <td><?php echo $systemdowntime['Systemdowntime']['author']; ?></td>
                                         <td>
-                                            <span class="text-muted">AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>
-                                                ]: </span><?php echo $systemdowntime['Systemdowntime']['comment']; ?>
+                                            <span class="text-muted">
+                                                AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>]:
+                                            </span>
+                                            <?php echo $systemdowntime['Systemdowntime']['comment']; ?>
                                         </td>
                                         <td>
                                             <?php
@@ -387,7 +390,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

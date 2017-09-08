@@ -128,15 +128,27 @@ class HostsController extends AppController {
                                 'label' => 'Acknowledged',
                                 'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
                             ],
+                            '0' => [
+                                'name'  => 'Not Acknowledged',
+                                'value' => 1,
+                                'label' => 'Not Acknowledged',
+                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                            ],
                         ],
                 ],
                 'Hoststatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime','type' => 'checkbox','searchType' => 'greater','options' =>
+                    'label' => 'In Downtime','type' => 'checkbox','searchType' => 'downtime','options' =>
                         [
-                            '0' => [
+                            '1' => [
                                 'name'  => 'Downtime',
                                 'value' => 1,
                                 'label' => 'In Downtime',
+                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
+                            ],
+                            '0' => [
+                                'name'  => 'Not in Downtime',
+                                'value' => 1,
+                                'label' => 'Not in Downtime',
                                 'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
                             ],
                         ],
@@ -182,15 +194,27 @@ class HostsController extends AppController {
                                 'label' => 'Acknowledged',
                                 'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
                             ],
+                            '0' => [
+                                'name'  => 'Not Acknowledged',
+                                'value' => 1,
+                                'label' => 'Not Acknowledged',
+                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                            ],
                         ],
                 ],
                 'Hoststatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime','type' => 'checkbox','searchType' => 'greater','options' =>
+                    'label' => 'In Downtime','type' => 'checkbox','searchType' => 'downtime','options' =>
                         [
-                            '0' => [
+                            '1' => [
                                 'name'  => 'Downtime',
                                 'value' => 1,
                                 'label' => 'In Downtime',
+                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
+                            ],
+                            '0' => [
+                                'name'  => 'Not in Downtime',
+                                'value' => 1,
+                                'label' => 'Not in Downtime',
                                 'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
                             ],
                         ],
@@ -272,7 +296,6 @@ class HostsController extends AppController {
 
         $this->set('all_hosts',$all_hosts);
         $this->set('_serialize',['all_hosts']);
-
 
         $this->set('username',$User->getFullName());
         $this->set('userRights',$this->MY_RIGHTS);
@@ -1360,7 +1383,7 @@ class HostsController extends AppController {
         }
         $conditions = $this->ListFilter->buildConditions([],$conditions);
         $query = [
-            'recurisve'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 $conditions,
             ],

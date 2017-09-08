@@ -155,9 +155,9 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                     </span>
                                     <?php
                                     if ($Hoststatus->getAcknowledgementType() == 1):
-                                        echo __('The current status was already acknowledged by');
+                                        echo __('The current status was acknowledged by');
                                     else:
-                                        echo __('The current status was already acknowledged (STICKY) by');
+                                        echo __('The current status was acknowledged (STICKY) by');
                                     endif; ?>
                                     <strong><?php echo h($Acknowledgement->getAuthorName()); ?></strong> (<i
                                             class="fa fa-clock-o"></i>

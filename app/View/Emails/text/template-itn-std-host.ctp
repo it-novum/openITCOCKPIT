@@ -23,19 +23,49 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-foreach ($parameters as $parameter):
-    echo $parameter."\n";
-endforeach;
 ?>
+Host <?php echo h($parameters['hostname']); ?>
+
+
+Time: <?php echo date('H:i:s T'); ?>
+
+Hostname: <?php echo h($parameters['hostname']); ?>
+
+Hostdescription: <?php echo h($parameters['hostdescription']); ?>
+
+Hostaddress: <?php echo h($parameters['hostaddress']); ?>
+
+State: <?php echo h($parameters['hoststate']); ?>
+
+
+Output: <?php echo h($parameters['hostoutput']); ?>
+
+
 
 
 --- BEGIN TICKET SYSTEM INFORMATION ---
-TICKET_HOSTNAME: <?php echo h($parameters['hostname']); ?>
-TICKET_HOSTUUID: <?php echo $parameters['hostUuid']; ?>
+TICKET_HOSTNAME: <?php echo h($parameters['hostname']);
+echo PHP_EOL; ?>
+TICKET_HOSTUUID: <?php echo $parameters['hostUuid'];
+echo PHP_EOL; ?>
 TICKET_SERVICEDESC:
 TICKET_SERVICEUUID:
-TICKET_STATE: <?php echo h($parameters['hoststate']); ?>
+TICKET_STATE: <?php echo h($parameters['hoststate']);
+echo PHP_EOL; ?>
 TICKET_NOTIFICATIONTYPE: HOST
 TICKET_COMMAND_NUMBER: 33
 --- END TICKET SYSTEM INFORMATION ---
 
+<?php if ($parameters['hoststate'] != 'UP'): ?>
+--- BEGIN ACK2 INFORMATION ---
+ACK_HOSTNAME: <?php echo h($parameters['hostname']);
+    echo PHP_EOL; ?>
+ACK_HOSTUUID: <?php echo $parameters['hostUuid'];
+    echo PHP_EOL; ?>
+ACK_SERVICEDESC:
+ACK_SERVICEUUID:
+ACK_STATE: <?php echo h($parameters['hoststate']);
+    echo PHP_EOL; ?>
+ACK_NOTIFICATIONTYPE: HOST
+--- END ACK2 INFORMATION ---
+<?php endif; ?>
