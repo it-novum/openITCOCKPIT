@@ -1381,7 +1381,7 @@ class HostsController extends AppController {
         }
         $conditions = $this->ListFilter->buildConditions([],$conditions);
         $query = [
-            'recurisve'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 $conditions,
             ],

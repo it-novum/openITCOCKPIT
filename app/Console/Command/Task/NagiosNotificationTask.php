@@ -119,6 +119,7 @@ class NagiosNotificationTask extends AppShell {
             $Email->replyTo([$replyToVal => $replyToVal]);
         }
 
+
         switch ($parameters['notificationtype']) {
             case 'CUSTOM':
                 $prefix = 'C';

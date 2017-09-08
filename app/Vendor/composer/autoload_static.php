@@ -35,6 +35,10 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         array (
             'Doctrine\\Common\\Cache\\' => 22,
             'Doctrine\\Common\\' => 16,
+            'Ddeboer\\Transcoder\\Tests\\' => 25,
+            'Ddeboer\\Transcoder\\' => 19,
+            'Ddeboer\\Imap\\Tests\\' => 19,
+            'Ddeboer\\Imap\\' => 13,
         ),
         'A' => 
         array (
@@ -74,6 +78,22 @@ class ComposerStaticInitc59c4036cad82e65a198aa10e4f1f83f
         'Doctrine\\Common\\' => 
         array (
             0 => __DIR__ . '/..' . '/doctrine/common/lib/Doctrine/Common',
+        ),
+        'Ddeboer\\Transcoder\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ddeboer/transcoder/tests',
+        ),
+        'Ddeboer\\Transcoder\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ddeboer/transcoder/src',
+        ),
+        'Ddeboer\\Imap\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ddeboer/imap/tests',
+        ),
+        'Ddeboer\\Imap\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ddeboer/imap/src',
         ),
         'Adldap\\' => 
         array (

@@ -193,8 +193,8 @@ App.Components.RrdComponent = Frontend.Component.extend({
 								self.units[host_uuid][service_uuid][ds] = service.xml_data[i].unit;
 							});
 						});
-						self.host_names[host_uuid] = service.hostname;
-						self.service_names[service_uuid] = service.servicename;
+						self.host_names[host_uuid] = htmlspecialchars(service.hostname);
+						self.service_names[service_uuid] = htmlspecialchars(service.servicename);
 
 						// Not necessary at this moment
 						if(self.display_threshold_lines === true){
