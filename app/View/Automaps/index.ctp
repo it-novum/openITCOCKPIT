@@ -31,7 +31,7 @@
                 <?php echo __('Monitoring'); ?>
                 <span>>
                     <?php echo __('Automaps'); ?>
-			</span>
+                </span>
             </h1>
         </div>
     </div>
@@ -43,9 +43,9 @@
                 <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                     <header>
                         <div class="widget-toolbar" role="menu">
-                        <?php if ($this->Acl->hasPermission('add')): ?>                            
-                             <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
-                        <?php endif; ?>
+                            <?php if ($this->Acl->hasPermission('add')): ?>
+                                <?php echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                            <?php endif; ?>
                             <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                             <?php
                             if ($isFilter):
@@ -66,12 +66,28 @@
 
                         <!-- widget content -->
                         <div class="widget-body no-padding">
+                            <?php
+                            $options = ['avoid_cut' => true];
+                            echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
+                            ?>
                             <div class="mobile_table">
-                                <table id="automaps_list" class="table table-striped table-hover table-bordered" style="">
+                                <table id="automaps_list" class="table table-striped table-hover table-bordered smart-form"
+                                       style="">
+                                    <?php $order = $this->Paginator->param('order'); ?>
                                     <thead>
                                     <tr>
-                                        <th class="no-sort"><?php echo __('Name'); ?></th>
-                                        <th class="no-sort"><?php echo __('Description'); ?></th>
+                                        <th class="no-sort">
+                                            <?php
+                                            echo $this->Utils->getDirection($order, 'Automap.name');
+                                            echo $this->Paginator->sort('Automap.name', __('Name'));
+                                            ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php
+                                            echo $this->Utils->getDirection($order, 'Automap.description');
+                                            echo $this->Paginator->sort('Automap.description', __('Description'));
+                                            ?>
+                                        </th>
                                         <th class="no-sort"><?php echo __('Host RegEx'); ?></th>
                                         <th class="no-sort"><?php echo __('Service RegEx'); ?></th>
                                         <th class="no-sort"><?php echo __('Options'); ?></th>
@@ -102,21 +118,72 @@
                                             <td><?php echo __viewAutomapOptions($automap); ?></td>
                                             <td>
                                                 <?php if ($automap['Automap']['recursive'] == 1): ?>
-                                                    <span class="label label-success"><?php echo __('Yes'); ?></span>
+                                                    <span class="label label-success label-forced"><?php echo __('Yes'); ?></span>
                                                 <?php else: ?>
-                                                    <span class="label label-danger"><?php echo __('No'); ?></span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
-                                                <a
-                                                        href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $automap['Automap']['id']; ?>"
-                                                        data-original-title="<?php echo __('Edit'); ?>"
-                                                        data-placement="left" rel="tooltip" data-container="body"><i
-                                                            id="list_edit" class="fa fa-gear fa-lg txt-color-teal"></i></a>
+                                                    <span class="label label-danger label-forced"><?php echo __('No'); ?></span>
                                                 <?php endif; ?>
                                             </td>
 
+
+                                            <td>
+                                                <div class="btn-group">
+                                                    <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+                                                        <a href="<?php echo Router::url([
+                                                            'action' => 'edit',
+                                                            $automap['Automap']['id']
+                                                        ]); ?>"
+                                                           class="btn btn-default btn-xs">
+                                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <a href="javascript:void(0);" class="btn btn-default btn-xs">&nbsp;
+                                                            <i class="fa fa-cog"></i>&nbsp;
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                                       class="btn btn-default btn-xs dropdown-toggle">
+                                                        <span class="caret"></span>
+                                                    </a>
+                                                    <ul class="dropdown-menu pull-right">
+                                                        <?php if ($this->Acl->hasPermission('edit') && $hasEditPermission): ?>
+                                                            <li>
+                                                                <a href="<?php echo Router::url([
+                                                                    'action' => 'edit',
+                                                                    $automap['Automap']['id']
+                                                                ]); ?> ">
+                                                                    <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('view')): ?>
+                                                            <li>
+                                                                <a href="<?php echo Router::url([
+                                                                    'action' => 'view',
+                                                                    $automap['Automap']['id']
+                                                                ]); ?>">
+                                                                    <i class="fa fa-eye"></i>
+                                                                    <?php echo __('View'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('delete') && $hasEditPermission): ?>
+                                                            <li class="divider"></li>
+                                                            <li>
+                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), [
+                                                                    'controller' => 'automaps',
+                                                                    'action'     => 'delete',
+                                                                    $automap['Automap']['id']
+                                                                ], [
+                                                                    'class'  => 'txt-color-red',
+                                                                    'escape' => false
+                                                                ],
+                                                                    __('Are you sure you want to delete this automap?'));
+                                                                ?>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                    </ul>
+                                                </div>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                     </tbody>
@@ -134,7 +201,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -160,14 +227,13 @@
  * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
  * @since  3.0.1
  */
-function __viewAutomapOptions($automap = [])
-{
+function __viewAutomapOptions($automap = []) {
     $options = ['show_ok' => 'txt-color-greenLight', 'show_warning' => 'txt-color-orange', 'show_critical' => 'txt-color-redLight', 'show_unknown' => 'txt-color-blueDark'];
     $class = 'fa fa-square ';
     $html = [];
     foreach ($options as $option => $color) {
         if (isset($automap['Automap'][$option]) && $automap['Automap'][$option] == 1) {
-            $html [] = '<i class="'.$class.$color.'"></i>';
+            $html [] = '<i class="' . $class . $color . '"></i>';
         }
     }
 

@@ -76,7 +76,7 @@ class Commands extends Importer {
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'a517bbb6-f299-4b57-9865-a4e0b70597e4',
-                            'description'  => 'Send a service notificationa s mail',
+                            'description'  => 'Send a service notification as mail',
                         ],
                     'Commandargument' =>
                         [],

@@ -239,9 +239,10 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="recurringdowntimes_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="recurringdowntimes_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -335,8 +336,10 @@
                                         </td>
                                         <td><?php echo $systemdowntime['Systemdowntime']['author']; ?></td>
                                         <td>
-                                            <span class="text-muted">AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>
-                                                ]: </span><?php echo $systemdowntime['Systemdowntime']['comment']; ?>
+                                            <span class="text-muted">
+                                                AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>]:
+                                            </span>
+                                            <?php echo $systemdowntime['Systemdowntime']['comment']; ?>
                                         </td>
                                         <td>
                                             <?php
@@ -387,7 +390,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

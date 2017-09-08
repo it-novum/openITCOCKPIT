@@ -568,8 +568,8 @@ class Host extends AppModel {
             $requestData['Host']['Contact'] = [];
         }
 
-        if (empty($diff_array['Hostgroup']['Hostgroup'])) {
-            $diff_array['Hostgroup']['Hostgroup'] = [];
+        if (empty($requestData['Host']['Hostgroup'])) {
+            $requestData['Host']['Hostgroup'] = [];
         }
 
 

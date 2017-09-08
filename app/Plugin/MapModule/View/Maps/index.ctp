@@ -45,7 +45,7 @@
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('New'), '/' . $this->params['plugin'] . '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
-                        <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
+                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                         <?php
                         if ($isFilter):
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'], true);
@@ -60,7 +60,7 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false, true); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false, true); ?>
                         <table id="contactgroup_list" class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
@@ -93,9 +93,9 @@
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="/map_module/mapeditors/view/<?php echo $map['Map']['id']; ?>"><?php echo $map['Map']['name']; ?></a>
+                                        <a href="/map_module/mapeditors/view/<?php echo $map['Map']['id']; ?>"><?php echo h($map['Map']['name']); ?></a>
                                     </td>
-                                    <td><?php echo $map['Map']['title'] ?></td>
+                                    <td><?php echo h($map['Map']['title']); ?></td>
                                     <td>
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>

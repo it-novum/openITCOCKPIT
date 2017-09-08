@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CmdShell extends AppShell
-{
+class CmdShell extends AppShell {
 
     public $uses = [
         'Host',
@@ -47,8 +46,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function main()
-    {
+    public function main() {
         App::uses('UUID', 'Lib');
         $this->uuidRegex = UUID::regex();
         define('LOGLEVEL_INFO', 1);
@@ -83,8 +81,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function buildServiceCache()
-    {
+    public function buildServiceCache() {
         $this->_log('Info: Build up service cache', LOGLEVEL_INFO);
         $services = $this->Service->find('all', [
             'fields'  => [
@@ -123,19 +120,18 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function appendCache($service)
-    {
+    public function appendCache($service) {
         $serviceName = $service['Service']['name'];
         if ($serviceName == null || $serviceName == '') {
             $serviceName = $service['Servicetemplate']['name'];
         }
 
-        $hostAndServiceMd5 = md5($service['Host']['uuid'].$serviceName);
+        $hostAndServiceMd5 = md5($service['Host']['uuid'] . $serviceName);
 
         if (!isset($this->serviceCache[$hostAndServiceMd5])) {
             $this->serviceCache[$hostAndServiceMd5] = $service['Service']['uuid'];
         } else {
-            $this->_log('Warning: Duplicate service '.$serviceName.' on host '.$service['Host']['name'].' ('.$service['Host']['uuid'].')', LOGLEVEL_WARNING);
+            $this->_log('Warning: Duplicate service ' . $serviceName . ' on host ' . $service['Host']['name'] . ' (' . $service['Host']['uuid'] . ')', LOGLEVEL_WARNING);
         }
 
         return $service['Service']['uuid'];
@@ -146,16 +142,15 @@ class CmdShell extends AppShell
      * If a service is not found in the cache, a SQL query is fired up to lookup the UUID of the service
      * and store the result in the cache
      *
-     * @param    string $hostUuid           the UUID of the host
+     * @param    string $hostUuid the UUID of the host
      * @param    string $serviceDescription the service description (for humans not a uuid e.g. Lan-Ping)
      *
      * @return    string/bool return service uuid if found in cache, or false if no result is found
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function searchCache($hostUuid, $serviceDescription)
-    {
-        $hostAndServiceMd5 = md5($hostUuid.$serviceDescription);
+    public function searchCache($hostUuid, $serviceDescription) {
+        $hostAndServiceMd5 = md5($hostUuid . $serviceDescription);
         if (isset($this->serviceCache[$hostAndServiceMd5])) {
             return $this->serviceCache[$hostAndServiceMd5];
         }
@@ -208,8 +203,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function processCommand($commandAsString)
-    {
+    public function processCommand($commandAsString) {
         //Parse the external command read from oitc.cmd
         $commandAsArray = $this->parseCommand($commandAsString);
         if ($commandAsArray) {
@@ -241,8 +235,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function parseCommand($command = '')
-    {
+    public function parseCommand($command = '') {
         $command = trim($command);
 
         //Get timestamp part
@@ -273,18 +266,17 @@ class CmdShell extends AppShell
      * The command gets parsed, service description will be replaced and
      * the function give the external command to nagios.cmd
      *
-     * @param    string $msg      the message you want to log
-     * @param    int    $logLevel the log level of the message
+     * @param    string $msg the message you want to log
+     * @param    int $logLevel the log level of the message
      *
      * @return    void
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function _log($msg, $logLevel)
-    {
+    public function _log($msg, $logLevel) {
         if ($this->logLevel & $logLevel) {
             $this->openLogfile();
-            fwrite($this->logfile, $msg.PHP_EOL);
+            fwrite($this->logfile, $msg . PHP_EOL);
         }
     }
 
@@ -295,8 +287,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function openLogfile()
-    {
+    public function openLogfile() {
         if (!is_resource($this->logfile)) {
             $this->logfile = fopen(Configure::read('logfile'), 'a+');
         }
@@ -310,8 +301,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function closeLogfile()
-    {
+    public function closeLogfile() {
         if (is_resource($this->logfile)) {
             fclose($this->logfile);
 
@@ -333,8 +323,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function buildCmdCommand($commandAsArray)
-    {
+    public function buildCmdCommand($commandAsArray) {
         //We only catch service commands, to replace the service description with a uuid
         //All other commands gets passed to monitorings *.cmd file
 
@@ -386,7 +375,7 @@ class CmdShell extends AppShell
                 }
 
                 // The user passed a service description, so we need to check, if we can find the uuid for this service
-                $this->_log('Service description: '.$commandAsArray['params'][2], LOGLEVEL_DEBUG);
+                $this->_log('Service description: ' . $commandAsArray['params'][2], LOGLEVEL_DEBUG);
                 $serviceUuid = $this->searchCache($commandAsArray['params'][1], $commandAsArray['params'][2]);
                 if ($serviceUuid) {
                     //Yes, we found a service uuid
@@ -417,13 +406,17 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    private function _buildNagCommand($commandAsArray)
-    {
+    private function _buildNagCommand($commandAsArray) {
         if (!empty($commandAsArray['params'])) {
-            return $commandAsArray['timestamp'].' '.$commandAsArray['command'].';'.implode(';', $commandAsArray['params'])."\n";
+
+            foreach ($commandAsArray['params'] as $key => $value) {
+                $commandAsArray['params'][$key] = $this->fixUtf8($value);
+            }
+
+            return $commandAsArray['timestamp'] . ' ' . $commandAsArray['command'] . ';' . implode(';', $commandAsArray['params']) . "\n";
         }
 
-        return $commandAsArray['timestamp'].' '.$commandAsArray['command']."\n";
+        return $commandAsArray['timestamp'] . ' ' . $commandAsArray['command'] . "\n";
     }
 
     /**
@@ -433,8 +426,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function createPipe()
-    {
+    public function createPipe() {
         $this->closePipe();
 
         $fileName = Configure::read('pipe');
@@ -461,8 +453,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function closePipe()
-    {
+    public function closePipe() {
         if (is_resource($this->cmdPipe)) {
             fclose($this->cmdPipe);
         }
@@ -486,17 +477,16 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function daemonize()
-    {
+    public function daemonize() {
         $sleep = Configure::read('sleep');
-        declare(ticks = 1);
+        declare(ticks=1);
 
         pcntl_signal(SIGTERM, [$this, 'sig_handler']);
         pcntl_signal(SIGINT, [$this, 'sig_handler']);
 
         stream_set_blocking($this->cmdPipe, false); //move over while?!
 
-        $this->_log('Info: Finished daemonizing... [My PID = '.getmypid().']', LOGLEVEL_INFO);
+        $this->_log('Info: Finished daemonizing... [My PID = ' . getmypid() . ']', LOGLEVEL_INFO);
 
         while (true) {
             pcntl_signal_dispatch();
@@ -534,16 +524,15 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function sig_handler($signo)
-    {
-        $this->_log('Info: Received signal: '.$signo, LOGLEVEL_INFO);
+    public function sig_handler($signo) {
+        $this->_log('Info: Received signal: ' . $signo, LOGLEVEL_INFO);
         switch ($signo) {
             case SIGTERM:
             case SIGINT:
                 if (!$this->closePipe()) {
                     $this->_log('Warning: Could not delete my named pipe file!', LOGLEVEL_WARNING);
                 }
-                $this->_log('Astalavista baby...'.PHP_EOL, LOGLEVEL_INFO);
+                $this->_log('Astalavista baby...' . PHP_EOL, LOGLEVEL_INFO);
                 $this->closeLogfile();
                 exit(0);
                 break;
@@ -566,8 +555,7 @@ class CmdShell extends AppShell
      * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since     3.0.1
      */
-    public function writeToMonitoringCmd($commandAsString = '')
-    {
+    public function writeToMonitoringCmd($commandAsString = '') {
         if (file_exists($this->_systemsettings['MONITORING']['MONITORING.CMD'])) {
             $cmd = fopen($this->_systemsettings['MONITORING']['MONITORING.CMD'], 'a+');
             fwrite($cmd, $commandAsString);
@@ -581,6 +569,12 @@ class CmdShell extends AppShell
             fclose($cmd);
         } else {
             $this->monitoringCmdCache[] = $commandAsString;
+        }
+    }
+
+    public function fixUtf8($str) {
+        if (mb_detect_encoding($str) !== 'UTF-8') {
+            return utf8_encode($str);
         }
     }
 

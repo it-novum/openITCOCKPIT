@@ -59,7 +59,7 @@ echo $this->Html->script('vendor/sigmajs/plugins/sigma.parsers.json/sigma.parser
             <?php echo __('Expert Monitoring') ?>
             <span>>
                 <?php echo __('Statusmap'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
