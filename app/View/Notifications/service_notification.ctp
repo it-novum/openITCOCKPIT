@@ -98,7 +98,7 @@ $ListSettingsRenderer->setPaginator($this->Paginator);
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
                             <i class="fa fa-lg fa-table"></i>
                         </a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
+                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                             <li style="width: 100%;">
                                 <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
                                     <input type="checkbox" class="pull-left"/>
