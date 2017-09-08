@@ -80,7 +80,7 @@ class ListSettingsRenderer {
         $html .= '<button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">';
         $html .= '<span id="listoptions_limit">' . h($selected) . '</span> <i class="fa fa-caret-down"></i>';
         $html .= '</button>';
-        $html .= '<ul class="dropdown-menu pull-right">';
+        $html .= '<ul class="dropdown-menu pull-right stayOpenOnClick">';
 
         foreach ($limits as $limit => $human) {
             $html .= '<li>';

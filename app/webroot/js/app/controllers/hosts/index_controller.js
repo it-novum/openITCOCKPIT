@@ -167,6 +167,11 @@ App.Controllers.HostsIndexController = Frontend.AppController.extend({
             }
             this.Externalcommand.refresh();
         }.bind(this));
+
+        /* After you click a value, it prevents the closure of drop-down */
+        $('.stayOpenOnClick').click(function (event) {
+            event.stopPropagation();
+        });
     },
 
     validateDowntimeInput: function () {

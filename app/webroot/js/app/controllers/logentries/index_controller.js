@@ -123,6 +123,11 @@ App.Controllers.LogentriesIndexController = Frontend.AppController.extend({
             event.stopPropagation();
         });
 
+        /* After you click a value, it prevents the closure of drop-down */
+        $('.stayOpenOnClick').click(function (event) {
+            event.stopPropagation();
+        });
+
     },
 
     fnShowHide: function (iCol, inputObject) {
