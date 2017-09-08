@@ -24,6 +24,7 @@
     "symfony/filesystem": "^3.2",
     "adldap/adldap": "dev-master",
     "crate/crate-pdo":"~0.6.0",
-    "crate/crate-dbal":"~0.3.0"
+    "crate/crate-dbal":"~0.3.0",
+    "ddeboer/imap": "^0.5.2"
   }
 }

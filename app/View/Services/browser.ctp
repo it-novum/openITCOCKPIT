@@ -168,9 +168,9 @@ $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                     </span>
                                     <?php
                                     if ($Servicestatus->getAcknowledgementType() == 1):
-                                        echo __('The current status was already acknowledged by');
+                                        echo __('The current status was acknowledged by');
                                     else:
-                                        echo __('The current status was already acknowledged (STICKY) by');
+                                        echo __('The current status was acknowledged (STICKY) by');
                                     endif; ?>
                                     <strong>
                                         <?php echo h($AcknowledgementService->getAuthorName()); ?>

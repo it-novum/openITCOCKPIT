@@ -14,5 +14,9 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib/Doctrine/Common/Cache'),
     'Doctrine\\Common\\' => array($vendorDir . '/doctrine/common/lib/Doctrine/Common'),
+    'Ddeboer\\Transcoder\\Tests\\' => array($vendorDir . '/ddeboer/transcoder/tests'),
+    'Ddeboer\\Transcoder\\' => array($vendorDir . '/ddeboer/transcoder/src'),
+    'Ddeboer\\Imap\\Tests\\' => array($vendorDir . '/ddeboer/imap/tests'),
+    'Ddeboer\\Imap\\' => array($vendorDir . '/ddeboer/imap/src'),
     'Adldap\\' => array($vendorDir . '/adldap/adldap/src'),
 );
