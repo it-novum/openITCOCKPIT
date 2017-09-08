@@ -37,7 +37,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
         $this->stdout->styles('red', ['text' => 'red']);
-        $this->out('Checking inbox mails for acknowledgment...    ', false);
+        $this->out('Checking inbox mails for acknowledgment...    ');
 
         $ackHostsAndServices = $this->ackHostsAndServices();
 
@@ -84,6 +84,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $acks = [];
         $success = '<green>Ok</green>';
         $acknowledged = 0;
+	openlog('Ack per mail ', LOG_CONS | LOG_NDELAY | LOG_PID, LOG_USER | LOG_PERROR);
         foreach($mailbox->getMessages() as $message){
             $this->out('Parsing email from '.$message->getFrom()->getAddress());
             $parsedValues = $this->parseAckInformation($message->getBodyText());
@@ -91,26 +92,31 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
             $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();
             $acknowledged++;
             if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                $this->Externalcommand->setHostAck([
+		$hostAckArray = [
                     'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                     'author' => $author,
                     'comment' => __('Acknowledged per mail'),
                     'sticky' => 1,
                     'type' => 'hostOnly'
-                ]);
+                ];
+                syslog(LOG_INFO, json_encode($hostAckArray));
+                $this->Externalcommand->setHostAck($hostAckArray);
                 $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
             } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-                $this->Externalcommand->setServiceAck([
+		$serviceAckArray = [
                     'hostUuid' => $parsedValues['ACK_HOSTUUID'],
                     'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
                     'author' => $author,
                     'comment' => __('Acknowledged per mail'),
                     'sticky' => 1
-                ]);
+                ];
+		syslog(LOG_INFO, json_encode($serviceAckArray));
+                $this->Externalcommand->setServiceAck($serviceAckArray);
                 $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
             }
             $message->delete();
         }
+	closelog();
         $mailbox->expunge();
 
         if($acknowledged == 0){
