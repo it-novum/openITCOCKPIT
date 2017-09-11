@@ -112,7 +112,6 @@ class MapeditorsController extends MapModuleAppController
                 }
             }
 
-
             if ($this->Map->saveAll($request)) {
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
@@ -136,8 +135,23 @@ class MapeditorsController extends MapModuleAppController
         $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
         $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
 
-        $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
-        $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
+        $selectedHosts = $selectedServices = [];
+        foreach($map['Mapitem'] as $mapItem){
+            if($mapItem['type'] === 'host'){
+                $selectedHosts[] = $mapItem['object_id'];
+            }elseif($mapItem['type'] === 'service'){
+                $selectedServices[] = $mapItem['object_id'];
+            }
+        }
+        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $hosts = $this->Host->getAjaxHosts($userContainerIds, [], $selectedHosts);
+
+        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], $selectedServices);
+        $services = [];
+        foreach($servicesNotFixed as $serviceNotFixed){
+            $services = array_merge($services, $serviceNotFixed);
+        }
+
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
@@ -158,6 +172,7 @@ class MapeditorsController extends MapModuleAppController
             'backgroundThumbs',
             'iconSets',
             'icons',
+            'containerIdsToCheck'
         ]));
     }
 

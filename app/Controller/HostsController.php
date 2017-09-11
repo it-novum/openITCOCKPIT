@@ -3143,7 +3143,11 @@ class HostsController extends AppController {
             foreach($hosts as $hostId => $hostName){
                 $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
             }
-            return $returnHtml;
+            if(!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true'){
+                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
+            }else{
+                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
+            }
         }
     }
 
@@ -3168,7 +3172,11 @@ class HostsController extends AppController {
             foreach($hosts as $hostId => $hostName){
                 $returnHtml .= '<option value="'.$hostId.'" '.(is_array($selectedArr) && in_array($hostId, $selectedArr)?'selected':'').'>'.$hostName.'</option>';
             }
-            return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
+            if(!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true'){
+                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
+            }else{
+                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
+            }
         }
     }
 }
