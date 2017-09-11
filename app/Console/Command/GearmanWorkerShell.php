@@ -280,21 +280,30 @@ class GearmanWorkerShell extends AppShell {
                     if (empty($satellite)) {
                         break;
                     }
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'] . '/nagios/discover/dump-host/' . $payload['hostuuid']);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-                    $output = curl_exec($ch);
 
-                    if ($output === false) {
-                        echo curl_error($ch);
-                    } else {
-                        $output = json_decode($output);
+                    try {
+                        $options = [
+                            'allow_redirects' => true,
+                            'verify'          => false,
+                            'stream_context'  => [
+                                'ssl' => [
+                                    'allow_self_signed' => true,
+                                    'verify' => false
+                                ]
+                            ]
+                        ];
+                        $Client = new Client($options);
+                        $response = $Client->request('GET', sprintf(
+                                'https://%s/nagios/discover/dump-host/%s',
+                                $satellite['Satellite']['address'],
+                                $payload['hostUuid'])
+                        );
+
+                        $output = json_decode($response->getBody()->getContents(), true);
+                    } catch (\Exception $e) {
+                        $output = [];
+                        error_log($e->getMessage());
                     }
-                    curl_close($ch);
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $output = null;
