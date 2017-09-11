@@ -337,6 +337,7 @@ class GearmanWorkerShell extends AppShell {
 
                         $output = json_decode($response->getBody()->getContents(), true);
                     } catch (\Exception $e) {
+                        $output = [];
                         error_log($e->getMessage());
                     }
 
@@ -389,6 +390,7 @@ class GearmanWorkerShell extends AppShell {
 
                         $output = json_decode($response->getBody()->getContents(), true);
                     } catch (\Exception $e) {
+                        $output = [];
                         error_log($e->getMessage());
                     }
 
@@ -436,6 +438,7 @@ class GearmanWorkerShell extends AppShell {
 
                         $output = json_decode($response->getBody()->getContents(), true);
                     } catch (\Exception $e) {
+                        $output = [];
                         error_log($e->getMessage());
                     }
 
