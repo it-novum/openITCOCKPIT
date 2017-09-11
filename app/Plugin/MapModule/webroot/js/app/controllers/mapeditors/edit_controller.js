@@ -55,9 +55,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
         $('.existing-map-items').each(function(){
             if($(this).data('type') === 'host'){
-                self.ajaxSelectedHosts[$(this).data('id')] = $(this).data('objectid');
+                self.ajaxSelectedHosts.push($(this).data('objectid'));
             }else  if($(this).data('type') === 'service'){
-                self.ajaxSelectedServices[$(this).data('id')] = $(this).data('objectid');
+                self.ajaxSelectedServices.push($(this).data('objectid'));
             }
 
         });
@@ -796,16 +796,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         }
                     }
                 });
-                if(self.current['type'] === 'host'){
-                    self.ajaxSelectedHosts[self.current['id']] = self.current['object_id'];
-                }else if(self.current['type'] === 'service'){
-                    self.ajaxSelectedServices[self.current['id']] = self.current['object_id'];
+                if(self.current['type'] === 'host' && self.ajaxSelectedHosts.indexOf(self.current['object_id']) != -1){
+                    self.ajaxSelectedHosts.push(self.current['object_id']);
+                }else if(self.current['type'] === 'service' && self.ajaxSelectedServices.indexOf(self.current['object_id']) != -1){
+                    self.ajaxSelectedServices.push(self.current['object_id']);
                 }
-
             } else {
                 //create new element
                 //Set icon to map
-                //console.log(self.current['type']);
                 if (typeof(self.current['type']) !== 'undefined') {
                     //create new element
                     //Set icon to map
@@ -824,10 +822,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                     //draggable function
                     self.makeDraggable();
+                    if(self.current['type'] === 'host'){
+                        self.ajaxSelectedHosts.push(self.current['object_id']);
+                    }else if(self.current['type'] === 'service'){
+                        self.ajaxSelectedServices.push(self.current['object_id']);
+                    }
                 }
 
             }
-
             $('#addElement_host').hide();
             $('#addElement_service').hide();
             $('#addElement_hostgroup').hide();

@@ -42,8 +42,8 @@ Frontend.AppController = Frontend.Controller.extend({
      * @return void
      */
     baseComponents: ['ListFilter', 'ImageChooser', 'FileChooser', 'WebsocketSudo', 'Time'],
-    ajaxSelectedHosts: {},
-    ajaxSelectedServices: {},
+    ajaxSelectedHosts: [],
+    ajaxSelectedServices: [],
 
     /**
      * Initializer
@@ -118,15 +118,15 @@ Frontend.AppController = Frontend.Controller.extend({
                 ajaxType = 'host';
                 if(isMultiple) {
                     self.ajaxSelectedHosts = $('#' + currentItnAjaxId).val();
-                }else{
-                    self.ajaxSelectedHosts[0] = $('#' + currentItnAjaxId).val();
+                }else if($('#' + currentItnAjaxId).val() != '0' && $('#' + currentItnAjaxId).val() != null && self.ajaxSelectedHosts.indexOf($('#' + currentItnAjaxId).val()) != -1){
+                    self.ajaxSelectedHosts.push($('#' + currentItnAjaxId).val());
                 }
             }else{
                 ajaxType = 'service';
                 if(isMultiple) {
                     self.ajaxSelectedServices = $('#' + currentItnAjaxId).val();
-                }else{
-                    self.ajaxSelectedServices[0] = $('#' + currentItnAjaxId).val();
+                }else if($('#' + currentItnAjaxId).val() != '0' && $('#' + currentItnAjaxId).val() != null && self.ajaxSelectedServices.indexOf($('#' + currentItnAjaxId).val()) != -1){
+                    self.ajaxSelectedServices.push($('#' + currentItnAjaxId).val());
                 }
             }
             if(itnAjaxLoading){
