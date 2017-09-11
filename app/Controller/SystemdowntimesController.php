@@ -116,6 +116,9 @@ class SystemdowntimesController extends AppController
     public function addHostdowntime()
     {
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['host_id'])){
+            $selected[] = $this->request->params['named']['host_id'];
+        }
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
@@ -338,6 +341,9 @@ class SystemdowntimesController extends AppController
     {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['service_id'])){
+            $selected[] = $this->request->params['named']['service_id'];
+        }
 
         $customFildsToRefill = [
             'Systemdowntime' => [
