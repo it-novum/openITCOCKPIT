@@ -133,13 +133,14 @@ class HostdependenciesController extends AppController
             return;
         }
 
-        $this->Frontend->set('data_placeholder', __('Please choose'));
+        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
 
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        debug($hostdependency);
+//        $hosts = $this->Host->getAjaxHosts($containerIds, [], $hostgroup['Host']);
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
@@ -229,7 +230,7 @@ class HostdependenciesController extends AppController
         ];
         $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
 
-        $this->Frontend->set('data_placeholder', __('Please choose'));
+        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -254,14 +255,15 @@ class HostdependenciesController extends AppController
                 $containerId = $this->request->data('Hostdependency.container_id');
                 if ($containerId > 0) {
                     $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-                    $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+                    $hosts = $this->Host->getAjaxHosts($containerId, [], !empty($this->request->data['Hostdependency']['Host']) ? $this->request->data['Hostdependency']['Host'] : []);
+                    $dependentHosts = $this->Host->getAjaxHosts($containerId, [], !empty($this->request->data['Hostdependency']['HostDependent']) ? $this->request->data['Hostdependency']['HostDependent'] : []);
                     $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                 }
                 $this->setFlash(__('Hostdependency could not be saved'), false);
             }
         }
-        $this->set(compact(['hosts', 'hostgroups', 'timeperiods', 'containers']));
+        $this->set(compact(['hosts', 'dependentHosts', 'hostgroups', 'timeperiods', 'containers']));
     }
 
     public function delete($id = null)
@@ -305,7 +307,7 @@ class HostdependenciesController extends AppController
         $hostgroups = $this->Host->makeItJavaScriptAble($hostgroups);
         $hostgroupsDependent = $hostgroups;
 
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        $hosts = $this->Host->getAjaxHosts($containerIds);
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
         $hostsDependent = $hosts;
 
