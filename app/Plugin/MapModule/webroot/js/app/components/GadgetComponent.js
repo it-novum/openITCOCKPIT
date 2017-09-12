@@ -279,6 +279,10 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         if (perfdata[0] != undefined) {
             if (perfdata[0].max != '') {
                 value = (parseInt(perfdata[0].current_value) / parseInt(perfdata[0].max))*100;
+                //todo fix me
+                if(value > 90){
+                    value = 90;
+                }
             } else {
                 value = 0;
             }
@@ -288,7 +292,6 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         //radii for the ellipse
         var rx = width / 2;
         var ry = 10;
-
         //calculate positions for the Cylinder
         var ellipseCx = x + rx;
         var ellipseBottomCy = height;
@@ -351,7 +354,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
 
         });
         //center rect
-        if(value > 0.1){
+        if(value > 1){
             svg.rect(cylinerGroup, rectX, newRectY - 10 , width, pxValue + 10, rx, ry, {
                 fill: 'url(#fade'+stateColor+'_' + id + ')',
                 fillOpacity: 0.9
