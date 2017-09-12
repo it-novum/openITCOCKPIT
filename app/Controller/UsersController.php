@@ -53,6 +53,7 @@ class UsersController extends AppController
         'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
         'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
         'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
+        'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
     ]]];
 
 
@@ -87,6 +88,7 @@ class UsersController extends AppController
                 'User.id',
                 'User.email',
                 'User.company',
+                'User.phone',
                 'User.status',
                 'User.full_name',
                 'User.samaccountname',

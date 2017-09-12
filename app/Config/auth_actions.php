@@ -5,7 +5,7 @@ $config = [
         'dev'              => '*',
         'pages'            => '*',
         'packetmanager'    => ['getPackets'],
-        'NagiosModule.cmd' => ['submit', 'ack']
+        'NagiosModule.cmd' => ['submit', 'ack'],
     ],
     'auth_actions'   => [
         'profile'               => [

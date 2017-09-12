@@ -40,6 +40,7 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 		'WidgetTacho',
 		'WidgetMap',
 		'WidgetGraphgenerator',
+		'WidgetGrafana',
 	],
 
 	_initialize: function(){
@@ -63,6 +64,9 @@ App.Controllers.DashboardsIndexController = Frontend.AppController.extend({
 
 		this.WidgetGraphgenerator.setAjaxloader(this.Ajaxloader);
 		this.WidgetGraphgenerator.initGraphs();
+
+		this.WidgetGrafana.setAjaxloader(this.Ajaxloader);
+		this.WidgetGrafana.initGrafana();
 
 		if(this.getVar('updateAvailable') === true){
 			$('#updateAvailableModal').modal('show');

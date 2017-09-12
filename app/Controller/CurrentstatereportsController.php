@@ -121,7 +121,7 @@ class CurrentstatereportsController extends AppController
                 }
 
                 if (!$serviceStatusExists) {
-                    $this->Session->setFlash(__('No service status information within specified filter found'), 'default', ['class' => 'alert auto-hide alert-info']);
+                    $this->setFlash(__('No service status information within specified filter found'), 'info');
                 } else {
                     if ($this->request->data('Currentstatereport.report_format') == 'pdf') {
                         $this->Session->write('currentStateData', $currentStateData);

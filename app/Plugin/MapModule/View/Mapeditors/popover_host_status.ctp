@@ -63,11 +63,11 @@ if($hostStatus['state'] == 0) {
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Hostname'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield[0]['name']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield[0]['name']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield[0]['description']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield[0]['description']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('State (State Type)'); ?></td>
@@ -75,27 +75,27 @@ if($hostStatus['state'] == 0) {
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['output']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['output']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['long_output']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['perfdata']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['current_check_attempt'].'/'.$returnedHoststatusfield['max_check_attempts']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['current_check_attempt'].'/'.$returnedHoststatusfield['max_check_attempts']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['last_check']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['last_check']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['next_check']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['next_check']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $returnedHoststatusfield['last_state_change']; ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['last_state_change']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
@@ -140,19 +140,19 @@ if($hostStatus['state'] == 0) {
                 if (isset($service['Service']['name']) && $service['Service']['name'] != '') {
                     echo $service['Service']['name'];
                 } else {
-                    echo $service['Servicetemplate']['name'];
+                    echo h($service['Servicetemplate']['name']);
                 }
                 ?>">
                     <?php
                     if (isset($service['Service']['name']) && $service['Service']['name'] != '') {
                         echo $service['Service']['name'];
                     } else {
-                        echo $service['Servicetemplate']['name'];
+                        echo h($service['Servicetemplate']['name']);
                     }
                     ?>
                 </td>
                 <td class="<?php echo $this->Status->ServiceStatusColorSimple($returnedServiceStatus[$counter]['state'])['class']; ?>"><?php echo $returnedServiceStatus[$counter]['human_state']; ?></td>
-                <td title="<?php echo $service['Servicestatus']['output']; ?>" class="cropText"><?php echo $service['Servicestatus']['output']; ?></td>
+                <td title="<?php echo $service['Servicestatus']['output']; ?>" class="cropText"><?php echo h($service['Servicestatus']['output']); ?></td>
             </tr>
         <?php
         $i++;

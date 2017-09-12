@@ -47,6 +47,7 @@ class DashboardHandler
         'Notice',
         'Map',
         'Graphgenerator',
+        'Grafana'
     ];
 
     protected $__widgetClasses = [];

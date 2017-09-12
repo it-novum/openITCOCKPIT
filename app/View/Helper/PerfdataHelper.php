@@ -37,8 +37,10 @@ class PerfdataHelper extends AppHelper
         $perfdata = [];
         $perf_data_structure = ['label', 'current_value', 'unit', 'warning', 'critical', 'min', 'max'];
         $i = 0;
-        foreach (explode(" ", $perfdata_string) as $data_set) {
-            foreach (explode(';', $data_set) as $value) {
+
+        preg_match_all('/ ([^=]*=[^ ]*)/', ' '.$perfdata_string, $matches);
+        foreach ($matches[0] as $data_set) {
+            foreach (explode(';', trim($data_set)) as $value) {
                 if (preg_match('/=/', $value)) {
                     $s = preg_split('/=/', $value);
                     if (isset($s[0])) {

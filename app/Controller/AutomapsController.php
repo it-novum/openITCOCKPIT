@@ -25,16 +25,39 @@
 
 use itnovum\openITCOCKPIT\Core\ContainerRepository;
 
-class AutomapsController extends AppController
-{
+class AutomapsController extends AppController {
     public $layout = 'Admin.default';
-    public $uses = ['Automap', 'Host', 'Service', 'Container', MONITORING_SERVICESTATUS, MONITORING_ACKNOWLEDGED];
-    public $components = ['CustomValidationErrors'];
-    public $helpers = ['CustomValidationErrors', 'Status'];
 
-    public function index()
-    {
+    public $uses = [
+        'Automap',
+        'Host',
+        'Service',
+        'Container',
+        MONITORING_SERVICESTATUS,
+        MONITORING_ACKNOWLEDGED
+    ];
 
+    public $components = [
+        'CustomValidationErrors',
+        'ListFilter.ListFilter'
+    ];
+
+    public $helpers = [
+        'CustomValidationErrors',
+        'Status',
+        'ListFilter.ListFilter'
+    ];
+
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Automap.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Automap.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
+            ],
+        ]
+    ];
+
+    public function index() {
         $options = [
             'conditions' => [
                 'Automap.container_id' => $this->MY_RIGHTS,
@@ -54,8 +77,7 @@ class AutomapsController extends AppController
         $this->set('_serialize', ['all_automaps']);
     }
 
-    public function add()
-    {
+    public function add() {
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         $this->set(compact(['containers']));
 
@@ -73,8 +95,7 @@ class AutomapsController extends AppController
         }
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
         }
@@ -104,8 +125,7 @@ class AutomapsController extends AppController
         $this->request->data = Hash::merge($automap, $this->request->data);
     }
 
-    public function view($id)
-    {
+    public function view($id) {
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
         }
@@ -190,6 +210,9 @@ class AutomapsController extends AppController
                 'Host.disabled'                  => 0,
                 'Host.name REGEXP'               => $automap['Automap']['host_regex'],
             ],
+            'order'      => [
+                'Host.name ASC'
+            ]
         ]);
 
         $services = $this->Service->find('all', [
@@ -251,6 +274,10 @@ class AutomapsController extends AppController
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex'],
                 $conditions,
             ],
+            'order'      => [
+                'Host.name ASC',
+                ' IF(Service.name IS NULL, Servicetemplate.name, Service.name) ASC'
+            ]
         ]);
 
         $username = $this->Auth->user('full_name');
@@ -259,8 +286,7 @@ class AutomapsController extends AppController
         $this->set('_serialize', ['automap', 'hosts', 'services']);
     }
 
-    public function loadServiceDetails($serviceId = null)
-    {
+    public function loadServiceDetails($serviceId = null) {
         $this->allowOnlyAjaxRequests();
 
         if (!$this->Service->exists($serviceId)) {
@@ -328,14 +354,14 @@ class AutomapsController extends AppController
         $acknowledged = [];
         if ($servicestatus['Servicestatus']['problem_has_been_acknowledged'] == 1) {
             $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-            $acknowledged = __('The current status was already acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
+            $acknowledged = __('The current status was acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
         }
 
 
         //Check for Graph
         $hasRrdGraph = false;
         Configure::load('rrd');
-        if (file_exists(Configure::read('rrd.path').$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd')) {
+        if (file_exists(Configure::read('rrd.path') . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.rrd')) {
             $hasRrdGraph = true;
         }
 
@@ -343,8 +369,7 @@ class AutomapsController extends AppController
         $this->set('_serialize', ['service', 'servicestatus', 'serviceName', 'hasRrdGraph', 'acknowledged']);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
