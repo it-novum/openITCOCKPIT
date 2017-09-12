@@ -278,7 +278,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         //max min current_value
         if (perfdata[0] != undefined) {
             if (perfdata[0].max != '') {
-                value = 1 - (parseInt(perfdata[0].current_value) / parseInt(perfdata[0].max));
+                value = (parseInt(perfdata[0].current_value) / parseInt(perfdata[0].max))*100;
             } else {
                 value = 0;
             }
@@ -295,7 +295,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var rectX = x;
         var rectY = y;
         var ellipseTopCy = y;
-        var pxValue = height * value;
+        var pxValue = height * value/100;
         var newRectY = (height - pxValue);
         var newTopEllipseY = newRectY;
 
