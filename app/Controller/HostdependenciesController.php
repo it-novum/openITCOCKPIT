@@ -139,8 +139,6 @@ class HostdependenciesController extends AppController
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
 
-        debug($hostdependency);
-//        $hosts = $this->Host->getAjaxHosts($containerIds, [], $hostgroup['Host']);
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
@@ -197,16 +195,17 @@ class HostdependenciesController extends AppController
             $hostdependency['Hostdependency']['HostgroupDependent'] = Hash::combine($hostdependency['HostdependencyHostgroupMembership'], '{n}[dependent=1].hostgroup_id', '{n}[dependent=1].hostgroup_id');
         }
 
-
         $this->request->data = Hash::merge($hostdependency, $this->request->data);
+        $hosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostdependency']['Host']) ? $this->request->data['Hostdependency']['Host'] : []);
+        $dependentHosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostdependency']['HostDependent']) ? $this->request->data['Hostdependency']['HostDependent'] : []);
 
-        $this->set(compact(['hostdependency', 'hosts', 'hostgroups', 'timeperiods', 'containers']));
+        $this->set(compact(['hostdependency', 'hosts', 'dependentHosts', 'hostgroups', 'timeperiods', 'containers']));
     }
 
     public function add()
     {
 
-        $hosts = [];
+        $hosts = $dependentHosts = [];
         $hostgroups = [];
         $timeperiods = [];
 
