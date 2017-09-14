@@ -51,26 +51,109 @@
             echo $this->Form->create('Hostescalation', [
                 'class' => 'form-horizontal clear',
             ]);
-            echo $this->Form->input('Hostescalation.container_id', ['options'       => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
-                                                                    'SelectionMode' => 'single',
+            echo $this->Form->input('Hostescalation.container_id', [
+                'options' => $this->Html->chosenPlaceholder($containers),
+                'class' => 'chosen',
+                'style' => 'width: 100%;',
+                'label' => __('Container'),
+                'SelectionMode' => 'single',
             ]);
-            echo $this->Form->input('Hostescalation.Host', ['options' => $hosts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('<i class="fa fa-plus-square text-success"></i> Hosts'), 'data-placeholder' => __('Please choose a host'), 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'], 'target' => '#HostescalationHostExcluded']);
-            echo $this->Form->input('Hostescalation.Host_excluded', ['options' => $hosts, 'class' => 'chosen test', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('<i class="fa fa-minus-square text-danger"></i> Hosts (excluded)'), 'data-placeholder' => __('Please choose a host'), 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'], 'target' => '#HostescalationHost']);
-            echo $this->Form->input('Hostescalation.Hostgroup', ['options' => $hostgroups, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('<i class="fa fa-plus-square text-success"></i> Hostgroups'), 'data-placeholder' => __('Please choose a hostgroup'), 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'], 'target' => '#HostescalationHostgroupExcluded']);
-            echo $this->Form->input('Hostescalation.Hostgroup_excluded', ['options' => $hostgroups, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('<i class="fa fa-minus-square text-danger"></i> Hostgroups (excluded)'), 'data-placeholder' => __('Please choose a hostgroup'), 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'], 'target' => '#HostescalationHostgroup']);
-            echo $this->Form->input('Hostescalation.first_notification', ['label'       => __('First escalation notice'),
-                                                                          'placeholder' => 0, 'min' => 0]);
-            echo $this->Form->input('Hostescalation.last_notification', ['label'       => __('Last escalation notice'),
-                                                                         'placeholder' => 0, 'min' => 0]);
+
+            echo $this->Form->input('Hostescalation.Host', [
+                'options' => $hosts,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => '<i class="fa fa-plus-square text-success"></i> ' . __('Hosts'),
+                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'],
+                'target' => '#HostescalationHostExcluded',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Hosts/ajaxGetByTerm',
+                'itn-ajax-container' => '#HostescalationContainerId',
+                'itn-ajax-onchange'=> '#HostescalationHostExcluded',
+            ]);
+
+            echo $this->Form->input('Hostescalation.Host_excluded', [
+                'options' => $excludedHosts,
+                'class' => 'chosen test',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => '<i class="fa fa-minus-square text-danger"></i> ' .  __('Hosts (excluded)'),
+                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'],
+                'target' => '#HostescalationHost',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Hosts/ajaxGetByTerm',
+                'itn-ajax-container' => '#HostescalationContainerId',
+                'itn-ajax-onchange'=> '#HostescalationHost',
+            ]);
+
+            echo $this->Form->input('Hostescalation.Hostgroup', [
+                'options' => $hostgroups,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => '<i class="fa fa-plus-square text-success"></i> ' . __('Hostgroups'),
+                'data-placeholder' => __('Please choose a hostgroup'),
+                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'],
+                'target' => '#HostescalationHostgroupExcluded'
+            ]);
+
+            echo $this->Form->input('Hostescalation.Hostgroup_excluded', [
+                'options' => $hostgroups,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hostgroups (excluded)'),
+                'data-placeholder' => __('Please choose a hostgroup'),
+                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'],
+                'target' => '#HostescalationHostgroup'
+            ]);
+
+            echo $this->Form->input('Hostescalation.first_notification', [
+                'label' => __('First escalation notice'),
+                'placeholder' => 0,
+                'min' => 0
+            ]);
+
+            echo $this->Form->input('Hostescalation.last_notification', [
+                'label'  => __('Last escalation notice'),
+                'placeholder' => 0,
+                'min' => 0
+            ]);
+
             echo $this->Form->input('Hostescalation.notification_interval', [
                 'label'       => __('Notification interval'),
                 'placeholder' => 60,
                 'min'         => 0,
                 'help'        => __('Interval in minutes'),
             ]);
-            echo $this->Form->input('Hostescalation.timeperiod_id', ['options' => $timeperiods, 'class' => 'chosen', 'multiple' => false, 'style' => 'width:100%;', 'label' => __('Timeperiod'), 'data-placeholder' => __('Please choose a contact')]);
-            echo $this->Form->input('Hostescalation.Contact', ['options' => $contacts, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contacts'), 'data-placeholder' => __('Please choose a contact')]);
-            echo $this->Form->input('Hostescalation.Contactgroup', ['options' => $contactgroups, 'class' => 'chosen', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Contactgroups'), 'data-placeholder' => __('Please choose a contactgroup')]);
+
+            echo $this->Form->input('Hostescalation.timeperiod_id', [
+                'options' => $timeperiods,
+                'class' => 'chosen',
+                'multiple' => false,
+                'style' => 'width:100%;',
+                'label' => __('Timeperiod'),
+                'data-placeholder' => __('Please choose a contact')
+            ]);
+
+            echo $this->Form->input('Hostescalation.Contact', [
+                'options' => $contacts,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Contacts'),
+                'data-placeholder' => __('Please choose a contact')
+            ]);
+
+            echo $this->Form->input('Hostescalation.Contactgroup', [
+                'options' => $contactgroups,
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Contactgroups'),
+                'data-placeholder' => __('Please choose a contactgroup')
+            ]);
             ?>
             <fieldset>
                 <legend class="font-sm">

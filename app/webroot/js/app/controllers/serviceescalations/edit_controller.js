@@ -63,7 +63,7 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 			}
 		});
 		$('[id^=ServiceescalationService]').change(function(){
-			$this = $(this);
+			var $this = $(this);
 			self.refreshServices($this.val(), $this, $this.attr('target'));
 		});
 		if($('#ServiceescalationService').val() !== null || $('#ServiceescalationServiceExcluded').val() !== null){
@@ -98,8 +98,8 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 			$('#ServiceescalationServicegroup').trigger("chosen:updated");
 			$('#ServiceescalationServicegroupExcluded').trigger("chosen:updated");
 		}
-		//$('ServicegroupService').trigger("chosen:updated");
-
+        $('#ServiceescalationService').change();
+        $('#ServiceescalationServiceExcluded').change();
 	},
 
 	refreshServices: function(selected_services, selectboxObject, target){
