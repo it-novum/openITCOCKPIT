@@ -73,7 +73,7 @@ class DashboardHandler
         $widgets = [];
         foreach ($this->_widgets as $widgetClassName) {
             $widgetClassName = 'Dashboard\Widget\\'.$widgetClassName;
-            if ($this->{$widgetClassName}->typeId !== 14) {
+            if ($this->{$widgetClassName}->typeId !== 14 && $this->{$widgetClassName}->typeId !== 16) {
                 $widgets[] = [
                     'typeId'  => $this->{$widgetClassName}->typeId,
                     'title'   => $this->{$widgetClassName}->title,
@@ -81,6 +81,13 @@ class DashboardHandler
                     'element' => 'Dashboard'.DS.$this->{$widgetClassName}->element,
                 ];
             } elseif (CakePlugin::loaded('MapModule') && $this->{$widgetClassName}->typeId === 14) {
+                $widgets[] = [
+                    'typeId'  => $this->{$widgetClassName}->typeId,
+                    'title'   => $this->{$widgetClassName}->title,
+                    'icon'    => $this->{$widgetClassName}->icon,
+                    'element' => 'Dashboard'.DS.$this->{$widgetClassName}->element,
+                ];
+            } elseif (CakePlugin::loaded('GrafanaModule') && $this->{$widgetClassName}->typeId === 16) {
                 $widgets[] = [
                     'typeId'  => $this->{$widgetClassName}->typeId,
                     'title'   => $this->{$widgetClassName}->title,
