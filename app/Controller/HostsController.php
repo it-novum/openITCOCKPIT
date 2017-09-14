@@ -2389,11 +2389,11 @@ class HostsController extends AppController {
         $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
 
         $grafanaDashboard = null;
+        $GrafanaDashboardExists = false;
         if (in_array('GrafanaModule', CakePlugin::loaded())) {
             $this->loadModel('GrafanaModule.GrafanaDashboard');
             $this->loadModel('GrafanaModule.GrafanaConfiguration');
             $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-            $GrafanaDashboardExists = false;
             if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
                 $GrafanaDashboardExists = true;
                 $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
