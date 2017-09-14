@@ -97,6 +97,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
                 </ul>
                 <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
             </header>
@@ -494,6 +495,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 </h5>
                             <?php endif; ?>
                         </div>
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
                     </div>
                     <!-- end widget body text-->
                     <!-- widget footer -->
