@@ -896,6 +896,33 @@ class Externalcommand extends NagiosModuleAppModel
         $this->_write('SCHEDULE_SVC_DOWNTIME;'.$options['hostUuid'].';'.$options['serviceUuid'].';'.$options['start'].';'.$options['end'].';1;0;'.$options['duration'].';'.$options['author'].';'.$options['comment'].'');
     }
 
+    public function setContainerDowntime($options){
+        $_options = [
+            'duration'     => $options['end'] - $options['start'],
+            'downtimetype' => 0,
+        ];
+
+        $options = Hash::merge($_options, $options);
+
+        //@TODO get all hosts from container(s)
+
+
+        switch ($options['downtimetype']) {
+            case 0:
+                //Host only
+
+                break;
+            case 1:
+                //Host inc services
+
+                break;
+            default:
+
+                break;
+        }
+
+    }
+
     /**
      * Create an external command to disable host or host + services notifications
      * ### Options

@@ -503,6 +503,10 @@ class GearmanWorkerShell extends AppShell {
                 $this->Externalcommand->setServiceDowntime($payload);
                 break;
 
+            case 'createContainerDowntime':
+                $this->Externalcommand->setContainerDowntime($payload);
+                break;
+
             //Called by NagiosModule/CmdController/submit
             case 'cmd_external_command':
                 $this->Externalcommand->runCmdCommand($payload);
