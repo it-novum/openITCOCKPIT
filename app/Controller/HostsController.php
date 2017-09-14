@@ -3166,7 +3166,7 @@ class HostsController extends AppController {
                     $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
                 }
             }else {
-                $userContainerIds = $this->Tree->resolveChildrenOfConainerIds($this->MY_RIGHTS);
+                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             }
             $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
             $returnHtml = '';
