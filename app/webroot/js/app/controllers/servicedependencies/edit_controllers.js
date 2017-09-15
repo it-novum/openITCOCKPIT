@@ -61,7 +61,7 @@ App.Controllers.ServicedependenciesEditController = Frontend.AppController.exten
 			}
 		});
 		$('[id^=ServicedependencyService]').change(function(){
-			$this = $(this);
+			var $this = $(this);
 			self.refreshServices($this.val(), $this, $this.attr('target'));
 		});
 		if($('#ServicedependencyService').val() !== null || $('#ServicedependencyServiceDependent').val() !== null){
@@ -96,6 +96,8 @@ App.Controllers.ServicedependenciesEditController = Frontend.AppController.exten
 			$('#ServicedependencyServicegroup').trigger("chosen:updated");
 			$('#ServicedependencyServicegroupDependent').trigger("chosen:updated");
 		}
+		$('#ServicedependencyService').change();
+		$('#ServicedependencyServiceDependent').change();
 	},
 
 	refreshServices: function(selected_services, selectboxObject, target){

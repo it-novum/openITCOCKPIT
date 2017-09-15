@@ -293,6 +293,7 @@ class Host extends AppModel {
                     'Host.name',
                 ]
             ]);
+
             if(!empty($selectedHosts)){
                 $hosts = $hosts + $selectedHosts;
             }
