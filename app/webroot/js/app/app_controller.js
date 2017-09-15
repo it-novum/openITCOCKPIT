@@ -94,8 +94,9 @@ Frontend.AppController = Frontend.Controller.extend({
                     if(typeof selectBoxes[i].attributes['itn-ajax-container'] !== 'undefined'){
                         arrayOfContainers[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-container'].value;
                     }
-                    if(typeof selectBoxes[i].attributes['itn-ajax-onchange'] !== 'undefined'){
+                    if(typeof selectBoxes[i].attributes['itn-ajax-onchange'] !== 'undefined') {
                         arrayOfOnchanges[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-onchange'].value;
+                    }
                     if(typeof selectBoxes[i].attributes['itn-ajax-selected-type'] !== 'undefined'){
                         arrayOfSelected[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-selected-type'].value;
                     }
