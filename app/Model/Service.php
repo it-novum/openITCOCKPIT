@@ -901,7 +901,7 @@ class Service extends AppModel {
             ]);
 
             if(!empty($selectedServices)){
-                $services = array_merge($selectedServices, $services);
+                $services = array_merge($services, $selectedServices);
             }
         }
 
