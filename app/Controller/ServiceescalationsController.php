@@ -222,6 +222,7 @@ class ServiceescalationsController extends AppController
                     'conditions' => [
                         'ServiceescalationServiceMembership.serviceescalation_id' => $id,
                     ],
+                    'recursive' => -1
                 ]);
                 /* Delete old service associations */
                 foreach ($old_membership_services as $old_membership_service) {
