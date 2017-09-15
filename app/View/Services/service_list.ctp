@@ -71,6 +71,7 @@ $this->Paginator->url($this->params['url']); ?>
                         'label' => false,
                         'wrapInput' => 'col col-xs-12',
                         'style' => 'width: 100%',
+                        'itn-ajax' => '/Hosts/ajaxGetByTerm'
                     ]);
                     ?>
                 </div>

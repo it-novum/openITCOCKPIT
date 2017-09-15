@@ -2272,8 +2272,7 @@ class ServicesController extends AppController {
         }
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->hostsByContainerId($containerIds,'list');
-
+        $hosts = $this->Host->getAjaxHosts($containerIds, [], [$host_id]);
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
@@ -2375,6 +2374,7 @@ class ServicesController extends AppController {
             'recursive' => -1,
             'conditions' => [
                 'Service.id' => $id
+
             ],
             'contain' => [
                 'Servicetemplate' => [
@@ -2403,6 +2403,7 @@ class ServicesController extends AppController {
                 'Service.service_url'
             ]
         ]);
+
 
         if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
             $this->render403();
@@ -2523,6 +2524,7 @@ class ServicesController extends AppController {
 
         $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
         $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'commandUuid']));
+
     }
 
     public function grapherZoom($id,$ds,$newStart,$newEnd,$showThresholds) {
