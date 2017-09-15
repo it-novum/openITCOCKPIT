@@ -294,7 +294,7 @@ class Host extends AppModel {
                 ]
             ]);
             if(!empty($selectedHosts)){
-                $hosts = $selectedHosts + $hosts;
+                $hosts = $hosts + $selectedHosts;
             }
         }
 
