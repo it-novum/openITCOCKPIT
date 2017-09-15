@@ -340,6 +340,7 @@
                             <input type="hidden" data-key="object_id"
                                    name="data[Mapitem][<?php echo $uuid; ?>][object_id]"
                                    value="<?php echo $item['object_id']; ?>"/>
+                            <input type="hidden" data-id="<?php echo $item['id']; ?>" data-type="<?php echo $item['type']; ?>" data-objectid="<?php echo $item['object_id']; ?>" class="existing-map-items"/>
                         </div>
                     <?php endforeach; ?>
                     <?php foreach ($map['Mapline'] as $key => $line): ?>
@@ -622,12 +623,18 @@
                                     <div class="col-xs-12" id="addElement_host" style="display:none;">
                                         <div class="padding-top-20"></div>
                                         <?php
+                                        echo $this->Form->input('container-id', [
+                                            'type' => 'hidden',
+                                            'value' => !empty($containerIdsToCheck[0]) ? $containerIdsToCheck[0] : ROOT_CONTAINER,
+                                        ]);
                                         echo $this->Form->create('addHost', [
                                             'class' => 'form-horizontal clear',
                                         ]);
                                         echo $this->Form->input('object_id', [
                                                 'options'          => $this->Html->chosenPlaceholder($hosts),
-                                                'data-placeholder' => __('Please select...'),
+                                                'data-placeholder' => __('Please, start typing...'),
+                                                'itn-ajax'         => '/Hosts/ajaxGetByTerm',
+                                                'itn-ajax-container'=> '#container-id',
                                                 'multiple'         => false,
                                                 'class'            => 'chosen elementInput',
                                                 'style'            => 'width: 100%',
@@ -666,21 +673,11 @@
                                         echo $this->Form->create('addService', [
                                             'class' => 'form-horizontal clear',
                                         ]);
-                                        echo $this->Form->input('HostObject_id', [
-                                                'options'          => $this->Html->chosenPlaceholder($hosts),
-                                                'data-placeholder' => __('Please select...'),
-                                                'multiple'         => false,
-                                                'class'            => 'chosen elementInput',
-                                                'style'            => 'width: 100%',
-                                                'label'            => __('Host'),
-                                                'wrapInput'        => 'col col-xs-8',
-                                                'element-property' => 'chosen',
-                                                'content'          => 'object_id',
-                                            ]
-                                        );
                                         echo $this->Form->input('object_id', [
-                                                //'options' => $this->Html->chosenPlaceholder($services),
-                                                'data-placeholder' => __('Please select...'),
+                                                'options' => $this->Html->chosenPlaceholder($services),
+                                                'data-placeholder' => __('Please, start typing...'),
+                                                'itn-ajax'         => '/Services/ajaxGetByTerm',
+                                                'itn-ajax-container'=> '#container-id',
                                                 'multiple'         => false,
                                                 'class'            => 'chosen elementInput',
                                                 'style'            => 'width: 100%',
