@@ -27,8 +27,7 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 class NagiosNotificationTask extends AppShell {
 
-    public $uses = ['Rrd','Systemsetting', MONITORING_SERVICESTATUS];
-
+    public $uses = ['Rrd', 'Systemsetting', MONITORING_SERVICESTATUS];
     public function construct() {
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
@@ -86,8 +85,8 @@ class NagiosNotificationTask extends AppShell {
             $Email->emailFormat('html');
         }
 
+        $Email->template('template-itn-std-host', 'template-itn-std-host')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings]);
 
-        $Email->template('template-itn-std-host','template-itn-std-host')->viewVars(['parameters' => $parameters,'_systemsettings' => $this->_systemsettings]);
 
         if (!$parameters['no-attachments']) {
             $Logo = new Logo();
@@ -144,13 +143,13 @@ class NagiosNotificationTask extends AppShell {
                 break;
         }
 
-        if($parameters['serviceType'] === EVK_SERVICE && CakePlugin::loaded('EventcorrelationModule')) {
+        if ($parameters['serviceType'] === EVK_SERVICE && CakePlugin::loaded('EventcorrelationModule')) {
             $this->loadModel('EventcorrelationModule.Eventcorrelation');
             $serviceStateArray = [
-                'OK' => 0,
-                'WARNING' => 1,
+                'OK'       => 0,
+                'WARNING'  => 1,
                 'CRITICAL' => 2,
-                'UNKNOWN' => 3
+                'UNKNOWN'  => 3
             ];
             $evcTree = $this->Eventcorrelation->getEvcTreeData($parameters['hostId'], []);
             $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'));
@@ -196,8 +195,7 @@ class NagiosNotificationTask extends AppShell {
 
                 // create temp path with hostUuid if not exists
                 $hosttmpdir_path = '/tmp/' . $parameters['hostUuid'];
-                $hosttmpdir = new Folder($hosttmpdir_path,true,0777);
-
+                $hosttmpdir = new Folder($hosttmpdir_path, true, 0777);
 
                 $attachments['logo.png'] = [
                     'file'      => $Logo->getSmallLogoDiskPath(),
@@ -211,19 +209,22 @@ class NagiosNotificationTask extends AppShell {
 
                     // generate and save filename to array
                     $dscount = $ds['ds'];
-                    $parameters['graph_path'][$dscount] = '' . $hosttmpdir_path . '/mailgraph_' . $ds['ds'] . '_' . rand(1,999999) . '.png';
+
+                    $parameters['graph_path'][$dscount] = '' . $hosttmpdir_path . '/mailgraph_' . $ds['ds'] . '_' . rand(1, 999999) . '.png';
 
                     // create graph
-                    $this->create_graph($parameters['graph_path'][$dscount],"-8h",$parameters['hostname'] . " / " . $parameters['servicedesc'] . " - " . $ds['label'],$parameters,$ds);
+                    $this->create_graph($parameters['graph_path'][$dscount], "-8h", $parameters['hostname'] . " / " . $parameters['servicedesc'] . " - " . $ds['label'], $parameters, $ds);
 
-                    $attachments['mailgraph_' . $dscount . '.png'] = ['file' => $parameters['graph_path'][$dscount],'mimetype' => 'image/png','contentId' => '10' . $dscount];
+                    $attachments['mailgraph_' . $dscount . '.png'] = ['file' => $parameters['graph_path'][$dscount], 'mimetype' => 'image/png', 'contentId' => '10' . $dscount];
+
 
                     $contentIDs[] = '10' . $dscount;
 
                 }
 
                 // read dir with graph files
-                $mailgraph_files = $hosttmpdir->find('.*\.png',true);
+                $mailgraph_files = $hosttmpdir->find('.*\.png', true);
+
                 //print_r($mailgraph_files);
 
             } else {
@@ -236,7 +237,12 @@ class NagiosNotificationTask extends AppShell {
 
             // debug($attachments);
             // send attachments
-            $Email->attachments($attachments);
+            try {
+                $Email->attachments($attachments);
+            } catch (Exception $e) {
+                $this->out($e->getMessage());
+            }
+
         }
 
         $Email->template('template-itn-std-service','template-itn-std-service')->viewVars(['parameters' => $parameters,'_systemsettings' => $this->_systemsettings,'contentIDs' => $contentIDs]);
@@ -259,7 +265,8 @@ class NagiosNotificationTask extends AppShell {
      *create graph function
      */
 
-    public function create_graph($output,$start,$title,$parameters,$ds) {
+    public function create_graph($output, $start, $title, $parameters, $ds) {
+
         $parameters['hostname'] = $this->replaceChars($parameters['hostname']);
         $parameters['servicedesc'] = $this->replaceChars($parameters['servicedesc']);
         $ds['label'] = $this->replaceChars($ds['label']);
@@ -277,15 +284,19 @@ class NagiosNotificationTask extends AppShell {
             "LINE1:var0#1aa8e4:" . $parameters['hostname'] . "/" . $parameters['servicedesc'] . " - " . $ds['label'],
         ];
 
-        $ret = rrd_graph($output,$options);
-        if (!$ret) {
-            echo "<b>Graph error: </b>" . rrd_error() . "\n";
+        try {
+            $ret = rrd_graph($output, $options);
+            if (!$ret) {
+                echo "<b>Graph error: </b>" . rrd_error() . "\n";
+            }
+        } catch (Exception $e) {
+            $this->out($e->getMessage());
+
         }
     }
 
-
-    private function replaceChars($str,$replacement = ' ') {
-        return preg_replace('/[^a-zA-Z^0-9\-\.]/',$replacement,$str);
+    private function replaceChars($str, $replacement = ' ') {
+        return preg_replace('/[^a-zA-Z^0-9\-\.]/', $replacement, $str);
     }
 
 }

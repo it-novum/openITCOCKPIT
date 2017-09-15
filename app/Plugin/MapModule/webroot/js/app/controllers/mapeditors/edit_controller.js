@@ -796,9 +796,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         }
                     }
                 });
-                if(self.current['type'] === 'host' && self.ajaxSelectedHosts.indexOf(self.current['object_id']) != -1){
+                if(self.current['type'] === 'host'){
                     self.ajaxSelectedHosts.push(self.current['object_id']);
-                }else if(self.current['type'] === 'service' && self.ajaxSelectedServices.indexOf(self.current['object_id']) != -1){
+                }else if(self.current['type'] === 'service'){
                     self.ajaxSelectedServices.push(self.current['object_id']);
                 }
             } else {
@@ -828,7 +828,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         self.ajaxSelectedServices.push(self.current['object_id']);
                     }
                 }
-
             }
             $('#addElement_host').hide();
             $('#addElement_service').hide();
