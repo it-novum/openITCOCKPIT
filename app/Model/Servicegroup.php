@@ -105,6 +105,7 @@ class Servicegroup extends AppModel
                             'Container.containertype_id' => CT_SERVICEGROUP,
                         ],
                         'recursive'  => -1,
+                        'contain' => ['Container'],
                         'order'      => [
                             'Container.name' => 'ASC',
                         ],

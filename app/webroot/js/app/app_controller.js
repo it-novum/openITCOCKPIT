@@ -58,6 +58,7 @@ Frontend.AppController = Frontend.Controller.extend({
         var arrayOfItnAjax = {};
         var arrayOfMultiples = {};
         var arrayOfContainers = {};
+        var arrayOfOnchanges = {};
         var arrayOfSelected = {};
 
         var selectBoxes = $('.chosen');
@@ -93,6 +94,9 @@ Frontend.AppController = Frontend.Controller.extend({
                     if(typeof selectBoxes[i].attributes['itn-ajax-container'] !== 'undefined'){
                         arrayOfContainers[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-container'].value;
                     }
+                    if(typeof selectBoxes[i].attributes['itn-ajax-onchange'] !== 'undefined') {
+                        arrayOfOnchanges[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-onchange'].value;
+                    }
                     if(typeof selectBoxes[i].attributes['itn-ajax-selected-type'] !== 'undefined'){
                         arrayOfSelected[selectBoxes[i].attributes['id'].value] = selectBoxes[i].attributes['itn-ajax-selected-type'].value;
                     }
@@ -113,6 +117,7 @@ Frontend.AppController = Frontend.Controller.extend({
 
             var isMultiple = typeof arrayOfMultiples[currentItnAjaxId] !== 'undefined';
             var containerId = typeof arrayOfContainers[currentItnAjaxId] !== 'undefined' ? arrayOfContainers[currentItnAjaxId] : '';
+            var onChangeId = typeof arrayOfOnchanges[currentItnAjaxId] !== 'undefined' ? arrayOfOnchanges[currentItnAjaxId] : '';
             var ajaxType;
             if(arrayOfItnAjax[currentItnAjaxId].indexOf('Host') !== -1){
                 ajaxType = 'host';
@@ -148,6 +153,7 @@ Frontend.AppController = Frontend.Controller.extend({
                         data: {term: termInputValue, selected: ajaxType==='host' ? self.ajaxSelectedHosts : self.ajaxSelectedServices, 'containerId': $(containerId).val(), isMultiple : isMultiple},
                         success: function (data) {
                             $('#' + currentItnAjaxId).html(data).trigger('chosen:updated');
+                            $(onChangeId).change();
                             termInput.val(termInputValue);
                             if(isMultiple){
                                 termInput.width(((termInputValue.length + 1) * 8) + 'px');

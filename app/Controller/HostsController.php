@@ -3161,7 +3161,7 @@ class HostsController extends AppController {
                 if($this->request->data['containerId'] === '0'){
                     $userContainerIds = [];
                 }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
-                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER);
                 } else {
                     $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
                 }
@@ -3190,7 +3190,7 @@ class HostsController extends AppController {
                 if($this->request->data['containerId'] === '0'){
                     $userContainerIds = [];
                 }elseif ($this->request->data['containerId'] == ROOT_CONTAINER) {
-                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER);
                 } else {
                     $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
                 }
