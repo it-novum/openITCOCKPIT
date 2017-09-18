@@ -276,7 +276,7 @@ class ServicetemplategroupsController extends AppController
         if ($this->request->is('post') || $this->request->is('put')) {
             $userId = $this->Auth->user('id');
             //Checking if target host exists
-            if ($this->Host->exists($this->request->data('Service.host_id'))) {
+            if ($this->Host->exists($this->request->data('Service.host_id')) && !empty($this->request->data('Service.ServicesToAdd'))) {
                 $this->loadModel('Service');
                 $this->loadModel('Servicetemplate');
                 $host = $this->Host->findById($this->request->data('Service.host_id'));
@@ -323,16 +323,15 @@ class ServicetemplategroupsController extends AppController
                 $this->setFlash(__('Services created successfully'));
                 $this->redirect(['controller' => 'services', 'action' => 'serviceList', $host['Host']['id']]);
             } else {
-                $this->setFlash(__('Target host does not exist'), false);
+                $this->setFlash(__('Target host does not exist or no services selected'), false);
             }
         }
-
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
         if ($this->hasRootPrivileges === true) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+            $hosts = $this->Host->getAjaxHosts($containerIds, [], isset($this->request->data['Service']['host_id']) ? $this->request->data['Service']['host_id'] : []);
         } else {
-            $hosts = $this->Host->hostsByContainerId($this->getWriteContainers(), 'list');
+            $hosts = $this->Host->getAjaxHosts($this->getWriteContainers(), [], isset($this->request->data['Service']['host_id']) ? $this->request->data['Service']['host_id'] : []);
         }
         $this->set(compact(['servicetemplategroup', 'hosts']));
         $this->set('back_url', $this->referer());

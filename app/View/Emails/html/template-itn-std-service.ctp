@@ -683,8 +683,7 @@
                                 <?php if (!$parameters['no-attachments']): ?>
                                     <?php foreach ($contentIDs as $contentID): ?>
                                         <tr>
-                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image'
-                                                     width="560" height="180"/></td>
+                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image' width="560" height="180"/></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>

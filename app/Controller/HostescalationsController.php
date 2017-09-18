@@ -171,7 +171,6 @@ class HostescalationsController extends AppController
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostescalation['Hostescalation']['container_id']);
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
@@ -240,20 +239,24 @@ class HostescalationsController extends AppController
             $hostescalation['Hostescalation']['Contactgroup'] = Hash::extract($hostescalation['Contactgroup'], '{n}.id');
         }
         $this->request->data = Hash::merge($hostescalation, $this->request->data);
-        $this->set(compact(['hostescalation', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts', 'containers']));
+
+        $hosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostescalation']['Host']) ? $this->request->data['Hostescalation']['Host'] : []);
+        $excludedHosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostescalation']['Host_excluded']) ? $this->request->data['Hostescalation']['Host_excluded'] : []);
+
+        $this->set(compact(['hostescalation', 'hosts', 'excludedHosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts', 'containers']));
     }
 
     public function add()
     {
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
-        $hosts = [];
+        $hosts = $excludedHosts = [];
         $hostgroups = [];
         $timeperiods = [];
         $contactgroups = [];
         $contacts = [];
 
-        $this->Frontend->set('data_placeholder', __('Please choose'));
+        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -307,7 +310,8 @@ class HostescalationsController extends AppController
                     if ($containerIds > 0) {
                         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
                         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+                        $hosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostescalation']['Host']) ? $this->request->data['Hostescalation']['Host'] : []);
+                        $excludedHosts = $this->Host->getAjaxHosts($containerIds, [], !empty($this->request->data['Hostescalation']['Host_excluded']) ? $this->request->data['Hostescalation']['Host_excluded'] : []);
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
@@ -316,7 +320,7 @@ class HostescalationsController extends AppController
             }
         }
 
-        $this->set(compact(['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
+        $this->set(compact(['containers', 'hosts', 'excludedHosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
     }
 
     public function delete($id = null)
@@ -352,7 +356,7 @@ class HostescalationsController extends AppController
         $hostgroups = $this->Host->makeItJavaScriptAble($hostgroups);
         $hostgroupsExcluded = $hostgroups;
 
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+        $hosts = $this->Host->getAjaxHosts($containerIds);
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
         $hostsExcluded = $hosts;
 

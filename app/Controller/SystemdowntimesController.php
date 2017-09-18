@@ -116,6 +116,9 @@ class SystemdowntimesController extends AppController
     public function addHostdowntime()
     {
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['host_id'])){
+            $selected[] = $this->request->params['named']['host_id'];
+        }
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
@@ -140,8 +143,7 @@ class SystemdowntimesController extends AppController
             }
 
         }
-        $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
-
+        $hosts = $this->Host->getAjaxHosts($writeContainerIds, [], $selected);
         $this->set(compact(['hosts', 'selected']));
         $this->set('back_url', $this->referer());
 
@@ -339,6 +341,9 @@ class SystemdowntimesController extends AppController
     {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['service_id'])){
+            $selected[] = $this->request->params['named']['service_id'];
+        }
 
         $customFildsToRefill = [
             'Systemdowntime' => [
@@ -361,8 +366,12 @@ class SystemdowntimesController extends AppController
             }
 
         }
-        $services = $this->Service->servicesByHostContainerIds($writeContainerIds);
-        $services = Hash::combine($services, '{n}.Service.id', ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name');
+
+        $servicesNotFixed = $this->Service->getAjaxServices($writeContainerIds, [], $selected);
+        $services = [];
+        foreach($servicesNotFixed as $serviceNotFixed){
+            $services = array_merge($services, $serviceNotFixed);
+        }
 
         $this->set(compact(['services', 'selected']));
         $this->set('back_url', $this->referer());
