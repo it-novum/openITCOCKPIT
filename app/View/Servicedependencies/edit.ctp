@@ -93,24 +93,40 @@
                 );
             endif;
 
-            echo $this->Form->hostAndServiceSelectOptiongroup('Servicedependency.Service', [
-                'label'    => __('<i class="fa fa-square class-default"></i> Services'),
-                'options'  => $services,
-                'required' => true,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10',
+            echo $this->Form->input('Servicedependency.Service', [
+                'options'          => $services,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10',
+                ],
                 'selected' => (isset($this->request->data['Servicedependency']['Service'])) ? $this->request->data['Servicedependency']['Service'] : [],
-                'target'   => '#ServicedependencyServiceDependent',
+                'target'           => '#ServicedependencyServiceDependent',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServicedependencyContainerId',
+                'itn-ajax-onchange'=> '#ServicedependencyServiceDependent',
             ]);
 
-            echo $this->Form->hostAndServiceSelectOptiongroup('Servicedependency.ServiceDependent', [
-                'label'    => __('<i class="fa fa-square class-info"></i> Dependent services'),
-                'options'  => $services,
-                'required' => true,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10 info',
+            echo $this->Form->input('Servicedependency.ServiceDependent', [
+                'options'          => $dependentServices,
+                'class'            => 'chosen test',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 info',
+                ],
                 'selected' => (isset($this->request->data['Servicedependency']['ServiceDependent'])) ? $this->request->data['Servicedependency']['ServiceDependent'] : [],
-                'target'   => '#ServicedependencyService',
+                'target'           => '#ServicedependencyService',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServicedependencyContainerId',
+                'itn-ajax-onchange'=> '#ServicedependencyService',
             ]);
 
             echo $this->Form->input('Servicedependency.Servicegroup', [
@@ -118,7 +134,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Servicegroups'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -133,7 +149,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent Servicegroups'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',

@@ -260,7 +260,7 @@ class Host extends AppModel {
         ]);
 
         $formattedHosts = [];
-        if(!empty($hostsIncluding) && is_array($hostsIncluding[0])){
+        if(!empty($hostsIncluding) && isset($hostsIncluding[0]) && is_array($hostsIncluding[0])){
             foreach($hostsIncluding as $hostIncluding){
                 $formattedHosts[] = $hostIncluding['id'];
             }
@@ -293,8 +293,9 @@ class Host extends AppModel {
                     'Host.name',
                 ]
             ]);
+
             if(!empty($selectedHosts)){
-                $hosts = $selectedHosts + $hosts;
+                $hosts = $hosts + $selectedHosts;
             }
         }
 
