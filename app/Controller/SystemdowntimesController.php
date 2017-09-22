@@ -456,7 +456,7 @@ class SystemdowntimesController extends AppController {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $selected = $this->request->data('Systemdowntime.object_id');
 
-        $customFildsToRefill = [
+        $customFieldsToRefill = [
             'Systemdowntime' => [
                 'from_date',
                 'from_time',
@@ -464,17 +464,18 @@ class SystemdowntimesController extends AppController {
                 'to_time',
                 'is_recurring',
                 'weekdays',
-                'day_of_month'
+                'day_of_month',
+                'inherit_downtime'
             ],
         ];
-        $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
+        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
         $this->set('back_url', $this->referer());
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS,OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP]);
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(),OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP]);
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         $this->set(compact('containers', 'selected'));
@@ -509,7 +510,7 @@ class SystemdowntimesController extends AppController {
                 $this->Systemdowntime->set($request);
                 if ($this->Systemdowntime->validates()) {
                     /* The data is valide and we can save it.
-                     * We need to use the foreach, becasue validates() cant handel saveAll() data :(
+                     * We need to use the foreach, becasue validates() cant handle saveAll() data :(
                      *
                      * How ever, at this point we passed the validation, so the data is valid.
                      * Now we need to check, if this is just a downtime, or an recurring downtime, because
@@ -525,23 +526,34 @@ class SystemdowntimesController extends AppController {
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'container') {
-                            $hostgroup = $this->Hostgroup->find('first', [
-                                'recursive'  => -1,
-                                'conditions' => [
-                                    'Hostgroup.id' => $request['Systemdowntime']['object_id'],
-                                ],
-                                'fields'     => [
-                                    'Hostgroup.uuid',
-                                ],
-                            ]);
+
+                            $childrenContainers = [];
+                            if($request['Systemdowntime']['object_id'] == ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1){
+                                $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id'], true);
+                            }else if($request['Systemdowntime']['object_id'] != ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1){
+                                $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id']);
+                                $childrenContainers = $this->Tree->removeRootContainer($childrenContainers);
+                            }
+
+                            //check if the user has rights for each children container
+                            $myChildrenContainer = [];
+                            foreach ($childrenContainers as $childrenContainer){
+                                if(in_array($childrenContainer, $this->MY_RIGHTS)){
+                                    $myChildrenContainer[] = $childrenContainer;
+                                }
+                            }
+
+                            //@TODO also sharing container! hosts_to_containers
 
                             $payload = [
-                                'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                'downtimetype'  => $request['Systemdowntime']['downtimetype_id'],
-                                'start'         => $start,
-                                'end'           => $end,
-                                'comment'       => $request['Systemdowntime']['comment'],
-                                'author'        => $this->Auth->user('full_name'),
+                                'containerId'      => $request['Systemdowntime']['object_id'],
+                                'childrenContainer' => $myChildrenContainer,
+                                'inherit_downtime'  => $request['Systemdowntime']['inherit_downtime'],
+                                'downtimetype'      => $request['Systemdowntime']['downtimetype_id'],
+                                'start'             => $start,
+                                'end'               => $end,
+                                'comment'           => $request['Systemdowntime']['comment'],
+                                'author'            => $this->Auth->user('full_name'),
                             ];
 
                             $this->GearmanClient->sendBackground('createContainerDowntime', $payload);
