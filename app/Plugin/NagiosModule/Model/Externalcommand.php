@@ -883,41 +883,9 @@ class Externalcommand extends NagiosModuleAppModel {
 
         $options = Hash::merge($_options, $options);
 
-        $this->Host = ClassRegistry::init('Host');
-
         $hostUuids = [];
-        switch ($options['inherit_downtime']) {
-            case 0:
-                //only hosts in the selected containers will be considered
-                $hostUuids = $this->Host->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Host.container_id' => $options['containerId'],
-                        'Host.disabled' => 0,
-                    ],
-                    'fields'     => [
-                        'Host.uuid'
-                    ]
-                ]);
-                break;
-            case 1:
-                //all hosts in the selected and the children container will be considered
-                //@TODO get all children container from the selection
-                $lookupContainerIds = [];
-                if (!empty($options['childrenContainer'])) {
-                    $lookupContainerIds = array_merge([$options['containerId']], $options['childrenContainer']);
-                }
-                $hostUuids = $this->Host->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Host.container_id' => $lookupContainerIds,
-                        'Host.disabled' => 0,
-                    ],
-                    'fields'     => [
-                        'Host.uuid'
-                    ]
-                ]);
-                break;
+        if (!empty($options['hostUuids'])) {
+            $hostUuids = $options['hostUuids'];
         }
 
         switch ($options['downtimetype']) {
@@ -925,7 +893,7 @@ class Externalcommand extends NagiosModuleAppModel {
                 //Host only
                 foreach ($hostUuids as $hostUuid) {
                     $this->setHostDowntime([
-                        'hostUuid'     => $hostUuid['Host']['uuid'],
+                        'hostUuid'     => $hostUuid,
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -939,7 +907,7 @@ class Externalcommand extends NagiosModuleAppModel {
                 //Host inc services
                 foreach ($hostUuids as $hostUuid) {
                     $this->setHostDowntime([
-                        'hostUuid'     => $hostUuid['Host']['uuid'],
+                        'hostUuid'     => $hostUuid,
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],
@@ -952,7 +920,7 @@ class Externalcommand extends NagiosModuleAppModel {
             default:
                 foreach ($hostUuids as $hostUuid) {
                     $this->setHostDowntime([
-                        'hostUuid'     => $hostUuid['Host']['uuid'],
+                        'hostUuid'     => $hostUuid,
                         'start'        => $options['start'],
                         'end'          => $options['end'],
                         'comment'      => $options['comment'],

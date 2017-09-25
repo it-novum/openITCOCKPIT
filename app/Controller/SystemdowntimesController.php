@@ -480,14 +480,103 @@ class SystemdowntimesController extends AppController {
 
         $this->set(compact('containers', 'selected'));
 
-
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
                 $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
             }
             $this->request->data = $this->_rewritePostData();
-            //Try validate the data:
+
+
+            //get all host UUIDS
+            $hostUuids = [];
             foreach ($this->request->data as $request) {
+                $childrenContainers = [];
+                if ($request['Systemdowntime']['object_id'] == ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1) {
+                    $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id'], true);
+                } else if ($request['Systemdowntime']['object_id'] != ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1) {
+                    $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id']);
+                    $childrenContainers = $this->Tree->removeRootContainer($childrenContainers);
+                }
+
+                //check if the user has rights for each children container
+                $myChildrenContainer = [];
+                foreach ($childrenContainers as $childrenContainer) {
+                    if (in_array($childrenContainer, $this->MY_RIGHTS)) {
+                        $myChildrenContainer[] = $childrenContainer;
+                    }
+                }
+
+                switch ($request['Systemdowntime']['inherit_downtime']) {
+                    case 0:
+                        //only hosts in the selected containers will be considered
+                        $result = $this->Host->find('all', [
+                            'recursive'  => -1,
+                            'conditions' => [
+                                'Host.container_id' => $request['Systemdowntime']['object_id'],
+                                'Host.disabled'     => 0,
+                            ],
+                            'fields'     => [
+                                'Host.uuid'
+                            ]
+                        ]);
+                        if (!empty($result)) {
+                            $hostUuids[] = Hash::extract($result, '{n}.Host.uuid');
+                        }
+
+                        break;
+                    case 1:
+                        //all hosts in the selected and the children container will be considered
+                        $lookupContainerIds = [];
+                        if (!empty($myChildrenContainer)) {
+                            $lookupContainerIds = array_merge([$request['Systemdowntime']['object_id']], $myChildrenContainer);
+                        }
+
+                        $conditions = [
+                            'HostsToContainers.container_id' => $lookupContainerIds,
+                            'Host.disabled'                  => 0,
+                        ];
+
+                        $result = $this->Host->find('all', [
+                            'recursive'  => -1,
+                            'joins'      => [
+                                [
+                                    'table'      => 'hosts_to_containers',
+                                    'alias'      => 'HostsToContainers',
+                                    'type'       => 'LEFT',
+                                    'conditions' => [
+                                        'HostsToContainers.host_id = Host.id',
+                                    ],
+                                ],
+                            ],
+                            'conditions' => $conditions,
+                            'order'      => [
+                                'Host.name' => 'ASC',
+                            ],
+                            'fields'     => [
+                                'Host.uuid',
+                            ],
+                        ]);
+                        if (!empty($result)) {
+                            $hostUuids[] = Hash::extract($result, '{n}.Host.uuid');
+                        }
+                        break;
+                }
+            }
+
+            //get rid of same uuids
+            $allHostUuids = [];
+            $mapping = [];
+            foreach ($hostUuids as $key => $data) {
+                foreach ($data as $hostUuid) {
+                    if (!in_array($hostUuid, $mapping)) {
+                        $mapping[] = $hostUuid;
+                        $allHostUuids[$key][] = $hostUuid;
+                    }
+                }
+            }
+
+            //Try validate the data:
+            foreach ($this->request->data as $key => $request) {
                 if ($request['Systemdowntime']['is_recurring']) {
                     $this->Systemdowntime->validate = Hash::merge(
                         $this->Systemdowntime->validate,
@@ -507,6 +596,7 @@ class SystemdowntimesController extends AppController {
                         ]
                     );
                 }
+
                 $this->Systemdowntime->set($request);
                 if ($this->Systemdowntime->validates()) {
                     /* The data is valide and we can save it.
@@ -527,33 +617,15 @@ class SystemdowntimesController extends AppController {
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'container') {
 
-                            $childrenContainers = [];
-                            if($request['Systemdowntime']['object_id'] == ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1){
-                                $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id'], true);
-                            }else if($request['Systemdowntime']['object_id'] != ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1){
-                                $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id']);
-                                $childrenContainers = $this->Tree->removeRootContainer($childrenContainers);
-                            }
-
-                            //check if the user has rights for each children container
-                            $myChildrenContainer = [];
-                            foreach ($childrenContainers as $childrenContainer){
-                                if(in_array($childrenContainer, $this->MY_RIGHTS)){
-                                    $myChildrenContainer[] = $childrenContainer;
-                                }
-                            }
-
-                            //@TODO also sharing container! hosts_to_containers
-
                             $payload = [
                                 'containerId'      => $request['Systemdowntime']['object_id'],
-                                'childrenContainer' => $myChildrenContainer,
-                                'inherit_downtime'  => $request['Systemdowntime']['inherit_downtime'],
-                                'downtimetype'      => $request['Systemdowntime']['downtimetype_id'],
-                                'start'             => $start,
-                                'end'               => $end,
-                                'comment'           => $request['Systemdowntime']['comment'],
-                                'author'            => $this->Auth->user('full_name'),
+                                'hostUuids'        => isset($allHostUuids[$key])?$allHostUuids[$key]:[],
+                                'inherit_downtime' => $request['Systemdowntime']['inherit_downtime'],
+                                'downtimetype'     => $request['Systemdowntime']['downtimetype_id'],
+                                'start'            => $start,
+                                'end'              => $end,
+                                'comment'          => $request['Systemdowntime']['comment'],
+                                'author'           => $this->Auth->user('full_name'),
                             ];
 
                             $this->GearmanClient->sendBackground('createContainerDowntime', $payload);
