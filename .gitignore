@@ -65,3 +65,4 @@ app/Vendor/*
 !app/Vendor/Oauth2
 !app/Vendor/imageSmoothArc.php
 !app/Vendor/qqFileUploader.php
+app/composer.lock
