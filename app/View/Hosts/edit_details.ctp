@@ -71,7 +71,6 @@
                                 <?php
 
                                 if ($this->Acl->hasPermission('sharing')) {
-                                    //if ($host['Host']['host_type'] == GENERIC_HOST) {
                                     echo $this->Form->input('Host.shared_container', [
                                             'options'   => $this->Html->chosenPlaceholder($sharingContainers),
                                             'multiple'  => true,
@@ -83,7 +82,6 @@
                                             'disabled'  => true
                                         ]
                                     );
-                                    //}
                                 }
 
                                 echo $this->Form->input('keep_sharing', [
