@@ -22,9 +22,13 @@
   "prefer-stable": true,
   "require": {
     "symfony/filesystem": "^3.2",
-    "adldap/adldap": "dev-master",
     "crate/crate-pdo":"~0.6.0",
     "crate/crate-dbal":"~0.3.0",
-    "ddeboer/imap": "^0.5.2"
+    "ddeboer/imap": "^0.5.2",
+    "smottt/wideimage": "^1.1",
+    "erusev/parsedown": "^1.6",
+    "erusev/parsedown-extra": "^0.7.1",
+    "cboden/ratchet": "^0.4.0",
+    "matthiasmullie/minify": "^1.3"
   }
 }
