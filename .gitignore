@@ -59,8 +59,7 @@ app/webroot/img/logo_custom.png
 app/webroot/img/logo_small_custom.png
 
 !app/Vendor/
-
-!app/Vendor/*
+app/Vendor/*
 !app/Vendor/adldap
 !app/Vendor/Date
 !app/Vendor/Oauth2
