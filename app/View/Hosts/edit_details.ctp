@@ -53,15 +53,69 @@
             <div class="row">
                 <div class="col-xs-12 col-md-9 col-lg-7">
                     <div class="padding-left-10">
-                        <div>
-                            <?php echo $this->Form->input('edit_description', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit description')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
+                        <div class="editHostDetailFormInput">
+                            <?php
+                            echo $this->Form->input('edit_sharing', [
+                                    'type'      => 'checkbox',
+                                    'checked'   => false,
+                                    'label'     => [
+                                        'class' => 'text-primary',
+                                        'text'  => __('Edit Sharing')
+                                    ],
+                                    'wrapInput' => false,
+                                    'class'     => 'parent_checkbox'
+                                ]
+                            );
+                            ?>
+                            <div class="scope">
+                                <?php
+
+                                if ($this->Acl->hasPermission('sharing')) {
+                                    //if ($host['Host']['host_type'] == GENERIC_HOST) {
+                                    echo $this->Form->input('Host.shared_container', [
+                                            'options'   => $this->Html->chosenPlaceholder($sharingContainers),
+                                            'multiple'  => true,
+                                            //'selected'  => $sharedContainers,
+                                            'class'     => 'chosen',
+                                            'style'     => 'width: 100%',
+                                            'label'     => __('Shared containers'),
+                                            'wrapInput' => 'col col-xs-8',
+                                            'disabled'  => true
+                                        ]
+                                    );
+                                    //}
+                                }
+
+                                echo $this->Form->input('keep_sharing', [
+                                        'type'     => 'checkbox',
+                                        'checked'  => false,
+                                        'label'    => __('Keep existing'),
+                                        'disabled' => true
+                                    ]
+                                );
+                                ?>
+                            </div>
+                        </div>
+                        <div class="editHostDetailFormInput">
+                            <?php echo $this->Form->input('edit_description', [
+                                    'type'      => 'checkbox',
+                                    'checked'   => false,
+                                    'label'     => [
+                                        'class' => 'text-primary',
+                                        'text'  => __('Edit description')
+                                    ],
+                                    'wrapInput' => false,
+                                    'class'     => 'parent_checkbox'
+                                ]
+                            );
+                            ?>
                             <div class="scope">
                                 <?php echo $this->Form->input('Host.description', ['type' => 'text', 'label' => __('Description'), 'disabled' => true]); ?>
                             </div>
                         </div>
                         <hr/>
 
-                        <div>
+                        <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_contacts', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit contacts')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
                             <div class="scope">
                                 <?php echo $this->Form->input(
@@ -79,7 +133,7 @@
                         </div>
                         <hr/>
 
-                        <div>
+                        <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_contactgroups', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit contact groups')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
                             <div class="scope">
                                 <?php echo $this->Form->input(
@@ -97,7 +151,7 @@
                         </div>
                         <hr/>
 
-                        <div>
+                        <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_url', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit host URL')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
                             <div class="scope">
                                 <?php echo $this->Form->input('Host.host_url', ['type' => 'text', 'label' => __('Host URL'), 'disabled' => true]); ?>
@@ -105,7 +159,7 @@
                         </div>
                         <hr/>
 
-                        <div>
+                        <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_tags', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit tags')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
                             <div class="scope">
                                 <?php echo $this->Form->input('Host.tags', ['type' => 'text', 'label' => __('Tags'), 'disabled' => true]); ?>
@@ -114,7 +168,7 @@
                         </div>
                         <hr/>
 
-                        <div>
+                        <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_priority', ['type' => 'checkbox', 'checked' => false, 'label' => ['class' => 'text-primary', 'text' => __('Edit priority')], 'wrapInput' => false, 'class' => 'parent_checkbox']); ?>
                             <div class="scope">
                                 <div class="form-group">

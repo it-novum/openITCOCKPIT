@@ -30,6 +30,7 @@ use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
 /**
  * @property Host $Host
@@ -894,6 +895,10 @@ class HostsController extends AppController {
         $contacts = $this->Contact->contactsByContainerId($containerIds,'list','id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds,'list','id');
 
+        //get sharing containers
+        $sharingContainers = $this->getSharingContainers(null,false);
+
+
         if ($this->request->is('post') || $this->request->is('put')) {
             foreach (func_get_args() as $host_id) {
                 $this->Host->unbindModel([
@@ -904,6 +909,9 @@ class HostsController extends AppController {
                 );
                 $data = ['Host' => []];
                 $host = $this->Host->findById($host_id);
+
+
+
                 if (!empty($host)) {
                     //Fill up required fields
                     $data['Host']['id'] = $host['Host']['id'];
@@ -911,6 +919,31 @@ class HostsController extends AppController {
                     $data['Host']['name'] = $host['Host']['name'];
                     $data['Host']['hosttemplate_id'] = $host['Host']['hosttemplate_id'];
                     $data['Host']['address'] = $host['Host']['address'];
+
+                    $hostSharingPermissions = new HostSharingPermissions(
+                        $host['Host']['container_id'],
+                        $this->hasRootPrivileges,
+                        Hash::extract($host['Container'], '{n}.id'),
+                        $this->MY_RIGHTS
+                    );
+                    $allowSharing = $hostSharingPermissions->allowSharing();
+
+                    if($allowSharing){
+                        if($this->request->data('Host.edit_sharing') == 1){
+                            if(!empty($this->request->data('Host.shared_container'))){
+                                if ($this->request->data('Host.keep_container') == 1) {
+                                    $sharedContainer = Hash::extract($host, 'Container.{n}.id');
+                                    $containers = array_merge($sharedContainer, $this->request->data('Host.shared_container'));
+                                    $data['Container']['Container'] = $containers;
+                                }else{
+                                    $containers = array_merge([$host['Host']['container_id']], $this->request->data('Host.shared_container'));
+                                    $data['Container']['Container'] = $containers;
+                                }
+
+                            }
+                        }
+
+                    }
 
                     if ($this->request->data('Host.edit_description') == 1) {
                         $data['Host']['description'] = $this->request->data('Host.description');
@@ -1007,7 +1040,7 @@ class HostsController extends AppController {
             return;
         }
 
-        $this->set(compact(['contacts','contactgroups']));
+        $this->set(compact(['contacts','contactgroups', 'sharingContainers']));
     }
 
     public function add() {
@@ -1305,7 +1338,6 @@ class HostsController extends AppController {
                 }
 
             }
-
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -1368,7 +1400,6 @@ class HostsController extends AppController {
         } else {
             return $sharingContainers;
         }
-
     }
 
     public function disabled() {
