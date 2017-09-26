@@ -246,6 +246,7 @@ $config = [
             'Downtimes'             => [
                 'host'    => ['index'],
                 'service' => ['index'],
+                'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
                 'debug' => ['testMail'],

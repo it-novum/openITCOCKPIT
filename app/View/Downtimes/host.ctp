@@ -238,6 +238,7 @@ $this->Paginator->options([
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
+                                    <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
                                     <th class="no-sort"><?php echo __('Running'); ?></th>
                                     <th class="no-sort">
                                         <?php echo $this->Utils->getDirection($order, 'Host.name');
@@ -281,6 +282,15 @@ $this->Paginator->options([
                                     $DowntimeIcon = new DowntimeIcon($Downtime);
                                     ?>
                                     <tr>
+                                        <td class="text-center width-5">
+                                           <?php if ($Downtime->isCancellable() && $this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']): ?>
+                                                <input type="checkbox" class="massChangeDT"
+                                                    hostname="<?php echo h($Host->getHostname()); ?>"
+                                                    downtimeServicesId="<?php echo $downtime['servicesDown']; ?>"
+                                                    internalDowntimeId="<?php echo h($Downtime->getInternalDowntimeId()); ?>"
+                                                    downtimehistoryId="<?php echo h($Downtime->getDowntimehistoryId()); ?>">
+                                           <?php endif; ?>
+                                        </td>
                                         <td class="text-center">
                                             <?php echo $DowntimeIcon->getIcon(); ?>
                                         </td>
@@ -358,6 +368,10 @@ $this->Paginator->options([
                                 </center>
                             </div>
                         <?php endif; ?>
+
+                        <?php if($this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']):
+                            echo $this->element('downtimes_mass_delete');
+                        endif; ?>
 
                         <div style="padding: 5px 10px;">
                             <div class="row">
