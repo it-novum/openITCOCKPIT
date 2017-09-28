@@ -390,6 +390,14 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	background-position: -42px -10px;
 }
 
+.margin-bottom-50 {
+	margin-bottom: 50px;
+}
+
+.margin-bottom-25 {
+	margin-bottom: 25px;
+}
+
 .margin-bottom-10 {
 	margin-bottom: 10px;
 }
