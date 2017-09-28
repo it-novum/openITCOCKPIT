@@ -36,6 +36,7 @@ class AcknowledgedHost extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'object_id',
+            'type' => 'INNER'
         ],
     ];
 
@@ -74,6 +75,7 @@ class AcknowledgedHost extends NagiosModuleAppModel
         $query = [
             'conditions' => [
                 'Objects.name1' => $AcknowledgedHostConditions->getHostUuid(),
+                'Objects.objecttype_id' => 1,
                 'entry_time >' => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getFrom()),
                 'entry_time <' => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getTo())
             ],
