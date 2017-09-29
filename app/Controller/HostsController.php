@@ -927,7 +927,7 @@ class HostsController extends AppController {
                     if ($allowSharing) {
                         if ($this->request->data('Host.edit_sharing') == 1) {
                             if (!empty($this->request->data('Host.shared_container'))) {
-                                if ($this->request->data('Host.keep_container') == 1) {
+                                if ($this->request->data('Host.keep_sharing') == 1) {
                                     $sharedContainer = Hash::extract($host, 'Container.{n}.id');
                                     $containers = array_merge($sharedContainer, $this->request->data('Host.shared_container'));
                                     $data['Container']['Container'] = $containers;
