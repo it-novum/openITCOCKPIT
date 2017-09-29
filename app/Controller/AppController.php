@@ -318,6 +318,12 @@ class AppController extends Controller {
      * @return void
      */
     public function beforeRender() {
+        if (!empty($this->request['paging']) && $this->isApiRequest()) {
+            $data = $this->request['paging'];
+            $data = current($data);
+            $this->set('paging', $data);
+        }
+
         if (!$this->request->is('ajax')) {
             $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
@@ -875,6 +881,13 @@ class AppController extends Controller {
             return true;
         }
 
+        return false;
+    }
+
+    protected function isAngularJsRequest(){
+        if($this->isApiRequest()){
+            return isset($this->request->query['angular']);
+        }
         return false;
     }
 

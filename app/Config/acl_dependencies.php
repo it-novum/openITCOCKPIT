@@ -172,7 +172,7 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Hostgroups'            => [
-                'index'    => ['listToPdf', 'view'],
+                'index'    => ['listToPdf', 'view', 'indexAngular'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
                 'edit'     => ['loadHosts', 'loadHosttemplates'],

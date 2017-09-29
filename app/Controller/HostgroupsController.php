@@ -48,7 +48,7 @@ class HostgroupsController extends AppController
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
     ];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
     public $components = [
         'Paginator',
         'ListFilter.ListFilter',
@@ -68,8 +68,19 @@ class HostgroupsController extends AppController
         ],
     ];
 
+    public function indexAngular(){
+        $this->layout = 'blank';
+        $this->render('index');
+        return;
+    }
+
     public function index()
     {
+        if(!$this->isApiRequest()){
+            //Only ship template for AngularJs
+            return;
+        }
+
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
@@ -101,7 +112,7 @@ class HostgroupsController extends AppController
         ];
         $query = Hash::merge($this->Paginator->settings, $options);
 
-        if ($this->isApiRequest()) {
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
             $all_hostgroups = $this->Hostgroup->find('all', $query);
         } else {
@@ -113,7 +124,7 @@ class HostgroupsController extends AppController
         $this->set('all_hostgroups', $all_hostgroups);
 
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_hostgroups']);
+        $this->set('_serialize', ['all_hostgroups', 'paging']);
     }
 
     public function view($id = null)
