@@ -23,10 +23,9 @@ angular.module('openITCOCKPIT', ['ui.router'])
         $httpProvider.interceptors.push("httpInterceptor");
     })
 
+    /*
     .config(function($urlRouterProvider, $stateProvider){
         //$urlRouterProvider.otherwise("/dashboard");
-
-
 
         $stateProvider
             .state('HostgroupsIndex', {
@@ -35,6 +34,21 @@ angular.module('openITCOCKPIT', ['ui.router'])
                 controller: "HostgroupsIndexController"
             })
     })
+    */
+
+    /*
+    .config(function($routeProvider){
+        $routeProvider
+            .when("/hostgroups/index", {
+                templateUrl : "/hostgroups/indexAngular.html",
+                controller : "HostgroupsIndexController"
+            })
+            .otherwise({
+                template : "<h1>None</h1><p>Nothing has been selected</p>"
+            });
+    })
+    */
+
 
     .filter('hostStatusName', function(){
         return function(hoststatusId){

@@ -1,19 +1,92 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsIndexController', function($scope, $http, $state){
+    .controller('HostgroupsIndexController', function($scope, $http, $state, SortService, MassChangeService){
 
-        //Refactor me with Angular-UI-Router!
-        if(!$state.is('HostgroupsIndex')){
-            $state.go('HostgroupsIndex');
-        }
+        SortService.setSort('Container.name');
+        SortService.setDirection('asc');
+        $scope.currentPage = 1;
+
+        /*** Filter Settings ***/
+        var defaultFilter = function(){
+            $scope.filter = {
+                container: {
+                    name: ''
+                },
+                hostgroup: {
+                    description: ''
+                }
+            };
+        };
+        /*** Filter end ***/
+        $scope.massChange = {};
+        $scope.selectedElements = 0;
 
         $scope.init = true;
+        $scope.showFilter = false;
         $scope.load = function(){
-            console.log('yolo');
+            $http.get("/hostgroups/index.json", {
+                params: {
+                    'angular': true,
+                    'sort': SortService.getSort(),
+                    'page': $scope.currentPage,
+                    'direction': SortService.getDirection(),
+                    'filter[Container.name]': $scope.filter.container.name,
+                    'filter[Hostgroup.description]': $scope.filter.hostgroup.description
+                }
+            }).then(function(result){
+                $scope.hostgroups = result.data.all_hostgroups;
+                $scope.paging = result.data.paging;
+                $scope.init = false;
+            });
 
         };
 
+        $scope.triggerFilter = function(){
+            if($scope.showFilter === true){
+                $scope.showFilter = false;
+            }else{
+                $scope.showFilter = true;
+            }
+        };
+
+        $scope.resetFilter = function(){
+            defaultFilter();
+        };
+
+        $scope.selectAll = function(){
+            if($scope.hostgroups){
+                for(var key in $scope.hostgroups){
+                    var id = $scope.hostgroups[key].Hostgroup.id;
+                    $scope.massChange[id] = true;
+                }
+            }
+        };
+
+        $scope.undoSelection = function(){
+            MassChangeService.clearSelection();
+            $scope.massChange = MassChangeService.getSelected();
+            $scope.selectedElements = MassChangeService.getCount();
+        };
+
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
 
 
-        $scope.load();
+        //Fire on page load
+        defaultFilter();
+        SortService.setCallback($scope.load);
+
+        $scope.$watch('filter', function(){
+            $scope.load();
+        }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
+
 
     });

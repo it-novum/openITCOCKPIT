@@ -190,9 +190,18 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
     <div id="content" style="opacity: 1;">
         <?php echo $this->Flash->render(); ?>
         <?php echo $this->Flash->render('auth'); ?>
-        <?php //echo $content_for_layout; ?>
-        <div ng-controller="<?php printf('%s%sController', ucfirst($this->request->controller), ucfirst($this->request->action)); ?>">
-            <div ui-view></div>
+        <?php $AngularController = sprintf(
+            '%s%sController',
+            ucfirst($this->request->controller),
+            ucfirst($this->request->action)
+        ); ?>
+        <div ng-controller="<?php echo $AngularController; ?>">
+            <div ui-view>
+                <?php
+                //Remove this line if ui-router is in use!!
+                echo $content_for_layout;
+                ?>
+            </div>
         </div>
         <?php echo $this->element('Admin.sql_dump'); ?>
     </div>

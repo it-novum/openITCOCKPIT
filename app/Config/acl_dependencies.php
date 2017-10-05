@@ -27,6 +27,9 @@ $config = [
     'acl_dependencies' => [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
         'always_allowed' => [
+            'Angular' => [
+                'paginator'
+            ],
             'Commands'         => [
                 'sortByCommandType',
             ],
@@ -172,7 +175,7 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Hostgroups'            => [
-                'index'    => ['listToPdf', 'view', 'indexAngular'],
+                'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
                 'edit'     => ['loadHosts', 'loadHosttemplates'],

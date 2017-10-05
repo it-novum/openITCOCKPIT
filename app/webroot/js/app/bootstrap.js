@@ -8,14 +8,6 @@ App.Types = appData.Types;
 App.Helpers = {};
 App.ModuleController = {};
 
-function __(msg) {
-	if(typeof appData.jsonData.localeStrings == 'object' && typeof appData.jsonData.localeStrings[ msg ] != 'undefined') {
-		return appData.jsonData.localeStrings[ msg ];
-	} else {
-		return msg;
-	}
-}
-
 function debug(){
 	return console.log.apply(console, Array.prototype.slice.call(arguments));
 }

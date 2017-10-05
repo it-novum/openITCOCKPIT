@@ -1,0 +1,182 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, version 3 of the License.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//  License agreement and license key will be shipped with the order
+//  confirmation.
+
+namespace itnovum\openITCOCKPIT\Filter;
+
+
+use CakeRequest;
+use NotImplementedException;
+
+abstract class Filter {
+
+    private $Request;
+
+    public function __construct(CakeRequest $Request) {
+        $this->Request = $Request;
+    }
+
+    /**
+     * @param $filters
+     * @return array
+     * @throws NotImplementedException
+     */
+    public function getConditionsByFilters($filters) {
+        $conditions = [];
+        foreach ($filters as $operator => $fields) {
+            foreach ($fields as $field) {
+                if ($this->queryHasField($field)) {
+                    switch ($operator) {
+                        case 'like':
+                            $value = $this->getQueryFieldValue($field);
+                            if ($value) {
+                                $value = str_replace('\\', '\\\\', $value);
+
+                                $conditions[sprintf('%s LIKE', $field)] = sprintf(
+                                    '%%%s%%',
+                                    $value
+                                );
+                            }
+                            break;
+                        case 'equals':
+                            $values = $this->getQueryFieldValue($field);
+                            if (is_array($values) && !empty($values)) {
+                                $conditions[sprintf('%s IN', $field)] = $values;
+                            } else {
+                                if ($values || $values === '0') {
+                                    $conditions[$field] = $values;
+                                }
+                            }
+                            break;
+                        case 'state':
+                            $values = $this->mapStateNameToStateId($field);
+                            if (is_array($values) && !empty($values)) {
+                                $conditions[sprintf('%s IN', $field)] = $values;
+                            } else {
+                                if ($values) {
+                                    $conditions[$field] = $values;
+                                }
+                            }
+                            break;
+                        default:
+                            throw new NotImplementedException('This filter type is not implemented yet');
+                    }
+                }
+            }
+        }
+        return $conditions;
+    }
+
+    /**
+     * @param $field
+     * @return bool
+     */
+    public function queryHasField($field) {
+        return isset($this->Request->query['filter'][$field]);
+    }
+
+    /**
+     * @param $field
+     * @return null|mixed
+     */
+    public function getQueryFieldValue($field) {
+        if ($this->queryHasField($field)) {
+            return $this->Request->query['filter'][$field];
+        }
+        return null;
+    }
+
+    public function mapStateNameToStateId($field) {
+        $values = $this->getQueryFieldValue($field);
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        $return = [];
+        foreach ($values as $value) {
+            switch ($value) {
+                case 'up':
+                case 'ok':
+                    $return[] = 0;
+                    break;
+                case 'down':
+                case 'warning':
+                    $return[] = 1;
+                    break;
+                case 'unreachable':
+                case 'critical':
+                    $return[] = 2;
+                    break;
+                case 'unknown':
+                    $return[] = 3;
+                    break;
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param string $default
+     * @return string
+     */
+    public function getSort($default = '') {
+        if (isset($this->Request->query['sort'])) {
+            return $this->Request->query['sort'];
+        }
+        return $default;
+    }
+
+    /**
+     * @param string $default
+     * @return string
+     */
+    public function getDirection($default = '') {
+        if (isset($this->Request->query['direction'])) {
+            return $this->Request->query['direction'];
+        }
+        return $default;
+    }
+
+    /**
+     * @param string $sort
+     * @param string $direction
+     * @return array
+     */
+    public function getOrderForPaginator($sort = '', $direction = ''){
+        return [
+            $this->getSort($sort) => $this->getDirection($direction)
+        ];
+    }
+
+    /**
+     * @param int $default
+     * @return int
+     */
+    public function getPage($default = 1) {
+        if (isset($this->Request->query['page'])) {
+            return (int)$this->Request->query['page'];
+        }
+        return $default;
+    }
+
+}

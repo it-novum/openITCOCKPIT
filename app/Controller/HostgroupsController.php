@@ -23,19 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
 
 /**
- * @property Hostgroup      $Hostgroup
- * @property Container      $Container
- * @property Host           $Host
- * @property Hosttemplate   $Hosttemplate
- * @property User           $User
+ * @property Hostgroup $Hostgroup
+ * @property Container $Container
+ * @property Host $Host
+ * @property Hosttemplate $Hosttemplate
+ * @property User $User
  */
-class HostgroupsController extends AppController
-{
+class HostgroupsController extends AppController {
 
     public $uses = [
         'Hostgroup',
@@ -51,73 +51,84 @@ class HostgroupsController extends AppController
     public $layout = 'angularjs';
     public $components = [
         'Paginator',
-        'ListFilter.ListFilter',
         'RequestHandler',
     ];
     public $helpers = [
-        'ListFilter.ListFilter',
         'Status',
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Hostgroup.description' => ['label' => 'Alias', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
-
-    public function indexAngular(){
-        $this->layout = 'blank';
-        $this->render('index');
-        return;
-    }
-
-    public function index()
-    {
-        if(!$this->isApiRequest()){
+    public function index() {
+        if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
 
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
-        }
-        $this->Paginator->settings['order'] = ['Container.name' => 'asc'];
+        $HostgroupFilter = new HostgroupFilter($this->request);
 
-        $options = [
-            'recursive' => -1,
-            'contain' => [
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Host' => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
-                    ]
+                    ],
+                    'Container'
                 ],
                 'Hosttemplate' => [
                     'fields' => [
                         'Hosttemplate.id',
                         'Hosttemplate.name'
-                    ]
+                    ],
+                    'Container'
                 ]
             ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
         ];
-        $query = Hash::merge($this->Paginator->settings, $options);
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+        }
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
-            $all_hostgroups = $this->Hostgroup->find('all', $query);
+            $hostgroups = $this->Hostgroup->find('all', $query);
         } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hostgroups = $this->Paginator->paginate();
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
+            $hostgroups = $this->Paginator->paginate();
+        }
+
+        $all_hostgroups = [];
+        foreach ($hostgroups as $hostgroup) {
+            $hostgroup['Hostgroup']['allowEdit'] = $this->hasPermission('edit', 'hostgroups');;
+            if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
+                $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
+            }
+            foreach ($hostgroup['Host'] as $key => $host) {
+                $hostgroup['Host'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosts');
+                if ($this->hasRootPrivileges === false && $hostgroup['Host'][$key]['allowEdit'] === true) {
+                    $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+                    $hostgroup['Host'][$key]['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
+                }
+            }
+
+            foreach ($hostgroup['Hosttemplate'] as $key => $hosttemplate) {
+                $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosttemplates');
+                if ($this->hasRootPrivileges === false && $hostgroup['Hosttemplate'][$key]['allowEdit'] === true) {
+                    $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->allowedByContainerId($hosttemplate['container_id']);
+                }
+            }
+
+            $all_hostgroups[] = [
+                'Hostgroup'    => $hostgroup['Hostgroup'],
+                'Container'    => $hostgroup['Container'],
+                'Host'         => $hostgroup['Host'],
+                'Hosttemplate' => $hostgroup['Hosttemplate']
+            ];
+
         }
 
 
@@ -127,8 +138,7 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['all_hostgroups', 'paging']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -147,8 +157,7 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['hostgroup']);
     }
 
-    public function extended($hostgroupId = null)
-    {
+    public function extended($hostgroupId = null) {
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
@@ -156,10 +165,10 @@ class HostgroupsController extends AppController
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         $options = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Host' => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
@@ -230,9 +239,9 @@ class HostgroupsController extends AppController
 
     }
 
-    private function getHostgroupNames($hostgroups){
+    private function getHostgroupNames($hostgroups) {
         $hostgroupnames = [];
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $hostgroupnames[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
         }
         return $hostgroupnames;
@@ -241,11 +250,11 @@ class HostgroupsController extends AppController
     private function getHosttemplates($hostgroups) {
         $hosttemplates = [];
 
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $templateIds = "";
-            foreach($hostgroup['Hosttemplate'] as $template) {
-                if ($templateIds !== ""){
-                    $templateIds = $templateIds.", ".$template['id'];
+            foreach ($hostgroup['Hosttemplate'] as $template) {
+                if ($templateIds !== "") {
+                    $templateIds = $templateIds . ", " . $template['id'];
                 } else {
                     $templateIds = $template['id'];
                 }
@@ -258,11 +267,11 @@ class HostgroupsController extends AppController
     private function getHostsInHostgroup($hostgroups) {
         $hostsInHostgroup = [];
 
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $hostIds = "";
-            foreach($hostgroup['Host'] as $host) {
-                if ($hostIds !== ""){
-                    $hostIds = $hostIds.", ".$host['id'];
+            foreach ($hostgroup['Host'] as $host) {
+                if ($hostIds !== "") {
+                    $hostIds = $hostIds . ", " . $host['id'];
                 } else {
                     $hostIds = $host['id'];
                 }
@@ -272,8 +281,7 @@ class HostgroupsController extends AppController
         return $hostsInHostgroup;
     }
 
-    public function loadServicesByHostId($hostId = null, $hostgroupId)
-    {
+    public function loadServicesByHostId($hostId = null, $hostgroupId) {
         if (!is_numeric($hostId) || $hostId < 1) {
             throw new NotFoundException('Invalide host id');
         }
@@ -325,8 +333,8 @@ class HostgroupsController extends AppController
 
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
+        $this->layout = 'Admin.default';
         if (!$this->Hostgroup->exists($id)) {
             throw new NotFoundException(__('Invalid hostgroup'));
         }
@@ -337,9 +345,9 @@ class HostgroupsController extends AppController
 
         $userId = $this->Auth->user('id');
         $hostgroup = $this->Hostgroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'Host' => [
+            'recursive'  => -1,
+            'contain'    => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
@@ -447,8 +455,8 @@ class HostgroupsController extends AppController
         $this->set(compact(['hostgroup', 'hosts', 'containers', 'hosttemplates']));
     }
 
-    public function add()
-    {
+    public function add() {
+        $this->layout = 'Admin.default';
         $userId = $this->Auth->user('id');
 
         if ($this->hasRootPrivileges === true) {
@@ -553,13 +561,12 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['containers', 'hosts', 'hosttemplates']);
     }
 
-    public function loadHosts($containerId = null)
-    {
+    public function loadHosts($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
-        if($containerId == ROOT_CONTAINER){
+        if ($containerId == ROOT_CONTAINER) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        }else{
+        } else {
             $containerIds = [ROOT_CONTAINER, $containerId];
         }
         $hosts = $this->Host->getAjaxHosts($containerIds, [], empty($this->request->data['addData']) ? [] : $this->request->data['addData']);
@@ -569,14 +576,13 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHosttemplates($containerId = null)
-    {
+    public function loadHosttemplates($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
-        if($containerId == ROOT_CONTAINER){
+        if ($containerId == ROOT_CONTAINER) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
             $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
-        }else{
+        } else {
             $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
         }
         $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
@@ -584,8 +590,7 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['hosttemplates']);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -625,8 +630,7 @@ class HostgroupsController extends AppController
 
     }
 
-    public function mass_add($id = null)
-    {
+    public function mass_add($id = null) {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $userId = $this->Auth->user('id');
@@ -740,8 +744,7 @@ class HostgroupsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
         foreach (func_get_args() as $hostgroupId) {
             if ($this->Hostgroup->exists($hostgroupId)) {
@@ -777,8 +780,7 @@ class HostgroupsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function listToPdf()
-    {
+    public function listToPdf() {
         $args = func_get_args();
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $conditions = [
@@ -858,7 +860,7 @@ class HostgroupsController extends AppController
         $hostgroupHostCount = Hash::apply($hostgroups, '{n}.Host.{n}', 'count');
         $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
 
-        $filename = 'Hostgroups_'.strtotime('now').'.pdf';
+        $filename = 'Hostgroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';

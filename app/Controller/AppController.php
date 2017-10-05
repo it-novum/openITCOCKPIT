@@ -35,6 +35,7 @@ App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\SessionCache;
 
 /**
  * @property User $User
@@ -140,12 +141,6 @@ class AppController extends Controller {
      */
     protected $DbBackend;
 
-    /**
-     * Translated strings to be passed to the front end. Can be added via
-     * _addLocaleStrings()
-     * @var array
-     */
-    protected $_localeStrings = [];
 
     /**
      * Called before every controller actions. Should not be overridden.
@@ -184,76 +179,82 @@ class AppController extends Controller {
     protected function __getUserRights() {
         //The user is logedIn, so we need to select container permissions out of DB
         $_user = $this->User->findById($this->Auth->user('id'));
-        $rights = [ROOT_CONTAINER];
-        $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
-        $this->hasRootPrivileges = false;
-        $this->MY_RIGHTS = [];
-        foreach ($_user['ContainerUserMembership'] as $container) {
-            $rights[] = (int)$container['container_id'];
-            $rights_levels[(int)$container['container_id']] = $container['permission_level'];
 
-            if ((int)$container['container_id'] === ROOT_CONTAINER) {
-                $rights_levels[ROOT_CONTAINER] = WRITE_RIGHT;
-                $this->hasRootPrivileges = true;
+        $SessionCache = new SessionCache('Permissions', $this->Session, 300);
+
+        if ($SessionCache->isEmpty()) {
+            $rights = [ROOT_CONTAINER];
+            $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
+            $this->hasRootPrivileges = false;
+            $this->MY_RIGHTS = [];
+            foreach ($_user['ContainerUserMembership'] as $container) {
+                $rights[] = (int)$container['container_id'];
+                $rights_levels[(int)$container['container_id']] = $container['permission_level'];
+
+                if ((int)$container['container_id'] === ROOT_CONTAINER) {
+                    $rights_levels[ROOT_CONTAINER] = WRITE_RIGHT;
+                    $this->hasRootPrivileges = true;
+                }
+
+                foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
+                    $rights[] = (int)$childContainer['Container']['id'];
+                    $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
+                }
             }
 
-            //foreach($this->Container->children($container['id'], false) as $childContainer){
-            foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
-                $rights[] = (int)$childContainer['Container']['id'];
-                $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
-            }
-        }
-        $this->MY_RIGHTS = array_unique($rights);
-        $this->set('hasRootPrivileges', $this->hasRootPrivileges);
-
-        $permissions = $this->Acl->Aro->Permission->find('all', [
-            'conditions' => [
-                'Aro.foreign_key' => $this->Auth->user('usergroup_id'),
-            ],
-            'fields'     => [
-                'Aro.foreign_key',
-                'Permission.aco_id',
-            ],
-        ]);
-        $aros = Hash::combine($permissions, '{n}.Permission.aco_id', '{n}.Permission.aco_id');
-        unset($permissions);
-        $acos = $this->Acl->Aco->find('threaded', [
-            'recursive' => -1,
-        ]);
-        $permissions = [];
-        foreach ($acos as $usergroupAcos) {
-            foreach ($usergroupAcos['children'] as $controllerAcos) {
-                $controllerName = strtolower($controllerAcos['Aco']['alias']);
-                if (!strpos($controllerName, 'module')) {
-                    //Core
-                    foreach ($controllerAcos['children'] as $actionAcos) {
-                        //Check if the user group is allowd for $actionAcos action
-                        if (!isset($aros[$actionAcos['Aco']['id']])) {
-                            continue;
-                        }
-                        $actionName = strtolower($actionAcos['Aco']['alias']);
-                        $permissions[$controllerName][$actionName] = $actionName;
-                    }
-                } else {
-                    //Plugin / Module
-                    $pluginName = Inflector::underscore($controllerName);
-                    $pluginAcos = $controllerAcos;
-                    foreach ($pluginAcos['children'] as $controllerAcos) {
-
-                        $controllerName = strtolower($controllerAcos['Aco']['alias']);
+            $permissions = $this->Acl->Aro->Permission->find('all', [
+                'conditions' => [
+                    'Aro.foreign_key' => $this->Auth->user('usergroup_id'),
+                ],
+                'fields'     => [
+                    'Aro.foreign_key',
+                    'Permission.aco_id',
+                ],
+            ]);
+            $aros = Hash::combine($permissions, '{n}.Permission.aco_id', '{n}.Permission.aco_id');
+            unset($permissions);
+            $acos = $this->Acl->Aco->find('threaded', [
+                'recursive' => -1,
+            ]);
+            $permissions = [];
+            foreach ($acos as $usergroupAcos) {
+                foreach ($usergroupAcos['children'] as $controllerAcos) {
+                    $controllerName = strtolower($controllerAcos['Aco']['alias']);
+                    if (!strpos($controllerName, 'module')) {
+                        //Core
                         foreach ($controllerAcos['children'] as $actionAcos) {
                             //Check if the user group is allowd for $actionAcos action
                             if (!isset($aros[$actionAcos['Aco']['id']])) {
                                 continue;
                             }
                             $actionName = strtolower($actionAcos['Aco']['alias']);
-                            $permissions[$pluginName][$controllerName][$actionName] = $actionName;
+                            $permissions[$controllerName][$actionName] = $actionName;
+                        }
+                    } else {
+                        //Plugin / Module
+                        $pluginName = Inflector::underscore($controllerName);
+                        $pluginAcos = $controllerAcos;
+                        foreach ($pluginAcos['children'] as $controllerAcos) {
+
+                            $controllerName = strtolower($controllerAcos['Aco']['alias']);
+                            foreach ($controllerAcos['children'] as $actionAcos) {
+                                //Check if the user group is allowd for $actionAcos action
+                                if (!isset($aros[$actionAcos['Aco']['id']])) {
+                                    continue;
+                                }
+                                $actionName = strtolower($actionAcos['Aco']['alias']);
+                                $permissions[$pluginName][$controllerName][$actionName] = $actionName;
+                            }
                         }
                     }
                 }
             }
-        }
 
+            $SessionCache->set('MY_RIGHTS', array_unique($rights));
+            $SessionCache->set('MY_RIGHTS_LEVEL', $rights_levels);
+            $SessionCache->set('PERMISSIONS', $permissions);
+            $SessionCache->set('hasRootPrivileges', $this->hasRootPrivileges);
+        }
 
         if (!empty($this->Auth->user('paginatorlength'))) {
             $this->Paginator->settings['limit'] = $this->Auth->user('paginatorlength');
@@ -270,11 +271,12 @@ class AppController extends Controller {
         }
 
         $this->userLimit = (int)$this->Paginator->settings['limit'];
-        $this->MY_RIGHTS = array_unique($rights);
-        $this->MY_RIGHTS_LEVEL = $rights_levels;
-        $this->PERMISSIONS = $permissions;
+        $this->MY_RIGHTS = $SessionCache->get('MY_RIGHTS');
+        $this->MY_RIGHTS_LEVEL = $SessionCache->get('MY_RIGHTS_LEVEL');
+        $this->PERMISSIONS = $SessionCache->get('PERMISSIONS');
+        $this->hasRootPrivileges = $SessionCache->get('hasRootPrivileges');
         $this->set('hasRootPrivileges', $this->hasRootPrivileges);
-        $this->set('aclPermissions', $permissions);
+        $this->set('aclPermissions', $this->PERMISSIONS);
         $this->set('MY_RIGHTS_LEVEL', $this->MY_RIGHTS_LEVEL);
     }
 
@@ -284,22 +286,18 @@ class AppController extends Controller {
      */
 
     protected function _beforeAction() {
-        $this->systemsettings = $this->Systemsetting->findAsArray();
-
-
-        if ($this->Session->check('FRONTEND.SYSTEMNAME')) {
-            $this->systemname = $this->Session->read('FRONTEND.SYSTEMNAME');
-        } else {
-            $this->Session->write('FRONTEND.SYSTEMNAME', '');
-            $this->systemname = '';
-            if (isset($this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
-                $this->Session->write('FRONTEND.SYSTEMNAME', $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
-                $this->systemname = $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
-            }
+        $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
+        if ($SessionCache->isEmpty()) {
+            $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
         }
 
-        $this->exportRunningHeaderInfo = isset($this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING']) ? $this->systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes' : false;
+        $systemsettings = $SessionCache->get('systemsettings');
+        $this->systemname = $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
 
+        $this->exportRunningHeaderInfo = false;
+        if (isset($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'])) {
+            $this->exportRunningHeaderInfo = 'yes';
+        }
     }
 
     /**
@@ -324,9 +322,7 @@ class AppController extends Controller {
             $this->set('paging', $data);
         }
 
-        if (!$this->request->is('ajax')) {
-            $this->Frontend->setJson('localeStrings', $this->_localeStrings);
-        }
+
         $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
@@ -338,11 +334,19 @@ class AppController extends Controller {
         //Add Websocket Information
         if ($this->Auth->loggedIn()) {
             $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
+            $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
+            if ($SessionCache->isEmpty()) {
+                $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
+            }
+            $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
+
+
             if (!$this->Session->check('SUDO_SERVER.API_KEY')) {
                 $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
                 $this->Session->write('SUDO_SERVER.API_KEY', $key['Systemsetting']['value']);
             }
-            $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
+            $systemsettings = $SessionCache->get('systemsettings');
+            $this->Frontend->setJson('akey', $systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING']);
 
         }
 
@@ -352,120 +356,119 @@ class AppController extends Controller {
         $this->set('loggedIn', $this->Auth->loggedIn());
         $this->set('systemname', $this->systemname);
         //$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')
-        $menu = $this->Menu->compileMenu();
-        $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);
-        $this->set('menu', $menu);
 
-        $autoPageRefresh = $this->Systemsetting->findByKey("FRONTEND.AUTOMATIC_PAGE_REFRESH");
-        $autoPageRefreshTime = intval($autoPageRefresh['Systemsetting']['value']);
-        if (!empty($autoPageRefreshTime)) $this->response->header('Refresh', $autoPageRefreshTime);
+        if(!$this->isApiRequest() && !$this->isAngularJsRequest()) {
+            $menu = $this->Menu->compileMenu();
+            $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);
+            $this->set('menu', $menu);
 
-        if ($this->Auth->loggedIn() && $this->Auth->user('showstatsinmenu')) {
-            //Load stats overview for this user
-            $this->loadModel('Host');
-            $hoststatusCount = [
-                '1' => 0,
-                '2' => 0,
-            ];
-            $hoststatusCountResult = $this->Host->find('all', [
-                'conditions' => [
-                    'Host.disabled'                  => 0,
-                    'HostObject.is_active'           => 1,
-                    'HostsToContainers.container_id' => $this->MY_RIGHTS,
-                    'Hoststatus.current_state >'     => 0,
-                ],
-                'contain'    => [],
-                'fields'     => [
-                    'Hoststatus.current_state',
-                    'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
-                ],
-                'group'      => [
-                    'Hoststatus.current_state',
-                ],
-                'joins'      => [
-
-                    [
-                        'table'      => 'nagios_objects',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostObject',
-                        'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+            if ($this->Auth->loggedIn() && $this->Auth->user('showstatsinmenu')) {
+                //Load stats overview for this user
+                $this->loadModel('Host');
+                $hoststatusCount = [
+                    '1' => 0,
+                    '2' => 0,
+                ];
+                $hoststatusCountResult = $this->Host->find('all', [
+                    'conditions' => [
+                        'Host.disabled'                  => 0,
+                        'HostObject.is_active'           => 1,
+                        'HostsToContainers.container_id' => $this->MY_RIGHTS,
+                        'Hoststatus.current_state >'     => 0,
                     ],
-
-                    [
-                        'table'      => 'nagios_hoststatus',
-                        'type'       => 'INNER',
-                        'alias'      => 'Hoststatus',
-                        'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                    'contain'    => [],
+                    'fields'     => [
+                        'Hoststatus.current_state',
+                        'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
                     ],
+                    'group'      => [
+                        'Hoststatus.current_state',
+                    ],
+                    'joins'      => [
 
-                    [
-                        'table'      => 'hosts_to_containers',
-                        'alias'      => 'HostsToContainers',
-                        'type'       => 'INNER',
-                        'conditions' => [
-                            'HostsToContainers.host_id = Host.id',
+                        [
+                            'table'      => 'nagios_objects',
+                            'type'       => 'INNER',
+                            'alias'      => 'HostObject',
+                            'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                        ],
+
+                        [
+                            'table'      => 'nagios_hoststatus',
+                            'type'       => 'INNER',
+                            'alias'      => 'Hoststatus',
+                            'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                        ],
+
+                        [
+                            'table'      => 'hosts_to_containers',
+                            'alias'      => 'HostsToContainers',
+                            'type'       => 'INNER',
+                            'conditions' => [
+                                'HostsToContainers.host_id = Host.id',
+                            ],
                         ],
                     ],
-                ],
-            ]);
-            foreach ($hoststatusCountResult as $hoststatus) {
-                $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
+                ]);
+                foreach ($hoststatusCountResult as $hoststatus) {
+                    $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
+                }
+
+                $this->loadModel('Service');
+                $servicestatusCount = [
+                    '1' => 0,
+                    '2' => 0,
+                    '3' => 0,
+                ];
+                $servicestatusCountResult = $this->Host->find('all', [
+                    'conditions' => [
+                        'Service.disabled'               => 0,
+                        'Servicestatus.current_state >'  => 0,
+                        'ServiceObject.is_active'        => 1,
+                        'HostsToContainers.container_id' => $this->MY_RIGHTS,
+
+                    ],
+                    'contain'    => [],
+                    'fields'     => [
+                        'Servicestatus.current_state',
+                        'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
+                    ],
+                    'group'      => [
+                        'Servicestatus.current_state',
+                    ],
+                    'joins'      => [
+                        [
+                            'table'      => 'hosts_to_containers',
+                            'type'       => 'INNER',
+                            'alias'      => 'HostsToContainers',
+                            'conditions' => 'HostsToContainers.host_id = Host.id',
+                        ],
+                        [
+                            'table'      => 'services',
+                            'type'       => 'INNER',
+                            'alias'      => 'Service',
+                            'conditions' => 'Service.host_id = Host.id',
+                        ],
+                        [
+                            'table'      => 'nagios_objects',
+                            'type'       => 'INNER',
+                            'alias'      => 'ServiceObject',
+                            'conditions' => 'ServiceObject.name2 = Service.uuid',
+                        ],
+                        [
+                            'table'      => 'nagios_servicestatus',
+                            'type'       => 'INNER',
+                            'alias'      => 'Servicestatus',
+                            'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                        ],
+                    ],
+                ]);
+                foreach ($servicestatusCountResult as $servicestatus) {
+                    $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
+                }
+
+                $this->set(compact(['hoststatusCount', 'servicestatusCount']));
             }
-
-            $this->loadModel('Service');
-            $servicestatusCount = [
-                '1' => 0,
-                '2' => 0,
-                '3' => 0,
-            ];
-            $servicestatusCountResult = $this->Host->find('all', [
-                'conditions' => [
-                    'Service.disabled'               => 0,
-                    'Servicestatus.current_state >'  => 0,
-                    'ServiceObject.is_active'        => 1,
-                    'HostsToContainers.container_id' => $this->MY_RIGHTS,
-
-                ],
-                'contain'    => [],
-                'fields'     => [
-                    'Servicestatus.current_state',
-                    'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
-                ],
-                'group'      => [
-                    'Servicestatus.current_state',
-                ],
-                'joins'      => [
-                    [
-                        'table'      => 'hosts_to_containers',
-                        'type'       => 'INNER',
-                        'alias'      => 'HostsToContainers',
-                        'conditions' => 'HostsToContainers.host_id = Host.id',
-                    ],
-                    [
-                        'table'      => 'services',
-                        'type'       => 'INNER',
-                        'alias'      => 'Service',
-                        'conditions' => 'Service.host_id = Host.id',
-                    ],
-                    [
-                        'table'      => 'nagios_objects',
-                        'type'       => 'INNER',
-                        'alias'      => 'ServiceObject',
-                        'conditions' => 'ServiceObject.name2 = Service.uuid',
-                    ],
-                    [
-                        'table'      => 'nagios_servicestatus',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicestatus',
-                        'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-                    ],
-                ],
-            ]);
-            foreach ($servicestatusCountResult as $servicestatus) {
-                $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
-            }
-
-            $this->set(compact(['hoststatusCount', 'servicestatusCount']));
         }
 
 
@@ -482,31 +485,16 @@ class AppController extends Controller {
             }
         }
 
-        $this->checkForUpdates();
+        if(!$this->isApiRequest() && !$this->isAngularJsRequest()) {
+            $this->checkForUpdates();
 
-        // @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
-        // which has the effect that passing data to the frontend from Controller::beforeRender
-        // won't work.
-        $this->Frontend->beforeRender($this);
+            // @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
+            // which has the effect that passing data to the frontend from Controller::beforeRender
+            // won't work.
+            $this->Frontend->beforeRender($this);
+        }
 
         parent::beforeRender();
-    }
-
-    /**
-     * Adds locale strings to be used in the frontend
-     *
-     * @param string [...]
-     *
-     * @return void
-     */
-    protected function _addLocaleStrings() {
-        $strings = func_get_args();
-        if (isset($strings[0]) && is_array($strings[0])) {
-            $strings = $strings[0];
-        }
-        foreach ($strings as $string) {
-            $this->_localeStrings[$string] = __($string, true);
-        }
     }
 
     /**
@@ -564,10 +552,10 @@ class AppController extends Controller {
      */
     public function setFlash($message, $success = true, $key = 'flash', $autoHide = true) {
         $successClass = $success;
-        if($success === true){
+        if ($success === true) {
             $successClass = 'success';
         }
-        if($success === false){
+        if ($success === false) {
             $successClass = 'danger';
         }
 
@@ -671,6 +659,9 @@ class AppController extends Controller {
      *    not enabled.
      */
     public function invokeAction(CakeRequest $request) {
+        if ($this->isApiRequest() || $this->isAngularJsRequest()) {
+            $result = parent::invokeAction($request);
+        }
         $result = parent::invokeAction($request);
 
         // Set the additional links for each controller!
@@ -701,6 +692,7 @@ class AppController extends Controller {
         }
 
         return $result; // Return what was returned before
+
     }
 
     /**
@@ -792,7 +784,7 @@ class AppController extends Controller {
                     return true;
                 }
 
-                if ($this->isApiRequest()) {
+                if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
                     throw new ForbiddenException('403 Forbidden');
                 }
 
@@ -807,7 +799,7 @@ class AppController extends Controller {
                 return true;
             }
 
-            if ($this->isApiRequest()) {
+            if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
                 throw new ForbiddenException('403 Forbidden');
             }
 
@@ -847,6 +839,19 @@ class AppController extends Controller {
         return $MY_WRITE_RIGHTS;
     }
 
+    protected function hasPermission($action = null, $controller = null, $plugin = null) {
+        //return false;
+        if ($plugin === null) {
+            $plugin = Inflector::classify($this->params['plugin']);
+        }
+
+        if ($plugin === null || $plugin === '') {
+            return isset($this->PERMISSIONS[$controller][$action]);
+        }
+
+        return isset($this->PERMISSIONS[$plugin][$controller][$action]);
+    }
+
     public function render403($options = []) {
         $_options = [
             'headline' => __('Permission denied'),
@@ -884,8 +889,8 @@ class AppController extends Controller {
         return false;
     }
 
-    protected function isAngularJsRequest(){
-        if($this->isApiRequest()){
+    protected function isAngularJsRequest() {
+        if ($this->isApiRequest()) {
             return isset($this->request->query['angular']);
         }
         return false;
