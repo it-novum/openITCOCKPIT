@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -209,8 +211,10 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
-                                <i class="fa fa-lg fa-trash-o"></i>
-                                <?php echo __('Delete all'); ?>
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
                             </div>
                         </div>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

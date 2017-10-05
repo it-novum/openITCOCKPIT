@@ -591,6 +591,7 @@ class HostgroupsController extends AppController {
     }
 
     public function delete($id = null) {
+        $this->autoRender = false;
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -604,7 +605,6 @@ class HostgroupsController extends AppController {
 
         if (!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))) {
             $this->render403();
-
             return;
         }
         if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
@@ -621,12 +621,7 @@ class HostgroupsController extends AppController {
             if ($changelog_data) {
                 CakeLog::write('log', serialize($changelog_data));
             }
-            $this->setFlash(__('Hostgroup deleted'));
-            $this->redirect(['action' => 'index']);
         }
-
-        $this->setFlash(__('Could not delete hostgroup'), false);
-        $this->redirect(['action' => 'index']);
 
     }
 

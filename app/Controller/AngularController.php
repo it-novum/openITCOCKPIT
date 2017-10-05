@@ -31,4 +31,8 @@ class AngularController extends AppController {
         return;
     }
 
+    public function mass_delete(){
+        return;
+    }
+
 }

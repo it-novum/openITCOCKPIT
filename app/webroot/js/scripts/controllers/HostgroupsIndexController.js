@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
+        $scope.deleteUrl = '/hostgroups/delete/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -67,11 +68,30 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.hostgroups){
+                for(var id in selectedObjects){
+                    if(id == $scope.hostgroups[key].Hostgroup.id){
+                        objects[id] = $scope.hostgroups[key].Container.name;
+                    }
+
+                }
+            }
+            return objects;
+        };
+
         $scope.changepage = function(page){
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.deleteSelected = function(){
+            console.log('Delete');
+            console.log();
         };
 
 
@@ -87,6 +107,7 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
+
 
 
     });

@@ -1508,3 +1508,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	vertical-align: baseline!important;
 	border-radius: .25em!important;
 }
+
+.bg-color-danger {
+	background: #d95450;
+}

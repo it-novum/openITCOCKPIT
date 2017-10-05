@@ -28,7 +28,8 @@ $config = [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
         'always_allowed' => [
             'Angular' => [
-                'paginator'
+                'paginator',
+                'mass_delete'
             ],
             'Commands'         => [
                 'sortByCommandType',
