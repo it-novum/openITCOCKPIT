@@ -24,7 +24,7 @@
 //	confirmation.
 ?>
 <?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-<div class="row">
+<div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-sitemap fa-fw "></i>
@@ -44,6 +44,11 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
                         <?php if ($this->Acl->hasPermission('add')): ?>
                             <a href="/hostgroups/add" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
@@ -215,6 +220,12 @@
                                     <i class="fa fa-lg fa-trash-o"></i>
                                     <?php echo __('Delete all'); ?>
                                 </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ng-href="{{ linkForPdf() }}" class="a-clean">
+                                    <i class="fa fa-lg fa-file-pdf-o"></i>
+                                    <?php echo __('List as PDF'); ?>
+                                </a>
                             </div>
                         </div>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>

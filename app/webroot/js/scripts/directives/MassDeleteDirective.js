@@ -32,8 +32,6 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                         }
 
                     });
-
-
                 }
             };
 

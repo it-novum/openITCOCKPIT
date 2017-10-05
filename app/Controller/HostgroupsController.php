@@ -739,120 +739,41 @@ class HostgroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
-        foreach (func_get_args() as $hostgroupId) {
-            if ($this->Hostgroup->exists($hostgroupId)) {
-                $hostgroup = $this->Hostgroup->find('first', [
-                    'contain'    => [
-                        'Container',
-                        'Host',
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $hostgroupId,
-                    ],
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))) {
-                    if ($this->Container->delete($hostgroup['Hostgroup']['container_id'], true)) {
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
-                            $this->params['action'],
-                            $this->params['controller'],
-                            $hostgroupId,
-                            OBJECT_HOSTGROUP,
-                            $hostgroup['Container']['parent_id'],
-                            $userId,
-                            $hostgroup['Container']['name'],
-                            $hostgroup
-                        );
-                        if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
-                        }
-                    }
-                }
-            }
-        }
-        $this->setFlash(__('Hostgroups deleted'));
-        $this->redirect(['action' => 'index']);
-    }
-
     public function listToPdf() {
-        $args = func_get_args();
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $conditions = [
-            'Container.parent_id' => $containerIds,
+        $this->layout = 'Admin.default';
+
+        $HostgroupFilter = new HostgroupFilter($this->request);
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+                'Host'         => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid'
+                    ],
+                ]
+            ],
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
         ];
-
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $hostgroup_ids = $args;
-                end($hostgroup_ids);
-                $last_key = key($hostgroup_ids);
-                unset($hostgroup_ids[$last_key]);
-
-                $_conditions = [
-                    'Hostgroup.id' => $hostgroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            } else {
-                $hostgroup_ids = $args;
-
-                $_conditions = [
-                    'Hostgroup.id' => $hostgroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            }
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
         }
 
-        $hostgroups = $this->Hostgroup->find('all', [
-            'conditions' => $conditions,
-            'fields'     => [
-                'Hostgroup.description',
-                'Container.name',
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields' => [
-                        'Host.name',
-                        'Host.uuid',
-                    ],
-                ],
-                'Container',
-            ],
-        ]);
+        $hostgroups = $this->Hostgroup->find('all', $query);
 
+
+        $hostgroupHostCount = 0;
         foreach ($hostgroups as $hgKey => $hostgroup) {
             $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
-
-            foreach ($hostgroupHostUuids as $hKey => $hostgroupHostUuid) {
-                $hoststatus = $this->Objects->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'name1'         => $hostgroupHostUuid,
-                        'objecttype_id' => 1,
-                    ],
-                    'fields'     => [
-                        'Hoststatus.current_state',
-                        'Hoststatus.is_flapping',
-                        'Hoststatus.problem_has_been_acknowledged',
-                        'Hoststatus.scheduled_downtime_depth',
-                        'Hoststatus.last_state_change',
-                        'Hoststatus.last_check',
-                        'Hoststatus.next_check',
-                    ],
-                    'joins'      => [
-                        [
-                            'table'      => 'nagios_hoststatus',
-                            'type'       => 'LEFT OUTER',
-                            'alias'      => 'Hoststatus',
-                            'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                        ],
-                    ],
-                ]);
-                $hostgroups[$hgKey]['Host'][$hKey]['Hoststatus'] = $hoststatus;
-            }
+            $hostgroupHostCount += count($hostgroupHostUuids);
+            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids);
+            $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
-        $hostgroupCount = Hash::apply($hostgroups, '{n}.Hostgroup', 'count');
-        $hostgroupHostCount = Hash::apply($hostgroups, '{n}.Host.{n}', 'count');
+
+        $hostgroupCount = count($hostgroups);
         $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
 
         $filename = 'Hostgroups_' . strtotime('now') . '.pdf';

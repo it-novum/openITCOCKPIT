@@ -180,7 +180,6 @@ $config = [
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
                 'edit'     => ['loadHosts', 'loadHosttemplates'],
-                'delete'   => ['mass_delete'],
             ],
             'Hosts'                 => [
                 'index'      => ['getHostByAjax', 'listToPdf'],

@@ -82,6 +82,13 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        $scope.linkForPdf = function(){
+            var baseUrl = '/hostgroups/listToPdf.pdf';
+            baseUrl += '?filter[Container.name]=' + encodeURI($scope.filter.container.name);
+            baseUrl += '&filter[Hostgroup.description]=' + encodeURI($scope.filter.hostgroup.description);
+            return baseUrl;
+        };
+
         $scope.changepage = function(page){
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
