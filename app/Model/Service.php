@@ -861,7 +861,7 @@ class Service extends AppModel {
         ]);
 
         $formattedServices = [];
-        if(!empty($servicesIncluding) && is_array($servicesIncluding[0])){
+        if(!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])){
             foreach($servicesIncluding as $serviceIncluding){
                 $formattedServices[] = $serviceIncluding['id'];
             }
@@ -901,7 +901,7 @@ class Service extends AppModel {
             ]);
 
             if(!empty($selectedServices)){
-                $services = array_merge($selectedServices, $services);
+                $services = array_merge($services, $selectedServices);
             }
         }
 

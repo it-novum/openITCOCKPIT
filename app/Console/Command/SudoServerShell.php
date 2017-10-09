@@ -23,26 +23,27 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require APP.'/Vendor/Ratchet/vendor/autoload.php';
+//require APP.'/Vendor/Ratchet/vendor/autoload.php';
+use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use Ratchet\Http\HttpServer;
+use React\Socket\Server;
+use React\Socket\Server as Reactor;
 
-require_once APP.'/Lib/SudoMessageInterface.php';
+require_once APP . '/Lib/SudoMessageInterface.php';
 
 App::import('Model', 'Export');
 
 //public $tasks = array('WriteConfiguration');
 
-class SudoServerShell extends AppShell
-{
+class SudoServerShell extends AppShell {
 
     public $uses = [MONITORING_EXTERNALCOMMAND, MONITORING_NAGIOSTAT, 'Systemsetting', 'Export'];
     //public $tasks = ['NagiosExport'];
     //public $tasks = ['SudoWorker'];
 
-    public function main()
-    {
+    public function main() {
         Configure::load('nagios');
 
         App::uses('Folder', 'Utility');
@@ -92,13 +93,11 @@ class SudoServerShell extends AppShell
         }
     }
 
-    public function _welcome()
-    {
+    public function _welcome() {
         //Disable CakePHP welcome messages
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'daemon'       => ['short' => 'd', 'help' => __d('oitc_console', 'Starts SudoServer in daemon mode, instead of as a forground process')],
@@ -114,8 +113,7 @@ class SudoServerShell extends AppShell
         return $parser;
     }
 
-    public function daemonizing()
-    {
+    public function daemonizing() {
         $this->_systemCheck();
         if ($this->status()) {
             $this->out('<error>SudoServer already running</error>');
@@ -137,13 +135,12 @@ class SudoServerShell extends AppShell
         chmod($this->pidFile, 0000);
 
         $this->stdout->styles('green', ['text' => 'green']);
-        $this->out('<green>Finished daemonizing... [My PID = '.$SudoServerPid.']</green>');
+        $this->out('<green>Finished daemonizing... [My PID = ' . $SudoServerPid . ']</green>');
     }
 
-    public function status()
-    {
+    public function status() {
         foreach ($this->_getPid() as $pid) {
-            exec('ps -eaf |grep '.escapeshellarg($pid).' |grep -v grep', $output);
+            exec('ps -eaf |grep ' . escapeshellarg($pid) . ' |grep -v grep', $output);
             foreach ($output as $line) {
                 if (preg_match('#.*app/Console/cake.php -working .*/app sudo_server (-d|--daemon|--restart)#', $line)) {
                     return true;
@@ -158,8 +155,7 @@ class SudoServerShell extends AppShell
         return false;
     }
 
-    private function _getPid()
-    {
+    private function _getPid() {
         $return = [];
         if (file_exists($this->pidFile)) {
             $pids = file($this->pidFile);
@@ -174,8 +170,7 @@ class SudoServerShell extends AppShell
         return $return;
     }
 
-    public function stop($exit = true)
-    {
+    public function stop($exit = true) {
         if (!$this->status()) {
             $this->out("<info>Notice: SudoServer isn't running!</info>");
             if ($exit) {
@@ -223,8 +218,7 @@ class SudoServerShell extends AppShell
         return true;
     }
 
-    public function restart()
-    {
+    public function restart() {
         if ($this->stop(false)) {
             sleep(1);
             $this->daemonizing();
@@ -234,14 +228,12 @@ class SudoServerShell extends AppShell
     /*
      * Pacemaker likes this function, we dont know why :)
      */
-    public function probe()
-    {
+    public function probe() {
         echo "restart\n";
         exit(0);
     }
 
-    private function _systemCheck()
-    {
+    private function _systemCheck() {
         if (!function_exists('pcntl_fork')) {
             $this->out('<error>Error: PHP function "pcntl_fork()" not found or is disabled for security reasons. Please check your php.ini</error>');
             exit(3);
@@ -264,8 +256,7 @@ class SudoServerShell extends AppShell
 
     }
 
-    private function _bootstrap()
-    {
+    private function _bootstrap() {
         $this->Systemsetting->getDataSource()->reconnect();
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
@@ -293,34 +284,30 @@ class SudoServerShell extends AppShell
 
 
         $SudoInterface = new SudoMessageInterface($this);
+
         $loop = React\EventLoop\Factory::create();
         $loop->addPeriodicTimer(0.01, [$SudoInterface, 'eventLoop']);
 
-        $webSock = new React\Socket\Server($loop);
-        $webSock->listen(8081, '0.0.0.0');
-
-        $webServer = new Ratchet\Server\IoServer(
-            new Ratchet\Http\HttpServer(
-                new Ratchet\WebSocket\WsServer(
-                    $SudoInterface
-                )
+        $Server = new IoServer(
+            new HttpServerSize(
+                new WsServer($SudoInterface)
             ),
-            $webSock
+            new Reactor(sprintf('%s:%s', '0.0.0.0', 8081), $loop),
+            $loop
         );
+
         try {
-            $loop->run();
+            $Server->run();
         } catch (Exception $e) {
             debug($e);
         }
     }
 
-    public function createSocket()
-    {
+    public function createSocket() {
         return socket_create(AF_UNIX, SOCK_DGRAM, 0);
     }
 
-    public function bindSocket()
-    {
+    public function bindSocket() {
         if (!is_dir($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'])) {
             mkdir($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET']);
         }
@@ -329,8 +316,8 @@ class SudoServerShell extends AppShell
 
         $this->deleteSocket();
 
-        socket_bind($this->socket, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME']);
-        if (file_exists($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'])) {
+        socket_bind($this->socket, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME']);
+        if (file_exists($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'])) {
             $this->setFilePermissions();
 
             return true;
@@ -339,29 +326,25 @@ class SudoServerShell extends AppShell
         }
     }
 
-    function deleteSocket()
-    {
-        if (file_exists($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'])) {
-            unlink($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME']);
+    function deleteSocket() {
+        if (file_exists($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'])) {
+            unlink($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME']);
         }
     }
 
-    public function setFolderPermissions()
-    {
+    public function setFolderPermissions() {
         chown($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'], $this->_systemsettings['WEBSERVER']['WEBSERVER.USER']);
         chgrp($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'], $this->_systemsettings['MONITORING']['MONITORING.GROUP']);
         chmod($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'], $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.FOLDERPERMISSIONS']);
     }
 
-    public function setFilePermissions()
-    {
-        chown($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['WEBSERVER']['WEBSERVER.USER']);
-        chgrp($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['MONITORING']['MONITORING.GROUP']);
-        chmod($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKETPERMISSIONS']);
+    public function setFilePermissions() {
+        chown($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['WEBSERVER']['WEBSERVER.USER']);
+        chgrp($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['MONITORING']['MONITORING.GROUP']);
+        chmod($this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET_NAME'], $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKETPERMISSIONS']);
     }
 
-    public function sendToWorkerSocket($data = [])
-    {
+    public function sendToWorkerSocket($data = []) {
         /*$data = [
             'task' => $task,
             //'sourceTask' => $task,
@@ -370,23 +353,21 @@ class SudoServerShell extends AppShell
             'requestor' => $this->requestor,
         ];*/
         $data = json_encode($data);
-        if (!socket_sendto($this->sudoWorkerSocket, $data, strlen($data), 0, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.WORKERSOCKET_NAME'])) {
-            $this->out(__('Could not connect to UNIX socket ').$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.WORKERSOCKET_NAME']);
+        if (!socket_sendto($this->sudoWorkerSocket, $data, strlen($data), 0, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.WORKERSOCKET_NAME'])) {
+            $this->out(__('Could not connect to UNIX socket ') . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.WORKERSOCKET_NAME']);
         }
     }
 
-    public function sendToResponseSocket($data = [])
-    {
+    public function sendToResponseSocket($data = []) {
         $socket = socket_create(AF_UNIX, SOCK_DGRAM, 0);
         $data = json_encode($data);
-        if (!socket_sendto($socket, $data, strlen($data), 0, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.RESPONSESOCKET_NAME'])) {
-            $this->out(__('Could not connect to UNIX socket ').$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'].$this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.RESPONSESOCKET_NAME']);
+        if (!socket_sendto($socket, $data, strlen($data), 0, $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.RESPONSESOCKET_NAME'])) {
+            $this->out(__('Could not connect to UNIX socket ') . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.SOCKET'] . $this->_systemsettings['SUDO_SERVER']['SUDO_SERVER.RESPONSESOCKET_NAME']);
         }
         unset($socket);
     }
 
-    function sigchld_handler($signal)
-    {
+    function sigchld_handler($signal) {
         //Get the dead child pid and clean up the zombie process
         $dead_child_pid = pcntl_wait($status, WNOHANG);
         // Dieser Child muss neu erstellt werden!

@@ -55,17 +55,17 @@ class SystemdowntimesController extends AppController {
 
     public function index() {
         $paginatorLimit = $this->Paginator->settings['limit'];
-        $requestSettings = $this->Systemdowntime->listSettings($this->request, $paginatorLimit);
+        $requestSettings = $this->Systemdowntime->listSettings($this->request,$paginatorLimit);
 
         if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
+            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'],$requestSettings['conditions']);
         } else {
             $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
         }
 
         $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
+        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'],$requestSettings['conditions']);
+        $this->Paginator->settings = Hash::merge($this->Paginator->settings,$requestSettings['default']);
 
         $all_systemdowntimes = $this->Paginator->paginate();
         foreach ($all_systemdowntimes as $dKey => $systemdowntime) {
@@ -106,13 +106,19 @@ class SystemdowntimesController extends AppController {
 
         }
 
-        $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
-        $this->set('all_systemdowntimes', $all_systemdowntimes);
-        $this->set('paginatorLimit', $paginatorLimit);
+        $this->set('DowntimeListsettings',$requestSettings['Listsettings']);
+        $this->set('all_systemdowntimes',$all_systemdowntimes);
+        $this->set('paginatorLimit',$paginatorLimit);
     }
 
     public function addHostdowntime() {
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['host_id'])){
+            $selected[] = $this->request->params['named']['host_id'];
+        }
+      
+        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
@@ -137,15 +143,15 @@ class SystemdowntimesController extends AppController {
             }
 
         }
-        $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
 
+        $hosts = $this->Host->getAjaxHosts($writeContainerIds, [], $selected);
         $this->set(compact(['hosts', 'selected']));
         $this->set('back_url', $this->referer());
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
-                $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
+                $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
             $this->request->data = $this->_rewritePostData();
             //Try validate the data:
@@ -188,6 +194,7 @@ class SystemdowntimesController extends AppController {
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'host') {
+
                             $host = $this->Host->find('first', [
                                 'recursive'  => -1,
                                 'fields'     => [
@@ -205,19 +212,19 @@ class SystemdowntimesController extends AppController {
                                 'comment'      => $request['Systemdowntime']['comment'],
                                 'author'       => $this->Auth->user('full_name'),
                             ];
-                            $this->GearmanClient->sendBackground('createHostDowntime', $payload);
+                            $this->GearmanClient->sendBackground('createHostDowntime',$payload);
                         }
                     }
                 } else {
-                    $this->setFlash(__('Downtime could not be saved'), false);
+                    $this->setFlash(__('Downtime could not be saved'),false);
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
-                    $this->CustomValidationErrors->customFields(['from_date', 'from_time', 'to_date', 'to_time', 'downtimetype']);
+                    $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     return;
                 }
             }
             $this->setFlash(__('Downtime successfully saved'));
-            $this->redirect(['controller' => 'downtimes', 'action' => 'index']);
+            $this->redirect(['controller' => 'downtimes','action' => 'index']);
         }
     }
 
@@ -246,13 +253,13 @@ class SystemdowntimesController extends AppController {
             }
 
         }
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($writeContainerIds, 'list', 'id');
-        $this->set(compact(['hostgroups', 'selected']));
-        $this->set('back_url', $this->referer());
+        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($writeContainerIds,'list','id');
+        $this->set(compact(['hostgroups','selected']));
+        $this->set('back_url',$this->referer());
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
-                $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
+                $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
             $this->request->data = $this->_rewritePostData();
             //Try validate the data:
@@ -295,7 +302,7 @@ class SystemdowntimesController extends AppController {
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'hostgroup') {
-                            $hostgroup = $this->Hostgroup->find('first', [
+                            $hostgroup = $this->Hostgroup->find('first',[
                                 'recursive'  => -1,
                                 'conditions' => [
                                     'Hostgroup.id' => $request['Systemdowntime']['object_id'],
@@ -319,21 +326,24 @@ class SystemdowntimesController extends AppController {
                     }
 
                 } else {
-                    $this->setFlash(__('Downtime could not be saved'), false);
+                    $this->setFlash(__('Downtime could not be saved'),false);
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
-                    $this->CustomValidationErrors->customFields(['from_date', 'from_time', 'to_date', 'to_time', 'downtimetype']);
+                    $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     return;
                 }
             }
             $this->setFlash(__('Downtime successfully saved'));
-            $this->redirect(['controller' => 'downtimes', 'action' => 'index']);
+            $this->redirect(['controller' => 'downtimes','action' => 'index']);
         }
     }
 
     public function addServicedowntime() {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $selected = $this->request->data('Systemdowntime.object_id');
+        if(empty($selected) && !empty($this->request->params['named']['service_id'])){
+            $selected[] = $this->request->params['named']['service_id'];
+        }
 
         $customFildsToRefill = [
             'Systemdowntime' => [
@@ -356,16 +366,20 @@ class SystemdowntimesController extends AppController {
             }
 
         }
-        $services = $this->Service->servicesByHostContainerIds($writeContainerIds);
-        $services = Hash::combine($services, '{n}.Service.id', ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name');
 
-        $this->set(compact(['services', 'selected']));
-        $this->set('back_url', $this->referer());
+        $servicesNotFixed = $this->Service->getAjaxServices($writeContainerIds, [], $selected);
+        $services = [];
+        foreach($servicesNotFixed as $serviceNotFixed){
+            $services = array_merge($services, $serviceNotFixed);
+        }
+
+        $this->set(compact(['services','selected']));
+        $this->set('back_url',$this->referer());
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
-                $this->request->data['Systemdowntime']['weekdays'] = implode(',', $this->request->data['Systemdowntime']['weekdays']);
+                $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
 
             $this->request->data = $this->_rewritePostData();
@@ -412,6 +426,7 @@ class SystemdowntimesController extends AppController {
                         if ($request['Systemdowntime']['downtimetype'] == 'service') {
                             $service = $this->Service->findById($request['Systemdowntime']['object_id']);
                             $service = $this->Service->find('first', [
+
                                 'recursive'  => -1,
                                 'contain'    => [
                                     'Host' => [
@@ -435,20 +450,20 @@ class SystemdowntimesController extends AppController {
                                 'comment'     => $request['Systemdowntime']['comment'],
                                 'author'      => $this->Auth->user('full_name'),
                             ];
-                            $this->GearmanClient->sendBackground('createServiceDowntime', $payload);
+                            $this->GearmanClient->sendBackground('createServiceDowntime',$payload);
                         }
                     }
 
                 } else {
-                    $this->setFlash(__('Downtime could not be saved'), false);
+                    $this->setFlash(__('Downtime could not be saved'),false);
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
-                    $this->CustomValidationErrors->customFields(['from_date', 'from_time', 'to_date', 'to_time', 'downtimetype']);
+                    $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
 
                     return;
                 }
             }
-            $this->redirect(['controller' => 'downtimes', 'action' => 'service']);
+            $this->redirect(['controller' => 'downtimes','action' => 'service']);
         }
     }
 

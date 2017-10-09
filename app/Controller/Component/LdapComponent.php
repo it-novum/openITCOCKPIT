@@ -85,6 +85,10 @@ class LdapComponent extends Component
 
     public function login($username, $password)
     {
+        if(empty($username) || empty($password)){
+            return false;
+        }
+
         if (!is_resource($this->adldap)) {
             $this->connect();
         }

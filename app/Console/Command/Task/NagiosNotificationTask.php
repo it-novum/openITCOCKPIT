@@ -28,13 +28,12 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 class NagiosNotificationTask extends AppShell {
 
     public $uses = ['Rrd', 'Systemsetting', MONITORING_SERVICESTATUS];
-
     public function construct() {
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
         //Loading Cake libs
-        App::uses('CakeEmail', 'Network/Email');
-        App::uses('Folder', 'Utility');
+        App::uses('CakeEmail','Network/Email');
+        App::uses('Folder','Utility');
     }
 
     /*
@@ -86,8 +85,8 @@ class NagiosNotificationTask extends AppShell {
             $Email->emailFormat('html');
         }
 
-
         $Email->template('template-itn-std-host', 'template-itn-std-host')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings]);
+
 
         if (!$parameters['no-attachments']) {
             $Logo = new Logo();
@@ -118,7 +117,6 @@ class NagiosNotificationTask extends AppShell {
         if (!empty($replyToVal)) {
             $Email->replyTo([$replyToVal => $replyToVal]);
         }
-
 
         switch ($parameters['notificationtype']) {
             case 'CUSTOM':
@@ -199,7 +197,6 @@ class NagiosNotificationTask extends AppShell {
                 $hosttmpdir_path = '/tmp/' . $parameters['hostUuid'];
                 $hosttmpdir = new Folder($hosttmpdir_path, true, 0777);
 
-
                 $attachments['logo.png'] = [
                     'file'      => $Logo->getSmallLogoDiskPath(),
                     'mimetype'  => 'image/png',
@@ -212,6 +209,7 @@ class NagiosNotificationTask extends AppShell {
 
                     // generate and save filename to array
                     $dscount = $ds['ds'];
+
                     $parameters['graph_path'][$dscount] = '' . $hosttmpdir_path . '/mailgraph_' . $ds['ds'] . '_' . rand(1, 999999) . '.png';
 
                     // create graph
@@ -219,12 +217,14 @@ class NagiosNotificationTask extends AppShell {
 
                     $attachments['mailgraph_' . $dscount . '.png'] = ['file' => $parameters['graph_path'][$dscount], 'mimetype' => 'image/png', 'contentId' => '10' . $dscount];
 
+
                     $contentIDs[] = '10' . $dscount;
 
                 }
 
                 // read dir with graph files
                 $mailgraph_files = $hosttmpdir->find('.*\.png', true);
+
                 //print_r($mailgraph_files);
 
             } else {
@@ -242,9 +242,10 @@ class NagiosNotificationTask extends AppShell {
             } catch (Exception $e) {
                 $this->out($e->getMessage());
             }
+
         }
 
-        $Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars(['parameters' => $parameters, '_systemsettings' => $this->_systemsettings, 'contentIDs' => $contentIDs]);
+        $Email->template('template-itn-std-service','template-itn-std-service')->viewVars(['parameters' => $parameters,'_systemsettings' => $this->_systemsettings,'contentIDs' => $contentIDs]);
 
         //send template to mail address
         $Email->send();
@@ -265,6 +266,7 @@ class NagiosNotificationTask extends AppShell {
      */
 
     public function create_graph($output, $start, $title, $parameters, $ds) {
+
         $parameters['hostname'] = $this->replaceChars($parameters['hostname']);
         $parameters['servicedesc'] = $this->replaceChars($parameters['servicedesc']);
         $ds['label'] = $this->replaceChars($ds['label']);
@@ -289,9 +291,9 @@ class NagiosNotificationTask extends AppShell {
             }
         } catch (Exception $e) {
             $this->out($e->getMessage());
+
         }
     }
-
 
     private function replaceChars($str, $replacement = ' ') {
         return preg_replace('/[^a-zA-Z^0-9\-\.]/', $replacement, $str);

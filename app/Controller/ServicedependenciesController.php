@@ -146,16 +146,11 @@ class ServicedependenciesController extends AppController
 
             return;
         }
-        $serviceDependencyContainerIds = $this->Tree->resolveChildrenOfContainerIds($serviceDependencyContainerId);
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($serviceDependencyContainerId);
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
-        $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
-            'prefixHostname' => true,
-            'delimiter'      => '/',
-            'forOptiongroup' => true,
-        ]);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
+        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
+        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -165,11 +160,6 @@ class ServicedependenciesController extends AppController
 
                 $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
                 $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                    'prefixHostname' => true,
-                    'delimiter'      => '/',
-                    'forOptiongroup' => true,
-                ]);
                 $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             }
 
@@ -218,7 +208,18 @@ class ServicedependenciesController extends AppController
         }
 
         $this->request->data = Hash::merge($servicedependency, $this->request->data);
-        $this->set(compact(['servicedependency', 'services', 'servicegroups', 'timeperiods', 'containers']));
+        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Servicedependency']['Service']) ? $this->request->data['Servicedependency']['Service'] : []);
+        $services = [];
+        foreach($servicesNotFixed as $serviceNotFixed){
+            $services = array_merge($services, $serviceNotFixed);
+        }
+        $dependentServicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Servicedependency']['ServiceDependent']) ? $this->request->data['Servicedependency']['ServiceDependent'] : []);
+        $dependentServices = [];
+        foreach($dependentServicesNotFixed as $dependentServiceNotFixed){
+            $dependentServices = array_merge($dependentServices, $dependentServiceNotFixed);
+        }
+
+        $this->set(compact(['servicedependency', 'services', 'dependentServices', 'servicegroups', 'timeperiods', 'containers']));
     }
 
     public function add()
@@ -242,9 +243,11 @@ class ServicedependenciesController extends AppController
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
-        $services = [];
+        $services = $dependentServices = [];
         $servicegroups = [];
         $timeperiods = [];
+        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
+        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             App::uses('UUID', 'Lib');
@@ -261,7 +264,6 @@ class ServicedependenciesController extends AppController
             if ($this->Servicedependency->saveAll($this->request->data)) {
                 if ($isJsonRequest) {
                     $this->serializeId();
-
                     return;
                 } else {
                     $this->setFlash(__('Servicedependency successfully saved'));
@@ -270,7 +272,6 @@ class ServicedependenciesController extends AppController
             } else {
                 if ($isJsonRequest) {
                     $this->serializeErrorMessage();
-
                     return;
                 } else {
                     $this->setFlash(__('Servicedependency could not be saved'), false);
@@ -278,9 +279,16 @@ class ServicedependenciesController extends AppController
                     $containerId = $this->request->data('Servicedependency.container_id');
                     if ($containerId > 0) {
                         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-                        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-                            'forOptiongroup' => true,
-                        ]);
+                        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Servicedependency']['Service']) ? $this->request->data['Servicedependency']['Service'] : []);
+                        $services = [];
+                        foreach($servicesNotFixed as $serviceNotFixed){
+                            $services = array_merge($services, $serviceNotFixed);
+                        }
+                        $dependentServicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Servicedependency']['ServiceDependent']) ? $this->request->data['Servicedependency']['ServiceDependent'] : []);
+                        $dependentServices = [];
+                        foreach($dependentServicesNotFixed as $dependentServiceNotFixed){
+                            $dependentServices = array_merge($dependentServices, $dependentServiceNotFixed);
+                        }
                         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     }
@@ -290,6 +298,7 @@ class ServicedependenciesController extends AppController
 
         $this->set([
             'services'      => $services,
+            'dependentServices' => $dependentServices,
             'servicegroups' => $servicegroups,
             'timeperiods'   => $timeperiods,
             'containers'    => $containers,
@@ -333,9 +342,7 @@ class ServicedependenciesController extends AppController
             $this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
         );
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-            'forOptiongroup' => true,
-        ]);
+        $services = $this->Service->getAjaxServices($containerIds);
         $timeperiodContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
             false,
             $this->Constants->containerProperties(OBJECT_TIMEPERIOD)

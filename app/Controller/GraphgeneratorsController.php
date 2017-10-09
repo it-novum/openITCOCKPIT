@@ -281,17 +281,16 @@ class GraphgeneratorsController extends AppController
         $this->allowOnlyAjaxRequests();
 
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $host = $this->Host->hostsByContainerId($userContainerIds, 'first', ['Host.id' => $hostId]);
+        $host = $this->Host->hostsByContainerId($userContainerIds, 'first', ['Host.id' => $hostId], 'uuid');
 
         $_services = [];
         if (!empty($host)) {
             $_services = $this->Service->find('all', [
                 'conditions' => [
-                    'Service.host_id' => $host['Host']['id'],
+                    'Service.host_id' => $hostId,
                 ],
             ]);
         }
-
         $services = [];
         foreach ($_services as $service) {
             if ($this->Rrd->isValidHostAndServiceUuid($host['Host']['uuid'], $service['Service']['uuid'])) {

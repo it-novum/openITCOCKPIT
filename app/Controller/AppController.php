@@ -350,6 +350,10 @@ class AppController extends Controller {
         $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);
         $this->set('menu', $menu);
 
+        $autoPageRefresh = $this->Systemsetting->findByKey("FRONTEND.AUTOMATIC_PAGE_REFRESH");
+        $autoPageRefreshTime = intval($autoPageRefresh['Systemsetting']['value']);
+        if (!empty($autoPageRefreshTime)) $this->response->header('Refresh', $autoPageRefreshTime);
+
         if ($this->Auth->loggedIn() && $this->Auth->user('showstatsinmenu')) {
             //Load stats overview for this user
             $this->loadModel('Host');

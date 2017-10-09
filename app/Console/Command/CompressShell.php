@@ -23,8 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'Minify.php';
-require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'JS.php';
+//require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'Minify.php';
+//require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'JS.php';
 
 use MatthiasMullie\Minify;
 
