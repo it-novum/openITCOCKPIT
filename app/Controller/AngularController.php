@@ -35,4 +35,8 @@ class AngularController extends AppController {
         return;
     }
 
+    public function confirm_delete(){
+        return;
+    }
+
 }

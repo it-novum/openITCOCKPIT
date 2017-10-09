@@ -29,7 +29,8 @@ $config = [
         'always_allowed' => [
             'Angular' => [
                 'paginator',
-                'mass_delete'
+                'mass_delete',
+                'confirm_delete'
             ],
             'Commands'         => [
                 'sortByCommandType',

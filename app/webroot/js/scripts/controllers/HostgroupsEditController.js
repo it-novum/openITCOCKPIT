@@ -16,6 +16,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.id = QueryStringService.getCakeId();
+
+        $scope.deleteUrl = "/hostgroups/delete/"+$scope.id+".json?angular=true";
+        $scope.sucessUrl = '/hostgroups/index';
+
         $scope.init = true;
         $scope.load = function(){
             $http.get("/hostgroups/edit/"+$scope.id+".json", {
@@ -41,8 +45,6 @@ angular.module('openITCOCKPIT')
                 $scope.post.Container.parent_id = parseInt($scope.hostgroup.Container.parent_id, 10);
                 $scope.post.Hostgroup.description = $scope.hostgroup.Hostgroup.description;
                 $scope.post.Hostgroup.hostgroup_url = $scope.hostgroup.Hostgroup.hostgroup_url;
-                //$scope.loadHosts('');
-                //$scope.loadHosttemplates('');
                 $scope.init = false;
             });
         };
@@ -97,6 +99,8 @@ angular.module('openITCOCKPIT')
             });
 
         };
+
+
 
 
         $scope.$watch('post.Container.parent_id', function(){

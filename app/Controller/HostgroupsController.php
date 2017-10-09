@@ -599,7 +599,6 @@ class HostgroupsController extends AppController {
     }
 
     public function delete($id = null) {
-        $this->autoRender = false;
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -629,8 +628,15 @@ class HostgroupsController extends AppController {
             if ($changelog_data) {
                 CakeLog::write('log', serialize($changelog_data));
             }
-        }
 
+            $this->setFlash(__('Host group deleted successfully'));
+            $this->set('message', __('Host group deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete host group'));
+        $this->set('_serialize', ['message']);
     }
 
     public function mass_add($id = null) {

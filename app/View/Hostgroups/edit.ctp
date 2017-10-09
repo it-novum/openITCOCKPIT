@@ -36,13 +36,19 @@
     </div>
 </div>
 <div id="error_msg"></div>
+
+<confirm-delete></confirm-delete>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
         <h2><?php echo __('Edit Host Groups'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                DELETE
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(hostgroup)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -117,7 +123,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="hosts"
-                                callback="loadHosts",
+                                callback="loadHosts" ,
                                 ng-options="host.key as host.value for host in hosts"
                                 ng-model="post.Hostgroup.Host">
                         </select>
