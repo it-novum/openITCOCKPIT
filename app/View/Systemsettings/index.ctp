@@ -156,8 +156,6 @@
                                                                 $options = [
                                                                     '0' => 'Individual host',
                                                                     '1' => 'Host including services',
-                                                                    '2' => 'Host and dependent Hosts (triggered)',
-                                                                    '3' => 'Host and dependent Hosts (non-triggered)',
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
