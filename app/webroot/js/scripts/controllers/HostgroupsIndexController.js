@@ -38,7 +38,6 @@ angular.module('openITCOCKPIT')
                 $scope.paging = result.data.paging;
                 $scope.init = false;
             });
-
         };
 
         $scope.triggerFilter = function(){

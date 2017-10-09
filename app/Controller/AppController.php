@@ -660,7 +660,7 @@ class AppController extends Controller {
      */
     public function invokeAction(CakeRequest $request) {
         if ($this->isApiRequest() || $this->isAngularJsRequest()) {
-            $result = parent::invokeAction($request);
+            return parent::invokeAction($request);
         }
         $result = parent::invokeAction($request);
 

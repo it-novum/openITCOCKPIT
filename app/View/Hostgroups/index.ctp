@@ -65,7 +65,7 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Host Groups'); ?></h2>
-                    <?php if (!empty($all_hostgroups) && $this->Acl->hasPermission('extended')): ?>
+                    <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
                                 <a href="/hostgroups/extended"><i class="fa fa-plus-square"></i>

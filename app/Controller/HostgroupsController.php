@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
@@ -456,19 +457,12 @@ class HostgroupsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'Admin.default';
-        $userId = $this->Auth->user('id');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        if(!$this->isApiRequest()){
+            //Only ship HTML template for angular
+            return;
         }
 
-
-        $this->Frontend->set('data_placeholder_host', __('Please, start typing...'));
-        $this->Frontend->set('data_placeholder_hosttemplate', __('Please, choose host template'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
+        $userId = $this->Auth->user('id');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [];
@@ -549,28 +543,39 @@ class HostgroupsController extends AppController {
             }
         }
 
-        $hosts = [];
-        $hosttemplates = [];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Container.parent_id');
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-            $hosts = $this->Host->getAjaxHosts($containerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
-        $this->set(compact(['containers', 'hosts', 'hosttemplates']));
-        $this->set('_serialize', ['containers', 'hosts', 'hosttemplates']);
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set(compact(['containers']));
+        $this->set('_serialize', ['containers']);
     }
 
-    public function loadHosts($containerId = null) {
-        $this->allowOnlyAjaxRequests();
-
-        if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-        } else {
-            $containerIds = [ROOT_CONTAINER, $containerId];
+    public function loadHosts() {
+        if(!$this->isAngularJsRequest()){
+            throw new MethodNotAllowedException();
         }
-        $hosts = $this->Host->getAjaxHosts($containerIds, [], empty($this->request->data['addData']) ? [] : $this->request->data['addData']);
-        $hosts = $this->Host->makeItJavaScriptAble($hosts);
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($containerIds, $HostFilter, $selected)
+        );
 
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);

@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Host Groups'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -47,42 +47,94 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Hostgroup', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Container.parent_id', [
-                'options' => $this->Html->chosenPlaceholder($containers),
-                'class' => 'chosen',
-                'style' => 'width: 100%;',
-                'label' => __('Container'),
-                'SelectionMode' => 'single',
-            ]);
-            echo $this->Form->input('Container.name', ['label' => __('Host Group Name')]);
-            echo $this->Form->input('Hostgroup.description', ['label' => __('Description')]);
-            echo $this->Form->input('hostgroup_url', ['label' => __('Host Group URL')]);
-            echo $this->Form->input('Hostgroup.Host', [
-                'options' => $hosts,
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
-                'label' => __('Hosts'),
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#ContainerParentId',
-            ]);
-            echo $this->Form->input('Hostgroup.Hosttemplate', [
-                'options' => $hosttemplates,
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
-                'label' => __('Host templates'),
-                'data-placeholder' => __('Please choose a host template')
-            ]);
-            ?>
-            <br/>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+
+                    <div class="form-group required">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+
+                            <select
+                                    id="HostgroupParentContainer"
+                                    data-placeholder="Choose a Category"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Container.parent_id" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Host group name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Container.name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="post.Hostgroup.description">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Host group URL'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="post.Hostgroup.hostgroup_url">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Hosts'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="HostgroupHosts"
+                                    multiple
+                                    data-placeholder="Choose a Category"
+                                    class="form-control"
+                                    chosen="hosts"
+                                    callback="loadHosts"
+                                    ng-options="host.key as host.value for host in hosts"
+                                    ng-model="post.Hostgroup.Host" >
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Host templates'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <a href="/hostgroups" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
