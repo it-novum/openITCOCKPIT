@@ -15,11 +15,10 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
             var callback = false;
             if(attrs.callback){
                 callback = attrs.callback;
-                console.log(callback);
             }
 
             var unwatchModel = $scope.$watch(attrs.ngModel, function(){
-                //element.trigger('chosen:updated');
+                element.trigger('chosen:updated');
             });
 
             var unwatchSource = $scope.$watchCollection(attrs.chosen, function(){
@@ -51,6 +50,11 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
             if(attrs.hasOwnProperty('multiple') === true){
                 defaultOptions['select_all_buttons'] = true;
             }
+
+            if(callback){
+                defaultOptions['no_results_text'] = 'Search for ';
+            }
+
             element.chosen(defaultOptions);
 
 

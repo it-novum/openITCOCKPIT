@@ -28,7 +28,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosts = function(searchString){
-            console.log($scope.post.Hostgroup.Host);
             $http.get("/hostgroups/loadHosts.json", {
                 params: {
                     'angular': true,

@@ -58,7 +58,7 @@
 
                             <select
                                     id="HostgroupParentContainer"
-                                    data-placeholder="Choose a Category"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
@@ -105,7 +105,7 @@
                             <select
                                     id="HostgroupHosts"
                                     multiple
-                                    data-placeholder="Choose a Category"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hosts"
                                     callback="loadHosts"
