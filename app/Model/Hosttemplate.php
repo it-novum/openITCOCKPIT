@@ -499,8 +499,7 @@ class Hosttemplate extends AppModel
             $selectedHosttemplates = $this->find('list', $query);
         }
 
-        $hosttemplates = Hash::merge($selectedHosttemplates, $hosttemplatesWithLimit);
-        $hosttemplates = array_unique($hosttemplates);
+        $hosttemplates = $hosttemplatesWithLimit + $selectedHosttemplates;
         asort($hosttemplates, SORT_FLAG_CASE|SORT_NATURAL);
         return $hosttemplates;
     }

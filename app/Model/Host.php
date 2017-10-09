@@ -350,7 +350,8 @@ class Host extends AppModel {
                     ],
                 ],
                 'conditions' => [
-                    'Host.id' => $selected
+                    'Host.id' => $selected,
+                    'HostsToContainers.container_id' => $containerIds
                 ],
                 'order'      => [
                     'Host.name' => 'ASC',
@@ -359,8 +360,7 @@ class Host extends AppModel {
             $selectedHosts = $this->find('list', $query);
         }
 
-        $hosts = Hash::merge($selectedHosts, $hostsWithLimit);
-        $hosts = array_unique($hosts);
+        $hosts = $hostsWithLimit + $selectedHosts;
         asort($hosts, SORT_FLAG_CASE|SORT_NATURAL);
         return $hosts;
     }
