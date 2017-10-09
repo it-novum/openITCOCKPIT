@@ -529,6 +529,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'FRONTEND.PRESELECTED_DOWNTIME_OPTION',
+                    'value'   => '0',
+                    'info'    => 'Set preselected Host downtime options individual',
+                    'section' => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'CHECK_MK.BIN',
                     'value'   => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
                     'info'    => 'Path to check_mk binary',

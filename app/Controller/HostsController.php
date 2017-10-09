@@ -206,13 +206,13 @@ class HostsController extends AppController {
                 'Hoststatus.scheduled_downtime_depth'      => [
                     'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
                         [
-                            '0' => [
+                            '1' => [
                                 'name'  => 'Downtime',
                                 'value' => 1,
                                 'label' => 'In Downtime',
                                 'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
                             ],
-                            '1' => [
+                            '0' => [
                                 'name'  => 'Not in Downtime',
                                 'value' => 1,
                                 'label' => 'Not in Downtime',
@@ -298,13 +298,15 @@ class HostsController extends AppController {
         $this->set('all_hosts', $all_hosts);
         $this->set('_serialize', ['all_hosts']);
 
-
         $this->set('username', $User->getFullName());
         $this->set('userRights', $this->MY_RIGHTS);
         $this->set('myNamedFilters', $this->request->data);
 
         $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+
+        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
 
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
@@ -2478,7 +2480,10 @@ class HostsController extends AppController {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        $this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+
+        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
     }
 
     /**
