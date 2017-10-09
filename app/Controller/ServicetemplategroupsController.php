@@ -364,18 +364,14 @@ class ServicetemplategroupsController extends AppController
                             $service['Service']['host_id'] = $host['Host']['id'];
                             $service['Service']['servicetemplate_id'] = $servicetemplate['Servicetemplate']['id'];
                             //$service['Host'] = $host['Host'];
-
                             $service['Service']['Contact'] = $servicetemplate['Contact'];
                             $service['Service']['Contactgroup'] = $servicetemplate['Contactgroup'];
-
                             $service['Contact']['Contact'] = [];
                             $service['Contactgroup']['Contactgroup'] = [];
                             $service['Servicegroup']['Servicegroup'] = [];
-
                             $service['Contact']['Contact'] = $service['Contact'];
                             $service['Contactgroup']['Contactgroup'] = $service['Contactgroup'];
                             $data_to_save = $this->Service->prepareForSave([], $service, 'add');
-
                             $this->Service->create();
                             if ($this->Service->saveAll($data_to_save)) {
                                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -401,16 +397,13 @@ class ServicetemplategroupsController extends AppController
                 $this->setFlash(__('Invalide hostgroup'), false);
             }
         }
-
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-
         if ($this->hasRootPrivileges === true) {
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
         }
-
         $this->Frontend->setJson('servicetemplategroup_id', $servicetemplategroup['Servicetemplategroup']['id']);
         $this->Frontend->setJson('service_exists', __('Service already exist on selected host. Tick the box to create duplicate.'));
         $this->Frontend->setJson('service_disabled', __('Service already exist on selected host but is disabled. Tick the box to create duplicate.'));
@@ -418,10 +411,11 @@ class ServicetemplategroupsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
+
     public function allocateToMatchingHostgroup($servicetemplategroup_id)
     {
         if (!$this->Servicetemplategroup->exists($servicetemplategroup_id)) {
-            throw new NotFoundException(__('Invalid hostgroup'));
+            throw new NotFoundException(__('Invalid service template group'));
         }
 
         $userId = $this->Auth->user('id');
@@ -474,6 +468,12 @@ class ServicetemplategroupsController extends AppController
             ],
         ];
         $hostgroup = $this->Hostgroup->find('first', $query);
+
+        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))) {
+            $this->render403();
+            return;
+        }
+
         if (empty($hostgroup)) {
             $this->setFlash(__('Could not found any hostgroup matching to %s', $servicetemplategroup['Container']['name']), false);
             $this->redirect(['action' => 'index']);
@@ -599,7 +599,19 @@ class ServicetemplategroupsController extends AppController
 
         $servicetemplategroup = $this->Servicetemplategroup->findById($servicetemplategroup_id);
         $servicetemplategroup['Servicetemplate'] = Hash::sort($servicetemplategroup['Servicetemplate'], '{n}.name', 'asc');
-        $hostgroup = $this->Hostgroup->findById($id_hostgroup);
+
+        $hostgroup = $this->Hostgroup->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Hostgroup.id' => $id_hostgroup,
+                'Container.parent_id' => $this->MY_RIGHTS
+            ]
+        ]);
+
+
         $hosts = [];
         foreach ($hostgroup['Host'] as $host) {
             //Find host + Services

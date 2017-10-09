@@ -49,9 +49,11 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
+
         if (empty($grafanaConfiguration)) {
-            $this->out('<error>No Grafana configuration found</error>');
+            throw new RuntimeException('No Grafana configuration found');
         }
+
         $this->GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $this->out('Check Connection to Grafana');
         $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $this->Proxy->getSettings());
