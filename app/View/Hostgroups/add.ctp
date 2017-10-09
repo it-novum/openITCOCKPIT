@@ -50,12 +50,11 @@
             <form ng-submit="submit();" class="form-horizontal">
                 <div class="row">
 
-                    <div class="form-group required">
+                    <div class="form-group required" ng-class="{'has-error': errors.Container.parent_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
                         <div class="col col-xs-10">
-
                             <select
                                     id="HostgroupParentContainer"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -64,10 +63,13 @@
                                     ng-options="container.key as container.value for container in containers"
                                     ng-model="post.Container.parent_id" >
                             </select>
+                            <div ng-repeat="error in errors.Container.parent_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group required">
+                    <div class="form-group required" ng-class="{'has-error': errors.Container.name}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Host group name'); ?>
                         </label>
@@ -76,6 +78,9 @@
                                     class="form-control"
                                     type="text"
                                     ng-model="post.Container.name">
+                            <div ng-repeat="error in errors.Container.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
 
@@ -120,7 +125,16 @@
                             <?php echo __('Host templates'); ?>
                         </label>
                         <div class="col col-xs-10">
-                            <input class="form-control" type="text">
+                            <select
+                                    id="HostgroupHosttemplates"
+                                    multiple
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hosttemplates"
+                                    callback="loadHosttemplates"
+                                    ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
+                                    ng-model="post.Hostgroup.Hosttemplate" >
+                            </select>
                         </div>
                     </div>
 
@@ -128,7 +142,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="/hostgroups" class="btn btn-default">Cancel</a>
+                                <a href="/hostgroups/index" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>

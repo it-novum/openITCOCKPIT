@@ -4,12 +4,12 @@ angular.module('openITCOCKPIT')
 
         $scope.post = {
             Container: {
-                name: null,
-                parent_id: null
+                name: '',
+                parent_id: 0
             },
             Hostgroup: {
-                description: null,
-                hostgroup_url: null,
+                description: '',
+                hostgroup_url: '',
                 Host: [],
                 Hosttemplate: []
             }
@@ -37,8 +37,34 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
-
             });
+        };
+
+        $scope.loadHosttemplates = function(searchString){
+            $http.get("/hostgroups/loadHosttemplates.json", {
+                params: {
+                    'angular': true,
+                    'containerId': $scope.post.Container.parent_id,
+                    'filter[Hosttemplate.name]': searchString,
+                    'selected[]': $scope.post.Hostgroup.Hosttemplate
+                }
+            }).then(function(result){
+                $scope.hosttemplates = result.data.hosttemplates;
+            });
+        };
+
+        $scope.submit = function(){
+            $http.post("/hostgroups/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                console.log('Data saved successfully');
+                window.location.href = '/hostgroups/index';
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+
         };
 
 
@@ -47,6 +73,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.loadHosts('');
+            $scope.loadHosttemplates('');
         }, true);
 
         $scope.load();

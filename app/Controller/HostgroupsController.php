@@ -25,6 +25,7 @@
 
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
@@ -462,9 +463,8 @@ class HostgroupsController extends AppController {
             return;
         }
 
-        $userId = $this->Auth->user('id');
-
         if ($this->request->is('post') || $this->request->is('put')) {
+            $userId = $this->Auth->user('id');
             $ext_data_for_changelog = [];
             App::uses('UUID', 'Lib');
             if ($this->request->data('Hostgroup.Host')) {
@@ -526,17 +526,15 @@ class HostgroupsController extends AppController {
                 }
 
                 if ($this->request->ext == 'json') {
+                    if($this->isAngularJsRequest()){
+                        $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
+                    }
                     $this->serializeId();
-
                     return;
                 }
-
-                $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-                $this->redirect(['action' => 'index']);
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('Could not save data'), false);
@@ -582,15 +580,23 @@ class HostgroupsController extends AppController {
     }
 
     public function loadHosttemplates($containerId = null) {
-        $this->allowOnlyAjaxRequests();
+        if(!$this->isAngularJsRequest()){
+            throw new MethodNotAllowedException();
+        }
 
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $HosttemplateFilter = new HosttemplateFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
-        } else {
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
         }
-        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
+
+        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble(
+            $this->Hosttemplate->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
+        );
+
         $this->set(compact(['hosttemplates']));
         $this->set('_serialize', ['hosttemplates']);
     }

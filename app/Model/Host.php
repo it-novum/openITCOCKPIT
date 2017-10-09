@@ -360,6 +360,7 @@ class Host extends AppModel {
         }
 
         $hosts = Hash::merge($selectedHosts, $hostsWithLimit);
+        $hosts = array_unique($hosts);
         asort($hosts, SORT_FLAG_CASE|SORT_NATURAL);
         return $hosts;
     }

@@ -752,6 +752,9 @@ class AppController extends Controller {
      * REST API functionality
      */
     protected function serializeErrorMessage() {
+        if($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
         $name = Inflector::singularize($this->name);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));

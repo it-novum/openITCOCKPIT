@@ -199,6 +199,8 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
             <div ui-view>
                 <?php
                 //Remove this line if ui-router is in use!!
+                echo $this->Flash->render();
+                echo $this->Flash->render('auth');
                 echo $content_for_layout;
                 ?>
             </div>
