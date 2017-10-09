@@ -508,17 +508,26 @@ class SystemdowntimesController extends AppController {
 
                 switch ($request['Systemdowntime']['inherit_downtime']) {
                     case 0:
-                        //only hosts in the selected containers will be considered
+                        //only hosts in the selected containers will be considered (also wich are shared in these containers)
                         $result = $this->Host->find('all', [
                             'recursive'  => -1,
                             'conditions' => [
-                                'Host.container_id' => $request['Systemdowntime']['object_id'],
-                                'Host.disabled'     => 0,
+                                'Host.disabled'           => 0,
+                                'Containers.container_id' => $request['Systemdowntime']['object_id']
                             ],
                             'fields'     => [
                                 'Host.uuid'
+                            ],
+                            'joins'      => [
+                                [
+                                    'table'      => 'hosts_to_containers',
+                                    'type'       => 'LEFT',
+                                    'alias'      => 'Containers',
+                                    'conditions' => 'Containers.host_id = Host.id',
+                                ],
                             ]
                         ]);
+                        
                         if (!empty($result)) {
                             $hostUuids[] = Hash::extract($result, '{n}.Host.uuid');
                         }
@@ -619,7 +628,7 @@ class SystemdowntimesController extends AppController {
 
                             $payload = [
                                 'containerId'      => $request['Systemdowntime']['object_id'],
-                                'hostUuids'        => isset($allHostUuids[$key])?$allHostUuids[$key]:[],
+                                'hostUuids'        => isset($allHostUuids[$key]) ? $allHostUuids[$key] : [],
                                 'inherit_downtime' => $request['Systemdowntime']['inherit_downtime'],
                                 'downtimetype'     => $request['Systemdowntime']['downtimetype_id'],
                                 'start'            => $start,
@@ -670,7 +679,7 @@ class SystemdowntimesController extends AppController {
 
     private function _rewritePostData() {
         /*
-        why we need this function? The problem is, may be a user want to save the downtime for more that one hast. the array we get from $this->reuqest->data looks like this:
+        why we need this function? The problem is, may be a user want to save the downtime for more that one host. the array we get from $this->request->data looks like this:
             array(
                 'Systemdowntime' => array(
                     'downtimetype' => 'host',
@@ -690,7 +699,7 @@ class SystemdowntimesController extends AppController {
                 )
             )
 
-        the big problem is the object_id, rthis thorws us an "Array to string conversion". So we need to rewirte the post array fo some like this:
+        the big problem is the object_id, this throws us an "Array to string conversion". So we need to rewrite the post array fo some like this:
 
         array(
             (int) 0 => array(
