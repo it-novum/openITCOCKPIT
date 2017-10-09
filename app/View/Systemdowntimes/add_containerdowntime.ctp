@@ -79,6 +79,7 @@
                         'label'     => ['text' => __('Maintenance period for'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                         'class'     => 'chosen col col-xs-12',
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                        'selected'  => $preselectedDowntimetype
                     ]);
                     echo $this->Form->input('comment', [
                         'value'     => __('In maintenance'),

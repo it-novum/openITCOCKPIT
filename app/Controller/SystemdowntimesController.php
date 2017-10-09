@@ -116,7 +116,7 @@ class SystemdowntimesController extends AppController {
         if(empty($selected) && !empty($this->request->params['named']['host_id'])){
             $selected[] = $this->request->params['named']['host_id'];
         }
-      
+
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
         $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
 
@@ -493,7 +493,8 @@ class SystemdowntimesController extends AppController {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
-        $this->set(compact('containers', 'selected'));
+        $preselectedDowntimetype=$this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION")['Systemsetting']['value'];
+        $this->set(compact('containers', 'selected', 'preselectedDowntimetype'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
@@ -542,7 +543,7 @@ class SystemdowntimesController extends AppController {
                                 ],
                             ]
                         ]);
-                        
+
                         if (!empty($result)) {
                             $hostUuids[] = Hash::extract($result, '{n}.Host.uuid');
                         }
