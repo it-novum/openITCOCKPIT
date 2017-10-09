@@ -540,7 +540,12 @@ class HostgroupsController extends AppController {
                 $this->setFlash(__('Could not save data'), false);
             }
         }
+    }
 
+    public function loadContainers(){
+        if(!$this->isAngularJsRequest()){
+            throw new MethodNotAllowedException();
+        }
 
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
@@ -550,7 +555,7 @@ class HostgroupsController extends AppController {
         $containers = $this->Container->makeItJavaScriptAble($containers);
 
 
-        $this->set(compact(['containers']));
+        $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);
     }
 

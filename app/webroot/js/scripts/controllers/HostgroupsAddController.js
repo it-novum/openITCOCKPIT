@@ -17,7 +17,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.load = function(){
-            $http.get("/hostgroups/add.json", {
+            $http.get("/hostgroups/loadContainers.json", {
                 params: {
                     'angular': true
                 }

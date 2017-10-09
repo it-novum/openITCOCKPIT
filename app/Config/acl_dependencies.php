@@ -178,8 +178,8 @@ $config = [
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
-                'edit'     => ['loadHosts', 'loadHosttemplates'],
+                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
                 'index'      => ['getHostByAjax', 'listToPdf'],
