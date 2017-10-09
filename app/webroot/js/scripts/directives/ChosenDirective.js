@@ -42,7 +42,7 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
 
                         oldTimeout = $timeout(function(){
                             $scope[callback](searchString);
-                        }, 250);
+                        }, 500);
                     }
                 }
             };
