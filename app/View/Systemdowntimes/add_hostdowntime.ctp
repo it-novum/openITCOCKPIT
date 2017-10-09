@@ -55,8 +55,6 @@
                     $hostdowntimetyps = [
                         0 => __('Individual host'),
                         1 => __('Host including services'),
-                        2 => __('Host and dependent Hosts (triggered)'),
-                        3 => __('Host and dependent Hosts (non-triggered)'),
                     ];
 
                     echo $this->CustomValidationErrors->errorHTML('downtimetype', [
