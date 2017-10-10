@@ -45,7 +45,6 @@ angular.module('openITCOCKPIT').directive('serverTime', function($http, $timeout
                     }
 
                     $scope.runClocks();
-
                 });
             };
 
@@ -63,7 +62,7 @@ angular.module('openITCOCKPIT').directive('serverTime', function($http, $timeout
         },
 
         link: function(scope, element, attr){
-
+            jQuery(element).find("[rel=tooltip]").tooltip();
         }
     };
 });

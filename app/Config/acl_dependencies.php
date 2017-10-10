@@ -31,7 +31,8 @@ $config = [
                 'paginator',
                 'mass_delete',
                 'confirm_delete',
-                'user_timezone'
+                'user_timezone',
+                'version_check'
             ],
             'Commands'         => [
                 'sortByCommandType',

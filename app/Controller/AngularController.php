@@ -63,4 +63,26 @@ class AngularController extends AppController {
         $this->set('_serialize', ['timezone']);
     }
 
+    public function version_check(){
+        if(!$this->isApiRequest()){
+            //Only ship HTML template
+            return;
+        }
+
+        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $availableVersion = '???';
+        if (file_exists($path)) {
+            require_once $path;
+            $availableVersion = openITCOCKPIT_AvailableVersion::get();
+        }
+        Configure::load('version');
+        $newVersionAvailable = false;
+        if(version_compare($availableVersion, Configure::read('version')) > 0 && $this->hasRootPrivileges){
+            $newVersionAvailable = true;
+        }
+
+        $this->set('newVersionAvailable', $newVersionAvailable);
+        $this->set('_serialize', ['newVersionAvailable']);
+    }
+
 }

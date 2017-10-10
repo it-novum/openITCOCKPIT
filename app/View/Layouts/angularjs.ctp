@@ -30,8 +30,10 @@ if ($sideMenuClosed) {
 
 $scripts = [
     'vendor/jquery/dist/jquery.min.js',
+    'vendor/jqueryui/jquery-ui.min.js',
+    'vendor/bootstrap/dist/js/bootstrap.min.js',
     'vendor/angular/angular.min.js',
-    'vendor/angular-ui-router/release/angular-ui-router.min.js'
+    'vendor/angular-ui-router/release/angular-ui-router.min.js',
 ];
 
 App::uses('Folder', 'Utility');
@@ -216,5 +218,12 @@ echo $this->element('shortcuts');
 <div id="scroll-top-container">
     <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
 </div>
+
+<?php printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), 'smartadmin/js/app.js'); ?>
+<script>
+    $(document).ready(function(){
+        pageSetUp();
+    });
+</script>
 </body>
 </html>

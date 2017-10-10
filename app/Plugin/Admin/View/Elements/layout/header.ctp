@@ -27,37 +27,45 @@
 <header id="header">
     <div id="logo-group">
         <span id="logo"><?php echo $systemname; ?></span>
-        <?php if ($loggedIn): ?>
     </div>
 
-    <div class="pull-right">
-        <div class="btn-header pull-right">
-            <span> <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
-                      rel="tooltip" data-container="body"><i class="fa fa-sign-out"></i></a> </span>
-        </div>
-        <div id="show_shortcuts" class="btn-header pull-right hidden-mobile hidden-tablet" data-toggle="modal"
-             data-target="#ShortcutsHelp">
-            <span> <a href="javascript:void(0);" data-original-title="<?php echo __('Keyboard shortcuts'); ?>"
-                      data-placement="left" rel="tooltip" data-container="body"><i
-                            class="fa fa-keyboard-o"></i></a> </span>
-        </div>
-        <div id="hide-menu" class="btn-header pull-right">
-            <span> <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>"
-                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-arrow-circle-left"></i></a> </span>
-        </div>
-        <div class="btn-header pull-right">
-            <span> <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                      data-placement="left" rel="tooltip" data-container="body"><i class="fa fa-retweet" id="i-export-running-checker"></i></a></span>
-        </div>
-        <server-time></server-time>
-        <?php
-        if (version_compare($availableVersion, $installedVersion) > 0 && $hasRootPrivileges === true): ?>
-            <div class="btn-header pull-right hidden-mobile hidden-tablet">
-                <span> <a href="/packetmanager/index" data-original-title="<?php echo __('New version available!'); ?>"
-                          data-placement="left" rel="tooltip" data-container="body"><i
-                                class="txt-color-blue fa fa-fire"></i></a> </span>
+    <?php if ($loggedIn): ?>
+        <div class="pull-right">
+            <div class="btn-header pull-right">
+            <span>
+                <a href="/login/logout" data-original-title="<?php echo __('Sign out'); ?>" data-placement="left"
+                   rel="tooltip" data-container="body">
+                    <i class="fa fa-sign-out"></i>
+                </a>
+            </span>
             </div>
-        <?php endif; ?>
-        <?php endif; ?>
-    </div>
+            <div id="show_shortcuts" class="btn-header pull-right hidden-mobile hidden-tablet" data-toggle="modal"
+                 data-target="#ShortcutsHelp">
+            <span>
+                <a href="javascript:void(0);" data-original-title="<?php echo __('Keyboard shortcuts'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body">
+                    <i class="fa fa-keyboard-o"></i>
+                </a>
+            </span>
+            </div>
+            <div id="hide-menu" class="btn-header pull-right">
+            <span>
+                <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body">
+                    <i class="fa fa-arrow-circle-left"></i>
+                </a>
+            </span>
+            </div>
+            <div class="btn-header pull-right">
+            <span>
+                <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body">
+                    <i class="fa fa-retweet" id="i-export-running-checker"></i>
+                </a>
+            </span>
+            </div>
+            <server-time></server-time>
+            <version-check></version-check>
+        </div>
+    <?php endif; ?>
 </header>

@@ -486,8 +486,6 @@ class AppController extends Controller {
         }
 
         if(!$this->isApiRequest() && !$this->isAngularJsRequest()) {
-            $this->checkForUpdates();
-
             // @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
             // which has the effect that passing data to the frontend from Controller::beforeRender
             // won't work.
@@ -907,19 +905,4 @@ class AppController extends Controller {
         return $this->request->ext === 'xml';
     }
 
-    public function checkForUpdates() {
-        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
-        $availableVersion = '???';
-        if (file_exists($path)) {
-            require_once $path;
-            $availableVersion = openITCOCKPIT_AvailableVersion::get();
-        }
-
-        Configure::load('version');
-
-        $this->set([
-            'availableVersion' => $availableVersion,
-            'installedVersion' => Configure::read('version'),
-        ]);
-    }
 }
