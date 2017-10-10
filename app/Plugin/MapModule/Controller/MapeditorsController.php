@@ -469,7 +469,6 @@ class MapeditorsController extends MapModuleAppController
         if (!empty($uuidsByItemType['servicegroup'])) {
             $servicegroupUuids = Hash::extract($uuidsByItemType['servicegroup'], '{n}.uuid');
             $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($servicegroupUuids);
-            //$mapstatus['servicegroupstatus'] = $servicegroups;
         }
 
         //get the Servicestatus
