@@ -37,7 +37,7 @@ class Timezone
     public static function getUserSystemOffset($userTimezone, $datetime = 'now')
     {
         if (strlen($userTimezone) < 2) {
-            //Empty database or empty cookie workaround to avoid completley broken page!
+            //Empty database or empty cookie workaround to avoid completely broken page!
             $userTimezone = "Europe/Berlin";
         }
         $d = new DateTime($userTimezone);

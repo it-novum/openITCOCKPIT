@@ -1517,3 +1517,9 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	text-decoration: none !important;
 	color:#333;
 }
+
+.server-clock {
+	font-weight:normal!important;
+	padding-left: 4px!important;
+	padding-right: 4px!important;
+}

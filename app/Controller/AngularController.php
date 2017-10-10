@@ -39,4 +39,28 @@ class AngularController extends AppController {
         return;
     }
 
+    public function user_timezone(){
+        if(!$this->isApiRequest()){
+            //Only ship HTML template
+            return;
+        }
+
+        $userTimezone = $this->Auth->user('timezone');
+        if(strlen($userTimezone) < 2){
+            $userTimezone = 'Europe/Berlin';
+        }
+        $UserTime = new DateTime($userTimezone);
+        $ServerTime = new DateTime();
+
+        $timezone = [
+            'user_timezone' => $userTimezone,
+            'user_offset' => $UserTime->getOffset(),
+            'server_time_utc' => time(),
+            'server_time' => date('F d, Y H:i:s'),
+            'server_timezone_offset' => $ServerTime->getOffset()
+        ];
+        $this->set('timezone', $timezone);
+        $this->set('_serialize', ['timezone']);
+    }
+
 }

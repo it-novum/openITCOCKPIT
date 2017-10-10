@@ -29,6 +29,7 @@ if ($sideMenuClosed) {
 }
 
 $scripts = [
+    'vendor/jquery/dist/jquery.min.js',
     'vendor/angular/angular.min.js',
     'vendor/angular-ui-router/release/angular-ui-router.min.js'
 ];
@@ -52,7 +53,7 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
     </title>
     <?php
     echo $this->Html->meta('icon');
-    echo $this->element('assets');
+    echo $this->element('assets_css');
 
     foreach ($scripts as $script):
         printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), $script);
@@ -69,7 +70,7 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
 <?php echo $this->element('Admin.layout/header') ?>
 <?php echo $this->element('Admin.layout/sidebar') ?>
 <div id="uglyDropdownMenuHack"></div>
-<div id="main" role="main">
+<div id="main" role="main" ng-controller="LayoutController">
     <div id="ribbon" class="hidden-mobile hidden-tablet">
         <span class="ribbon-button-alignment"></span>
         <ol class="breadcrumb">

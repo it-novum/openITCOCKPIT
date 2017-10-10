@@ -30,7 +30,8 @@ $config = [
             'Angular' => [
                 'paginator',
                 'mass_delete',
-                'confirm_delete'
+                'confirm_delete',
+                'user_timezone'
             ],
             'Commands'         => [
                 'sortByCommandType',
