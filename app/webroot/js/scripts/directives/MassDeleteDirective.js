@@ -20,18 +20,18 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                 var i = 0;
                 for(var id in $scope.objects){
 
-                    $http.post($scope.deleteUrl + id + ".json", {
-                    }).then(function(result){
-                        i++;
-                        $scope.percentage = Math.round(i/count*100);
+                    $http.post($scope.deleteUrl + id + ".json").then(
+                        function(result){
+                            i++;
+                            $scope.percentage = Math.round(i / count * 100);
 
-                        if(i === count){
-                            $scope.isDeleting = false;
-                            $scope.load();
-                            $('#angularMassDelete').modal('hide');
-                        }
+                            if(i === count){
+                                $scope.isDeleting = false;
+                                $scope.load();
+                                $('#angularMassDelete').modal('hide');
+                            }
 
-                    });
+                        });
                 }
             };
 
