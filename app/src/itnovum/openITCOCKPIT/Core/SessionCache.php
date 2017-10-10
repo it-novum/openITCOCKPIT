@@ -55,12 +55,13 @@ class SessionCache {
     public function __construct($name, SessionComponent $Session, $expire = 0) {
         $this->name = $name;
         $this->Session = $Session;
-        if($expire > 0){
-            $this->expire = time() + $expire;
-        }
+        $this->expire = (int)$expire;
 
-        if($this->isExpired()){
+        if ($this->isExpired()) {
             $this->flushCache();
+        }
+        if ($this->expire > 0 && !$this->has($this->expireKeyName)) {
+            $this->set($this->expireKeyName, time() + $this->expire);
         }
     }
 
@@ -68,23 +69,31 @@ class SessionCache {
      * @param string $key
      * @return string
      */
-    private function getKey($key){
+    private function getKey($key) {
         return sprintf('%s.%s', $this->name, $key);
     }
 
-    public function isEmpty(){
-        $data = $this->Session->check($this->name);
-        if($data === false){
+    public function isEmpty() {
+        $data = $this->Session->read($this->name);
+
+        if($data === null){
             return true;
         }
-        return empty($data);
+
+        if (sizeof($data) === 1 && isset($data[$this->expireKeyName])) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * @param string $key
      * @return bool
      */
-    public function has($key = ''){
+    public function has($key = '') {
+        if($this->isEmpty() === true){
+            return false;
+        }
         return $this->Session->check($this->getKey($key));
     }
 
@@ -92,7 +101,7 @@ class SessionCache {
      * @param string $key
      * @return mixed
      */
-    public function get($key){
+    public function get($key) {
         return $this->Session->read($this->getKey($key));
     }
 
@@ -100,7 +109,7 @@ class SessionCache {
      * @param string $key
      * @param mixed $value
      */
-    public function set($key, $value){
+    public function set($key, $value) {
         $this->Session->write($this->getKey($key), $value);
     }
 
@@ -108,13 +117,11 @@ class SessionCache {
      * @return bool
      */
     public function isExpired() {
-        if ($this->expire === 0) {
-            return false;
-        }
-
-        if ($this->has($this->expireKeyName)) {
-            if (time() > $this->get($this->expireKeyName)) {
-                return true;
+        if ($this->expire > 0) {
+            if ($this->has($this->expireKeyName)) {
+                if (time() > $this->get($this->expireKeyName)) {
+                    return true;
+                }
             }
         }
 
@@ -124,12 +131,12 @@ class SessionCache {
     /**
      * @return bool
      */
-    public function flushCache(){
+    public function flushCache() {
         $this->Session->delete($this->name);
     }
 
-    public function flushIfExpired(){
-        if($this->isExpired()){
+    public function flushIfExpired() {
+        if ($this->isExpired()) {
             $this->flushCache();
         }
     }

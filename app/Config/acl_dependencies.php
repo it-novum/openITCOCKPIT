@@ -32,7 +32,9 @@ $config = [
                 'mass_delete',
                 'confirm_delete',
                 'user_timezone',
-                'version_check'
+                'version_check',
+                'menustats',
+                'menu'
             ],
             'Commands'         => [
                 'sortByCommandType',
