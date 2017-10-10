@@ -489,7 +489,7 @@ class Mapeditor extends MapModuleAppModel
             $conditions = [
                 'Objects.name2' => $serviceUuid,
             ];
-            $servicegroupstatus[0]['Servicegroup']['Servicestatus'][$key] = $this->_servicestatus($conditions, $fields, true, 'first');
+            $servicegroupstatus['Servicestatus'][$serviceUuid] = $this->_servicestatus($conditions, $fields, true, 'first');
         }
 
         return $servicegroupstatus;
