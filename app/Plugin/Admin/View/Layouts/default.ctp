@@ -28,9 +28,13 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
+App::uses('Folder', 'Utility');
+$ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
+$appScripts = $ScriptsFolder->findRecursive('.*\.js');
+
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="openITCOCKPIT">
 <head>
     <!--[if IE]>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -44,6 +48,13 @@ if ($sideMenuClosed) {
     <?php
     echo $this->Html->meta('icon');
     echo $this->element('assets');
+
+    printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
+    printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
+    foreach ($appScripts as $appScript):
+        printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
+    endforeach;
+
     ?>
 </head>
 <body class="<?= $bodyClass ?>">
@@ -51,7 +62,7 @@ if ($sideMenuClosed) {
 <?php echo $this->element('Admin.layout/header') ?>
 <?php echo $this->element('Admin.layout/sidebar') ?>
 <div id="uglyDropdownMenuHack"></div>
-<div id="main" role="main">
+<div id="main" role="main" ng-controller="LayoutController">
     <div id="ribbon" class="hidden-mobile hidden-tablet">
         <span class="ribbon-button-alignment"></span>
         <ol class="breadcrumb">
@@ -63,104 +74,8 @@ if ($sideMenuClosed) {
             </li>
         </ol>
 
-
         <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
-            <div class="pull-right" style="padding-right: 25px;">
-                <ol class="menustats">
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'hosts',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Hoststatus.current_state[1]' => 1,
-                            'Filter.Hoststatus.current_state[2]' => 1,
-                            'sort' => 'Hoststatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" style="color:#bbb;">
-                            <i class="fa fa-hdd-o fa-lg" data-original-title="<?php echo __('Host status'); ?>"
-                               data-placement="bottom" rel="tooltip"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'hosts',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Hoststatus.current_state[1]' => 1,
-                            'sort' => 'Hoststatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" class="btn btn-danger btn-xs">
-                            <?php echo $hoststatusCount[1]; ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'hosts',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Hoststatus.current_state[2]' => 1,
-                            'sort' => 'Hoststatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" class="btn btn-default btn-xs">
-                            <?php echo $hoststatusCount[2]; ?>
-                        </a>
-                    </li>
-                </ol>
-                <ol class="menustats">
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'services',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Servicestatus.current_state[1]' => 1,
-                            'Filter.Servicestatus.current_state[2]' => 1,
-                            'Filter.Servicestatus.current_state[3]' => 1,
-                            'sort' => 'Servicestatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" style="color:#bbb;">
-                            <i class="fa fa-cog fa-lg" data-original-title="<?php echo __('Service status'); ?>"
-                               data-placement="bottom" rel="tooltip">
-                            </i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'services',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Servicestatus.current_state[1]' => 1,
-                            'sort' => 'Servicestatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" class="btn btn-warning btn-xs">
-                            <?php echo $servicestatusCount[1]; ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'services',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Servicestatus.current_state[2]' => 1,
-                            'sort' => 'Servicestatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" class="btn btn-danger btn-xs">
-                            <?php echo $servicestatusCount[2]; ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo Router::url([
-                            'controller' => 'services',
-                            'action' => 'index',
-                            'plugin' => '',
-                            'Filter.Servicestatus.current_state[3]' => 1,
-                            'sort' => 'Servicestatus.last_state_change',
-                            'direction' => 'desc'
-                        ]); ?>" class="btn btn-default btn-xs">
-                            <?php echo $servicestatusCount[3]; ?>
-                        </a>
-                    </li>
-                </ol>
-            </div>
+            <menustats></menustats>
         <?php endif; ?>
 
         <div class="pull-right">

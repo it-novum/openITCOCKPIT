@@ -41,7 +41,7 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return void
      */
-    baseComponents: ['ListFilter', 'ImageChooser', 'FileChooser', 'WebsocketSudo', 'Time'],
+    baseComponents: ['ListFilter', 'ImageChooser', 'FileChooser', 'WebsocketSudo'],
     ajaxSelectedHosts: [],
     ajaxSelectedServices: [],
 
@@ -54,7 +54,6 @@ Frontend.AppController = Frontend.Controller.extend({
         var self = this;
         this._dom = $('div.controller.' + this._frontendData.controller + '_' + this._frontendData.action);
         this.$ = this._dom.find.bind(this._dom);
-        this.Time.setup();
         var arrayOfItnAjax = {};
         var arrayOfMultiples = {};
         var arrayOfContainers = {};
