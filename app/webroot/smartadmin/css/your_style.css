@@ -1523,3 +1523,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	padding-left: 4px!important;
 	padding-right: 4px!important;
 }
+
+.menu-search-border{
+	border-bottom: 1px solid #525151;
+}

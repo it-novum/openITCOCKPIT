@@ -31,13 +31,24 @@
                    class="form-control pull-left"
                    id="filterMainMenu"
                    title="<?php echo __('If you type the menu will be instantly searched'); ?>&#10;<?php echo __('If you press return, the system will run a host search'); ?>"
+                   ng-model="menuFilter"
+                   ng-keydown="navigate($event)"
             />
             <a href="/search/index" class="form-control pull-right no-padding" id="searchMainMenu">
                 <i class="fa fa-search-plus"></i>
             </a>
         </div>
-        <div id="menuSearchResult"></div>
     </li>
+
+    <li ng-repeat="menuMatche in menuMatches" ng-show="menuMatches.length > 0"
+        ng-class="{'menu-search-border':$last, 'search_list_item_active':$index == menuFilterPosition}">
+        <a href="{{ menuMatche.url }}">
+            <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
+            <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
+        </a>
+    </li>
+
+
     <li ng-repeat="parentNode in menu" ng-class="{'open': isActiveParent(parentNode)}">
         <a href="{{ parentHref(parentNode) }}">
 

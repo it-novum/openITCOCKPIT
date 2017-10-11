@@ -94,6 +94,15 @@ angular.module('openITCOCKPIT', ['ui.router'])
         }
     })
 
+    .filter('highlight', function($sce) {
+        return function(title, searchString) {
+            if (searchString) title = title.replace(new RegExp('('+searchString+')', 'gi'),
+                '<span class="search-highlight">$1</span>')
+
+            return $sce.trustAsHtml(title)
+        }
+    })
+
     .run(function($rootScope, SortService){
 
         $rootScope.getSortClass = function(field){
