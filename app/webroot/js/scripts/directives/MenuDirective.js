@@ -18,27 +18,6 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
                     }
                 }).then(function(result){
                     $scope.menu = result.data.menu;
-
-                    $timeout(function(){
-                        $scope.menu = [
-                            {
-                                "url": "/",
-                                "title": "Foobar",
-                                "icon": "user",
-                                "order": 1,
-                                "children": [
-
-                                ],
-                                "url_array": {
-                                    "controller": "dashboards",
-                                    "action": "index",
-                                    "plugin": ""
-                                },
-                                "id": "dashboard"
-                            }
-                    ];
-                    }, 10000);
-
                 });
             };
 
@@ -92,7 +71,27 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
 
         },
 
-        link: function(scope, element, attr){
-        }
+        link: function($scope, element, attrs){
+            //Source: https://stackoverflow.com/a/24228604
+            //Many thanks!
+
+            // Trigger when number of children changes,
+            // including by directives like ng-repeat
+            var watch = $scope.$watch(function(){
+                return element.children().children().length;
+            }, function(){
+                // Wait for templates to render
+                $scope.$evalAsync(function(){
+                    // Finally, directives are evaluated
+                    // and templates are renderer here
+                    $(element).jarvismenu({
+                        accordion: true,
+                        speed: $.menu_speed,
+                        closedSign: '<em class="fa fa-plus-square-o"></em>',
+                        openedSign: '<em class="fa fa-minus-square-o"></em>'
+                    });
+                });
+            });
+        },
     };
 });

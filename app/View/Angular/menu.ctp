@@ -43,12 +43,12 @@
 
             <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>
-            <b class="collapse-sign" ng-show="parentNode.children.length > 0">
-                <em class="fa fa-plus-square-o" ng-hide="isActiveParent(parentNode)"></em>
-                <em class="fa fa-minus-square-o" ng-show="isActiveParent(parentNode)"></em>
+            <b class="collapse-sign" ng-if="parentNode.children.length > 0">
+                <em class="fa fa-plus-square-o" ng-if="!isActiveParent(parentNode)"></em>
+                <em class="fa fa-minus-square-o" ng-if="isActiveParent(parentNode)"></em>
             </b>
         </a>
-        <ul ng-show="parentNode.children.length > 0" style="{{ isActiveParentStyle(parentNode) }}">
+        <ul ng-if="parentNode.children.length > 0" style="{{ isActiveParentStyle(parentNode) }}">
             <li ng-repeat="childNode in parentNode.children" ng-class="{'active': isActiveChild(childNode)}">
                 <a href="{{ childNode.url }}">
                     <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
