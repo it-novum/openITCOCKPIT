@@ -88,11 +88,11 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
                     return;
                 }
 
-                if(keyCode === ARROW_KEY_DOWN && $scope.menuFilterPosition +1 < $scope.menuMatches.length){
+                if(keyCode === ARROW_KEY_DOWN && $scope.menuFilterPosition + 1 < $scope.menuMatches.length){
                     $scope.menuFilterPosition++;
                 }
 
-                if(keyCode === ARROW_KEY_UP && $scope.menuFilterPosition -1 >= 0){
+                if(keyCode === ARROW_KEY_UP && $scope.menuFilterPosition - 1 >= 0){
                     $scope.menuFilterPosition--;
                 }
 
@@ -113,6 +113,15 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
                 $scope.menuFilterPosition = -1;
                 searchString = searchString.toLowerCase();
                 for(var parentKey in $scope.menu){
+                    if($scope.menu[parentKey].children.length === 0){
+                        //Search parent records, that have no child elements
+                        var parentTitle = $scope.menu[parentKey].title.toLowerCase();
+                        if(parentTitle.match(searchString)){
+                            $scope.menuMatches.push($scope.menu[parentKey]);
+                        }
+                    }
+
+                    //Search in child items
                     for(var childKey in $scope.menu[parentKey].children){
                         var title = $scope.menu[parentKey].children[childKey].title.toLowerCase();
                         if(title.match(searchString)){
