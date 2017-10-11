@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('menu', function($http){
+angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
     return {
         restrict: 'A',
         templateUrl: '/angular/menu.html',
@@ -9,6 +9,8 @@ angular.module('openITCOCKPIT').directive('menu', function($http){
         },
 
         controller: function($scope){
+            $scope.currentMenu = [];
+
             $scope.load = function(){
                 $http.get("/angular/menu.json", {
                     params: {
@@ -16,6 +18,27 @@ angular.module('openITCOCKPIT').directive('menu', function($http){
                     }
                 }).then(function(result){
                     $scope.menu = result.data.menu;
+
+                    $timeout(function(){
+                        $scope.menu = [
+                            {
+                                "url": "/",
+                                "title": "Foobar",
+                                "icon": "user",
+                                "order": 1,
+                                "children": [
+
+                                ],
+                                "url_array": {
+                                    "controller": "dashboards",
+                                    "action": "index",
+                                    "plugin": ""
+                                },
+                                "id": "dashboard"
+                            }
+                    ];
+                    }, 10000);
+
                 });
             };
 
@@ -70,7 +93,6 @@ angular.module('openITCOCKPIT').directive('menu', function($http){
         },
 
         link: function(scope, element, attr){
-
         }
     };
 });
