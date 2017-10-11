@@ -39,15 +39,6 @@
                 </a>
             </span>
             </div>
-            <div id="show_shortcuts" class="btn-header pull-right hidden-mobile hidden-tablet" data-toggle="modal"
-                 data-target="#ShortcutsHelp">
-            <span>
-                <a href="javascript:void(0);" data-original-title="<?php echo __('Keyboard shortcuts'); ?>"
-                   data-placement="left" rel="tooltip" data-container="body">
-                    <i class="fa fa-keyboard-o"></i>
-                </a>
-            </span>
-            </div>
 
             <div class="btn-header pull-right">
             <span>
