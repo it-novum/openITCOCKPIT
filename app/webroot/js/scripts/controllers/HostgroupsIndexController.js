@@ -50,6 +50,7 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
+            $scope.undoSelection();
         };
 
         $scope.selectAll = function(){
@@ -106,6 +107,7 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
+            $scope.undoSelection();
             $scope.load();
         }, true);
 

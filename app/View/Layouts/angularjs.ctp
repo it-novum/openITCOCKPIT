@@ -34,7 +34,8 @@ $scripts = [
     'vendor/bootstrap/dist/js/bootstrap.min.js',
     'vendor/angular/angular.min.js',
     'vendor/angular-ui-router/release/angular-ui-router.min.js',
-    'js/lib/jquery-cookie.js'
+    'js/lib/jquery-cookie.js',
+    'js/vendor/chosen.jquery.min.js'
 ];
 
 App::uses('Folder', 'Utility');
