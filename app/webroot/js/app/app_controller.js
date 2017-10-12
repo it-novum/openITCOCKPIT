@@ -317,15 +317,16 @@ Frontend.AppController = Frontend.Controller.extend({
     },
 
     _updateHeaderExportRunning: function(){
-        if(this.getVar('exportRunningHeaderInfo')){
+        if(false){
             this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
             this.WebsocketSudo.connect();
 
             this.WebsocketSudo._success = function(e){
                 return true;
-            }.bind(this)
+            }.bind(this);
 
             this.WebsocketSudo._dispatcher = function(transmitted){
+                console.log(transmitted);
                 if(transmitted.running && !$('#i-export-running-checker').hasClass('fa-spin')){
                     $('#i-export-running-checker').removeClass('fa-retweet').addClass('fa-spin fa-refresh txt-color-red');
                 }else if(!transmitted.running && $('#i-export-running-checker').hasClass('fa-spin')){

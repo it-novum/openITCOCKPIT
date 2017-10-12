@@ -84,8 +84,6 @@ class SudoMessageInterface implements MessageComponentInterface
 
     public function eventLoop()
     {
-        $this->readSocket();
-
         $this->isExportRunning();
 
 
@@ -398,35 +396,6 @@ class SudoMessageInterface implements MessageComponentInterface
         //$this->process =
         //$this->pipes = $pipes;
         //$this->taskName = isset($options['task']) ? $options['task'] : '';
-    }
-
-
-    public function readSocket($len = 8192)
-    {
-        $buf = "";
-        socket_recv($this->Cake->socket, $buf, $len, MSG_DONTWAIT);
-        if ($buf !== null) {
-            $data = json_decode($buf);
-            $this->runSocketCommand($data);
-        }
-    }
-
-    public function runSocketCommand($data)
-    {
-
-        // Avoid "MySQL server has gone away"
-        $this->Cake->Systemsetting->getDatasource()->reconnect();
-
-        //debug($data);
-        switch ($data->task) {
-            case 'responseFromFork':
-                $old_requestor = $this->requestor;
-                $this->requestor = $data->requestor;
-                $this->send($data->payload->payload, $data->payload->type, $data->payload->task, $data->payload->category);
-                $this->requestor = $old_requestor;
-                break;
-
-        }
     }
 
     private function isExportRunning(){

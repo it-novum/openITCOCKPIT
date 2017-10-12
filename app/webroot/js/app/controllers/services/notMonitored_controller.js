@@ -27,14 +27,11 @@ App.Controllers.ServicesNotMonitoredController = Frontend.AppController.extend({
 
     $table: null,
 
-    components: ['Ajaxloader', 'Utils', 'Rrd', 'Masschange', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader'],
+    components: ['Ajaxloader', 'Utils', 'Masschange', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader'],
 
     _initialize: function() {
         this.Ajaxloader.setup();
         this.Utils.flapping();
-        this.Rrd.bindPopup({
-            Time: this.Time,
-        });
         var self = this;
         $('.select_datatable').click(function(){
             self.fnShowHide($(this).attr('my-column'), $(this).children());

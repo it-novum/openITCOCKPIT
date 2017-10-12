@@ -34,7 +34,9 @@ $config = [
                 'user_timezone',
                 'version_check',
                 'menustats',
-                'menu'
+                'menu',
+                'websocket_configuration',
+                'export'
             ],
             'Commands'         => [
                 'sortByCommandType',

@@ -296,7 +296,9 @@ class AppController extends Controller {
 
         $this->exportRunningHeaderInfo = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'])) {
-            $this->exportRunningHeaderInfo = 'yes';
+            if($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes') {
+                $this->exportRunningHeaderInfo = true;
+            }
         }
     }
 
@@ -323,7 +325,7 @@ class AppController extends Controller {
         }
 
 
-        $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
+        $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
             $this->set('isFilter', true);

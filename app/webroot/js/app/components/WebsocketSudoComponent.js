@@ -44,6 +44,7 @@ App.Components.WebsocketSudoComponent = Frontend.Component.extend({
 
 		if(this._connection === null) {
             this._connection = new WebSocket(this._wsUrl);
+            console.log('new connection');
         }
 		this._connection.onopen = this._onConnectionOpen.bind(this);
 		this._connection.onmessage = this._onResponse.bind(this);
@@ -67,7 +68,8 @@ App.Components.WebsocketSudoComponent = Frontend.Component.extend({
 	
 	_onResponse: function(e) {
 		var transmitted = JSON.parse(e.data);
-		switch(transmitted.type){
+        console.log(transmitted);
+        switch(transmitted.type){
 			case 'connection':
 				// Es handelt sich um einen Verbidungsaufbau, dieser speichert die durch PHP generietere uniqid in die Klassenvariable
 				this._uniqid = transmitted.uniqid;
@@ -82,6 +84,7 @@ App.Components.WebsocketSudoComponent = Frontend.Component.extend({
 				if(this._uniqid == transmitted.uniqid){
 					this._callback(transmitted);
 				}
+				break;
 				
 			case 'dispatcher':
 				// Eine Aufgabe wurde vom SudoWebsocketserver abgearbeiet und es kann auf das event über die dispatcher callback function reagiert werden

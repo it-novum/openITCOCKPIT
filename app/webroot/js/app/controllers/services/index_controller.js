@@ -27,13 +27,14 @@ App.Controllers.ServicesIndexController = Frontend.AppController.extend({
 
 	$table: null,
 
-	components: ['Ajaxloader', 'Utils', 'Rrd', 'Masschange', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader'],
+	components: ['Ajaxloader', 'Utils', 'Rrd', 'Masschange', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader', 'Time'],
 	
 	_initialize: function() {
+		this.Time.setup();
 		this.Ajaxloader.setup();
 		this.Utils.flapping();
 		this.Rrd.bindPopup({
-			Time: this.Time,
+			Time: this.Time
 		});
 		var self = this;
 		$('.select_datatable').click(function(){

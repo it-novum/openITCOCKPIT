@@ -41,12 +41,22 @@
             </div>
 
             <div class="btn-header pull-right">
-            <span>
-                <a href="/exports/index" data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
-                   data-placement="left" rel="tooltip" data-container="body">
-                    <i class="fa fa-retweet" id="i-export-running-checker"></i>
-                </a>
-            </span>
+                <span>
+                    <?php if ($exportRunningHeaderInfo === false): ?>
+                        <a href="/exports/index"
+                           data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                           data-placement="left" rel="tooltip" data-container="body">
+                            <i class="fa fa-retweet"></i>
+                        </a>
+                    <?php else: ?>
+                        <a href="/exports/index" export-status=""
+                           data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
+                           data-placement="left" rel="tooltip" data-container="body">
+                            <i class="fa fa-retweet" ng-hide="exportRunning"></i>
+                            <i class="fa fa-refresh fa-spin txt-color-red" ng-show="exportRunning"></i>
+                        </a>
+                    <?php endif; ?>
+                </span>
             </div>
             <server-time></server-time>
             <version-check></version-check>

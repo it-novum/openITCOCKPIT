@@ -51,6 +51,10 @@ class AngularController extends AppController {
         return;
     }
 
+    public function export(){
+        return;
+    }
+
     public function user_timezone() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -233,6 +237,25 @@ class AngularController extends AppController {
 
         $this->set('menu', $menu);
         $this->set('_serialize', ['menu']);
+    }
+
+    public function websocket_configuration(){
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
+        if ($SessionCache->isEmpty()) {
+            $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
+        }
+
+        $systemsettings = $SessionCache->get('systemsettings');
+        $websocketConfig = $systemsettings['SUDO_SERVER'];
+        $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
+
+        $this->set('websocket', $websocketConfig);
+        $this->set('_serialize', ['websocket']);
     }
 
 }
