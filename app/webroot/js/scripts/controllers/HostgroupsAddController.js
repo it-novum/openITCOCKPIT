@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsAddController', function($scope, $http, $state){
+    .controller('HostgroupsAddController', function($scope, $http){
 
 
         $scope.post = {

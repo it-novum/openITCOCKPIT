@@ -33,7 +33,7 @@ $scripts = [
     'vendor/jqueryui/jquery-ui.min.js',
     'vendor/bootstrap/dist/js/bootstrap.min.js',
     'vendor/angular/angular.min.js',
-    'vendor/angular-ui-router/release/angular-ui-router.min.js',
+    //'vendor/angular-ui-router/release/angular-ui-router.min.js',
     'js/lib/jquery-cookie.js',
     'js/vendor/chosen.jquery.min.js'
 ];

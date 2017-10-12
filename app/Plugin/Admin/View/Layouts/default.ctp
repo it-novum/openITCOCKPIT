@@ -50,7 +50,7 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
-    printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
+    //printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
     foreach ($appScripts as $appScript):
         printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
     endforeach;

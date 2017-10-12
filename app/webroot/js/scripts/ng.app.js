@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['ui.router'])
+angular.module('openITCOCKPIT', [])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsIndexController', function($scope, $http, $state, SortService, MassChangeService){
+    .controller('HostgroupsIndexController', function($scope, $http, SortService, MassChangeService){
 
         SortService.setSort('Container.name');
         SortService.setDirection('asc');
