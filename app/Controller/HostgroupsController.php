@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
@@ -567,9 +568,11 @@ class HostgroupsController extends AppController {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
 
         $hosts = $this->Host->makeItJavaScriptAble(
-            $this->Host->getHostsForAngular($containerIds, $HostFilter, $selected)
+            $this->Host->getHostsForAngular($HostCondition, $selected)
         );
 
         $this->set(compact(['hosts']));

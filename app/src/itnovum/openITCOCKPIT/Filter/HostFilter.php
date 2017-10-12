@@ -34,6 +34,10 @@ class HostFilter extends Filter {
         $filters = [
             'like' => [
                 'Host.name',
+            ],
+            'equals' => [
+                'Host.uuid',
+                'Host.disabled'
             ]
         ];
 

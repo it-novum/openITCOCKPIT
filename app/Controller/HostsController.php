@@ -29,6 +29,7 @@ use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
@@ -3152,6 +3153,10 @@ class HostsController extends AppController {
         $this->set('_serialize',['servicetemplategroup','host']);
     }
 
+    /**
+     * @return string
+     * @deprecated
+     */
     public function ajaxGetByTerm(){
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['term'])){
@@ -3181,6 +3186,10 @@ class HostsController extends AppController {
         }
     }
 
+    /**
+     * @return string
+     * @deprecated
+     */
     public function ajaxGetGenericByTerm(){
         $this->autoRender = false;
         if ($this->request->is('ajax') && isset($this->request->data['term'])){
@@ -3208,5 +3217,24 @@ class HostsController extends AppController {
                 return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
             }
         }
+    }
+
+    public function ajaxList(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
     }
 }

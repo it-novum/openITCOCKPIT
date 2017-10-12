@@ -307,11 +307,12 @@ class Host extends AppModel {
         return $hosts;
     }
 
-    public function getHostsForAngular($containerIds = [], HostFilter $HostFilter, $selected = []) {
-        if (!is_array($containerIds)) {
-            $containerIds = [$containerIds];
-        }
-
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $selected
+     * @return array|null
+     */
+    public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
         $query = [
             'recursive'  => -1,
             'joins'      => [
@@ -324,19 +325,17 @@ class Host extends AppModel {
                     ],
                 ],
             ],
-            'conditions' => $HostFilter->ajaxFilter(),
+            'conditions' => $HostConditions->getConditionsForFind(),
             'order'      => [
                 'Host.name' => 'ASC',
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ];
 
-
-        $query['conditions']['HostsToContainers.container_id'] = $containerIds;
         $hostsWithLimit = $this->find('list', $query);
 
         $selectedHosts = [];
-        if(!empty($selected)){
+        if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
                 'joins'      => [
@@ -350,18 +349,23 @@ class Host extends AppModel {
                     ],
                 ],
                 'conditions' => [
-                    'Host.id' => $selected,
-                    'HostsToContainers.container_id' => $containerIds
+                    'Host.id' => $selected
                 ],
                 'order'      => [
                     'Host.name' => 'ASC',
                 ],
             ];
+            if ($HostConditions->hasContainer()) {
+                $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+            }
+            if($HostConditions->includeDisabled() === false){
+                $query['conditions']['Host.disabled'] = 0;
+            }
             $selectedHosts = $this->find('list', $query);
         }
 
         $hosts = $hostsWithLimit + $selectedHosts;
-        asort($hosts, SORT_FLAG_CASE|SORT_NATURAL);
+        asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
         return $hosts;
     }
 
