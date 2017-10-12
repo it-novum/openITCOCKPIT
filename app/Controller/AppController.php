@@ -340,15 +340,8 @@ class AppController extends Controller {
             if ($SessionCache->isEmpty()) {
                 $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
             }
-            $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
-
-
-            if (!$this->Session->check('SUDO_SERVER.API_KEY')) {
-                $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-                $this->Session->write('SUDO_SERVER.API_KEY', $key['Systemsetting']['value']);
-            }
             $systemsettings = $SessionCache->get('systemsettings');
-            $this->Frontend->setJson('akey', $systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING']);
+            $this->Frontend->setJson('akey', $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
 
         }
 

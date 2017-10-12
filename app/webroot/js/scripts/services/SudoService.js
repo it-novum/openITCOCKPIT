@@ -15,11 +15,11 @@ angular.module('openITCOCKPIT')
         };
 
         var _onResponse = function(event){
-            console.log(event);
+            //console.log(event);
         };
 
         var _onDispatch = function(event){
-            console.log(event);
+            //console.log(event);
         };
 
         var keepAlive = function(){
@@ -63,7 +63,7 @@ angular.module('openITCOCKPIT')
 
                 case 'response':
                     //Server response to a request we sent
-                    if(_uniqid == transmitted.uniqid){
+                    if(_uniqid === transmitted.uniqid){
                         _onResponse(event);
                     }
                     break;
