@@ -67,8 +67,11 @@ class MapstatusHelper extends AppHelper {
         if (isset($this->_View->viewVars['servicegroups'])) {
             $servicegroupstatus = $this->_View->viewVars['servicegroups'];
             foreach ($servicegroupstatus as $sgs) {
-                $this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs['Servicegroup']['Servicestatus'];
+                if(!empty($sgs['Servicegroup']['uuid'])){
+                    $this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs;
+                }
             }
+            $this->servicegroupstatus['Servicestatus'] = $servicegroupstatus['Servicestatus'];
         }
         if (isset($this->_View->viewVars['mapstatus'])) {
             $this->mapstatus = $this->_View->viewVars['mapstatus'];
@@ -266,7 +269,15 @@ class MapstatusHelper extends AppHelper {
 
 
     public function servicegroupstatus($uuid) {
-        $servicestate = Hash::extract($this->servicegroupstatus[$uuid], '{n}.Servicestatus');
+
+        $serviceUuids = Hash::extract($this->servicegroupstatus[$uuid], 'Service.{n}.uuid');
+        $servicestates = [];
+        foreach ($serviceUuids as $serviceUuid){
+            $servicestates[] = $this->servicegroupstatus['Servicestatus'][$serviceUuid];
+        }
+        $servicestate = Hash::extract($servicestates, '{n}.Servicestatus');
+
+        //debug($servicestates);
         if (!empty($servicestate)) {
             $cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
 

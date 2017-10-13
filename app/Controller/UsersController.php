@@ -367,7 +367,7 @@ class UsersController extends AppController
         $this->request->data = $this->User->find('first', $options);
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
-        $this->set(compact(['containers', 'selectedContainers']));
+        $this->set(compact(['containers', 'selectedContainers', 'permissionsUser']));
         $this->request->data['User']['password'] = '';
 
         $type = 'local';

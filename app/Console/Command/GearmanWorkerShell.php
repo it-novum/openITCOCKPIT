@@ -143,7 +143,7 @@ class GearmanWorkerShell extends AppShell {
 
     public function start() {
         if ($this->status()) {
-            $this->out("<info>Notice: oITC GearmanWorker is allready running!</info>");
+            $this->out("<info>Notice: oITC GearmanWorker is already running!</info>");
             exit(0);
         }
 
@@ -501,6 +501,10 @@ class GearmanWorkerShell extends AppShell {
 
             case 'createServiceDowntime':
                 $this->Externalcommand->setServiceDowntime($payload);
+                break;
+
+            case 'createContainerDowntime':
+                $this->Externalcommand->setContainerDowntime($payload);
                 break;
 
             //Called by NagiosModule/CmdController/submit

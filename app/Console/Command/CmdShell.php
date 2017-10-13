@@ -576,6 +576,7 @@ class CmdShell extends AppShell {
         if (mb_detect_encoding($str) !== 'UTF-8') {
             return utf8_encode($str);
         }
+        return $str;
     }
 
     /*
