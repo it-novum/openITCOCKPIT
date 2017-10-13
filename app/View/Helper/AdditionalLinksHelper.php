@@ -38,11 +38,12 @@ class AdditionalLinksHelper extends AppHelper {
      *
      * @param string[][] $additionalLinks
      * @param int $currentIndex The current index or ID of the current item
+     * @param bool $escape Escape HTML in link
      *
      * @return string The list items (<li>) with the corresponding links (<a>)
      */
-    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = []) {
-        $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam);
+    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $escape = true) {
+        $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $escape);
         $links = array_map(function ($element) {
             return '<li>' . $element . '</li>';
         }, $links);
@@ -69,10 +70,12 @@ class AdditionalLinksHelper extends AppHelper {
     /**
      * @param string[][] $additionalLinks
      * @param int $currentIndex The current index or ID of the current item.
+     * @param array $addArrParam
+     * @param bool $escape
      *
      * @return string[] The rendered <a> tags. Each element accords to one link.
      */
-    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = []) {
+    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = [], $escape = true) {
         $result = [];
         foreach ($additionalLinks as $link) {
             if (isset($link['callback']) && isset($addArrParam['Service']['name']) && !$link['callback']($addArrParam['Service']['name']))
@@ -93,7 +96,9 @@ class AdditionalLinksHelper extends AppHelper {
                 }
             }
             $options = $link['options'];
+            $options['escape'] = $escape;
             $confirmMessage = $link['confirmMessage'];
+
 
             $renderedLink = $this->Html->link($title, $url, $options, $confirmMessage);
             $result[] = $renderedLink;

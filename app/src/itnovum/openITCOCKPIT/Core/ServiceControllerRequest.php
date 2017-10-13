@@ -66,6 +66,12 @@ class ServiceControllerRequest {
             ];
         }
 
+        if(isset($this->request->query['sort']) && isset($this->request->query['direction'])){
+            return [
+                $this->request->query['sort'] => $this->request->query['direction']
+            ];
+        }
+
         return $defaultOrder;
 
     }
