@@ -214,7 +214,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                 <tbody>
                                 <tr ng-if="isNextHost(service)"
-                                    ng-repeat-start="service in services">
+                                    ng-repeat-start="service in services track by $index">
                                     <td colspan="13" class="service_table_host_header">
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
@@ -274,7 +274,6 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td>
                                         {{ service.Service.servicename }}
-                                        {{ service.Host.uuid }}
                                     </td>
 
                                     <td>
