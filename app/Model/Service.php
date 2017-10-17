@@ -1034,7 +1034,7 @@ class Service extends AppModel {
         foreach ($compare_array['Service'] as $key => $data) {
             $possible_key = preg_replace('/(\{.*\})|(\.)/', '', $data[0]);
             if ($data[0] == 'Servicecommandargumentvalue.{n}.{(commandargument_id|value)}') {
-                if (isset($service['Servicecommandargumentvalue'])) {
+                if (!empty($service['Servicecommandargumentvalue'])) {
                     if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
                         $diff_data = Set::classicExtract($service, $data[0]);
                         $diff_array['Servicecommandargumentvalue'] = $diff_data;
@@ -1045,7 +1045,7 @@ class Service extends AppModel {
                             $compare_array['Servicetemplate'][$key][1]));
                 }
             } else if ($data[0] == 'Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}') {
-                if (isset($service['Serviceeventcommandargumentvalue'])) {
+                if (!empty($service['Serviceeventcommandargumentvalue'])) {
                     if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
                         $diff_data = Set::classicExtract($service, $data[0]);
                         $diff_array['Serviceeventcommandargumentvalue'] = $diff_data;
