@@ -660,8 +660,21 @@ class GearmanWorkerShell extends AppShell {
                 }
 
                 $discoveryResult = null;
-                if (!empty($payload['path']) && !empty($payload['filename']) && !empty($payload['cidrAddress'])) {
-                    exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['cidrAddress']), $output, $returncode);
+                if (!empty($payload['path']) && !empty($payload['filename']) && !empty($payload['address']) && isset($payload['bitmask'])) {
+                    if($payload['hostOnly']){
+                        if($payload['hostWithServices']){
+                            //scan a single host WITH services
+                            exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['address']), $output, $returncode);
+                        }else{
+                            //scan a single host WITHOUT services
+                            //@TODO this scan is currently the same as the "host_scan_with_services"
+                            exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['address']), $output, $returncode);
+                        }
+                    }else{
+                        $CIDRAddress = $payload['address'] . '/' . $payload['bitmask'];
+                        exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($CIDRAddress), $output, $returncode);
+                    }
+
                 }
 
                 $this->Systemsetting->getDatasource()->reconnect();
