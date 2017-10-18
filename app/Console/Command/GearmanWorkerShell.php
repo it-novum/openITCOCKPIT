@@ -661,6 +661,10 @@ class GearmanWorkerShell extends AppShell {
 
                 $discoveryResult = null;
                 if (!empty($payload['path']) && !empty($payload['filename']) && !empty($payload['address']) && isset($payload['bitmask'])) {
+                    /**
+                     * @TODO remove this line
+                     */
+                    $payload['hostOnly'] = false;
                     if($payload['hostOnly']){
                         if($payload['hostWithServices']){
                             //scan a single host WITH services
