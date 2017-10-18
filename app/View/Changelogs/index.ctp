@@ -264,7 +264,6 @@
                                                                                     endif;
 
                                                                                 elseif(!isset($current_data_value['id']) && !$isCopied):
-                                                                                    debug((int)$isCopied);
                                                                                     continue;
                                                                                 endif;
                                                                                 foreach (array_keys($current_data_value) as $field_identifier):
