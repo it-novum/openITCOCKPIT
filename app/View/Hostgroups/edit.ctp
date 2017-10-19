@@ -98,10 +98,8 @@
                     'multiple'         => true,
                     'style'            => 'width:100%;',
                     'label'            => __('Hosts'),
-                    'data-placeholder' => __('Please, start typing...'),
-                    'selected'         => $this->request->data['Host'],
-                    'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                    'itn-ajax-container' => '#ContainerParentId',
+                    'data-placeholder' => __('Please choose a host'),
+                    'selected'         => $this->request->data['Host']
                 ]
             );
             echo $this->Form->input('Hostgroup.Hosttemplate', [

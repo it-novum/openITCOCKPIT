@@ -113,7 +113,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'multiple' => true,
                 'style'    => 'width:100%;',
                 'label' => __('<i class="fa fa-desktop"></i> Hosts'),
-                'data-placeholder' => __('Please, start typing...'),
+                'data-placeholder' => __('Please choose a host'),
                 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10'],
                 'itn-ajax' => '/Hosts/ajaxGetByTerm'
             ]);
@@ -125,7 +125,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'multiple' => true,
                 'style'    => 'width:100%;',
                 'label'    => __('<i class="fa fa-gears"></i> Services'),
-                'data-placeholder' => __('Please, start typing...'),
+                'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10'],
                 'itn-ajax' => '/Services/ajaxGetByTerm'
             ]);

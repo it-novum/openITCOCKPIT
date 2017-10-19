@@ -193,22 +193,25 @@ class ServicegroupsController extends AppController
             ];
         }
 
-        $containerIds = [ROOT_CONTAINER];
+        $serviceIds = [ROOT_CONTAINER];
         if ($this->request->is('post') == false && $this->request->is('put') == false) {
-            $containerIds[] = $servicegroup['Container']['parent_id'];
+            $serviceIds[] = $servicegroup['Container']['parent_id'];
         } else {
-            $containerIds[] = $this->request->data['Container']['parent_id'];
+            $serviceIds[] = $this->request->data['Container']['parent_id'];
         }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds, true);
 
-        array_unshift($containerIds, ROOT_CONTAINER);
-        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], $servicegroup['Service']);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
+        $serviceIds = $this->Tree->resolveChildrenOfContainerIds($serviceIds);
+        array_unshift($serviceIds, ROOT_CONTAINER);
+        $_services = $this->Service->servicesByHostContainerIds($serviceIds);
+        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($serviceIds, 'list');
+        //Fix that duplicate hostnames dont overwrite the array key!!
+        foreach ($_services as $service) {
+            $hostId = $service['Host']['id'];
+            $hostName = $service['Host']['name'];
+            $serviceId = $service['Service']['id'];
+            $serviceDescription = $service[0]['ServiceDescription'];
+            $services[$hostId][$hostName][$serviceId] = $hostName.'/'.$serviceDescription;
         }
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
-
         $servicegroup['Service'] = $services_for_changelog; //Services for changelog
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [];
@@ -216,26 +219,13 @@ class ServicegroupsController extends AppController
             $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
             $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
 
-            if(!empty($this->request->data['Service'])){
-                $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], $this->request->data['Service']);
-                $services = [];
-                foreach($servicesNotFixed as $serviceNotFixed){
-                    $services = array_merge($services, $serviceNotFixed);
-                }
-            }
-
             if ($this->request->data('Servicegroup.Service')) {
-                $serviceAsList = [];
-                foreach($services as $serviceArr){
-                    $serviceAsList += $serviceArr;
-                }
+                $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
-                    if(isset($serviceAsList[$service_id])) {
-                        $ext_data_for_changelog['Service'][] = [
-                            'id' => $service_id,
-                            'name' => $serviceAsList[$service_id],
-                        ];
-                    }
+                    $ext_data_for_changelog['Service'][] = [
+                        'id' => $service_id,
+                        'name' => $serviceAsList[$service_id],
+                    ];
                 }
             }
             if ($this->request->data('Servicegroup.Servicetemplate')) {
@@ -311,13 +301,17 @@ class ServicegroupsController extends AppController
         $this->Frontend->set('data_placeholder_servicetemplate', __('Please choose a service template'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
         if ($this->request->is('post') || $this->request->is('put')) {
+            $_services = [];
+            $_servicetemplates = [];
             if ($this->request->data['Container']['parent_id'] > 0) {
                 $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id'], $this->hasRootPrivileges);
-                $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data('Servicegroup.Service')) ? $this->request->data('Servicegroup.Service') : []);
-                foreach($servicesNotFixed as $serviceNotFixed){
-                    $services = array_merge($services, $serviceNotFixed);
-                }
-                $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
+                $_services = $this->Service->servicesByHostContainerIds($containerIds);
+                $_servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds);
+            }
+
+            //Fix that duplicate hostnames dont overwrite the array key!!
+            foreach ($_services as $service) {
+                $services[$service['Host']['id']][$service['Host']['name']][$service['Service']['id']] = $service['Host']['name'].'/'.$service[0]['ServiceDescription'];
             }
 
             $ext_data_for_changelog = [];
@@ -327,28 +321,33 @@ class ServicegroupsController extends AppController
             if (isset($this->request->data['Servicegroup']['Service'])) {
                 $this->request->data['Service'] = $this->request->data['Servicegroup']['Service'];
             }
-            if ($this->request->data('Servicegroup.Service') && !empty($services)) {
-                $serviceAsList = [];
-                foreach($services as $serviceArr){
-                    $serviceAsList += $serviceArr;
-                }
+            if ($this->request->data('Servicegroup.Service')) {
+                $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
-                    if(isset($serviceAsList[$service_id])) {
-                        $ext_data_for_changelog['Service'][] = [
-                            'id' => $service_id,
-                            'name' => $serviceAsList[$service_id],
-                        ];
-                    }
+                    $ext_data_for_changelog['Service'][] = [
+                        'id' => $service_id,
+                        'name' => $serviceAsList[$service_id],
+                    ];
                 }
             }
-            if ($this->request->data('Servicegroup.Servicetemplate') && !empty($servicetemplates)) {
+            if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
-                    if(isset($servicetemplates[$servicetemplate_id])) {
-                        $ext_data_for_changelog['Servicetemplate'][] = [
-                            'id' => $servicetemplate_id,
-                            'name' => $servicetemplates[$servicetemplate_id],
-                        ];
-                    }
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'recursive' => -1,
+                        'contain'    => [],
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id' => $servicetemplate_id,
+                        'name' => $servicetemplates[$servicetemplate_id],
+                    ];
+
                 }
             }
             $isJsonRequest = $this->request->ext === 'json';
@@ -394,7 +393,9 @@ class ServicegroupsController extends AppController
     {
         $this->allowOnlyAjaxRequests();
 
-        $services = $this->Service->getAjaxServices([ROOT_CONTAINER, $containerId]);
+        $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
+            'forOptiongroup' => true,
+        ]);
         $services = $this->Service->makeItJavaScriptAble($services);
 
         $data = ['services' => $services];

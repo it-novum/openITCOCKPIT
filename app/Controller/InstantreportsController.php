@@ -158,7 +158,9 @@ class InstantreportsController extends AppController
         $timePeriods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($userContainerIds, 'all');
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($userContainerIds, 'all');
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
         $usersToSend = $this->User->usersByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
         $types = $this->Instantreport->getTypes();
         $evaluations = $this->Instantreport->getEvaluations();
         $reportFormats = $this->Instantreport->getReportFormats();
@@ -199,12 +201,8 @@ class InstantreportsController extends AppController
             }
         }
 
-        $hosts = $this->Host->getAjaxHosts($userContainerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
-        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
 
         $this->set([
             'evaluations' => $evaluations,
@@ -295,11 +293,7 @@ class InstantreportsController extends AppController
         }
 
         $hosts = $this->Host->getAjaxHosts($userContainerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
-        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
+        $services = $this->Service->getAjaxServices($userContainerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
 
         $this->set([
             'evaluations' => $evaluations,
