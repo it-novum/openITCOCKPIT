@@ -1503,3 +1503,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 .status_headline {
 	margin: 12px 0 28px;
 }
+
+.disableLink{
+	pointer-events: none;
+	cursor: default;
+}
