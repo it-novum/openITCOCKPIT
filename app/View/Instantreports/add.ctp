@@ -115,7 +115,6 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'label' => __('<i class="fa fa-desktop"></i> Hosts'),
                 'data-placeholder' => __('Please choose a host'),
                 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10'],
-                'itn-ajax' => '/Hosts/ajaxGetByTerm'
             ]);
 
             echo $this->Form->input('Instantreport.Service', [
@@ -127,7 +126,6 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'label'    => __('<i class="fa fa-gears"></i> Services'),
                 'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10'],
-                'itn-ajax' => '/Services/ajaxGetByTerm'
             ]);
 
             echo $this->Form->input('Instantreport.timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);
