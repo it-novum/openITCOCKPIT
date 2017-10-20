@@ -120,7 +120,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
 
             echo $this->Form->input('Instantreport.Service', [
                 'div'      => 'form-group checkbox-group multiple-select select-type select-type-'.Instantreport::TYPE_SERVICES,
-                'options'  => $services,
+                'options'  => Hash::combine($services, ['%s', '{n}.Service.id'], ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name'),
                 'class'    => 'chosen',
                 'multiple' => true,
                 'style'    => 'width:100%;',
