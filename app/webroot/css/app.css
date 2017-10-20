@@ -23,3 +23,7 @@ div.required label:after {
 	color: red;
 	display:inline;
 }
+
+.dt-toolbar-footer {
+	background: #fff;
+}

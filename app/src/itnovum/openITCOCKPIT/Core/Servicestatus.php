@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+
 class Servicestatus {
 
     private $currentState = null;
@@ -65,9 +67,14 @@ class Servicestatus {
 
     private $latency;
 
-    public function __construct($data){
+    /**
+     * @var UserTime|null
+     */
+    private $UserTime;
+
+    public function __construct($data, $UserTime = null){
         if (isset($data['current_state'])) {
-            $this->currentState = $data['current_state'];
+            $this->currentState = (int)$data['current_state'];
         }
 
         if (isset($data['is_flapping'])) {
@@ -79,7 +86,7 @@ class Servicestatus {
         }
 
         if (isset($data['scheduled_downtime_depth'])) {
-            $this->scheduledDowntimeDepth = $data['scheduled_downtime_depth'];
+            $this->scheduledDowntimeDepth = (int)$data['scheduled_downtime_depth'];
         }
 
         if (isset($data['last_check'])) {
@@ -145,6 +152,8 @@ class Servicestatus {
         if (isset($data['latency'])) {
             $this->latency = $data['latency'];
         }
+
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -385,5 +394,25 @@ class Servicestatus {
         return !is_null($this->currentState);
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if($this->UserTime !== null) {
+            $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
+            $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());
+            $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
+            $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
+        }else{
+            $arr['lastHardStateChange'] = $this->getLastHardStateChange();
+            $arr['last_state_change'] = $this->getLastStateChange();
+            $arr['lastCheck'] = $this->getLastCheck();
+            $arr['nextCheck'] = $this->getNextCheck();
+        }
+        $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
+        $arr['isInMonitoring'] = $this->isInDowntime();
+        return $arr;
+    }
 
 }

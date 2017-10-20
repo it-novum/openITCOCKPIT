@@ -30,13 +30,14 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
      */
     $jqconsole: null,
 
-    components: ['WebsocketSudo', 'Ajaxloader', 'Utils', 'Externalcommand', 'Rrd', 'Qr'],
+    components: ['WebsocketSudo', 'Ajaxloader', 'Utils', 'Externalcommand', 'Rrd', 'Qr', 'Time'],
 
     _initialize: function () {
+        this.Time.setup();
         this.Ajaxloader.setup();
         this.Utils.flapping();
         this.Rrd.bindPopup({
-            Time: this.Time,
+            Time: this.Time
         });
         this.Qr.setup();
         this.Externalcommand.setup();
@@ -142,12 +143,12 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 
         this.WebsocketSudo._errorCallback = function () {
             $('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
-        }
+        };
 
         this.WebsocketSudo.connect();
         this.WebsocketSudo._success = function (e) {
             return true;
-        }.bind(this)
+        }.bind(this);
 
         this.WebsocketSudo._callback = function (transmitted) {
             return true;

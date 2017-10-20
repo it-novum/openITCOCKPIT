@@ -27,6 +27,17 @@ $config = [
     'acl_dependencies' => [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
         'always_allowed' => [
+            'Angular' => [
+                'paginator',
+                'mass_delete',
+                'confirm_delete',
+                'user_timezone',
+                'version_check',
+                'menustats',
+                'menu',
+                'websocket_configuration',
+                'export'
+            ],
             'Commands'         => [
                 'sortByCommandType',
             ],
@@ -68,7 +79,8 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
-                'ajaxGetByTerm'
+                'ajaxGetByTerm',
+                'icon'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -174,12 +186,11 @@ $config = [
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
-                'edit'     => ['loadHosts', 'loadHosttemplates'],
-                'delete'   => ['mass_delete'],
+                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],

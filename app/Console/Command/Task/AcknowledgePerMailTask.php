@@ -27,12 +27,11 @@ App::import('Vendor', 'ddeboer/imap/src/Server');
 use Ddeboer\Imap\Server;
 use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
-class AcknowledgePerMailTask extends AppShell implements CronjobInterface
-{
+class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
     public $uses = ['NagiosModule.Externalcommand', 'Systemsetting'];
     public $_systemsettings;
 
-    public function execute($quiet = false){
+    public function execute($quiet = false) {
 
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
@@ -42,7 +41,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $ackHostsAndServices = $this->ackHostsAndServices();
 
         $this->out($ackHostsAndServices['success']);
-        foreach($ackHostsAndServices['messages'] as $message){
+        foreach ($ackHostsAndServices['messages'] as $message) {
             $this->out($message);
         }
         $this->hr();
@@ -51,19 +50,19 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
     /**
      * @return string all unseen messages from inbox
      */
-    private function ackHostsAndServices(){
+    private function ackHostsAndServices() {
         $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
-        if(empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']) ||
+        if (empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']) ||
             empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_ADDRESS']) ||
-            empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'])){
+            empty($this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_PASSWORD'])) {
             return ['success' => '<red>Error</red>', 'messages' => ['Some of ACK_ values were not provided in system settings']];
         }
         $serverParts = explode('/', $this->_systemsettings['MONITORING']['MONITORING.ACK_RECEIVER_SERVER']);
-        if(count($serverParts) < 2){
+        if (count($serverParts) < 2) {
             return ['success' => '<red>Error</red>', 'messages' => ['ACK_RECEIVER_SERVER has wrong format']];
         }
         $serverAndPort = explode(':', $serverParts[0]);
-        if(count($serverAndPort) < 2){
+        if (count($serverAndPort) < 2) {
             return ['success' => '<red>Error</red>', 'messages' => ['ACK_RECEIVER_SERVER has wrong format. Either connection URL is wrong or port was not provided.']];
         }
 
@@ -72,9 +71,9 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $serverProtocol = trim($serverParts[1]);
         $serverSSL = in_array('ssl', $serverParts);
         $serverNoValidateCert = in_array('novalidate-cert', $serverParts);
-        $serverOptions = '/'.$serverProtocol.($serverSSL?'/ssl':'').($serverNoValidateCert?'/novalidate-cert':'');
+        $serverOptions = '/' . $serverProtocol . ($serverSSL ? '/ssl' : '') . ($serverNoValidateCert ? '/novalidate-cert' : '');
 
-        if($serverProtocol != 'imap'){
+        if ($serverProtocol != 'imap') {
             return ['success' => '<red>Error</red>', 'messages' => ['Only IMAP protocol is supported.']];
         }
 
@@ -84,78 +83,96 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface
         $acks = [];
         $success = '<green>Ok</green>';
         $acknowledged = 0;
-	openlog('Ack per mail ', LOG_CONS | LOG_NDELAY | LOG_PID, LOG_USER | LOG_PERROR);
-        foreach($mailbox->getMessages() as $message){
-            $this->out('Parsing email from '.$message->getFrom()->getAddress());
-            $parsedValues = $this->parseAckInformation($message->getBodyText());
+        openlog('Ack per mail ', LOG_CONS | LOG_NDELAY | LOG_PID, LOG_USER | LOG_PERROR);
+        foreach ($mailbox->getMessages() as $message) {
+            $this->out('Parsing email from ' . $message->getFrom()->getAddress());
+
+            $body = $message->getBodyText();
+            //Check if this is base64_encoded, but the header is not set to base64
+            if($this->isBase64($body)){
+                $body = base64_decode($body, true);
+            }
+
+            $parsedValues = $this->parseAckInformation($body);
             if (empty($parsedValues)) continue;
             $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();
             $acknowledged++;
             if (empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-		$hostAckArray = [
+                $hostAckArray = [
                     'hostUuid' => $parsedValues['ACK_HOSTUUID'],
-                    'author' => $author,
-                    'comment' => __('Acknowledged per mail'),
-                    'sticky' => 1,
-                    'type' => 'hostOnly'
+                    'author'   => $author,
+                    'comment'  => __('Acknowledged per mail'),
+                    'sticky'   => 1,
+                    'type'     => 'hostOnly'
                 ];
                 syslog(LOG_INFO, json_encode($hostAckArray));
                 $this->Externalcommand->setHostAck($hostAckArray);
                 $this->out('Host ' . $parsedValues['ACK_HOSTUUID'] . ' <green>acknowledged</green>');
-            } elseif (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
-		$serviceAckArray = [
-                    'hostUuid' => $parsedValues['ACK_HOSTUUID'],
+            } else if (!empty($parsedValues['ACK_SERVICEUUID']) && !empty($parsedValues['ACK_HOSTUUID'])) {
+                $serviceAckArray = [
+                    'hostUuid'    => $parsedValues['ACK_HOSTUUID'],
                     'serviceUuid' => $parsedValues['ACK_SERVICEUUID'],
-                    'author' => $author,
-                    'comment' => __('Acknowledged per mail'),
-                    'sticky' => 1
+                    'author'      => $author,
+                    'comment'     => __('Acknowledged per mail'),
+                    'sticky'      => 1
                 ];
-		syslog(LOG_INFO, json_encode($serviceAckArray));
+                syslog(LOG_INFO, json_encode($serviceAckArray));
                 $this->Externalcommand->setServiceAck($serviceAckArray);
                 $this->out('Service ' . $parsedValues['ACK_SERVICEUUID'] . ' <green>acknowledged</green>');
             }
             $message->delete();
         }
-	closelog();
+        closelog();
         $mailbox->expunge();
 
-        if($acknowledged == 0){
+        if ($acknowledged == 0) {
             $acks = ['No hosts and services were acknowledged'];
         }
         $connection->close();
         return ['success' => $success, 'messages' => $acks];
     }
 
-    private function getStringBetween($string, $start, $end){
+    private function getStringBetween($string, $start, $end) {
         $str = str_replace(["\r", "\n", '>'], '', $string);
         $ini = mb_strpos($str, $start);
         if ($ini === false) return '';
         $ini += strlen($start);
         $len = mb_strpos($str, $end);
-        if ($end === false)  return '';
+        if ($end === false) return '';
         return mb_substr($str, $ini, $len - $ini);
     }
 
-    private function parseAckInformation($ackString){
+    private function parseAckInformation($ackString) {
         $myString = $this->getStringBetween($ackString, '--- BEGIN ACK INFORMATION ---', '--- END ACK INFORMATION ---');
-        if(empty($myString)){
+        if (empty($myString)) {
             $myString = $this->getStringBetween($ackString, '--- BEGIN ACK2 INFORMATION ---', '--- END ACK2 INFORMATION ---');
         }
-        if(empty($myString)) return [];
+        if (empty($myString)) return [];
 
         $firstExplode = explode(':', $myString);
         $currentIndex = trim($firstExplode[0]);
         $returnArr = [];
-        for($i = 1; $i<count($firstExplode); $i++){
+        for ($i = 1; $i < count($firstExplode); $i++) {
             $nextExplose = explode('ACK_', $firstExplode[$i]);
             $returnArr[$currentIndex] = trim($nextExplose[0]);
-            $currentIndex = isset($nextExplose[1]) ? ('ACK_'.trim($nextExplose[1])) : null;
+            $currentIndex = isset($nextExplose[1]) ? ('ACK_' . trim($nextExplose[1])) : null;
         }
-        if(!isset($returnArr['ACK_HOSTUUID']) || empty($returnArr['ACK_HOSTUUID']) || !isset($returnArr['ACK_SERVICEUUID'])) {
+        if (!isset($returnArr['ACK_HOSTUUID']) || empty($returnArr['ACK_HOSTUUID']) || !isset($returnArr['ACK_SERVICEUUID'])) {
             return [];
         }
 
         return $returnArr;
+    }
+
+    /**
+     * @param $str
+     * @return bool
+     */
+    private function isBase64($str){
+        if(base64_encode(base64_decode($str, true)) === $str){
+            return true;
+        }
+        return false;
     }
 
 }

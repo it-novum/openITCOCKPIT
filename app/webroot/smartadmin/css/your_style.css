@@ -1508,3 +1508,22 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	vertical-align: baseline!important;
 	border-radius: .25em!important;
 }
+
+.bg-color-danger {
+	background: #d95450;
+}
+
+.a-clean {
+	text-decoration: none !important;
+	color:#333;
+}
+
+.server-clock {
+	font-weight:normal!important;
+	padding-left: 4px!important;
+	padding-right: 4px!important;
+}
+
+.menu-search-border{
+	border-bottom: 1px solid #525151;
+}

@@ -27,21 +27,22 @@ App.Controllers.AutomapsViewController = Frontend.AppController.extend({
     currentHostUuid: null,
     currentServiceUuid: null,
 
-    components: ['Ajaxloader', 'Rrd', 'WebsocketSudo', 'Externalcommand'],
+    components: ['Ajaxloader', 'Rrd', 'WebsocketSudo', 'Externalcommand', 'Time'],
 
     _initialize: function(){
         this.Ajaxloader.setup();
+        this.Time.setup();
 
         this.WebsocketSudo.setup(this.getVar('websocket_url'), this.getVar('akey'));
 
         this.WebsocketSudo._errorCallback = function(){
             $('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
-        }
+        };
 
         this.WebsocketSudo.connect();
         this.WebsocketSudo._success = function(e){
             return true;
-        }.bind(this)
+        }.bind(this);
 
         this.WebsocketSudo._callback = function(transmitted){
             return true;
