@@ -61,6 +61,7 @@ class ServiceescalationsController extends AppController
 
     public function index()
     {
+
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -72,6 +73,7 @@ class ServiceescalationsController extends AppController
                         'fields'          => [
                             'id',
                             'name',
+                            'disabled'
                         ],
                         'Servicetemplate' => [
                             'fields' => [
@@ -82,6 +84,7 @@ class ServiceescalationsController extends AppController
                             'fields' => [
                                 'id',
                                 'name',
+                                'disabled'
                             ],
                         ],
                     ],
@@ -191,9 +194,7 @@ class ServiceescalationsController extends AppController
         }
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-        $containerIds = $serviceescalation['Serviceescalation']['container_id'];
-        list($servicegroups, $timeperiods, $contacts, $contactgroups) =
-            $this->getAvailableDataByContainerId($containerIds);
+        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =$this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerIds = $this->request->data('Serviceescalation.container_id');
@@ -254,21 +255,10 @@ class ServiceescalationsController extends AppController
         }
 
         $this->request->data = Hash::merge($serviceescalation, $this->request->data);
-        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Serviceescalation']['Service']) ? $this->request->data['Serviceescalation']['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
-        $excludedServicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Serviceescalation']['Service_excluded']) ? $this->request->data['Serviceescalation']['Service_excluded'] : []);
-        $servicesExcluded = [];
-        foreach($excludedServicesNotFixed as $excludedServiceNotFixed){
-            $servicesExcluded = array_merge($servicesExcluded, $excludedServiceNotFixed);
-        }
 
         $this->set([
             'serviceescalation' => $serviceescalation,
             'services'          => $services,
-            'servicesExcluded' => $servicesExcluded,
             'servicegroups'     => $servicegroups,
             'timeperiods'       => $timeperiods,
             'contactgroups'     => $contactgroups,

@@ -98,8 +98,6 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 			$('#ServiceescalationServicegroup').trigger("chosen:updated");
 			$('#ServiceescalationServicegroupExcluded').trigger("chosen:updated");
 		}
-        $('#ServiceescalationService').change();
-        $('#ServiceescalationServiceExcluded').change();
 	},
 
 	refreshServices: function(selected_services, selectboxObject, target){

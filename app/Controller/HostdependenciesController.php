@@ -65,7 +65,10 @@ class HostdependenciesController extends AppController
             'contain'    => [
                 'HostdependencyHostMembership'      => [
                     'Host' => [
-                        'fields' => 'name',
+                        'fields' => [
+                            'name',
+                            'disabled'
+                        ],
                     ],
                 ],
                 'HostdependencyHostgroupMembership' => [

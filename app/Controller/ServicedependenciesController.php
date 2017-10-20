@@ -64,8 +64,7 @@ class ServicedependenciesController extends AppController
         'CustomValidationErrors',
     ];
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -74,12 +73,19 @@ class ServicedependenciesController extends AppController
             'contain'    => [
                 'ServicedependencyServiceMembership'      => [
                     'Service' => [
-                        'fields'          => ['name'],
+                        'fields'          => [
+                            'name',
+                            'disabled'
+                        ],
                         'Servicetemplate' => [
                             'fields' => ['name'],
                         ],
                         'Host'            => [
-                            'fields' => ['id', 'name'],
+                            'fields' => [
+                                'id',
+                                'name',
+                                'disabled'
+                            ],
                         ],
                     ],
                 ],
@@ -90,11 +96,12 @@ class ServicedependenciesController extends AppController
                         ],
                     ],
                 ],
-                'Timeperiod'                              => [
+                'Timeperiod' => [
                     'fields' => 'name',
                 ],
             ],
         ];
+
         $query = Hash::merge($this->Paginator->settings, $options);
 
         if ($this->isApiRequest) {
@@ -104,6 +111,7 @@ class ServicedependenciesController extends AppController
             $this->Paginator->settings = $query;
             $all_servicedependencies = $this->Paginator->paginate();
         }
+
 
         $this->set('all_servicedependencies', $all_servicedependencies);
         $this->set('_serialize', ['all_servicedependencies']);

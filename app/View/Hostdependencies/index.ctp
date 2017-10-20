@@ -118,6 +118,8 @@
                                                         else:
                                                             echo h($host['Host']['name']);
                                                         endif;
+                                                        echo ($host['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -141,6 +143,8 @@
                                                         else:
                                                             echo h($host_dependent['Host']['name']);
                                                         endif;
+                                                        echo ($host_dependent['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
