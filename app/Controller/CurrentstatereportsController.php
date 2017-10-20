@@ -49,17 +49,15 @@ class CurrentstatereportsController extends AppController
         //ContainerID => 1 for ROOT Container
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
-        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], isset($this->request->data['Currentstatereport']['Service']) ? $this->request->data['Currentstatereport']['Service'] : []);
-        $servicesList = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $servicesList = array_merge($servicesList, $serviceNotFixed);
-        }
-        $this->set(compact(['userContainerId', 'servicesList']));
+        $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
+            '{n}.Service.id', '{n}'
+        );
+        $this->set(compact(['services', 'userContainerId']));
+
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
-                $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds, 'all', ['Service.id' => $this->request->data['Currentstatereport']['Service']]), '{n}.Service.id', '{n}');
                 foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
                     if(empty($services[$serviceId]['Service']['uuid'])) continue;
                     $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'], [
