@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use GuzzleHttp\Client;
 
 /**
  * Class GearmanWorkerShell
@@ -142,7 +143,7 @@ class GearmanWorkerShell extends AppShell {
 
     public function start() {
         if ($this->status()) {
-            $this->out("<info>Notice: oITC GearmanWorker is allready running!</info>");
+            $this->out("<info>Notice: oITC GearmanWorker is already running!</info>");
             exit(0);
         }
 
@@ -279,21 +280,30 @@ class GearmanWorkerShell extends AppShell {
                     if (empty($satellite)) {
                         break;
                     }
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'] . '/nagios/discover/dump-host/' . $payload['hostuuid']);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-                    $output = curl_exec($ch);
 
-                    if ($output === false) {
-                        echo curl_error($ch);
-                    } else {
-                        $output = json_decode($output);
+                    try {
+                        $options = [
+                            'allow_redirects' => true,
+                            'verify'          => false,
+                            'stream_context'  => [
+                                'ssl' => [
+                                    'allow_self_signed' => true,
+                                    'verify' => false
+                                ]
+                            ]
+                        ];
+                        $Client = new Client($options);
+                        $response = $Client->request('GET', sprintf(
+                                'https://%s/nagios/discover/dump-host/%s',
+                                $satellite['Satellite']['address'],
+                                $payload['hostUuid'])
+                        );
+
+                        $output = json_decode($response->getBody()->getContents(), true);
+                    } catch (\Exception $e) {
+                        $output = [];
+                        error_log($e->getMessage());
                     }
-                    curl_close($ch);
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $output = null;
@@ -316,21 +326,30 @@ class GearmanWorkerShell extends AppShell {
                     if (empty($satellite)) {
                         break;
                     }
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'] . '/nagios/discover/check-types');
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-                    $output = curl_exec($ch);
 
-                    if ($output === false) {
-                        echo curl_error($ch);
-                    } else {
-                        $output = json_decode($output);
+                    try {
+                        $options = [
+                            'allow_redirects' => true,
+                            'verify'          => false,
+                            'stream_context'  => [
+                                'ssl' => [
+                                    'allow_self_signed' => true,
+                                    'verify' => false
+                                ]
+                            ]
+                        ];
+                        $Client = new Client($options);
+                        $response = $Client->request('GET', sprintf(
+                            'https://%s/nagios/discover/check-types',
+                            $satellite['Satellite']['address']
+                        ));
+
+                        $output = json_decode($response->getBody()->getContents(), true);
+                    } catch (\Exception $e) {
+                        $output = [];
+                        error_log($e->getMessage());
                     }
-                    curl_close($ch);
+
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
                 }
@@ -359,21 +378,31 @@ class GearmanWorkerShell extends AppShell {
                     if (empty($satellite)) {
                         break;
                     }
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'] . '/nagios/discover/dump-host/' . $payload['hostUuid']);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-                    $output = curl_exec($ch);
 
-                    if ($output === false) {
-                        echo curl_error($ch);
-                    } else {
-                        $output = json_decode($output);
+                    try {
+                        $options = [
+                            'allow_redirects' => true,
+                            'verify'          => false,
+                            'stream_context'  => [
+                                'ssl' => [
+                                    'allow_self_signed' => true,
+                                    'verify' => false
+                                ]
+                            ]
+                        ];
+                        $Client = new Client($options);
+                        $response = $Client->request('GET', sprintf(
+                            'https://%s/nagios/discover/dump-host/%s',
+                            $satellite['Satellite']['address'],
+                            $payload['hostUuid'])
+                        );
+
+                        $output = json_decode($response->getBody()->getContents(), true);
+                    } catch (\Exception $e) {
+                        $output = [];
+                        error_log($e->getMessage());
                     }
-                    curl_close($ch);
+
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -II -v ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $output = null;
@@ -397,21 +426,31 @@ class GearmanWorkerShell extends AppShell {
                     if (empty($satellite)) {
                         break;
                     }
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $satellite['Satellite']['address'] . '/nagios/discover/raw-info/' . $payload['hostUuid']);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-                    $output = curl_exec($ch);
 
-                    if ($output === false) {
-                        echo curl_error($ch);
-                    } else {
-                        $output = json_decode($output);
+                    try {
+                        $options = [
+                            'allow_redirects' => true,
+                            'verify'          => false,
+                            'stream_context'  => [
+                                'ssl' => [
+                                    'allow_self_signed' => true,
+                                    'verify' => false
+                                ]
+                            ]
+                        ];
+                        $Client = new Client($options);
+                        $response = $Client->request('GET', sprintf(
+                            'https://%s/nagios/discover/raw-info/%s',
+                            $satellite['Satellite']['address'],
+                            $payload['hostUuid'])
+                        );
+
+                        $output = json_decode($response->getBody()->getContents(), true);
+                    } catch (\Exception $e) {
+                        $output = [];
+                        error_log($e->getMessage());
                     }
-                    curl_close($ch);
+
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
                 }
@@ -462,6 +501,10 @@ class GearmanWorkerShell extends AppShell {
 
             case 'createServiceDowntime':
                 $this->Externalcommand->setServiceDowntime($payload);
+                break;
+
+            case 'createContainerDowntime':
+                $this->Externalcommand->setContainerDowntime($payload);
                 break;
 
             //Called by NagiosModule/CmdController/submit
@@ -665,9 +708,9 @@ class GearmanWorkerShell extends AppShell {
                         exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['address']), $output, $returncode);
                     } else {
                         $CIDRAddress = $payload['address'] . '/' . $payload['bitmask'];
-                        if(!empty($payload['hostsWithoutServices'])){
+                        if (!empty($payload['hostsWithoutServices'])) {
                             exec("nmap --unprivileged -sn -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($CIDRAddress), $output, $returncode);
-                        }else{
+                        } else {
                             exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($CIDRAddress), $output, $returncode);
                         }
 
@@ -675,446 +718,451 @@ class GearmanWorkerShell extends AppShell {
 
                 }
 
-        $this->Systemsetting->getDatasource()->reconnect();
-        $nmapScan->saveField('finished', 1);
+                $this->Systemsetting->getDatasource()->reconnect();
+                $nmapScan->saveField('finished', 1);
 
-        if ($returncode == 0) {
-            $nmapScan->saveField('successful', 1);
+                if ($returncode == 0) {
+                    $nmapScan->saveField('successful', 1);
+                }
+
+                $return = true;
+                break;
         }
 
-        $return = true;
-        break;
+        return serialize($return);
     }
 
-return serialize($return);
-}
-
-/**
- * @param int $createBackup
- */
-public
-function launchExport($createBackup = 1) {
-    //We do the export in on of our workers, to avoid max_execution_time errors
-    $this->NagiosExport->init();
-    $successfully = true;
-    $this->Export->deleteAll(true);
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task' => 'export_started',
-            'text' => __('Started refresh of monitoring configuration'),
-        ],
-    ];
-    $result = $this->Export->save($data);
-
-    if ($createBackup == 1) {
+    /**
+     * @param int $createBackup
+     */
+    public function launchExport($createBackup = 1) {
+        //We do the export in on of our workers, to avoid max_execution_time errors
+        $this->NagiosExport->init();
+        $successfully = true;
+        $this->Export->deleteAll(true);
         $this->Export->create();
         $data = [
             'Export' => [
-                'task' => 'export_create_backup',
-                'text' => __('Create Backup of old configuration'),
+                'task' => 'export_started',
+                'text' => __('Started refresh of monitoring configuration'),
             ],
         ];
         $result = $this->Export->save($data);
 
-        App::uses('Folder', 'Utility');
-        $folder1 = new Folder(Configure::read('nagios.export.backupSource'));
-
-        $backupTarget = Configure::read('nagios.export.backupTarget') . '/' . date('d-m-Y_H-i-s');
-
-        if (!is_dir(Configure::read('nagios.export.backupTarget'))) {
-            mkdir(Configure::read('nagios.export.backupTarget'));
-        }
-
-        if (!is_dir($backupTarget)) {
-            mkdir($backupTarget);
-        }
-        $folder1->copy($backupTarget);
-
-        $filename = "export_oitc_bkp_" . date("Y-m-d_His") . ".sql";
-        $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/' . $filename);
-
-        $this->Export->saveField('finished', 1);
-        $this->Export->saveField('successfully', 1);
-    }
-
-    $gearmanClient = new GearmanClient();
-    $gearmanClient->addServer($this->Config['address'], $this->Config['port']);
-    //This callback gets called, for any finished export task (like hosttemplates, services etc...)
-    $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
-
-    //Delete old configuration
-    //Delete old configuration
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task' => 'export_delete_old_configuration',
-            'text' => __('Delete old configuration'),
-        ],
-    ];
-    $response = $this->Export->save($data);
-    $gearmanClient->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
-    $this->Export->saveField('finished', 1);
-    $this->Export->saveField('successfully', 1);
-
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task' => 'before_export_external_tasks',
-            'text' => __('Execute pre export tasks'),
-        ],
-    ];
-    $response = $this->Export->save($data);
-    $this->NagiosExport->beforeExportExternalTasks();
-    $this->Export->id = $response['Export']['id'];
-    $this->Export->saveField('finished', 1);
-    $this->Export->saveField('successfully', 1);
-
-    //Define all tasks, we can do parallel
-    $tasks = [
-        'export_create_default_config' => [
-            'text' => __('Create default configuration'),
-        ],
-        'export_hosttemplates'         => [
-            'text' => __('Create hosttemplate configuration'),
-        ],
-        'export_hosts'                 => [
-            'text' => __('Create host configuration'),
-        ],
-        'export_commands'              => [
-            'text' => __('Create command configuration'),
-        ],
-        'export_contacts'              => [
-            'text' => __('Create contact configuration'),
-        ],
-        'export_contactgroups'         => [
-            'text' => __('Create contact group configuration'),
-        ],
-        'export_timeperiods'           => [
-            'text' => __('Create timeperiod configuration'),
-        ],
-        'export_hostgroups'            => [
-            'text' => __('Create host group configuration'),
-        ],
-        'export_hostescalations'       => [
-            'text' => __('Create host escalation configuration'),
-        ],
-        'export_servicetemplates'      => [
-            'text' => __('Create servicetemplate configuration'),
-        ],
-        'export_services'              => [
-            'text' => __('Create service configuration'),
-        ],
-        'export_serviceescalations'    => [
-            'text' => __('Create service escalation configuration'),
-        ],
-        'export_servicegroups'         => [
-            'text' => __('Create service group configuration'),
-        ],
-        'export_hostdependencies'      => [
-            'text' => __('Create host dependency configuration'),
-        ],
-        'export_servicedependencies'   => [
-            'text' => __('Create service dependency configuration'),
-        ],
-        'export_userdefinedmacros'     => [
-            'text' => __('Export user defined macros'),
-        ],
-    ];
-
-    foreach ($tasks as $taskName => $task) {
-        if (isset($task['options'])) {
-            //Task with secial options
-            $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
-        } else {
-            //Normal task
-            $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
-        }
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => $taskName,
-                'text' => $task['text'],
-            ],
-        ];
-        $this->Export->save($data);
-    }
-    $gearmanClient->runTasks();
-
-    //runTasks() may be block for a long time
-    //Reset MySQL Connection to avoid MySQL hase gone away
-    $this->Systemsetting->getDatasource()->reconnect();
-
-    //Export done
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task' => 'after_export_external_tasks',
-            'text' => __('Execute post export tasks'),
-        ],
-    ];
-    $response = $this->Export->save($data);
-    $this->NagiosExport->afterExportExternalTasks();
-    $this->Export->saveField('finished', 1);
-    $this->Export->saveField('successfully', 1);
-
-    //Verify new configuration
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task' => 'export_verify_new_configuration',
-            'text' => __('Verifying new configuration'),
-        ],
-    ];
-    $this->Export->save($data);
-    $command = $this->NagiosExport->returnVerifyCommand();
-    $output = null;
-    exec($command, $output, $returncode);
-    $this->Export->saveField('finished', 1);
-    if ($returncode === 0) {
-        //New configuration is valid :-)
-        //Reloading monitoring system
-        $this->Export->saveField('successfully', 1);
-        $this->Export->create();
-        $data = [
-            'Export' => [
-                'task' => 'export_reload_monitoring',
-                'text' => __('Reloading monitoring engine'),
-            ],
-        ];
-        $this->Export->save($data);
-        $command = $this->NagiosExport->returnReloadCommand();
-        $output = null;
-        exec($command, $output, $returncode);
-        $this->Export->saveField('finished', 1);
-        if ($returncode == 0) {
-            $this->Export->saveField('finished', 1);
-            $this->Export->saveField('successfully', 1);
-
-            //Run After Export command
+        if ($createBackup == 1) {
             $this->Export->create();
             $data = [
                 'Export' => [
-                    'task' => 'export_after_export_command',
-                    'text' => __('Execute after export command'),
+                    'task' => 'export_create_backup',
+                    'text' => __('Create Backup of old configuration'),
                 ],
             ];
             $result = $this->Export->save($data);
-            $command = $this->NagiosExport->returnAfterExportCommand();
-            $output = null;
-            exec($command, $output, $returncode);
-            //The exec() may be block for a while
-            //Reset MySQL Connection to avoid MySQL hase gone away
-            $this->Systemsetting->getDatasource()->reconnect();
-            $this->Export->id = $result['Export']['id'];
-            $this->Export->saveField('finished', 1);
-            if ($returncode == 0) {
-                $this->Export->saveField('successfully', 1);
-                $this->distributedMonitoringAfterExportCommand();
-            } else {
-                $successfully = false;
-                $this->Export->saveField('successfully', 0);
+
+            App::uses('Folder', 'Utility');
+            $folder1 = new Folder(Configure::read('nagios.export.backupSource'));
+
+            $backupTarget = Configure::read('nagios.export.backupTarget') . '/' . date('d-m-Y_H-i-s');
+
+            if (!is_dir(Configure::read('nagios.export.backupTarget'))) {
+                mkdir(Configure::read('nagios.export.backupTarget'));
             }
-        } else {
-            $successfully = false;
-            $this->Export->saveField('successfully', 0);
+
+            if (!is_dir($backupTarget)) {
+                mkdir($backupTarget);
+            }
+            $folder1->copy($backupTarget);
+
+            $filename = "export_oitc_bkp_" . date("Y-m-d_His") . ".sql";
+            $this->NagiosExport->makeSQLBackup(Configure::read('nagios.export.backupTarget') . '/' . $filename);
+
+            $this->Export->saveField('finished', 1);
+            $this->Export->saveField('successfully', 1);
         }
-    } else {
-        //Error with new configuration :-(
-        $successfully = false;
-        $this->Export->saveField('successfully', 0);
-    }
-
-    //Export done
-    $this->Export->create();
-    $data = [
-        'Export' => [
-            'task'         => 'export_finished',
-            'text'         => __('Refresh finished'),
-            'finished'     => 1,
-            'successfully' => $successfully,
-        ],
-    ];
-    $this->Export->save($data);
-    $exportStarted = $this->Export->findByTask('export_started');
-    $exportStarted['Export']['finished'] = 1;
-    $exportStarted['Export']['successfully'] = $successfully;
-    $this->Export->save($exportStarted);
-
-    if ($successfully) {
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
-            $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
-            //Unmark all SAT-Systems
-            $SatelliteModel->disableAllInstanceConfigSyncs();
-        }
-    }
-
-}
-
-/**
- * @param GearmanTask $task
- */
-public
-function exportCallback($task) {
-    $result = unserialize($task->data());
-    if ($result['task'] !== 'export_sync_sat_config') {
-        $exportRecord = $this->Export->findByTask($result['task']);
-        if (!empty($exportRecord)) {
-            $exportRecord['Export']['finished'] = 1;
-            $exportRecord['Export']['successfully'] = 1;
-            $this->Export->save($exportRecord);
-        }
-    }
-}
-
-public
-function distributedMonitoringAfterExportCommand() {
-    //Loading distributed Monitoring support, if plugin is loaded/installed
-    $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-        return strpos($value, 'Module') !== false;
-    });
-
-    if (in_array('DistributeModule', $modulePlugins)) {
-        //DistributeModule is loaded and installed...
-        $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
-
-        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
-        if ($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1) {
-            $satellites = $this->Satellite->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Satellite.sync_instance' => 1,
-                ],
-            ]);
-        } else {
-            $satellites = $this->Satellite->find('all', [
-                'recursive' => -1,
-            ]);
-        }
-
 
         $gearmanClient = new GearmanClient();
         $gearmanClient->addServer($this->Config['address'], $this->Config['port']);
         //This callback gets called, for any finished export task (like hosttemplates, services etc...)
         $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
 
-        if (!empty($satellites)) {
-            foreach ($satellites as $satellite) {
+        //Delete old configuration
+        //Delete old configuration
+        $this->Export->create();
+        $data = [
+            'Export' => [
+                'task' => 'export_delete_old_configuration',
+                'text' => __('Delete old configuration'),
+            ],
+        ];
+        $response = $this->Export->save($data);
+        $gearmanClient->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'export_delete_old_configuration']), $this->Config['password']));
+        $this->Export->saveField('finished', 1);
+        $this->Export->saveField('successfully', 1);
+
+        $this->Export->create();
+        $data = [
+            'Export' => [
+                'task' => 'before_export_external_tasks',
+                'text' => __('Execute pre export tasks'),
+            ],
+        ];
+        $response = $this->Export->save($data);
+        $this->NagiosExport->beforeExportExternalTasks();
+        $this->Export->id = $response['Export']['id'];
+        $this->Export->saveField('finished', 1);
+        $this->Export->saveField('successfully', 1);
+
+        //Define all tasks, we can do parallel
+        $tasks = [
+            'export_create_default_config' => [
+                'text' => __('Create default configuration'),
+            ],
+            'export_hosttemplates'         => [
+                'text' => __('Create hosttemplate configuration'),
+            ],
+            'export_hosts'                 => [
+                'text' => __('Create host configuration'),
+            ],
+            'export_commands'              => [
+                'text' => __('Create command configuration'),
+            ],
+            'export_contacts'              => [
+                'text' => __('Create contact configuration'),
+            ],
+            'export_contactgroups'         => [
+                'text' => __('Create contact group configuration'),
+            ],
+            'export_timeperiods'           => [
+                'text' => __('Create timeperiod configuration'),
+            ],
+            'export_hostgroups'            => [
+                'text' => __('Create host group configuration'),
+            ],
+            'export_hostescalations'       => [
+                'text' => __('Create host escalation configuration'),
+            ],
+            'export_servicetemplates'      => [
+                'text' => __('Create servicetemplate configuration'),
+            ],
+            'export_services'              => [
+                'text' => __('Create service configuration'),
+            ],
+            'export_serviceescalations'    => [
+                'text' => __('Create service escalation configuration'),
+            ],
+            'export_servicegroups'         => [
+                'text' => __('Create service group configuration'),
+            ],
+            'export_hostdependencies'      => [
+                'text' => __('Create host dependency configuration'),
+            ],
+            'export_servicedependencies'   => [
+                'text' => __('Create service dependency configuration'),
+            ],
+            'export_userdefinedmacros'     => [
+                'text' => __('Export user defined macros'),
+            ],
+        ];
+
+        foreach ($tasks as $taskName => $task) {
+            if (isset($task['options'])) {
+                //Task with secial options
+                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName, 'options' => $task['options']]), $this->Config['password']));
+            } else {
+                //Normal task
+                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => $taskName]), $this->Config['password']));
+            }
+            $this->Export->create();
+            $data = [
+                'Export' => [
+                    'task' => $taskName,
+                    'text' => $task['text'],
+                ],
+            ];
+            $this->Export->save($data);
+        }
+        $gearmanClient->runTasks();
+
+        //runTasks() may be block for a long time
+        //Reset MySQL Connection to avoid MySQL hase gone away
+        $this->Systemsetting->getDatasource()->reconnect();
+
+        //Export done
+        $this->Export->create();
+        $data = [
+            'Export' => [
+                'task' => 'after_export_external_tasks',
+                'text' => __('Execute post export tasks'),
+            ],
+        ];
+        $response = $this->Export->save($data);
+        $this->NagiosExport->afterExportExternalTasks();
+        $this->Export->saveField('finished', 1);
+        $this->Export->saveField('successfully', 1);
+
+        //Verify new configuration
+        $this->Export->create();
+        $data = [
+            'Export' => [
+                'task' => 'export_verify_new_configuration',
+                'text' => __('Verifying new configuration'),
+            ],
+        ];
+        $this->Export->save($data);
+        $command = $this->NagiosExport->returnVerifyCommand();
+        $output = null;
+        exec($command, $output, $returncode);
+        $this->Export->saveField('finished', 1);
+        if ($returncode === 0) {
+            //New configuration is valid :-)
+            //Reloading monitoring system
+            $this->Export->saveField('successfully', 1);
+            $this->Export->create();
+            $data = [
+                'Export' => [
+                    'task' => 'export_reload_monitoring',
+                    'text' => __('Reloading monitoring engine'),
+                ],
+            ];
+            $this->Export->save($data);
+            $command = $this->NagiosExport->returnReloadCommand();
+            $output = null;
+            exec($command, $output, $returncode);
+            $this->Export->saveField('finished', 1);
+            if ($returncode == 0) {
+                $this->Export->saveField('finished', 1);
+                $this->Export->saveField('successfully', 1);
+
+                //Run After Export command
                 $this->Export->create();
-                $this->Export->save([
+                $data = [
                     'Export' => [
-                        'task' => 'export_sync_sat_config_' . $satellite['Satellite']['id'],
-                        'text' => __('Copy new monitoring configuration for Satellite [' . $satellite['Satellite']['id'] . '] ' . $satellite['Satellite']['name']),
+                        'task' => 'export_after_export_command',
+                        'text' => __('Execute after export command'),
+                    ],
+                ];
+                $result = $this->Export->save($data);
+                $command = $this->NagiosExport->returnAfterExportCommand();
+                $output = null;
+                exec($command, $output, $returncode);
+                //The exec() may be block for a while
+                //Reset MySQL Connection to avoid MySQL hase gone away
+                $this->Systemsetting->getDatasource()->reconnect();
+                $this->Export->id = $result['Export']['id'];
+                $this->Export->saveField('finished', 1);
+                if ($returncode == 0) {
+                    $this->Export->saveField('successfully', 1);
+                    $this->distributedMonitoringAfterExportCommand();
+                } else {
+                    $successfully = false;
+                    $this->Export->saveField('successfully', 0);
+                }
+            } else {
+                $successfully = false;
+                $this->Export->saveField('successfully', 0);
+            }
+        } else {
+            //Error with new configuration :-(
+            $successfully = false;
+            $this->Export->saveField('successfully', 0);
+        }
+
+        //Export done
+        $this->Export->create();
+        $data = [
+            'Export' => [
+                'task'         => 'export_finished',
+                'text'         => __('Refresh finished'),
+                'finished'     => 1,
+                'successfully' => $successfully,
+            ],
+        ];
+        $this->Export->save($data);
+        $exportStarted = $this->Export->findByTask('export_started');
+        $exportStarted['Export']['finished'] = 1;
+        $exportStarted['Export']['successfully'] = $successfully;
+        $this->Export->save($exportStarted);
+
+        if ($successfully) {
+            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+                $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
+                //Unmark all SAT-Systems
+                $SatelliteModel->disableAllInstanceConfigSyncs();
+            }
+        }
+
+    }
+
+    /**
+     * @param GearmanTask $task
+     */
+    public function exportCallback($task) {
+        $result = unserialize($task->data());
+        if ($result['task'] !== 'export_sync_sat_config') {
+            $exportRecord = $this->Export->findByTask($result['task']);
+            if (!empty($exportRecord)) {
+                $exportRecord['Export']['finished'] = 1;
+                $exportRecord['Export']['successfully'] = 1;
+                $this->Export->save($exportRecord);
+            }
+        }
+    }
+
+    public function distributedMonitoringAfterExportCommand() {
+        //Loading distributed Monitoring support, if plugin is loaded/installed
+        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        if (in_array('DistributeModule', $modulePlugins)) {
+            //DistributeModule is loaded and installed...
+            $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
+
+            $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+            if ($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1) {
+                $satellites = $this->Satellite->find('all', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Satellite.sync_instance' => 1,
                     ],
                 ]);
-                $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
+            } else {
+                $satellites = $this->Satellite->find('all', [
+                    'recursive' => -1,
+                ]);
             }
-            $gearmanClient->runTasks();
+
+
+            $gearmanClient = new GearmanClient();
+            $gearmanClient->addServer($this->Config['address'], $this->Config['port']);
+            //This callback gets called, for any finished export task (like hosttemplates, services etc...)
+            $gearmanClient->setCompleteCallback([$this, 'exportCallback']);
+
+            if (!empty($satellites)) {
+                foreach ($satellites as $satellite) {
+                    $this->Export->create();
+                    $this->Export->save([
+                        'Export' => [
+                            'task' => 'export_sync_sat_config_' . $satellite['Satellite']['id'],
+                            'text' => __('Copy new monitoring configuration for Satellite [' . $satellite['Satellite']['id'] . '] ' . $satellite['Satellite']['name']),
+                        ],
+                    ]);
+                    $gearmanClient->addTask("oitc_gearman", Security::cipher(serialize(['task' => 'export_sync_sat_config', 'Satellite' => $satellite]), $this->Config['password']));
+                }
+                $gearmanClient->runTasks();
+            }
+            // Avoid "MySQL server has gone away"
+            $this->Systemsetting->getDatasource()->reconnect();
         }
-        // Avoid "MySQL server has gone away"
-        $this->Systemsetting->getDatasource()->reconnect();
     }
-}
 
-/**
- * The signal handler is called by the linux kernel or pcntl_signal_dispatch and will handel singals^^
- * Delete oitc.cmd and exit on SIGTERM and SIGINT
- *
- * @param    int $signo , the signal catched by pcntl_signal_dispatch()
- *
- * @return    void
- * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
- * @since     3.0.1
- */
-public
-function sig_handler($signo) {
-    switch ($signo) {
-        case SIGTERM:
-        case SIGINT:
-            if ($this->parentProcess) {
-                foreach ($this->childPids as $pid) {
-                    posix_kill($pid, SIGTERM);
-                }
+    /**
+     * The signal handler is called by the linux kernel or pcntl_signal_dispatch and will handel singals^^
+     * Delete oitc.cmd and exit on SIGTERM and SIGINT
+     *
+     * @param    int $signo , the signal catched by pcntl_signal_dispatch()
+     *
+     * @return    void
+     * @author    Daniel Ziegler <daniel.ziegler@it-novum.com>
+     * @since     3.0.1
+     */
+    public function sig_handler($signo) {
+        switch ($signo) {
+            case SIGTERM:
+            case SIGINT:
+                if ($this->parentProcess) {
+                    foreach ($this->childPids as $pid) {
+                        posix_kill($pid, SIGTERM);
+                    }
 
-                foreach ($this->childPids as $pid) {
-                    pcntl_waitpid($pid, $status);
-                }
+                    foreach ($this->childPids as $pid) {
+                        pcntl_waitpid($pid, $status);
+                    }
 
-                if (file_exists(Configure::read('gearman.pidfile'))) {
-                    unlink(Configure::read('gearman.pidfile'));
-                }
-            }
-            exit(0);
-            break;
-
-        case SIGCHLD:
-            ///Get the dead child pid and clean up the zombie process
-            if ($this->parentProcess) {
-                $dead_child_pid = pcntl_wait($status, WNOHANG);
-                $pids = [];
-                foreach ($this->childPids as $pid) {
-                    if ($pid != $dead_child_pid) {
-                        $pids[] = $pid;
+                    if (file_exists(Configure::read('gearman.pidfile'))) {
+                        unlink(Configure::read('gearman.pidfile'));
                     }
                 }
-                $this->childPids = $pids;
-                unset($pids);
-            }
-            break;
+                exit(0);
+                break;
 
-        default:
-            //$this->out('Warning: Signal not supported yet!');
-            break;
-    }
-}
+            case SIGCHLD:
+                ///Get the dead child pid and clean up the zombie process
+                if ($this->parentProcess) {
+                    $dead_child_pid = pcntl_wait($status, WNOHANG);
+                    $pids = [];
+                    foreach ($this->childPids as $pid) {
+                        if ($pid != $dead_child_pid) {
+                            $pids[] = $pid;
+                        }
+                    }
+                    $this->childPids = $pids;
+                    unset($pids);
+                }
+                break;
 
-/**
- * Pacemaker likes this function, we dont know why :)
- */
-public
-function probe() {
-    echo "restart\n";
-    exit(0);
-}
-
-/**
- * @return bool
- */
-public
-function status() {
-    foreach ($this->_getPid() as $pid) {
-        exec('ps -eaf |grep ' . escapeshellarg($pid) . ' |grep -v grep', $output);
-        foreach ($output as $line) {
-            if (preg_match('#.*app/Console/cake.php -working .*/app gearman_worker (-d|--daemon|--start)#', $line)) {
-                return true;
-            }
+            default:
+                //$this->out('Warning: Signal not supported yet!');
+                break;
         }
     }
-    // The file should not exist at this point, if it exists the GearmanWorker crashed and we need to cleanup
-    if (file_exists(Configure::read('gearman.pidfile'))) {
-        unlink(Configure::read('gearman.pidfile'));
+
+    /**
+     * Pacemaker likes this function, we dont know why :)
+     */
+    public function probe() {
+        echo "restart\n";
+        exit(0);
     }
 
-    return false;
-}
+    /**
+     * @return bool
+     */
+    public function status() {
+        foreach ($this->_getPid() as $pid) {
+            exec('ps -eaf |grep ' . escapeshellarg($pid) . ' |grep -v grep', $output);
+            foreach ($output as $line) {
+                if (preg_match('#.*app/Console/cake.php -working .*/app gearman_worker (-d|--daemon|--start)#', $line)) {
+                    return true;
+                }
+            }
+        }
+        // The file should not exist at this point, if it exists the GearmanWorker crashed and we need to cleanup
+        if (file_exists(Configure::read('gearman.pidfile'))) {
+            unlink(Configure::read('gearman.pidfile'));
+        }
 
-public
-function restart() {
-    if ($this->stop(false)) {
-        sleep(1);
-        $this->start();
+        return false;
     }
-}
 
-/**
- * @param bool $exit
- *
- * @return bool
- */
-public
-function stop($exit = true) {
-    if (!$this->status()) {
-        $this->out("<info>Notice: oITC GearmanWorker isn't running!</info>");
+    public function restart() {
+        if ($this->stop(false)) {
+            sleep(1);
+            $this->start();
+        }
+    }
+
+    /**
+     * @param bool $exit
+     *
+     * @return bool
+     */
+    public function stop($exit = true) {
+        if (!$this->status()) {
+            $this->out("<info>Notice: oITC GearmanWorker isn't running!</info>");
+            if ($exit) {
+                exit(0);
+            }
+
+            return true;
+        }
+
+        foreach ($this->_getPid() as $mypid) {
+            posix_kill($mypid, SIGTERM);
+            $this->out("<info>Waiting for oITC GearmanWorker to exit...</info>", false);
+            pcntl_waitpid($mypid, $status);
+            $this->out("<green>   OK</green>");
+        }
         if ($exit) {
             exit(0);
         }
@@ -1122,60 +1170,45 @@ function stop($exit = true) {
         return true;
     }
 
-    foreach ($this->_getPid() as $mypid) {
-        posix_kill($mypid, SIGTERM);
-        $this->out("<info>Waiting for oITC GearmanWorker to exit...</info>", false);
-        pcntl_waitpid($mypid, $status);
-        $this->out("<green>   OK</green>");
-    }
-    if ($exit) {
-        exit(0);
-    }
-
-    return true;
-}
-
-/**
- * @return array
- */
-private
-function _getPid() {
-    $return = [];
-    if (file_exists(Configure::read('gearman.pidfile'))) {
-        $pids = file(Configure::read('gearman.pidfile'));
-        if (sizeof($pids) > 1) {
-            $this->out('<warning>More than one pid in my pid file!</warning>');
+    /**
+     * @return array
+     */
+    private function _getPid() {
+        $return = [];
+        if (file_exists(Configure::read('gearman.pidfile'))) {
+            $pids = file(Configure::read('gearman.pidfile'));
+            if (sizeof($pids) > 1) {
+                $this->out('<warning>More than one pid in my pid file!</warning>');
+            }
+            foreach ($pids as $pid) {
+                $return[] = trim($pid);
+            }
         }
-        foreach ($pids as $pid) {
-            $return[] = trim($pid);
-        }
+
+        return $return;
     }
 
-    return $return;
-}
-
-/**
- * @return bool
- */
-private
-function deleteMkAutochecks() {
-    $autochecksPath = $this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'] . 'autochecks';
-    if (!is_dir($autochecksPath)) {
-        return false;
-    }
-    $files = [];
-    foreach (new DirectoryIterator($autochecksPath) as $fileInfo) {
-        if (!$fileInfo->isDot()) {
-            $files[] = $fileInfo->getRealPath();
+    /**
+     * @return bool
+     */
+    private function deleteMkAutochecks() {
+        $autochecksPath = $this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'] . 'autochecks';
+        if (!is_dir($autochecksPath)) {
+            return false;
         }
-    }
-    if (empty($files)) {
+        $files = [];
+        foreach (new DirectoryIterator($autochecksPath) as $fileInfo) {
+            if (!$fileInfo->isDot()) {
+                $files[] = $fileInfo->getRealPath();
+            }
+        }
+        if (empty($files)) {
+            return true;
+        }
+
+        $Filesystem = new \Symfony\Component\Filesystem\Filesystem();
+        $Filesystem->remove($files);
+
         return true;
     }
-
-    $Filesystem = new \Symfony\Component\Filesystem\Filesystem();
-    $Filesystem->remove($files);
-
-    return true;
-}
 }
