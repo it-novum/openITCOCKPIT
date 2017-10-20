@@ -55,8 +55,6 @@
                     $hostdowntimetyps = [
                         0 => __('Individual host'),
                         1 => __('Host including services'),
-                        2 => __('Host and dependent Hosts (triggered)'),
-                        3 => __('Host and dependent Hosts (non-triggered)'),
                     ];
 
                     echo $this->CustomValidationErrors->errorHTML('downtimetype', [
@@ -71,19 +69,23 @@
                         'value' => 'host',
                     ]);
                     echo $this->Form->input('object_id', [
-                        'options'   => $hosts,
-                        'multiple'  => true,
+                        'options'  => $hosts,
+                        'multiple' => true,
                         'label'     => ['text' => __('Host'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                         'class'     => 'chosen col col-xs-12',
                         'selected'  => $selected,
+                        'itn-ajax' => '/Hosts/ajaxGetByTerm'
                     ]);
                     echo $this->Form->input('downtimetype_id', [
                         'options'   => $hostdowntimetyps,
                         'label'     => ['text' => __('Maintenance period for'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                         'class'     => 'chosen col col-xs-12',
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
+                        'selected'  => $preselectedDowntimetype,
                     ]);
+                    //var_dump($psd);
+                    //echo $psd;
                     echo $this->Form->input('comment', [
                         'value'     => __('In maintenance'),
                         'label'     => ['text' => __('Comment'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],

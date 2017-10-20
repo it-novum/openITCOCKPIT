@@ -50,10 +50,25 @@ app/Plugin/NWCModule
 app/Plugin/NrpeModule
 app/Plugin/PostgresModule
 app/Plugin/WMIModule
+app/Plugin/PagerdutyModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
 tests
 app/webroot/img/logo_custom.png
 app/webroot/img/logo_small_custom.png
+
+!app/Vendor/
+app/Vendor/*
+!app/Vendor/adldap
+!app/Vendor/Date
+!app/Vendor/Oauth2
+!app/Vendor/imageSmoothArc.php
+!app/Vendor/qqFileUploader.php
+app/composer.lock
+vendor
+vendor/*
+Vendor
+Vendor/*
+
 

@@ -93,24 +93,38 @@
 
             echo $this->Form->input('Serviceescalation.id', ['type' => 'hidden', 'value' => $serviceescalation['Serviceescalation']['id']]);
 
-            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service', [
-                'label'    => __('<i class="fa fa-plus-square text-success"></i> Services'),
-                'options'  => $services,
-                'required' => true,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10 success',
-                'selected' => $this->request->data('Serviceescalation.Service'),
+            echo $this->Form->input('Serviceescalation.Service', [
+                'options'          => $services,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Services'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10',
+                ],
                 'target'   => '#ServiceescalationServiceExcluded',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServiceescalationContainerId',
+                'itn-ajax-onchange'=> '#ServiceescalationServiceExcluded',
             ]);
 
-            echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service_excluded', [
-                'label'    => __('<i class="fa fa-plus-square text-danger"></i> Services (excluded)'),
-                'options'  => $services,
-                'required' => false,
-                'escape'   => false,
-                'divClass' => 'col col-xs-10 danger',
-                'selected' => $this->request->data('Serviceescalation.Service_excluded'),
+            echo $this->Form->input('Serviceescalation.Service_excluded', [
+                'options'          => $servicesExcluded,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => '<i class="fa fa-plus-square text-danger"></i> ' . __('Services (excluded)'),
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 danger',
+                ],
                 'target'   => '#ServiceescalationService',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServiceescalationContainerId',
+                'itn-ajax-onchange'=> '#ServiceescalationService',
             ]);
 
             echo $this->Form->input('Serviceescalation.Servicegroup', [
@@ -118,7 +132,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-plus-square text-success"></i> Servicegroups'),
+                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -133,7 +147,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Servicegroups (excluded)'),
+                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Servicegroups (excluded)'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',

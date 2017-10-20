@@ -1116,4 +1116,24 @@ class DashboardsController extends AppController
             }
         }
     }
+
+    public function saveGrafanaId(){
+        $this->autoRender = false;
+        if (isset($this->request->data['dashboard']['widgetId'])) {
+            $widgetId = $this->request->data['dashboard']['widgetId'];
+            $hostId = $this->request->data['dashboard']['hostId'];
+            $tabId = $this->request->data['dashboard']['tabId'];
+            if ($this->Widget->exists($widgetId)) {
+                $widget = $this->Widget->findById($widgetId);
+                $widget['Widget']['host_id'] = $hostId;
+                if($this->Widget->save($widget)){
+                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
+                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
+                    return $this->redirect(['action' => 'index', $tabId]);
+                }else{
+                    return $this->redirect(['action' => 'index']);
+                }
+            }
+        }
+    }
 }

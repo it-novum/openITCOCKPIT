@@ -88,10 +88,13 @@ class Servicegroup extends AppModel
                             'Container.parent_id'        => array_unique(array_values($tenant)),
                             'Container.containertype_id' => CT_SERVICEGROUP,
                         ],
-                        'recursive'  => 1,
+                        'recursive'  => -1,
                         'order'      => [
                             'Container.name' => 'ASC',
                         ],
+                        'contain' => [
+                            'Container'
+                        ]
                     ]);
 
                 default:
@@ -101,10 +104,14 @@ class Servicegroup extends AppModel
                             'Container.parent_id'        => array_unique(array_values($tenant)),
                             'Container.containertype_id' => CT_SERVICEGROUP,
                         ],
-                        'recursive'  => 1,
+                        'recursive'  => -1,
+                        'contain' => ['Container'],
                         'order'      => [
                             'Container.name' => 'ASC',
                         ],
+                        'contain' => [
+                            'Container'
+                        ]
                     ]);
                     foreach ($results as $result) {
                         $return[$result['Servicegroup'][$index]] = $result['Container']['name'];

@@ -911,8 +911,8 @@ class DocumentationsController extends AppController
             $renderPage = true;
 
             App::uses('File', 'Utility');
-            require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
-            require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
+            //require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
+            //require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
 
             $basePath = APP.'docs'.DS.$language;
             $categoryDirectory = $wiki[$categoryUrl]['directory'];

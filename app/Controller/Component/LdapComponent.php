@@ -28,7 +28,7 @@ use Model\Adldap;
 class LdapComponent extends Component
 {
 
-    public $components = ['Session'];
+    public $components = ['Flash'];
 
 
     public function __construct(ComponentCollection $collection, $settings = [])
@@ -72,14 +72,23 @@ class LdapComponent extends Component
                 'use_tls'            => $useTls,
             ]);
         } catch (Exception $e) {
-            $this->Session->setFlash($e->getMessage(), 'default', [
-                'class' => 'alert alert-danger',
-            ], 'flash');
+            $this->Flash->set(
+                $e->getMessage(), [
+                    'element' => 'default',
+                    'params'  => [
+                        'class' => 'alert alert-danger'
+                    ]
+                ]
+            );
         }
     }
 
     public function login($username, $password)
     {
+        if(empty($username) || empty($password)){
+            return false;
+        }
+
         if (!is_resource($this->adldap)) {
             $this->connect();
         }

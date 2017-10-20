@@ -65,27 +65,33 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Services'),
-                'data-placeholder' => __('Please choose a service'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10',
                 ],
                 'target'           => '#ServicedependencyServiceDependent',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServicedependencyContainerId',
+                'itn-ajax-onchange'=> '#ServicedependencyServiceDependent',
             ]);
 
             echo $this->Form->input('Servicedependency.ServiceDependent', [
-                'options'          => $services,
+                'options'          => $dependentServices,
                 'class'            => 'chosen test',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent services'),
-                'data-placeholder' => __('Please choose a service'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 info',
                 ],
                 'target'           => '#ServicedependencyService',
+                'data-placeholder' => __('Please, start typing...'),
+                'itn-ajax' => '/Services/ajaxGetByTerm',
+                'itn-ajax-container' => '#ServicedependencyContainerId',
+                'itn-ajax-onchange'=> '#ServicedependencyService',
             ]);
 
             echo $this->Form->input('Servicedependency.Servicegroup', [
@@ -93,7 +99,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Servicegroups'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -107,7 +113,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent Servicegroups'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',

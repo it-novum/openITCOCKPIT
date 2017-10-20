@@ -26,12 +26,14 @@
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
-if(!isset($hoststatus['Hoststatus'])):
+if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+$HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -97,6 +99,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
+                    <?php if ($GrafanaDashboardExists): ?>
+                        <li class="">
+                            <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span></a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
                 <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
             </header>
@@ -112,8 +120,17 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     <!-- widget body text-->
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo $host['Host']['name']; ?>
-                            <strong><?php echo __('available since:') ?><?php echo $this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+                            <?php echo h($host['Host']['name']); ?>
+                            <strong>
+                                <?php echo __('is %s since:', $HoststatusIcon->getHumanState()) ?>
+
+                                <?php echo $this->Time->format(
+                                    $Hoststatus->getLastHardStateChange(),
+                                    $this->Auth->user('dateformat'),
+                                    false,
+                                    $this->Auth->user('timezone')
+                                ); ?>
+                            </strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>
                                 <strong><?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
@@ -138,9 +155,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     </span>
                                     <?php
                                     if ($Hoststatus->getAcknowledgementType() == 1):
-                                        echo __('The current status was already acknowledged by');
+                                        echo __('The current status was acknowledged by');
                                     else:
-                                        echo __('The current status was already acknowledged (STICKY) by');
+                                        echo __('The current status was acknowledged (STICKY) by');
                                     endif; ?>
                                     <strong><?php echo h($Acknowledgement->getAuthorName()); ?></strong> (<i
                                             class="fa fa-clock-o"></i>
@@ -162,7 +179,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                 ['target' => '_blank']) :
                                             $Acknowledgement->getCommentData();
                                     else:
-                                        echo h($Acknowledgement->getCommentData());
+                                        echo $this->Bbcode->asHtml(h($Acknowledgement->getCommentData()));
                                     endif;
                                     ?>".
 
@@ -240,15 +257,15 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 <tr>
                                     <td><strong><?php echo __('Priority'); ?>:</strong></td>
                                     <td>
-                                        <?php if(isset($host['Host']['priority'])):?>
+                                        <?php if (isset($host['Host']['priority'])): ?>
                                             <?php for ($i = 1; $i < 6; $i++): ?>
-                                                <?php if($i <= $host['Host']['priority']):?>
+                                                <?php if ($i <= $host['Host']['priority']): ?>
                                                     <i class="fa fa-fire" style="color:#3276B1; font-size:17px;"></i>
-                                                <?php else:?>
+                                                <?php else: ?>
                                                     <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
                                                 <?php endif;
                                             endfor; ?>
-                                        <?php endif;?>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <?php if (!$Hoststatus->isNotificationsEnabled()): ?>
@@ -493,6 +510,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 </h5>
                             <?php endif; ?>
                         </div>
+                        <?php if ($GrafanaDashboardExists): ?>
+                            <div id="tab5" class="tab-pane fade">
+                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
+                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <!-- end widget body text-->
                     <!-- widget footer -->
@@ -554,7 +577,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
                                                         <th><?php echo __('Servicestatus'); ?></th>
-                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i>
+                                                        </th>
                                                         <th class="text-center"><i class="fa fa-user"
                                                                                    title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                         </th>
@@ -575,7 +599,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tbody>
                                                     <?php foreach ($services as $service):
                                                         $_servicestatus = [];
-                                                        if(isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])){
+                                                        if (isset($servicestatus[$service['Service']['uuid']]['Servicestatus'])) {
                                                             $_servicestatus = $servicestatus[$service['Service']['uuid']]['Servicestatus'];
                                                         }
                                                         $Servicestatus = new Servicestatus(
@@ -604,10 +628,12 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                                         class="fa fa-cog"></i>&nbsp;
                                                                             </a>
                                                                         <?php else: ?>
-                                                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                            <a href="javascript:void(0);"
+                                                                               class="btn btn-default">&nbsp;<i
                                                                                         class="fa fa-cog"></i>&nbsp;</a>
                                                                         <?php endif; ?>
-                                                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                                                        <a href="javascript:void(0);"
+                                                                           data-toggle="dropdown"
                                                                            class="btn btn-default dropdown-toggle"><span
                                                                                     class="caret"></span></a>
                                                                         <ul class="dropdown-menu">
@@ -919,7 +945,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                         3 => __('Hosts and dependent Hosts (non-triggered)'),
                     ];
                     ?>
-                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for') . ':']) ?>
+                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'selected' => $preselectedDowntimetype, 'label' => __('Maintenance period for') . ':']) ?>
                     <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
                     <!-- from -->
                     <div class="form-group">

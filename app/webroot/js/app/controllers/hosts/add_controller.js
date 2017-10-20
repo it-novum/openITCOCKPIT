@@ -941,7 +941,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         }
 
         $(options.prefix+options.selector).val(options.value);
-        $(options.prefix+options.selector).trigger("chosen:updated");
+        $(options.prefix+options.selector).trigger("chosen:updated").change();
     },
 
     loadParameters: function(command_id){
