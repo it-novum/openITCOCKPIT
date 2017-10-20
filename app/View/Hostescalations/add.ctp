@@ -64,27 +64,27 @@
                 'class' => 'chosen',
                 'multiple' => true,
                 'style' => 'width:100%;',
-                'label' => '<i class="fa fa-plus-square text-success"></i> ' . __('Hosts'),
-                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'],
-                'target' => '#HostescalationHostExcluded',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostescalationContainerId',
-                'itn-ajax-onchange'=> '#HostescalationHostExcluded',
+                'label' => __('<i class="fa fa-plus-square text-success"></i> Hosts'),
+                'data-placeholder' => __('Please choose a host'),
+                'wrapInput' => [
+                    'tag' => 'div',
+                    'class' => 'col col-xs-10 success'
+                ],
+                'target' => '#HostescalationHostExcluded'
             ]);
 
             echo $this->Form->input('Hostescalation.Host_excluded', [
-                'options' => $excludedHosts,
+                'options' => $hosts,
                 'class' => 'chosen test',
                 'multiple' => true,
                 'style' => 'width:100%;',
-                'label' => '<i class="fa fa-minus-square text-danger"></i> ' .  __('Hosts (excluded)'),
-                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'],
-                'target' => '#HostescalationHost',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostescalationContainerId',
-                'itn-ajax-onchange'=> '#HostescalationHost',
+                'label' => __('<i class="fa fa-minus-square text-danger"></i> Hosts (excluded)'),
+                'data-placeholder' => __('Please choose a host'),
+                'wrapInput' => [
+                    'tag' => 'div',
+                    'class' => 'col col-xs-10 danger'
+                ],
+                'target' => '#HostescalationHost'
             ]);
 
             echo $this->Form->input('Hostescalation.Hostgroup', [
@@ -98,15 +98,18 @@
                 'target' => '#HostescalationHostgroupExcluded'
             ]);
 
-            echo $this->Form->input('Hostescalation.Hostgroup_excluded', [
+            echo $this->Form->input('Hostescalation.Hostgroup', [
                 'options' => $hostgroups,
                 'class' => 'chosen',
                 'multiple' => true,
                 'style' => 'width:100%;',
-                'label' => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hostgroups (excluded)'),
+                'label' => __('<i class="fa fa-plus-square text-success"></i> Hostgroups'),
                 'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 danger'],
-                'target' => '#HostescalationHostgroup'
+                'wrapInput' => [
+                    'tag' => 'div',
+                    'class' => 'col col-xs-10 success'
+                ],
+                'target' => '#HostescalationHostgroupExcluded'
             ]);
 
             echo $this->Form->input('Hostescalation.first_notification', [
@@ -116,16 +119,16 @@
             ]);
 
             echo $this->Form->input('Hostescalation.last_notification', [
-                'label'  => __('Last escalation notice'),
+                'label' => __('Last escalation notice'),
                 'placeholder' => 0,
                 'min' => 0
             ]);
 
             echo $this->Form->input('Hostescalation.notification_interval', [
-                'label'       => __('Notification interval'),
+                'label' => __('Notification interval'),
                 'placeholder' => 60,
-                'min'         => 0,
-                'help'        => __('Interval in minutes'),
+                'min' => 0,
+                'help' => __('Interval in minutes'),
             ]);
 
             echo $this->Form->input('Hostescalation.timeperiod_id', [
@@ -164,15 +167,15 @@
                 </legend>
                 <?php
                 $escalation_options = [
-                    'escalate_on_recovery'    => 'fa-square txt-color-greenLight',
-                    'escalate_on_down'        => 'fa-square txt-color-redLight',
+                    'escalate_on_recovery' => 'fa-square txt-color-greenLight',
+                    'escalate_on_down' => 'fa-square txt-color-redLight',
                     'escalate_on_unreachable' => 'fa-square txt-color-blueDark',
                 ];
                 foreach ($escalation_options as $escalation_option => $icon):?>
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($escalation_option, [
                             'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon' => '<i class="fa ' . $icon . '"></i> ',
                         ]); ?>
                         <div class="clearfix"></div>
                     </div>
