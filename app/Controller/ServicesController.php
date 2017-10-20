@@ -2272,7 +2272,7 @@ class ServicesController extends AppController {
         }
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->getAjaxHosts($containerIds, [], [$host_id]);
+        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
