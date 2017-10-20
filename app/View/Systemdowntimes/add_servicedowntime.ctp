@@ -77,7 +77,6 @@
                         'class'     => 'chosen col col-xs-12',
                         'selected'  => $selected,
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                        'itn-ajax' => '/Services/ajaxGetByTerm'
                     ]);
                     echo $this->Form->input('comment', [
                         'value'     => __('In maintenance'),

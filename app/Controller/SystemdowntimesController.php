@@ -144,7 +144,7 @@ class SystemdowntimesController extends AppController {
 
         }
 
-        $hosts = $this->Host->getAjaxHosts($writeContainerIds, [], $selected);
+        $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
         $this->set(compact(['hosts', 'selected']));
         $this->set('back_url', $this->referer());
 
@@ -367,11 +367,8 @@ class SystemdowntimesController extends AppController {
 
         }
 
-        $servicesNotFixed = $this->Service->getAjaxServices($writeContainerIds, [], $selected);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
+        $services = $this->Service->servicesByHostContainerIds($writeContainerIds);
+        $services = Hash::combine($services, '{n}.Service.id', ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name');
 
         $this->set(compact(['services','selected']));
         $this->set('back_url',$this->referer());
