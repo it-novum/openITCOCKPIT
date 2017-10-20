@@ -93,40 +93,24 @@
                 );
             endif;
 
-            echo $this->Form->input('Servicedependency.Service', [
-                'options'          => $services,
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
+            echo $this->Form->hostAndServiceSelectOptiongroup('Servicedependency.Service', [
+                'label'    => '<i class="fa fa-square class-default"></i> ' . __('Services'),
+                'options'  => $services,
+                'required' => true,
+                'escape'   => false,
+                'divClass' => 'col col-xs-10',
                 'selected' => (isset($this->request->data['Servicedependency']['Service'])) ? $this->request->data['Servicedependency']['Service'] : [],
                 'target'           => '#ServicedependencyServiceDependent',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Services/ajaxGetByTerm',
-                'itn-ajax-container' => '#ServicedependencyContainerId',
-                'itn-ajax-onchange'=> '#ServicedependencyServiceDependent',
             ]);
 
-            echo $this->Form->input('Servicedependency.ServiceDependent', [
-                'options'          => $dependentServices,
-                'class'            => 'chosen test',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
+            echo $this->Form->hostAndServiceSelectOptiongroup('Servicedependency.ServiceDependent', [
                 'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10 info',
-                ],
+                'options'  => $services,
+                'required' => true,
+                'escape'   => false,
+                'divClass' => 'col col-xs-10 info',
                 'selected' => (isset($this->request->data['Servicedependency']['ServiceDependent'])) ? $this->request->data['Servicedependency']['ServiceDependent'] : [],
-                'target'           => '#ServicedependencyService',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Services/ajaxGetByTerm',
-                'itn-ajax-container' => '#ServicedependencyContainerId',
-                'itn-ajax-onchange'=> '#ServicedependencyService',
+                'target'   => '#ServicedependencyService',
             ]);
 
             echo $this->Form->input('Servicedependency.Servicegroup', [

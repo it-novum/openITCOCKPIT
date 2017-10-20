@@ -97,33 +97,27 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Hosts'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Hosts'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10',
                 ],
                 'target'           => '#HostdependencyHostDependent',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostdependencyContainerId',
-                'itn-ajax-onchange'=> '#HostdependencyHostDependent',
+                'data-placeholder' => __('Please choose a host'),
             ]);
 
             echo $this->Form->input('Hostdependency.HostDependent', [
-                'options'          => $dependentHosts,
+                'options'          => $hosts,
                 'class'            => 'chosen test',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent hosts'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent hosts'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 info',
                 ],
                 'target'           => '#HostdependencyHost',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostdependencyContainerId',
-                'itn-ajax-onchange'=> '#HostdependencyHost',
+                'data-placeholder' => __('Please choose a host'),
             ]);
 
             echo $this->Form->input('Hostdependency.Hostgroup', [
