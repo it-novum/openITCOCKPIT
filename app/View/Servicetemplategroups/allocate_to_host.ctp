@@ -56,15 +56,14 @@
                 <div class="col-xs-12 col-md-8">
                     <?php echo $this->Form->input('Service.host_id', [
                         'options'          => $this->Html->chosenPlaceholder($hosts),
+                        'data-placeholder' => __('Please select...'),
                         'class'            => 'chosen',
                         'wrapInput'        => 'col col-xs-12 col-md-8',
                         'style'            => 'width: 100%',
                         'label'            => [
                             'class' => 'col col-xs-1 control-label',
                             'text'  => __('Host'),
-                        ],
-                        'data-placeholder' => __('Please, start typing...'),
-                        'itn-ajax' => '/Hosts/ajaxGetByTerm'
+                        ]
                     ]); ?>
 
                     <fieldset>
