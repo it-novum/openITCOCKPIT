@@ -35,6 +35,75 @@ angular.module('openITCOCKPIT')
         var lastHostUuid = null;
 
 
+        var forTemplate = function(serverResponse){
+            var services = [];
+            var servicesstatus = [];
+            var hosts = [];
+            var hostsstatus = [];
+            var saved_hostuuids = [];
+            var result = [];
+            var lastendhost = "";
+            var tmp_hostservicegroup = null;
+
+            serverResponse.forEach(function(record){
+                services.push(record.Service);
+                servicesstatus.push([record.Service.id, record.Servicestatus]);
+                if(saved_hostuuids.indexOf(record.Host.uuid) < 0){
+                    hosts.push(record.Host);
+                    hostsstatus.push([record.Host.id, record.Hoststatus]);
+                    saved_hostuuids.push(record.Host.uuid);
+                }
+            });
+
+            services.forEach(function(service){
+                if(lastendhost != service.host_id){
+                    if(tmp_hostservicegroup !== null){
+                        result.push(tmp_hostservicegroup);
+                    }
+
+                    tmp_hostservicegroup = {};
+                    var host = null;
+                    var hoststatus = null;
+                    hosts.forEach(function(hostelem){
+                        if(hostelem.id == service.host_id){
+                            host = hostelem;
+                        }
+                    });
+                    hostsstatus.forEach(function(hoststatelem){
+                        if(hoststatelem[0] === service.host_id){
+                            hoststatus = hoststatelem[1];
+                        }
+                    });
+
+                    tmp_hostservicegroup = {
+                        Host: host,
+                        Hoststatus: hoststatus,
+                        Services: []
+                    };
+                    lastendhost = service.host_id;
+                }
+
+                var servicestatus = null;
+                servicesstatus.forEach(function(servstatelem){
+                    if(servstatelem[0] === service.id){
+                        servicestatus = servstatelem[1];
+                    }
+                });
+
+                tmp_hostservicegroup.Services.push({
+                    Service: service,
+                    Servicestatus: servicestatus
+                });
+
+            });
+
+            if(tmp_hostservicegroup !== null){
+                result.push(tmp_hostservicegroup);
+            }
+
+            return result;
+        };
+
         $scope.load = function(){
             lastHostUuid = null;
             $http.get("/services/index.json", {
@@ -47,7 +116,8 @@ angular.module('openITCOCKPIT')
                     //'filter[Hostgroup.description]': $scope.filter.hostgroup.description
                 }
             }).then(function(result){
-                $scope.services = result.data.all_services;
+                $scope.services = [];
+                $scope.services = forTemplate(result.data.all_services);
                 $scope.paging = result.data.paging;
                 $scope.init = false;
             });
@@ -134,7 +204,6 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
-
 
 
     });
