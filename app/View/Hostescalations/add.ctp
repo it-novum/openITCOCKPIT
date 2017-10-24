@@ -98,18 +98,18 @@
                 'target' => '#HostescalationHostgroupExcluded'
             ]);
 
-            echo $this->Form->input('Hostescalation.Hostgroup', [
+            echo $this->Form->input('Hostescalation.Hostgroup_excluded', [
                 'options' => $hostgroups,
                 'class' => 'chosen',
                 'multiple' => true,
                 'style' => 'width:100%;',
-                'label' => __('<i class="fa fa-plus-square text-success"></i> Hostgroups'),
+                'label' => __('<i class="fa fa-plus-square text-danger"></i> Hostgroups'),
                 'data-placeholder' => __('Please choose a hostgroup'),
                 'wrapInput' => [
                     'tag' => 'div',
                     'class' => 'col col-xs-10 success'
                 ],
-                'target' => '#HostescalationHostgroupExcluded'
+                'target' => '#HostescalationHostgroup'
             ]);
 
             echo $this->Form->input('Hostescalation.first_notification', [
