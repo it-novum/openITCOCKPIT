@@ -272,7 +272,13 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
 
                                     <td>
-                                        {{ service.Service.servicename }}
+                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                            <a href="/services/browser/{{ service.Service.id }}">
+                                                {{ service.Service.servicename }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ service.Service.servicename }}
+                                        <?php endif; ?>
                                     </td>
 
                                     <td>
