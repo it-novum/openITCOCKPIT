@@ -214,8 +214,10 @@ class Host extends AppModel {
 
         ],
     ];
+
+
     /**
-     * Returns an array with hosts, the user is allowd to see by container_id
+     * Returns an array with hosts, the user is allowed to see by container_id
      *
      * @param array $containerIds Container IDs of container ids the user is allowd to see
      * @param array $conditions Additional conditions for selecting hosts

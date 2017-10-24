@@ -48,13 +48,11 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
             }
 
             ajaxUrl = options.ajaxUrl.replace(':selectBoxValue:', containerId);
-            dataToSend = typeof options.dataToSend === 'undefined' ? '' : $(options.dataToSend).val();
             self.Ajaxloader.show();
 
             $.ajax({
                 url: ajaxUrl,
                 type: 'post',
-                data: {addData: dataToSend},
                 dataType: 'json',
                 error: function(){},
                 success: function(){},

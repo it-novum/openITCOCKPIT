@@ -66,32 +66,26 @@
                 'multiple'         => true,
                 'style'            => 'width:100%;',
                 'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
+                'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10',
                 ],
-                'target'           => '#ServicedependencyServiceDependent',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Services/ajaxGetByTerm',
-                'itn-ajax-container' => '#ServicedependencyContainerId',
-                'itn-ajax-onchange'=> '#ServicedependencyServiceDependent',
+                'target'           => '#ServicedependencyServiceDependent'
             ]);
 
             echo $this->Form->input('Servicedependency.ServiceDependent', [
-                'options'          => $dependentServices,
+                'options'          => $services,
                 'class'            => 'chosen test',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
                 'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
+                'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 info',
                 ],
-                'target'           => '#ServicedependencyService',
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Services/ajaxGetByTerm',
-                'itn-ajax-container' => '#ServicedependencyContainerId',
-                'itn-ajax-onchange'=> '#ServicedependencyService',
+                'target'           => '#ServicedependencyService'
             ]);
 
             echo $this->Form->input('Servicedependency.Servicegroup', [

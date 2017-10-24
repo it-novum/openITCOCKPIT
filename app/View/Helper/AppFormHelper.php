@@ -162,22 +162,6 @@ class AppFormHelper extends BoostCakeFormHelper
                 $options['div'] = $options['div'].' datetime';
             }
         }
-        if(isset($options['itn-ajax'])){
-            $ajaxElements = 0;
-            if(is_array($options['options']) && !empty($options['options'])){
-                foreach($options['options'] as $aOption){
-                    if(is_array($aOption)){
-                        $ajaxElements += count($aOption);
-                    }else{
-                        $ajaxElements++;
-                    }
-                }
-            }
-            if($ajaxElements !== 0 && $ajaxElements < AppModel::ITN_AJAX_LIMIT){
-                unset($options['itn-ajax']);
-                unset($options['itn-ajax-depends']);
-            }
-        }
 
         $out = parent::input($fieldName, $options);
         $this->_inputDefaults = $this->_storedInputDefaults;

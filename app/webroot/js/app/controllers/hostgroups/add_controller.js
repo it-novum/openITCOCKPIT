@@ -37,13 +37,11 @@ App.Controllers.HostgroupsAddController = Frontend.AppController.extend({
 		this.ContainerSelectbox.addContainerEventListener({
 			selectBoxSelector: '#ContainerParentId',
 			ajaxUrl: '/hostgroups/loadHosts/:selectBoxValue:' + '.json',
-            dataToSend: '#HostgroupHost',
 			fieldTypes: {
 				hosts: '#HostgroupHost',
 			},
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-			dataPlaceholder: self.getVar('data_placeholder_host')
-		});
+            dataPlaceholder: self.getVar('data_placeholder')		});
         this.ContainerSelectbox.addContainerEventListener({
             selectBoxSelector: '#ContainerParentId',
             ajaxUrl: '/hostgroups/loadHosttemplates/:selectBoxValue:' + '.json',
@@ -51,7 +49,7 @@ App.Controllers.HostgroupsAddController = Frontend.AppController.extend({
                 hosttemplates: '#HostgroupHosttemplate',
             },
             dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-            dataPlaceholder: self.getVar('data_placeholder_hosttemplate')
+            dataPlaceholder: self.getVar('data_placeholder')
         });
 	},
 });
