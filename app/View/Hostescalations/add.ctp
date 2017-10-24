@@ -103,7 +103,7 @@
                 'class' => 'chosen',
                 'multiple' => true,
                 'style' => 'width:100%;',
-                'label' => __('<i class="fa fa-plus-square text-danger"></i> Hostgroups'),
+                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hostgroups (excluded)'),
                 'data-placeholder' => __('Please choose a hostgroup'),
                 'wrapInput' => [
                     'tag' => 'div',
