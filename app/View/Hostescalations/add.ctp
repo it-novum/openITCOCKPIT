@@ -88,28 +88,30 @@
             ]);
 
             echo $this->Form->input('Hostescalation.Hostgroup', [
-                'options' => $hostgroups,
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
-                'label' => '<i class="fa fa-plus-square text-success"></i> ' . __('Hostgroups'),
+                'options'          => $hostgroups,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
+                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Hostgroups'),
                 'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10 success'],
-                'target' => '#HostescalationHostgroupExcluded'
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 success',
+                ],
+                'target'           => '#HostescalationHostgroupExcluded'
             ]);
-
             echo $this->Form->input('Hostescalation.Hostgroup_excluded', [
-                'options' => $hostgroups,
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
+                'options'          => $hostgroups,
+                'class'            => 'chosen',
+                'multiple'         => true,
+                'style'            => 'width:100%;',
                 'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hostgroups (excluded)'),
                 'data-placeholder' => __('Please choose a hostgroup'),
-                'wrapInput' => [
-                    'tag' => 'div',
-                    'class' => 'col col-xs-10 success'
+                'wrapInput'        => [
+                    'tag'   => 'div',
+                    'class' => 'col col-xs-10 danger',
                 ],
-                'target' => '#HostescalationHostgroup'
+                'target'           => '#HostescalationHostgroup'
             ]);
 
             echo $this->Form->input('Hostescalation.first_notification', [
