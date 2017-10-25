@@ -696,6 +696,37 @@ class GearmanWorkerShell extends AppShell {
 
                 $return = $state;
                 break;
+            case 'NmapDiscovery':
+                $nmapScan = ClassRegistry::init('DiscoveryModule.NmapScan');
+                if (!empty($payload['scanId'])) {
+                    $nmapScan->id = $payload['scanId'];
+                }
+
+                $discoveryResult = null;
+                if (!empty($payload['path']) && !empty($payload['filename']) && !empty($payload['address']) && isset($payload['bitmask'])) {
+                    if ($payload['singleHost']) {
+                        exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($payload['address']), $output, $returncode);
+                    } else {
+                        $CIDRAddress = $payload['address'] . '/' . $payload['bitmask'];
+                        if (!empty($payload['hostsWithoutServices'])) {
+                            exec("nmap --unprivileged -sn -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($CIDRAddress), $output, $returncode);
+                        } else {
+                            exec("nmap --unprivileged -oX " . escapeshellarg($payload['path'] . $payload['filename']) . " " . escapeshellarg($CIDRAddress), $output, $returncode);
+                        }
+
+                    }
+
+                }
+
+                $this->Systemsetting->getDatasource()->reconnect();
+                $nmapScan->saveField('finished', 1);
+
+                if ($returncode == 0) {
+                    $nmapScan->saveField('successful', 1);
+                }
+
+                $return = true;
+                break;
         }
 
         return serialize($return);
