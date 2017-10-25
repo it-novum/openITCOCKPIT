@@ -67,8 +67,11 @@ class MapstatusHelper extends AppHelper {
         if (isset($this->_View->viewVars['servicegroups'])) {
             $servicegroupstatus = $this->_View->viewVars['servicegroups'];
             foreach ($servicegroupstatus as $sgs) {
-                $this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs['Servicegroup']['Servicestatus'];
+                if(!empty($sgs['Servicegroup']['uuid'])){
+                    $this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs;
+                }
             }
+            $this->servicegroupstatus['Servicestatus'] = $servicegroupstatus['Servicestatus'];
         }
         if (isset($this->_View->viewVars['mapstatus'])) {
             $this->mapstatus = $this->_View->viewVars['mapstatus'];
@@ -117,19 +120,34 @@ class MapstatusHelper extends AppHelper {
                 array_push($this->servicestatus[$hss['Objects']['name2']], $hss['Servicetemplate']);
                 array_push($this->servicestatus[$hss['Objects']['name2']], $hss['Objects']);
             }
-
             foreach ($hostServiceStatus as $key => $hss) {
                 $hostServiceStates[$key] = $this->servicestatus($hss['Objects']['name2']);
             }
-
             $cumulative_service_state['Service'] = Hash::apply($hostServiceStates, '{n}.state', 'max');
-
             $stateKey = null;
+
+            $numberOfAck = 0;
             foreach ($hostServiceStates as $key => $value) {
-                if ($value['state'] == $cumulative_service_state['Service']) {
-                    $stateKey = $key;
+                if($value['problem_has_been_acknowledged'] == 1){
+                    $numberOfAck++;
                 }
             }
+
+            if(sizeof($hostServiceStates) == $numberOfAck){
+                //there are only ack services
+                foreach ($hostServiceStates as $key => $value){
+                    if ($value['state'] == $cumulative_service_state['Service']) {
+                        $stateKey = $key;
+                    }
+                }
+            }else{
+                foreach ($hostServiceStates as $key => $value){
+                    if ($value['state'] == $cumulative_service_state['Service'] && $value['problem_has_been_acknowledged'] == 0) {
+                        $stateKey = $key;
+                    }
+                }
+            }
+
             if (sizeof($stateKey) > 0) {
                 $servicestate = $hostServiceStates[$stateKey];
             }
@@ -176,15 +194,33 @@ class MapstatusHelper extends AppHelper {
     public function servicestatus($uuid) {
         if (isset($this->servicestatus[$uuid]['current_state'])) {
             if ($this->servicestatus[$uuid]['problem_has_been_acknowledged'] == 1 && $this->servicestatus[$uuid]['scheduled_downtime_depth'] > 0) {
-                return ['state' => $this->servicestatus[$uuid]['current_state'], 'is_flapping' => $this->servicestatus[$uuid]['is_flapping'], 'human_state' => __('Service state is acknowledged and the service is in scheduled downtime'), 'image' => 'downtime_ack.png'];
+                return [
+                    'state' => $this->servicestatus[$uuid]['current_state'],
+                    'is_flapping' => $this->servicestatus[$uuid]['is_flapping'],
+                    'human_state' => __('Service state is acknowledged and the service is in scheduled downtime'),
+                    'image' => 'downtime_ack.png',
+                    'problem_has_been_acknowledged' => $this->servicestatus[$uuid]['problem_has_been_acknowledged']
+                ];
             }
 
             if ($this->servicestatus[$uuid]['problem_has_been_acknowledged'] == 1) {
-                return ['state' => $this->servicestatus[$uuid]['current_state'], 'is_flapping' => $this->servicestatus[$uuid]['is_flapping'], 'human_state' => __('Service state is acknowledged'), 'image' => 'ack.png'];
+                return [
+                    'state' => $this->servicestatus[$uuid]['current_state'],
+                    'is_flapping' => $this->servicestatus[$uuid]['is_flapping'],
+                    'human_state' => __('Service state is acknowledged'),
+                    'image' => 'ack.png',
+                    'problem_has_been_acknowledged' => $this->servicestatus[$uuid]['problem_has_been_acknowledged']
+                ];
             }
 
             if ($this->servicestatus[$uuid]['scheduled_downtime_depth'] > 0) {
-                return ['state' => $this->servicestatus[$uuid]['current_state'], 'is_flapping' => $this->servicestatus[$uuid]['is_flapping'], 'human_state' => __('Service is in scheduled downtime'), 'image' => 'downtime.png'];
+                return [
+                    'state' => $this->servicestatus[$uuid]['current_state'],
+                    'is_flapping' => $this->servicestatus[$uuid]['is_flapping'],
+                    'human_state' => __('Service is in scheduled downtime'),
+                    'image' => 'downtime.png',
+                    'problem_has_been_acknowledged' => $this->servicestatus[$uuid]['problem_has_been_acknowledged']
+                ];
             }
 
             $state = [
@@ -212,6 +248,7 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => $state[$this->servicestatus[$uuid]['current_state']]['human_state'],
                 'image' => $state[$this->servicestatus[$uuid]['current_state']]['image'],
                 'perfdata' => $this->servicestatus[$uuid]['perfdata'],
+                'problem_has_been_acknowledged' => $this->servicestatus[$uuid]['problem_has_been_acknowledged']
             ];
         }
 
@@ -232,7 +269,15 @@ class MapstatusHelper extends AppHelper {
 
 
     public function servicegroupstatus($uuid) {
-        $servicestate = Hash::extract($this->servicegroupstatus[$uuid], '{n}.Servicestatus');
+
+        $serviceUuids = Hash::extract($this->servicegroupstatus[$uuid], 'Service.{n}.uuid');
+        $servicestates = [];
+        foreach ($serviceUuids as $serviceUuid){
+            $servicestates[] = $this->servicegroupstatus['Servicestatus'][$serviceUuid];
+        }
+        $servicestate = Hash::extract($servicestates, '{n}.Servicestatus');
+
+        //debug($servicestates);
         if (!empty($servicestate)) {
             $cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
 
@@ -398,6 +443,22 @@ class MapstatusHelper extends AppHelper {
                     if (empty($mapstatus['hoststatus'][0])) {
                         continue;
                     }
+
+
+                    //ACK should be shown as OK
+                    foreach ($mapstatus['hoststatus'][0] as $key => $hoststate){
+                        if($hoststate['Hoststatus']['problem_has_been_acknowledged'] == 1){
+                            $mapstatus['hoststatus'][0][$key]['Hoststatus']['current_state'] = '0';
+                        }
+                        if(!empty($hoststate['Servicestatus'])){
+                            foreach ($hoststate['Servicestatus'] as $sKey => $servicestate){
+                                if($servicestate['Servicestatus']['problem_has_been_acknowledged'] == 1){
+                                    $mapstatus['hoststatus'][0][$key]['Servicestatus'][$sKey]['Servicestatus']['current_state'] = '0';
+                                }
+                            }
+                        }
+                    }
+
                     $hoststates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Hoststatus.current_state');
                     $servicestates = Hash::extract($mapstatus['hoststatus'], '{n}.{n}.Servicestatus.{n}.Servicestatus.current_state');
 
@@ -409,7 +470,16 @@ class MapstatusHelper extends AppHelper {
                     if (empty($mapstatus['servicestatus'][0])) {
                         continue;
                     }
+
+                    //ACK should be shown as OK
+                    foreach($mapstatus['servicestatus'] as $key => $mapstate){
+                        if($mapstate['Servicestatus']['problem_has_been_acknowledged'] == 1){
+                            $mapstatus['servicestatus'][$key]['Servicestatus']['current_state'] = '0';
+                        }
+                    }
+
                     $servicestates = Hash::extract($mapstatus['servicestatus'], '{n}.Servicestatus.current_state');
+
                     $cumulative_service_state['Service']['Service'] = Hash::apply($servicestates, '{n}', 'max');
                     break;
                 case 'hostgroupstatus':

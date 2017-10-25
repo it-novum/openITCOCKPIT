@@ -67,7 +67,9 @@ class HostescalationsController extends AppController
                 'HostescalationHostMembership'      => [
                     'Host' => [
                         'fields' => [
-                            'name', 'id',
+                            'name',
+                            'id',
+                            'disabled'
                         ],
                     ],
                 ],
@@ -240,6 +242,7 @@ class HostescalationsController extends AppController
             $hostescalation['Hostescalation']['Contactgroup'] = Hash::extract($hostescalation['Contactgroup'], '{n}.id');
         }
         $this->request->data = Hash::merge($hostescalation, $this->request->data);
+
         $this->set(compact(['hostescalation', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts', 'containers']));
     }
 
@@ -315,7 +318,6 @@ class HostescalationsController extends AppController
                 }
             }
         }
-
         $this->set(compact(['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
     }
 

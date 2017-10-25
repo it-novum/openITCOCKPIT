@@ -112,7 +112,6 @@ class MapeditorsController extends MapModuleAppController
                 }
             }
 
-
             if ($this->Map->saveAll($request)) {
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
@@ -136,6 +135,7 @@ class MapeditorsController extends MapModuleAppController
         $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
         $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
 
+
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
         $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
@@ -157,7 +157,7 @@ class MapeditorsController extends MapModuleAppController
             'services',
             'backgroundThumbs',
             'iconSets',
-            'icons',
+            'icons'
         ]));
     }
 
@@ -405,6 +405,7 @@ class MapeditorsController extends MapModuleAppController
                 'Host.address',
                 'Hoststatus.output',
                 'Hoststatus.long_output',
+                'Hoststatus.perfdata',
                 'Hoststatus.last_check',
                 'Hoststatus.next_check',
                 'Hoststatus.last_state_change',
@@ -453,7 +454,6 @@ class MapeditorsController extends MapModuleAppController
         if (!empty($uuidsByItemType['servicegroup'])) {
             $servicegroupUuids = Hash::extract($uuidsByItemType['servicegroup'], '{n}.uuid');
             $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($servicegroupUuids);
-            //$mapstatus['servicegroupstatus'] = $servicegroups;
         }
 
         //get the Servicestatus
@@ -561,6 +561,7 @@ class MapeditorsController extends MapModuleAppController
             'Host.address',
             'Hoststatus.output',
             'Hoststatus.long_output',
+            'Hoststatus.perfdata',
             'Hoststatus.last_check',
             'Hoststatus.next_check',
             'Hoststatus.last_state_change',

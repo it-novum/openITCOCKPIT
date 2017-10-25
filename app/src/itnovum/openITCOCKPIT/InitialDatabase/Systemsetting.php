@@ -529,9 +529,9 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
-                    'key'     => 'FRONTEND.AUTOMATIC_PAGE_REFRESH',
+                    'key'     => 'FRONTEND.PRESELECTED_DOWNTIME_OPTION',
                     'value'   => '0',
-                    'info'    => 'Set seconds for automatic site refresh, set 0 to turn off.',
+                    'info'    => 'Set preselected Host downtime options individual',
                     'section' => 'FRONTEND'
                 ],
             ],

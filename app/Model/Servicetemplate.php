@@ -406,6 +406,7 @@ class Servicetemplate extends AppModel
         }
 
         return $this->find($type, [
+            'recursive' => -1,
             'conditions' => $conditions,
             'order'      => [
                 'Servicetemplate.template_name' => 'ASC',

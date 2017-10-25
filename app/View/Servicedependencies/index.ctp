@@ -59,7 +59,7 @@
                         <div class="widget-toolbar" role="menu">
                             <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                         class="fa fa-lg fa-table"></i></a>
-                            <ul class="dropdown-menu arrow-box-up-right pull-right">
+                            <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                                 <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                             class="select_datatable text-left" my-column="0"><input
                                                 type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Services'); ?>
@@ -143,6 +143,8 @@
                                                         else:
                                                             echo h($service['Service']['Host']['name']);
                                                         endif;
+                                                        echo ($service['Service']['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ':'';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -157,6 +159,8 @@
                                                         else:
                                                             echo h(($service['Service']['name'] !== null && $service['Service']['name'] !== '') ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name']);
                                                         endif;
+                                                        echo ($service['Service']['disabled'])?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -180,6 +184,9 @@
                                                         else:
                                                             echo h($service_dependent['Service']['Host']['name']);
                                                         endif;
+                                                        echo ($service_dependent['Service']['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo '</li>';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -195,6 +202,9 @@
                                                             echo h(($service_dependent['Service']['name'] !== null && $service_dependent['Service']['name'] !== '') ? $service_dependent['Service']['name'] : $service_dependent['Service']['Servicetemplate']['name']
                                                             );
                                                         endif;
+                                                        echo ($service_dependent['Service']['disabled'])?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo '</li>';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>

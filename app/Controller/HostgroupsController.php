@@ -319,6 +319,7 @@ class HostgroupsController extends AppController
         if (!$this->Hostgroup->exists($id)) {
             throw new NotFoundException(__('Invalid hostgroup'));
         }
+
         $userId = $this->Auth->user('id');
         $hostgroup = $this->Hostgroup->find('first', [
             'recursive' => -1,
@@ -359,7 +360,6 @@ class HostgroupsController extends AppController
             $containerId = $this->request->data('Container.parent_id');
         }
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         if ($this->request->data('Hostgroup.Host')) {
@@ -442,8 +442,8 @@ class HostgroupsController extends AppController
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
 
-
         $this->Frontend->set('data_placeholder', __('Please choose a host'));
+
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -548,6 +548,7 @@ class HostgroupsController extends AppController
             $hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER, $containerId], 'list');
         }
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
+
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }

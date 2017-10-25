@@ -162,6 +162,7 @@ class AppFormHelper extends BoostCakeFormHelper
                 $options['div'] = $options['div'].' datetime';
             }
         }
+
         $out = parent::input($fieldName, $options);
         $this->_inputDefaults = $this->_storedInputDefaults;
 

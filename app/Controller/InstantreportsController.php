@@ -158,9 +158,7 @@ class InstantreportsController extends AppController
         $timePeriods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($userContainerIds, 'all');
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($userContainerIds, 'all');
-        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
         $usersToSend = $this->User->usersByContainerId($userContainerIds, 'all');
-        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
         $types = $this->Instantreport->getTypes();
         $evaluations = $this->Instantreport->getEvaluations();
         $reportFormats = $this->Instantreport->getReportFormats();
@@ -174,16 +172,17 @@ class InstantreportsController extends AppController
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
                 $this->request->data['User'] = $this->request->data['Instantreport']['User'];
             }
-            if (isset($this->request->data['Instantreport']['Hostgroup'])) {
+            $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Servicegroup'] = $this->request->data['Hostgroup'] = [];
+            if (isset($this->request->data['Instantreport']['Hostgroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTGROUPS) {
                 $this->request->data['Hostgroup'] = $this->request->data['Instantreport']['Hostgroup'];
             }
-            if (isset($this->request->data['Instantreport']['Servicegroup'])) {
+            if (isset($this->request->data['Instantreport']['Servicegroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICEGROUPS) {
                 $this->request->data['Servicegroup'] = $this->request->data['Instantreport']['Servicegroup'];
             }
-            if (isset($this->request->data['Instantreport']['Host'])) {
+            if (isset($this->request->data['Instantreport']['Host']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTS) {
                 $this->request->data['Host'] = $this->request->data['Instantreport']['Host'];
             }
-            if (isset($this->request->data['Instantreport']['Service'])) {
+            if (isset($this->request->data['Instantreport']['Service']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICES) {
                 $this->request->data['Service'] = $this->request->data['Instantreport']['Service'];
             }
             $this->Instantreport->set($this->request->data);
@@ -199,6 +198,9 @@ class InstantreportsController extends AppController
                 }
             }
         }
+
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
 
         $this->set([
             'evaluations' => $evaluations,
@@ -243,9 +245,7 @@ class InstantreportsController extends AppController
         $timePeriods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($userContainerIds, 'all');
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($userContainerIds, 'all');
-        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
         $usersToSend = $this->User->usersByContainerId($userContainerIds, 'all');
-        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
         $types = $this->Instantreport->getTypes();
         $evaluations = $this->Instantreport->getEvaluations();
         $reportFormats = $this->Instantreport->getReportFormats();
@@ -261,34 +261,18 @@ class InstantreportsController extends AppController
             }else{
                 $this->request->data['User'] = [];
             }
-            if (isset($this->request->data['Instantreport']['Hostgroup'])) {
+            $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Servicegroup'] = $this->request->data['Hostgroup'] = [];
+            if (isset($this->request->data['Instantreport']['Hostgroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTGROUPS) {
                 $this->request->data['Hostgroup'] = $this->request->data['Instantreport']['Hostgroup'];
             }
-            if (isset($this->request->data['Instantreport']['Servicegroup'])) {
+            if (isset($this->request->data['Instantreport']['Servicegroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICEGROUPS) {
                 $this->request->data['Servicegroup'] = $this->request->data['Instantreport']['Servicegroup'];
             }
-            if (isset($this->request->data['Instantreport']['Host'])) {
+            if (isset($this->request->data['Instantreport']['Host']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTS) {
                 $this->request->data['Host'] = $this->request->data['Instantreport']['Host'];
             }
-            if (isset($this->request->data['Instantreport']['Service'])) {
+            if (isset($this->request->data['Instantreport']['Service']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICES) {
                 $this->request->data['Service'] = $this->request->data['Instantreport']['Service'];
-            }
-            switch($this->request->data['Instantreport']['type']){
-                case Instantreport::TYPE_HOSTGROUPS:
-                    $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Servicegroup'] = [];
-                    break;
-
-                case Instantreport::TYPE_HOSTS:
-                    $this->request->data['Service'] = $this->request->data['Hostgroup'] = $this->request->data['Servicegroup'] = [];
-                    break;
-
-                case Instantreport::TYPE_SERVICEGROUPS:
-                    $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Hostgroup'] = [];
-                    break;
-
-                case Instantreport::TYPE_SERVICES:
-                    $this->request->data['Host'] = $this->request->data['Hostgroup'] = $this->request->data['Servicegroup'] = [];
-                    break;
             }
             $this->Instantreport->set($this->request->data);
 
@@ -305,6 +289,9 @@ class InstantreportsController extends AppController
             }
 
         }
+
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
 
         $this->set([
             'evaluations' => $evaluations,
@@ -496,6 +483,7 @@ class InstantreportsController extends AppController
         $instantReportDetails['onlyHosts'] = $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS;
         $instantReportDetails['onlyServices'] = $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES;
         $instantReportDetails['summary'] = $instantReport['Instantreport']['summary'] === '1';
+        $instantReportDetails['name'] = $instantReport['Instantreport']['name'];
         $instantReportData = [];
 
         if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
@@ -912,7 +900,7 @@ class InstantreportsController extends AppController
                     'download'           => false,
                     'binary'             => $binary_path,
                     'orientation'        => 'portrait',
-                    'filename'           => 'InstantReport.pdf',
+                    'filename'           => sprintf('InstantReport_%s.pdf', $instantReport['Instantreport']['name']),
                     'no-pdf-compression' => '*',
                     'image-dpi'          => '900',
                     'background'         => true,
@@ -1238,8 +1226,13 @@ class InstantreportsController extends AppController
     }
 
     public function createPdfReport(){
+        $instantReportDetails = $this->Session->read('instantReportDetails');
+        $reportName = '';
+        if(isset($instantReportDetails['name'])){
+            $reportName = $instantReportDetails['name'];
+        }
         $this->set('instantReportData', $this->Session->read('instantReportData'));
-        $this->set('instantReportDetails', $this->Session->read('instantReportDetails'));
+        $this->set('instantReportDetails', $instantReportDetails);
         if ($this->Session->check('instantReportData')) {
             $this->Session->delete('instantReportData');
         }
@@ -1263,7 +1256,7 @@ class InstantreportsController extends AppController
             'download'           => true,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
-            'filename'           => 'Instantreport.pdf',
+            'filename'           => sprintf('Instantreport_%s.pdf', $reportName),
             'no-pdf-compression' => '*',
             'image-dpi'          => '900',
             'background'         => true,

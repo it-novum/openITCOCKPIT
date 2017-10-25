@@ -65,7 +65,10 @@ class HostdependenciesController extends AppController
             'contain'    => [
                 'HostdependencyHostMembership'      => [
                     'Host' => [
-                        'fields' => 'name',
+                        'fields' => [
+                            'name',
+                            'disabled'
+                        ],
                     ],
                 ],
                 'HostdependencyHostgroupMembership' => [
@@ -140,6 +143,7 @@ class HostdependenciesController extends AppController
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
 
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
+
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
@@ -195,7 +199,6 @@ class HostdependenciesController extends AppController
             $hostdependency['Hostdependency']['Hostgroup'] = Hash::combine($hostdependency['HostdependencyHostgroupMembership'], '{n}[dependent=0].hostgroup_id', '{n}[dependent=0].hostgroup_id');
             $hostdependency['Hostdependency']['HostgroupDependent'] = Hash::combine($hostdependency['HostdependencyHostgroupMembership'], '{n}[dependent=1].hostgroup_id', '{n}[dependent=1].hostgroup_id');
         }
-
 
         $this->request->data = Hash::merge($hostdependency, $this->request->data);
 

@@ -41,8 +41,7 @@ App.Controllers.HostgroupsAddController = Frontend.AppController.extend({
 				hosts: '#HostgroupHost',
 			},
 			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-			dataPlaceholder: self.getVar('data_placeholder')
-		});
+            dataPlaceholder: self.getVar('data_placeholder')		});
         this.ContainerSelectbox.addContainerEventListener({
             selectBoxSelector: '#ContainerParentId',
             ajaxUrl: '/hostgroups/loadHosttemplates/:selectBoxValue:' + '.json',

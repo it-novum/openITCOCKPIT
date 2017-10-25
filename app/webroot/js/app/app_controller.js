@@ -79,10 +79,17 @@ Frontend.AppController = Frontend.Controller.extend({
                 }
             }
         }
+
+
         this._updateHeaderExportRunning();
         this._initComponents();
         this._initialize(); // Intented to be overwritten.
         this._initUiLibrary(); // Should not be overwritten.
+
+        /* After you click a value, it prevents the closure of drop-down */
+        $('.stayOpenOnClick').click(function (event) {
+            event.stopPropagation();
+        });
     },
 
     _initUiLibrary: function () {

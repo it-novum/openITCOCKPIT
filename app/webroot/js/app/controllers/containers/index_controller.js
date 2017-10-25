@@ -65,6 +65,7 @@ App.Controllers.ContainersIndexController = Frontend.AppController.extend({
                     success: function(){},
                     complete: function(response){
                         var __this = _this;
+                        $('#ajax_result').html('');
                         $('#ajax_result').append(response.responseText);
                         $.ajax({
                             url: "/containers/byTenantForSelect/"+encodeURIComponent(selectedId),

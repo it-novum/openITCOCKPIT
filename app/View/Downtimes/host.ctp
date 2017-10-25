@@ -72,6 +72,11 @@
                                         <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
                                     </li>
                                 <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                    <li>
+                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
                         </div>
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -84,7 +89,7 @@
                     <div class="widget-toolbar" role="menu">
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                     class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
+                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         my-column="1"><input type="checkbox" class="pull-left"/>
                                     &nbsp; <?php echo __('Host'); ?></a></li>
@@ -217,7 +222,7 @@
                                 <span id="listoptions_limit"><?php echo $selected; ?></span> <i
                                         class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <?php foreach ($listoptions as $listoption): ?>
                                     <li>
                                         <a href="javascript:void(0);" class="listoptions_action"
@@ -243,7 +248,7 @@
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <?php echo __('Options'); ?> <i class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <li>
                                     <input type="hidden" value="0" name="data[Listsettings][hide_expired]"/>
                                 <li style="width: 100%;"><a href="javascript:void(0)"

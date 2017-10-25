@@ -2151,7 +2151,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * Round the Corrdinates up or down which is dependent of the Grid Size and the Position
      * where the element has been dropped (this is used for the magnetic grid)
      *
-     * @param  {string | number} number A single coordinate of the element
+     * @param  {string | number} number A single coordinate of the element
      * @return {number}        the Rounded number
      */
     roundCoordinates: function (number) {

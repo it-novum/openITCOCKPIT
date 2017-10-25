@@ -27,8 +27,7 @@ App::uses('AuthComponent', 'Controller/Component');
 App::uses('UserRights', 'Lib');
 App::import('Component', 'Ldap');
 
-class AppAuthComponent extends AuthComponent
-{
+class AppAuthComponent extends AuthComponent {
 
     /**
      * @var Controller
@@ -40,7 +39,7 @@ class AppAuthComponent extends AuthComponent
      */
     public $UserRights;
 
-    public $components = ['Session', 'RequestHandler', 'Cookie', 'Ldap'];
+    public $components = ['Session', 'RequestHandler', 'Cookie', 'Ldap', 'Flash'];
 
 
     /**
@@ -50,8 +49,7 @@ class AppAuthComponent extends AuthComponent
      *
      * @return void
      */
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         Configure::load('user_rights');
         $rightsConfig = Configure::read('user_rights');
         $this->UserRights = new UserRights($rightsConfig);
@@ -64,15 +62,14 @@ class AppAuthComponent extends AuthComponent
      * Sets up the AuthComponent for the Admin backend
      * @return void
      */
-    protected function _settings()
-    {
+    protected function _settings() {
         Configure::load('auth_actions');
 
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $pluginName) {
-            Configure::load($pluginName.'.'.'auth_actions');
+            Configure::load($pluginName . '.' . 'auth_actions');
         }
 
         $actionConfig = Configure::read('auth_actions');
@@ -90,7 +87,7 @@ class AppAuthComponent extends AuthComponent
 
         $key = $controller;
         if (!empty($plugin)) {
-            $key = $plugin.'.'.$key;
+            $key = $plugin . '.' . $key;
         }
 
         if (isset($publicActionsConfig[$key])) {
@@ -135,8 +132,7 @@ class AppAuthComponent extends AuthComponent
 
     }
 
-    public function login($user = null, $method = null, $options = [])
-    {
+    public function login($user = null, $method = null, $options = []) {
         $_options = [];
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
@@ -151,7 +147,7 @@ class AppAuthComponent extends AuthComponent
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
                  */
-                if(isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE){
+                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
                     return false;
                 }
                 $_options = [];
@@ -166,17 +162,24 @@ class AppAuthComponent extends AuthComponent
                 }
                 $options = Hash::merge($_options, $options);
 
-                if($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap' && isset($options['dn'])){
+                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap' && isset($options['dn'])) {
                     $options['samaccountname'] = $options['dn'];
                 }
-                try{
+                try {
                     $result = $this->Ldap->login($options['samaccountname'], $options['sampassword']);
-                }catch (\Adldap\Exceptions\AdldapException $ex){
-                    $this->Session->setFlash($ex->getMessage());
+                } catch (\Adldap\Exceptions\AdldapException $ex) {
+                    $this->Flash->set(
+                        $ex->getMessage(), [
+                            'element' => 'default',
+                            'params'  => [
+                                'class' => 'alert alert-danger'
+                            ]
+                        ]
+                    );
                     return false;
                 }
 
-                if(empty($user) || !isset($user['User'])){
+                if (empty($user) || !isset($user['User'])) {
                     return false;
                 }
 
@@ -199,8 +202,7 @@ class AppAuthComponent extends AuthComponent
      * If we have a valid cookie, log the user in.
      * @return void
      */
-    public function autoLogin()
-    {
+    public function autoLogin() {
         $this->_cookieSettings();
         $type = null;
         $options = [];
@@ -249,9 +251,13 @@ class AppAuthComponent extends AuthComponent
                 //$this->Session->write('MY_RIGHTS', array_unique($rights));
                 //$this->Session->write('hasRootPrivileges', $hasRootPrivileges);
 
-                $this->Session->setFlash(__('login.automatically_logged_in'), 'default', [
-                    'class' => 'alert alert-success',
-                ], 'flash');
+                $this->Flash->set(
+                    __('login.automatically_logged_in'), [
+                    'element' => 'default',
+                    'params'  => [
+                        'class' => 'alert alert-success'
+                    ]
+                ]);
 
                 return true;
             } else {
@@ -265,8 +271,7 @@ class AppAuthComponent extends AuthComponent
     /**
      * @return void
      */
-    protected function _cookieSettings()
-    {
+    protected function _cookieSettings() {
         $this->Cookie->name = 'CT';
         $this->Cookie->type = 'rijndael';
         $this->Cookie->key = 'xPJbcZcOP5DN1jrT7fp6%vY7voVt-f#1B!Y8!UQ!jVo_3mESDdduxtA+sXSs4HXA';
@@ -276,8 +281,7 @@ class AppAuthComponent extends AuthComponent
      * Save a "remember me" cookie for the current user
      * @return void
      */
-    public function addRememberMeCookie($options = [])
-    {
+    public function addRememberMeCookie($options = []) {
         $this->_cookieSettings();
 
         $_options = [
@@ -296,8 +300,7 @@ class AppAuthComponent extends AuthComponent
      * Deletes the remember me cookie
      * @return void
      */
-    public function deleteRememberMeCookie()
-    {
+    public function deleteRememberMeCookie() {
         $this->_cookieSettings();
         $this->Cookie->delete('CTUser');
     }
@@ -305,8 +308,7 @@ class AppAuthComponent extends AuthComponent
     /**
      * @return void
      */
-    public function logout()
-    {
+    public function logout() {
         $this->Session->delete('Auth');
         $this->deleteRememberMeCookie();
 
@@ -317,8 +319,7 @@ class AppAuthComponent extends AuthComponent
      * Returns a sub-set of the currently logged in user's data for use in the frontend.
      * @return array        Returns null if the user isn't logged in.
      */
-    public function getFrontendUserData()
-    {
+    public function getFrontendUserData() {
         $user = $this->user();
         if ($user !== null) {
             $allowedKeys = ['id', 'email', 'role', 'firstname', 'lastname'];
@@ -340,8 +341,7 @@ class AppAuthComponent extends AuthComponent
      *
      * @return void
      */
-    public function flash($message)
-    {
+    public function flash($message) {
         $this->_controller->setFlash($message, false, $this->flash['key']);
     }
 
@@ -352,8 +352,7 @@ class AppAuthComponent extends AuthComponent
      *
      * @return bool
      */
-    public function hasRight($right)
-    {
+    public function hasRight($right) {
         if (!$this->loggedIn()) {
             return false;
         }

@@ -99,7 +99,7 @@
                     'style'            => 'width:100%;',
                     'label'            => __('Hosts'),
                     'data-placeholder' => __('Please choose a host'),
-                    'selected'         => $this->request->data['Host'],
+                    'selected'         => $this->request->data['Host']
                 ]
             );
             echo $this->Form->input('Hostgroup.Hosttemplate', [

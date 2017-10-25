@@ -65,13 +65,13 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Services'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Services'),
                 'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10',
                 ],
-                'target'           => '#ServicedependencyServiceDependent',
+                'target'           => '#ServicedependencyServiceDependent'
             ]);
 
             echo $this->Form->input('Servicedependency.ServiceDependent', [
@@ -79,13 +79,13 @@
                 'class'            => 'chosen test',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent services'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
                 'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 info',
                 ],
-                'target'           => '#ServicedependencyService',
+                'target'           => '#ServicedependencyService'
             ]);
 
             echo $this->Form->input('Servicedependency.Servicegroup', [
@@ -93,7 +93,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-default"></i> Servicegroups'),
+                'label'            => '<i class="fa fa-square class-default"></i> ' . __('Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -107,7 +107,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-square class-info"></i> Dependent Servicegroups'),
+                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent Servicegroups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',

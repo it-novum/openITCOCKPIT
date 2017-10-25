@@ -199,6 +199,7 @@ class ServicegroupsController extends AppController
         } else {
             $serviceIds[] = $this->request->data['Container']['parent_id'];
         }
+
         $serviceIds = $this->Tree->resolveChildrenOfContainerIds($serviceIds);
         array_unshift($serviceIds, ROOT_CONTAINER);
         $_services = $this->Service->servicesByHostContainerIds($serviceIds);
@@ -209,10 +210,8 @@ class ServicegroupsController extends AppController
             $hostName = $service['Host']['name'];
             $serviceId = $service['Service']['id'];
             $serviceDescription = $service[0]['ServiceDescription'];
-
             $services[$hostId][$hostName][$serviceId] = $hostName.'/'.$serviceDescription;
         }
-
         $servicegroup['Service'] = $services_for_changelog; //Services for changelog
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [];
@@ -224,7 +223,7 @@ class ServicegroupsController extends AppController
                 $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
+                        'id' => $service_id,
                         'name' => $serviceAsList[$service_id],
                     ];
                 }
@@ -314,6 +313,7 @@ class ServicegroupsController extends AppController
             foreach ($_services as $service) {
                 $services[$service['Host']['id']][$service['Host']['name']][$service['Service']['id']] = $service['Host']['name'].'/'.$service[0]['ServiceDescription'];
             }
+
             $ext_data_for_changelog = [];
             App::uses('UUID', 'Lib');
             $this->request->data['Servicegroup']['uuid'] = UUID::v4();
@@ -325,7 +325,7 @@ class ServicegroupsController extends AppController
                 $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
+                        'id' => $service_id,
                         'name' => $serviceAsList[$service_id],
                     ];
                 }
@@ -344,16 +344,16 @@ class ServicegroupsController extends AppController
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
-                        'name' => $servicetemplate['Servicetemplate']['name'],
+                        'id' => $servicetemplate_id,
+                        'name' => $servicetemplates[$servicetemplate_id],
                     ];
+
                 }
             }
             $isJsonRequest = $this->request->ext === 'json';
 
             $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
             $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
-
             if ($this->Servicegroup->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],

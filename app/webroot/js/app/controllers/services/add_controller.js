@@ -840,7 +840,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 		}
 
 		$(options.prefix+options.selector).val(options.value);
-		$(options.prefix+options.selector).trigger("chosen:updated");
+		$(options.prefix+options.selector).trigger("chosen:updated").change();
 	},
 
 	loadParametersByCommandId: function(command_id, servicetemplate_id, $target){

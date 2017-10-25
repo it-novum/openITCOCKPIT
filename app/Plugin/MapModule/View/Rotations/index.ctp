@@ -44,7 +44,7 @@
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Html->link(__('New'), '/' . $this->params['plugin'] . '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
-                        <?php echo $this->Html->link(__('Search'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-search']); ?>
+                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                         <?php
                         if ($isFilter):
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'], true);
@@ -58,7 +58,7 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-search"></i> ' . __('search'), false, false, true); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false, true); ?>
                         <div class="mobile_table">
                             <table id="datatable_fixed_column"
                                    class="table table-striped table-hover table-bordered smart-form">

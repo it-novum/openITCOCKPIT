@@ -67,7 +67,7 @@ $config = [
                 'grapherTemplate',
                 'grapherZoom',
                 'grapherZoomTemplate',
-                'createGrapherErrorPng',
+                'createGrapherErrorPng'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -109,7 +109,7 @@ $config = [
                 'saveMap',
             ],
             'Hosts'            => [
-                'view',
+                'view'
             ]
         ],
         'dependencies'   => [

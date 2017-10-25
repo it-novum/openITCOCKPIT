@@ -61,6 +61,7 @@ class ServiceescalationsController extends AppController
 
     public function index()
     {
+
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -72,6 +73,7 @@ class ServiceescalationsController extends AppController
                         'fields'          => [
                             'id',
                             'name',
+                            'disabled'
                         ],
                         'Servicetemplate' => [
                             'fields' => [
@@ -82,6 +84,7 @@ class ServiceescalationsController extends AppController
                             'fields' => [
                                 'id',
                                 'name',
+                                'disabled'
                             ],
                         ],
                     ],
@@ -191,8 +194,7 @@ class ServiceescalationsController extends AppController
         }
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
-            $this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
+        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =$this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerIds = $this->request->data('Serviceescalation.container_id');
@@ -221,6 +223,7 @@ class ServiceescalationsController extends AppController
                     'conditions' => [
                         'ServiceescalationServiceMembership.serviceescalation_id' => $id,
                     ],
+                    'recursive' => -1
                 ]);
                 /* Delete old service associations */
                 foreach ($old_membership_services as $old_membership_service) {
@@ -283,6 +286,8 @@ class ServiceescalationsController extends AppController
             ],
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
+        $this->Frontend->set('data_placeholder', __('Please choose service'));
+        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $necessaryKeys = [

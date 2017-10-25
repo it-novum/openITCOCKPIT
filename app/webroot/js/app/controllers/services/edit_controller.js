@@ -202,10 +202,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         /**
          * Mainly does two things:
          *
-         *    1.    Fills up the input fields of the form. The values are used from the chosen Hosttemplate.
+         *    1.    Fills up the input fields of the form. The values are used from the chosen Servicetemplate.
          *        This part was refactored.
          *
-         *    2.    Allows to reset the values to their defaults. The defaults depend on the chosen Hosttemplate.
+         *    2.    Allows to reset the values to their defaults. The defaults depend on the chosen Servicetemplate.
          *        This part was newly created.
          *
          *    onChangeField()            - When a field gets changed, this method will be called.
@@ -219,7 +219,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
              * Initialize the event listeners.
              */
             init: function () {
-                this.updateHosttemplateValues(	// Updates the fields based on the decision of the user/template.
+                this.updateServicetemplateValues(	// Updates the fields based on the decision of the user/template.
                     this.initRestoreDefault		// Initializes the restore functionality after the template values have been loaded.
                 );
             },
@@ -273,8 +273,8 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             },
 
 
-            _restoreHostMacrosFromTemplate: function () {
-                //Loading the macros of the hosttemplate
+            _restoreServiceMacrosFromTemplate: function () {
+                //Loading the macros of the servicetemplate
                 self.CustomVariables.loadMacroFromTemplate(
                     self.servicetemplateManager.currentTemplate.id,
                     self.servicetemplateManager._activateOrUpdateMacroRestore
@@ -298,7 +298,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                 if (!isIdenticalWithTemplate) {
                     $icon.off('click');
-                    $icon.on('click', self.servicetemplateManager._restoreHostMacrosFromTemplate);
+                    $icon.on('click', self.servicetemplateManager._restoreServiceMacrosFromTemplate);
                 }
 
                 // Update the class of the icon.
@@ -353,9 +353,9 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                         .remove();
                 }
 
-                var $hostMacroSettings = $('.service-macro-settings');
-                $hostMacroSettings.find('.fa-chain-default, .fa-chain-non-default').remove();
-                $hostMacroSettings.off('click.MacroRemove', '.deleteMacro');
+                var $serviceMacroSettings = $('.service-macro-settings');
+                $serviceMacroSettings.find('.fa-chain-default, .fa-chain-non-default').remove();
+                $serviceMacroSettings.off('click.MacroRemove', '.deleteMacro');
 
                 self.servicetemplateManager.isRestoreFunctionalityInitialized = false;
             },
@@ -393,7 +393,6 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                             break;
                     }
                 }
-                // console.log('onClickRestoreDefault()');
                 if ($field.prop('disabled')) {
                     return;
                 }
@@ -576,7 +575,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                             'title': restoreDefaultTitle
                         });
                         $restoreDefaultIcon.on('click', wrappedOnClickRestore);
-                        //Don't show icon when contacts or contactgroups are inherited from host or hosttemplate
+                        //Don't show icon when contacts or contactgroups are inherited from service or service template
                         if ($('#inheritContacts').prop('checked') && (keyName == 'contact' || keyName == 'contactgroup')) {
 
                         } else {
@@ -596,7 +595,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             },
 
             /**
-             * Initalizes the restore functionality. The default values depend on the chosen Hosttemplate.
+             * Initalizes the restore functionality. The default values depend on the chosen Servicetemplate.
              */
             initRestoreDefault: function () {
                 // Bind on all predefined inputs to allow to restore their defaults.
@@ -646,17 +645,16 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 self.servicetemplateManager.isInitializedOnce = true;
             },
 
-            updateHosttemplateValues: function (onComplete) {
+            updateServicetemplateValues: function (onComplete) {
                 self.servicetemplateManager.currentTemplate = {};
-                var $selectBoxHosttemplate = $('#ServiceServicetemplateId');
+                var $selectBoxServicetemplate = $('#ServiceServicetemplateId');
 
                 var ajaxCompleteCallback = function (response) {
-                    // console.log(response.responseJSON);
                     var responseObject = response.responseJSON;
                     if (responseObject.code === 'not_authenticated' || responseObject.servicetemplate.length == 0) {
                         return;
                     }
-                    var hosttemplateId = $selectBoxHosttemplate.val();
+                    var servicetemplateId = $selectBoxServicetemplate.val();
 
                     self.servicetemplateManager.currentTemplate = responseObject.servicetemplate.Servicetemplate;
                     self.servicetemplateManager.currentContact = responseObject.servicetemplate.Contact;
@@ -671,14 +669,14 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     window.currentServiceGroup = responseObject.servicetemplate.Servicegroup;
                     window.currentCustomVariable = responseObject.servicetemplate.Customvariable;
 
-                    if (self.servicetemplateManager.currentTemplate.id != hosttemplateId) {
+                    if (self.servicetemplateManager.currentTemplate.id != servicetemplateId) {
                         self.Ajaxloader.hide();
 
                         return;
                     }
 
                     if (self.servicetemplateManager.isInitializedOnce) { // After it was initialized once, replace the values
-                        // Update the interface input self.fieldMap out of the hosttemplate JSON data
+                        // Update the interface input self.fieldMap out of the service template JSON data
                         for (var key in self.fieldMap) {
                             //modifying values of sliders
                             if (in_array(key, ['check_interval', 'retry_interval', 'notification_interval'])) {
@@ -763,10 +761,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                     }
 
-                    // Loading the macros of the hosttemplate if no own macros exist. Otherwise only create the
+                    // Loading the macros of the service template if no own macros exist. Otherwise only create the
                     // restore icon.
-                    var hostHasOwnMacros = $('.service-macro-settings').find('input[type=hidden]').length > 0;
-                    if (hostHasOwnMacros) {
+                    var serviceHasOwnMacros = $('.service-macro-settings').find('input[type=hidden]').length > 0;
+                    if (serviceHasOwnMacros) {
                         self.servicetemplateManager._activateOrUpdateMacroRestore();
                     } else {
                         self.CustomVariables.loadMacroFromTemplate(
@@ -780,7 +778,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     onComplete(); // Gets called only for the first AJAX request
                 };
 
-                var onChangeHosttemplate = function () {
+                var onChangeServicetemplate = function () {
                     self.servicetemplateManager.isRestoreFunctionalityInitialized = true;
                     var templateId = parseInt($(this).val(), 10);
                     if (templateId <= 0) {
@@ -806,37 +804,28 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 };
 
                 // // Bind change event for the servicetemplate selectbox.
-                // $('#ServiceServicetemplateId').on('change.serviceContainer', onChangeHosttemplate);
+                // $('#ServiceServicetemplateId').on('change.serviceContainer', onChangeServicetemplate);
 
                 // Call first time (without a change to the values of the fields) because the field is obligatory.
-                if (parseInt($selectBoxHosttemplate.val(), 10) > 0) {
-                    onChangeHosttemplate.call($selectBoxHosttemplate);
+                if (parseInt($selectBoxServicetemplate.val(), 10) > 0) {
+                    onChangeServicetemplate.call($selectBoxServicetemplate);
+
                 } else {
                     self.servicetemplateManager.isInitializedOnce = true;
                 }
 
-                // Bind change event on the hosttemplate selectbox and load the template settings.
-                $selectBoxHosttemplate.on('change.hostTemplate', function () {
-                    onChangeHosttemplate.call(this);
+                // Bind change event on the service template selectbox and load the template settings.
+                $selectBoxServicetemplate.on('change.serviceTemplate', function () {
+                    onChangeServicetemplate.call(this);
                     // self.loadParametersFromTemplate($(this).val());
-
                     // Load the arguments (with values) for the command id and event handler command id fields (once).
                     var $serviceCommandId = $('#ServiceCommandId'),
                         $eventhandlerCommandId = $('#ServiceEventhandlerCommandId'),
                         $serviceTemplateId = $('#ServiceServicetemplateId');
 
-                    self.loadParametersByCommandId($serviceCommandId.val(), $('#ServiceServicetemplateId').val(), $('#CheckCommandArgs'));
+                    self.loadParametersByCommandId($serviceCommandId.val(),$serviceTemplateId.val(), $('#CheckCommandArgs'));
                     self.loadNagParametersByCommandId($eventhandlerCommandId.val(), $('#ServiceServicetemplateId').val(), $('#EventhandlerCommandArgs'));
                 });
-
-                // Bind change event for the check command selectbox.
-                /*$('#ServiceCommandId').on('change.hostCommand', function(){
-                 self.loadParameters($(this).val());
-                 });*/
-                if ($('#ServiceCommandId').val() !== null && $('#ServiceServicetemplateId').val() != 0) {
-                    //self.loadParametersFromTemplate($('#ServiceServicetemplateId').val());
-                    //self.loadParameters(responseObject.servicetemplate.Servicetemplate.id);
-                }
             }
         };
 
@@ -872,8 +861,6 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
     },
 
     updateSlider: function (_options) {
-        // console.log('updateSlider called with options: ' + _options);
-        // console.log(_options);
         var options = _options || {};
         options.value = parseInt(_options.value, 10) || 0;
         options.selector = _options.selector || null;
@@ -911,13 +898,12 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         options.value = _options.value || 0;
         options.selector = _options.selector || '';
         options.prefix = _options.prefix || "#Service";
-
         if (options.prefix == 'false') {
             options.prefix = '';
         }
 
         $(options.prefix + options.selector).val(options.value);
-        $(options.prefix + options.selector).trigger("chosen:updated");
+        $(options.prefix + options.selector).trigger("chosen:updated").change();
     },
 
     loadParametersByCommandId: function (command_id, servicetemplate_id, $target) {
@@ -993,7 +979,6 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             success: function () {
             },
             complete: function (response) {
-                // console.log(response);
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
             }.bind(this)

@@ -28,11 +28,11 @@
  * Acts as the base controller for both the frontend and the backend
  * @package default
  */
-App::uses('ServiceResponse','Frontend.Lib');
-App::uses('Controller','Controller');
-App::uses('CakeTime','Utility');
-App::uses('AuthActions','Lib');
-App::uses('User','Model');
+App::uses('ServiceResponse', 'Frontend.Lib');
+App::uses('Controller', 'Controller');
+App::uses('CakeTime', 'Utility');
+App::uses('AuthActions', 'Lib');
+App::uses('User', 'Model');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 
@@ -99,6 +99,7 @@ class AppController extends Controller {
      */
     public $components = [
         'Session',
+        'Flash',
         'Frontend.Frontend',
         'Auth' => ['className' => 'AppAuth'],
         'Acl',
@@ -157,7 +158,7 @@ class AppController extends Controller {
 
         Configure::load('dbbackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
-        $this->set('DbBackend',$this->DbBackend);
+        $this->set('DbBackend', $this->DbBackend);
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
@@ -175,7 +176,7 @@ class AppController extends Controller {
             if (!empty($autoLoginUserAdmin)) {
                 $this->Auth->login($autoLoginUserAdmin);
                 $this->MY_RIGHTS = [1];
-                $this->MY_RIGHTS_LEVEL = [1,2];
+                $this->MY_RIGHTS_LEVEL = [1, 2];
             }
         }
     }
@@ -197,15 +198,15 @@ class AppController extends Controller {
             }
 
             //foreach($this->Container->children($container['id'], false) as $childContainer){
-            foreach ($this->Container->children($container['container_id'],false) as $childContainer) {
+            foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
                 $rights[] = (int)$childContainer['Container']['id'];
                 $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
             }
         }
         $this->MY_RIGHTS = array_unique($rights);
-        $this->set('hasRootPrivileges',$this->hasRootPrivileges);
+        $this->set('hasRootPrivileges', $this->hasRootPrivileges);
 
-        $permissions = $this->Acl->Aro->Permission->find('all',[
+        $permissions = $this->Acl->Aro->Permission->find('all', [
             'conditions' => [
                 'Aro.foreign_key' => $this->Auth->user('usergroup_id'),
             ],
@@ -214,16 +215,16 @@ class AppController extends Controller {
                 'Permission.aco_id',
             ],
         ]);
-        $aros = Hash::combine($permissions,'{n}.Permission.aco_id','{n}.Permission.aco_id');
+        $aros = Hash::combine($permissions, '{n}.Permission.aco_id', '{n}.Permission.aco_id');
         unset($permissions);
-        $acos = $this->Acl->Aco->find('threaded',[
+        $acos = $this->Acl->Aco->find('threaded', [
             'recursive' => -1,
         ]);
         $permissions = [];
         foreach ($acos as $usergroupAcos) {
             foreach ($usergroupAcos['children'] as $controllerAcos) {
                 $controllerName = strtolower($controllerAcos['Aco']['alias']);
-                if (!strpos($controllerName,'module')) {
+                if (!strpos($controllerName, 'module')) {
                     //Core
                     foreach ($controllerAcos['children'] as $actionAcos) {
                         //Check if the user group is allowd for $actionAcos action
@@ -272,9 +273,9 @@ class AppController extends Controller {
         $this->MY_RIGHTS = array_unique($rights);
         $this->MY_RIGHTS_LEVEL = $rights_levels;
         $this->PERMISSIONS = $permissions;
-        $this->set('hasRootPrivileges',$this->hasRootPrivileges);
-        $this->set('aclPermissions',$permissions);
-        $this->set('MY_RIGHTS_LEVEL',$this->MY_RIGHTS_LEVEL);
+        $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+        $this->set('aclPermissions', $permissions);
+        $this->set('MY_RIGHTS_LEVEL', $this->MY_RIGHTS_LEVEL);
     }
 
     /**
@@ -289,10 +290,10 @@ class AppController extends Controller {
         if ($this->Session->check('FRONTEND.SYSTEMNAME')) {
             $this->systemname = $this->Session->read('FRONTEND.SYSTEMNAME');
         } else {
-            $this->Session->write('FRONTEND.SYSTEMNAME','');
+            $this->Session->write('FRONTEND.SYSTEMNAME', '');
             $this->systemname = '';
             if (isset($this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
-                $this->Session->write('FRONTEND.SYSTEMNAME',$this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
+                $this->Session->write('FRONTEND.SYSTEMNAME', $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
                 $this->systemname = $this->systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
             }
         }
@@ -309,7 +310,7 @@ class AppController extends Controller {
      * @return bool
      */
     public function isAuthorized($user) {
-        return ClassRegistry::getObject('AuthActions')->isAuthorized($user,$this->plugin,$this->name,$this->action);
+        return ClassRegistry::getObject('AuthActions')->isAuthorized($user, $this->plugin, $this->name, $this->action);
     }
 
     /**
@@ -318,40 +319,36 @@ class AppController extends Controller {
      */
     public function beforeRender() {
         if (!$this->request->is('ajax')) {
-            $this->Frontend->setJson('localeStrings',$this->_localeStrings);
+            $this->Frontend->setJson('localeStrings', $this->_localeStrings);
         }
-        $this->Frontend->setJson('exportRunningHeaderInfo',$this->exportRunningHeaderInfo);
+        $this->Frontend->setJson('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
         if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            $this->set('isFilter',true);
+            $this->set('isFilter', true);
         } else {
-            $this->set('isFilter',false);
+            $this->set('isFilter', false);
         }
 
         //Add Websocket Information
         if ($this->Auth->loggedIn()) {
-            $this->Frontend->setJson('websocket_url','wss://' . env('HTTP_HOST') . '/sudo_server');
+            $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
             if (!$this->Session->check('SUDO_SERVER.API_KEY')) {
                 $key = $this->Systemsetting->findByKey('SUDO_SERVER.API_KEY');
-                $this->Session->write('SUDO_SERVER.API_KEY',$key['Systemsetting']['value']);
+                $this->Session->write('SUDO_SERVER.API_KEY', $key['Systemsetting']['value']);
             }
-            $this->Frontend->setJson('akey',$this->Session->read('SUDO_SERVER.API_KEY'));
+            $this->Frontend->setJson('akey', $this->Session->read('SUDO_SERVER.API_KEY'));
 
         }
 
 
-        ClassRegistry::addObject('AuthComponent',$this->Auth);
-        $this->set('sideMenuClosed',isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
-        $this->set('loggedIn',$this->Auth->loggedIn());
-        $this->set('systemname',$this->systemname);
+        ClassRegistry::addObject('AuthComponent', $this->Auth);
+        $this->set('sideMenuClosed', isset($_COOKIE['sideMenuClosed']) && $_COOKIE['sideMenuClosed'] == 'true');
+        $this->set('loggedIn', $this->Auth->loggedIn());
+        $this->set('systemname', $this->systemname);
         //$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')
         $menu = $this->Menu->compileMenu();
-        $menu = $this->Menu->filterMenuByAcl($menu,$this->PERMISSIONS);
-        $this->set('menu',$menu);
-
-        $autoPageRefresh = $this->Systemsetting->findByKey("FRONTEND.AUTOMATIC_PAGE_REFRESH");
-        $autoPageRefreshTime = intval($autoPageRefresh['Systemsetting']['value']);
-        if (!empty($autoPageRefreshTime)) $this->response->header('Refresh',$autoPageRefreshTime);
+        $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);
+        $this->set('menu', $menu);
 
         if ($this->Auth->loggedIn() && $this->Auth->user('showstatsinmenu')) {
             //Load stats overview for this user
@@ -360,7 +357,7 @@ class AppController extends Controller {
                 '1' => 0,
                 '2' => 0,
             ];
-            $hoststatusCountResult = $this->Host->find('all',[
+            $hoststatusCountResult = $this->Host->find('all', [
                 'conditions' => [
                     'Host.disabled'                  => 0,
                     'HostObject.is_active'           => 1,
@@ -411,7 +408,7 @@ class AppController extends Controller {
                 '2' => 0,
                 '3' => 0,
             ];
-            $servicestatusCountResult = $this->Host->find('all',[
+            $servicestatusCountResult = $this->Host->find('all', [
                 'conditions' => [
                     'Service.disabled'               => 0,
                     'Servicestatus.current_state >'  => 0,
@@ -458,7 +455,7 @@ class AppController extends Controller {
                 $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
             }
 
-            $this->set(compact(['hoststatusCount','servicestatusCount']));
+            $this->set(compact(['hoststatusCount', 'servicestatusCount']));
         }
 
 
@@ -498,7 +495,7 @@ class AppController extends Controller {
             $strings = $strings[0];
         }
         foreach ($strings as $string) {
-            $this->_localeStrings[$string] = __($string,true);
+            $this->_localeStrings[$string] = __($string, true);
         }
     }
 
@@ -511,7 +508,7 @@ class AppController extends Controller {
      *
      * @return void
      */
-    public function redirect($url,$status = null,$exit = true) {
+    public function redirect($url, $status = null, $exit = true) {
         // this statement catches not authenticated or not authorized ajax requests
         // AuthComponent will call Controller::redirect(null, 403) in those cases.
         // with this we're making sure that we return valid JSON responses in all cases
@@ -523,7 +520,7 @@ class AppController extends Controller {
             return;
         }
 
-        parent::redirect($url,$status,$exit);
+        parent::redirect($url, $status, $exit);
 
         return;
     }
@@ -537,11 +534,11 @@ class AppController extends Controller {
      *
      * @return void
      */
-    public function flashBack($msg,$url = null,$success = false) {
+    public function flashBack($msg, $url = null, $success = false) {
         if (!$url) {
             $url = ['action' => 'index'];
         }
-        $this->setFlash($msg,$success);
+        $this->setFlash($msg, $success);
         $this->redirect($url);
     }
 
@@ -549,16 +546,27 @@ class AppController extends Controller {
      * Override setFlash to add bootstrap classes
      *
      * @param string $message
-     * @param bool $success
+     * @param bool|string $success
      * @param string $key
      * @param boolean $autoHide
      *
      * @return void
      */
-    public function setFlash($message,$success = true,$key = 'flash',$autoHide = true) {
-        $this->Session->setFlash($message,'default',[
-            'class' => 'alert ' . ($autoHide ? 'auto-hide' : '') . ' alert-' . ($success ? 'success' : 'danger'),
-        ],$key);
+    public function setFlash($message, $success = true, $key = 'flash', $autoHide = true) {
+        $successClass = $success;
+        if($success === true){
+            $successClass = 'success';
+        }
+        if($success === false){
+            $successClass = 'danger';
+        }
+
+        $this->Flash->set($message, [
+            'element' => 'default',
+            'params'  => [
+                'class' => 'alert ' . ($autoHide ? 'auto-hide' : '') . ' alert-' . $successClass
+            ]
+        ]);
     }
 
     /**
@@ -572,8 +580,8 @@ class AppController extends Controller {
      *
      * @return ServiceResponse
      */
-    public function serviceResponse($code,$data = []) {
-        return new ServiceResponse($code,$data);
+    public function serviceResponse($code, $data = []) {
+        return new ServiceResponse($code, $data);
     }
 
     /**
@@ -607,19 +615,19 @@ class AppController extends Controller {
      *
      * @return string Full output string of view contents
      */
-    public function render($action = null,$layout = null,$file = null) {
+    public function render($action = null, $layout = null, $file = null) {
         // if this is a widget request, we use widgetResponse to guarantee a
         // consistent data format
         if (isset($this->request->params['widget']) && $this->request->params['widget'] === true) {
             if ($layout === null) {
                 $layout = 'plain';
             }
-            $response = parent::render($action,$layout,$file);
+            $response = parent::render($action, $layout, $file);
 
             return $this->widgetResponse($response);
         }
 
-        return parent::render($action,$layout,$file);
+        return parent::render($action, $layout, $file);
     }
 
     /**
@@ -631,7 +639,7 @@ class AppController extends Controller {
      * @since 3.0
      */
     protected function __unbindAssociations($ModelName) {
-        foreach (['hasOne','hasMany','belongsTo','hasAndBelongsToMany'] as $association) {
+        foreach (['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association) {
             if (!empty($this->{$ModelName}->{$association})) {
                 foreach ($this->{$ModelName}->{$association} as $accociatedModel) {
                     $this->{$ModelName}->unbindModel([$association => [$accociatedModel['className']]]);
@@ -658,14 +666,14 @@ class AppController extends Controller {
         // Set the additional links for each controller!
         $controller = Inflector::tableize($this->name);
         $action = $request->params['action'];
-        $positions = ['top','list','bottom','tab'];
-        $contentPositions = ['top','center','bottom','form'];
+        $positions = ['top', 'list', 'bottom', 'tab'];
+        $contentPositions = ['top', 'center', 'bottom', 'form'];
 
-        $additionalLinks = $this->AdditionalLinks->fetchLinkData($controller,$action,$positions);
-        $additionalContent = $this->AdditionalLinks->fetchContentData($controller,$action,$contentPositions);
+        $additionalLinks = $this->AdditionalLinks->fetchLinkData($controller, $action, $positions);
+        $additionalContent = $this->AdditionalLinks->fetchContentData($controller, $action, $contentPositions);
         //debug($additionalContent);
         foreach ($additionalLinks as $viewPosition => $linkData) {
-            $this->set('additionalLinks' . ucfirst($viewPosition),$linkData);
+            $this->set('additionalLinks' . ucfirst($viewPosition), $linkData);
             if (!empty($linkData) && $viewPosition == 'tab') {
                 foreach ($linkData as $key => $data) {
                     //add an id so we can identify tabs
@@ -673,13 +681,13 @@ class AppController extends Controller {
                 }
             }
             //defines the vars link $additionalLinkList or $additionalLinkTab
-            $this->set('additionalLinks' . ucfirst($viewPosition),$linkData);
+            $this->set('additionalLinks' . ucfirst($viewPosition), $linkData);
 
         }
 
         foreach ($additionalContent as $viewPosition => $linkData) {
             //defines the vars link $additionalElementsList or $additionalElementsTab
-            $this->set('additionalElements' . ucfirst($viewPosition),$linkData);
+            $this->set('additionalElements' . ucfirst($viewPosition), $linkData);
         }
 
         return $result; // Return what was returned before
@@ -703,7 +711,7 @@ class AppController extends Controller {
         }
     }
 
-    public function getNamedParameter($paramName,$default = null) {
+    public function getNamedParameter($paramName, $default = null) {
         if (isset($this->request->params['named'][$paramName])) {
             return $this->request->params['named'][$paramName];
         }
@@ -719,23 +727,23 @@ class AppController extends Controller {
             return;
         }
         $name = Inflector::singularize($this->name);
-        $this->set('id',$this->{$name}->id);
+        $this->set('id', $this->{$name}->id);
 
         $serializeVariableNames = ['id'];
         switch ($name) {
             case 'Command':
-                $this->set('command_arguments',$this->Commandargument->getLastInsertedDataWithId());
+                $this->set('command_arguments', $this->Commandargument->getLastInsertedDataWithId());
                 $serializeVariableNames[] = 'command_argument_ids';
                 $serializeVariableNames[] = 'command_arguments';
                 break;
             case 'Tenant':
             case 'Location':
-                $this->set('container_id',$this->Container->id);
+                $this->set('container_id', $this->Container->id);
                 $serializeVariableNames[] = 'container_id';
                 break;
         }
 
-        $this->set('_serialize',$serializeVariableNames);
+        $this->set('_serialize', $serializeVariableNames);
     }
 
     /**
@@ -745,7 +753,7 @@ class AppController extends Controller {
         $name = Inflector::singularize($this->name);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
-        $this->set('_serialize',['error']);
+        $this->set('_serialize', ['error']);
     }
 
     ///**
@@ -763,13 +771,13 @@ class AppController extends Controller {
 
     //$useLevel === false: Check if user is permitted to SEE this object
     //$useLevel === true:  Check if user is permitted to EDIT this object
-    public function allowedByContainerId($containerIds = [],$useLevel = true) {
+    public function allowedByContainerId($containerIds = [], $useLevel = true) {
         if ($this->hasRootPrivileges === true) {
             return true;
         }
 
         if ($useLevel === true) {
-            $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL,function ($value) {
+            $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function ($value) {
                 if ((int)$value === WRITE_RIGHT) {
                     return true;
                 }
@@ -784,7 +792,7 @@ class AppController extends Controller {
             if (!is_array($containerIds)) {
                 $containerIds = [$containerIds];
             }
-            $result = array_intersect($containerIds,$MY_WRITE_RIGHTS);
+            $result = array_intersect($containerIds, $MY_WRITE_RIGHTS);
             if (!empty($result)) {
                 return true;
             }
@@ -799,12 +807,12 @@ class AppController extends Controller {
         $rights = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         if (is_array($containerIds)) {
-            $result = array_intersect($containerIds,$rights);
+            $result = array_intersect($containerIds, $rights);
             if (!empty($result)) {
                 return true;
             }
         } else {
-            if (in_array($containerIds,$rights)) {
+            if (in_array($containerIds, $rights)) {
                 return true;
             }
         }
@@ -817,7 +825,7 @@ class AppController extends Controller {
     }
 
     protected function getWriteContainers() {
-        $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL,function ($value) {
+        $MY_WRITE_RIGHTS = array_filter($this->MY_RIGHTS_LEVEL, function ($value) {
             if ((int)$value === WRITE_RIGHT) {
                 return true;
             }
@@ -837,9 +845,9 @@ class AppController extends Controller {
             'referer'  => ['action' => 'index'],
         ];
 
-        $options = Hash::merge($_options,$options);
+        $options = Hash::merge($_options, $options);
 
-        $this->set('options',$options);
+        $this->set('options', $options);
         $this->render('/Errors/error403');
     }
 
@@ -849,8 +857,8 @@ class AppController extends Controller {
     protected function getLoadedModels() {
         $models = [];
         foreach ($this->uses as $modelName) {
-            if (strpos($modelName,'.') !== false) {
-                list($plugin,$modelName) = explode('.',$modelName);
+            if (strpos($modelName, '.') !== false) {
+                list($plugin, $modelName) = explode('.', $modelName);
             }
             $models[$modelName] = $this->{$modelName};
         }

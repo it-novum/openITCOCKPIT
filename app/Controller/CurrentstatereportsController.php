@@ -54,10 +54,12 @@ class CurrentstatereportsController extends AppController
         );
         $this->set(compact(['services', 'userContainerId']));
 
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
                 foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
+                    if(empty($services[$serviceId]['Service']['uuid'])) continue;
                     $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'], [
                         'conditions' => [
                             'Servicestatus.current_state' => $this->request->data('Currentstatereport.current_state'),
@@ -121,7 +123,7 @@ class CurrentstatereportsController extends AppController
                 }
 
                 if (!$serviceStatusExists) {
-                    $this->Session->setFlash(__('No service status information within specified filter found'), 'default', ['class' => 'alert auto-hide alert-info']);
+                    $this->setFlash(__('No service status information within specified filter found'), 'info');
                 } else {
                     if ($this->request->data('Currentstatereport.report_format') == 'pdf') {
                         $this->Session->write('currentStateData', $currentStateData);

@@ -47,8 +47,8 @@
 
 <div id="content" style="opacity: 1;">
     <div class="controller <?php echo $this->name ?>_<?php echo $this->action ?>">
-        <?php echo $this->Session->flash(); ?>
-        <?php echo $this->Session->flash('auth'); ?>
+        <?php echo $this->Flash->render(); ?>
+        <?php echo $this->Flash->render('auth'); ?>
         <?php echo $content_for_layout; ?>
         <?php echo $this->element('Admin.sql_dump'); ?>
     </div>

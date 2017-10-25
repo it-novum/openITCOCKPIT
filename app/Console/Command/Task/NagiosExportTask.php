@@ -263,7 +263,7 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define contact{', 0);
             $content .= $this->addContent('contact_name', 1, $contact['Contact']['uuid']);
-            $content .= $this->addContent('alias', 1, $contact['Contact']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($contact['Contact']['description']));
             $content .= $this->addContent('host_notifications_enabled', 1, $contact['Contact']['host_notifications_enabled']);
             $content .= $this->addContent('service_notifications_enabled', 1, $contact['Contact']['service_notifications_enabled']);
             $content .= $this->addContent('host_notification_period', 1, $contact['HostTimeperiod']['uuid']);
@@ -345,7 +345,9 @@ class NagiosExportTask extends AppShell
 
                 $content .= $this->addContent('define contactgroup{', 0);
                 $content .= $this->addContent('contactgroup_name', 1, $contactgroup['Contactgroup']['uuid']);
-                $content .= $this->addContent('alias', 1, $contactgroup['Contactgroup']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                    $contactgroup['Contactgroup']['description']
+                ));
                 $content .= $this->addContent('members', 1, implode(',', Hash::extract($contactgroup['Contact'], '{n}.uuid')));
                 $content .= $this->addContent('}', 0);
                 if (!$this->conf['minified']) {
@@ -417,8 +419,12 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('use', 1, '8147201e91c4dcf7c016ba2ddeac3fd7e72edacc');
             $content .= $this->addContent('host_name', 1, $hosttemplate['Hosttemplate']['uuid']);
             $content .= $this->addContent('name', 1, $hosttemplate['Hosttemplate']['uuid']);
-            $content .= $this->addContent('display_name', 1, $hosttemplate['Hosttemplate']['name']);
-            $content .= $this->addContent('alias', 1, $hosttemplate['Hosttemplate']['description']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $hosttemplate['Hosttemplate']['name']
+            ));
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                $hosttemplate['Hosttemplate']['description']
+            ));
 
             $content .= $this->nl();
             $content .= $this->addContent(';Check settings:', 1);
@@ -635,12 +641,12 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define host{', 0);
             $content .= $this->addContent('use', 1, $host['Hosttemplate']['uuid']);
             $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
-            $content .= $this->addContent('display_name', 1, $host['Host']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host['Host']['name']));
             $content .= $this->addContent('address', 1, $host['Host']['address']);
 
 
             if ($host['Host']['description'] !== null && $host['Host']['description'] !== '')
-                $content .= $this->addContent('alias', 1, $host['Host']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host['Host']['description']));
 
             //Check if the host hase parent hosts and if they are active!
             if (!empty($host['Parenthost'])) {
@@ -898,12 +904,12 @@ class NagiosExportTask extends AppShell
         $content .= $this->addContent('define host{', 0);
         $content .= $this->addContent('use', 1, $host['Hosttemplate']['uuid']);
         $content .= $this->addContent('host_name', 1, $host['Host']['uuid']);
-        $content .= $this->addContent('display_name', 1, $host['Host']['name']);
+        $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash($host['Host']['name']));
         $content .= $this->addContent('address', 1, $host['Host']['address']);
 
 
         if ($host['Host']['description'] !== null && $host['Host']['description'] !== '')
-            $content .= $this->addContent('alias', 1, $host['Host']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($host['Host']['description']));
 
         if (!empty($host['Parenthost'])) {
 
@@ -1099,7 +1105,9 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('register', 1, 0);
             $content .= $this->addContent('use', 1, '689bfdd01af8a21c4a4706c5117849c2fc2c3f38');
             $content .= $this->addContent('name', 1, $servicetemplates['Servicetemplate']['uuid']);
-            $content .= $this->addContent('display_name', 1, $servicetemplates['Servicetemplate']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $servicetemplates['Servicetemplate']['name']
+            ));
             $content .= $this->addContent('service_description', 1, $servicetemplates['Servicetemplate']['uuid']);
 
             $content .= $this->nl();
@@ -1308,9 +1316,13 @@ class NagiosExportTask extends AppShell
 
                 $content .= $this->addContent('name', 1, $service['Service']['uuid']);
                 if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-                    $content .= $this->addContent('display_name', 1, $service['Service']['name']);
+                    $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                        $service['Service']['name'])
+                    );
                 } else {
-                    $content .= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+                    $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                        $service['Servicetemplate']['name'])
+                    );
                 }
 
                 $content .= $this->addContent('service_description', 1, $service['Service']['uuid']);
@@ -1587,9 +1599,13 @@ class NagiosExportTask extends AppShell
 
         $content .= $this->addContent('name', 1, $service['Service']['uuid']);
         if ($service['Service']['name'] !== null && $service['Service']['name'] !== '') {
-            $content .= $this->addContent('display_name', 1, $service['Service']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $service['Service']['name']
+            ));
         } else {
-            $content .= $this->addContent('display_name', 1, $service['Servicetemplate']['name']);
+            $content .= $this->addContent('display_name', 1, $this->escapeLastBackslash(
+                $service['Servicetemplate']['name']
+            ));
         }
 
         $content .= $this->addContent('service_description', 1, $service['Service']['uuid']);
@@ -1800,7 +1816,7 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define hostgroup{', 0);
             $content .= $this->addContent('hostgroup_name', 1, $hostgroup['Hostgroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $hostgroup['Hostgroup']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($hostgroup['Hostgroup']['description']));
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
@@ -1846,7 +1862,9 @@ class NagiosExportTask extends AppShell
 
             $content .= $this->addContent('define servicegroup{', 0);
             $content .= $this->addContent('servicegroup_name', 1, $servicegroup['Servicegroup']['uuid']);
-            $content .= $this->addContent('alias', 1, $servicegroup['Servicegroup']['description']);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                $servicegroup['Servicegroup']['description']
+            ));
 
             $content .= $this->addContent('}', 0);
             $file->write($content);
@@ -1859,11 +1877,42 @@ class NagiosExportTask extends AppShell
      */
     public function exportHostescalations($uuid = null)
     {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'HostescalationHostMembership' => [
+                    'Host' => [
+                        'conditions' => [
+                            'Host.disabled' => 0
+                        ],
+                        'fields' => [
+                            'uuid'
+                        ],
+                    ],
+                ],
+                'HostescalationHostgroupMembership' => [
+                    'Hostgroup' => [
+                        'fields' => [
+                            'Hostgroup.uuid'
+                        ]
+                    ],
+                ],
+                'Timeperiod' => [
+                    'fields' => [
+                        'uuid',
+                    ],
+                ],
+            ],
+        ];
+
         if ($uuid !== null) {
             $hostescalations = [];
-            $hostescalations[] = $this->Hostescalation->findByUuid($uuid);
+            $query['conditions'] = [
+                'Hostescalation.uuid' => $uuid
+            ];
+            $hostescalations[] = $this->Hostescalation->find('first', $query);
         } else {
-            $hostescalations = $this->Hostescalation->find('all');
+            $hostescalations = $this->Hostescalation->find('all', $query);
         }
 
         if (!is_dir($this->conf['path'].$this->conf['hostescalations'])) {
@@ -1872,26 +1921,9 @@ class NagiosExportTask extends AppShell
 
         foreach ($hostescalations as $hostescalation) {
             if (!empty($hostescalation['HostescalationHostMembership']) || !empty($hostescalation['HostescalationHostgroupMembership'])) {
-                $includedHosts = $this->Host->find('all', [
-                    'conditions' => [
-                        'Host.id'       => Hash::extract($hostescalation['HostescalationHostMembership'], '{n}[excluded=0].host_id'),
-                        'Host.disabled' => 0,
-                    ],
-                    'fields'     => ['Host.uuid'],
-                ]);
-                $includedHostsDbResult = $includedHosts;
-                $includedHosts = Hash::extract($includedHosts, '{n}.Host.uuid');
+                $includedHosts = Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=0].Host.uuid');
+                $exludedHosts = Hash::extract($hostescalation, 'HostescalationHostMembership.{n}[excluded=1].Host.uuid');
 
-
-                $exludedHosts = $this->Host->find('all', [
-                    'conditions' => [
-                        'Host.id'       => Hash::extract($hostescalation['HostescalationHostMembership'], '{n}[excluded=1].host_id'),
-                        'Host.disabled' => 0,
-                    ],
-                    'fields'     => ['Host.uuid'],
-                ]);
-                $exludedHostsDbResult = $exludedHosts;
-                $exludedHosts = Hash::extract($exludedHosts, '{n}.Host.uuid');
                 // Prefix the hosts with an !
                 $_exludedHosts = [];
                 foreach ($exludedHosts as $extHost) {
@@ -1899,40 +1931,23 @@ class NagiosExportTask extends AppShell
                 }
 
                 $hosts = Hash::merge($includedHosts, $_exludedHosts);
-                unset($_exludedHosts, $exludedHosts, $includedHosts);
 
-                $includedHostgroups = $this->Hostgroup->find('all', [
-                    'conditions' => [
-                        'Hostgroup.id' => Hash::extract($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=0].hostgroup_id'),
-                    ],
-                    'fields'     => ['Hostgroup.uuid'],
-                ]);
-                $includedHostgroupsDbResult = $includedHostgroups;
-                $includedHostgroups = Hash::extract($includedHostgroups, '{n}.Hostgroup.uuid');
+                $includedHostgroups = Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=0].Hostgroup.uuid');
+                $exludedHostgroups = Hash::extract($hostescalation, 'HostescalationHostgroupMembership.{n}[excluded=1].Hostgroup.uuid');
 
-                $exludedHostgroups = $this->Hostgroup->find('all', [
-                    'conditions' => [
-                        'Hostgroup.id' => Hash::extract($hostescalation['HostescalationHostgroupMembership'], '{n}[excluded=1].hostgroup_id'),
-                    ],
-                    'fields'     => ['Hostgroup.uuid'],
-                ]);
-                $exludedHostgroupsDbResult = $exludedHostgroups;
-                $exludedHostgroups = Hash::extract($exludedHostgroups, '{n}.Hostgroup.uuid');
                 // Prefix the hosts with an !
                 $_exludedHostgroups = [];
                 foreach ($exludedHostgroups as $extHostgroup) {
-                    $_exludedHostgroups[] = '!'.$extHostgroup;
+                    $_exludedHostgroups[] = '!' . $extHostgroup;
                 }
                 $hostgroups = Hash::merge($includedHostgroups, $_exludedHostgroups);
-                unset($_exludedHosts, $exludedHostgroups, $includedHostgroups);
 
-                if ((!empty($includedHostsDbResult)) || (!empty($includedHostgroupsDbResult))) {
-                    $file = new File($this->conf['path'].$this->conf['hostescalations'].$hostescalation['Hostescalation']['uuid'].$this->conf['suffix']);
+                if (!empty($includedHosts) || !empty($includedHostgroups)) {
+                    $file = new File($this->conf['path'] . $this->conf['hostescalations'] . $hostescalation['Hostescalation']['uuid'] . $this->conf['suffix']);
                     $content = $this->fileHeader();
                     if (!$file->exists()) {
                         $file->create();
                     }
-
 
                     $content .= $this->addContent('define hostescalation{', 0);
                     if (!empty($hosts)) {
@@ -1957,7 +1972,6 @@ class NagiosExportTask extends AppShell
                         $content .= $this->addContent('escalation_options', 1, $hostEscalationString);
                     }
 
-
                     $content .= $this->addContent('}', 0);
                     $file->write($content);
                     $file->close();
@@ -1965,7 +1979,6 @@ class NagiosExportTask extends AppShell
                     //This hostescalation is broken!
                     $this->Hostescalation->delete($hostescalation['Hostescalation']['id']);
                 }
-                unset($includedHostsDbResult, $exludedHostsDbResult, $includedHostgroupsDbResult, $exludedHostgroupsDbResult);
             } else {
                 //This hostescalation is broken!
                 $this->Hostescalation->delete($hostescalation['Hostescalation']['id']);
@@ -1978,81 +1991,89 @@ class NagiosExportTask extends AppShell
      */
     public function exportServiceescalations($uuid = null)
     {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'ServiceescalationServiceMembership' => [
+                    'Service' => [
+                        'conditions' => [
+                            'Service.disabled' => 0
+                        ],
+                        'fields' => [
+                            'uuid',
+                        ],
+                        'Host'  => [
+                            'fields' => [
+                                'uuid',
+                            ],
+                        ],
+                    ],
+                ],
+                'ServiceescalationServicegroupMembership' => [
+                    'Servicegroup' => [
+                        'fields' => [
+                            'Servicegroup.uuid'
+                        ]
+                    ],
+                ],
+                'Timeperiod' => [
+                    'fields' => [
+                        'uuid',
+                    ],
+                ],
+            ],
+        ];
+
         if ($uuid !== null) {
             $serviceescalations = [];
-            $serviceescalations[] = $this->Serviceescalation->findByUuid($uuid);
+            $query['conditions'] = [
+                'Serviceescalation.uuid' => $uuid
+            ];
+            $serviceescalations[] = $this->Serviceescalation->find('first', $query);
         } else {
-            $serviceescalations = $this->Serviceescalation->find('all');
+            $serviceescalations = $this->Serviceescalation->find('all', $query);
         }
-
-        if (!is_dir($this->conf['path'].$this->conf['serviceescalations'])) {
-            mkdir($this->conf['path'].$this->conf['serviceescalations']);
-        }
-
         foreach ($serviceescalations as $serviceescalation) {
             if (!empty($serviceescalation['ServiceescalationServiceMembership']) || !empty($serviceescalation['ServiceescalationServicegroupMembership'])) {
-                $includedServices = $this->Service->find('all', [
-                    'conditions' => [
-                        'Service.id'       => Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=0].service_id'),
-                        'Service.disabled' => 0,
-                    ],
-                    'fields'     => ['Service.uuid', 'Host.uuid'],
-                ]);
+
+                $includedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=0].Service'));
+
+                $exludedServices = array_filter(Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=1].Service'));
+
+                $includedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=0].Servicegroup.uuid');
+                $exludedServicegroups = Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=1].Servicegroup.uuid');
+
 
                 $includedHosts = array_unique(Hash::extract($includedServices, '{n}.Host.uuid'));
-                $includedServicesDbResult = $includedServices;
-                $includedServices = Hash::extract($includedServices, '{n}.Service.uuid');
+                $includedServices = Hash::extract($includedServices, '{n}.uuid');
 
-                $exludedServices = $this->Service->find('all', [
-                    'conditions' => [
-                        'Service.id'       => Hash::extract($serviceescalation['ServiceescalationServiceMembership'], '{n}[excluded=1].service_id'),
-                        'Service.disabled' => 0,
-                    ],
-                    'fields'     => ['Service.uuid', 'Host.uuid'],
-                ]);
-                $exludedHosts = array_unique(Hash::extract($includedServices, '{n}.Host.uuid'));
-                $exludedServices = Hash::extract($exludedServices, '{n}.Service.uuid');
+                $exludedHosts = array_unique(Hash::extract($exludedServices, '{n}.Host.uuid'));
+                $exludedServices = Hash::extract($exludedServices, '{n}.uuid');
+
+
                 // Prefix exluded services with an !
                 $_exludedServices = [];
                 foreach ($exludedServices as $extService) {
-                    $_exludedServices[] = '!'.$extService;
+                    $_exludedServices[] = '!' . $extService;
                 }
 
                 $_exludedHosts = [];
                 foreach ($exludedHosts as $extHost) {
-                    $_exludedHosts[] = '!'.$extHost;
+                    $_exludedHosts[] = '!' . $extHost;
                 }
 
                 $services = Hash::merge($includedServices, $_exludedServices);
                 $hosts = Hash::merge($includedHosts, $_exludedHosts);
-                unset($_exludedServices, $exludedServices, $includedServices, $_exludedHosts, $includedHosts, $exludedHosts);
 
-                $includedServicegroups = $this->Servicegroup->find('all', [
-                    'conditions' => [
-                        'Servicegroup.id' => Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=0].servicegroup_id'),
-                    ],
-                    'fields'     => ['Servicegroup.uuid'],
-                ]);
-                $includedServicegroupsDbResult = $includedServicegroups;
-                $includedServicegroups = Hash::extract($includedServicegroups, '{n}.Servicegroup.uuid');
-
-                $exludedServicegroups = $this->Servicegroup->find('all', [
-                    'conditions' => [
-                        'Servicegroup.id' => Hash::extract($serviceescalation['ServiceescalationServicegroupMembership'], '{n}[excluded=1].servicegroup_id'),
-                    ],
-                    'fields'     => ['Servicegroup.uuid'],
-                ]);
-                $exludedServicegroups = Hash::extract($exludedServicegroups, '{n}.Servicegroup.uuid');
                 // Prefix excluded servicegroups with an !
                 $_exludedServicegroups = [];
                 foreach ($exludedServicegroups as $extServicegroup) {
-                    $_exludedServicegroups[] = '!'.$extServicegroup;
+                    $_exludedServicegroups[] = '!' . $extServicegroup;
                 }
                 $servicegroups = Hash::merge($includedServicegroups, $_exludedServicegroups);
-                unset($_exludedServicegroups, $exludedServicegroups, $includedServicegroups);
 
-                if ((!empty($includedServicesDbResult) && !empty($hosts)) || (!empty($includedServicegroupsDbResult) && !empty($hosts))) {
-                    $file = new File($this->conf['path'].$this->conf['serviceescalations'].$serviceescalation['Serviceescalation']['uuid'].$this->conf['suffix']);
+                if ((!empty($includedServices && !empty($hosts))) || (!empty($includedServicegroups) && !empty($hosts))){
+                    $file = new File($this->conf['path'] . $this->conf['serviceescalations'] . $serviceescalation['Serviceescalation']['uuid'] . $this->conf['suffix']);
                     $content = $this->fileHeader();
                     if (!$file->exists()) {
                         $file->create();
@@ -2088,12 +2109,11 @@ class NagiosExportTask extends AppShell
                     $content .= $this->addContent('}', 0);
                     $file->write($content);
                     $file->close();
-                } else {
+                }else {
                     //This service escalation is broken!
                     $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
                 }
-                unset($includedServicesDbResult, $includedServicegroupsDbResult);
-            } else {
+            }else {
                 //This service escalation is broken!
                 $this->Serviceescalation->delete($serviceescalation['Serviceescalation']['id']);
             }
@@ -2144,7 +2164,7 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define timeperiod{', 0);
             $content .= $this->addContent('timeperiod_name', 1, $timeperiod['Timeperiod']['uuid']);
             if (strlen($timeperiod['Timeperiod']['description']) > 0) {
-                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($timeperiod['Timeperiod']['description']));
             } else {
                 //Naemon 1.0.0 fix
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
@@ -2153,7 +2173,7 @@ class NagiosExportTask extends AppShell
             foreach ($timeperiod['Timerange'] as $timerange) {
                 $timeranges[$timerange['day']][] = $timerange['start'] . '-' . $timerange['end'];
             }
-            
+
             foreach($timeranges as $weekday => $timesArray){
                 asort($timesArray);
                 $content .= $this->addContent($weekdays[$weekday], 1, implode(',', $timesArray));
@@ -2216,7 +2236,7 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('define timeperiod{', 0);
             $content .= $this->addContent('timeperiod_name', 1, $timeperiod['Timeperiod']['uuid']);
             if (strlen($timeperiod['Timeperiod']['description']) > 0) {
-                $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['description']);
+                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($timeperiod['Timeperiod']['description']));
             } else {
                 //Naemon 1.0.0 fix
                 $content .= $this->addContent('alias', 1, $timeperiod['Timeperiod']['uuid']);
@@ -2268,11 +2288,48 @@ class NagiosExportTask extends AppShell
      */
     public function exportHostdependencies($uuid = null)
     {
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'HostdependencyHostMembership' => [
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.uuid',
+                            'Host.disabled'
+
+                        ],
+                        'conditions' => [
+                            'Host.disabled' => 0
+                        ]
+                    ]
+                ],
+                'HostdependencyHostgroupMembership' => [
+                    'Hostgroup' => [
+                        'fields' => [
+                            'Hostgroup.id',
+                            'Hostgroup.uuid'
+
+                        ]
+                    ]
+                ],
+                'Timeperiod' => [
+                    'fields' => [
+                        'Timeperiod.id',
+                        'Timeperiod.uuid',
+                    ]
+                ]
+            ],
+
+        ];
         if ($uuid !== null) {
             $hostdependencies = [];
-            $hostdependencies[] = $this->Hostdependency->findByUuid($uuid);
+            $query['conditions'] = [
+                'Hostdependency.uuid' => $uuid
+            ];
+            $hostdependencies[] = $this->Hostdependency->find('first', $query);
         } else {
-            $hostdependencies = $this->Hostdependency->find('all');
+            $hostdependencies = $this->Hostdependency->find('all', $query);
         }
 
         if (!is_dir($this->conf['path'].$this->conf['hostdependencies'])) {
@@ -2286,49 +2343,26 @@ class NagiosExportTask extends AppShell
                 $file->create();
             }
 
-            $content .= $this->addContent('define hostdependency{', 0);
+            $hosts = Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=0].Host.uuid');
+            $dependentHosts = Hash::extract($hostdependency, 'HostdependencyHostMembership.{n}[dependent=1].Host.uuid');
 
-            //Find dependend hosts
-            $hosts = [];
-            $dependenHosts = [];
-            if (!empty($hostdependency['HostdependencyHostMembership'])) {
-                foreach ($hostdependency['HostdependencyHostMembership'] as $_host) {
-                    if ($_host['dependent'] == 0) {
-                        $host = $this->Host->findById($_host['host_id']);
-                        $hosts[] = $host['Host']['uuid'];
-                        unset($host);
-                    } else {
-                        $depHost = $this->Host->findById($_host['host_id']);
-                        $dependenHosts[] = $depHost['Host']['uuid'];
-                        unset($depHost);
-                    }
-                }
+            $hostGroups = Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=0].Hostgroup.uuid');
+            $dependentHostGroups = Hash::extract($hostdependency, 'HostdependencyHostgroupMembership.{n}[dependent=1].Hostgroup.uuid');
+
+
+            if(!empty($hosts) && !empty($dependentHosts)) {
+                $content .= $this->addContent('define hostdependency{', 0);
 
                 $content .= $this->addContent('host_name', 1, implode(',', $hosts));
-                $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependenHosts));
-            }
+                $content .= $this->addContent('dependent_host_name', 1, implode(',', $dependentHosts));
 
-            //Find dependend hostgroups
-            $hostgroups = [];
-            $dependenHostgroups = [];
-            if (!empty($hostdependency['HostdependencyHostgroupMembership'])) {
-                foreach ($hostdependency['HostdependencyHostgroupMembership'] as $_hostgroup) {
-                    if ($_hostgroup['dependent'] == 0) {
-                        $hostgroup = $this->Hostgroup->findById($_hostgroup['hostgroup_id']);
-                        $hostgroups[] = $hostgroup['Hostgroup']['uuid'];
-                        unset($hostgroup);
-                    } else {
-                        $depHostgroup = $this->Hostgroup->findById($_hostgroup['hostgroup_id']);
-                        $dependenHostgroups[] = $depHostgroup['Hostgroup']['uuid'];
-                        unset($depHostgroup);
-                    }
+                if(!empty($hostGroups)){
+                    $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostGroups));
                 }
 
-                $content .= $this->addContent('hostgroup_name', 1, implode(',', $hostgroups));
-                if (!empty($dependenHostgroups)) {
-                    $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependenHostgroups));
+                if (!empty($dependentHostGroups)) {
+                    $content .= $this->addContent('dependent_hostgroup_name', 1, implode(',', $dependentHostGroups));
                 }
-
             }
 
             $content .= $this->addContent('inherits_parent', 1, $hostdependency['Hostdependency']['inherits_parent']);
@@ -2351,7 +2385,7 @@ class NagiosExportTask extends AppShell
             $content .= $this->addContent('}', 0);
 
             //Check if the host dependency is valid
-            if (empty($hosts) || empty($dependenHosts)) {
+            if (empty($hosts) || empty($dependentHosts)) {
                 //This host dependency is broken, ther are no hosts in it!
                 $this->Hostdependency->delete($hostdependency['Hostdependency']['id']);
                 $file->close();
@@ -2370,11 +2404,50 @@ class NagiosExportTask extends AppShell
      */
     public function exportServicedependencies($uuid = null)
     {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'ServicedependencyServiceMembership' => [
+                    'Service' => [
+                        'conditions' => [
+                            'Service.disabled' => 0
+                        ],
+                        'fields' => [
+                            'uuid',
+                        ],
+                        'Host'  => [
+                            'fields' => [
+                                'uuid',
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ],
+                        ],
+                    ],
+                ],
+                'ServicedependencyServicegroupMembership' => [
+                    'Servicegroup' => [
+                        'fields' => [
+                            'Servicegroup.uuid'
+                        ]
+                    ],
+                ],
+                'Timeperiod' => [
+                    'fields' => [
+                        'uuid',
+                    ],
+                ],
+            ],
+        ];
+
         if ($uuid !== null) {
             $servicedependencies = [];
-            $servicedependencies[] = $this->Servicedependency->findByUuid($uuid);
+            $query['conditions'] = [
+                'Servicedependency.uuid' => $uuid
+            ];
+            $servicedependencies[] = $this->Servicedependency->find('first', $query);
         } else {
-            $servicedependencies = $this->Servicedependency->find('all');
+            $servicedependencies = $this->Servicedependency->find('all', $query);
         }
 
         if (!is_dir($this->conf['path'].$this->conf['servicedependencies'])) {
@@ -2387,64 +2460,16 @@ class NagiosExportTask extends AppShell
                 $file->create();
             }
 
-            $masterServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].service_id');
-            $masterServices = $this->Service->find('all', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Host',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Service.id',
-                    'Service.uuid',
-                ],
-                'conditions' => [
-                    'Service.id' => $masterServicesIds,
-                ],
-            ]);
+            $masterServices = array_filter(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=0].Service'));
+            $dependentServices = array_filter(Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].Service'));
 
-            $dependentServicesIds = Hash::extract($servicedependency['ServicedependencyServiceMembership'], '{n}[dependent=1].service_id');
-            $dependentServices = $this->Service->find('all', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Host',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Service.id',
-                    'Service.uuid',
-                ],
-                'conditions' => [
-                    'Service.id' => $dependentServicesIds,
-                ],
-            ]);
+            $masterServicegroups = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].Servicegroup.uuid');
+            $dependentServicegroups = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].Servicegroup.uuid');
 
-            $masterServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=0].servicegroup_id');
-            $masterServicegroups = $this->Servicegroup->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Servicegroup.id' => $masterServicegroupIds,
-                ],
-                'fields'     => [
-                    'Servicegroup.uuid',
-                ],
-            ]);
+
             if (!empty($masterServicegroups)) {
                 $masterServicegroups = implode(',', Hash::extract($masterServicegroups, '{n}.Servicegroup.uuid'));
             }
-
-            $dependentServicegroupIds = Hash::extract($servicedependency['ServicedependencyServicegroupMembership'], '{n}[dependent=1].servicegroup_id');
-            $dependentServicegroups = $this->Servicegroup->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Servicegroup.id' => $dependentServicegroupIds,
-                ],
-                'fields'     => [
-                    'Servicegroup.uuid',
-                ],
-            ]);
             if (!empty($dependentServicegroups)) {
                 $dependentServicegroups = implode(',', Hash::extract($dependentServicegroups, '{n}.Servicegroup.uuid'));
             }
@@ -2455,9 +2480,9 @@ class NagiosExportTask extends AppShell
                     foreach ($dependentServices as $dependentService) {
                         $content .= $this->addContent('define servicedependency{', 0);
                         $content .= $this->addContent('host_name', 1, $masterService['Host']['uuid']);
-                        $content .= $this->addContent('service_description', 1, $masterService['Service']['uuid']);
+                        $content .= $this->addContent('service_description', 1, $masterService['uuid']);
                         $content .= $this->addContent('dependent_host_name', 1, $dependentService['Host']['uuid']);
-                        $content .= $this->addContent('dependent_service_description', 1, $dependentService['Service']['uuid']);
+                        $content .= $this->addContent('dependent_service_description', 1, $dependentService['uuid']);
 
                         if (!empty($masterServicegroups)) {
                             $content .= $this->addContent('servicegroup_name', 1, $masterServicegroups);
@@ -3011,5 +3036,12 @@ class NagiosExportTask extends AppShell
         ];
 
         return $return;
+    }
+
+    public function escapeLastBackslash($str = ''){
+        if(mb_substr($str, -1) === '\\'){
+            $str = sprintf('%s\\', $str); //Add a \ to the end of the string - because last char is a \
+        }
+        return $str;
     }
 }

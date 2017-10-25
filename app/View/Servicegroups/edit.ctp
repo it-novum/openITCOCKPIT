@@ -87,7 +87,7 @@
             echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
                 'label'    => __('Services'),
                 'options'  => $services,
-                'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : [],
+                'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : []
             ]);
 
             echo $this->Form->input('Servicegroup.Servicetemplate', [

@@ -60,7 +60,7 @@
                         <div class="widget-toolbar" role="menu">
                             <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                         class="fa fa-lg fa-table"></i></a>
-                            <ul class="dropdown-menu arrow-box-up-right pull-right">
+                            <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                                 <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                             class="select_datatable text-left" my-column="0"><input
                                                 type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hosts'); ?>
@@ -164,6 +164,8 @@
                                                         else:
                                                             echo h($host['Host']['name']);
                                                         endif;
+                                                        echo ($host['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -190,6 +192,8 @@
                                                         else:
                                                             echo h($host_excluded['Host']['name']);
                                                         endif;
+                                                        echo ($host_excluded['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>

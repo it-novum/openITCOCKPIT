@@ -42,9 +42,9 @@ App.Controllers.ServicesServiceListController = Frontend.AppController.extend({
 		/*
 		 * Bind change event on serviceListHostId
 		 */
-		$('#serviceListHostId').change(function(){
-			window.location = '/services/serviceList/'+$(this).val();
-		});
+        $('#serviceListHostId').change(function(){
+            window.location = '/services/serviceList/'+$(this).val();
+        });
 		
 		
 		//Create sudo server websocket connection

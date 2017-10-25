@@ -390,6 +390,14 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 	background-position: -42px -10px;
 }
 
+.margin-bottom-50 {
+	margin-bottom: 50px;
+}
+
+.margin-bottom-25 {
+	margin-bottom: 25px;
+}
+
 .margin-bottom-10 {
 	margin-bottom: 10px;
 }
@@ -1494,4 +1502,21 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 
 .status_headline {
 	margin: 12px 0 28px;
+}
+
+.disableLink{
+	pointer-events: none;
+	cursor: default;
+
+.label-forced {
+	display: inline!important;
+	padding: .2em .6em .3em!important;
+	font-size: 75%!important;
+	font-weight: 700!important;
+	line-height: 1!important;
+	color: #fff!important;
+	text-align: center!important;
+	white-space: nowrap!important;
+	vertical-align: baseline!important;
+	border-radius: .25em!important;
 }

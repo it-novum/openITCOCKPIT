@@ -51,17 +51,15 @@
             ]);
 
             echo $this->Form->input('Service', [
-                'options'          => Hash::combine($services,
-                    '{n}.Service.id'
-                    , [
+                'options'          => Hash::combine($services, '{n}.Service.id', [
                         '%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription',
                     ],
                     '{n}.Host.name'
                 ),
-                'class'            => 'chosen',
-                'multiple'         => true,
-                'style'            => 'width:100%;',
-                'label'            => __('Services'),
+                'class' => 'chosen',
+                'multiple' => true,
+                'style' => 'width:100%;',
+                'label' => __('Services'),
                 'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => [
                     'tag'   => 'div',

@@ -63,7 +63,7 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 			}
 		});
 		$('[id^=ServiceescalationService]').change(function(){
-			$this = $(this);
+			var $this = $(this);
 			self.refreshServices($this.val(), $this, $this.attr('target'));
 		});
 		if($('#ServiceescalationService').val() !== null || $('#ServiceescalationServiceExcluded').val() !== null){
@@ -79,8 +79,8 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 					$OptionObject.prop('disabled', true);
 				}
 			});
-			$('#ServiceescalationService').trigger("chosen:updated");
-			$('#ServiceescalationServiceExcluded').trigger("chosen:updated");
+			$('#ServiceescalationService').trigger("chosen:updated").change();
+			$('#ServiceescalationServiceExcluded').trigger("chosen:updated").change();
 		}
 		if($('#ServiceescalationServicegroup').val() !== null || $('#ServiceescalationServicegroupExcluded').val() !== null){
 			$('#ServiceescalationServicegroup').children('option').each(function(intKey, OptionObject){
@@ -95,11 +95,9 @@ App.Controllers.ServiceescalationsEditController = Frontend.AppController.extend
 					$OptionObject.prop('disabled', true);
 				}
 			});
-			$('#ServiceescalationServicegroup').trigger("chosen:updated");
-			$('#ServiceescalationServicegroupExcluded').trigger("chosen:updated");
+			$('#ServiceescalationServicegroup').trigger("chosen:updated").change();
+			$('#ServiceescalationServicegroupExcluded').trigger("chosen:updated").change();
 		}
-		//$('ServicegroupService').trigger("chosen:updated");
-
 	},
 
 	refreshServices: function(selected_services, selectboxObject, target){

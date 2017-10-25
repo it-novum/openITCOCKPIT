@@ -64,7 +64,7 @@
                     'multiple'         => true,
                     'style'            => 'width:100%;',
                     'label'            => __('Services'),
-                    'data-placeholder' => __('Please choose a service'),
+                    'data-placeholder' => __('Please choose a service')
                 ]);
             else:
                 echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [

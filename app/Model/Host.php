@@ -215,54 +215,29 @@ class Host extends AppModel {
         ],
     ];
 
+
     /**
-     * Returns an array with hosts, the user is allowd to see by container_id
+     * Returns an array with hosts, the user is allowed to see by container_id
      *
-     * @param    array $containerIds Container IDs of container ids the user is allowd to see
-     * @param    string $type cake's find types
+     * @param array $containerIds Container IDs of container ids the user is allowd to see
+     * @param array $conditions Additional conditions for selecting hosts
+     * @param array $hostsIncluding containing ids of hosts which must be in the result array too
      *
      * @return array
      */
-    public function hostsByContainerId($containerIds = [], $type = 'all', $conditions = [], $index = 'id', $useLevel = false) {
+    public function getAjaxHosts($containerIds = [], $conditions = [], $hostsIncluding = []){
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
         $containerIds = array_unique($containerIds);
 
-        if ($useLevel === false) {
-            $_conditions = [
-                'HostsToContainers.container_id' => $containerIds,
-                'Host.disabled' => 0,
-            ];
-        } else {
-            $_conditions = [
-                'HostsToContainers.container_id' => $containerIds,
-                'Host.disabled' => 0,
-            ];
-        }
+        $_conditions = [
+            'HostsToContainers.container_id' => $containerIds,
+            'Host.disabled' => 0,
+        ];
 
         $conditions = Hash::merge($_conditions, $conditions);
-
-        if ($index == 'id') {
-            return $this->find($type, [
-                'recursive' => -1,
-                'joins' => [
-                    ['table' => 'hosts_to_containers',
-                        'alias' => 'HostsToContainers',
-                        'type' => 'LEFT',
-                        'conditions' => [
-                            'HostsToContainers.host_id = Host.id',
-                        ],
-                    ],
-                ],
-                'conditions' => $conditions,
-                'order' => [
-                    'Host.name' => 'ASC',
-                ],
-            ]);
-        }
-
-        $hosts = $this->find('all', [
+        $hosts = $this->find('list', [
             'recursive' => -1,
             'joins' => [
                 [
@@ -279,10 +254,110 @@ class Host extends AppModel {
                 'Host.name' => 'ASC',
             ],
             'fields' => [
+                'Host.id',
                 'Host.name',
-                'Host.' . $index,
             ],
+            'limit' => self::ITN_AJAX_LIMIT,
+            'group' => 'Host.id'
         ]);
+
+        $formattedHosts = [];
+        if(!empty($hostsIncluding) && isset($hostsIncluding[0]) && is_array($hostsIncluding[0])){
+            foreach($hostsIncluding as $hostIncluding){
+                $formattedHosts[] = $hostIncluding['id'];
+            }
+        }elseif(is_array($hostsIncluding)){
+            $formattedHosts = $hostsIncluding;
+        }else{
+            $formattedHosts = [$hostsIncluding];
+        }
+
+        if(!empty($formattedHosts) && !empty(array_diff($formattedHosts, array_keys($hosts)))){
+            $selectedCondition = ['Host.id' => array_diff($formattedHosts, array_keys($hosts))];
+            $selectedHosts = $this->find('list', [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'hosts_to_containers',
+                        'alias' => 'HostsToContainers',
+                        'type' => 'LEFT',
+                        'conditions' => [
+                            'HostsToContainers.host_id = Host.id',
+                        ],
+                    ],
+                ],
+                'conditions' => Hash::merge($selectedCondition, $_conditions),
+                'order' => [
+                    'Host.name' => 'ASC',
+                ],
+                'fields' => [
+                    'Host.id',
+                    'Host.name',
+                ]
+            ]);
+
+            if(!empty($selectedHosts)){
+                $hosts = $hosts + $selectedHosts;
+            }
+        }
+
+        return $hosts;
+    }
+
+    /**
+     * Returns an array with hosts, the user is allowd to see by container_id
+     *
+     * @param array $containerIds Container IDs of container ids the user is allowd to see
+     * @param string $type cake's find types
+     * @param array $conditions Additional conditions for selecting hosts
+     * @param string $index of associative array in result
+     * @param integer $limit or hosts. null if no limit needed.
+     *
+     * @return array
+     */
+    public function hostsByContainerId($containerIds = [], $type = 'all', $conditions = [], $index = 'id', $limit = null) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $containerIds = array_unique($containerIds);
+
+        $_conditions = [
+            'HostsToContainers.container_id' => $containerIds,
+            'Host.disabled' => 0,
+        ];
+
+        $conditions = Hash::merge($_conditions, $conditions);
+
+        $selectArray = [
+            'recursive' => -1,
+            'joins' => [
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => $conditions,
+            'order' => [
+                'Host.name' => 'ASC',
+            ],
+            'fields' => [
+                'Host.' . $index,
+                'Host.name',
+            ],
+        ];
+        if(!is_null($limit)){
+            $selectArray['limit'] = $limit;
+        }
+
+        $hosts = $this->find($type, $selectArray);
+
+        if (in_array($type, ['list', 'first'])){
+            return $hosts;
+        }
 
         $result = [];
         foreach ($hosts as $host) {
@@ -496,8 +571,8 @@ class Host extends AppModel {
             $requestData['Host']['Contact'] = [];
         }
 
-        if (empty($diff_array['Hostgroup']['Hostgroup'])) {
-            $diff_array['Hostgroup']['Hostgroup'] = [];
+        if (empty($requestData['Host']['Hostgroup'])) {
+            $requestData['Host']['Hostgroup'] = [];
         }
 
 
