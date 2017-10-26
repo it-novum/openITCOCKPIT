@@ -608,7 +608,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                         $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
-                                                                <td class="text-center width-90">
+                                                                <td class="text-center width-90" data-sort="<?php echo $Servicestatus->currentState();?>">
                                                                     <?php
                                                                     if ($Servicestatus->isFlapping()):
                                                                         echo $Servicestatus->getServiceFlappingIconColored();
@@ -713,9 +713,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                 </td>
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
-                                                                    data-container="body">
+                                                                    data-container="body"
+                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange();?>"
+                                                                >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
-                                                                </td>
+                                                                    <?php echo strtotime($Servicestatus->getLastStateChange());?></td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>
