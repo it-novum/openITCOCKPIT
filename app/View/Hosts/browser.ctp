@@ -99,6 +99,9 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
+                  
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
+
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
                             <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
@@ -401,6 +404,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                    value="<?php echo $host['Host']['uuid']; ?>"><br/>
                             <strong><?php echo __('IP address'); ?>:</strong>
                             <code><?php echo h($host['Host']['address']); ?></code><br/>
+                            <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
                             <strong><?php echo __('Description'); ?>:</strong><br/>
                             <i class="txt-color-blue"><?php echo h($host['Host']['description']); ?></i>
                         </div>
@@ -510,6 +514,10 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                 </h5>
                             <?php endif; ?>
                         </div>
+
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">
                                 <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
