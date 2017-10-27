@@ -47,8 +47,8 @@ class AcknowledgementsController extends AppController {
     ];
 
 
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Bbcode'];
+    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'Bbcode'];
     public $layout = 'Admin.default';
 
     public $listFilters = [
