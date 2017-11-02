@@ -80,7 +80,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
             }.bind(this), parseInt(this.getVar('interval') * 1000));
         }
         if (this.getVar('is_fullscren') == true) {
-            $('#MapContainer').css('height', $(window).height()+'px');
+            $('#MapContainer').css('height', ($(window).height()-96)+'px');
         }
         //check if there are Gadgets
         if (this.getVar('map_gadgets')) {
