@@ -546,7 +546,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'CHECK_MK.MATCH',
-                    'value'   => '(perl|dsmc|java|ksh|VBoxHeadless)',
+                    'value'   => '(perl|dsmc|java|ksh|VBoxHeadless|php)',
                     'info'    => 'These are the services that should not be compressed by check_mk as regular expression',
                     'section' => 'CHECK_MK'
                 ],
