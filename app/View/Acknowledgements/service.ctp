@@ -231,7 +231,9 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                         ); ?>
                                     </td>
                                     <td><?php echo h($AcknowledgementService->getAuthorName()); ?></td>
-                                    <td><?php echo h($AcknowledgementService->getCommentData()); ?></td>
+                                    <td>
+                                        <?php echo $this->Bbcode->asHtml(h($AcknowledgementService->getCommentData())); ?>
+                                    </td>
                                     <td>
                                         <?php
                                         if ($AcknowledgementService->isSticky()):

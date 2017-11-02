@@ -217,7 +217,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                         <?php echo h($Ack->getAuthorName()); ?>
                                     </td>
                                     <td>
-                                        <?php echo h($Ack->getCommentData()); ?>
+                                        <?php echo $this->Bbcode->asHtml(h($Ack->getCommentData())); ?>
                                     </td>
                                     <td>
                                         <?php
