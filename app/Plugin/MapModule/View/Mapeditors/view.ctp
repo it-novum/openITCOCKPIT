@@ -53,12 +53,30 @@
                 echo $this->Utils->backButton(null, $backLink, ['target' => "_parent"]); ?>
                 <?php if (!$isFullscreen): ?>
                     <a target="_parent"
-                       href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', 'fullscreen' => 1, $map['Map']['id']]); ?>"
+                       href="<?php echo Router::url(array_merge([
+                           'controller' => 'mapeditors',
+                           'action' => 'view',
+                           'plugin' => 'map_module',
+                           'fullscreen' => 1,
+                           $map['Map']['id']],
+                           $this->params['named'])); ?>"
                        class="btn btn-default btn-xs"><i
                                 class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen'); ?></a>
-                <?php else: ?>
+                <?php else:
+                    $newParams = [
+                        'rotate' => $this->params['named']['rotate'],
+                        'interval' => $this->params['named']['interval']
+                    ];
+
+                    ?>
                     <a target="_parent"
-                       href="<?php echo Router::url(['controller' => 'mapeditors', 'action' => 'view', 'plugin' => 'map_module', $map['Map']['id']]); ?>"
+                       href="<?php echo Router::url(array_merge([
+                           'controller' => 'mapeditors',
+                           'action' => 'view',
+                           'plugin' => 'map_module',
+                           $map['Map']['id']],
+                           $newParams
+                       )); ?>"
                        class="btn btn-default btn-xs"><i
                                 class="glyphicon glyphicon-resize-small"></i> <?php echo __('Leave fullscreen'); ?></a>
                 <?php endif; ?>
