@@ -65,73 +65,9 @@ class Systemsetting extends Importer {
         $data = [
             [
                 'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.SOCKET',
-                    'value'   => '/usr/share/openitcockpit/app/run/',
-                    'info'    => 'Path where the sudo server will try to create its socket file',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.SOCKET_NAME',
-                    'value'   => 'sudo.sock',
-                    'info'    => 'Sudoservers socket name',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.SOCKETPERMISSIONS',
-                    'value'   => '49588',
-                    'info'    => 'Permissions of the socket file',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.FOLDERPERMISSIONS',
-                    'value'   => '16877',
-                    'info'    => 'Permissions of the socket folder',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
                     'key'     => 'SUDO_SERVER.API_KEY',
                     'value'   => '1fea123e07f730f76e661bced33a94152378611e',
                     'info'    => 'API key for the sudoserver socket API',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.WORKERSOCKET_NAME',
-                    'value'   => 'worker.sock',
-                    'info'    => 'Sudoservers worker socket name',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.WORKERSOCKETPERMISSIONS',
-                    'value'   => '49588',
-                    'info'    => 'Permissions of the worker socket file',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.RESPONSESOCKET_NAME',
-                    'value'   => 'response.sock',
-                    'info'    => 'Sudoservers worker socket name',
-                    'section' => 'SUDO_SERVER'
-                ],
-            ],
-            [
-                'Systemsetting' => [
-                    'key'     => 'SUDO_SERVER.RESPONSESOCKETPERMISSIONS',
-                    'value'   => '49588',
-                    'info'    => 'Permissions of the worker socket file',
                     'section' => 'SUDO_SERVER'
                 ],
             ],
