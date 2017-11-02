@@ -103,7 +103,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
+apt-get install openitcockpit{,-common,-nagios,-statusengine-nagios,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 
