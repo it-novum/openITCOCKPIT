@@ -67,7 +67,9 @@ class HostescalationsController extends AppController
                 'HostescalationHostMembership'      => [
                     'Host' => [
                         'fields' => [
-                            'name', 'id',
+                            'name',
+                            'id',
+                            'disabled'
                         ],
                     ],
                 ],

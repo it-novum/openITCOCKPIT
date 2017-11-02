@@ -945,7 +945,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                         3 => __('Hosts and dependent Hosts (non-triggered)'),
                     ];
                     ?>
-                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for') . ':']) ?>
+                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'selected' => $preselectedDowntimetype, 'label' => __('Maintenance period for') . ':']) ?>
                     <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
                     <!-- from -->
                     <div class="form-group">

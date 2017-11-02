@@ -213,21 +213,20 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                 </thead>
 
                                 <tbody>
-                                <tr ng-if="isNextHost(service)"
-                                    ng-repeat-start="service in services track by $index">
+                                <tr ng-repeat-start="host in services">
                                     <td colspan="13" class="service_table_host_header">
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
-                                               href="/hosts/browser/{{service.Host.id}}">
-                                                {{service.Host.hostname}} ({{service.Host.address}})
+                                               href="/hosts/browser/{{host.Host.id}}">
+                                                {{host.Host.hostname}} ({{host.Host.address}})
                                             </a>
                                         <?php else: ?>
-                                            {{service.Host.hostname}} ({{service.Host.address}})
+                                            {{host.Host.hostname}} ({{host.Host.address}})
                                         <?php endif; ?>
 
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                             <a class="pull-right txt-color-blueDark"
-                                               href="/services/serviceList/{{service.Host.id}}">
+                                               href="/services/serviceList/{{host.Host.id}}">
                                                 <i class="fa fa-list"
                                                    title=" <?php echo __('Go to Service list'); ?>"></i>
                                             </a>
@@ -235,7 +234,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
                                 </tr>
 
-                                <tr ng-repeat-end="">
+                                <tr ng-repeat="service in host.Services" ng-repeat-end="" >
 
                                     <td>
                                         <input type="checkbox">
@@ -267,13 +266,19 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td class="text-center">
                                         <strong title="<?php echo __('Passively transferred service'); ?>"
-                                                ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                                ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                             P
                                         </strong>
                                     </td>
 
                                     <td>
-                                        {{ service.Service.servicename }}
+                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                            <a href="/services/browser/{{ service.Service.id }}">
+                                                {{ service.Service.servicename }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ service.Service.servicename }}
+                                        <?php endif; ?>
                                     </td>
 
                                     <td>
@@ -281,15 +286,15 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                        <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                        <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>
 
                                     <td>
-                                        <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                        <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                        <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
                                             <?php echo __('n/a'); ?>
                                         </span>
                                     </td>

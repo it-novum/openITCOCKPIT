@@ -143,6 +143,8 @@
                                                         else:
                                                             echo h($service['Service']['Host']['name']);
                                                         endif;
+                                                        echo ($service['Service']['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ':'';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -157,6 +159,8 @@
                                                         else:
                                                             echo h(($service['Service']['name'] !== null && $service['Service']['name'] !== '') ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name']);
                                                         endif;
+                                                        echo ($service['Service']['disabled'])?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>':'';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -180,6 +184,9 @@
                                                         else:
                                                             echo h($service_dependent['Service']['Host']['name']);
                                                         endif;
+                                                        echo ($service_dependent['Service']['Host']['disabled'])?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo '</li>';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -195,6 +202,9 @@
                                                             echo h(($service_dependent['Service']['name'] !== null && $service_dependent['Service']['name'] !== '') ? $service_dependent['Service']['name'] : $service_dependent['Service']['Servicetemplate']['name']
                                                             );
                                                         endif;
+                                                        echo ($service_dependent['Service']['disabled'])?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo '</li>';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>

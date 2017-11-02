@@ -1855,7 +1855,6 @@ class ServicesController extends AppController {
     public function loadParametersByCommandId($command_id = null, $servicetemplate_id = null) {
         $this->allowOnlyAjaxRequests();
 
-        $test = [];
         $commandarguments = [];
         if ($command_id) {
             $commandarguments = $this->Commandargument->find('all', [
