@@ -74,8 +74,7 @@
                         'label'     => ['text' => __('Host'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                         'class'     => 'chosen col col-xs-12',
-                        'selected'  => $selected,
-                        'itn-ajax' => '/Hosts/ajaxGetByTerm'
+                        'selected'  => $selected
                     ]);
                     echo $this->Form->input('downtimetype_id', [
                         'options'   => $hostdowntimetyps,

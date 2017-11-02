@@ -99,6 +99,9 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
+                  
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
+
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
                             <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
@@ -401,6 +404,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                    value="<?php echo $host['Host']['uuid']; ?>"><br/>
                             <strong><?php echo __('IP address'); ?>:</strong>
                             <code><?php echo h($host['Host']['address']); ?></code><br/>
+                            <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
                             <strong><?php echo __('Description'); ?>:</strong><br/>
                             <i class="txt-color-blue"><?php echo h($host['Host']['description']); ?></i>
                         </div>
@@ -510,6 +514,10 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                 </h5>
                             <?php endif; ?>
                         </div>
+
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">
                                 <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
@@ -608,7 +616,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                         $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
-                                                                <td class="text-center width-90">
+                                                                <td class="text-center width-90" data-sort="<?php echo $Servicestatus->currentState();?>">
                                                                     <?php
                                                                     if ($Servicestatus->isFlapping()):
                                                                         echo $Servicestatus->getServiceFlappingIconColored();
@@ -713,9 +721,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                 </td>
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
-                                                                    data-container="body">
+                                                                    data-container="body"
+                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange();?>"
+                                                                >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
-                                                                </td>
+                                                                    <?php echo strtotime($Servicestatus->getLastStateChange());?></td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>

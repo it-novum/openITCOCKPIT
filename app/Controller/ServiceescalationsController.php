@@ -61,6 +61,7 @@ class ServiceescalationsController extends AppController
 
     public function index()
     {
+
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -72,6 +73,7 @@ class ServiceescalationsController extends AppController
                         'fields'          => [
                             'id',
                             'name',
+                            'disabled'
                         ],
                         'Servicetemplate' => [
                             'fields' => [
@@ -82,6 +84,7 @@ class ServiceescalationsController extends AppController
                             'fields' => [
                                 'id',
                                 'name',
+                                'disabled'
                             ],
                         ],
                     ],
@@ -191,9 +194,7 @@ class ServiceescalationsController extends AppController
         }
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-        $containerIds = $serviceescalation['Serviceescalation']['container_id'];
-        list($servicegroups, $timeperiods, $contacts, $contactgroups) =
-            $this->getAvailableDataByContainerId($containerIds);
+        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =$this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerIds = $this->request->data('Serviceescalation.container_id');
@@ -254,21 +255,10 @@ class ServiceescalationsController extends AppController
         }
 
         $this->request->data = Hash::merge($serviceescalation, $this->request->data);
-        $servicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Serviceescalation']['Service']) ? $this->request->data['Serviceescalation']['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
-        $excludedServicesNotFixed = $this->Service->getAjaxServices($containerIds, [], !empty($this->request->data['Serviceescalation']['Service_excluded']) ? $this->request->data['Serviceescalation']['Service_excluded'] : []);
-        $servicesExcluded = [];
-        foreach($excludedServicesNotFixed as $excludedServiceNotFixed){
-            $servicesExcluded = array_merge($servicesExcluded, $excludedServiceNotFixed);
-        }
 
         $this->set([
             'serviceescalation' => $serviceescalation,
             'services'          => $services,
-            'servicesExcluded' => $servicesExcluded,
             'servicegroups'     => $servicegroups,
             'timeperiods'       => $timeperiods,
             'contactgroups'     => $contactgroups,
@@ -279,7 +269,7 @@ class ServiceescalationsController extends AppController
 
     public function add()
     {
-        $services = $servicesExcluded = [];
+        $services = [];
         $servicegroups = [];
         $contacts = [];
         $contactgroups = [];
@@ -296,7 +286,7 @@ class ServiceescalationsController extends AppController
             ],
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
+        $this->Frontend->set('data_placeholder', __('Please choose service'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -344,26 +334,14 @@ class ServiceescalationsController extends AppController
 
                     $containerId = $this->request->data('Serviceescalation.container_id');
                     if ($containerId > 0) {
-                        list($servicegroups, $timeperiods, $contacts, $contactgroups) =
+                        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
                             $this->getAvailableDataByContainerId($containerId);
-
-                        $servicesNotFixed = $this->Service->getAjaxServices($containerId, [], !empty($this->request->data['Serviceescalation']['Service']) ? $this->request->data['Serviceescalation']['Service'] : []);
-                        $services = [];
-                        foreach($servicesNotFixed as $serviceNotFixed){
-                            $services = array_merge($services, $serviceNotFixed);
-                        }
-                        $excludedServicesNotFixed = $this->Service->getAjaxServices($containerId, [], !empty($this->request->data['Serviceescalation']['Service_excluded']) ? $this->request->data['Serviceescalation']['Service_excluded'] : []);
-                        $servicesExcluded = [];
-                        foreach($excludedServicesNotFixed as $excludedServiceNotFixed){
-                            $servicesExcluded = array_merge($servicesExcluded, $excludedServiceNotFixed);
-                        }
                     }
                 }
             }
         }
         $this->set([
             'services'      => $services,
-            'servicesExcluded' => $servicesExcluded,
             'servicegroups' => $servicegroups,
             'timeperiods'   => $timeperiods,
             'contactgroups' => $contactgroups,
@@ -440,7 +418,7 @@ class ServiceescalationsController extends AppController
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-        $services = $this->Service->getAjaxServices($containerIds);
+        $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');

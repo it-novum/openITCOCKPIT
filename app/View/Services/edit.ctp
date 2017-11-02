@@ -246,7 +246,7 @@ $notification_settings = [
                             <div
                                     class="form-group form-group-slider required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+                                       for="ServiceNotificationinterval"><?php echo __('Notification interval'); ?></label>
 
                                 <div class="col col-md-7 hidden-mobile">
                                     <input
@@ -390,7 +390,7 @@ $notification_settings = [
                             <?php echo $this->Form->input('Service.command_id', [
                                 'options' => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
-                                'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label' => ['text' => __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class' => 'chosen col col-xs-12',
                                 'selected' => $service['Service']['command_id'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
@@ -447,7 +447,7 @@ $notification_settings = [
                             ]); ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Check interval'); ?></label>
 
                                 <div class="col col-xs-7">
                                     <input
@@ -480,7 +480,7 @@ $notification_settings = [
                             </div>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Retry interval'); ?></label>
 
                                 <div class="col col-xs-7">
                                     <input

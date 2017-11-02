@@ -67,9 +67,7 @@
                 'multiple' => true,
                 'style' => 'width:100%;',
                 'label' => __('Hosts'),
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#ContainerParentId',
+                'data-placeholder' => __('Please choose a host')
             ]);
             echo $this->Form->input('Hostgroup.Hosttemplate', [
                 'options' => $hosttemplates,

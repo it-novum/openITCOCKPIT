@@ -22,8 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
 $flapDetection_settings = [
     'flap_detection_on_ok' => 'fa-square txt-color-greenLight',
     'flap_detection_on_warning' => 'fa-square txt-color-orange',
@@ -96,8 +95,7 @@ $notification_settings = [
                                 'label' => ['text' => __('Host'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 'style' => 'width: 100%',
-                                'value' => $hostId,
-                                'itn-ajax' => '/Hosts/ajaxGetGenericByTerm'
+                                'value' => $hostId
 
                             ]);
                             echo $this->Form->input('Service.servicetemplate_id', [
@@ -179,7 +177,7 @@ $notification_settings = [
                             <br/>
                             <div class="form-group form-group-slider required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+                                       for="ServiceNotificationinterval"><?php echo __('Notification interval'); ?></label>
 
                                 <div class="col col-md-7 hidden-mobile">
                                     <input
@@ -283,7 +281,7 @@ $notification_settings = [
                             <?php echo $this->Form->input('Service.command_id', [
                                 'options' => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
-                                'label' => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label' => ['text' => __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class' => 'chosen col col-xs-12',
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]); ?>
@@ -303,7 +301,7 @@ $notification_settings = [
                             ]); ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Check interval'); ?></label>
 
                                 <div class="col col-xs-7">
                                     <input
@@ -336,7 +334,7 @@ $notification_settings = [
                             </div>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Retry interval'); ?></label>
 
                                 <div class="col col-xs-7">
                                     <input

@@ -63,6 +63,7 @@ class ServicetemplatesController extends AppController
     ];
     public $uses = [
         'Servicetemplate',
+        'Service',
         'Timeperiod',
         'Command',
         'Contact',
@@ -415,50 +416,31 @@ class ServicetemplatesController extends AppController
             $this->Servicetemplate->set($this->request->data);
             if ($this->Servicetemplate->validates()) {
                 //Delete Command argument values
-                //Fetching all commandargument_id of the command arguments out of database:
-                $commandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
-                //Fetching all commandargument_id out of $this->request-data
-                $commandargumentIdsOfRequest = [];
-                if (isset($this->request->data['Servicetemplatecommandargumentvalue'])) {
-                    $commandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplatecommandargumentvalue'], '{n}.commandargument_id');
-                }
-                // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
+                $this->Servicetemplatecommandargumentvalue->deleteAll([
+                    'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+                ]);
 
-                $this->loadModel('Servicetemplatecommandargumentvalue');
-
-                foreach ($commandargumentIdsOfDatabase as $commandargumentId) {
-                    if (!in_array($commandargumentId, $commandargumentIdsOfRequest)) {
-                        $this->Servicetemplatecommandargumentvalue->deleteAll([
-                            'Servicetemplatecommandargumentvalue.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                            'Servicetemplatecommandargumentvalue.commandargument_id' => $commandargumentId
-                        ], false);
-                    }
-                }
-
-                // Checking if the user deleted this argument or changed the command and if we need to delete it out of the database
-                //Delete Event Command argument values
-                //Fetching all commandargument_id of the command arguments out of database:
-                $eventCommandargumentIdsOfDatabase = Hash::extract($serviceTemplate['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
-                //Fetching all commandargument_id out of $this->request-data
-                $eventCommandargumentIdsOfRequest = [];
-                if (isset($this->request->data['Servicetemplateeventcommandargumentvalue'])) {
-                    $eventCommandargumentIdsOfRequest = Hash::extract($this->request->data['Servicetemplateeventcommandargumentvalue'], '{n}.commandargument_id');
-                }
-                $this->loadModel('Servicetemplateeventcommandargumentvalue');
-                foreach ($eventCommandargumentIdsOfDatabase as $eventCommandargumentId) {
-                    if (!in_array($eventCommandargumentId, $eventCommandargumentIdsOfRequest)) {
-                        // Deleteing the parameter of the argument out of database (sorry ugly php 5.4+ syntax - check twice before modify)
-                        $this->Servicetemplateeventcommandargumentvalue->deleteAll([
-                            'Servicetemplateeventcommandargumentvalue.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
-                            'Servicetemplateeventcommandargumentvalue.commandargument_id' => $eventCommandargumentId
-                        ], false);
-                    }
-                }
+                //Delete old event handler command argument values
+                $this->Servicetemplateeventcommandargumentvalue->deleteAll([
+                    'servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+                ]);
 
                 $this->Customvariable->deleteAll([
                     'object_id'     => $serviceTemplate['Servicetemplate']['id'],
                     'objecttype_id' => OBJECT_SERVICETEMPLATE,
                 ], false);
+
+                //CleaUp for services
+
+                // $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
+                //$oldServicetemplateEventkCommandId
+
+                $dependentServices = $this->Service->find('list', [
+                   'conditions' => [
+                       'Service.servicetemplate_id' => $serviceTemplate['Servicetemplate']['id'],
+                       'Service.command_id IS NULL'
+                   ]
+                ]);
             }
 
             // Save everything including custom variables

@@ -22,8 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
 $flapDetection_settings = [
     'flap_detection_on_up'          => 'fa-square txt-color-greenLight',
     'flap_detection_on_down'        => 'fa-square txt-color-redLight',
@@ -92,7 +91,7 @@ $notification_settings = [
                                 ]
                             );
                             echo $this->Form->input('name', [
-                                'label'     => ['text' => __('Templatename'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'     => ['text' => __('Template name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
                             echo $this->Form->input('description', [
@@ -164,7 +163,7 @@ $notification_settings = [
                             ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="HostNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+                                       for="HostNotificationinterval"><?php echo __('Notification interval'); ?></label>
                                 <div class="col col-md-7 hidden-mobile">
                                     <input type="text" id="HostNotificationinterval" maxlength="255" value=""
                                            class="form-control slider slider-success"
@@ -244,7 +243,7 @@ $notification_settings = [
                             <?php
                             echo $this->Form->input('Hosttemplate.command_id', [
                                 'options'   => $this->Html->chosenPlaceholder($commands),
-                                'label'     => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'     => ['text' => __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'     => 'chosen col col-xs-12',
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
@@ -268,7 +267,7 @@ $notification_settings = [
                             ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="HostCheckinterval"><?php echo __('Checkinterval'); ?></label>
+                                       for="HostCheckinterval"><?php echo __('Check interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="HostCheckinterval" maxlength="255"
                                            value="<?php echo $this->CustomValidationErrors->refill('check_interval', 0); ?>"
@@ -293,7 +292,7 @@ $notification_settings = [
                             </div>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="HostCheckinterval"><?php echo __('Retryinterval'); ?></label>
+                                       for="HostCheckinterval"><?php echo __('Retry interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="HostRetryinterval" maxlength="255"
                                            value="<?php echo $this->CustomValidationErrors->refill('retry_interval', 0); ?>"

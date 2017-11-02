@@ -320,10 +320,6 @@ class HostgroupsController extends AppController
             throw new NotFoundException(__('Invalid hostgroup'));
         }
 
-        $this->Frontend->set('data_placeholder_host', __('Please, start typing...'));
-        $this->Frontend->set('data_placeholder_hosttemplate', __('Please, choose host template'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
         $userId = $this->Auth->user('id');
         $hostgroup = $this->Hostgroup->find('first', [
             'recursive' => -1,
@@ -364,7 +360,7 @@ class HostgroupsController extends AppController
             $containerId = $this->request->data('Container.parent_id');
         }
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-        $hosts = $this->Host->getAjaxHosts($containerIds, [], $hostgroup['Host']);
+        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         if ($this->request->data('Hostgroup.Host')) {
             foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
@@ -446,9 +442,8 @@ class HostgroupsController extends AppController
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
 
+        $this->Frontend->set('data_placeholder', __('Please choose a host'));
 
-        $this->Frontend->set('data_placeholder_host', __('Please, start typing...'));
-        $this->Frontend->set('data_placeholder_hosttemplate', __('Please, choose host template'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -535,7 +530,7 @@ class HostgroupsController extends AppController
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Container.parent_id');
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-            $hosts = $this->Host->getAjaxHosts($containerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
+            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
             $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
         }
         $this->set(compact(['containers', 'hosts', 'hosttemplates']));
@@ -548,10 +543,10 @@ class HostgroupsController extends AppController
 
         if($containerId == ROOT_CONTAINER){
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         }else{
-            $containerIds = [ROOT_CONTAINER, $containerId];
+            $hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER, $containerId], 'list');
         }
-        $hosts = $this->Host->getAjaxHosts($containerIds, [], empty($this->request->data['addData']) ? [] : $this->request->data['addData']);
         $hosts = $this->Host->makeItJavaScriptAble($hosts);
 
         $this->set(compact(['hosts']));

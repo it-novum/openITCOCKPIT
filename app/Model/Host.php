@@ -214,8 +214,10 @@ class Host extends AppModel {
 
         ],
     ];
+
+
     /**
-     * Returns an array with hosts, the user is allowd to see by container_id
+     * Returns an array with hosts, the user is allowed to see by container_id
      *
      * @param array $containerIds Container IDs of container ids the user is allowd to see
      * @param array $conditions Additional conditions for selecting hosts
@@ -1098,6 +1100,15 @@ class Host extends AppModel {
                 if (isset($documentation['Documentation']['id'])) {
                     $Documentation->delete($documentation['Documentation']['id']);
                     unset($documentation);
+                }
+
+                //Delete Idoit imported Hosts
+                if (CakePlugin::loaded('IdoitModule')) {
+                    $this->IdoitMapping = ClassRegistry::init('IdoitMapping');
+                    $this->IdoitMapping->deleteAll([
+                        'IdoitMapping.oitc_object_id' => $id,
+                        'IdoitMapping.type' => 1, // Must be IdoitMapping::TYPE_HOST
+                    ]);
                 }
 
                 return true;

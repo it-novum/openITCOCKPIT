@@ -223,7 +223,6 @@
                                                                                                 ?>
                                                                                                 <span class="txt-color-red">
                                                                                     <?php
-
                                                                                     echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['before'][$field_name]] : $value['before'][$field_name]); ?>
                                                                                 </span>
                                                                                                 <i class="fa fa-caret-right"></i>
@@ -253,6 +252,7 @@
                                                                                 $changelog_min_action = 'changelog_new';
                                                                                 $ids_after_save = (isset($value['after'])) ? Hash::extract($value['after'], '{n}.id') : [];
                                                                                 $ids_before_save = (isset($value['before'])) ? Hash::extract($value['before'], '{n}.id') : [];
+                                                                                $isCopied = !isset($value['before'], $value['after']);
                                                                                 if (isset($current_data_value['id'])):
                                                                                     if (!in_array($current_data_value['id'], $ids_before_save) && !in_array($current_data_value['id'], $ids_after_save) && ($change['Changelog']['action'] != 'add' && $change['Changelog']['action'] != 'copy')):
                                                                                         continue;
@@ -262,6 +262,9 @@
                                                                                     elseif (in_array($current_data_value['id'], $ids_before_save) && in_array($current_data_value['id'], $ids_after_save)):
                                                                                         $changelog_min_action = 'changelog_edit';
                                                                                     endif;
+
+                                                                                elseif(!isset($current_data_value['id']) && !$isCopied):
+                                                                                    continue;
                                                                                 endif;
                                                                                 foreach (array_keys($current_data_value) as $field_identifier):
                                                                                     if ($field_identifier !== 'id'):?>

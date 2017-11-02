@@ -84,14 +84,10 @@
             echo $this->Form->input('Servicegroup.servicegroup_url', ['label' => __('Servicegroup URL'), 'value' => $this->request->data['Servicegroup']['servicegroup_url']]);
 
 
-            echo $this->Form->input('Servicegroup.Service', [
+            echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
                 'label'    => __('Services'),
-                'class'    => 'chosen optgroup_show',
                 'options'  => $services,
-                'multiple' => true,
-                'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : [],
-                'itn-ajax' => '/Services/ajaxGetByTerm',
-                'itn-ajax-container' => '#ContainerParentId',
+                'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : []
             ]);
 
             echo $this->Form->input('Servicegroup.Servicetemplate', [
