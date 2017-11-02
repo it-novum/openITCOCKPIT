@@ -22,8 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-?>
-<?php
+
 $flapDetection_settings = [
     'flap_detection_on_ok'       => 'fa-square txt-color-greenLight',
     'flap_detection_on_warning'  => 'fa-square txt-color-orange',
@@ -212,7 +211,7 @@ $notification_settings = [
                             ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="ServiceNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+                                       for="ServiceNotificationinterval"><?php echo __('Notification interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="ServiceNotificationinterval" maxlength="255" value=""
                                            class="form-control slider slider-success"
@@ -304,7 +303,7 @@ $notification_settings = [
                                 'options'          => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
                                 'selected'         => $this->request->data['Servicetemplate']['command_id'],
-                                'label'            => ['text' => '<a href="/commands/edit/'.$this->request->data['Servicetemplate']['command_id'].'"><i class="fa fa-cog"></i> </a>'.__('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'            => ['text' => '<a href="/commands/edit/'.$this->request->data['Servicetemplate']['command_id'].'"><i class="fa fa-cog"></i> </a>'.__('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                                 'help'             => '<span class="text-danger">'.__('Warning: If you change the check command, all service custom arguments will be reset to service template default!').'</span>'
@@ -374,7 +373,7 @@ $notification_settings = [
                             ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Checkinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Check interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="ServiceCheckinterval" maxlength="255" value=""
                                            class="form-control slider slider-success"
@@ -398,7 +397,7 @@ $notification_settings = [
                             </div>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
                                 <label class="col col-md-1 control-label text-left"
-                                       for="ServiceCheckinterval"><?php echo __('Retryinterval'); ?></label>
+                                       for="ServiceCheckinterval"><?php echo __('Retry interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="ServiceRetryinterval" maxlength="255" value=""
                                            class="form-control slider slider-primary"
