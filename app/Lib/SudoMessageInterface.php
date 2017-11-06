@@ -301,16 +301,6 @@ class SudoMessageInterface implements MessageComponentInterface
             case 'submitDeleteServiceDowntime':
                 $this->Cake->Externalcommand->deleteServiceDowntime($msg->data[0]);
                 break;
-
-            //case 'runCompleteExport':
-            //	// We need to leave to callback, that our function can return data to the browser in realtime!
-            //	$this->Cake->sendToWorkerSocket([
-            //		'task' => 'runCompleteExport',
-            //		'parameters' => [(bool)$msg->data[0]],
-            //		'requestor' => $msg->uniqid,
-            //	]);
-            //	break;
-            //
         }
     }
 

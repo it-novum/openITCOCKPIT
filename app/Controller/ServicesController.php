@@ -746,18 +746,19 @@ class ServicesController extends AppController {
         $this->loadModel('Customvariable');
 
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, true);
+        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
         }
 
-        if (is_null($hostId)) {
-            $includingHost = isset($this->request->data['Service']['host_id']) ? $this->request->data['Service']['host_id'] : [];
-        } else {
-            $includingHost = [$hostId];
-        }
-        $hosts = $this->Host->getAjaxHosts($myRights, ['Host.host_type' => GENERIC_HOST], $includingHost);
+
+        $hosts = $this->Host->find('list', [
+            'conditions' => [
+                'Host.host_type'    => GENERIC_HOST,
+                'Host.container_id' => $myRights
+            ]
+        ]);
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
@@ -2310,7 +2311,7 @@ class ServicesController extends AppController {
         }
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->getAjaxHosts($containerIds, [], [$host_id]);
+        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request);
         $ServiceConditions = new ServiceConditions();
@@ -3117,60 +3118,10 @@ class ServicesController extends AppController {
         return null;
     }
 
-    public function ajaxGetByTerm() {
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['term'])) {
-            if (strpos($this->request->data['term'], '/') === false) {
-                $conditions = [
-                    'OR' => [
-                        ['Host.name LIKE' => '%' . $this->request->data['term'] . '%'],
-                        ['Service.ServiceDescription LIKE' => '%' . $this->request->data['term'] . '%'],
-                    ]
-                ];
-            } else {
-                $hostServiceArr = explode('/', $this->request->data['term'], 2);
-                $conditions = [
-                    ['Host.name LIKE' => '%' . $hostServiceArr[0] . '%'],
-                    ['Service.ServiceDescription LIKE' => '%' . $hostServiceArr[1] . '%'],
-                ];
-            }
-
-            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            if (isset($this->request->data['containerId'])) {
-                if ($this->request->data['containerId'] === '0') {
-                    $userContainerIds = [];
-                } else if ($this->request->data['containerId'] == ROOT_CONTAINER) {
-                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER);
-                } else {
-                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
-                }
-            } else {
-                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            }
-            $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, $conditions, $selectedArr);
-            $services = [];
-            foreach ($servicesNotFixed as $serviceNotFixed) {
-                $services = array_merge($services, $serviceNotFixed);
-            }
-            $returnHtml = '';
-            foreach ($services as $hostName => $serviceArr) {
-                $returnHtml .= '<optgroup label="' . $hostName . '">';
-                foreach ($serviceArr as $serviceId => $serviceName) {
-                    $returnHtml .= '<option value="' . $serviceId . '" ' . (in_array($serviceId, $selectedArr) ? 'selected' : '') . '>' . $serviceName . '</option>';
-                }
-                $returnHtml .= '</optgroup>';
-            }
-            if (!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true') {
-                return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : $returnHtml;
-            } else {
-                return empty($returnHtml) ? '<option value="0">No services found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
-            }
-        }
-    }
-
-    public function icon(){
+    public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template
         return;
     }
+
 }

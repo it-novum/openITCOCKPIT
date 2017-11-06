@@ -497,8 +497,8 @@ class Externalcommand extends NagiosModuleAppModel {
             ],
         ]);
 
-        if (isset($hoststatus[$options['hostUuid']]['Hoststatus']['current_state'])) {
-            if ($hoststatus[$options['hostUuid']]['Hoststatus']['current_state'] > 0) {
+        if (isset($hoststatus['Hoststatus']['current_state'])) {
+            if ($hoststatus['Hoststatus']['current_state'] > 0) {
                 $this->_write('ACKNOWLEDGE_HOST_PROBLEM;' . $options['hostUuid'] . ';' . $options['sticky'] . ';1;1;' . $options['author'] . ';' . $options['comment']);
             }
         }
@@ -637,9 +637,8 @@ class Externalcommand extends NagiosModuleAppModel {
                 'Servicestatus.current_state',
             ],
         ]);
-
-        if (isset($servicestatus[$options['serviceUuid']]['Servicestatus']['current_state'])) {
-            if ($servicestatus[$options['serviceUuid']]['Servicestatus']['current_state'] > 0) {
+        if (isset($servicestatus['Servicestatus']['current_state'])) {
+            if ($servicestatus['Servicestatus']['current_state'] > 0) {
                 $this->setServiceAck(['hostUuid' => $options['hostUuid'], 'serviceUuid' => $options['serviceUuid'], 'author' => $options['author'], 'comment' => $options['comment'], 'sticky' => $options['sticky']]);
             }
         }

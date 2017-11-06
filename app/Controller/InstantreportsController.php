@@ -199,12 +199,8 @@ class InstantreportsController extends AppController
             }
         }
 
-        $hosts = $this->Host->getAjaxHosts($userContainerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
-        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
 
         $this->set([
             'evaluations' => $evaluations,
@@ -294,12 +290,8 @@ class InstantreportsController extends AppController
 
         }
 
-        $hosts = $this->Host->getAjaxHosts($userContainerIds, [], isset($this->request->data['Host']) ? $this->request->data['Host'] : []);
-        $servicesNotFixed = $this->Service->getAjaxServices($userContainerIds, [], isset($this->request->data['Service']) ? $this->request->data['Service'] : []);
-        $services = [];
-        foreach($servicesNotFixed as $serviceNotFixed){
-            $services = array_merge($services, $serviceNotFixed);
-        }
+        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
+        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
 
         $this->set([
             'evaluations' => $evaluations,

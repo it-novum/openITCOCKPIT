@@ -480,8 +480,8 @@ class CommandsController extends AppController
     private function getCommandTypes()
     {
         return [
-            CHECK_COMMAND        => __('Servicecheck command'),
-            HOSTCHECK_COMMAND    => __('Hostcheck command'),
+            CHECK_COMMAND        => __('Service check command'),
+            HOSTCHECK_COMMAND    => __('Host check command'),
             NOTIFICATION_COMMAND => __('Notification command'),
             EVENTHANDLER_COMMAND => __('Eventhandler command'),
         ];

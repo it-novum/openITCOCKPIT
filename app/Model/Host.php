@@ -218,96 +218,6 @@ class Host extends AppModel {
     ];
 
     /**
-     * Returns an array with hosts, the user is allowd to see by container_id
-     *
-     * @param array $containerIds Container IDs of container ids the user is allowd to see
-     * @param array $conditions Additional conditions for selecting hosts
-     * @param array $hostsIncluding containing ids of hosts which must be in the result array too
-     *
-     * @return array
-     * @todo Remove me!
-     * @deprecated
-     */
-    public function getAjaxHosts($containerIds = [], $conditions = [], $hostsIncluding = []) {
-        if (!is_array($containerIds)) {
-            $containerIds = [$containerIds];
-        }
-        $containerIds = array_unique($containerIds);
-
-        $_conditions = [
-            'HostsToContainers.container_id' => $containerIds,
-            'Host.disabled'                  => 0,
-        ];
-
-        $conditions = Hash::merge($_conditions, $conditions);
-        $hosts = $this->find('list', [
-            'recursive'  => -1,
-            'joins'      => [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'conditions' => $conditions,
-            'order'      => [
-                'Host.name' => 'ASC',
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.name',
-            ],
-            'limit'      => self::ITN_AJAX_LIMIT,
-            'group'      => 'Host.id'
-        ]);
-
-        $formattedHosts = [];
-        if (!empty($hostsIncluding) && isset($hostsIncluding[0]) && is_array($hostsIncluding[0])) {
-            foreach ($hostsIncluding as $hostIncluding) {
-                $formattedHosts[] = $hostIncluding['id'];
-            }
-        } else if (is_array($hostsIncluding)) {
-            $formattedHosts = $hostsIncluding;
-        } else {
-            $formattedHosts = [$hostsIncluding];
-        }
-
-        if (!empty($formattedHosts) && !empty(array_diff($formattedHosts, array_keys($hosts)))) {
-            $selectedCondition = ['Host.id' => array_diff($formattedHosts, array_keys($hosts))];
-            $selectedHosts = $this->find('list', [
-                'recursive'  => -1,
-                'joins'      => [
-                    [
-                        'table'      => 'hosts_to_containers',
-                        'alias'      => 'HostsToContainers',
-                        'type'       => 'LEFT',
-                        'conditions' => [
-                            'HostsToContainers.host_id = Host.id',
-                        ],
-                    ],
-                ],
-                'conditions' => Hash::merge($selectedCondition, $_conditions),
-                'order'      => [
-                    'Host.name' => 'ASC',
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.name',
-                ]
-            ]);
-
-            if (!empty($selectedHosts)) {
-                $hosts = $hosts + $selectedHosts;
-            }
-        }
-
-        return $hosts;
-    }
-
-    /**
      * @param HostConditions $HostConditions
      * @param array $selected
      * @return array|null
@@ -1165,6 +1075,15 @@ class Host extends AppModel {
                 if (isset($documentation['Documentation']['id'])) {
                     $Documentation->delete($documentation['Documentation']['id']);
                     unset($documentation);
+                }
+
+                //Delete Idoit imported Hosts
+                if (CakePlugin::loaded('IdoitModule')) {
+                    $this->IdoitMapping = ClassRegistry::init('IdoitMapping');
+                    $this->IdoitMapping->deleteAll([
+                        'IdoitMapping.oitc_object_id' => $id,
+                        'IdoitMapping.type' => 1, // Must be IdoitMapping::TYPE_HOST
+                    ]);
                 }
 
                 return true;

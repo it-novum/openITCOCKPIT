@@ -89,10 +89,10 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
 
             $body = $message->getBodyText();
             //Check if this is base64_encoded, but the header is not set to base64
-            if($this->isBase64($body)){
-                $body = base64_decode($body, true);
+            if ($this->isBase64($body)) {
+                $body = base64_decode(str_replace(["\n", "\r\n", "\r"], '', $body), true);
             }
-
+//debug($body);
             $parsedValues = $this->parseAckInformation($body);
             if (empty($parsedValues)) continue;
             $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();
@@ -168,8 +168,9 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
      * @param $str
      * @return bool
      */
-    private function isBase64($str){
-        if(base64_encode(base64_decode($str, true)) === $str){
+    private function isBase64($str) {
+        $str = str_replace(["\n", "\r\n", "\r"], '', $str);
+        if (base64_encode(base64_decode($str, true)) === $str) {
             return true;
         }
         return false;

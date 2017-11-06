@@ -113,21 +113,19 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'multiple' => true,
                 'style'    => 'width:100%;',
                 'label' => __('<i class="fa fa-desktop"></i> Hosts'),
-                'data-placeholder' => __('Please, start typing...'),
+                'data-placeholder' => __('Please choose a host'),
                 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10'],
-                'itn-ajax' => '/Hosts/ajaxGetByTerm'
             ]);
 
             echo $this->Form->input('Instantreport.Service', [
                 'div'      => 'form-group checkbox-group multiple-select select-type select-type-'.Instantreport::TYPE_SERVICES,
-                'options'  => $services,
+                'options'  => Hash::combine($services, ['%s', '{n}.Service.id'], ['%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription'], '{n}.Host.name'),
                 'class'    => 'chosen',
                 'multiple' => true,
                 'style'    => 'width:100%;',
                 'label'    => __('<i class="fa fa-gears"></i> Services'),
-                'data-placeholder' => __('Please, start typing...'),
+                'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10'],
-                'itn-ajax' => '/Services/ajaxGetByTerm'
             ]);
 
             echo $this->Form->input('Instantreport.timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);

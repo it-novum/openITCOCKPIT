@@ -79,7 +79,6 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
-                'ajaxGetByTerm',
                 'icon'
             ],
             'Statusmaps'       => [
@@ -122,9 +121,7 @@ $config = [
                 'saveMap',
             ],
             'Hosts'            => [
-                'view',
-                'ajaxGetByTerm',
-                'ajaxGetGenericByTerm'
+                'view'
             ]
         ],
         'dependencies'   => [

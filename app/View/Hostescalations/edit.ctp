@@ -97,35 +97,29 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Hosts'),
+                'label'            => __('<i class="fa fa-plus-square text-success"></i> Hosts'),
+                'data-placeholder' => __('Please choose a host'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 success',
                 ],
                 'target'           => '#HostescalationHostExcluded',
                 'selected'         => $this->request->data['Hostescalation']['Host'],
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostescalationContainerId',
-                'itn-ajax-onchange'=> '#HostescalationHostExcluded',
             ]);
 
             echo $this->Form->input('Hostescalation.Host_excluded', [
-                'options'          => $excludedHosts,
+                'options'          => $hosts,
                 'class'            => 'chosen test',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Hosts (excluded)'),
+                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Hosts (excluded)'),
+                'data-placeholder' => __('Please choose a host'),
                 'wrapInput'        => [
                     'tag'   => 'div',
                     'class' => 'col col-xs-10 danger',
                 ],
                 'target'           => '#HostescalationHost',
                 'selected'         => $this->request->data['Hostescalation']['Host_excluded'],
-                'data-placeholder' => __('Please, start typing...'),
-                'itn-ajax' => '/Hosts/ajaxGetByTerm',
-                'itn-ajax-container' => '#HostescalationContainerId',
-                'itn-ajax-onchange'=> '#HostescalationHost',
             ]);
 
             echo $this->Form->input('Hostescalation.Hostgroup', [

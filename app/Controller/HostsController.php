@@ -307,7 +307,7 @@ class HostsController extends AppController {
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
 
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
 
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
@@ -2481,10 +2481,10 @@ class HostsController extends AppController {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
-        $this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
 
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
     }
 
     /**
@@ -3185,73 +3185,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['servicetemplategroup', 'host']);
     }
 
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function ajaxGetByTerm(){
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['term'])) {
-            $conditions = ['Host.name LIKE' => '%' . $this->request->data['term'] . '%'];
-            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            if (isset($this->request->data['containerId'])) {
-                if ($this->request->data['containerId'] === '0') {
-                    $userContainerIds = [];
-                } else if ($this->request->data['containerId'] == ROOT_CONTAINER) {
-                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER);
-                } else {
-                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
-                }
-            } else {
-                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            }
-            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
-            $returnHtml = '';
-            foreach ($hosts as $hostId => $hostName) {
-                $returnHtml .= '<option value="' . $hostId . '" ' . (is_array($selectedArr) && in_array($hostId, $selectedArr) ? 'selected' : '') . '>' . $hostName . '</option>';
-            }
-            if (!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true') {
-                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
-            } else {
-                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
-            }
-        }
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function ajaxGetGenericByTerm(){
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['term'])) {
-            $conditions = ['Host.name LIKE' => '%' . $this->request->data['term'] . '%', 'Host.host_type' => GENERIC_HOST];
-            $selectedArr = isset($this->request->data['selected']) && !empty($this->request->data['selected']) && is_array($this->request->data['selected']) ? $this->request->data['selected'] : [];
-            if (isset($this->request->data['containerId'])) {
-                if ($this->request->data['containerId'] === '0') {
-                    $userContainerIds = [];
-                } else if ($this->request->data['containerId'] == ROOT_CONTAINER) {
-                    $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER);
-                } else {
-                    $userContainerIds = [ROOT_CONTAINER, $this->request->data['containerId']];
-                }
-            } else {
-                $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            }
-            $hosts = $this->Host->getAjaxHosts($userContainerIds, $conditions, $selectedArr);
-            $returnHtml = '';
-            foreach ($hosts as $hostId => $hostName) {
-                $returnHtml .= '<option value="' . $hostId . '" ' . (is_array($selectedArr) && in_array($hostId, $selectedArr) ? 'selected' : '') . '>' . $hostName . '</option>';
-            }
-            if (!empty($this->request->data['isMultiple']) && $this->request->data['isMultiple'] === 'true') {
-                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : $returnHtml;
-            } else {
-                return empty($returnHtml) ? '<option value="0">No hosts found - Please, start typing...</option>' : ('<option value="0">Please, select ...</option>' . $returnHtml);
-            }
-        }
-    }
-
-    public function ajaxList(){
+    public function ajaxList() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
