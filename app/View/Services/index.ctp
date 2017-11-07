@@ -155,9 +155,10 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <div class="form-group smart-form">
                                         <i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
-                                               value=""
                                                data-role="tagsinput"
-                                               placeholder="<?php echo __('Filter by tags'); ?>">
+                                               placeholder="<?php echo __('Filter by tags'); ?>"
+                                               ng-model="filter.Service.keywords"
+                                               ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
 

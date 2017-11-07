@@ -37,6 +37,9 @@ class ServiceFilter extends Filter {
                 'Service.servicename',
                 'Servicestatus.output'
             ],
+            'rlike' => [
+                'Service.keywords'
+            ],
             'equals' => [
                 'Service.uuid',
                 'Service.disabled',

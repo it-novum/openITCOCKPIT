@@ -24,7 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Filter;
 
-
 use CakeRequest;
 use NotImplementedException;
 
@@ -60,7 +59,7 @@ abstract class Filter {
                             break;
 
                         case 'rlike':
-                            $value = $this->getQueryFieldValue($field);
+                            $value = $this->getQueryFieldValue($field, true);
                             if ($value) {
                                 if (!is_array($value)) {
                                     $value = [$value];
@@ -139,9 +138,27 @@ abstract class Filter {
      * @param $field
      * @return null|mixed
      */
-    public function getQueryFieldValue($field) {
+    public function getQueryFieldValue($field, $strict = false) {
         if ($this->queryHasField($field)) {
-            return $this->Request->query['filter'][$field];
+            if($strict === false) {
+                return $this->Request->query['filter'][$field];
+            }
+
+            if($strict === true){
+                $value = $this->Request->query['filter'][$field];
+                if(is_array($value)){
+                    $value = array_filter($value, function($val){
+                        if($val === null || $val === ''){
+                            return false;
+                        }
+                        return true;
+                    });
+                }
+                if(!empty($value)){
+                    return $value;
+                }
+            }
+
         }
         return null;
     }
