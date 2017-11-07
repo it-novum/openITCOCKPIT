@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
 
 /**
@@ -36,7 +37,8 @@ class InstantreportsController extends AppController
     public $cronFromDate = '';
     public $cronToDate = '';
     public $cronPdfName = '';
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
+    //public $layout = 'Admin.default';
     public $components = [
         'Paginator',
         'RequestHandler',
@@ -52,99 +54,51 @@ class InstantreportsController extends AppController
     ];
 
     public function index(){
-        $options = [
-            'recursive' => -1,
-            'order' => [
-                'Instantreport.id' => 'desc',
-            ],
-            'conditions' => [
-                'Instantreport.container_id' => $this->MY_RIGHTS,
-                'Instantreport.send_email' => '0',
-            ],
-            'contain'    => [
-                'Timeperiod.name'
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $allInstantReports = $this->Instantreport->find('all', $options);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $allInstantReports = $this->Paginator->paginate();
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
         }
 
-        if(empty($allInstantReports)){
-            $allInstantReports = $this->Instantreport->find('all', [
-                'recursive' => -1,
-                'order' => [
-                    'Instantreport.id' => 'desc',
-                ],
-                'conditions' => [
-                    'Instantreport.container_id' => $this->MY_RIGHTS,
-                    'Instantreport.send_email' => '1',
-                ],
-                'contain'    => [
-                    'Timeperiod.name',
-                    'User.firstname',
-                    'User.lastname',
-                ],
-            ]);
-            if(empty($allInstantReports)) {
-                $this->redirect(['action' => 'add']);
-            }else{
-                $this->redirect(['action' => 'sendEmailsList']);
-            }
-        }
+        $InstantreportFilter = new InstantreportFilter($this->request);
 
-        $evaluations = $this->Instantreport->getEvaluations();
-        $types = $this->Instantreport->getTypes();
-
-        $this->set([
-            'allInstantReports' => $allInstantReports,
-            'evaluations' => $evaluations,
-            'types' => $types
-        ]);
-    }
-
-    public function sendEmailsList(){
         $options = [
             'recursive' => -1,
-            'order' => [
-                'Instantreport.id' => 'desc',
-            ],
             'conditions' => [
-                'Instantreport.container_id' => $this->MY_RIGHTS,
-                'Instantreport.send_email' => '1',
+                'Instantreport.container_id' => $this->MY_RIGHTS
             ],
             'contain'    => [
                 'Timeperiod.name',
                 'User.firstname',
-                'User.lastname',
+                'User.lastname'
             ],
+            'order'      => $InstantreportFilter->getOrderForPaginator('Instantreport.name', 'asc'),
+            'conditions' => $InstantreportFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
-        if ($this->isApiRequest()) {
-            $allInstantReports = $this->Instantreport->find('all', $options);
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($options['limit']);
+            $instantreports = $this->Instantreport->find('all', $options);
         } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $allInstantReports = $this->Paginator->paginate();
-        }
-
-        if(empty($allInstantReports)){
-            $this->redirect(['action' => 'index']);
+            $this->Paginator->settings = $options;
+            $this->Paginator->settings['page'] = $InstantreportFilter->getPage();
+            $instantreports = $this->Paginator->paginate();
         }
 
         $evaluations = $this->Instantreport->getEvaluations();
         $types = $this->Instantreport->getTypes();
         $sendIntervals = $this->Instantreport->getSendIntervals();
 
-        $this->set([
-            'allInstantReports' => $allInstantReports,
-            'evaluations' => $evaluations,
-            'types' => $types,
-            'sendIntervals' => $sendIntervals
-        ]);
+        array_walk($instantreports, function(&$value, &$key) use ($evaluations, $types, $sendIntervals){
+            $value['Instantreport']['evaluation'] = $evaluations[$value['Instantreport']['evaluation']];
+            $value['Instantreport']['type'] = $types[$value['Instantreport']['type']];
+            $value['Instantreport']['send_interval'] = $sendIntervals[$value['Instantreport']['send_interval']];
+        });
 
+        $this->set([
+            'instantreports' => $instantreports
+        ]);
+        $this->set('_serialize', ['instantreports', 'paging']);
     }
 
     public function add() {
@@ -166,9 +120,6 @@ class InstantreportsController extends AppController
         $sendIntervals = $this->Instantreport->getSendIntervals();
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
-                $this->request->data['User'] = $this->request->data['Instantreport']['User'];
-            }
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
                 $this->request->data['User'] = $this->request->data['Instantreport']['User'];
             }
@@ -208,7 +159,7 @@ class InstantreportsController extends AppController
             'reportFormats' => $reportFormats,
             'reflectionStates' => $reflectionStates,
             'sendIntervals' => $sendIntervals,
-			'containers' => $containers,
+            'containers' => $containers,
             'timeperiods' => $timePeriods,
             'hostgroups' => $hostgroups,
             'servicegroups' => $servicegroups,
@@ -224,11 +175,20 @@ class InstantreportsController extends AppController
             throw new NotFoundException(__('Invalid Instant report'));
         }
 
-        $instantReport = $this->Instantreport->findById($id);
 
-        if(empty($instantReport)){
-            throw new NotFoundException(__('Invalid Instant report'));
-        }
+        $instantReport = $this->Instantreport->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'User.id',
+                'Host.id',
+                'Service.id',
+                'Hostgroup.id',
+                'Servicegroup.id'
+            ],
+            'conditions' => [
+                'Instantreport.id' => $id
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($instantReport, 'Instantreport.container_id'))) {
             $this->render403();
@@ -251,15 +211,13 @@ class InstantreportsController extends AppController
         $reportFormats = $this->Instantreport->getReportFormats();
         $reflectionStates = $this->Instantreport->getReflectionStates();
         $sendIntervals = $this->Instantreport->getSendIntervals();
-
         $this->request->data = Hash::merge($instantReport, $this->request->data);
-        unset($this->request->data['Container']);
-
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
                 $this->request->data['User'] = $this->request->data['Instantreport']['User'];
             }else{
                 $this->request->data['User'] = [];
+                $this->request->data['Instantreport']['send_interval'] = 0;
             }
             $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Servicegroup'] = $this->request->data['Hostgroup'] = [];
             if (isset($this->request->data['Instantreport']['Hostgroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTGROUPS) {
@@ -278,16 +236,13 @@ class InstantreportsController extends AppController
 
             if ($this->Instantreport->validates()) {
                 $instantReportData = $this->Instantreport->data;
-                $this->Instantreport->saveAll();
-                if(isset($this->request->data['save_submit']) || $instantReportData['Instantreport']['send_email'] === '1'){
+                if($this->Instantreport->saveAll()){
                     $this->setFlash(__('<a href="/instantreports/edit/%s">Instant Report</a> modified successfully', $instantReportData['Instantreport']['id']));
-                    if($instantReportData['Instantreport']['send_email'] === '1'){
-                        $this->redirect(['action' => 'sendEmailsList']);
-                    }
                     $this->redirect(['action' => 'index']);
+                }else{
+                    $this->setFlash(__('Data could not be saved'), false);
                 }
             }
-
         }
 
         $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
@@ -399,7 +354,6 @@ class InstantreportsController extends AppController
             $this->set([
                 'id' => $id,
                 'allInstantReports' => $allInstantReports,
-                'reportFormats' => $reportFormats,
                 'reportFormats' => $reportFormats
             ]);
 

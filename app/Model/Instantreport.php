@@ -40,6 +40,7 @@ class Instantreport extends AppModel {
     CONST STATE_SOFT_HARD = 1;
     CONST STATE_HARD_ONLY = 2;
 
+    CONST SEND_NEVER = 0;
     CONST SEND_DAILY = 1;
     CONST SEND_WEEKLY = 3;
     CONST SEND_MONTHLY = 2;
@@ -292,8 +293,8 @@ class Instantreport extends AppModel {
     public function getEvaluations(){
         return [
             self::EVALUATION_HOSTS => ['label' => __('Hosts '), 'icon' => 'desktop'],
-            self::EVALUATION_HOSTS_SERVICES => ['label' => __('Hosts and Services '), 'icon' => 'gears'],
-            self::EVALUATION_SERVICES => ['label' => __('Services '), 'icon' => 'gears']
+            self::EVALUATION_HOSTS_SERVICES => ['label' => __('Hosts and Services '), 'icon' => 'cogs'],
+            self::EVALUATION_SERVICES => ['label' => __('Services '), 'icon' => 'cog']
         ];
     }
 
@@ -313,6 +314,7 @@ class Instantreport extends AppModel {
 
     public function getSendIntervals(){
         return [
+            self::SEND_NEVER => __('Never'),
             self::SEND_DAILY => __('Daily'),
             self::SEND_WEEKLY => __('Weekly'),
             self::SEND_MONTHLY => __('Monthly'),
@@ -392,5 +394,4 @@ class Instantreport extends AppModel {
         $dateNow->setTime(23, 59, 59);
         return $dateNow->getTimestamp();
     }
-
 }

@@ -90,7 +90,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'class'    => 'chosen',
                 'multiple' => true,
                 'style'    => 'width:100%;',
-                'label' => __('<i class="fa fa-desktop"></i> Host groups'),
+                'label' => __('<i class="fa fa-sitemap"></i> Host groups'),
                 'data-placeholder' => __('Please choose a host group'),
                 'wrapInput' => ['tag' => 'div', 'class' => 'col col-xs-10']
             ]);
@@ -101,7 +101,7 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'class'    => 'chosen',
                 'multiple' => true,
                 'style'    => 'width:100%;',
-                'label'    => __('<i class="fa fa-gears"></i> Service groups'),
+                'label'    => __('<i class="fa fa-cogs"></i> Service groups'),
                 'data-placeholder' => __('Please choose a service group'),
                 'wrapInput'=> ['tag'   => 'div', 'class' => 'col col-xs-10']
             ]);
@@ -123,12 +123,18 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 'class'    => 'chosen',
                 'multiple' => true,
                 'style'    => 'width:100%;',
-                'label'    => __('<i class="fa fa-gears"></i> Services'),
+                'label'    => __('<i class="fa fa-cog"></i> Services'),
                 'data-placeholder' => __('Please choose a service'),
                 'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10'],
             ]);
 
-            echo $this->Form->input('Instantreport.timeperiod_id', ['options' => $this->Html->chosenPlaceholder($timeperiods), 'data-placeholder' => __('Please select...'), 'class' => 'chosen', 'label' => __('Timeperiod'), 'style' => 'width:100%;']);
+            echo $this->Form->input('Instantreport.timeperiod_id', [
+                'options' => $this->Html->chosenPlaceholder($timeperiods),
+                'data-placeholder' => __('Please select...'),
+                'class' => 'chosen',
+                'label' => __('Timeperiod'),
+                'style' => 'width:100%;'
+            ]);
 
             echo $this->Form->input('Instantreport.reflection', [
                 'options'          => $reflectionStates,
@@ -193,12 +199,8 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                 ]);
                 ?>
             </div>
-            <div class="well formactions"><div class="pull-right">
-                    <?php
-                    echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary save-submit-class', 'name' => 'save_submit']).'&nbsp;';
-                    echo $this->Html->link(__('Cancel'), ['action' => 'index'], ['class' => 'btn btn-default']);
-                    ?>
-            </div></div>
-        </div>
-    </div>
-</div>
+        </div> <!-- close row-->
+        <br/>
+        <?php echo $this->Form->formActions(); ?>
+    </div> <!-- close widget body -->
+</div> <!-- end jarviswidget -->

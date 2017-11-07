@@ -191,15 +191,10 @@ foreach ($evaluations as $evaluationValue => $evaluationArray){
                     'data-placeholder' => __('Please choose users'),
                     'wrapInput'        => ['tag'   => 'div', 'class' => 'col col-xs-10']
                 ]);
-            ?>
+                ?>
             </div>
-            <div class="well formactions"><div class="pull-right">
-                    <?php
-                    echo $this->Form->submit(__('Save'), ['div' => false, 'class' => 'btn btn-primary save-submit-class', 'name' => 'save_submit']).'&nbsp;';
-                    echo $this->Html->link(__('Cancel'), ['action' => 'index'], ['class' => 'btn btn-default']);
-                    ?>
-            </div></div>
-
-        </div>
-    </div>
-</div>
+        </div> <!-- close row-->
+        <br/>
+        <?php echo $this->Form->formActions(); ?>
+    </div> <!-- close widget body -->
+</div> <!-- end jarviswidget -->
