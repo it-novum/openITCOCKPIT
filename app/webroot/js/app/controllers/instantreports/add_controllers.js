@@ -48,6 +48,9 @@ App.Controllers.InstantreportsAddController = Frontend.AppController.extend({
             self.changeSendMail();
         });
         self.changeSendMail();
+
+        self.$tagsinput = $('.tagsinput');
+        self.$tagsinput.tagsinput();
     },
 
     changeInputFieldsByType: function(){
