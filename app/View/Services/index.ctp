@@ -76,7 +76,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/hostgroups/add" class="btn btn-xs btn-success">
+                            <a href="/services/add" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -122,10 +122,20 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-sitemap"></i>
+                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by host group name'); ?>"
-                                                   ng-model="filter.container.name"
+                                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                                   ng-model="filter.Host.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                                   ng-model="filter.Service.name"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -134,12 +144,130 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <div class="form-group smart-form">
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.hostgroup.description"
+                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   ng-model="filter.Servicestatus.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
                                 </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <i class="icon-prepend fa fa-filter"></i>
+                                        <input type="text" class="input-sm"
+                                               value=""
+                                               data-role="tagsinput"
+                                               placeholder="<?php echo __('Filter by tags'); ?>">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Service status'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.current_state.ok"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-success"></i>
+                                                <?php echo __('Ok'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.current_state.warning"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-warning"></i>
+                                                <?php echo __('Warning'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.current_state.critical"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-danger"></i>
+                                                <?php echo __('Critical'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.current_state.unknown"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Unknown'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Acknowledgements'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.acknowledged"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Acknowledge'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.not_acknowledged"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Not acknowledged'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Downtimes'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.in_downtime"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('In downtime'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.in_downtime"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Not in downtime'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Check type'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.passive"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Passive service'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
                                 <div class="col-xs-12">
                                     <div class="pull-right margin-top-10">
                                         <button type="button" ng-click="resetFilter()"
@@ -234,7 +362,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
                                 </tr>
 
-                                <tr ng-repeat="service in host.Services" ng-repeat-end="" >
+                                <tr ng-repeat="service in host.Services" ng-repeat-end="">
 
                                     <td>
                                         <input type="checkbox">
@@ -384,7 +512,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
-                                    <?php echo __('Delete all'); ?>
+                                    <?php echo __('Delete'); ?>
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">

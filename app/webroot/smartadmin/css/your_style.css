@@ -1165,7 +1165,7 @@ a.autocomplete-items {
 
 .custom-tree li.parent_li > span:hover,
 .custom-tree li.parent_li > span:hover + ul li span {
-	background-color: none!important;
+	background-color: transparent!important;
 	background: none!important;
 	border: 1px solid yellow;
 	color: #337AB7!important;
@@ -1504,9 +1504,10 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 	margin: 12px 0 28px;
 }
 
-.disableLink{
+.disableLink {
 	pointer-events: none;
 	cursor: default;
+}
 
 .label-forced {
 	display: inline!important;
@@ -1538,4 +1539,92 @@ label[class^='aco-host']:after, label[class^='aco-service']:after{
 
 .menu-search-border{
 	border-bottom: 1px solid #525151;
+}
+
+
+.smart-form .checkbox i {
+	position: absolute;
+	top: 3px;
+	left: 0;
+	display: block;
+	/*width: 10px;
+    height: 10px;*/
+	outline: none;
+	border-width: 1px;
+	border-style: solid;
+	background: #FFF;
+}
+
+.smart-form .checkbox input + i:after {
+	content: '\f00c';
+	/* top: -5px;*/
+	left: 0px;
+	/*width: 10px;
+    height: 10px;
+    font: normal 9px/19px FontAwesome; */
+	text-align: center;
+}
+
+/*.small-checkbox-label {
+	padding-left: 0px !important;
+	margin-right: 23px !important;
+}*/
+
+.checkbox-success {
+	border-color: #409240 !important;
+}
+
+.checkbox-success:after {
+	color: #5cb85c !important;
+}
+
+.checkbox-warning {
+	border-color: #de8201 !important;
+}
+
+.checkbox-warning:after {
+	color: #de8201 !important;
+}
+
+.checkbox-danger {
+	border-color: #A90329 !important;
+}
+
+.checkbox-danger:after {
+	color: #A90329 !important;
+}
+
+.checkbox-default {
+	border-color: #4c4f53 !important;
+}
+
+.checkbox-default:after {
+	color: #92a2a8 !important;
+}
+
+.checkbox-primary {
+	border-color: #265986 !important;
+}
+
+.checkbox-primary:after {
+	color: #3276B1 !important;
+}
+.smart-form .bootstrap-tagsinput{
+	padding-left: 37px;
+	font-size: 12px;
+	line-height: 1.5;
+	/*height: 28px;*/
+	min-height: 28px;
+	width: auto;
+	padding-bottom: 0;
+	padding-top: 0;
+}
+
+.smart-form .bootstrap-tagsinput input{
+	padding-top: 5px;
+}
+
+.smart-form .bootstrap-tagsinput .label{
+	font-size: 12px;
+	line-height: 14px;
 }

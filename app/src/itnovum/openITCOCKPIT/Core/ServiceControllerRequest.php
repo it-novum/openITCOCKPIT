@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+
 class ServiceControllerRequest {
 
     /**
@@ -32,9 +34,14 @@ class ServiceControllerRequest {
      */
     private $request;
 
+    /**
+     * @var ServiceFilter
+     */
+    private $ServiceFilter;
 
-    public function __construct(\CakeRequest $request){
+    public function __construct(\CakeRequest $request, ServiceFilter $ServiceFilter){
         $this->request = $request;
+        $this->ServiceFilter = $ServiceFilter;
     }
 
     /**
@@ -56,24 +63,12 @@ class ServiceControllerRequest {
     }
 
     /**
-     * @param array $defaultOrder
+     * @param string $sort
+     * @param string $direction
      * @return array
      */
-    public function getOrder($defaultOrder = []){
-        if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
-            return [
-                $this->request['named']['sort'] => $this->request['named']['direction']
-            ];
-        }
-
-        if(isset($this->request->query['sort']) && isset($this->request->query['direction'])){
-            return [
-                $this->request->query['sort'] => $this->request->query['direction']
-            ];
-        }
-
-        return $defaultOrder;
-
+    public function getOrder($sort = '', $direction = ''){
+        return $this->ServiceFilter->getOrderForPaginator($sort, $direction);
     }
 
 }

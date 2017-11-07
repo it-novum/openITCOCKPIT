@@ -35,7 +35,8 @@ $scripts = [
     'vendor/angular/angular.min.js',
     //'vendor/angular-ui-router/release/angular-ui-router.min.js',
     'js/lib/jquery-cookie.js',
-    'js/vendor/chosen.jquery.min.js'
+    'js/vendor/chosen.jquery.min.js',
+    'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js'
 ];
 
 App::uses('Folder', 'Utility');

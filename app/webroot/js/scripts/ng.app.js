@@ -105,6 +105,16 @@ angular.module('openITCOCKPIT', [])
 
     .run(function($rootScope, SortService){
 
+        $rootScope.currentStateForApi = function(current_state){
+            var states = [];
+            for(var key in current_state){
+                if(current_state[key] === true){
+                    states.push(key);
+                }
+            }
+            return states;
+        };
+
         $rootScope.getSortClass = function(field){
             if(field === SortService.getSort()){
                 if(SortService.getDirection() === 'asc'){

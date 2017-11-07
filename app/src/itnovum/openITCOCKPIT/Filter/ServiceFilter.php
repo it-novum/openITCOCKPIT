@@ -30,16 +30,25 @@ class ServiceFilter extends Filter {
     /**
      * @return array
      */
-    public function ajaxFilter(){
+    public function indexFilter(){
         $filters = [
             'like' => [
                 'Host.name',
-                'Service.name',
+                'Service.servicename',
                 'Servicestatus.output'
             ],
             'equals' => [
                 'Service.uuid',
-                'Service.disabled'
+                'Service.disabled',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled'
+            ],
+            'greater' => [
+                'Servicestatus.scheduled_downtime_depth',
+            ],
+            'state' => [
+                'Servicestatus.current_state'
             ]
         ];
 

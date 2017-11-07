@@ -12,14 +12,23 @@ angular.module('openITCOCKPIT')
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
-                    current_state: [
-                        'ok',
-                        'warning',
-                        'critical',
-                        'unknown'
-                    ]
+                    current_state: {
+                        ok: false,
+                        warning: false,
+                        critical: false,
+                        unknown: false
+                    },
+                    acknowledged: false,
+                    not_acknowledged: false,
+                    in_downtime: false,
+                    not_in_downtime: false,
+                    passive: false,
+                    output: ''
                 },
                 Service: {
+                    name: ''
+                },
+                Host: {
                     name: ''
                 }
             };
@@ -56,6 +65,7 @@ angular.module('openITCOCKPIT')
             });
 
             services.forEach(function(service){
+                //Notice, API return some IDs as string :/
                 if(lastendhost != service.host_id){
                     if(tmp_hostservicegroup !== null){
                         result.push(tmp_hostservicegroup);
@@ -65,6 +75,7 @@ angular.module('openITCOCKPIT')
                     var host = null;
                     var hoststatus = null;
                     hosts.forEach(function(hostelem){
+                        //Notice, API return some IDs as string :/
                         if(hostelem.id == service.host_id){
                             host = hostelem;
                         }
@@ -112,8 +123,10 @@ angular.module('openITCOCKPIT')
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    //'filter[Container.name]': $scope.filter.container.name,
-                    //'filter[Hostgroup.description]': $scope.filter.hostgroup.description
+                    'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[Service.servicename]': $scope.filter.Service.name,
+                    'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
+                    'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state)
                 }
             }).then(function(result){
                 $scope.services = [];
@@ -195,6 +208,7 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
+            console.log($scope.filter);
             $scope.undoSelection();
             $scope.load();
         }, true);

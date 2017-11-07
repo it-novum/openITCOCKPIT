@@ -29,6 +29,7 @@ use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
@@ -286,7 +287,9 @@ class ServicesController extends AppController {
             return;
         }
 
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request);
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
         $User = new User($this->Auth);
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
@@ -321,20 +324,17 @@ class ServicesController extends AppController {
         }
 
         //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
-            'Host.name'           => 'asc',
-            'Service.servicename' => 'asc'
-        ]));
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
             $this->Service->virtualFieldsForIndexAndServiceList();
             $modelName = 'Service';
         }
 
         if ($this->DbBackend->isCrateDb()) {
             $this->Servicestatus->virtualFieldsForIndexAndServiceList();
-            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
             $modelName = 'Servicestatus';
         }
 

@@ -58,6 +58,16 @@ abstract class Filter {
                                 );
                             }
                             break;
+
+                        case 'rlike':
+                            $value = $this->getQueryFieldValue($field);
+                            if ($value) {
+                                if (!is_array($value)) {
+                                    $value = [$value];
+                                }
+                                $conditions[sprintf('%s rlike', $field)] = implode('|', $value);
+                            }
+                            break;
                         case 'equals':
                             $values = $this->getQueryFieldValue($field);
                             if (is_array($values) && !empty($values)) {
@@ -68,6 +78,35 @@ abstract class Filter {
                                 }
                             }
                             break;
+
+                        case 'greater':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s >', $field)] = $values;
+                            }
+                            break;
+
+                        case 'greater_equals':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s >=', $field)] = $values;
+                            }
+                            break;
+
+                        case 'lesser':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s <', $field)] = $values;
+                            }
+                            break;
+
+                        case 'lesser_equals':
+                            $values = $this->getQueryFieldValue($field);
+                            if ($values || $values === '0') {
+                                $conditions[sprintf('%s <=', $field)] = $values;
+                            }
+                            break;
+
                         case 'state':
                             $values = $this->mapStateNameToStateId($field);
                             if (is_array($values) && !empty($values)) {
@@ -77,6 +116,7 @@ abstract class Filter {
                                     $conditions[$field] = $values;
                                 }
                             }
+
                             break;
                         default:
                             throw new NotImplementedException('This filter type is not implemented yet');
@@ -162,7 +202,7 @@ abstract class Filter {
      * @param string $direction
      * @return array
      */
-    public function getOrderForPaginator($sort = '', $direction = ''){
+    public function getOrderForPaginator($sort = '', $direction = '') {
         return [
             $this->getSort($sort) => $this->getDirection($direction)
         ];
