@@ -38,12 +38,13 @@ class AdditionalLinksHelper extends AppHelper {
      *
      * @param string[][] $additionalLinks
      * @param int $currentIndex The current index or ID of the current item
-     * @param bool $escape Escape HTML in link
+     * @param array $addArrParam
+     * @param bool $angularJs
      *
      * @return string The list items (<li>) with the corresponding links (<a>)
      */
-    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $escape = true) {
-        $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $escape);
+    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false) {
+        $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $angularJs);
         $links = array_map(function ($element) {
             return '<li>' . $element . '</li>';
         }, $links);
@@ -71,11 +72,11 @@ class AdditionalLinksHelper extends AppHelper {
      * @param string[][] $additionalLinks
      * @param int $currentIndex The current index or ID of the current item.
      * @param array $addArrParam
-     * @param bool $escape
+     * @param bool $angularJs
      *
      * @return string[] The rendered <a> tags. Each element accords to one link.
      */
-    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = [], $escape = true) {
+    protected function renderLinks($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false) {
         $result = [];
         foreach ($additionalLinks as $link) {
             if (isset($link['callback']) && isset($addArrParam['Service']['name']) && !$link['callback']($addArrParam['Service']['name']))
@@ -83,24 +84,28 @@ class AdditionalLinksHelper extends AppHelper {
 
             $title = $link['title'];
             $url = $link['url'];
-            if ($currentIndex !== -1) { // replace 'autoIndex' within a string
 
-                if (is_string($url)) {
-                    $url = str_replace('autoIndex', $currentIndex, $url);
-                } elseif (is_array($url) && count($url)) { // replace 'autoIndex' accordingly
-                    foreach ($url as $key => $value) {
-                        if (!in_array($key, ['controller', 'index'], true)) {
-                            $url[$key] = str_replace('autoIndex', $currentIndex, $value);
+            if($angularJs === false) {
+                if ($currentIndex !== -1) { // replace 'autoIndex' within a string
+                    if (is_string($url)) {
+                        $url = str_replace('autoIndex', $currentIndex, $url);
+                    } else if (is_array($url) && count($url)) { // replace 'autoIndex' accordingly
+                        foreach ($url as $key => $value) {
+                            if (!in_array($key, ['controller', 'index'], true)) {
+                                $url[$key] = str_replace('autoIndex', $currentIndex, $value);
+                            }
                         }
                     }
                 }
             }
             $options = $link['options'];
-            $options['escape'] = $escape;
             $confirmMessage = $link['confirmMessage'];
 
-
-            $renderedLink = $this->Html->link($title, $url, $options, $confirmMessage);
+            $url = Router::url($url);
+            if($angularJs === true){
+                $url = str_replace('autoIndex', $currentIndex, $url);
+            }
+            $renderedLink = $this->Html->link($title,$url , $options, $confirmMessage);
             $result[] = $renderedLink;
         }
 
