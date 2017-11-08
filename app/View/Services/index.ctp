@@ -23,15 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
-
-$this->Paginator->options(['url' => $this->params['named']]);
-
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -39,7 +30,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
             <i class="fa fa-gear fa-fw "></i>
             <?php echo __('Services'); ?>
             <span>>
-                <?php echo __('List'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -468,7 +459,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                             $additionalLinksList,
                                                             '{{service.Service.id}}',
                                                             [],
-                                                            false
+                                                            true
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
