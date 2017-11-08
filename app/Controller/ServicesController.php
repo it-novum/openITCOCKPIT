@@ -347,6 +347,7 @@ class ServicesController extends AppController {
             $this->set('_serialize', ['all_services']);
             return;
         } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
         }
