@@ -85,6 +85,82 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Evaluation'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hosts"
+                                                       ng-true-value="1"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Hosts'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hostsandservices"
+                                                       ng-true-value="2"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Hosts and Services'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.services"
+                                                       ng-true-value="3"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Services'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Type'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.hostgroups"
+                                                       ng-true-value="1"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Host groups'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.hosts"
+                                                       ng-true-value="2"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Hosts'); ?>
+                                            </label>
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.servicegroups"
+                                                       ng-true-value="3"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Service groups'); ?>
+                                            </label>
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.services"
+                                                       ng-true-value="4"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Services'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="mobile_table">
                             <table id="intantreport_list" class="table table-striped table-hover table-bordered smart-form"
@@ -101,13 +177,16 @@
                                     <th class="no-sort">
                                         <?php echo __('Type'); ?>
                                     </th>
-                                    <th class="no-sort">
+                                    <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
+                                        <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
                                         <?php echo __('Time period'); ?>
                                     </th>
-                                    <th class="no-sort">
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
                                         <?php echo __('Summary display'); ?>
                                     </th>
-                                    <th class="no-sort">
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
                                         <?php echo __('Consider downtimes'); ?>
                                     </th>
                                     <th class="no-sort">

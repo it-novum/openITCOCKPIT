@@ -34,6 +34,10 @@ class InstantreportFilter extends Filter {
         $filters = [
             'like' => [
                 'Instantreport.name'
+            ],
+            'equals' => [
+                'Instantreport.evaluation',
+                'Instantreport.type'
             ]
         ];
         return $this->getConditionsByFilters($filters);
