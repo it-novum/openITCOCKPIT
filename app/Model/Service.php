@@ -820,7 +820,7 @@ class Service extends AppModel {
         return false;
     }
 
-    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []){
+    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -836,78 +836,78 @@ class Service extends AppModel {
         ];
         $conditions = Hash::merge($_conditions, $conditions);
         $services = $this->find('all', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host' => [
+                'Host'            => [
                     'fields' => [
                         'Host.name',
                     ],
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.ServiceDescription'
             ],
-            'order' => [
+            'order'      => [
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ]);
 
         $formattedServices = [];
-        if(!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])){
-            foreach($servicesIncluding as $serviceIncluding){
+        if (!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])) {
+            foreach ($servicesIncluding as $serviceIncluding) {
                 $formattedServices[] = $serviceIncluding['id'];
             }
-        }else{
+        } else {
             $formattedServices = $servicesIncluding;
         }
 
         $servicesIds = [];
-        foreach($services as $service){
+        foreach ($services as $service) {
             $servicesIds[] = $service['Service']['id'];
         }
 
-        if(!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))){
+        if (!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))) {
             $selectedCondition = ['Service.id' => array_diff($formattedServices, $servicesIds)];
             $selectedServices = $this->find('all', [
-                'recursive' => -1,
-                'contain' => [
+                'recursive'  => -1,
+                'contain'    => [
                     'Servicetemplate' => [
                         'fields' => [
                             'Servicetemplate.name'
                         ],
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.name',
                         ],
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                     'Service.ServiceDescription'
                 ],
-                'order' => [
+                'order'      => [
                     'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
                 ],
                 'conditions' => Hash::merge($selectedCondition, $_conditions),
             ]);
 
-            if(!empty($selectedServices)){
+            if (!empty($selectedServices)) {
                 $services = array_merge($services, $selectedServices);
             }
         }
 
         $returnValue = [];
-        foreach($services as $serviceArray){
-            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'].'/'.$serviceArray['Service']['ServiceDescription'];
+        foreach ($services as $serviceArray) {
+            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'] . '/' . $serviceArray['Service']['ServiceDescription'];
         }
         return $returnValue;
     }
@@ -921,8 +921,8 @@ class Service extends AppModel {
 
         $_conditions = [
             'Host.container_id' => $containerIds,
-            'Host.disabled' => 0,
-            'Service.disabled' => 0,
+            'Host.disabled'     => 0,
+            'Service.disabled'  => 0,
         ];
         $conditions = Hash::merge($_conditions, $conditions);
 
@@ -1141,81 +1141,71 @@ class Service extends AppModel {
             $id = $service['Service']['id'];
         }
 
-        $payload = [
-            'hostUuid'    => $service['Host']['uuid'],
-            'serviceUuid' => $service['Service']['uuid'],
-        ];
         $Changelog = ClassRegistry::init('Changelog');
 
-        if ($this->__allowDelete($id)) {
-
-            if ($this->delete($id)) {
-                //Delete was successfully - delete Graphgenerator configurations
-                $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-                $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-                    'conditions' => [
-                        'GraphgenTmplConf.service_id' => $id,
-                    ],
-                ]);
-                foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                    $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-                }
-
-                $changelog_data = $Changelog->parseDataForChangelog(
-                    'delete',
-                    'services',
-                    $id,
-                    OBJECT_SERVICE,
-                    $service['Host']['container_id'],
-                    $userId,
-                    $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
-                    $service
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                $Documentation = ClassRegistry::init('Documentation');
-                //Delete the Documentation of the Host
-                $documentation = $Documentation->findByUuid($service['Service']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-                //Add service to deleted objects table
-                $_serviceName = $service['Service']['name'];
-                if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
-                    $_serviceName = $service['Servicetemplate']['name'];
-                }
-                //Add host to deleted objects table
-                $DeletedService = ClassRegistry::init('DeletedService');
-                $DeletedService->create();
-                $data = [
-                    'DeletedService' => [
-                        'uuid'               => $service['Service']['uuid'],
-                        'host_uuid'          => $service['Host']['uuid'],
-                        'servicetemplate_id' => $service['Service']['servicetemplate_id'],
-                        'host_id'            => $service['Service']['host_id'],
-                        'name'               => $_serviceName,
-                        'description'        => $service['Service']['description'],
-                        'deleted_perfdata'   => 0,
-                    ],
-                ];
-                $DeletedService->save($data);
-
-                /*
-                 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
-                 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
-                 * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
-                 */
-                $this->_clenupServiceEscalationDependencyAndGroup($service);
-
-                //Delete nagios configuration
-                //$this->GearmanClient->sendBackground('deleteServiceConfiguration', $payload);
-
-                return true;
+        if ($this->delete($id)) {
+            //Delete was successfully - delete Graphgenerator configurations
+            $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+            $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
+                'conditions' => [
+                    'GraphgenTmplConf.service_id' => $id,
+                ],
+            ]);
+            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
+                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
             }
+
+            $changelog_data = $Changelog->parseDataForChangelog(
+                'delete',
+                'services',
+                $id,
+                OBJECT_SERVICE,
+                $service['Host']['container_id'],
+                $userId,
+                $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
+                $service
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $Documentation = ClassRegistry::init('Documentation');
+            //Delete the Documentation of the Host
+            $documentation = $Documentation->findByUuid($service['Service']['uuid']);
+            if (isset($documentation['Documentation']['id'])) {
+                $Documentation->delete($documentation['Documentation']['id']);
+                unset($documentation);
+            }
+
+            //Add service to deleted objects table
+            $_serviceName = $service['Service']['name'];
+            if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
+                $_serviceName = $service['Servicetemplate']['name'];
+            }
+            //Add host to deleted objects table
+            $DeletedService = ClassRegistry::init('DeletedService');
+            $DeletedService->create();
+            $data = [
+                'DeletedService' => [
+                    'uuid'               => $service['Service']['uuid'],
+                    'host_uuid'          => $service['Host']['uuid'],
+                    'servicetemplate_id' => $service['Service']['servicetemplate_id'],
+                    'host_id'            => $service['Service']['host_id'],
+                    'name'               => $_serviceName,
+                    'description'        => $service['Service']['description'],
+                    'deleted_perfdata'   => 0,
+                ],
+            ];
+            $DeletedService->save($data);
+
+            /*
+             * Check if the service was part of an servicegroup, serviceescalation or servicedependency
+             * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+             * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
+             */
+            $this->_clenupServiceEscalationDependencyAndGroup($service);
+
+            return true;
         }
 
         return false;
@@ -1257,36 +1247,27 @@ class Service extends AppModel {
         }
     }
 
-    public $usedBy = null;
-
-    public function __allowDelete($serviceId) {
-        //using components in Model is ugly but we need the Constants here
-        App::import('Component', 'Constants');
-        $this->Constants = new ConstantsComponent();
-
-        $moduleConstants = $this->Constants->defines['modules'];
-        $usedBy = [
-            'Service' => [],
-        ];
-
+    /**
+     * @param $service
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($service, $moduleConstants) {
+        $usedBy = [];
         foreach ($moduleConstants as $moduleName => $value) {
-            if (!empty($serviceId)) {
-                if ($this->checkUsageFlag($serviceId, $value)) {
-                    $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
-                }
+            if ($service['Service']['usage_flag'] & $value) {
+                $usedBy[$moduleName] = $value;
             }
         }
-
-        if (empty($usedBy['Service'])) {
-            return true;
-        }
-
-        $this->usedBy = $usedBy;
-        return false;
+        return $usedBy;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function humanizeModuleConstantName($name) {
-        return preg_replace('/_MODULE/', '', $name);
+        return str_replace('_MODULE', '', $name);
     }
 
     public function checkUsageFlag($serviceId, $moduleValue) {

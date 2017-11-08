@@ -258,4 +258,10 @@ class AngularController extends AppController {
         $this->set('_serialize', ['websocket']);
     }
 
+    public function not_found(){
+        $this->layout = 'angularjs';
+        //Only ship HTML template
+        return;
+    }
+
 }

@@ -55,6 +55,8 @@
     </div>
 <?php endif; ?>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -356,8 +358,10 @@
 
                                 <tr ng-repeat="service in host.Services" ng-repeat-end="">
 
-                                    <td>
-                                        <input type="checkbox">
+                                    <td class="width-5">
+                                        <input type="checkbox"
+                                               ng-model="massChange[service.Service.id]"
+                                               ng-show="service.Service.allow_edit">
                                     </td>
 
                                     <td class="text-center">

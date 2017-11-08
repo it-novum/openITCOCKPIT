@@ -296,7 +296,7 @@ class AppController extends Controller {
 
         $this->exportRunningHeaderInfo = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'])) {
-            if($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes') {
+            if ($systemsettings['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes') {
                 $this->exportRunningHeaderInfo = true;
             }
         }
@@ -352,7 +352,7 @@ class AppController extends Controller {
         $this->set('systemname', $this->systemname);
         //$this->set('systemTimezone', $this->systemTimezone); done with ini_get('date.timezone')
 
-        if(!$this->isApiRequest() && !$this->isAngularJsRequest()) {
+        if (!$this->isApiRequest() && !$this->isAngularJsRequest()) {
             $menu = $this->Menu->compileMenu();
             $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS);
             $this->set('menu', $menu);
@@ -372,7 +372,7 @@ class AppController extends Controller {
             }
         }
 
-        if(!$this->isApiRequest() && !$this->isAngularJsRequest()) {
+        if (!$this->isApiRequest() && !$this->isAngularJsRequest()) {
             // @FIXME: ComponentCollection::beforeRender is triggered before Controller::beforeRender
             // which has the effect that passing data to the frontend from Controller::beforeRender
             // won't work.
@@ -637,7 +637,7 @@ class AppController extends Controller {
      * REST API functionality
      */
     protected function serializeErrorMessage() {
-        if($this->isAngularJsRequest()) {
+        if ($this->isAngularJsRequest()) {
             $this->response->statusCode(400);
         }
         $name = Inflector::singularize($this->name);
@@ -790,6 +790,50 @@ class AppController extends Controller {
 
     protected function isXmlRequest() {
         return $this->request->ext === 'xml';
+    }
+
+    /**
+     * @param array $usedBy
+     * @param string $type
+     * @return array
+     */
+    protected function getUsedByForFrontend($usedBy = [], $type = 'host') {
+        $result = [];
+        $action = 'hostUsedBy';
+        if ($type === 'service') {
+            $action = 'serviceUsedBy';
+        }
+
+        foreach ($usedBy as $moduleName => $moduleId) {
+            switch ($moduleId) {
+                case AUTOREPORT_MODULE:
+                    $result[] = [
+                        'baseUrl' => Router::url([
+                            'controller' => 'autoreports',
+                            'action'     => $action,
+                            'plugin'     => 'autoreport_module',
+                        ]).'/',
+                        'message' => __('Used by Autoreport module'),
+                        'module' => 'AutoreportModule'
+                    ];
+                    break;
+                case EVENTCORRELATION_MODULE:
+                    $result[] = [
+                        'baseUrl' => Router::url([
+                            'controller' => 'eventcorrelations',
+                            'action'     => $action,
+                            'plugin'     => 'eventcorrelation_module',
+                        ]).'/',
+                        'message' => __('Used by Eventcorrelation module'),
+                        'module' => 'EventcorrelationModule'
+                    ];
+                    break;
+                default:
+                    throw new NotImplementedException('Module not implemented yet');
+                    break;
+            }
+        }
+        return $result;
     }
 
 

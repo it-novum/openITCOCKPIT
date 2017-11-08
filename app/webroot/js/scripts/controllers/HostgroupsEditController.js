@@ -46,6 +46,10 @@ angular.module('openITCOCKPIT')
                 $scope.post.Hostgroup.description = $scope.hostgroup.Hostgroup.description;
                 $scope.post.Hostgroup.hostgroup_url = $scope.hostgroup.Hostgroup.hostgroup_url;
                 $scope.init = false;
+            }, function errorCallback(result){
+                if(result.status === 404){
+                    window.location.href = '/angular/not_found';
+                }
             });
         };
 

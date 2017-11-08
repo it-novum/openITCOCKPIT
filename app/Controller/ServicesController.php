@@ -1329,12 +1329,11 @@ class ServicesController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
+        }
+        if (!$this->Service->exists($id)) {
+            throw new NotFoundException(__('Invalid service'));
         }
 
         $service = $this->Service->findById($id);
@@ -1355,26 +1354,28 @@ class ServicesController extends AppController {
         $containerIdsToCheck[] = $host['Host']['container_id'];
         if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
-
             return;
         }
 
-        if ($this->Service->__delete($service, $this->Auth->user('id'))) {
-            //   $this->setFlash(__('Service deleted.'));
-            $this->Flash->success('Service deleted', [
-                'key' => 'positive',
-            ]);
-            $this->redirect(['action' => 'index']);
-        }
-        //$this->setFlash(__('Could not delete service'), false);
+        $modules = $this->Constants->defines['modules'];
 
-        $this->Flash->error('Could not delete service', [
-            'key'    => 'positive',
-            'params' => [
-                'usedBy' => $this->Service->usedBy,
-            ]
-        ]);
-        $this->redirect(['action' => 'index']);
+        $usedBy = $this->Service->isUsedByModules($service, $modules);
+        if(empty($usedBy)){
+            //Not used by any module
+            if ($this->Service->__delete($service, $this->Auth->user('id'))) {
+                $this->set('success', true);
+                $this->set('message', __('Service successfully deleted'));
+                $this->set('_serialize', ['success']);
+                return;
+            }
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting service'));
+        $this->set('usedBy', $this->getUsedByForFrontend($usedBy, 'service'));
+        $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
     public function mass_delete($id = null) {

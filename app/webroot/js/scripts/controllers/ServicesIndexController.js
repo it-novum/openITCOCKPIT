@@ -37,10 +37,11 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/hostgroups/delete/';
+        $scope.deleteUrl = '/services/delete/';
 
         $scope.init = true;
         $scope.showFilter = false;
+        $scope.serverResult = [];
 
         var lastHostUuid = null;
 
@@ -149,6 +150,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.services = [];
+                $scope.serverResult = result.data.all_services;
                 $scope.services = forTemplate(result.data.all_services);
                 $scope.paging = result.data.paging;
                 $scope.init = false;
@@ -177,9 +179,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.hostgroups){
-                for(var key in $scope.hostgroups){
-                    var id = $scope.hostgroups[key].Hostgroup.id;
+            if($scope.services){
+                for(var key in $scope.serverResult){
+                    var id = $scope.serverResult[key].Service.id;
                     $scope.massChange[id] = true;
                 }
             }
@@ -194,10 +196,13 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.hostgroups){
+            for(var key in $scope.serverResult){
                 for(var id in selectedObjects){
-                    if(id == $scope.hostgroups[key].Hostgroup.id){
-                        objects[id] = $scope.hostgroups[key].Container.name;
+                    if(id == $scope.serverResult[key].Service.id){
+                        console.log($scope.serverResult[key]);
+                        objects[id] =
+                            $scope.serverResult[key].Host.hostname + '/' +
+                            $scope.serverResult[key].Service.servicename;
                     }
 
                 }

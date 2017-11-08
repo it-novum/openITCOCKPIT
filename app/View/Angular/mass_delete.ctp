@@ -13,8 +13,12 @@
 
                     <div class="col-xs-12 margin-top-10">
                         <ul>
-                            <li ng-repeat="object in objects">
+                            <li ng-repeat="(id, object) in objects">
                                 {{ object }}
+                                <div class="text-danger" ng-repeat="issue in issueObjects[id]">
+                                    <i class="fa fa-times"></i>
+                                    <a class="text-danger" href="{{issue.url}}">{{issue.message}}</a>
+                                </div>
                             </li>
                         </ul>
                     </div>

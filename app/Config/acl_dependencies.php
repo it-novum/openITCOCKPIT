@@ -36,7 +36,8 @@ $config = [
                 'menustats',
                 'menu',
                 'websocket_configuration',
-                'export'
+                'export',
+                'not_found'
             ],
             'Commands'         => [
                 'sortByCommandType',

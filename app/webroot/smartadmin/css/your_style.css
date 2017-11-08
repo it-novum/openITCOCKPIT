@@ -723,8 +723,13 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
 }
 
 .width-120 {
-	width: 120px;
-	min-width: 120px;
+	 width: 120px;
+	 min-width: 120px;
+ }
+
+.width-130 {
+	width: 130px;
+	min-width: 130px;
 }
 
 .width-150 {
