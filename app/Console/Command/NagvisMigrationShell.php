@@ -68,7 +68,7 @@ class NagvisMigrationShell extends AppShell {
         //newIconset => [obsoleteIconset_1, obsoleteIconset_2, ... obsoleteIconset_n]
         $this->iconsetMap = [
             'std_mini_32px' => ['std_medium', 'std_small', 'std_small_sack', 'std_medium_sack', 'std_big_sack'],
-            'std_mid_64px' => ['std_big'],
+            'std_mid_64px'  => ['std_big'],
         ];
         //iconsets which are not needed anymore
         $this->obsoleteIconsets = [
@@ -201,20 +201,20 @@ class NagvisMigrationShell extends AppShell {
         $pass = $this->in('Please Enter the Password for user ' . $user . ' on ' . $host);
         $frontendUser = $this->in('Please Enter a valid Frontend user on ' . $host);
         $frontendPass = $this->in('Please Enter the Password for user ' . $frontendUser . ' on ' . $host);
-        $https = $this->in('Using SSL for Frontend Login ?',['y', 'n'], 'n');
+        $https = $this->in('Using SSL for Frontend Login ?', ['y', 'n'], 'n');
         $sslVerification = '';
-        if($https == 'y'){
-            $sslVerification = $this->in('Disable SSL verification? (mostly needed with self-signed certificates)',['y', 'n'], 'n');
+        if ($https == 'y') {
+            $sslVerification = $this->in('Disable SSL verification? (mostly needed with self-signed certificates)', ['y', 'n'], 'n');
         }
 
 
         return [
-            'host' => $host,
-            'user' => $user,
-            'pass' => $pass,
-            'frontendUser' => $frontendUser,
-            'frontendPass' => $frontendPass,
-            'https' => $https,
+            'host'            => $host,
+            'user'            => $user,
+            'pass'            => $pass,
+            'frontendUser'    => $frontendUser,
+            'frontendPass'    => $frontendPass,
+            'https'           => $https,
             'sslVerification' => $sslVerification,
         ];
     }
@@ -301,7 +301,7 @@ class NagvisMigrationShell extends AppShell {
             $options = [];
             if ($https == 'y') {
                 $protocol = 'https';
-                if($noSSLVerify == 'y'){
+                if ($noSSLVerify == 'y') {
                     $options = [
                         'CURLOPT_SSL_VERIFYPEER' => false,
                         'CURLOPT_SSL_VERIFYHOST' => 0
@@ -312,13 +312,13 @@ class NagvisMigrationShell extends AppShell {
             $url = $protocol . '://' . $user . ':' . $pass . '@' . $host . '/openitc/main/' . $filename;
             $http = new Http($url, $options);
             $http->sendRequest();
-            if(!empty($http->data)){
+            if (!empty($http->data)) {
                 return json_decode($http->data);
-            }else{
+            } else {
                 throw new Exception($http->getLastError()['error']);
             }
 
-        }catch (Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
@@ -334,7 +334,8 @@ class NagvisMigrationShell extends AppShell {
      * @return Bool               true if the transfer is complete
      */
     protected function getFiles($session, $path, $fileList, $downloadDir) {
-        $a = ["Measuring the cable length to fetch your data... ",
+        $a = [
+            "Measuring the cable length to fetch your data... ",
             "Warming up Large Hadron Collider...",
             "Elf down! We're cloning the elf that was supposed to get you the data. Please wait.",
             "Do you suffer from ADHD? Me neith- oh look a bunny... What was I doing again? Oh, right. Here we go.",
@@ -407,7 +408,7 @@ class NagvisMigrationShell extends AppShell {
     protected function getMapNames() {
         $mapnames = $this->map->find('all', [
             'recursive' => -1,
-            'fields' => [
+            'fields'    => [
                 'Map.name',
             ],
         ]);
@@ -427,14 +428,14 @@ class NagvisMigrationShell extends AppShell {
     protected function saveNewData($data) {
 
 
-        try{
-            if($this->map->saveAll($data)){
+        try {
+            if ($this->map->saveAll($data)) {
                 $this->out('<success>Data successfully Saved!</success>');
-            }else{
+            } else {
                 $this->out('<error>Could not save data!</error>');
                 throw new Exception($this->Map->validationErrors);
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
     }
@@ -460,16 +461,16 @@ class NagvisMigrationShell extends AppShell {
                     case 'global':
                         //contains background and grid(but this option is not be implemented in the map Module)
                         $mapId = $this->map->find('first', [
-                            'recursive' => -1,
+                            'recursive'  => -1,
                             'conditions' => [
                                 'Map.name' => $mapname,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Map.id',
                                 'Map.name',
                                 'Map.title',
                             ],
-                            'contain' => [
+                            'contain'    => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -478,9 +479,9 @@ class NagvisMigrationShell extends AppShell {
                             ],
                         ]);
                         $currentData = [
-                            'id' => $mapId['Map']['id'],
-                            'name' => $mapname, // neccesary for assigning the background image correctly
-                            'title' => $mapId['Map']['title'],
+                            'id'         => $mapId['Map']['id'],
+                            'name'       => $mapname, // neccesary for assigning the background image correctly
+                            'title'      => $mapId['Map']['title'],
                             'background' => empty($item['map_image']) ? '' : $item['map_image'],
                         ];
                         $mapData['Map'] = $currentData;
@@ -495,10 +496,10 @@ class NagvisMigrationShell extends AppShell {
                         $viewType = $this->getViewType((!isset($item['view_type'])) ? 'icon' : $item['view_type']); //icon or line
                         $currentData = [
                             'object_id' => $hostId, // must be resolved
-                            'x' => $item['x'],
-                            'y' => $item['y'],
-                            'type' => 'host',
-                            'iconset' => $this->getNewIconset((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset']),
+                            'x'         => $item['x'],
+                            'y'         => $item['y'],
+                            'type'      => 'host',
+                            'iconset'   => $this->getNewIconset((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset']),
                         ];
 
                         if ($viewType == 'Mapline') {
@@ -506,13 +507,13 @@ class NagvisMigrationShell extends AppShell {
                             $y = explode(',', $item['y']);
                             $currentData = [
                                 'object_id' => $hostId, //must be resolved from hostId
-                                'startX' => $x[0],
-                                'endX' => $x[1],
-                                'startY' => $y[0],
-                                'endY' => $y[1],
-                                'type' => 'host',
-                                'iconset' => 'std_line',
-                                'gadget' => (isset($gadget)) ? $gadget : 'null',
+                                'startX'    => $x[0],
+                                'endX'      => $x[1],
+                                'startY'    => $y[0],
+                                'endY'      => $y[1],
+                                'type'      => 'host',
+                                'iconset'   => 'std_line',
+                                'gadget'    => (isset($gadget)) ? $gadget : 'null',
                             ];
                         }
 
@@ -528,31 +529,35 @@ class NagvisMigrationShell extends AppShell {
 
                         $viewType = $this->getViewType((!isset($item['view_type'])) ? 'icon' : $item['view_type']);// gadget, icon or line
                         //if gadget add gadget => gadgettype
+                        $gadget = false;
                         if ($viewType == 'Mapgadget') {
                             $gadget = $this->getGadget($item['gadget_url']);
                         }
+                        debug($gadget);
 
                         $currentData = [
                             'object_id' => $ids['Service']['id'], //must be resolved from hostId
-                            'x' => $item['x'],
-                            'y' => $item['y'],
-                            'type' => 'service',
-                            'iconset' => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
-                            'gadget' => (isset($gadget)) ? $gadget : 'null',
+                            'x'         => $item['x'],
+                            'y'         => $item['y'],
+                            'type'      => 'service',
+                            'iconset'   => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
+                            'gadget'    => ($gadget) ? $gadget : null,
                         ];
+
+                        debug($currentData);
 
                         if ($viewType == 'Mapline') {
                             $x = explode(',', $item['x']);
                             $y = explode(',', $item['y']);
                             $currentData = [
                                 'object_id' => $ids['Service']['id'], //must be resolved from hostId
-                                'startX' => $x[0],
-                                'endX' => $x[1],
-                                'startY' => $y[0],
-                                'endY' => $y[1],
-                                'type' => 'service',
-                                'iconset' => 'std_line',
-                                'gadget' => (isset($gadget)) ? $gadget : 'null',
+                                'startX'    => $x[0],
+                                'endX'      => $x[1],
+                                'startY'    => $y[0],
+                                'endY'      => $y[1],
+                                'type'      => 'service',
+                                'iconset'   => 'std_line',
+                                'gadget'    => (isset($gadget)) ? $gadget : 'null',
                             ];
                         }
 
@@ -567,10 +572,10 @@ class NagvisMigrationShell extends AppShell {
                         $viewType = $this->getViewType((!isset($item['view_type'])) ? 'icon' : $item['view_type']);//icon or line
                         $currentData = [
                             'object_id' => $hostgroupId,
-                            'type' => 'hostgroup',
-                            'x' => $item['x'],
-                            'y' => $item['y'],
-                            'iconset' => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
+                            'type'      => 'hostgroup',
+                            'x'         => $item['x'],
+                            'y'         => $item['y'],
+                            'iconset'   => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
                         ];
                         $mapData[$viewType][] = $currentData;
                         break;
@@ -583,10 +588,10 @@ class NagvisMigrationShell extends AppShell {
                         $viewType = $this->getViewType((!isset($item['view_type'])) ? 'icon' : $item['view_type']);//icon or line
                         $currentData = [
                             'object_id' => $servicegroupId,
-                            'type' => 'servicegroup',
-                            'x' => $item['x'],
-                            'y' => $item['y'],
-                            'iconset' => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
+                            'type'      => 'servicegroup',
+                            'x'         => $item['x'],
+                            'y'         => $item['y'],
+                            'iconset'   => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
                         ];
                         $mapData[$viewType][] = $currentData;
                         break;
@@ -594,23 +599,25 @@ class NagvisMigrationShell extends AppShell {
                         //stateless text
                         $currentData = [
                             'text' => $item['text'],
-                            'x' => $item['x'],
-                            'y' => $item['y'],
+                            'x'    => $item['x'],
+                            'y'    => $item['y'],
                             'size' => 12, // standard font size
                         ];
                         $mapData['Maptext'][] = $currentData;
                         break;
                     case 'line':
+                        debug('###########################LINE########################');
+                        debug($item);
                         $x = explode(',', $item['x']);
                         $y = explode(',', $item['y']);
                         $currentData = [
                             'object_id' => 0, //must be resolved from hostId
-                            'startX' => $x[0],
-                            'endX' => $x[1],
-                            'startY' => $y[0],
-                            'endY' => $y[1],
-                            'type' => 'stateless',
-                            'iconset' => 'std_line',
+                            'startX'    => $x[0],
+                            'endX'      => $x[1],
+                            'startY'    => $y[0],
+                            'endY'      => $y[1],
+                            'type'      => 'stateless',
+                            'iconset'   => 'std_line',
                         ];
 
                         $mapData['Mapline'][] = $currentData;
@@ -619,8 +626,8 @@ class NagvisMigrationShell extends AppShell {
                         //icon
                         $currentData = [
                             'icon' => $item['icon'],
-                            'x' => $item['x'],
-                            'y' => $item['y'],
+                            'x'    => $item['x'],
+                            'y'    => $item['y'],
                         ];
                         $mapData['Mapicon'][] = $currentData;
                         break;
@@ -632,11 +639,11 @@ class NagvisMigrationShell extends AppShell {
 
                         //map item
                         $currentData = [
-                            'x' => $item['x'],
-                            'y' => $item['y'],
+                            'x'         => $item['x'],
+                            'y'         => $item['y'],
                             'object_id' => $mapId,
-                            'type' => 'map',
-                            'iconset' => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
+                            'type'      => 'map',
+                            'iconset'   => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
                         ];
                         $mapData['Mapitem'][] = $currentData;
                         break;
@@ -696,6 +703,10 @@ class NagvisMigrationShell extends AppShell {
             case 'pChartPieChart_1':
             case 'graph_trend':
             case 'graph_traffic_in-out':
+            case 'graph_apps30days':
+            case 'graph_appsCweek':
+            case 'graph_appsQuarter':
+            case 'graph_appsYear':
                 return 'RRDGraph';
                 break;
             case 'temperatur':
@@ -731,11 +742,11 @@ class NagvisMigrationShell extends AppShell {
 
     protected function resolveMapname($mapname) {
         $mapId = $this->map->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'name' => $mapname,
             ],
-            'fields' => [
+            'fields'     => [
                 'id',
             ],
         ]);
@@ -768,15 +779,15 @@ class NagvisMigrationShell extends AppShell {
 
         $groupId = $this->$groupType->find('first', [
             'recursive' => -1,
-            'fields' => [
+            'fields'    => [
                 $type . '.id',
                 'Container.id',
             ],
-            'joins' => [
+            'joins'     => [
                 [
-                    'table' => 'containers',
-                    'alias' => 'Container',
-                    'type' => 'INNER',
+                    'table'      => 'containers',
+                    'alias'      => 'Container',
+                    'type'       => 'INNER',
                     'conditions' => [
                         $type . '.container_id = Container.id',
                         'Container.name' => $groupname,
@@ -804,11 +815,11 @@ class NagvisMigrationShell extends AppShell {
      */
     protected function resolveHostname($hostname) {
         $hostId = $this->host->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Host.name' => $hostname,
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
             ],
         ]);
@@ -844,11 +855,11 @@ class NagvisMigrationShell extends AppShell {
 
             if (!empty($newName)) {
                 $hostId = $this->host->find('first', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
                         'Host.name' => $newName,
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Host.id',
                     ],
                 ]);
@@ -949,15 +960,15 @@ class NagvisMigrationShell extends AppShell {
             $serviceId = $this->service->find('first', [
                 'conditions' => [
                     'Service.host_id' => $hostId,
-                    'OR' => [
-                        'Service.name' => $servicename,
+                    'OR'              => [
+                        'Service.name'         => $servicename,
                         'Servicetemplate.name' => $servicename,
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                 ],
-                'contain' => [
+                'contain'    => [
                     'Host',
                     'Servicetemplate',
                 ],
@@ -1047,9 +1058,9 @@ class NagvisMigrationShell extends AppShell {
             $fileExtension = pathinfo($fullFilePath, PATHINFO_EXTENSION);
             $filename = preg_replace('/(\..*)/', '', $image);
             $data = [
-                'fullPath' => $fullFilePath,
-                'uuidFilename' => $filename,
-                'fileExtension' => $fileExtension,
+                'fullPath'       => $fullFilePath,
+                'uuidFilename'   => $filename,
+                'fileExtension'  => $fileExtension,
                 'folderInstance' => $folderInstance,
             ];
             $backgroundUploadInstance = new BackgroundUploadsController();
@@ -1210,7 +1221,7 @@ class NagvisMigrationShell extends AppShell {
     protected function moveDirRecursively($from, $to, $skip = []) {
         $folderInstance = new Folder($from);
         $options = [
-            'to' => $to,
+            'to'   => $to,
             'from' => $from,
             'skip' => $skip,
         ];

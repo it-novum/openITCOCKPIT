@@ -743,8 +743,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
             switch (type) {
                 case 'service':
+                    console.log(self.currentGadget);
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
                     $('#addServiceGadgetY').val(self.currentGadget['y']);
+                    $('#addServiceGadgetSizeX').val(self.currentGadget['size_x']);
+                    $('#addServiceGadgetSizeY').val(self.currentGadget['size_y']);
                     if ('host_object_id' in self.currentGadget) {
                         //insert the host for the service
                         $('#addServiceGadgetHostObjectId').val(self.currentGadget['host_object_id']).trigger('chosen:updated');
@@ -944,6 +947,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     options['fontSize'] = self.currentGadget['font_size'];
                     options['showLabel'] = self.currentGadget['show_label'];
                 }
+                if(typeof(self.currentGadget['size_x']) != null && typeof(self.currentGadget['size_y']) != null){
+                    options['sizeX'] = self.currentGadget['size_x'];
+                    options['sizeY'] = self.currentGadget['size_y'];
+                }
+
                 options['demo'] = true;
 
                 gadgetId = options['id'];
@@ -968,11 +976,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $('<div id="svgContainer_' + self.currentGadget['elementUuid'] + '"></div>')
                     .appendTo(self.mapEditorContainer);
 
+                console.log(self.currentGadget);
+
                 //call the gadgetComponent to create the SVG
                 self.Gadget['draw' + self.currentGadget['gadget']]('svgContainer_' + self.currentGadget['elementUuid'], {
                     id: self.currentGadget['elementUuid'],
                     x: self.currentGadget['x'],
                     y: self.currentGadget['y'],
+                    sizeX:self.currentGadget['size_x'],
+                    sizeY:self.currentGadget['size_y'],
                     showLabel:self.currentGadget['show_label'],
                     fontSize:self.currentGadget['font_size'],
                     demo: true
@@ -1153,6 +1165,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             //reconstruct gadgets
             var mapGadgets = this.getVar('map_gadgets');
             for (var i = 0; i < mapGadgets.length; i++) {
+                //skip gadgets which are falsely migrated (no gadget name)
+                if(mapGadgets[i]['gadget'] == 'null' || mapGadgets[i]['gadget'] == ''){
+                    continue;
+                }
                 var tempUuid = this.Uuid.v4();
 
                 $('<div id="svgContainer_' + tempUuid + '"></div>')
@@ -1162,10 +1178,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     gadgetId: mapGadgets[i]['id'],
                 }
 
+                console.log(self.Gadget);
                 self.Gadget['draw' + mapGadgets[i]['gadget']]('svgContainer_' + tempUuid, {
                     id: tempUuid,
                     x: mapGadgets[i]['x'],
                     y: mapGadgets[i]['y'],
+                    sizeX:mapGadgets[i]['size_x'],
+                    sizeY:mapGadgets[i]['size_y'],
                     containerData: containerData,
                     fontSize: mapGadgets[i]['font_size'],
                     showLabel: mapGadgets[i]['show_label'],
@@ -1185,7 +1204,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
             for (var i = 0; i < mapLines.length; i++) {
                 var tempUuid = self.Uuid.v4();
-
+                
                 start['x'] = parseInt(mapLines[i]['startX']);
                 start['y'] = parseInt(mapLines[i]['startY']);
                 end['x'] = parseInt(mapLines[i]['endX']);

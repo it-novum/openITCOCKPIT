@@ -1,18 +1,15 @@
 <?php
 
-class MapModuleSchema extends CakeSchema
-{
+class MapModuleSchema extends CakeSchema {
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         $db = ConnectionManager::getDataSource($this->connection);
         $db->cacheSources = false;
 
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
         if (isset($event['update'])) {
             switch ($event['update']) {
                 case 'map_uploads':
@@ -485,6 +482,8 @@ class MapModuleSchema extends CakeSchema
         'map_id'                 => ['type' => 'integer', 'null' => false, 'default' => null],
         'x'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_x'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_y'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'                  => ['type' => 'integer', 'null' => true, 'default' => 0],
         'gadget'                 => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'                   => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],

@@ -43,7 +43,7 @@
     <?php if (!$isWidget): ?>
         <header>
             <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
-            <h2><?php echo __('View map '.h($map['Map']['name'])); ?></h2>
+            <h2><?php echo __('View map ' . h($map['Map']['name'])); ?></h2>
             <div class="widget-toolbar" role="menu">
                 <?php
                 $backLink = '/map_module/maps';
@@ -69,15 +69,15 @@
         <?php
         $css = '';
         if ($map['Map']['background'] != null && $map['Map']['background'] != ''):
-            $filePath = $backgroundThumbs['path'].'/'.$map['Map']['background'];
+            $filePath = $backgroundThumbs['path'] . '/' . $map['Map']['background'];
             if (file_exists($filePath)):
-                $size = getimagesize($backgroundThumbs['path'].DS.$map['Map']['background']);
-                $css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
+                $size = getimagesize($backgroundThumbs['path'] . DS . $map['Map']['background']);
+                $css = 'width: ' . $size[0] . 'px; height: ' . $size[1] . 'px; background-image: url(' . $backgroundThumbs['webPath'] . '/' . $map['Map']['background'] . '); background-repeat: no-repeat';
             else:
                 echo '<div class="alert alert-danger fade in">
 							<button class="close" data-dismiss="alert">×</button>
 							<i class="fa-fw fa fa-times"></i>
-							<strong>'.__('Error!').'</strong> '.__('Loading Background image failed!').'
+							<strong>' . __('Error!') . '</strong> ' . __('Loading Background image failed!') . '
 						</div>';
             endif;
         endif;
@@ -125,9 +125,9 @@
                          style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
                         <?php
                         if (array_key_exists('fullscreen', $this->params['named'])) {
-                            echo '<a target="_parent" href="/map_module/mapeditors/view/'.$item['Mapitem']['object_id'].'/fullscreen:1">';
+                            echo '<a target="_parent" href="/map_module/mapeditors/view/' . $item['Mapitem']['object_id'] . '/fullscreen:1">';
                         } else {
-                            echo '<a target="_parent" href="/map_module/mapeditors/view/'.$item['Mapitem']['object_id'].'">';
+                            echo '<a target="_parent" href="/map_module/mapeditors/view/' . $item['Mapitem']['object_id'] . '">';
                         }
                         ?>
                         <?php else: ?>
@@ -249,19 +249,33 @@
                                 if (ucfirst($gadget['Mapgadget']['type']) == 'Service' && $gadget['Mapgadget']['gadget'] == 'RRDGraph') {
                                     $Rrd = ClassRegistry::init('Rrd');
                                     $rrd_path = Configure::read('rrd.path');
-                                    if (file_exists($rrd_path.$gadget['Service']['host_uuid'].DS.$gadget['Service']['uuid'].'.xml')):
-                                        $rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path.$gadget['Service']['host_uuid'].DS.$gadget['Service']['uuid'].'.xml');
+                                    if (file_exists($rrd_path . $gadget['Service']['host_uuid'] . DS . $gadget['Service']['uuid'] . '.xml')):
+                                        $rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path . $gadget['Service']['host_uuid'] . DS . $gadget['Service']['uuid'] . '.xml');
                                         $rrdBackgroundColor = 'BACK#FFFFFFFF';
                                         if (isset($gadget['Mapgadget']['transparent_background']) && $gadget['Mapgadget']['transparent_background'] == true) {
                                             $rrdBackgroundColor = 'BACK#FFFFFF00';
                                         }
+
+                                        $legend = '';
+                                        if(!empty($gadget['Mapgadget']['size_x']) && !empty($gadget['Mapgadget']['size_y'])){
+                                            if($gadget['Mapgadget']['size_y'] <= 32 && $gadget['Mapgadget']['size_x'] <= 200){
+                                                $legend = '--no-legend';
+                                            }
+                                        }else{
+                                            $gadget['Mapgadget']['size_x'] = 300;
+                                        }
+
+
                                         $options = [
                                             'start'        => strtotime('1 hour ago'),
                                             'end'          => time(),
                                             'path'         => $rrd_path,
                                             'host_uuid'    => $gadget['Service']['host_uuid'],
                                             'service_uuid' => $gadget['Service']['uuid'],
-                                            'width'        => 300,
+                                            //'width'        => 300,
+                                            'width'        => $gadget['Mapgadget']['size_x'],
+                                            'height'       => $gadget['Mapgadget']['size_y'],
+                                            'legend'       => $legend,
                                             'color'        => [
                                                 $rrdBackgroundColor,
                                                 'CANVAS#FFFFFF99',

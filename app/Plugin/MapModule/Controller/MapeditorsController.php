@@ -111,7 +111,7 @@ class MapeditorsController extends MapModuleAppController
                     ]);
                 }
             }
-
+debug($request);
             if ($this->Map->saveAll($request)) {
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
@@ -137,7 +137,28 @@ class MapeditorsController extends MapModuleAppController
 
 
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
-        $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
+
+        $keys = array_keys($hosts);
+
+        $services = $this->Service->find('all',[
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $keys
+            ],
+            'fields' => [
+                'Service.id',
+                'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
+                'Service.uuid',
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
+                ],
+            ]
+        ]);
+
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
