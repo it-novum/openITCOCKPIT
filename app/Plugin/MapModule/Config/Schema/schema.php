@@ -485,7 +485,7 @@ class MapModuleSchema extends CakeSchema {
         'size_x'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
         'size_y'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'                  => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'gadget'                 => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'gadget'                 => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'                   => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'              => ['type' => 'integer', 'null' => false, 'default' => null],
         'transparent_background' => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 5],

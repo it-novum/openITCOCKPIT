@@ -521,6 +521,11 @@ class NagvisMigrationShell extends AppShell {
 
                         break;
                     case 'service':
+                        //skip commented definitions
+                        if(isset($item['#host_name']) || isset($item['#service_description'])){
+                            continue;
+                        }
+
                         $ids = $this->resolveServicename($item['host_name'], $item['service_description']);
                         //host or service not found
                         if (empty($ids)) {
@@ -533,7 +538,6 @@ class NagvisMigrationShell extends AppShell {
                         if ($viewType == 'Mapgadget') {
                             $gadget = $this->getGadget($item['gadget_url']);
                         }
-                        debug($gadget);
 
                         $currentData = [
                             'object_id' => $ids['Service']['id'], //must be resolved from hostId
@@ -543,8 +547,6 @@ class NagvisMigrationShell extends AppShell {
                             'iconset'   => $this->getNewIconset(((!isset($item['iconset'])) ? $data['global'][0]['iconset'] : $item['iconset'])),
                             'gadget'    => ($gadget) ? $gadget : null,
                         ];
-
-                        debug($currentData);
 
                         if ($viewType == 'Mapline') {
                             $x = explode(',', $item['x']);
@@ -606,8 +608,6 @@ class NagvisMigrationShell extends AppShell {
                         $mapData['Maptext'][] = $currentData;
                         break;
                     case 'line':
-                        debug('###########################LINE########################');
-                        debug($item);
                         $x = explode(',', $item['x']);
                         $y = explode(',', $item['y']);
                         $currentData = [
@@ -695,6 +695,7 @@ class NagvisMigrationShell extends AppShell {
             case 'text_wbg':
             case 'text-value-only':
             case 'rawOut':
+            case 'time_text':
                 return 'Text';
                 break;
             case 'graph':
@@ -710,6 +711,8 @@ class NagvisMigrationShell extends AppShell {
                 return 'RRDGraph';
                 break;
             case 'temperatur':
+            case 'zylinder':
+            case 'zylinder3d':
                 return 'Cylinder';
                 break;
             default:
