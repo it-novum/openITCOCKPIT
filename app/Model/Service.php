@@ -1359,6 +1359,7 @@ class Service extends AppModel {
                 'Host.uuid',
                 'Host.description',
                 'Host.address',
+                'Host.satellite_id',
 
                 'Hoststatus.current_state',
                 'Hoststatus.is_flapping',

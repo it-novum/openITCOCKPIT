@@ -242,7 +242,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Servicestatus.in_downtime"
+                                                       ng-model="filter.Servicestatus.not_in_downtime"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Not in downtime'); ?>
@@ -378,9 +378,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
                                            ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
 
-                                        <i class="fa fa-user-o fa-lg"
+                                        <i class="fa fa-lg fa-user-o"
                                            ng-show="service.Servicestatus.problemHasBeenAcknowledged"
-                                           ng-if="service.Servicestatus.acknowledgement_type == 0"
+                                           ng-if="service.Servicestatus.acknowledgement_type == 2"
                                            title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
                                     </td>
 

@@ -32,6 +32,10 @@ class ServiceFilter extends Filter {
      */
     public function indexFilter(){
         $filters = [
+            'bool' => [
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.active_checks_enabled'
+            ],
             'like' => [
                 'Host.name',
                 'Service.servicename',
@@ -43,11 +47,8 @@ class ServiceFilter extends Filter {
             'equals' => [
                 'Service.uuid',
                 'Service.disabled',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.active_checks_enabled'
             ],
-            'greater' => [
+            'downtime' => [
                 'Servicestatus.scheduled_downtime_depth',
             ],
             'state' => [

@@ -46,6 +46,16 @@ abstract class Filter {
             foreach ($fields as $field) {
                 if ($this->queryHasField($field)) {
                     switch ($operator) {
+                        case 'bool':
+                            $value = $this->getQueryFieldValue($field);
+                            if($value === '1' || $value === 1 || $value === 'true'){
+                                $conditions[$field] = 1;
+                            }
+
+                            if($value === '0' || $value === 0 || $value === 'false'){
+                                $conditions[$field] = 0;
+                            }
+                            break;
                         case 'like':
                             $value = $this->getQueryFieldValue($field);
                             if ($value) {
@@ -116,6 +126,16 @@ abstract class Filter {
                                 }
                             }
 
+                            break;
+
+                        case 'downtime':
+                            $value = $this->getQueryFieldValue($field);
+                            if($value === '1' || $value === 1 || $value === 'true'){
+                                $conditions[sprintf('%s >=', $field)] = 1;
+                            }
+                            if($value === '0' || $value === 0 || $value === 'false'){
+                                $conditions[sprintf('%s =', $field)] = 0;
+                            }
                             break;
                         default:
                             throw new NotImplementedException('This filter type is not implemented yet');

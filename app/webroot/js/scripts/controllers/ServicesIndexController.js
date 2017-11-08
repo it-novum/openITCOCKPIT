@@ -118,6 +118,20 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             lastHostUuid = null;
+            var hasBeenAcknowledged = '';
+            var inDowntime = '';
+            if($scope.filter.Servicestatus.acknowledged^$scope.filter.Servicestatus.not_acknowledged){
+                hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
+            }
+            if($scope.filter.Servicestatus.in_downtime^$scope.filter.Servicestatus.not_in_downtime){
+                inDowntime = $scope.filter.Servicestatus.in_downtime === true;
+            }
+
+            var passive = '';
+            if($scope.filter.Servicestatus.passive){
+                passive = !$scope.filter.Servicestatus.passive;
+            }
+
             $http.get("/services/index.json", {
                 params: {
                     'angular': true,
@@ -128,7 +142,10 @@ angular.module('openITCOCKPIT')
                     'filter[Service.servicename]': $scope.filter.Service.name,
                     'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                     'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                    'filter[Service.keywords][]': $scope.filter.Service.keywords.split(',')
+                    'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
+                    'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
+                    'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
+                    'filter[Servicestatus.active_checks_enabled]': passive
                 }
             }).then(function(result){
                 $scope.services = [];
@@ -201,7 +218,6 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteSelected = function(){
             console.log('Delete');
-            console.log();
         };
 
 
@@ -210,7 +226,6 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
-            console.log($scope.filter);
             $scope.undoSelection();
             $scope.load();
         }, true);

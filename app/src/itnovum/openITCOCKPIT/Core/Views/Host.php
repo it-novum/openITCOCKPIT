@@ -194,7 +194,7 @@ class Host {
         if($this->satelliteId  === null){
             return false;
         }
-        return ($this->satelliteId !== 0);
+        return ((int)$this->satelliteId !== 0);
     }
 
     /**
