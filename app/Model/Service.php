@@ -1270,6 +1270,11 @@ class Service extends AppModel {
         return str_replace('_MODULE', '', $name);
     }
 
+    /**
+     * @param int $serviceId
+     * @param int $moduleValue
+     * @return bool
+     */
     public function checkUsageFlag($serviceId, $moduleValue) {
         $result = $this->find('first', [
             'recursive'  => -1,

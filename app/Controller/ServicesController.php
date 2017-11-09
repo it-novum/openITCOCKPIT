@@ -1378,51 +1378,6 @@ class ServicesController extends AppController {
         $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
-    public function mass_delete($id = null) {
-        $msgCollect = [];
-        foreach (func_get_args() as $service_id) {
-            if ($this->Service->exists($service_id)) {
-                $service = $this->Service->findById($service_id);
-                $host = $this->Host->find('first', [
-                    'conditions' => [
-                        'Host.id' => $service['Host']['id'],
-                    ],
-                    'contain'    => [
-                        'Container',
-                    ],
-                    'fields'     => [
-                        'Host.id',
-                        'Host.container_id',
-                        'Container.*',
-                    ],
-                ]);
-                $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-                $containerIdsToCheck[] = $host['Host']['container_id'];
-                if ($this->allowedByContainerId($containerIdsToCheck)) {
-                    if (!$this->Service->__delete($service, $this->Auth->user('id'))) {
-                        $msgCollect[] = $this->Service->usedBy;
-                    }
-                }
-            }
-        }
-
-
-        if (!empty($msgCollect)) {
-            $messages = call_user_func_array('array_merge_recursive', $msgCollect);
-            $this->Flash->error('Could not delete service', [
-                'key'    => 'positive',
-                'params' => [
-                    'usedBy' => $messages,
-                ]
-            ]);
-            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-        }
-
-        $this->Flash->success('Service deleted', [
-            'key' => 'positive',
-        ]);
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-    }
 
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
