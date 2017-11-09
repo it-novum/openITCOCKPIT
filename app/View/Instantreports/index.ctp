@@ -95,7 +95,7 @@
                                                        ng-model="filter.instantreport.evaluation.hosts"
                                                        ng-true-value="1"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Hosts'); ?>
                                             </label>
 
@@ -104,7 +104,7 @@
                                                        ng-model="filter.instantreport.evaluation.hostsandservices"
                                                        ng-true-value="2"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Hosts and Services'); ?>
                                             </label>
 
@@ -113,7 +113,7 @@
                                                        ng-model="filter.instantreport.evaluation.services"
                                                        ng-true-value="3"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Services'); ?>
                                             </label>
                                         </div>
@@ -128,7 +128,7 @@
                                                        ng-model="filter.instantreport.type.hostgroups"
                                                        ng-true-value="1"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Host groups'); ?>
                                             </label>
 
@@ -137,7 +137,7 @@
                                                        ng-model="filter.instantreport.type.hosts"
                                                        ng-true-value="2"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Hosts'); ?>
                                             </label>
                                             <label class="checkbox small-checkbox-label">
@@ -145,7 +145,7 @@
                                                        ng-model="filter.instantreport.type.servicegroups"
                                                        ng-true-value="3"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Service groups'); ?>
                                             </label>
                                             <label class="checkbox small-checkbox-label">
@@ -153,7 +153,7 @@
                                                        ng-model="filter.instantreport.type.services"
                                                        ng-true-value="4"
                                                        ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-default"></i>
+                                                <i class="checkbox-primary"></i>
                                                 <?php echo __('Services'); ?>
                                             </label>
                                         </div>
@@ -250,6 +250,47 @@
                                                 </li>
                                             </ul>
                                         </ul>
+                                    </td>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <a href="/instantreports/edit/{{ instantreport.Instantreport.id}}"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right">
+                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <li>
+                                                        <a href="/instantreports/edit/{{instantreport.Instantreport.id}}">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                    <li>
+                                                        <a href="/instantreports/generate/{{ instantreport.Instantreport.id}}">
+                                                            <i class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                    <li class="divider"></li>
+                                                    <li>
+                                                        <a href="/instantreports/delete/{{ instantreport.Instantreport.id}}" class="txt-color-red"
+                                                           ng-click="confirmDelete(instantreport)">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>

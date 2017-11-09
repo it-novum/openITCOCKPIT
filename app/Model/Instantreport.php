@@ -164,6 +164,83 @@ class Instantreport extends AppModel {
         ],
     ];
 
+    public $validateCreateReport = [
+        'id' => [
+            'notBlank' => [
+                'allowEmpty' => false,
+                'rule' => ['multiple', [
+                    'min' => 1,
+                ]],
+                'message' => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+        'start_date' => [
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'required' => true,
+                'message' => 'This field cannot be left blank',
+            ],
+            'date' => [
+                'rule' => ['date', 'dmy'],
+                'required' => true,
+                'message' => 'Enter a valid date',
+            ],
+            'validateDates' => [
+                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'required' => true,
+                'message' => '"To" must not be earlier than "From"',
+            ],
+        ],
+        'end_date' => [
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'required' => true,
+                'message' => 'This field cannot be left blank',
+            ],
+            'date' => [
+                'rule' => ['date', 'dmy'],
+                'required' => true,
+                'message' => 'Enter a valid date',
+            ],
+            'validateDates' => [
+                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'required' => true,
+                'message' => '"To" must not be earlier than "From"',
+            ],
+        ],
+    ];
+
+    public function setValidationRules($condition = null) {
+        if ($condition == 'generate') {
+            $this->validate = $this->validateCreateReport;
+        }
+    }
+
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->setValidationRules();
+    }
+
+    /**
+     * Here we can check some conditions to see what validation we need
+     * @return boolean
+     */
+    public function beforeValidate($options = []) {
+        $router_params = Router::getParams();
+        if (isset($router_params['action'])) {
+            if($router_params['action'] === 'generate'){
+                $this->validate = $this->validateCreateReport;
+            }
+        }
+
+        return true;
+    }
+
+    public function validateDates() {
+        return (strtotime($this->data['Instantreport']['start_date']) <= strtotime($this->data['Instantreport']['end_date']));
+    }
+
     /*
     Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
     */
