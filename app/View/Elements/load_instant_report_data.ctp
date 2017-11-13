@@ -66,7 +66,9 @@ $Logo = new Logo();
                                     </h2>
                                 </header>
                                 <div class="well padding-bottom-10">
-                                    <?php if (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2])): ?>
+                                    <?php if (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
+                                            [$hostData[0], $hostData[1], $hostData[2]]
+                                        )>0): ?>
                                         <div class="row margin-top-10 font-md padding-bottom-20">
                                             <div class="col-md-12 text-left">
                                                 <?php
@@ -92,12 +94,23 @@ $Logo = new Logo();
                                                 ?>
                                             </div>
                                         </div>
-                                    <?php endif; ?>
+                                    <?php
+                                    elseif(!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
+                                            [$hostData[0], $hostData[1], $hostData[2]]
+                                        ) === 0):?>
+                                        <i class="fa fa-info-circle txt-color-blueDark"></i>
+                                        <?php
+                                        echo __('There are no time frames defined. Time evaluation report data is not available for the selected period.');
+                                    endif; ?>
                                     <div>
                                         <?php
                                         if (isset($hostData['Services'])):
                                             foreach ($hostData['Services'] as $serviceUuid => $serviceData):
-                                                if (isset($serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3])):?>
+                                                if (isset($serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]) &&
+                                                    array_sum(
+                                                        [$serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]]
+                                                    )>0
+                                                ):?>
                                                     <div class="padding-top-10 padding-bottom-5"><i
                                                                 class="fa fa-gear"></i> <?php echo h($serviceData['Service']['name']); ?>
                                                     </div>
@@ -193,8 +206,19 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-        <?php endif; ?>
-
+            <?php
+        elseif (!$instantReportDetails['onlyServices'] && $totalTimeHosts == 0):?>
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <div class="well padding-bottom-10">
+                        <i class="fa fa-desktop txt-color-blueDark"></i> <?= __('Hosts summary') ?>
+                        <?php
+                        echo __('There are no time frames defined. Time evaluation report data is not available for the selected period.'); ?>
+                    </div>
+                </div>
+            </section>
+            <?php
+        endif; ?>
             <?php if (!$instantReportDetails['onlyHosts'] && $totalTimeServices != 0): ?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -233,7 +257,19 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-        <?php endif;
+            <?php
+        elseif (!$instantReportDetails['onlyHosts'] && $totalTimeServices == 0):?>
+            <section id="widget-grid" class="">
+                <div class="row">
+                    <div class="well padding-bottom-10">
+                        <i class="fa fa-cogs txt-color-blueDark"></i> <?= __('Services summary') ?>
+                        <?php
+                        echo __('There are no time frames defined. Time evaluation report data is not available for the selected period.'); ?>
+                    </div>
+                </div>
+            </section>
+            <?php
+        endif;
         endif;
 
 

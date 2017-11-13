@@ -275,9 +275,9 @@ class InstantreportsController extends AppController {
         if (empty($instantReport)) {
             throw new NotFoundException(__('Invalid Instant report'));
         }
-
         if (!empty($this->cronFromDate)) {
             $this->generateReport($instantReport, date('d.m.Y', $this->cronFromDate), date('d.m.Y', $this->cronToDate), Instantreport::FORMAT_PDF);
+            return;
         } else {
             $options = [
                 'recursive' => -1,
@@ -338,7 +338,7 @@ class InstantreportsController extends AppController {
         $instantReportDetails['name'] = $instantReport['Instantreport']['name'];
         $instantReportData = [];
         $allHostsServices = $this->getAllHostsServices($instantReport);
-        if(!empty($allHostsServices['Hosts']) || !empty($allHostsServices['Services'])){
+        if (!empty($allHostsServices['Hosts']) || !empty($allHostsServices['Services'])) {
             $timeperiod = $this->Timeperiod->find('first', [
                 'conditions' => [
                     'Timeperiod.id' => $instantReport['Instantreport']['timeperiod_id'],
@@ -351,7 +351,6 @@ class InstantreportsController extends AppController {
                     $timeperiod['Timerange']),
                 '{n}.is_downtime', false
             );
-
             $startDateSqlFormat = date('Y-m-d H:i:s', strtotime($startDate));
             $endDateSqlFormat = date('Y-m-d H:i:s', strtotime($endDate));
 
@@ -364,13 +363,13 @@ class InstantreportsController extends AppController {
                     'conditions' => [
                         'OR' => [
                             '"' . $startDateSqlFormat . '"
-									BETWEEN Systemfailure.start_time
-									AND Systemfailure.end_time',
+                                    BETWEEN Systemfailure.start_time
+                                    AND Systemfailure.end_time',
                             '"' . $endDateSqlFormat . '"
-									BETWEEN Systemfailure.start_time
-									AND Systemfailure.end_time',
+                                    BETWEEN Systemfailure.start_time
+                                    AND Systemfailure.end_time',
                             'Systemfailure.start_time BETWEEN "' . $startDateSqlFormat . '"
-									AND "' . $endDateSqlFormat . '"',
+                                    AND "' . $endDateSqlFormat . '"',
                         ],
                     ],
                 ]);
@@ -442,7 +441,6 @@ class InstantreportsController extends AppController {
                         'Objects.name1' => $hostUuid
                     ],
                 ]);
-
                 if (!empty($stateHistoryWithObject)) {
                     if (empty($stateHistoryWithObject[0]['Statehistory'])) {
                         $stateHistoryWithPrev = $this->Statehistory->find('first', [
@@ -460,6 +458,7 @@ class InstantreportsController extends AppController {
                     }
                     if (!empty($stateHistoryWithPrev)) {
                         $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
+                        $stateHistoryWithObject[0]['Statehistory'][0]['state_time'] = $startDateSqlFormat;
                     }
                     if ($instantReport['Instantreport']['downtimes'] !== '1') {
                         $timeSlices = $timeSlicesGlobal;
@@ -574,22 +573,23 @@ class InstantreportsController extends AppController {
                 ]);
 
                 if (!empty($stateHistoryWithObject)) {
-                    if(empty($stateHistoryWithObject[0]['Statehistory'])){
+                    if (empty($stateHistoryWithObject[0]['Statehistory'])) {
                         $stateHistoryWithPrev = $this->Statehistory->find('first', [
                             'recursive' => -1,
                             'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
                             'conditions' => [
                                 'AND' => [
                                     'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
-                                    'Statehistory.state_time <= "'.$startDateSqlFormat.'"'
+                                    'Statehistory.state_time <= "' . $startDateSqlFormat . '"'
                                 ],
                             ],
                             'order' => ['Statehistory.state_time' => 'DESC'],
 
                         ]);
                     }
-                    if(!empty($stateHistoryWithPrev)){
+                    if (!empty($stateHistoryWithPrev)) {
                         $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
+                        $stateHistoryWithObject[0]['Statehistory'][0]['state_time'] = $startDateSqlFormat;
                     }
                     if ($instantReport['Instantreport']['downtimes'] !== '1') {
                         $timeSlices = $timeSlicesGlobal;
@@ -624,7 +624,7 @@ class InstantreportsController extends AppController {
                         }
                     }
                     $hostUuid = $stateHistoryWithObject[0]['Service']['Host']['uuid'];
-                    if(empty($instantReportData['Hosts'][$hostUuid]['Host']['name'])){
+                    if (empty($instantReportData['Hosts'][$hostUuid]['Host']['name'])) {
                         $instantReportData['Hosts'][$hostUuid]['Host']['name'] = $stateHistoryWithObject[0]['Service']['Host']['name'];
                     }
                     $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid] = $this->Instantreport->generateInstantreportData(
@@ -726,7 +726,7 @@ class InstantreportsController extends AppController {
             'Hosts' => [],
             'Services' => []
         ];
-        switch($instantReport['Instantreport']['type']){
+        switch ($instantReport['Instantreport']['type']) {
             case Instantreport::TYPE_HOSTGROUPS:      //-> 1
                 $containArray = [
                     1 => [
@@ -753,17 +753,17 @@ class InstantreportsController extends AppController {
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES){
-                        $objectsForInstantReport['Hosts'] = array_unique(
-                            Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                    $objectsForInstantReport['Hosts'] = array_unique(
+                        Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.uuid')
+                    );
                 }
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES){
-                        $objectsForInstantReport['Services'] = array_unique(
-                            Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.Service.{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
+                    $objectsForInstantReport['Services'] = array_unique(
+                        Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.Service.{n}.uuid')
+                    );
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_HOSTS:           //-> 2
@@ -786,17 +786,17 @@ class InstantreportsController extends AppController {
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES){
-                        $objectsForInstantReport['Hosts'] = array_unique(
-                            Hash::extract($instantReportHosts['Host'], '{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                    $objectsForInstantReport['Hosts'] = array_unique(
+                        Hash::extract($instantReportHosts['Host'], '{n}.uuid')
+                    );
                 }
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES){
-                        $objectsForInstantReport['Services'] = array_unique(
-                            Hash::extract($instantReportHosts['Host'], '{n}.Service.{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
+                    $objectsForInstantReport['Services'] = array_unique(
+                        Hash::extract($instantReportHosts['Host'], '{n}.Service.{n}.uuid')
+                    );
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_SERVICEGROUPS:   //-> 3
@@ -825,17 +825,17 @@ class InstantreportsController extends AppController {
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES){
-                        $objectsForInstantReport['Hosts'] = array_unique(
-                            Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.Host.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                    $objectsForInstantReport['Hosts'] = array_unique(
+                        Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.Host.uuid')
+                    );
                 }
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES){
-                        $objectsForInstantReport['Services'] = array_unique(
-                            Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
+                    $objectsForInstantReport['Services'] = array_unique(
+                        Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.uuid')
+                    );
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_SERVICES:        //-> 4
@@ -858,17 +858,17 @@ class InstantreportsController extends AppController {
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES){
-                        $objectsForInstantReport['Hosts'] = array_unique(
-                            Hash::extract($instantReportServices['Service'], '{n}.Host.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                    $objectsForInstantReport['Hosts'] = array_unique(
+                        Hash::extract($instantReportServices['Service'], '{n}.Host.uuid')
+                    );
                 }
-                if($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES){
-                        $objectsForInstantReport['Services'] = array_unique(
-                            Hash::extract($instantReportServices['Service'], '{n}.uuid')
-                        );
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
+                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
+                    $objectsForInstantReport['Services'] = array_unique(
+                        Hash::extract($instantReportServices['Service'], '{n}.uuid')
+                    );
                 }
                 return $objectsForInstantReport;
         }
@@ -935,10 +935,10 @@ class InstantreportsController extends AppController {
         $this->pdfConfig = [
             'engine' => 'CakePdf.WkHtmlToPdf',
             'margin' => [
-                'bottom' => 15,
+                'bottom' => 5,
                 'left' => 0,
                 'right' => 0,
-                'top' => 15,
+                'top' => 5,
             ],
             'encoding' => 'UTF-8',
             'download' => true,
