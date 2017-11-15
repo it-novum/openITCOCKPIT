@@ -43,6 +43,21 @@ App::uses('Folder', 'Utility');
 $ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
 $appScripts = $ScriptsFolder->findRecursive('.*\.js');
 
+$pluginScripts = [];
+foreach (new DirectoryIterator(APP . 'Plugin' . DS) as $pluginDir) {
+    if ($pluginDir->isDot()) {
+        continue;
+    }
+    $PluginScriptsFolder = new Folder(APP . 'Plugin' . DS . $pluginDir->getFilename() . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS);
+    $result = $PluginScriptsFolder->findRecursive('.*\.js');
+    if (!empty($result)) {
+        $pluginScripts[] = [
+            'dir'    => $result,
+            'module' => $pluginDir->getFilename()
+        ];
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en" ng-app="openITCOCKPIT">
@@ -66,6 +81,13 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
 
     foreach ($appScripts as $appScript):
         printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
+    endforeach;
+
+    foreach ($pluginScripts as $plugin):
+        $currentPlugin = $plugin['module'];
+        foreach ($plugin['dir'] as $pluginScript):
+            printf('<script src="%s/%s/%s"></script>', Router::fullBaseUrl(), Inflector::underscore($currentPlugin), str_replace(APP . 'Plugin' . DS . $currentPlugin . DS . 'webroot' . DS, '', $pluginScript));
+        endforeach;
     endforeach;
 
     ?>
