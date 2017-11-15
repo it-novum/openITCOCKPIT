@@ -33,6 +33,7 @@ class ContainersController extends AppController {
     public $helpers = ['Nest'];
 
     public function index() {
+        $this->layout = 'angularjs';
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_NODE;
             $this->Container->create();
@@ -131,7 +132,9 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenant($id = null) {
-        $this->allowOnlyAjaxRequests();
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         if (!$this->Container->hasAny()) {
             throw new NotFoundException(__('tenant.notfound'));
         }
@@ -144,6 +147,7 @@ class ContainersController extends AppController {
         $nest = Hash::nest($this->Container->children($id, false, null, 'name'));
         $parent[0]['children'] = $nest;
         $this->set('nest', $parent);
+        $this->set('_serialize', ['nest']);
     }
 
     /**

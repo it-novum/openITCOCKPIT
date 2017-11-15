@@ -37,7 +37,8 @@ $config = [
                 'menu',
                 'websocket_configuration',
                 'export',
-                'not_found'
+                'not_found',
+                'nested_list'
             ],
             'Commands'         => [
                 'sortByCommandType',

@@ -45,30 +45,19 @@
     </header>
     <div>
         <div class="widget-body">
+            <?php
 
+            echo $this->Form->create('Container', [
+                'class' => 'form-horizontal clear',
+                'url' => 'index',
+            ]);
 
-            <div class="row">
-
-                <div class="form-group">
-                    <label class="col col-md-2 control-label">
-                        <?php echo __('Tenant'); ?>
-                    </label>
-                    <div class="col col-xs-10">
-
-                        <select
-                                id="TenantSelect"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="tenants"
-                                ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
-                                ng-model="selectedTenant" >
-                        </select>
-
-                    </div>
-                </div>
-
-            </div>
-
+            echo $this->Form->input('id', [
+                'label'     => ['text' => __('Tenants'), 'class' => 'col-xs-12 col-md-12 col-lg-12'],
+                'options'   => $tenants,
+                'class'     => 'select2 select_tenant',
+                'wrapInput' => 'col col-xs-12 col-md-12 col-lg-12',
+            ]); ?>
             <br/>
             <div>
                 <span class="ajax_loader text-center">
@@ -86,8 +75,9 @@
                             <h2><?php echo __('Tree'); ?></h2>
                         </header>
                         <div>
-                            <div class="dd dd-nodrag" nested-list="" containers="containers" ng-if="containers"></div>
-
+                            <div class="widget-body">
+                                <div id="ajax_result"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,7 +89,10 @@
                         </header>
                         <div>
                             <div class="widget-body">
+                                <?php
 
+
+                                ?>
                                 <div id="ajax_parent_nodes"></div>
                                 <?php
                                 $options = [];
@@ -113,7 +106,9 @@
                     </div>
                 </div>
             </div>
-
+            <?php
+            echo $this->Form->formActions();
+            ?>
         </div>
     </div>
 </div>

@@ -264,4 +264,9 @@ class AngularController extends AppController {
         return;
     }
 
+    public function nested_list(){
+        //Only ship HTML template
+        return;
+    }
+
 }
