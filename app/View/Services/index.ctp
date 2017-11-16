@@ -470,7 +470,10 @@
                                                 <?php if ($this->Acl->hasPermission('delete')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        Delete
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(host, service))">
+                                                            <i class="fa fa-plug"></i> <?php echo __('Delete'); ?>
+                                                        </a>
                                                     </li>
                                                 <?php endif; ?>
                                             </ul>

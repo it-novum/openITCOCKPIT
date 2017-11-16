@@ -193,13 +193,18 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.getObjectForDelete = function(host, service){
+            var object = {};
+            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+            return object;
+        };
+
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.serverResult){
                 for(var id in selectedObjects){
                     if(id == $scope.serverResult[key].Service.id){
-                        console.log($scope.serverResult[key]);
                         objects[id] =
                             $scope.serverResult[key].Host.hostname + '/' +
                             $scope.serverResult[key].Service.servicename;
@@ -215,6 +220,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changepage = function(page){
+            $scope.undoSelection();
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
