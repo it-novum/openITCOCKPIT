@@ -264,4 +264,9 @@ class AngularController extends AppController {
         return;
     }
 
+    public function executing(){
+        //Only ship HTML template
+        return;
+    }
+
 }

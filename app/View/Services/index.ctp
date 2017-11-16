@@ -508,24 +508,77 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
                                     <?php echo __('Delete'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForPdf() }}" class="a-clean">
-                                    <i class="fa fa-lg fa-file-pdf-o"></i>
-                                    <?php echo __('List as PDF'); ?>
-                                </a>
+                            <div class="xol-xs-12 col-md-2">
+                                <div class="btn-group">
+                                    <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle"><span
+                                                class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a ng-href="{{ linkForPdf() }}" class="a-clean">
+                                                <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
+                                            </a>
+                                        </li>
+                                        <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="reschedule(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" data-toggle="modal"
+                                                   data-target="#nag_command_disable_notifications"><i
+                                                            class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" data-toggle="modal"
+                                                   data-target="#nag_command_enable_notifications"><i
+                                                            class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                                </a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="javascript:void(0);" style="text-decoration: none; color:#333;"
+                                                   data-toggle="modal" data-target="#nag_command_schedule_downtime"><i
+                                                            class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" style="text-decoration: none; color:#333;"
+                                                   data-toggle="modal" data-target="#nag_command_ack_state"><i
+                                                            class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>
+
+            <reschedule-service></reschedule-service>
+
         </article>
     </div>
 </section>
+
+
 

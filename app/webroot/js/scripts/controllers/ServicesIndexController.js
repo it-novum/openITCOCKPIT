@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesIndexController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
+    .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort('Servicestatus.current_state');
@@ -215,8 +215,59 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
+        $scope.getObjectsForExternalCommand = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.serverResult){
+                for(var id in selectedObjects){
+                    if(id == $scope.serverResult[key].Service.id){
+                        objects[id] = $scope.serverResult[key]
+                    }
+
+                }
+            }
+            return objects;
+        };
+
+        $scope.linkForCopy = function(){
+            var baseUrl = '/services/copy/';
+            var ids = Object.keys(MassChangeService.getSelected());
+            return baseUrl + ids.join('/');
+        };
+
         $scope.linkForPdf = function(){
-            return;
+
+            var baseUrl = '/services/listToPdf.pdf?';
+
+            var hasBeenAcknowledged = '';
+            var inDowntime = '';
+            if($scope.filter.Servicestatus.acknowledged^$scope.filter.Servicestatus.not_acknowledged){
+                hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
+            }
+            if($scope.filter.Servicestatus.in_downtime^$scope.filter.Servicestatus.not_in_downtime){
+                inDowntime = $scope.filter.Servicestatus.in_downtime === true;
+            }
+
+            var passive = '';
+            if($scope.filter.Servicestatus.passive){
+                passive = !$scope.filter.Servicestatus.passive;
+            }
+
+            return baseUrl + $httpParamSerializer({
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.servicename]': $scope.filter.Service.name,
+                'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
+                'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
+                'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
+                'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
+                'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
+                'filter[Servicestatus.active_checks_enabled]': passive
+            });
+
         };
 
         $scope.changepage = function(page){
