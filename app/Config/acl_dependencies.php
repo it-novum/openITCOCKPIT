@@ -38,7 +38,9 @@ $config = [
                 'websocket_configuration',
                 'export',
                 'not_found',
-                'executing'
+                'executing',
+                'acknowledge_service',
+                'downtime_service'
             ],
             'Commands'         => [
                 'sortByCommandType',

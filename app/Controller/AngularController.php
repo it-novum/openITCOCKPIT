@@ -274,4 +274,14 @@ class AngularController extends AppController {
         $this->set('id', $id);
     }
 
+    public function acknowledge_service(){
+        //Only ship HTML template
+        return;
+    }
+
+    public function downtime_service(){
+        //Only ship HTML template
+        return;
+    }
+
 }

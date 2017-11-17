@@ -281,8 +281,11 @@ class ServicesController extends AppController {
 
     public function index() {
         $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('username',$User->getFullName());
             //Only ship HTML template
             return;
         }
@@ -291,7 +294,6 @@ class ServicesController extends AppController {
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
-        $User = new User($this->Auth);
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -402,9 +404,6 @@ class ServicesController extends AppController {
 
         $this->set('all_services', $all_services);
         $this->set('_serialize', ['all_services', 'paging']);
-
-        //$this->set('username',$User->getFullName());
-        //$this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     public function view($id = null) {

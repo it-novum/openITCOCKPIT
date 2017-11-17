@@ -554,13 +554,13 @@
                                             <li class="divider"></li>
                                             <li>
                                                 <a href="javascript:void(0);"
-                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                   ng-click="serviceDowntime(getObjectsForExternalCommand())">
                                                     <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
                                                 </a>
                                             </li>
                                             <li>
                                                 <a href="javascript:void(0);"
-                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                   ng-click="acknowledgeService(getObjectsForExternalCommand())">
                                                     <i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
                                                 </a>
                                             </li>
@@ -577,6 +577,8 @@
             <reschedule-service></reschedule-service>
             <disable-notifications></disable-notifications>
             <enable-notifications></enable-notifications>
+            <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
+            <service-downtime author="<?php echo h($username); ?>"></service-downtime>
 
         </article>
     </div>
