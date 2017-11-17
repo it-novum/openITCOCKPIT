@@ -3,7 +3,8 @@ angular.module('openITCOCKPIT')
 
 
         $scope.init = true;
-        $scope.selectedTenant = 2;
+        $scope.selectedTenant = null;
+        $scope.selectedTenantForNode = null;
         $scope.nested_list_counter = 0;
         $scope.loadTenants = function(){
             $http.get("/tenants/index.json", {
@@ -26,8 +27,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
-
-
+        $scope.loadContainerlist = function(){
+            $http.get('/containers/byTenantForSelect/'+$scope.selectedTenant+'.json').then(function(result){
+                $scope.containerlist = result.data.paths;
+            });
+        };
 
         $scope.loadTenants();
 
@@ -35,6 +39,7 @@ angular.module('openITCOCKPIT')
             console.log($scope.selectedTenant);
             if($scope.selectedTenant !== null){
                 $scope.loadContainers();
+                $scope.loadContainerlist();
             }
         });
 

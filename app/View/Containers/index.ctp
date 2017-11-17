@@ -61,7 +61,9 @@
                                 class="form-control"
                                 chosen="tenants"
                                 ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
-                                ng-model="selectedTenant">
+                                ng-model="selectedTenant"
+                                ng-selected="selectedTenant=tenants[0].Tenant.id"
+                                >
                         </select>
 
                     </div>
@@ -112,18 +114,20 @@
 
                             <div class="form-group">
                                 <label for="TenantSelect" class="col col-md-2 control-label">
-                                    <?php echo __('Tenant'); ?>
+                                    <?php echo __('Parent Node'); ?>
                                 </label>
                                 <div class="col col-xs-10">
                                     <select
-                                            id="TenantforNodeSelect"
+                                            id="TenantForNodeSelect"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
-                                            chosen="containers[0].children"
-                                            ng-options="tenant.Container.name for tenant in containers[0].children"
-                                            ng-model="selectedTenantforNode">
+                                            chosen="containerlist"
+                                            ng-options="key as value for (key , value) in containerlist"
+                                            ng-model="selectedTenantForNode"
+                                            >
                                     </select>
                                 </div>
+
                             </div>
                             <br><br>
 
@@ -137,6 +141,29 @@
                                 </div>
                             </div>
 
+                        </div>
+
+                    </div>
+                    <div class="jarviswidget" id="wid-id-0">
+
+                        <header>
+                            <span class="widget-icon"> <i class="fa fa-book"></i> </span>
+                            <h2><?php echo __('Legend'); ?>:</h2>
+                        </header>
+
+                        <div class="widget-body">
+                            <div class="col col-xs-12">
+                                <dl>
+                                    <dt><i class="fa fa-globe"></i> Global</dt>
+                                    <dt><i class="fa fa-home"></i> Tenant</dt>
+                                    <dt><i class="fa fa-location-arrow"></i> Location</dt>
+                                    <dt><i class="fa fa-link"></i> Node</dt>
+                                    <dt><i class="fa fa-users"></i> Contactgroup</dt>
+                                    <dt><i class="fa fa-sitemap"></i> Hostgroup</dt>
+                                    <dt><i class="fa fa-cogs"></i> Servicegroup</dt>
+                                    <dt><i class="fa fa-pencil-square-o"></i> Servicetemplategroup</dt>
+                                </dl>
+                            </div>
                         </div>
 
                     </div>

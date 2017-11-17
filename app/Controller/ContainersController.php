@@ -162,9 +162,11 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenantForSelect($id = null, $options = []) {
-        $this->allowOnlyAjaxRequests();
-
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
+        $this->set('_serialize', ['paths']);
     }
 
     public function delete($id = null) {
