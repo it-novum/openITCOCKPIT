@@ -50,10 +50,10 @@
             <div class="row">
 
                 <div class="form-group">
-                    <label class="col col-md-2 control-label">
+                    <label class="col col-md-1 control-label">
                         <?php echo __('Tenant'); ?>
                     </label>
-                    <div class="col col-xs-10">
+                    <div class="col col-xs-11">
 
                         <select
                                 id="TenantSelect"
@@ -61,7 +61,7 @@
                                 class="form-control"
                                 chosen="tenants"
                                 ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
-                                ng-model="selectedTenant" >
+                                ng-model="selectedTenant">
                         </select>
 
                     </div>
@@ -93,27 +93,55 @@
                 </div>
                 <div class="col-sm-12 col-lg-6">
                     <div class="jarviswidget" id="wid-id-0">
+
                         <header>
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
                             <h2><?php echo __('Add new node'); ?>:</h2>
                         </header>
-                        <div>
-                            <div class="widget-body">
 
-                                <div id="ajax_parent_nodes"></div>
-                                <?php
-                                $options = [];
-                                if ($validationError === false):
-                                    $options = ['value' => false];
-                                endif;
-                                echo $this->Form->input('name', $options);
-                                ?>
+                        <div class="widget-body">
+
+                            <div class="form-group">
+                                <label for="TenantSelect" class="col col-md-2 control-label">
+                                    <?php echo __('Tenant'); ?>
+                                </label>
+                                <div class="col col-xs-10">
+                                    <select
+                                            id="TenantforNodeSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="containers[0].children"
+                                            ng-options="tenant.Container.name for tenant in containers[0].children"
+                                            ng-model="selectedTenantforNode">
+                                    </select>
+                                </div>
                             </div>
+                            <br><br>
+
+                            <div class="form-group required">
+                                <label for="ContainerName" class="col col-md-2 control-label">
+                                    <?php echo __('Name'); ?>
+                                </label>
+                                <div class="col col-xs-10 required">
+                                    <input name="data[Container][name]" class="form-control" maxlength="255"
+                                           id="ContainerName" required="required" type="text">
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
             </div>
-
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <input class="btn btn-primary" value="<?php echo __('Save'); ?>" type="submit">
+                    &nbsp;
+                    <a href="/containers" class="btn btn-default">
+                        <?php echo __('Cancel'); ?>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
