@@ -85,10 +85,19 @@
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
                             <h2><?php echo __('Tree'); ?></h2>
                         </header>
-                        <div>
-                            <div class="dd dd-nodrag" nested-list="" containers="containers" ng-if="containers"></div>
 
+                        <div class="dd dd-nodrag">
+
+                            <ol
+                                    class="dd-list"
+                                    id="nestable"
+                                    nested-list=""
+                                    container="container"
+                                    ng-repeat="container in containers"
+                                    ng-if="containers"
+                            ></ol>
                         </div>
+
                     </div>
                 </div>
                 <div class="col-sm-12 col-lg-6">

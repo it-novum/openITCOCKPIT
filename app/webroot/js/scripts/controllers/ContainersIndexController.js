@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.selectedTenant = 2;
+        $scope.nested_list_counter = 0;
         $scope.loadTenants = function(){
             $http.get("/tenants/index.json", {
                 params: {
@@ -16,7 +17,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainers = function(){
-            $http.get('containers/byTenant/'+$scope.selectedTenant+'.json', {
+            $http.get('/containers/byTenant/'+$scope.selectedTenant+'.json', {
                 params: {
                     'angular': true
                 }
