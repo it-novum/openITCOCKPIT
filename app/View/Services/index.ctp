@@ -540,28 +540,28 @@
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="javascript:void(0);" data-toggle="modal"
-                                                   data-target="#nag_command_disable_notifications"><i
-                                                            class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="disableNotifications(getObjectsForExternalCommand())">
+                                                  <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="javascript:void(0);" data-toggle="modal"
-                                                   data-target="#nag_command_enable_notifications"><i
-                                                            class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
                                                 </a>
                                             </li>
                                             <li class="divider"></li>
                                             <li>
-                                                <a href="javascript:void(0);" style="text-decoration: none; color:#333;"
-                                                   data-toggle="modal" data-target="#nag_command_schedule_downtime"><i
-                                                            class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="javascript:void(0);" style="text-decoration: none; color:#333;"
-                                                   data-toggle="modal" data-target="#nag_command_ack_state"><i
-                                                            class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
@@ -575,6 +575,8 @@
             </div>
 
             <reschedule-service></reschedule-service>
+            <disable-notifications></disable-notifications>
+            <enable-notifications></enable-notifications>
 
         </article>
     </div>

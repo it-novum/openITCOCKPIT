@@ -1,11 +1,11 @@
-angular.module('openITCOCKPIT').directive('rescheduleService', function($http, SudoService, $timeout){
+angular.module('openITCOCKPIT').directive('disableNotifications', function($http, SudoService, $timeout){
     return {
         restrict: 'E',
-        templateUrl: '/angular/executing.html?id=angularRescheduleServiceModal',
+        templateUrl: '/angular/executing.html?id=angularDisableNotificationsModal',
 
         controller: function($scope){
 
-            $scope.doReschedule = function(objects){
+            $scope.doDisableNotifications = function(objects){
                 var count = Object.keys(objects).length;
                 var i = 0;
                 $scope.percentage = 0;
@@ -15,26 +15,25 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
                     var object = objects[id];
                     i++;
                     $scope.percentage = Math.round(i / count * 100);
-                    SudoService.send(SudoService.toJson('rescheduleService', [
+                    SudoService.send(SudoService.toJson('submitDisableServiceNotifications', [
                         object.Host.uuid,
-                        object.Service.uuid,
-                        object.Host.satelliteId
+                        object.Service.uuid
                     ]));
                 }
                 $timeout(function(){
-                    $('#angularRescheduleServiceModal').modal('hide');
+                    $('#angularDisableNotificationsModal').modal('hide');
                 }, 500);
             };
 
         },
 
         link: function($scope, element, attr){
-            $scope.reschedule = function(objects){
+            $scope.disableNotifications = function(objects){
                 if(Object.keys(objects).length === 0){
                     return;
                 }
-                $('#angularRescheduleServiceModal').modal('show');
-                $scope.doReschedule(objects);
+                $('#angularDisableNotificationsModal').modal('show');
+                $scope.doDisableNotifications(objects);
             };
         }
     };

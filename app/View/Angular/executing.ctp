@@ -1,4 +1,4 @@
-<div id="angularExecutingModal" class="modal" role="dialog">
+<div id="<?php echo h($id); ?>" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
