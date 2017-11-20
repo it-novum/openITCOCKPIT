@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title"><h4>
+                <h4 class="modal-title">
+                    <h4>
                         <i class="fa fa-clock-o"></i>
                         <?php echo __('Set planned maintenance times'); ?>
                     </h4>
@@ -11,6 +12,7 @@
             <div class="modal-body">
                 <div class="row">
 
+                    <!-- comment -->
                     <div class="form-group">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Comment'); ?>:
@@ -20,9 +22,14 @@
                                     class="form-control"
                                     placeholder="<?php echo __('In progress'); ?>"
                                     type="text"
-                                    ng-model="downtime.comment">
+                                    ng-model="downtime.comment"
+                                    ng-init="downtime.comment='<?php echo __('In progress'); ?>'"
                         </div>
                     </div>
+                    <div ng-repeat="error in errors.Downtime.comment" class="col-md-offset-2 col-xs-12 col-md-10">
+                        <div class="help-block text-danger-important">{{ error }}</div>
+                    </div>
+
                     <!-- from -->
                     <div class="form-group">
                         <label class="col col-md-2 control-label">
@@ -31,12 +38,20 @@
                         <div class="col col-xs-5" style="padding-right: 0px;">
                             <input class="form-control"
                                    ng-model="downtime.from_date"
+                                   ng-init="downtime.from_date='<?php echo date('d.m.Y'); ?>'"
                                    type="text">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
                             <input class="form-control"
                                    ng-model="downtime.from_time"
+                                   ng-init="downtime.from_time='<?php echo date('H:i'); ?>'"
                                    type="text">
+                        </div>
+                        <div ng-repeat="error in errors.Downtime.from_date" class="col-md-offset-2 col-xs-12 col-md-10">
+                            <div class="help-block text-danger-important">{{ error }}</div>
+                        </div>
+                        <div ng-repeat="error in errors.Downtime.from_time" class="col-md-offset-2 col-xs-12 col-md-10">
+                            <div class="help-block text-danger-important">{{ error }}</div>
                         </div>
                     </div>
 
@@ -46,12 +61,22 @@
                             <?php echo __('To'); ?>:
                         </label>
                         <div class="col col-xs-5" style="padding-right: 0px;">
-                            <input value="20.11.2017" class="form-control"
+                            <input class="form-control"
+                                   ng-model="downtime.to_date"
+                                   ng-init="downtime.to_date='<?php echo date('d.m.Y', time() + 60 * 15); ?>'"
                                    type="text">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
-                            <input value="04:11" class="form-control"
+                            <input class="form-control"
+                                   ng-model="downtime.to_time"
+                                   ng-init="downtime.to_time='<?php echo date('H:i', time() + 60 * 15); ?>'"
                                    type="text">
+                        </div>
+                        <div ng-repeat="error in errors.Downtime.to_date" class="col-md-offset-2 col-xs-12 col-md-10">
+                            <div class="help-block text-danger-important">{{ error }}</div>
+                        </div>
+                        <div ng-repeat="error in errors.Downtime.to_time" class="col-md-offset-2 col-xs-12 col-md-10">
+                            <div class="help-block text-danger-important">{{ error }}</div>
                         </div>
                     </div>
 
@@ -69,7 +94,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" ng-click="doAcknowledgeService()">
+                <button type="button" class="btn btn-success" ng-click="doServiceDowntime()">
                     <?php echo __('Save'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">

@@ -5,14 +5,14 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
         controller: function($scope){
 
-            var date = new Date();
 
             $scope.doDowntime = false;
             $scope.downtime = {
                 comment: '',
-                from_date: date.getDate()+'.'+date.getMonth()+date.getFullYear(),
-                from_time: date.getHours()+':'+date.getMinutes(),
-                error: false
+                from_date: '',
+                from_time: '',
+                to_date: '',
+                to_time: ''
             };
 
             var objects = {};
@@ -27,39 +27,40 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
             };
 
             $scope.doServiceDowntime = function(){
-                $scope.ack.error = false;
-                if($scope.ack.comment === ''){
-                    $scope.ack.error = true;
-                    return false;
-                }
 
-                var sticky = 0;
-                if($scope.ack.sticky === true){
-                    sticky = 2;
-                }
 
-                var count = Object.keys(objects).length;
-                var i = 0;
-                $scope.percentage = 0;
-                $scope.doDowntime = true;
+                $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
+                    $scope.downtime
+                ).then(function(result){
+                    var count = Object.keys(objects).length;
+                    var i = 0;
+                    $scope.percentage = 0;
+                    $scope.doDowntime = true;
 
-                $scope.percentage = Math.round(i / count * 100);
-                for(var id in objects){
-                    var object = objects[id];
-                    i++;
                     $scope.percentage = Math.round(i / count * 100);
-                    SudoService.send(SudoService.toJson('submitServicestateAck', [
-                        object.Host.uuid,
-                        object.Service.uuid,
-                        $scope.ack.comment,
-                        author,
-                        sticky
-                    ]));
-                }
-                $timeout(function(){
-                    $scope.doDowntime = false;
-                    $('#angularServiceDowntimeModal').modal('hide');
-                }, 500);
+                    for(var id in objects){
+                        var object = objects[id];
+                        i++;
+                        $scope.percentage = Math.round(i / count * 100);
+                        SudoService.send(SudoService.toJson('submitServiceDowntime', [
+                            object.Host.uuid,
+                            object.Service.uuid,
+                            $scope.downtime.from_date + ' ' + $scope.downtime.from_time,
+                            $scope.downtime.to_date + ' ' + $scope.downtime.to_time,
+                            $scope.downtime.comment,
+                            author,
+                        ]));
+                    }
+                    $timeout(function(){
+                        $scope.doDowntime = false;
+                        $('#angularServiceDowntimeModal').modal('hide');
+                    }, 500);
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+
             };
 
         },

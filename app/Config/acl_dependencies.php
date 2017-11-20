@@ -50,6 +50,7 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
+                'validateDowntimeInputFromAngular'
             ],
             'Forward'          => [
                 'index',
