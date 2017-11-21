@@ -23,9 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
-require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
-
 $widgetData = $widgetNotices[$widget['Widget']['id']];
 
 $widgetNoticeId = null;
