@@ -10,6 +10,15 @@ So easy that everyone can use it: create your entire monitoring configuration wi
 
 ![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
 
+# Demo
+Play around with our [Demo](https://demo.openitcockpit.org/) system. Its equipped with the majority of modules that you will get with the community license
+
+Credentials:
+````
+Username(Email): demo@openitcockpit.org
+Password: demo123
+````
+
 # System requirements
 * Ubuntu Linux 64 bit (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 64 bit (8 "jessie" and 9 "stretch")
 * 2 CPU cores (x86-64)
