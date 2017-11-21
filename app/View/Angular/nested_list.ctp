@@ -29,10 +29,11 @@
         </a>
         <i class="note pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) == 0">empty</i>
         <span class="badge bg-color-blue txt-color-white pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0">{{ (container.Container.rght-container.Container.lft)/2-0.5 }}</span>
+
     </div>
 
     <ol class="dd-list" nested-list="" container="child" ng-repeat="child in container.children" ng-if="container.children"></ol>
-{{container_list}}
+
 </li>
 
 

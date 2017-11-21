@@ -62,7 +62,7 @@
                                 chosen="tenants"
                                 ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
                                 ng-model="selectedTenant"
-                                ng-selected="selectedTenant=tenants[0].Tenant.id"
+
                                 >
                         </select>
 
@@ -98,6 +98,7 @@
                                     ng-repeat="container in containers"
                                     ng-if="containers"
                             ></ol>
+
                         </div>
 
                     </div>
@@ -122,8 +123,8 @@
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="containerlist"
-                                            ng-options="key as value for (key , value) in containerlist"
-                                            ng-model="selectedTenantForNode"
+                                            ng-options="key as value for (key, value) in containerlist"
+                                            ng-model="newNode_parent"
                                             >
                                     </select>
                                 </div>
@@ -136,8 +137,14 @@
                                     <?php echo __('Name'); ?>
                                 </label>
                                 <div class="col col-xs-10 required">
-                                    <input name="data[Container][name]" class="form-control" maxlength="255"
-                                           id="ContainerName" required="required" type="text">
+
+                                    <input type="text"
+                                           class="form-control"
+                                           maxlength="255"
+                                           required="required"
+                                           placeholder="<?php echo __('Node name'); ?>"
+                                           ng-model="newNode_name"
+                                           >
                                 </div>
                             </div>
 
@@ -171,7 +178,11 @@
             </div>
             <div class="well formactions ">
                 <div class="pull-right">
-                    <input class="btn btn-primary" value="<?php echo __('Save'); ?>" type="submit">
+                    <input type="button"
+                           class="btn btn-primary"
+                           value="<?php echo __('Save'); ?>"
+                           ng-click="saveNewNode()"
+                    >
                     &nbsp;
                     <a href="/containers" class="btn btn-default">
                         <?php echo __('Cancel'); ?>

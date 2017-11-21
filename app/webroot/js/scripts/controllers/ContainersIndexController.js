@@ -5,7 +5,39 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.selectedTenant = null;
         $scope.selectedTenantForNode = null;
+        $scope.newNode_name = null;
+        $scope.newNode_parent = null;
         $scope.nested_list_counter = 0;
+        $scope.errors = null;
+
+
+
+        $scope.saveNewNode = function(){
+            if($scope.newNode_name && $scope.newNode_parent){
+
+                console.log($scope.newNode_name);
+                console.log($scope.newNode_parent);
+                $http.post("/containers/add.json",
+                    {
+                        Container: {
+                            parent_id: $scope.newNode_parent,
+                            name: $scope.newNode_name,
+                            containertype_id: '5'
+                        },
+                    }
+                ).then(function(result){
+                    //console.log(result);
+                    $scope.newNode_name = null;
+                    $scope.loadContainers();
+                    $scope.loadContainerlist();
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
+        };
+
         $scope.loadTenants = function(){
             $http.get("/tenants/index.json", {
                 params: {
@@ -42,5 +74,7 @@ angular.module('openITCOCKPIT')
                 $scope.loadContainerlist();
             }
         });
+
+
 
     });
