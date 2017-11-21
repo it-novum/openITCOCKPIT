@@ -281,8 +281,11 @@ class ServicesController extends AppController {
 
     public function index() {
         $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('username',$User->getFullName());
             //Only ship HTML template
             return;
         }
@@ -291,7 +294,6 @@ class ServicesController extends AppController {
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
-        $User = new User($this->Auth);
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($this->MY_RIGHTS);
@@ -402,9 +404,6 @@ class ServicesController extends AppController {
 
         $this->set('all_services', $all_services);
         $this->set('_serialize', ['all_services', 'paging']);
-
-        //$this->set('username',$User->getFullName());
-        //$this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
     }
 
     public function view($id = null) {
@@ -2797,7 +2796,8 @@ class ServicesController extends AppController {
     }
 
     public function listToPdf() {
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request);
+        $ServiceFilter = new ServiceFilter($this->request);
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
             $ServiceConditions->setIncludeDisabled(false);
@@ -2811,14 +2811,14 @@ class ServicesController extends AppController {
         ]));
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
             $this->Service->virtualFieldsForIndexAndServiceList();
             $modelName = 'Service';
         }
 
         if ($this->DbBackend->isCrateDb()) {
             $this->Servicestatus->virtualFieldsForIndexAndServiceList();
-            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
             $modelName = 'Servicestatus';
         }
 
