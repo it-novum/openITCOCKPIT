@@ -25,9 +25,19 @@
 
 class MapsController extends MapModuleAppController {
 
-    public $layout = 'Admin.default';
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'CustomValidationErrors'];
-    public $helpers = ['CustomValidationErrors', 'ListFilter.ListFilter'];
+    public $layout = 'angularjs';
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+        'CustomValidationErrors'
+    ];
+
+    public $helpers = [
+        'CustomValidationErrors',
+        'ListFilter.ListFilter'
+    ];
+
     //public $uses = ['Tenant'];
 
     public $listFilters = ['index' => [
@@ -39,6 +49,10 @@ class MapsController extends MapModuleAppController {
     ]];
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
         $query = [
             'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
             'fields' => [
@@ -65,6 +79,8 @@ class MapsController extends MapModuleAppController {
             'group' => 'Map.id',
         ];
 
+
+
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
@@ -76,6 +92,19 @@ class MapsController extends MapModuleAppController {
             $all_maps = $this->Paginator->paginate();
         }
 
+        foreach($all_maps as $key => $all_map){
+            $all_maps[$key]['Map']['allowEdit'] = false;
+            if($this->hasRootPrivileges == true){
+                $all_maps[$key]['Map']['allowEdit'] = true;
+                continue;
+            }
+            foreach ($all_map['Container'] as $cKey => $container){
+                if($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT){
+                    $all_maps[$key]['Map']['allowEdit'] = true;
+                    continue;
+                }
+            }
+        }
         $this->set('all_maps', $all_maps);
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
         $this->set('_serialize', ['all_maps']);
@@ -83,11 +112,10 @@ class MapsController extends MapModuleAppController {
 
 
     public function add() {
-        $this->loadModel('Container');
-
-        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-
-        $this->set(compact('container'));
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
@@ -103,18 +131,16 @@ class MapsController extends MapModuleAppController {
             }
 
             if ($this->Map->saveAll($this->request->data)) {
-
                 if ($this->request->ext === 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
+                    }
                     $this->serializeId();
-
                     return;
                 }
-                $this->setFlash(__('Map properties successfully saved'));
-                $this->redirect(['action' => 'index']);
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('could not save data'), false);
@@ -122,7 +148,29 @@ class MapsController extends MapModuleAppController {
         }
     }
 
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
     public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid map'));
         }
@@ -271,14 +319,5 @@ class MapsController extends MapModuleAppController {
         }
         $this->setFlash(__('Maps deleted'));
         $this->redirect(['action' => 'index']);
-    }
-
-    public function loadUsersForTenant($tenantId = []) {
-        return;
-
-        foreach ($tenantId as $key => $value) {
-            //	debug($key);
-            //	debug($value);
-        }
     }
 }
