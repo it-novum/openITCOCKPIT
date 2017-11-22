@@ -9,14 +9,26 @@ angular.module('openITCOCKPIT')
         $scope.newNode_parent = null;
         $scope.nested_list_counter = 0;
         $scope.errors = null;
+        $scope.delete_url = '/containers/delete.json';
+        $scope.delete_id = null;
 
 
+        $scope.$watch('delete_id',function(){
+            if($scope.selectedTenant !== null){
+                console.log("delc");
+            }
+        });
+
+
+        $scope.getObjectForDelete = function(name){
+            console.log("ggg");
+            var object = {};
+            object[1] = name;
+            return object;
+        };
 
         $scope.saveNewNode = function(){
             if($scope.newNode_name && $scope.newNode_parent){
-
-                console.log($scope.newNode_name);
-                console.log($scope.newNode_parent);
                 $http.post("/containers/add.json",
                     {
                         Container: {
@@ -68,13 +80,10 @@ angular.module('openITCOCKPIT')
         $scope.loadTenants();
 
         $scope.$watch('selectedTenant',function(){
-            console.log($scope.selectedTenant);
             if($scope.selectedTenant !== null){
                 $scope.loadContainers();
                 $scope.loadContainerlist();
             }
         });
-
-
 
     });

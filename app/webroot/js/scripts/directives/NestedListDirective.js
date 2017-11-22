@@ -7,11 +7,25 @@ angular.module('openITCOCKPIT').directive('nestedList', function($http, $interva
         },
 
         controller: function($scope){
-            console.log($scope.container);
+            //console.log($scope.container);
+
+            $scope.deleteUrl="/containers/delete.json";
+
+            $scope.getObjectForDelete = function(name){
+                var object = {};
+                object[1] = name;
+                return object;
+            };
 
         },
 
-        link: function(scope, element, attr){
+        link: function($scope, element, attr){
+
+            $scope.getObjectForDelete = function(name){
+                var object = {};
+                object[1] = name;
+                return object;
+            };
 
         }
     };
