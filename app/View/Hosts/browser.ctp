@@ -1118,7 +1118,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
+                <button type="submit" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
                     <?php echo __('Send'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">

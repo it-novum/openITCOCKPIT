@@ -901,7 +901,7 @@ $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitServicestateAck">
+                <button type="submit" class="btn btn-success" data-dismiss="modal" id="submitServicestateAck">
                     <?php echo __('Send'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
