@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\MapFilter;
+
 class MapsController extends MapModuleAppController {
 
     public $layout = 'angularjs';
@@ -53,8 +55,11 @@ class MapsController extends MapModuleAppController {
             //Only ship template for AngularJs
             return;
         }
+        
+        $MapFilter = new MapFilter($this->request);
+
         $query = [
-            'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
+            'conditions' => $MapFilter->indexFilter(),
             'fields' => [
                 'Map.*',
             ],
@@ -66,9 +71,7 @@ class MapsController extends MapModuleAppController {
                     'conditions' => 'MapsToContainers.map_id = Map.id',
                 ],
             ],
-            'order' => [
-                'Map.name' => 'asc',
-            ],
+            'order' => $MapFilter->getOrderForPaginator('Map.name', 'asc'),
             'contain' => [
                 'Container' => [
                     'fields' => [

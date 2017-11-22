@@ -2,10 +2,6 @@ angular.module('openITCOCKPIT')
     .controller('MapsAddController', function($scope, $http){
 
         $scope.post = {
-           /* Container: [
-                //name: '',
-                //parent_id: 0
-            ],*/
             Map: {
                 name: '',
                 title: '',
@@ -39,11 +35,6 @@ angular.module('openITCOCKPIT')
             });
 
         };
-
-
-        $scope.$watch('post', function(){
-            console.log($scope.post);
-        }, true);
 
         $scope.load();
     });
