@@ -42,67 +42,71 @@ class MapsController extends MapModuleAppController {
 
     //public $uses = ['Tenant'];
 
-    public $listFilters = ['index' => [
-        'fields' => [
-            'Map.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-            'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
-            //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
-        ],
-    ]];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
+                //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
+            ],
+        ]
+    ];
 
     public function index() {
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        
+
         $MapFilter = new MapFilter($this->request);
 
         $query = [
             'conditions' => $MapFilter->indexFilter(),
-            'fields' => [
+            'fields'     => [
                 'Map.*',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'maps_to_containers',
-                    'type' => 'INNER',
-                    'alias' => 'MapsToContainers',
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
                     'conditions' => 'MapsToContainers.map_id = Map.id',
                 ],
             ],
-            'order' => $MapFilter->getOrderForPaginator('Map.name', 'asc'),
-            'contain' => [
+            'order'      => $MapFilter->getOrderForPaginator('Map.name', 'asc'),
+            'contain'    => [
                 'Container' => [
                     'fields' => [
                         'Container.id',
                     ],
                 ],
             ],
-            'group' => 'Map.id',
+            'group'      => 'Map.id',
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
-
-
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['MapsToContainers.container_id'] = $this->MY_RIGHTS;
         }
-        if ($this->isApiRequest()) {
+
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
             $all_maps = $this->Map->find('all', $query);
         } else {
-            $this->Paginator->settings = array_merge_recursive($this->Paginator->settings, $query);
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $MapFilter->getPage();
             $all_maps = $this->Paginator->paginate();
         }
 
-        foreach($all_maps as $key => $all_map){
+        foreach ($all_maps as $key => $all_map) {
             $all_maps[$key]['Map']['allowEdit'] = false;
-            if($this->hasRootPrivileges == true){
+            if ($this->hasRootPrivileges == true) {
                 $all_maps[$key]['Map']['allowEdit'] = true;
                 continue;
             }
-            foreach ($all_map['Container'] as $cKey => $container){
-                if($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT){
+            foreach ($all_map['Container'] as $cKey => $container) {
+                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
                     $all_maps[$key]['Map']['allowEdit'] = true;
                     continue;
                 }
@@ -110,7 +114,7 @@ class MapsController extends MapModuleAppController {
         }
         $this->set('all_maps', $all_maps);
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_maps']);
+        $this->set('_serialize', ['all_maps', 'paging']);
     }
 
 
@@ -205,7 +209,7 @@ class MapsController extends MapModuleAppController {
                     'Container.id',
                     'Container.name',
                 ],
-                'order' => 'Container.name ASC',
+                'order'  => 'Container.name ASC',
             ]
         ),
             '{n}.Container.id', '{n}.Container.name'
@@ -279,14 +283,14 @@ class MapsController extends MapModuleAppController {
                 throw new NotFoundException(__('Invalid Map'));
             }
             $map = $this->Map->find('first', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'Map.id' => $mapId,
                 ],
-                'fields' => [
+                'fields'     => [
                     'Map.name',
                 ],
-                'contain' => [
+                'contain'    => [
                     'Container' => [
                         'fields' => [
                             'Container.id',

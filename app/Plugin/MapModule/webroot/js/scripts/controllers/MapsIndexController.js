@@ -56,6 +56,42 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
+        $scope.selectAll = function(){
+            if($scope.maps){
+                for(var key in $scope.maps){
+                    var id = $scope.maps[key].Map.id;
+                    $scope.massChange[id] = true;
+                }
+            }
+        };
+
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.maps){
+                for(var id in selectedObjects){
+                    if(id == $scope.maps[key].Map.id){
+                        objects[id] = $scope.maps[key].Map.name;
+                    }
+
+                }
+            }
+            return objects;
+        };
+
+        $scope.getObjectForDelete = function(map){
+            var object = {};
+            object[map.Map.id] = map.Map.name + '/' + map.Map.title;
+            return object;
+        };
+
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -64,6 +100,4 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
             $scope.load();
         }, true);
-
-        //$scope.load();
     });

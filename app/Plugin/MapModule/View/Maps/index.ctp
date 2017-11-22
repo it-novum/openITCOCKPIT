@@ -153,18 +153,19 @@
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
                                         <ul class="dropdown-menu pull-right">
-                                            <li ng-if="map.Map.allowEdit">
-                                                <a href="/map_module/mapeditor/edit/{{map.Map.id}}">
-                                                    <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
-                                                </a>
-                                            </li>
-                                            <li ng-if="map.Map.allowEdit">
-                                                <a href="/map_module/maps/edit/{{map.Map.id}}">
-                                                    <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
-                                                </a>
-                                            </li>
-                                            <li class="divider" ng-if="map.Map.allowEdit"></li>
-
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <li ng-if="map.Map.allowEdit">
+                                                    <a href="/map_module/mapeditor/edit/{{map.Map.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
+                                                    </a>
+                                                </li>
+                                                <li ng-if="map.Map.allowEdit">
+                                                    <a href="/map_module/maps/edit/{{map.Map.id}}">
+                                                        <i class="fa fa-edit"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                                <li class="divider" ng-if="map.Map.allowEdit"></li>
+                                            <?php endif; ?>
                                             <li>
                                                 <a href="/map_module/maps/view/{{map.Map.id}}">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
@@ -174,12 +175,15 @@
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
-                                            <li class="divider" ng-if="map.Map.allowEdit"></li>
-                                            <li ng-if="map.Map.allowEdit">
-                                                <a href="/map_module/maps/delete/{{map.Map.id}}"
-                                                   class="txt-color-red">
-                                                    <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
-                                            </li>
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <li class="divider" ng-if="map.Map.allowEdit"></li>
+                                                <li ng-if="map.Map.allowEdit">
+                                                    <a class="txt-color-red"
+                                                       href="javascript:void(0);" class="txt-color-red"
+                                                       ng-click="confirmDelete(getObjectForDelete(map))">
+                                                        <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+                                                </li>
+                                            <?php endif; ?>
                                         </ul>
                                     </div>
                                 </td>
