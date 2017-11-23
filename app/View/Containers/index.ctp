@@ -90,13 +90,9 @@
 
                         <div class="dd dd-nodrag">
 
-                            <ol class="dd-list"
-                                id="nestable"
-                                nested-list=""
-                                container="container"
-                                ng-repeat="container in containers"
-                                ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0"
-                            ></ol>
+
+                            <div ng-bind-html="tree | to_trusted"></div>
+
 
                         </div>
 
