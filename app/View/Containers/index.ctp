@@ -63,7 +63,7 @@
                                 ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
                                 ng-model="selectedTenant"
 
-                                >
+                        >
                         </select>
 
                     </div>
@@ -90,13 +90,12 @@
 
                         <div class="dd dd-nodrag">
 
-                            <ol
-                                    class="dd-list"
-                                    id="nestable"
-                                    nested-list=""
-                                    container="container"
-                                    ng-repeat="container in containers"
-                                    ng-if="containers"
+                            <ol class="dd-list"
+                                id="nestable"
+                                nested-list=""
+                                container="container"
+                                ng-repeat="container in containers"
+                                ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0"
                             ></ol>
 
                         </div>
@@ -125,7 +124,7 @@
                                             chosen="containerlist"
                                             ng-options="key as value for (key, value) in containerlist"
                                             ng-model="newNode_parent"
-                                            >
+                                    >
                                     </select>
                                 </div>
 
@@ -144,7 +143,7 @@
                                            required="required"
                                            placeholder="<?php echo __('Node name'); ?>"
                                            ng-model="newNode_name"
-                                           >
+                                    >
                                 </div>
                             </div>
 

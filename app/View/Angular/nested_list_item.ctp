@@ -1,4 +1,4 @@
-<li class="dd-item" data-id="{{ container.Container.id }}">
+
 
     <button data-action="collapse" type="button" ng-if="container.children.length">Collapse</button>
     <button data-action="expand" type="button" style="display: none;" ng-if="container.children.length">Expand</button>
@@ -36,24 +36,3 @@
               ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0">{{ (container.Container.rght-container.Container.lft)/2-0.5 }}</span>
 
     </div>
-
-
-    <ol class="dd-list"
-        id="nestable"
-        nested-list=""
-        ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0"
-        container="container"
-        ng-repeat="container in container.children"
-    ></ol>
-
-    <li class="dd-item"
-        data-id="{{ container.Container.id }}"
-        nested-list-item=""
-        ng-if="((container.Container.rght-container.Container.lft)/2-0.5) <= 0"
-        container="container"
-        ng-repeat="container in container.children"
-    ></li>
-
-
-</li>
-
