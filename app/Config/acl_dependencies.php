@@ -37,7 +37,10 @@ $config = [
                 'menu',
                 'websocket_configuration',
                 'export',
-                'not_found'
+                'not_found',
+                'executing',
+                'acknowledge_service',
+                'downtime_service'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -47,6 +50,7 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
+                'validateDowntimeInputFromAngular'
             ],
             'Forward'          => [
                 'index',

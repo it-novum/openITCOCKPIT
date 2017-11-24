@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo $this->Utils->pluralize($servicesToCopy, __('Service'), __('Services')); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -40,7 +40,14 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($servicesToCopy, __('service'), __('services')); ?><?php echo __('to host'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet">
+            <?php printf(
+                '%s %s %s',
+                __('Copy'),
+                $this->Utils->pluralize($servicesToCopy, __('service'), __('services')),
+                __('to host')
+            ); ?>
+        </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -79,7 +86,7 @@
                                 else:
                                     echo h($serviceToCopy['Service']['name']);
                                 endif; ?>
-                                <?php echo $this->Form->input('Service.source.'.$key, ['value' => $serviceToCopy['Service']['id'], 'type' => 'hidden']); ?>
+                                <?php echo $this->Form->input('Service.source.' . $key, ['value' => $serviceToCopy['Service']['id'], 'type' => 'hidden']); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

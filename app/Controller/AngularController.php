@@ -264,4 +264,24 @@ class AngularController extends AppController {
         return;
     }
 
+    public function executing(){
+        //Only ship HTML template
+        if(!isset($this->request->query['id'])){
+            $id = 'angularExecutingModal';
+        }else{
+            $id = $this->request->query['id'];
+        }
+        $this->set('id', $id);
+    }
+
+    public function acknowledge_service(){
+        //Only ship HTML template
+        return;
+    }
+
+    public function downtime_service(){
+        //Only ship HTML template
+        return;
+    }
+
 }

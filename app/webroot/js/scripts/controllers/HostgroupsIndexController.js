@@ -90,6 +90,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changepage = function(page){
+            $scope.undoSelection();
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();

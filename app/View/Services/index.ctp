@@ -470,7 +470,10 @@
                                                 <?php if ($this->Acl->hasPermission('delete')): ?>
                                                     <li class="divider"></li>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        Delete
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(host, service))">
+                                                            <i class="fa fa-plug"></i> <?php echo __('Delete'); ?>
+                                                        </a>
                                                     </li>
                                                 <?php endif; ?>
                                             </ul>
@@ -505,24 +508,81 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                    <i class="fa fa-lg fa-files-o"></i>
+                                    <?php echo __('Copy'); ?>
+                                </a>
+                            </div>
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
                                     <?php echo __('Delete'); ?>
                                 </span>
                             </div>
-                            <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForPdf() }}" class="a-clean">
-                                    <i class="fa fa-lg fa-file-pdf-o"></i>
-                                    <?php echo __('List as PDF'); ?>
-                                </a>
+                            <div class="xol-xs-12 col-md-2">
+                                <div class="btn-group">
+                                    <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle"><span
+                                                class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a ng-href="{{ linkForPdf() }}" class="a-clean">
+                                                <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
+                                            </a>
+                                        </li>
+                                        <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="reschedule(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="disableNotifications(getObjectsForExternalCommand())">
+                                                  <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                                </a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="serviceDowntime(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="acknowledgeService(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>
+
+            <reschedule-service></reschedule-service>
+            <disable-notifications></disable-notifications>
+            <enable-notifications></enable-notifications>
+            <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
+            <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
         </article>
     </div>
 </section>
+
+
 
