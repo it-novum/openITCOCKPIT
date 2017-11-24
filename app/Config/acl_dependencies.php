@@ -39,7 +39,6 @@ $config = [
                 'export',
                 'not_found',
                 'nested_list',
-                'nested_list_item',
                 'executing',
                 'acknowledge_service',
                 'downtime_service'

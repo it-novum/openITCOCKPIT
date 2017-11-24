@@ -1,5 +1,4 @@
 <li class="dd-item" data-id="{{ container.Container.id }}">
-
     <button data-action="collapse" type="button" ng-if="container.children.length">Collapse</button>
     <button data-action="expand" type="button" style="display: none;" ng-if="container.children.length">Expand</button>
 
@@ -18,42 +17,26 @@
 
         {{ container.Container.name }}
 
-        <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
-           class="txt-color-red padding-left-10 font-xs pointer"
-        >
-            <i class="fa fa-pencil"></i>
-            Rename
-        </a>
-        <a class="txt-color-red padding-left-10 font-xs pointer"
-           ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
-           ng-click="$rootScope.confirmDelete(getObjectForDelete('hshud'))"
-        >
-            <i class="fa fa-trash-o"></i>
-            Delete
-        </a>
+        <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
+            <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
+               class="txt-color-red padding-left-10 font-xs pointer"
+               ng-click="edit(container)"
+            >
+                <i class="fa fa-pencil"></i>
+                Edit
+            </a>
+        <?php endif; ?>
+
         <i class="note pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) == 0">empty</i>
         <span class="badge bg-color-blue txt-color-white pull-right"
               ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0">{{ (container.Container.rght-container.Container.lft)/2-0.5 }}</span>
 
     </div>
 
-
-    <ol class="dd-list"
-        id="nestable"
-        nested-list=""
-        ng-if="((container.Container.rght-container.Container.lft)/2-0.5) > 0"
-        container="container"
-        ng-repeat="container in container.children"
-    ></ol>
-
-    <li class="dd-item"
-        data-id="{{ container.Container.id }}"
-        nested-list-item=""
-        ng-if="((container.Container.rght-container.Container.lft)/2-0.5) <= 0"
-        container="container"
-        ng-repeat="container in container.children"
-    ></li>
-
+    <ol class="dd-list">
+        <nested-list container="container" ng-repeat="container in container.children"></nested-list>
+    </ol>
 
 </li>
+<edit-node></edit-node>
 

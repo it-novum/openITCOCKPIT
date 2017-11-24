@@ -98,14 +98,13 @@ class ContainersController extends AppController {
                 return;
             }
             $this->serializeErrorMessage();
-        } else {
-            if ($this->Container->save($this->request->data)) {
-                $this->setFlash(__('new node created successfully'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('error while saving data'), false);
-                $this->redirect(['action' => 'index']);
-            }
+        }
+    }
+
+    public function edit(){
+        $this->layout = 'blank';
+        if(!$this->isAngularJsRequest()){
+            return;
         }
     }
 

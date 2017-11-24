@@ -90,12 +90,15 @@
 
                         <div class="dd dd-nodrag">
 
-
-                            <div ng-bind-html="tree | to_trusted"></div>
-
+                            <ol class="dd-list"
+                                id="nestable"
+                                ng-if="container.children.length > 0"
+                                ng-repeat="container in containers"
+                            >
+                                <nested-list container="container"></nested-list>
+                            </ol>
 
                         </div>
-
                     </div>
                 </div>
                 <div class="col-sm-12 col-lg-6">
@@ -108,7 +111,7 @@
 
                         <div class="widget-body">
 
-                            <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error': errors.parent_id}">
                                 <label for="TenantSelect" class="col col-md-2 control-label">
                                     <?php echo __('Parent Node'); ?>
                                 </label>
@@ -122,12 +125,15 @@
                                             ng-model="newNode_parent"
                                     >
                                     </select>
+                                    <div ng-repeat="error in errors.parent_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
 
                             </div>
                             <br><br>
 
-                            <div class="form-group required">
+                            <div class="form-group required" ng-class="{'has-error': errors.name}">
                                 <label for="ContainerName" class="col col-md-2 control-label">
                                     <?php echo __('Name'); ?>
                                 </label>
@@ -140,12 +146,32 @@
                                            placeholder="<?php echo __('Node name'); ?>"
                                            ng-model="newNode_name"
                                     >
+                                    <div ng-repeat="error in errors.name">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
 
                         </div>
 
+                        <div class="well formactions ">
+                            <div id="nodeCreatedFlashMessage" class="alert alert-success" style="display:none;">
+                                <?php echo __('Node created successfully'); ?>
+                            </div>
+                            <div class="pull-right">
+                                <input type="button"
+                                       class="btn btn-primary"
+                                       value="<?php echo __('Save'); ?>"
+                                       ng-click="saveNewNode()"
+                                >
+                                &nbsp;
+                                <a href="/containers" class="btn btn-default">
+                                    <?php echo __('Cancel'); ?>
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="jarviswidget" id="wid-id-0">
 
                         <header>
@@ -171,19 +197,8 @@
                     </div>
                 </div>
             </div>
-            <div class="well formactions ">
-                <div class="pull-right">
-                    <input type="button"
-                           class="btn btn-primary"
-                           value="<?php echo __('Save'); ?>"
-                           ng-click="saveNewNode()"
-                    >
-                    &nbsp;
-                    <a href="/containers" class="btn btn-default">
-                        <?php echo __('Cancel'); ?>
-                    </a>
-                </div>
-            </div>
+
         </div>
     </div>
 </div>
+
