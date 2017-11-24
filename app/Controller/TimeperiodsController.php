@@ -545,4 +545,27 @@ class TimeperiodsController extends AppController
         $this->set(compact('timeperiods'));
         $this->set('back_url', $this->referer());
     }
+
+    public function loadTimeperiodsByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+
+        $timeperiods = $this->Timeperiod->find('list', [
+            'conditions' => [
+                'Timeperiod.container_id' => [
+                    ROOT_CONTAINER, $containerId
+                ]
+            ]
+        ]);
+
+        $timeperiods = $this->Timeperiod->makeItJavaScriptAble(
+            $timeperiods
+        );
+
+        $this->set(compact(['timeperiods']));
+        $this->set('_serialize', ['timeperiods']);
+    }
 }

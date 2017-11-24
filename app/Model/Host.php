@@ -239,9 +239,11 @@ class Host extends AppModel {
             'order'      => [
                 'Host.name' => 'ASC',
             ],
+            'group' => [
+                'Host.id'
+            ],
             'limit'      => self::ITN_AJAX_LIMIT
         ];
-
         $hostsWithLimit = $this->find('list', $query);
 
         $selectedHosts = [];

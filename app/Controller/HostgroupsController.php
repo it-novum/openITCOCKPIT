@@ -601,6 +601,45 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hosttemplates']);
     }
 
+
+    public function loadHosgroupsByContainerId() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container'
+            ],
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
+        ];
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $hostgroups = $this->Hostgroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
+            $hostgroups = $this->Paginator->paginate();
+        }
+
+        $this->set(compact(['hostgroups']));
+        $this->set('_serialize', ['hostgroups']);
+    }
+
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
