@@ -173,51 +173,39 @@ class MapsController extends MapModuleAppController {
     }
 
     public function edit($id = null) {
-        if (!$this->isApiRequest()) {
+     /*   if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
-
+*/
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid map'));
         }
-        $this->loadModel('Tenant');
-        $this->Map->recursive = -1;
-        $this->Map->autoFields = false;
 
-
-        $this->Map->contain([
-            'Container' => [
-                'fields' => ['id', 'name'],
+        $map = $this->Map->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Map.id' => $id
             ],
+            'contain' => [
+                'Container' => [
+                    'fields' => ['id', 'name'],
+                ]
+            ]
         ]);
 
-        $map = $this->Map->findById($id);
-
         $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-
         if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
-
             return;
         }
 
-        //'Tenant.description' <-> Container.name
-        $tenants = Set::combine($this->Tenant->find('all', [
-
-                'fields' => [
-                    'Container.id',
-                    'Container.name',
-                ],
-                'order'  => 'Container.name ASC',
-            ]
-        ),
-            '{n}.Container.id', '{n}.Container.name'
-        );
-        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-        $this->set(compact('map', 'container'));
+        $this->set('_serialize', ['map']);
+        $this->set(compact('map'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Map']['id'] = $id;
+
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
             if (empty($this->request->data['Map']['refresh_interval'])) {
@@ -236,13 +224,11 @@ class MapsController extends MapModuleAppController {
 
                     return;
                 }
-                $this->setFlash(__('Map properties successfully saved'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
 
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('could not save data'), false);
@@ -259,7 +245,6 @@ class MapsController extends MapModuleAppController {
         $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
         if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
-
             return;
         }
 
@@ -268,63 +253,14 @@ class MapsController extends MapModuleAppController {
         }
 
         if ($this->Map->delete($id, true)) {
-            $this->setFlash(__('Map deleted'));
-            $this->redirect(['action' => 'index']);
+            $this->setFlash(__('Map deleted successfully'));
+            $this->set('message', __('Map deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
         }
 
-        $this->setFlash(__('Could not delete map'), false);
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function mass_delete() {
-        $userId = $this->Auth->user('id');
-        foreach (func_get_args() as $mapId) {
-            if (!$this->Map->exists($mapId)) {
-                throw new NotFoundException(__('Invalid Map'));
-            }
-            $map = $this->Map->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Map.id' => $mapId,
-                ],
-                'fields'     => [
-                    'Map.name',
-                ],
-                'contain'    => [
-                    'Container' => [
-                        'fields' => [
-                            'Container.id',
-                            'Container.parent_id',
-                        ],
-                    ],
-                ],
-            ]);
-
-            $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-            if (!$this->allowedByContainerId($containerIdsToCheck)) {
-                $this->render403();
-
-                return;
-            }
-
-            if ($this->Map->delete($map['Map']['id'], true)) {
-                /*	$changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $ids,
-                        OBJECT_SERVICEGROUP,
-                        $servicegroup['Container']['parent_id'],
-                        $userId,
-                        $map['Map']['name'],
-                        $map
-                    );
-                    if($changelog_data){
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
-                    */
-            }
-        }
-        $this->setFlash(__('Maps deleted'));
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete Map'));
+        $this->set('_serialize', ['message']);
     }
 }

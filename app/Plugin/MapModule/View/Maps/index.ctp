@@ -175,7 +175,7 @@
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('delete')): ?>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                                 <li ng-if="map.Map.allowEdit">
                                                     <a class="txt-color-red"

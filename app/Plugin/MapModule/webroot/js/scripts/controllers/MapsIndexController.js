@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
+        $scope.deleteUrl = '/map_module/maps/delete/';
 
         $scope.showFilter = false;
         $scope.init = true;
