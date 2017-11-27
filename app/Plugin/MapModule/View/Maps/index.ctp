@@ -132,7 +132,7 @@
                                            ng-show="map.Map.allowEdit">
                                 </td>
                                 <td>
-                                    {{ map.Map.name }}
+                                    <a href="/map_module/mapeditors/view/{{ map.Map.id }}" >{{ map.Map.name }}</a>
                                 </td>
                                 <td>
                                     {{ map.Map.title }}
@@ -140,7 +140,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <?php if ($this->Acl->hasPermission('edit')): ?>
-                                            <a href="/map_module/maps/edit/{{map.Map.id}}"
+                                            <a href="/map_module/mapeditors/edit/{{map.Map.id}}"
                                                ng-if="map.Map.allowEdit"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                                         <?php else: ?>
@@ -155,7 +155,7 @@
                                         <ul class="dropdown-menu pull-right">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
                                                 <li ng-if="map.Map.allowEdit">
-                                                    <a href="/map_module/mapeditor/edit/{{map.Map.id}}">
+                                                    <a href="/map_module/mapeditors/edit/{{map.Map.id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit in Map editor'); ?>
                                                     </a>
                                                 </li>
@@ -167,11 +167,11 @@
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
                                             <li>
-                                                <a href="/map_module/maps/view/{{map.Map.id}}">
+                                                <a href="/map_module/mapeditors/view/{{map.Map.id}}">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                             </li>
                                             <li>
-                                                <a href="/map_module/maps/view/fullscreen/{{map.Map.id}}/fullscreen:1">
+                                                <a href="/map_module/mapeditors/view/{{map.Map.id}}/fullscreen:1">
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

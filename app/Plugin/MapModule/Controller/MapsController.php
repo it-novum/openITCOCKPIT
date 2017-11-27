@@ -40,14 +40,11 @@ class MapsController extends MapModuleAppController {
         'ListFilter.ListFilter'
     ];
 
-    //public $uses = ['Tenant'];
-
     public $listFilters = [
         'index' => [
             'fields' => [
                 'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
                 'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
-                //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
             ],
         ]
     ];
@@ -173,11 +170,11 @@ class MapsController extends MapModuleAppController {
     }
 
     public function edit($id = null) {
-     /*   if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
-*/
+
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid map'));
         }
