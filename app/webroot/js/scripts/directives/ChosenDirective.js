@@ -25,7 +25,6 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
                 element.trigger('chosen:updated');
             });
 
-
             var defaultOptions = {
                 placeholder_text_single: 'Please choose',
                 placeholder_text_multiple: 'Please choose',
@@ -57,6 +56,10 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
 
             element.chosen(defaultOptions);
 
+            /*$scope.updateChosen = function(){
+                console.log($scope.post.Instantreport.Service);
+                element.trigger('chosen:updated');
+            };*/
 
             $scope.$on('$destroy', function(){
                 unwatchModel();

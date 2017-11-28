@@ -85,7 +85,7 @@
                 'class'   => 'padding-right-10',
                 'default' => '1'
             ]);
-            
+
             echo $this->Form->input('Instantreport.type', [
                     'options' => [
                         '1' => 'Host groups',
@@ -112,7 +112,7 @@
                                 class="form-control"
                                 chosen="hostgroups"
                                 ng-options="hostgroup.Hostgroup.id as hostgroup.Container.name for hostgroup in hostgroups"
-                                ng-model="post.Instantreport.hostgroup_id" >
+                                ng-model="post.Instantreport.Hostgroup" >
                         </select>
                         <div ng-repeat="error in errors.Hostgroup.id">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -130,8 +130,9 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="hosts"
+                                callback="loadHosts"
                                 ng-options="host.key as host.value for host in hosts"
-                                ng-model="post.Instantreport.host_id" >
+                                ng-model="post.Instantreport.Host" >
                         </select>
                         <div ng-repeat="error in errors.Host.id">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -150,7 +151,7 @@
                                 class="form-control"
                                 chosen="servicegroups"
                                 ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
-                                ng-model="post.Instantreport.servicegroup_id" >
+                                ng-model="post.Instantreport.Servicegroup" >
                         </select>
                         <div ng-repeat="error in errors.Servicegroup.id">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -169,9 +170,12 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="services"
-                                ng-options="service.key as service.value for service in services"
-                                ng-model="post.Instantreport.service_id" >
+                                callback="loadServices"
+                                ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                                ng-model="post.Instantreport.Service" >
                         </select>
+
+
                         <div ng-repeat="error in errors.Service.id">
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>

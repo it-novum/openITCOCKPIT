@@ -1706,3 +1706,9 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .text-danger-important {
     color: #a94442 !important;
 }
+
+.chosen-container .chosen-results li.group-result {
+    padding-left: 10px!important;
+    font-weight: bold!important;
+}
+

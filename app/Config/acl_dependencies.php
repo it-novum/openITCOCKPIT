@@ -235,7 +235,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate' => ['mass_deactivate'],
-                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
+                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId'],
                 'browser'    => ['servicesByHostId', 'longOutputByUuid'],
                 'add'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'       => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],

@@ -3081,4 +3081,30 @@ class ServicesController extends AppController {
         return;
     }
 
+    public function loadServicesByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $ServiceFilter = new ServiceFilter($this->request);
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setContainerIds($containerIds);
+        $ServiceCondition->includeDisabled(true);
+
+        $services = $this->Service->makeItJavaScriptAble(
+            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+        );
+
+        $this->set(compact(['services']));
+        $this->set('_serialize', ['services']);
+    }
 }
