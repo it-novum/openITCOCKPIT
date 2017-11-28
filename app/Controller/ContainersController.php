@@ -106,6 +106,22 @@ class ContainersController extends AppController {
         if(!$this->isAngularJsRequest()){
             return;
         }
+        if($this->request->is('post')){
+            $containerId = $this->request->data['Container']['id'];
+            $containerName = $this->request->data['Container']['name'];
+            $containerTypeId = $this->request->data['Container']['containertype_id'];
+            if (!$this->Container->exists($containerId) || $containerTypeId!=5) {
+                throw new NotFoundException(__('Invalid container'));
+            }
+
+            $this->Container->id = $containerId;
+            if(!$this->Container->saveField('name', $containerName)){
+                $this->serializeErrorMessage();
+            } else {
+                $this->serializeId();
+            }
+
+        }
     }
 
     /**

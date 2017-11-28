@@ -17,15 +17,8 @@
 
         {{ container.Container.name }}
 
-        <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-            <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
-               class="txt-color-red padding-left-10 font-xs pointer"
-               ng-click="edit(container)"
-            >
-                <i class="fa fa-pencil"></i>
-                Edit
-            </a>
-        <?php endif; ?>
+        <edit-node container="container" callback="callback"></edit-node>
+
 
         <i class="note pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) == 0">empty</i>
         <span class="badge bg-color-blue txt-color-white pull-right"
@@ -34,9 +27,7 @@
     </div>
 
     <ol class="dd-list">
-        <nested-list container="container" ng-repeat="container in container.children"></nested-list>
+        <nested-list container="container" ng-repeat="container in container.children" callback="callback"></nested-list>
     </ol>
 
 </li>
-<edit-node></edit-node>
-

@@ -88,16 +88,19 @@
                             <h2><?php echo __('Tree'); ?></h2>
                         </header>
 
-                        <div class="dd dd-nodrag">
+                        <div class="widget-body">
 
-                            <ol class="dd-list"
-                                id="nestable"
-                                ng-if="container.children.length > 0"
-                                ng-repeat="container in containers"
-                            >
-                                <nested-list container="container"></nested-list>
-                            </ol>
+                            <div class="dd dd-nodrag">
 
+                                <ol class="dd-list"
+                                    id="nestable"
+                                    ng-if="container.children.length > 0"
+                                    ng-repeat="container in containers"
+                                >
+                                    <nested-list container="container" callback="load"></nested-list>
+                                </ol>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -134,7 +137,7 @@
                             <br><br>
 
                             <div class="form-group required" ng-class="{'has-error': errors.name}">
-                                <label for="ContainerName" class="col col-md-2 control-label">
+                                <label class="col col-md-2 control-label">
                                     <?php echo __('Name'); ?>
                                 </label>
                                 <div class="col col-xs-10 required">

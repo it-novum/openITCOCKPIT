@@ -2,39 +2,54 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
     return {
         restrict: 'E',
         templateUrl: '/containers/edit.html',
+        scope: {
+            'container': '=',
+            'callback': '='
+        },
+
 
         controller: function($scope){
 
-            var container = null;
-
-            $scope.setContainer = function(_container){
-                container = _container;
+            $scope.post = {
+                Container: {
+                    id: $scope.container.Container.id,
+                    name: $scope.container.Container.name,
+                    containertype_id: 5
+                }
+            };
+            $scope.openModal = function(){
+                $('#angularEditNode-'+$scope.container.Container.id).modal('show');
             };
 
             $scope.save = function(){
-                console.log('save');
-                console.log(container);
-
-                //$('#angularEditNode').modal('hide');
+                if($scope.post.Container.name){
+                    $http.post("/containers/edit.json?angular=true", $scope.post).then(
+                        function(result){
+                            $scope.callback();
+                            $('#angularEditNode-'+$scope.container.Container.id).modal('hide');
+                        }, function errorCallback(result){
+                            console.error(result.data);
+                        }
+                    );
+                }
             };
 
             $scope.delete = function(){
                 $scope.isDeleting = true;
-                console.log('delete');
-                console.log(container);
 
-                //$('#angularEditNode').modal('hide');
-
-
+                $http.post('/containers/delete/'+$scope.container.Container.id).then(
+                    function(result){
+                        $scope.callback();
+                        $('#angularEditNode-'+$scope.container.Container.id).modal('hide');
+                    }, function errorCallback(result){
+                        console.error(result.data);
+                    }
+                );
             };
+
         },
 
         link: function($scope, element, attr){
-            $scope.edit = function(container){
-                $scope.setContainer(container);
-                $('#angularEditNode').modal('show');
-            };
-
         }
     };
 });

@@ -8,6 +8,12 @@ angular.module('openITCOCKPIT')
         $scope.newNode_parent = null;   //19 e.g.
         $scope.errors = null;
 
+
+        $scope.load = function(){
+            $scope.loadContainers();
+            $scope.loadContainerlist();
+        };
+
         $scope.saveNewNode = function(){
             $http.post("/containers/add.json?angular=true",
                 {
@@ -20,8 +26,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 $('#nodeCreatedFlashMessage').show();
                 $scope.newNode_name = null;
-                $scope.loadContainers();
-                $scope.loadContainerlist();
+                $scope.load();
                 $timeout(function(){
                     $('#nodeCreatedFlashMessage').hide();
                 },3000);
@@ -65,8 +70,7 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('selectedTenant', function(){
             if($scope.selectedTenant !== null){
-                $scope.loadContainers();
-                $scope.loadContainerlist();
+                $scope.load();
             }
         });
 

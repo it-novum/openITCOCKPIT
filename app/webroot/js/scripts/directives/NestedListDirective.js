@@ -3,7 +3,8 @@ angular.module('openITCOCKPIT').directive('nestedList', function($http, $interva
         restrict: 'E',
         templateUrl: '/angular/nested_list.html',
         scope: {
-            'container': '='
+            'container': '=',
+            'callback': '='
         },
 
         controller: function($scope){
