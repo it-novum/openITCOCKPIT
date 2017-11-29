@@ -48,7 +48,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                             $scope.downtime.from_date + ' ' + $scope.downtime.from_time,
                             $scope.downtime.to_date + ' ' + $scope.downtime.to_time,
                             $scope.downtime.comment,
-                            author,
+                            author
                         ]));
                     }
                     $timeout(function(){

@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -392,13 +393,16 @@ class ServicesController extends AppController {
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service);
 
-            $all_services[] = [
+            $tmpRecord = [
                 'Service'       => $Service->toArray(),
                 'Host'          => $Host->toArray(),
                 'Servicestatus' => $Servicestatus->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray()
             ];
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $all_services[] = $tmpRecord;
         }
 
 

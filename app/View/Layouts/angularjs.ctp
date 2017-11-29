@@ -36,7 +36,9 @@ $scripts = [
     //'vendor/angular-ui-router/release/angular-ui-router.min.js',
     'js/lib/jquery-cookie.js',
     'js/vendor/chosen.jquery.min.js',
-    'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js'
+    'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
+    //'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
+    'js/app/layoutfix.js',
 ];
 
 App::uses('Folder', 'Utility');
@@ -127,7 +129,8 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
 <?php printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), 'smartadmin/js/app.js'); ?>
 <script>
     $(document).ready(function(){
-        pageSetUp();
+        //pageSetUp();
+
     });
 </script>
 </body>

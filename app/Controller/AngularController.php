@@ -284,4 +284,9 @@ class AngularController extends AppController {
         return;
     }
 
+    public function service_graph(){
+        //Only ship HTML template
+        return;
+    }
+
 }

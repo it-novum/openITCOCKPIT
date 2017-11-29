@@ -278,11 +278,6 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.deleteSelected = function(){
-            console.log('Delete');
-        };
-
-
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -297,6 +292,5 @@ angular.module('openITCOCKPIT')
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
-
 
     });

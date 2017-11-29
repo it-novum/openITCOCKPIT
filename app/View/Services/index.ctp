@@ -274,7 +274,8 @@
                         </div>
 
                         <div class="mobile_table">
-                            <table id="service_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="service_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -385,7 +386,8 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-lg fa-area-chart"></i>
+                                        <service-graph service="service"
+                                                       ng-if="service.Service.has_graph"></service-graph>
                                     </td>
 
                                     <td class="text-center">
@@ -442,7 +444,7 @@
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right">
+                                            <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="/services/edit/{{service.Service.id}}">
@@ -542,7 +544,7 @@
                                             <li>
                                                 <a href="javascript:void(0);"
                                                    ng-click="disableNotifications(getObjectsForExternalCommand())">
-                                                  <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                    <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
                                                 </a>
                                             </li>
                                             <li>
