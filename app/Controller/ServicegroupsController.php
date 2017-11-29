@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 
 
 /**
@@ -713,5 +714,43 @@ class ServicegroupsController extends AppController
             'background'         => true,
             'no-background'      => false,
         ];
+    }
+
+    public function loadServicegroupsByContainerId() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container'
+            ],
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $ServicegroupFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
+        ];
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $servicegroups = $this->Servicegroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
+            $servicegroups = $this->Paginator->paginate();
+        }
+
+        $this->set(compact(['servicegroups']));
+        $this->set('_serialize', ['servicegroups']);
     }
 }

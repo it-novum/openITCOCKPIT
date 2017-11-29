@@ -461,4 +461,36 @@ class UsersController extends AppController
 
         return;
     }
+
+    public function loadUsersByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+
+        $users = $this->User->find('list', [
+            'recursive' => -1,
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+            ],
+            'conditions' => [
+                'UsersToContainer.container_id' => [
+                    ROOT_CONTAINER, $containerId
+                ]
+            ]
+        ]);
+
+        $users = $this->User->makeItJavaScriptAble(
+            $users
+        );
+
+        $this->set(compact(['users']));
+        $this->set('_serialize', ['users']);
+    }
 }

@@ -102,6 +102,11 @@ class InstantreportsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_INSTANTREPORT, [], $this->hasRootPrivileges);
         } else {
@@ -109,15 +114,11 @@ class InstantreportsController extends AppController {
         }
         //ContainerID => 1 for ROOT Container
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $timePeriods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($userContainerIds, 'all');
-        $servicegroups = $this->Servicegroup->servicegroupsByContainerId($userContainerIds, 'all');
         $usersToSend = $this->User->usersByContainerId($userContainerIds, 'all');
         $types = $this->Instantreport->getTypes();
         $evaluations = $this->Instantreport->getEvaluations();
         $reportFormats = $this->Instantreport->getReportFormats();
         $reflectionStates = $this->Instantreport->getReflectionStates();
-        $sendIntervals = $this->Instantreport->getSendIntervals();
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
@@ -142,31 +143,22 @@ class InstantreportsController extends AppController {
                 $this->Instantreport->saveAll();
                 if (isset($this->request->data['save_submit'])) {
                     $this->setFlash(__('<a href="/instantreports/edit/%s">Instant Report</a> saved successfully', $this->Instantreport->id));
-                    if ($instantReportData['Instantreport']['send_email'] === '1') {
-                        $this->redirect(['action' => 'sendEmailsList']);
-                    }
                     $this->redirect(['action' => 'index']);
                 }
             }
         }
 
-        $hosts = $this->Host->hostsByContainerId($userContainerIds, 'all');
-        $services = $this->Service->servicesByHostContainerIds($userContainerIds);
-
+debug($evaluations);
         $this->set([
             'evaluations' => $evaluations,
             'types' => $types,
             'reportFormats' => $reportFormats,
             'reflectionStates' => $reflectionStates,
-            'sendIntervals' => $sendIntervals,
-            'containers' => $containers,
-            'timeperiods' => $timePeriods,
-            'hostgroups' => $hostgroups,
-            'servicegroups' => $servicegroups,
-            'hosts' => $hosts,
-            'services' => $services,
             'usersToSend' => $usersToSend
         ]);
+
+        $this->set('_serialize', ['evaluations', 'types']);
+
     }
 
     public function edit($id = null) {
@@ -956,4 +948,20 @@ class InstantreportsController extends AppController {
         return explode('|', $data);
     }
 
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
 }

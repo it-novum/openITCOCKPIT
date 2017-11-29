@@ -150,7 +150,10 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Timeperiods'           => [
-                'index'  => ['view'],
+                'index'  => [
+                    'view',
+                    'loadTimeperiodsByContainerId'
+                ],
                 'delete' => ['mass_delete'],
             ],
             'Contactgroups'         => [
@@ -194,7 +197,7 @@ $config = [
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -208,6 +211,7 @@ $config = [
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport', 'expandServices'],
+                'add' => ['loadContainers']
             ],
             'Macros'                => [
                 'index' => ['addMacro'],
@@ -226,7 +230,7 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view'],
+                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
                 'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
                 'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
@@ -244,12 +248,12 @@ $config = [
                 'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
                 'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['addFromLdap'],
                 'edit'  => ['resetPassword'],
             ],
