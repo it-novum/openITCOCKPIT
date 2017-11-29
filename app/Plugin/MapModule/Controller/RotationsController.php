@@ -23,9 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class RotationsController extends MapModuleAppController
-{
-    public $layout = 'Admin.default';
+use itnovum\openITCOCKPIT\Filter\MapFilter;
+
+class RotationsController extends MapModuleAppController {
+    public $layout = 'angularjs';
     public $components = [
         'Paginator',
         'ListFilter.ListFilter',
@@ -37,40 +38,118 @@ class RotationsController extends MapModuleAppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Rotation.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Rotation.name' => [
+                    'label'      => 'Name',
+                    'searchType' => 'wildcard'
+                ],
             ],
         ],
     ];
 
-    public $uses = ['MapModule.Rotation', 'MapModule.Map'];
+    public $uses = [
+        'MapModule.Rotation',
+        'MapModule.Map'
+    ];
 
 
-    public function index()
-    {
+    public function index() {
+
         $all_rotations = $this->Paginator->paginate();
         $this->set(compact(['all_rotations']));
     }
 
-    public function add()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
-            if ($this->Rotation->save($this->request->data)) {
-                $this->setFlash(__('Rotation saved successfully'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->setFlash(__('Could not save data'), false);
-            debug($this->Rotation->validationErrors);
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
         }
 
-        $maps = $this->Map->find('list');
-        $this->set(compact('maps'));
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Container'] = $this->request->data['Rotation']['container_id'];
 
+            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
+
+            if ($this->Rotation->save($this->request->data)) {
+                if ($this->request->ext === 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/map_module/rotations/edit/%s">Rotation</a> successfully saved', $this->Rotation->id));
+                    }
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                if ($this->request->ext === 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->setFlash(__('could not save data'), false);
+            }
+        }
     }
 
-    public function edit($id = null)
-    {
+    public function loadMaps() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $MapFilter = new MapFilter($this->request);
+
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $MapFilter->indexFilter(),
+            'fields'     => [
+                'Map.id',
+                'Map.name',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
+                    'conditions' => 'MapsToContainers.map_id = Map.id',
+                ],
+            ],
+            'contain'    => [
+                'Container' => [
+                    'fields' => [
+                        'Container.id',
+                    ],
+                ],
+            ],
+            'group'      => 'Map.id'
+        ];
+
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['MapsToContainers.container_id'] = $this->MY_RIGHTS;
+        }
+
+        $maps = $this->Map->find('all', $query);
+
+        $maps = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
+        $maps = $this->Rotation->makeItJavaScriptAble($maps);
+
+        $this->set('maps', $maps);
+        $this->set('_serialize', ['maps']);
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Rotation->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function edit($id = null) {
         if (!$this->Rotation->exists($id)) {
             throw new NotFoundException(__('Invalid map rotation'));
         }
@@ -92,8 +171,7 @@ class RotationsController extends MapModuleAppController
 
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }

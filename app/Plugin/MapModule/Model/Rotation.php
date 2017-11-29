@@ -26,6 +26,11 @@
 class Rotation extends MapModuleAppModel
 {
     public $hasAndBelongsToMany = [
+        'Container' => [
+            'className' => 'Container',
+            'joinTable' => 'rotations_to_containers',
+            'dependent' => true,
+        ],
         'Map' => [
             'className' => 'MapModule.Map',
             'joinTable' => 'maps_to_rotations',
@@ -34,6 +39,14 @@ class Rotation extends MapModuleAppModel
     ];
 
     var $validate = [
+        'container_id' => [
+            'atLeastOne' => [
+                'rule'     => ['atLeastOne'],
+                'message'  => 'You must specify at least one Container.',
+                'required' => true,
+                'on'       => 'create',
+            ],
+        ],
         'name'     => [
             'notBlank' => [
                 'rule'     => 'notBlank',
