@@ -11,7 +11,7 @@ So easy that everyone can use it: create your entire monitoring configuration wi
 ![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
 
 # Demo
-Play around with our [Demo](https://demo.openitcockpit.org/) system. Its equipped with the majority of modules that you will get with the community license
+Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
 
 Credentials:
 ````
