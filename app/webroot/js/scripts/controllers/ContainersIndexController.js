@@ -4,10 +4,16 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.selectedTenant = null;
         $scope.selectedTenantForNode = null;
-        $scope.newNode_name = null;     //"name" e.g.
-        $scope.newNode_parent = null;   //19 e.g.
         $scope.errors = null;
 
+
+        $scope.post = {
+            Container: {
+                parent_id: null,
+                name: null,
+                containertype_id: '5'
+            }
+        };
 
         $scope.load = function(){
             $scope.loadContainers();
@@ -15,17 +21,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.saveNewNode = function(){
-            $http.post("/containers/add.json?angular=true",
-                {
-                    Container: {
-                        parent_id: $scope.newNode_parent,
-                        name: $scope.newNode_name,
-                        containertype_id: '5'
-                    }
-                }
-            ).then(function(result){
+            $http.post("/containers/add.json?angular=true", $scope.post).then(function(result){
                 $('#nodeCreatedFlashMessage').show();
-                $scope.newNode_name = null;
+                $scope.post.Container.name = null;
                 $scope.load();
                 $timeout(function(){
                     $('#nodeCreatedFlashMessage').hide();
@@ -57,6 +55,9 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.containers = result.data.nest;
+                $('#nestable').nestable({
+                    noDragClass: 'dd-nodrag'
+                });
             });
         };
 

@@ -90,10 +90,10 @@
 
                         <div class="widget-body">
 
-                            <div class="dd dd-nodrag">
+                            <div class="dd dd-nodrag" id="nestable">
 
                                 <ol class="dd-list"
-                                    id="nestable"
+                                    id=""
                                     ng-if="container.children.length > 0"
                                     ng-repeat="container in containers"
                                 >
@@ -125,7 +125,7 @@
                                             class="form-control"
                                             chosen="containerlist"
                                             ng-options="key as value for (key, value) in containerlist"
-                                            ng-model="newNode_parent"
+                                            ng-model="post.Container.parent_id"
                                     >
                                     </select>
                                     <div ng-repeat="error in errors.parent_id">
@@ -147,7 +147,7 @@
                                            maxlength="255"
                                            required="required"
                                            placeholder="<?php echo __('Node name'); ?>"
-                                           ng-model="newNode_name"
+                                           ng-model="post.Container.name"
                                     >
                                     <div ng-repeat="error in errors.name">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -183,7 +183,7 @@
                         </header>
 
                         <div class="widget-body">
-                            <div class="col col-xs-12">
+                            <div class="col col-xs-12"><br>
                                 <dl>
                                     <dt><i class="fa fa-globe"></i> Global</dt>
                                     <dt><i class="fa fa-home"></i> Tenant</dt>
@@ -204,4 +204,3 @@
         </div>
     </div>
 </div>
-

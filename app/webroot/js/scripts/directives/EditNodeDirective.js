@@ -7,14 +7,14 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
             'callback': '='
         },
 
-
         controller: function($scope){
 
             $scope.post = {
                 Container: {
                     id: $scope.container.Container.id,
+                    containertype_id: 5,
                     name: $scope.container.Container.name,
-                    containertype_id: 5
+                    parent_id: $scope.container.Container.parent_id
                 }
             };
             $scope.openModal = function(){
@@ -22,16 +22,18 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
             };
 
             $scope.save = function(){
-                if($scope.post.Container.name){
+                //if($scope.post.Container.name){
                     $http.post("/containers/edit.json?angular=true", $scope.post).then(
                         function(result){
                             $scope.callback();
                             $('#angularEditNode-'+$scope.container.Container.id).modal('hide');
                         }, function errorCallback(result){
-                            console.error(result.data);
+                            if(result.data.hasOwnProperty('error')){
+                                $scope.errors = result.data.error;
+                            }
                         }
                     );
-                }
+                //}
             };
 
             $scope.delete = function(){
@@ -42,7 +44,9 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
                         $scope.callback();
                         $('#angularEditNode-'+$scope.container.Container.id).modal('hide');
                     }, function errorCallback(result){
-                        console.error(result.data);
+                        if(result.data.hasOwnProperty('error')){
+                            $scope.errors = result.data.error;
+                        }
                     }
                 );
             };
@@ -50,6 +54,7 @@ angular.module('openITCOCKPIT').directive('editNode', function($http, $interval)
         },
 
         link: function($scope, element, attr){
+
         }
     };
 });
