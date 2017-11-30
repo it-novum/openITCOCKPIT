@@ -1,8 +1,21 @@
 angular.module('openITCOCKPIT')
     .controller('InstantreportsAddController', function($scope, $http){
+        $scope.types = {
+            TYPE_HOSTGROUPS:    '1',
+            TYPE_HOSTS:         '2',
+            TYPE_SERVICEGROUPS: '3',
+            TYPE_SERVICES:      '4'
+        }
         $scope.post = {
             Instantreport: {
+                container_id: null,
                 name: '',
+                type: $scope.types.TYPE_HOSTGROUPS, // select host groups as default value
+                timeperiod_id: '0',
+                reflection: '0',
+                summary:false,
+                send_email:false,
+                send_interval:'0',
                 Hostgroup: [],
                 Host: [],
                 Servicegroup: [],
@@ -11,19 +24,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.types = {
-            TYPE_HOSTGROUPS:    '1',
-            TYPE_HOSTS:         '2',
-            TYPE_SERVICEGROUPS: '3',
-            TYPE_SERVICES:      '4'
-        }
-
         $scope.init = true;
-        $scope.post.Instantreport.type = $scope.types.TYPE_HOSTGROUPS; //select host groups as default value
-
-        $scope.post.Instantreport.send_email = false;
-        $scope.post.Instantreport.send_interval = '0';
-        $scope.post.Instantreport.container_id = null;
 
         $scope.load = function(){
             $http.get("/instantreports/loadContainers.json", {
@@ -36,20 +37,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadTimeperiods = function(searchString){
+        $scope.loadTimeperiods = function(){
             $http.get("/timeperiods/loadTimeperiodsByContainerId.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.post.Instantreport.container_id,
-                    //'filter[Timeperiod.name]': searchString,
-                    //'selected[]': $scope.post.Instantreport.Timeperiod
+                    'containerId': $scope.post.Instantreport.container_id
                 }
             }).then(function(result){
                 $scope.timeperiods = result.data.timeperiods;
             });
         };
 
-        $scope.loadHostgroups = function(searchString){
+        $scope.loadHostgroups = function(){
             if($scope.init){
                 return;
             }
@@ -57,9 +56,7 @@ angular.module('openITCOCKPIT')
                 $http.get("/hostgroups/loadHosgroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id,
-                        'filter[Container.name]': searchString,
-                        'selected[]': $scope.post.Instantreport.Hostgroup
+                        'containerId': $scope.post.Instantreport.container_id
                     }
                 }).then(function (result) {
                     $scope.hostgroups = result.data.hostgroups;
@@ -82,7 +79,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadServicegroups = function(searchString){
+        $scope.loadServicegroups = function(){
             if($scope.init){
                 return;
             }
@@ -90,9 +87,7 @@ angular.module('openITCOCKPIT')
                 $http.get("/servicegroups/loadServicegroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id,
-                        'filter[Container.name]': searchString,
-                        'selected[]': $scope.post.Instantreport.Servicegroup
+                        'containerId': $scope.post.Instantreport.container_id
                     }
                 }).then(function (result) {
                     $scope.servicegroups = result.data.servicegroups;
@@ -117,7 +112,7 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.loadUsers = function(searchString){
+        $scope.loadUsers = function(){
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
@@ -130,6 +125,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
+            console.log($scope.post);
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){

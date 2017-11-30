@@ -245,25 +245,11 @@ class Instantreport extends AppModel {
     Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
     */
     public function atLeastOne() {
-        switch($this->data['Instantreport']['type']){
-            case self::TYPE_HOSTGROUPS:
-                return isset($this->data['Instantreport']['Hostgroup']) && !empty($this->data['Instantreport']['Hostgroup']);
-                break;
+        return !empty($this->data['Instantreport']['Hostgroup'])
+            ^!empty($this->data['Instantreport']['Servicegroup'])
+            ^!empty($this->data['Instantreport']['Host'])
+            ^!empty($this->data['Instantreport']['Service']);
 
-            case self::TYPE_SERVICEGROUPS:
-                return isset($this->data['Instantreport']['Servicegroup']) && !empty($this->data['Instantreport']['Servicegroup']);
-                break;
-
-            case self::TYPE_HOSTS:
-                return isset($this->data['Instantreport']['Host']) && !empty($this->data['Instantreport']['Host']);
-                break;
-
-            case self::TYPE_SERVICES:
-                return isset($this->data['Instantreport']['Service']) && !empty($this->data['Instantreport']['Service']);
-                break;
-        }
-
-        return true;
     }
 
     public function atLeastOneUser(){

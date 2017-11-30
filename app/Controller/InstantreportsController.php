@@ -107,58 +107,23 @@ class InstantreportsController extends AppController {
             //Only ship template for AngularJs
             return;
         }
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_INSTANTREPORT, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_INSTANTREPORT, [], $this->hasRootPrivileges);
-        }
-        //ContainerID => 1 for ROOT Container
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $usersToSend = $this->User->usersByContainerId($userContainerIds, 'all');
-        $types = $this->Instantreport->getTypes();
-        $evaluations = $this->Instantreport->getEvaluations();
-        $reportFormats = $this->Instantreport->getReportFormats();
-        $reflectionStates = $this->Instantreport->getReflectionStates();
-
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
-                $this->request->data['User'] = $this->request->data['Instantreport']['User'];
-            }
-            $this->request->data['Service'] = $this->request->data['Host'] = $this->request->data['Servicegroup'] = $this->request->data['Hostgroup'] = [];
-            if (isset($this->request->data['Instantreport']['Hostgroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTGROUPS) {
-                $this->request->data['Hostgroup'] = $this->request->data['Instantreport']['Hostgroup'];
-            }
-            if (isset($this->request->data['Instantreport']['Servicegroup']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICEGROUPS) {
-                $this->request->data['Servicegroup'] = $this->request->data['Instantreport']['Servicegroup'];
-            }
-            if (isset($this->request->data['Instantreport']['Host']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_HOSTS) {
-                $this->request->data['Host'] = $this->request->data['Instantreport']['Host'];
-            }
-            if (isset($this->request->data['Instantreport']['Service']) && $this->request->data['Instantreport']['type'] == Instantreport::TYPE_SERVICES) {
-                $this->request->data['Service'] = $this->request->data['Instantreport']['Service'];
-            }
-            $this->Instantreport->set($this->request->data);
-            if ($this->Instantreport->validates()) {
-                $instantReportData = $this->Instantreport->data;
-                $this->Instantreport->saveAll();
-                if (isset($this->request->data['save_submit'])) {
-                    $this->setFlash(__('<a href="/instantreports/edit/%s">Instant Report</a> saved successfully', $this->Instantreport->id));
-                    $this->redirect(['action' => 'index']);
+            if ($this->Instantreport->saveAll($this->request->data)) {
+                if ($this->request->ext == 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/instantreports/edit/%s">instantreport</a> successfully saved', $this->Instantreport->id));
+                    }
+                    $this->serializeId();
+                    return;
                 }
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->setFlash(__('Could not save data'), false);
             }
         }
-
-debug($evaluations);
-        $this->set([
-            'evaluations' => $evaluations,
-            'types' => $types,
-            'reportFormats' => $reportFormats,
-            'reflectionStates' => $reflectionStates,
-            'usersToSend' => $usersToSend
-        ]);
-
-        $this->set('_serialize', ['evaluations', 'types']);
-
     }
 
     public function edit($id = null) {
@@ -205,6 +170,8 @@ debug($evaluations);
         $sendIntervals = $this->Instantreport->getSendIntervals();
         $this->request->data = Hash::merge($instantReport, $this->request->data);
         if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['User'] = [];
+            $this->request->data['Instantreport']['send_interval'] = 0;
             if ($this->request->data['Instantreport']['send_email'] === '1' && isset($this->request->data['Instantreport']['User'])) {
                 $this->request->data['User'] = $this->request->data['Instantreport']['User'];
             } else {
