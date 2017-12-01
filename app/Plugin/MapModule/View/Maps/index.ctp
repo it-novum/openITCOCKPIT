@@ -68,7 +68,6 @@
                     <h2>Maps </h2>
                 </header>
                 <div>
-
                     <div class="widget-body no-padding">
                         <div class="list-filter well" ng-show="showFilter">
                             <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
@@ -192,7 +191,7 @@
                         </table>
 
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="hostgroups.length == 0">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="map.length == 0">
                                 <div class="col-xs-12 text-center txt-color-red italic">
                                     <?php echo __('No entries match the selection'); ?>
                                 </div>

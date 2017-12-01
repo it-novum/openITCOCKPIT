@@ -1,37 +1,38 @@
 angular.module('openITCOCKPIT')
-    .controller('MapsIndexController', function($scope, $http, SortService, MassChangeService){
+    .controller('RotationsIndexController', function($scope, $http, SortService, MassChangeService){
 
-        SortService.setSort('Map.name');
+        SortService.setSort('Rotation.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                map: {
+                rotation: {
                     name: '',
-                    title: '',
+                    interval: '',
                 },
             };
         };
         /*** Filter end ***/
+
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/map_module/maps/delete/';
+        $scope.deleteUrl = '/map_module/rotations/delete/';
 
         $scope.showFilter = false;
         $scope.load = function(){
-            $http.get('/map_module/maps/index.json',{
+            $http.get('/map_module/rotations/index.json',{
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Map.name]': $scope.filter.map.name,
-                    'filter[Map.title]': $scope.filter.map.title
+                    'filter[Rotation.name]': $scope.filter.rotation.name,
+                    'filter[Rotation.interval]': $scope.filter.rotation.interval
                 }
             }).then(function(result){
-                $scope.maps = result.data.all_maps;
+                $scope.rotations = result.data.all_rotations;
                 $scope.paging = result.data.paging;
             });
         };
@@ -56,9 +57,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.maps){
-                for(var key in $scope.maps){
-                    var id = $scope.maps[key].Map.id;
+            if($scope.rotations){
+                for(var key in $scope.rotations){
+                    var id = $scope.rotations[key].Rotation.id;
                     $scope.massChange[id] = true;
                 }
             }
@@ -67,10 +68,10 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.maps){
+            for(var key in $scope.rotations){
                 for(var id in selectedObjects){
-                    if(id == $scope.maps[key].Map.id){
-                        objects[id] = $scope.maps[key].Map.name;
+                    if(id == $scope.rotations[key].Rotation.id){
+                        objects[id] = $scope.rotations[key].Rotation.name;
                     }
 
                 }
@@ -78,9 +79,9 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.getObjectForDelete = function(map){
+        $scope.getObjectForDelete = function(rotation){
             var object = {};
-            object[map.Map.id] = map.Map.name + '/' + map.Map.title;
+            object[rotations.Rotation.id] = rotations.Rotation.name;
             return object;
         };
 
@@ -91,9 +92,8 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        //Fire on page load
         defaultFilter();
-        SortService.setCallback($scope.load);
+        $scope.load();
 
         $scope.$watch('filter', function(){
             $scope.undoSelection();

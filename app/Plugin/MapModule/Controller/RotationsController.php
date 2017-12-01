@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Filter\MapFilter;
+use itnovum\openITCOCKPIT\Filter\RotationFilter;
 
 class RotationsController extends MapModuleAppController {
     public $layout = 'angularjs';
@@ -53,9 +54,79 @@ class RotationsController extends MapModuleAppController {
 
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
 
-        $all_rotations = $this->Paginator->paginate();
-        $this->set(compact(['all_rotations']));
+        $RotationFilter = new RotationFilter($this->request);
+
+        $query = [
+            'conditions' => $RotationFilter->indexFilter(),
+            'order'      => $RotationFilter->getOrderForPaginator('Rotation.name', 'asc'),
+            'group'      => 'Rotation.id',
+            'limit'      => $this->Paginator->settings['limit'],
+            'contain'     => [
+                'Map' => [
+                    'fields' => [
+                        'Map.id'
+                    ]
+                ],
+                'Container' => [
+                    'fields' => [
+                        'Container.id'
+                    ]
+                ]
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'rotations_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'RotationsToContainers',
+                    'conditions' => 'RotationsToContainers.rotation_id = Rotation.id',
+                ],
+            ],
+        ];
+
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['RotationsToContainers.container_id'] = $this->MY_RIGHTS;
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $all_rotations = $this->Rotation->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $RotationFilter->getPage();
+            $all_rotations = $this->Paginator->paginate();
+        }
+
+        foreach ($all_rotations as $key => $rotation) {
+            $all_rotations[$key]['Rotation']['allowEdit'] = false;
+            if ($this->hasRootPrivileges == true) {
+                $all_rotations[$key]['Rotation']['allowEdit'] = true;
+                continue;
+            }
+            foreach ($rotation['Container'] as $cKey => $container) {
+                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
+                    $all_rotations[$key]['Rotation']['allowEdit'] = true;
+                    continue;
+                }
+            }
+        }
+
+        //build rotation link
+        $link = '';
+        foreach($all_rotations as $key => $rotation){
+            foreach ($rotation['Map'] as $rKey => $map){
+                $link .= 'rotate['.$rKey.']:'.$map['id'].'/';
+            }
+            $all_rotations[$key]['Rotation']['rotationLink'] = $link;
+        }
+
+
+        $this->set('all_rotations', $all_rotations);
+        $this->set('_serialize', ['all_rotations', 'paging']);
     }
 
     public function add() {
@@ -176,19 +247,27 @@ class RotationsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $this->Rotation->id = $id;
-        if (!$this->Rotation->exists()) {
-            throw new NotFoundException(__('Invalid map rotation'));
+        if (!$this->Rotation->exists($id)) {
+            throw new NotFoundException(__('Invalid Map rotation'));
         }
 
-        if ($this->Rotation->delete()) {
+        $rotation = $this->Rotation->findById($id);
+        $containerIdsToCheck = Hash::extract($rotation, 'Container.{n}.MapsToContainer.container_id');
+        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->Rotation->delete($id, true)) {
             $this->setFlash(__('Map rotation deleted successfully'));
-
-            return $this->redirect(['action' => 'index']);
+            $this->set('message', __('Map rotation deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
         }
-        $this->setFlash(__('Could not delete map rotation'), false);
 
-        return $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete map rotation'));
+        $this->set('_serialize', ['message']);
 
     }
 }
