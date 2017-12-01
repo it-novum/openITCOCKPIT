@@ -84,17 +84,17 @@
                         <?php echo __('Evaluation');?>
                     </label>
                     <div class="col col-xs-10">
-                        <label class="padding-right-10" for="InstantreportEvaluation0">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation0" value="0">
-                            <i class="fa fa-desktop"></i> Hosts
-                        </label>
                         <label class="padding-right-10" for="InstantreportEvaluation1">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation1" value="1" checked="checked">
-                            <i class="fa fa-cogs"></i> Host and Services
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation1" value="1">
+                            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
                         </label>
                         <label class="padding-right-10" for="InstantreportEvaluation2">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation2" value="2">
-                            <i class="fa fa-cog"></i> Services
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation2" value="2" checked="checked">
+                            <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
+                        </label>
+                        <label class="padding-right-10" for="InstantreportEvaluation3">
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation3" value="3">
+                            <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
                         </label>
                     </div>
                 </div>
@@ -224,8 +224,8 @@
                     <div class="col col-xs-10">
                         <select name="data[Instantreport][reflection]" class="form-control" id="InstantreportReflection"
                             chosen="states"  ng-model="post.Instantreport.reflection">
-                            <option value="0"><?php echo __('soft and hard state'); ?></option>
-                            <option value="1"><?php echo __('only hard state'); ?></option>
+                            <option value="1"><?php echo __('soft and hard state'); ?></option>
+                            <option value="2"><?php echo __('only hard state'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -263,35 +263,38 @@
                     ?>
                 </div>
                 <div class="send-interval-holder" ng-if="post.Instantreport.send_email">
-                    <?php
-                    echo $this->Form->input('Instantreport.send_interval', [
-                        'div' => 'form-group',
-                        'options' => [
-                            'DAY',
-                            'WEEK',
-                            'MONTH',
-                            'YEAR'
-                        ],
-                        'data-placeholder' => __('Please select...'),
-                        'class' => 'chosen form-control',
-                        'label' => __('Send interval'),
-                        'style' => 'width:100%;',
-                    ]);
-                    ?>
-                    <div class="form-group required" ng-class="{'has-error': errors.User.id}">
+                    <div class="form-group">
+                        <label for="InstantreportSendInterval" class="col col-md-2 control-label">
+                            <?php echo __('Send interval'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                name="data[Instantreport][send_interval]"
+                                data-placeholder="<?php __('Please select...'); ?>"
+                                class="chosen form-control" id="InstantreportSendInterval"
+                                chosen="send_interval"
+                                ng-model="post.Instantreport.send_interval">
+                                <option value="1"><?php echo __('DAY'); ?></option>
+                                <option value="2"><?php echo __('WEEK'); ?></option>
+                                <option value="3"><?php echo __('MONTH'); ?></option>
+                                <option value="4"><?php echo __('YEAR'); ?></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required" ng-class="{'has-error': errors.User}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Users to send'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <select multiple
-                                    id="UserId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="users"
-                                    ng-options="user.key as user.value for user in users"
-                                    ng-model="post.Instantreport.User">
+                                id="UserId"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="users"
+                                ng-options="user.key as user.value for user in users"
+                                ng-model="post.Instantreport.User">
                             </select>
-                            <div ng-repeat="error in errors.User.id">
+                            <div ng-repeat="error in errors.User">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -301,7 +304,9 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                            <a href="/instantreports/index" class="btn btn-default">Cancel</a>
+                            <a href="/instantreports/index" class="btn btn-default">
+                                <?php echo __('Cancel'); ?>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -12,10 +12,11 @@ angular.module('openITCOCKPIT')
                 name: '',
                 type: $scope.types.TYPE_HOSTGROUPS, // select host groups as default value
                 timeperiod_id: '0',
-                reflection: '0',
+                reflection: '1',
                 summary:false,
                 send_email:false,
                 send_interval:'0',
+                evaluation: '2', //hosts and services
                 Hostgroup: [],
                 Host: [],
                 Servicegroup: [],
@@ -129,7 +130,7 @@ angular.module('openITCOCKPIT')
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/instanreports/index';
+                window.location.href = '/instantreports/index';
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;

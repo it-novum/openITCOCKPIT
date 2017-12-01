@@ -42,8 +42,8 @@ class Instantreport extends AppModel {
 
     CONST SEND_NEVER = 0;
     CONST SEND_DAILY = 1;
-    CONST SEND_WEEKLY = 3;
-    CONST SEND_MONTHLY = 2;
+    CONST SEND_WEEKLY = 2;
+    CONST SEND_MONTHLY = 3;
     CONST SEND_YEARLY = 4;
 
     public $name = 'Instantreport';
@@ -147,7 +147,7 @@ class Instantreport extends AppModel {
         'User'          => [
             'atLeastOneUser' => [
                 'rule'     => ['atLeastOneUser'],
-                'message'  => 'You must specify at least one user',
+                'message'  => 'You must specify at least one user'
             ],
         ],
         'timeperiod_id' => [
@@ -253,7 +253,9 @@ class Instantreport extends AppModel {
     }
 
     public function atLeastOneUser(){
-        return $this->data['Instantreport']['send_email'] !== '1' || !empty($this->data['Instantreport']['User']);
+        // XNOR Operator (false and false) = true and (true and true) = true
+        // if send_email true and user list is not empty, if send_mail false and user list is empty
+        return !(!(($this->data['Instantreport']['send_email'] === true) ^ empty($this->data['Instantreport']['User'])));
     }
 
     public function notZero($fieldName)
