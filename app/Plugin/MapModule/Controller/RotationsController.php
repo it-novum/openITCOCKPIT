@@ -66,8 +66,8 @@ class RotationsController extends MapModuleAppController {
             'order'      => $RotationFilter->getOrderForPaginator('Rotation.name', 'asc'),
             'group'      => 'Rotation.id',
             'limit'      => $this->Paginator->settings['limit'],
-            'contain'     => [
-                'Map' => [
+            'contain'    => [
+                'Map'       => [
                     'fields' => [
                         'Map.id'
                     ]
@@ -117,9 +117,9 @@ class RotationsController extends MapModuleAppController {
 
         //build rotation link
         $link = '';
-        foreach($all_rotations as $key => $rotation){
-            foreach ($rotation['Map'] as $rKey => $map){
-                $link .= 'rotate['.$rKey.']:'.$map['id'].'/';
+        foreach ($all_rotations as $key => $rotation) {
+            foreach ($rotation['Map'] as $rKey => $map) {
+                $link .= 'rotate[' . $rKey . ']:' . $map['id'] . '/';
             }
             $all_rotations[$key]['Rotation']['rotationLink'] = $link;
         }
@@ -221,25 +221,49 @@ class RotationsController extends MapModuleAppController {
     }
 
     public function edit($id = null) {
-        if (!$this->Rotation->exists($id)) {
-            throw new NotFoundException(__('Invalid map rotation'));
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
-            if ($this->Rotation->save($this->request->data)) {
-                $this->setFlash(__('Rotation modifed successfully'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->setFlash(__('Could not save data'), false);
-            debug($this->Rotation->validationErrors);
+        if (!$this->Rotation->exists($id)) {
+            throw new NotFoundException(__('Invalid Map rotation'));
         }
 
         $rotation = $this->Rotation->findById($id);
-        $maps = $this->Map->find('list');
-        $this->set(compact('maps', 'rotation'));
 
+        $this->set('_serialize', ['rotation']);
+        $this->set(compact('rotation'));
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Rotation']['id'] = $id;
+
+            if (empty($this->request->data['Rotation']['interval'])) {
+                $this->request->data['Rotation']['interval'] = 90;
+            } else {
+                if ($this->request->data['Rotation']['interval'] < 10) {
+                    $this->request->data['Rotation']['interval'] = 10;
+                }
+            }
+
+            $this->request->data['Map'] = $this->request->data['Rotation']['Map'];
+            $this->request->data['Container'] = $this->request->data['Rotation']['container_id'];
+
+            if ($this->Rotation->saveAll($this->request->data)) {
+                if ($this->isJsonRequest()) {
+                    $this->serializeId();
+                    return;
+                }
+                $this->setFlash(__('<a href="/map_module/rotations/edit/%s">Rotation</a> successfully saved', $this->Rotation->id));
+
+            } else {
+                if ($this->request->ext === 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->setFlash(__('could not save data'), false);
+            }
+        }
     }
 
     public function delete($id = null) {
