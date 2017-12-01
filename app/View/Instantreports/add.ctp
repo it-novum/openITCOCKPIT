@@ -236,7 +236,7 @@
                         'wrapGridClass' => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
                         'captionClass' => 'control-label',
-                        'checked' => isset($this->request->data['Instantreport']['downtimes']) && $this->request->data['Instantreport']['downtimes'] === '1',
+                        'ng-model' => 'post.Instantreport.downtimes'
                     ]);
                     ?>
                 </div>
@@ -247,7 +247,7 @@
                         'wrapGridClass' => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
                         'captionClass' => 'control-label',
-                        'checked' => isset($this->request->data['Instantreport']['summary']) && $this->request->data['Instantreport']['summary'] === '1',
+                        'ng-model' => 'post.Instantreport.summary'
                     ]);
                     ?>
                 </div>

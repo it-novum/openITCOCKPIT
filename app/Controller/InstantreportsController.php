@@ -108,10 +108,15 @@ class InstantreportsController extends AppController {
             return;
         }
         if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['User'] = $this->request->data('Instantreport.User');
+            $this->request->data['Hostgroup'] = $this->request->data('Instantreport.Hostgroup');
+            $this->request->data['Host'] = $this->request->data('Instantreport.Host');
+            $this->request->data['Servicegroup'] = $this->request->data('Instantreport.Servicegroup');
+            $this->request->data['Service'] = $this->request->data('Instantreport.Service');
             if ($this->Instantreport->saveAll($this->request->data)) {
                 if ($this->request->ext == 'json') {
                     if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/instantreports/edit/%s">instantreport</a> successfully saved', $this->Instantreport->id));
+                        $this->setFlash(__('<a href="/instantreports/edit/%s">Instantreport</a> successfully saved', $this->Instantreport->id));
                     }
                     $this->serializeId();
                     return;

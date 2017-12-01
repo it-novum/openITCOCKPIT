@@ -14,8 +14,9 @@ angular.module('openITCOCKPIT')
                 timeperiod_id: '0',
                 reflection: '1',
                 summary:false,
+                downtimes: false,
                 send_email:false,
-                send_interval:'0',
+                send_interval:'1',
                 evaluation: '2', //hosts and services
                 Hostgroup: [],
                 Host: [],
