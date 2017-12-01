@@ -259,7 +259,7 @@ class AngularController extends AppController {
     }
 
     public function not_found(){
-        $this->layout = 'angularjs';
+        $this->layout = 'Admin.default';
         //Only ship HTML template
         return;
     }

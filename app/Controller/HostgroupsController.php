@@ -441,7 +441,6 @@ class HostgroupsController extends AppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('Could not save data'), false);
             }
         }
 
