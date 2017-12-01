@@ -141,5 +141,6 @@ angular.module('openITCOCKPIT', [])
             }
             SortService.triggerReload();
         };
+
     })
 ;

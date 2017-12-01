@@ -274,7 +274,8 @@
                         </div>
 
                         <div class="mobile_table">
-                            <table id="service_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="service_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -385,7 +386,11 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-lg fa-area-chart"></i>
+                                        <i class="fa fa-lg fa-area-chart"
+                                           ng-mouseenter="mouseenter($event, host, service)"
+                                           ng-mouseleave="mouseleave()"
+                                           ng-if="service.Service.has_graph">
+                                        </i>
                                     </td>
 
                                     <td class="text-center">
@@ -442,7 +447,7 @@
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right">
+                                            <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li ng-if="service.Service.allow_edit">
                                                         <a href="/services/edit/{{service.Service.id}}">
@@ -542,7 +547,7 @@
                                             <li>
                                                 <a href="javascript:void(0);"
                                                    ng-click="disableNotifications(getObjectsForExternalCommand())">
-                                                  <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                    <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
                                                 </a>
                                             </li>
                                             <li>
@@ -579,6 +584,13 @@
             <enable-notifications></enable-notifications>
             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
+            <div id="serviceGraphContainer" class="popup-graph-container">
+                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                </div>
+                <div id="serviceGraphFlot"></div>
+            </div>
 
         </article>
     </div>

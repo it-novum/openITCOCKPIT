@@ -41,6 +41,7 @@ $config = [
             'lib/colr.js',
             'lib/ColorGenerator.js',
             'app/bootstrap',
+            'app/layoutfix',
             'vendor/jquery.blockUI',
             'lib/ui_blocker',
             'lib/dialog',

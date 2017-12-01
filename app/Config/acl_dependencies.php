@@ -40,7 +40,7 @@ $config = [
                 'not_found',
                 'executing',
                 'acknowledge_service',
-                'downtime_service'
+                'downtime_service',
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -95,6 +95,7 @@ $config = [
                 'loadServicesByHostId',
                 'loadPerfDataStructures',
                 'loadServiceruleFromService',
+                'getPerfdataByUuid'
             ],
             'Dashboards'       => [
                 'index',
