@@ -509,6 +509,7 @@ class GraphgeneratorsController extends AppController
         $hostUuid = $this->request->query('host_uuid');
         $serviceUuid = $this->request->query('service_uuid');
         $hours = (int)$this->request->query('hours');
+        $jsTimestamp = (bool)$this->request->query('jsTimestamp');
         if($hours < 1){
             $hours = 3;
         }
@@ -530,9 +531,20 @@ class GraphgeneratorsController extends AppController
         $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null);
         $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
         foreach($rrd_data['xml_data'] as $dataSource){
+
+            $tmpData = $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+            $data = [];
+            if($jsTimestamp){
+                foreach($tmpData as $timestamp => $value){
+                    $data[($timestamp * 1000)] = $value;
+                }
+            }else{
+                $data = $tmpData;
+            }
+
             $performance_data[] = [
                 'datasource' => $dataSource,
-                'data' => $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE)
+                'data' => $data
             ];
         }
 

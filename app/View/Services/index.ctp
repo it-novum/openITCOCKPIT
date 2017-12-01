@@ -386,8 +386,11 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <service-graph service="service"
-                                                       ng-if="service.Service.has_graph"></service-graph>
+                                        <i class="fa fa-lg fa-area-chart"
+                                           ng-mouseenter="mouseenter($event, host, service)"
+                                           ng-mouseleave="mouseleave()"
+                                           ng-if="service.Service.has_graph">
+                                        </i>
                                     </td>
 
                                     <td class="text-center">
@@ -581,6 +584,13 @@
             <enable-notifications></enable-notifications>
             <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
             <service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
+            <div id="serviceGraphContainer" class="popup-graph-container">
+                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                </div>
+                <div id="serviceGraphFlot"></div>
+            </div>
 
         </article>
     </div>

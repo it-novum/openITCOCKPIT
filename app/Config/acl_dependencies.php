@@ -41,7 +41,6 @@ $config = [
                 'executing',
                 'acknowledge_service',
                 'downtime_service',
-                'service_graph'
             ],
             'Commands'         => [
                 'sortByCommandType',
