@@ -81,7 +81,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(rotation){
             var object = {};
-            object[rotations.Rotation.id] = rotations.Rotation.name;
+            object[rotation.Rotation.id] = rotation.Rotation.name;
             return object;
         };
 

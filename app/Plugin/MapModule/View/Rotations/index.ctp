@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
 
     <div class="row">

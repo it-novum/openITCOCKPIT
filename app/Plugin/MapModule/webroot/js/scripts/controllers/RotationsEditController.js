@@ -11,6 +11,9 @@ angular.module('openITCOCKPIT')
         };
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.deleteUrl = "/map_module/rotations/delete/"+$scope.id+".json?angular=true";
+        $scope.sucessUrl = '/map_module/rotations/index';
+
         $scope.load = function(){
             $http.get("/map_module/rotations/edit/" + $scope.id + ".json", {
                 params: {

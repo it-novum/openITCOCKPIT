@@ -37,6 +37,8 @@
 </div>
 <div id="error_msg"></div>
 
+<confirm-delete></confirm-delete>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
