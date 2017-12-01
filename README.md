@@ -15,7 +15,7 @@ Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped
 
 Credentials:
 ````
-Username(Email): demo@openitcockpit.org
+Username(Email): demo@openitcockpit.io
 Password: demo123
 ````
 
