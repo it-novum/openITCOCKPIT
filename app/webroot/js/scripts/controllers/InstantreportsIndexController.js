@@ -82,6 +82,12 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.getObjectForDelete = function(instantreport){
+            var object = {};
+            object[instantreport.Instantreport.id] = instantreport.Instantreport.name;
+            return object;
+        };
+
 
         //Fire on page load
         defaultFilter();

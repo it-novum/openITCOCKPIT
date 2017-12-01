@@ -36,7 +36,7 @@
         </h1>
     </div>
 </div>
-
+<massdelete></massdelete>
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -163,7 +163,8 @@
 
                         </div>
                         <div class="mobile_table">
-                            <table id="intantreport_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="intantreport_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -265,7 +266,8 @@
                                             <a href="javascript:void(0);" data-toggle="dropdown"
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
-                                            <ul class="dropdown-menu pull-right">
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{instantreport.Instantreport.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li>
                                                         <a href="/instantreports/edit/{{instantreport.Instantreport.id}}">
@@ -283,9 +285,9 @@
                                                 <?php if ($this->Acl->hasPermission('delete')): ?>
                                                     <li class="divider"></li>
                                                     <li>
-                                                        <a href="/instantreports/delete/{{ instantreport.Instantreport.id}}" class="txt-color-red"
-                                                           ng-click="confirmDelete(instantreport)">
-                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(instantreport))">
+                                                            <i class="fa fa-plug"></i> <?php echo __('Delete'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

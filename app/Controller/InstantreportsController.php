@@ -864,17 +864,17 @@ class InstantreportsController extends AppController {
         $this->Instantreport->id = $id;
 
         if ($this->Instantreport->delete()) {
-            $this->setFlash(__('Instant Report deleted'));
-        } else {
-            $this->setFlash(__('Could not delete Instant Report'), false);
+            $this->set('success', true);
+            $this->set('message', __('Instant report successfully deleted'));
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        if ($instantreport['Instantreport']['send_email'] === '1') {
-            $this->redirect(['action' => 'sendEmailsList']);
-        } else {
-            $this->redirect(['action' => 'index']);
-        }
-
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting instant report'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function createPdfReport() {
