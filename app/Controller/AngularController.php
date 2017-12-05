@@ -280,6 +280,11 @@ class AngularController extends AppController {
     }
 
     public function downtime_service(){
+    //Only ship HTML template
+        return;
+    }
+
+    public function nested_list(){
         //Only ship HTML template
         return;
     }

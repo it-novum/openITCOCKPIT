@@ -51,6 +51,7 @@ $scripts = [
     //'/smartadmin/js/plugin/flot/jquery.flot.navigate.js',
     //'/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
     //'/smartadmin/js/plugin/flot/jquery.flot.selection.js',
+    'js/lib/jquery.nestable.js'
 ];
 
 App::uses('Folder', 'Utility');

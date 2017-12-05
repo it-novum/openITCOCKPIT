@@ -38,6 +38,7 @@ $config = [
                 'websocket_configuration',
                 'export',
                 'not_found',
+                'nested_list',
                 'executing',
                 'acknowledge_service',
                 'downtime_service',
