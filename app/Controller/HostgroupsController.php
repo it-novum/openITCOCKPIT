@@ -421,6 +421,7 @@ class HostgroupsController extends AppController {
             $this->request->data['Container']['id'] = $hostgroup['Hostgroup']['container_id'];
             $this->request->data['Hosttemplate'] = (!empty($this->request->data('Hostgroup.Hosttemplate'))) ? $this->request->data('Hostgroup.Hosttemplate') : [];
             if ($this->Hostgroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -502,6 +503,7 @@ class HostgroupsController extends AppController {
 
 
             if ($this->Hostgroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -656,6 +658,7 @@ class HostgroupsController extends AppController {
             return;
         }
         if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
+            Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],
@@ -723,6 +726,7 @@ class HostgroupsController extends AppController {
                 }
 
                 if ($this->Hostgroup->saveAll($this->request->data)) {
+                    Cache::clear(false, 'permissions');
                     $changelog_data = $this->Changelog->parseDataForChangelog(
                         'add',
                         'hostgroups',
@@ -757,6 +761,7 @@ class HostgroupsController extends AppController {
                     $hostgroup['Host'] = $hostgroupMembers;
                     $hostgroup['Hostgroup']['Host'] = $hostgroupMembers;
                     if ($this->Hostgroup->saveAll($hostgroup)) {
+                        Cache::clear(false, 'permissions');
                         $this->setFlash(_('Hostgroup appended successfully'));
                         $this->redirect(['action' => 'index']);
                     } else {

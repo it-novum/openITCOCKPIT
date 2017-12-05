@@ -250,6 +250,7 @@ class ServicegroupsController extends AppController
             }
 
             if ($this->Servicegroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -356,6 +357,7 @@ class ServicegroupsController extends AppController
             $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
             $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
             if ($this->Servicegroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -434,6 +436,7 @@ class ServicegroupsController extends AppController
         }
 
         if ($this->Container->delete($container['Servicegroup']['container_id'], true)) {
+            Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],
@@ -488,6 +491,7 @@ class ServicegroupsController extends AppController
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         $this->setFlash(__('Servicegroups deleted'));
         $this->redirect(['action' => 'index']);
     }
@@ -509,6 +513,7 @@ class ServicegroupsController extends AppController
                 $servicegroup['Service'] = $servicegroupMembers;
                 $servicegroup['Servicegroup']['Service'] = $servicegroupMembers;
                 if ($this->Servicegroup->saveAll($servicegroup)) {
+                    Cache::clear(false, 'permissions');
                     $this->setFlash(_('Servicegroup appended successfully'));
                     $this->redirect(['action' => 'index']);
                 } else {

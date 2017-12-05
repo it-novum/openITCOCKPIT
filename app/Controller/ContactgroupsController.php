@@ -167,6 +167,7 @@ class ContactgroupsController extends AppController
 
             //Save Contact associations -> Array Format [Contact] => data
             if ($this->Contactgroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -251,6 +252,7 @@ class ContactgroupsController extends AppController
                 $this->request->data['Contact'] = $this->request->data['Contactgroup']['Contact'];
             }
             if ($this->Contactgroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -349,6 +351,7 @@ class ContactgroupsController extends AppController
 
         if ($this->__allowDelete($id)) {
             if ($this->Contactgroup->delete($id)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -403,6 +406,7 @@ class ContactgroupsController extends AppController
                     }
                 }
             }
+            Cache::clear(false, 'permissions');
             $this->setFlash(__('Contactgroups deleted'));
             $this->redirect(['action' => 'index']);
         }
@@ -498,6 +502,7 @@ class ContactgroupsController extends AppController
                     }
                 }
                 $datasource->commit();
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Contactgroups are successfully copied'));
                 $this->redirect(['action' => 'index']);
             } catch (Exception $e) {

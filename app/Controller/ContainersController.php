@@ -38,6 +38,7 @@ class ContainersController extends AppController {
             $this->request->data['Container']['containertype_id'] = CT_NODE;
             $this->Container->create();
             if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('new node created successfully'));
             } else {
                 $this->setFlash(__('error while saving data'), false);
@@ -93,6 +94,7 @@ class ContainersController extends AppController {
         }
         if ($this->request->ext == 'json') {
             if ($this->Container->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $this->serializeId();
 
                 return;
@@ -114,6 +116,7 @@ class ContainersController extends AppController {
             }
 
             if(!$this->Container->save($this->request->data)){
+                Cache::clear(false, 'permissions');
                 $this->serializeErrorMessage();
             } else {
                 $this->serializeId();
@@ -404,8 +407,10 @@ class ContainersController extends AppController {
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Container deleted'));
                 $this->redirect(['action' => 'index']);
             } else {
