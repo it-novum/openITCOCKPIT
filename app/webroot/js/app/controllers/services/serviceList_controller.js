@@ -25,12 +25,13 @@
 App.Controllers.ServicesServiceListController = Frontend.AppController.extend({
 	$table: null,
 
-	components: ['Utils', 'Masschange', 'Rrd', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader'],
+	components: ['Utils', 'Masschange', 'Rrd', 'WebsocketSudo', 'Externalcommand', 'Ajaxloader', 'Time'],
 
 	_initialize: function() {
+		this.Time.setup();
 		this.Utils.flapping();
 		this.Rrd.bindPopup({
-			Time: this.Time,
+			Time: this.Time
 		});
 		
 		this.Masschange.setup({

@@ -40,9 +40,10 @@ class Instantreport extends AppModel {
     CONST STATE_SOFT_HARD = 1;
     CONST STATE_HARD_ONLY = 2;
 
+    CONST SEND_NEVER = 0;
     CONST SEND_DAILY = 1;
-    CONST SEND_WEEKLY = 3;
-    CONST SEND_MONTHLY = 2;
+    CONST SEND_WEEKLY = 2;
+    CONST SEND_MONTHLY = 3;
     CONST SEND_YEARLY = 4;
 
     public $name = 'Instantreport';
@@ -146,7 +147,7 @@ class Instantreport extends AppModel {
         'User'          => [
             'atLeastOneUser' => [
                 'rule'     => ['atLeastOneUser'],
-                'message'  => 'You must specify at least one user',
+                'message'  => 'You must specify at least one user'
             ],
         ],
         'timeperiod_id' => [
@@ -163,33 +164,98 @@ class Instantreport extends AppModel {
         ],
     ];
 
-    /*
-    Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
-    */
-    public function atLeastOne() {
-        switch($this->data['Instantreport']['type']){
-            case self::TYPE_HOSTGROUPS:
-                return isset($this->data['Instantreport']['Hostgroup']) && !empty($this->data['Instantreport']['Hostgroup']);
-                break;
+    public $validateCreateReport = [
+        'id' => [
+            'notBlank' => [
+                'allowEmpty' => false,
+                'rule' => ['multiple', [
+                    'min' => 1,
+                ]],
+                'message' => 'This field cannot be left blank',
+                'required' => true,
+            ],
+        ],
+        'start_date' => [
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'required' => true,
+                'message' => 'This field cannot be left blank',
+            ],
+            'date' => [
+                'rule' => ['date', 'dmy'],
+                'required' => true,
+                'message' => 'Enter a valid date',
+            ],
+            'validateDates' => [
+                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'required' => true,
+                'message' => '"To" must not be earlier than "From"',
+            ],
+        ],
+        'end_date' => [
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'required' => true,
+                'message' => 'This field cannot be left blank',
+            ],
+            'date' => [
+                'rule' => ['date', 'dmy'],
+                'required' => true,
+                'message' => 'Enter a valid date',
+            ],
+            'validateDates' => [
+                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'required' => true,
+                'message' => '"To" must not be earlier than "From"',
+            ],
+        ],
+    ];
 
-            case self::TYPE_SERVICEGROUPS:
-                return isset($this->data['Instantreport']['Servicegroup']) && !empty($this->data['Instantreport']['Servicegroup']);
-                break;
+    public function setValidationRules($condition = null) {
+        if ($condition == 'generate') {
+            $this->validate = $this->validateCreateReport;
+        }
+    }
 
-            case self::TYPE_HOSTS:
-                return isset($this->data['Instantreport']['Host']) && !empty($this->data['Instantreport']['Host']);
-                break;
+    function __construct($id = false, $table = null, $ds = null) {
+        parent::__construct($id, $table, $ds);
+        $this->setValidationRules();
+    }
 
-            case self::TYPE_SERVICES:
-                return isset($this->data['Instantreport']['Service']) && !empty($this->data['Instantreport']['Service']);
-                break;
+    /**
+     * Here we can check some conditions to see what validation we need
+     * @return boolean
+     */
+    public function beforeValidate($options = []) {
+        $router_params = Router::getParams();
+        if (isset($router_params['action'])) {
+            if($router_params['action'] === 'generate'){
+                $this->validate = $this->validateCreateReport;
+            }
         }
 
         return true;
     }
 
+    public function validateDates() {
+        return (strtotime($this->data['Instantreport']['start_date']) <= strtotime($this->data['Instantreport']['end_date']));
+    }
+
+    /*
+    Custom validation rule for "Hosts", "Services", "Hostgroups", "Servicegroups" fields
+    */
+    public function atLeastOne() {
+        return !empty($this->data['Instantreport']['Hostgroup'])
+            ^!empty($this->data['Instantreport']['Servicegroup'])
+            ^!empty($this->data['Instantreport']['Host'])
+            ^!empty($this->data['Instantreport']['Service']);
+
+    }
+
     public function atLeastOneUser(){
-        return $this->data['Instantreport']['send_email'] !== '1' || !empty($this->data['Instantreport']['User']);
+        // XNOR Operator (false and false) = true and (true and true) = true
+        // if send_email true and user list is not empty, if send_mail false and user list is empty
+        return !(!(($this->data['Instantreport']['send_email'] === true) ^ empty($this->data['Instantreport']['User'])));
     }
 
     public function notZero($fieldName)
@@ -292,8 +358,8 @@ class Instantreport extends AppModel {
     public function getEvaluations(){
         return [
             self::EVALUATION_HOSTS => ['label' => __('Hosts '), 'icon' => 'desktop'],
-            self::EVALUATION_HOSTS_SERVICES => ['label' => __('Hosts and Services '), 'icon' => 'gears'],
-            self::EVALUATION_SERVICES => ['label' => __('Services '), 'icon' => 'gears']
+            self::EVALUATION_HOSTS_SERVICES => ['label' => __('Hosts and Services '), 'icon' => 'cogs'],
+            self::EVALUATION_SERVICES => ['label' => __('Services '), 'icon' => 'cog']
         ];
     }
 
@@ -313,6 +379,7 @@ class Instantreport extends AppModel {
 
     public function getSendIntervals(){
         return [
+            self::SEND_NEVER => __('Never'),
             self::SEND_DAILY => __('Daily'),
             self::SEND_WEEKLY => __('Weekly'),
             self::SEND_MONTHLY => __('Monthly'),
@@ -392,5 +459,4 @@ class Instantreport extends AppModel {
         $dateNow->setTime(23, 59, 59);
         return $dateNow->getTimestamp();
     }
-
 }

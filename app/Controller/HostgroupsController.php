@@ -23,19 +23,22 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
 use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
 
 /**
- * @property Hostgroup      $Hostgroup
- * @property Container      $Container
- * @property Host           $Host
- * @property Hosttemplate   $Hosttemplate
- * @property User           $User
+ * @property Hostgroup $Hostgroup
+ * @property Container $Container
+ * @property Host $Host
+ * @property Hosttemplate $Hosttemplate
+ * @property User $User
  */
-class HostgroupsController extends AppController
-{
+class HostgroupsController extends AppController {
 
     public $uses = [
         'Hostgroup',
@@ -48,76 +51,97 @@ class HostgroupsController extends AppController
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
     ];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
     public $components = [
         'Paginator',
-        'ListFilter.ListFilter',
         'RequestHandler',
     ];
     public $helpers = [
-        'ListFilter.ListFilter',
         'Status',
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Hostgroup.description' => ['label' => 'Alias', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
-
-    public function index()
-    {
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
+    public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
         }
-        $this->Paginator->settings['order'] = ['Container.name' => 'asc'];
 
-        $options = [
-            'recursive' => -1,
-            'contain' => [
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Host' => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
-                    ]
+                    ],
+                    'Container'
                 ],
                 'Hosttemplate' => [
                     'fields' => [
                         'Hosttemplate.id',
                         'Hosttemplate.name'
-                    ]
+                    ],
+                    'Container'
                 ]
             ],
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $this->MY_RIGHTS,
-            ],
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
         ];
-        $query = Hash::merge($this->Paginator->settings, $options);
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+        }
 
-        if ($this->isApiRequest()) {
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
-            $all_hostgroups = $this->Hostgroup->find('all', $query);
+            $hostgroups = $this->Hostgroup->find('all', $query);
         } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hostgroups = $this->Paginator->paginate();
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
+            $hostgroups = $this->Paginator->paginate();
+        }
+
+        $all_hostgroups = [];
+        foreach ($hostgroups as $hostgroup) {
+            $hostgroup['Hostgroup']['allowEdit'] = $this->hasPermission('edit', 'hostgroups');;
+            if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
+                $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
+            }
+            foreach ($hostgroup['Host'] as $key => $host) {
+                $hostgroup['Host'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosts');
+                if ($this->hasRootPrivileges === false && $hostgroup['Host'][$key]['allowEdit'] === true) {
+                    $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+                    $hostgroup['Host'][$key]['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
+                }
+            }
+
+            foreach ($hostgroup['Hosttemplate'] as $key => $hosttemplate) {
+                $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosttemplates');
+                if ($this->hasRootPrivileges === false && $hostgroup['Hosttemplate'][$key]['allowEdit'] === true) {
+                    $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->allowedByContainerId($hosttemplate['container_id']);
+                }
+            }
+
+            $all_hostgroups[] = [
+                'Hostgroup'    => $hostgroup['Hostgroup'],
+                'Container'    => $hostgroup['Container'],
+                'Host'         => $hostgroup['Host'],
+                'Hosttemplate' => $hostgroup['Hosttemplate']
+            ];
+
         }
 
 
         $this->set('all_hostgroups', $all_hostgroups);
 
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_hostgroups']);
+        $this->set('_serialize', ['all_hostgroups', 'paging']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -128,7 +152,6 @@ class HostgroupsController extends AppController
         $hostgroup = $this->Hostgroup->findById($id);
         if (!$this->allowedByContainerId($hostgroup['Container']['parent_id'])) {
             $this->render403();
-
             return;
         }
 
@@ -136,8 +159,8 @@ class HostgroupsController extends AppController
         $this->set('_serialize', ['hostgroup']);
     }
 
-    public function extended($hostgroupId = null)
-    {
+    public function extended($hostgroupId = null) {
+        $this->layout = 'Admin.default';
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
@@ -145,10 +168,10 @@ class HostgroupsController extends AppController
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         $options = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Host' => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
@@ -219,9 +242,9 @@ class HostgroupsController extends AppController
 
     }
 
-    private function getHostgroupNames($hostgroups){
+    private function getHostgroupNames($hostgroups) {
         $hostgroupnames = [];
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $hostgroupnames[$hostgroup['Hostgroup']['id']] = $hostgroup['Container']['name'];
         }
         return $hostgroupnames;
@@ -230,11 +253,11 @@ class HostgroupsController extends AppController
     private function getHosttemplates($hostgroups) {
         $hosttemplates = [];
 
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $templateIds = "";
-            foreach($hostgroup['Hosttemplate'] as $template) {
-                if ($templateIds !== ""){
-                    $templateIds = $templateIds.", ".$template['id'];
+            foreach ($hostgroup['Hosttemplate'] as $template) {
+                if ($templateIds !== "") {
+                    $templateIds = $templateIds . ", " . $template['id'];
                 } else {
                     $templateIds = $template['id'];
                 }
@@ -247,11 +270,11 @@ class HostgroupsController extends AppController
     private function getHostsInHostgroup($hostgroups) {
         $hostsInHostgroup = [];
 
-        foreach($hostgroups as $hostgroup) {
+        foreach ($hostgroups as $hostgroup) {
             $hostIds = "";
-            foreach($hostgroup['Host'] as $host) {
-                if ($hostIds !== ""){
-                    $hostIds = $hostIds.", ".$host['id'];
+            foreach ($hostgroup['Host'] as $host) {
+                if ($hostIds !== "") {
+                    $hostIds = $hostIds . ", " . $host['id'];
                 } else {
                     $hostIds = $host['id'];
                 }
@@ -261,8 +284,7 @@ class HostgroupsController extends AppController
         return $hostsInHostgroup;
     }
 
-    public function loadServicesByHostId($hostId = null, $hostgroupId)
-    {
+    public function loadServicesByHostId($hostId = null, $hostgroupId) {
         if (!is_numeric($hostId) || $hostId < 1) {
             throw new NotFoundException('Invalide host id');
         }
@@ -314,17 +336,20 @@ class HostgroupsController extends AppController
 
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         if (!$this->Hostgroup->exists($id)) {
             throw new NotFoundException(__('Invalid hostgroup'));
         }
 
-        $userId = $this->Auth->user('id');
         $hostgroup = $this->Hostgroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'Host' => [
+            'recursive'  => -1,
+            'contain'    => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
@@ -344,62 +369,53 @@ class HostgroupsController extends AppController
         ]);
         if (!$this->allowedByContainerId($hostgroup['Container']['parent_id'])) {
             $this->render403();
-
             return;
-        }
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
 
         $ext_data_for_changelog = [];
         $containerId = $hostgroup['Container']['parent_id'];
         if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Container.parent_id');
-        }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
-        if ($this->request->data('Hostgroup.Host')) {
-            foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
-                $host = $this->Host->find('first', [
-                    'contain'    => [],
-                    'fields'     => [
-                        'Host.id',
-                        'Host.name',
-                    ],
-                    'conditions' => [
-                        'Host.id' => $host_id,
-                    ],
-                ]);
-                $ext_data_for_changelog['Host'][] = [
-                    'id'   => $host_id,
-                    'name' => $host['Host']['name'],
-                ];
+            $this->request->data['Hostgroup']['id'] = $id;
+            if ($this->request->data('Hostgroup.Host')) {
+                foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
+                    $host = $this->Host->find('first', [
+                        'contain'    => [],
+                        'fields'     => [
+                            'Host.id',
+                            'Host.name',
+                        ],
+                        'conditions' => [
+                            'Host.id' => $host_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Host'][] = [
+                        'id'   => $host_id,
+                        'name' => $host['Host']['name'],
+                    ];
+                }
             }
-        }
-        if ($this->request->data('Hostgroup.Hosttemplate')) {
-            foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
-                $hosttemplate = $this->Hosttemplate->find('first', [
-                    'contain'    => [],
-                    'fields'     => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.name',
-                    ],
-                    'conditions' => [
-                        'Hosttemplate.id' => $hosttemplate_id,
-                    ],
-                ]);
-                $ext_data_for_changelog['Hosttemplate'][] = [
-                    'id'   => $hosttemplate_id,
-                    'name' => $hosttemplate['Hosttemplate']['name'],
-                ];
+            if ($this->request->data('Hostgroup.Hosttemplate')) {
+                foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
+                    $hosttemplate = $this->Hosttemplate->find('first', [
+                        'contain'    => [],
+                        'fields'     => [
+                            'Hosttemplate.id',
+                            'Hosttemplate.name',
+                        ],
+                        'conditions' => [
+                            'Hosttemplate.id' => $hosttemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Hosttemplate'][] = [
+                        'id'   => $hosttemplate_id,
+                        'name' => $hosttemplate['Hosttemplate']['name'],
+                    ];
+                }
             }
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $userId = $this->Auth->user('id');
             $this->request->data['Host'] = (!empty($this->request->data('Hostgroup.Host'))) ? $this->request->data('Hostgroup.Host') : [];
             //Add container id (of the hostgroup container itself) to the request data
             $this->request->data['Container']['id'] = $hostgroup['Hostgroup']['container_id'];
@@ -420,33 +436,26 @@ class HostgroupsController extends AppController
                     CakeLog::write('log', serialize($changelog_data));
                 }
                 $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-                $this->redirect(['action' => 'index']);
             } else {
-                $this->setFlash(__('Could not save data'), false);
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
             }
-        } else {
-            $hostgroup['Host'] = Hash::extract($hostgroup['Host'], '{n}.id');
         }
 
-        $this->request->data = Hash::merge($hostgroup, $this->request->data);
-        $this->set(compact(['hostgroup', 'hosts', 'containers', 'hosttemplates']));
+        $this->set('hostgroup', $hostgroup);
+        $this->set('_serialize', ['hostgroup']);
     }
 
-    public function add()
-    {
-        $userId = $this->Auth->user('id');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        $this->Frontend->set('data_placeholder', __('Please choose a host'));
-
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
         if ($this->request->is('post') || $this->request->is('put')) {
+            $userId = $this->Auth->user('id');
             $ext_data_for_changelog = [];
             App::uses('UUID', 'Lib');
             if ($this->request->data('Hostgroup.Host')) {
@@ -508,68 +517,129 @@ class HostgroupsController extends AppController
                 }
 
                 if ($this->request->ext == 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
+                    }
                     $this->serializeId();
-
                     return;
                 }
-
-                $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-                $this->redirect(['action' => 'index']);
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('Could not save data'), false);
             }
         }
-
-        $hosts = [];
-        $hosttemplates = [];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerId = $this->request->data('Container.parent_id');
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, true);
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
-        }
-        $this->set(compact(['containers', 'hosts', 'hosttemplates']));
-        $this->set('_serialize', ['containers', 'hosts', 'hosttemplates']);
     }
 
-    public function loadHosts($containerId = null)
-    {
-        $this->allowOnlyAjaxRequests();
-
-        if($containerId == ROOT_CONTAINER){
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-            $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        }else{
-            $hosts = $this->Host->hostsByContainerId([ROOT_CONTAINER, $containerId], 'list');
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
-        $hosts = $this->Host->makeItJavaScriptAble($hosts);
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadHosts() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
 
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHosttemplates($containerId = null)
-    {
-        $this->allowOnlyAjaxRequests();
-
-        if($containerId == ROOT_CONTAINER){
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
-        }else{
-            $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
+    public function loadHosttemplates($containerId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
-        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $HosttemplateFilter = new HosttemplateFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble(
+            $this->Hosttemplate->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
+        );
+
         $this->set(compact(['hosttemplates']));
         $this->set('_serialize', ['hosttemplates']);
     }
 
-    public function delete($id = null)
-    {
+
+    public function loadHosgroupsByContainerId() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container'
+            ],
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
+            'limit'      => $this->Paginator->settings['limit']
+        ];
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $hostgroups = $this->Hostgroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $HostgroupFilter->getPage();
+            $hostgroups = $this->Paginator->paginate();
+        }
+
+        $this->set(compact(['hostgroups']));
+        $this->set('_serialize', ['hostgroups']);
+    }
+
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -583,7 +653,6 @@ class HostgroupsController extends AppController
 
         if (!$this->allowedByContainerId(Hash::extract($container, 'Container.parent_id'))) {
             $this->render403();
-
             return;
         }
         if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
@@ -600,17 +669,18 @@ class HostgroupsController extends AppController
             if ($changelog_data) {
                 CakeLog::write('log', serialize($changelog_data));
             }
-            $this->setFlash(__('Hostgroup deleted'));
-            $this->redirect(['action' => 'index']);
+
+            $this->setFlash(__('Host group deleted successfully'));
+            $this->set('message', __('Host group deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
         }
-
-        $this->setFlash(__('Could not delete hostgroup'), false);
-        $this->redirect(['action' => 'index']);
-
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete host group'));
+        $this->set('_serialize', ['message']);
     }
 
-    public function mass_add($id = null)
-    {
+    public function mass_add($id = null) {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $userId = $this->Auth->user('id');
@@ -724,125 +794,44 @@ class HostgroupsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function mass_delete($id = null)
-    {
-        $userId = $this->Auth->user('id');
-        foreach (func_get_args() as $hostgroupId) {
-            if ($this->Hostgroup->exists($hostgroupId)) {
-                $hostgroup = $this->Hostgroup->find('first', [
-                    'contain'    => [
-                        'Container',
-                        'Host',
-                    ],
-                    'conditions' => [
-                        'Hostgroup.id' => $hostgroupId,
-                    ],
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($hostgroup, 'Container.parent_id'))) {
-                    if ($this->Container->delete($hostgroup['Hostgroup']['container_id'], true)) {
-                        $changelog_data = $this->Changelog->parseDataForChangelog(
-                            $this->params['action'],
-                            $this->params['controller'],
-                            $hostgroupId,
-                            OBJECT_HOSTGROUP,
-                            $hostgroup['Container']['parent_id'],
-                            $userId,
-                            $hostgroup['Container']['name'],
-                            $hostgroup
-                        );
-                        if ($changelog_data) {
-                            CakeLog::write('log', serialize($changelog_data));
-                        }
-                    }
-                }
-            }
-        }
-        $this->setFlash(__('Hostgroups deleted'));
-        $this->redirect(['action' => 'index']);
-    }
+    public function listToPdf() {
+        $this->layout = 'Admin.default';
 
-    public function listToPdf()
-    {
-        $args = func_get_args();
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $conditions = [
-            'Container.parent_id' => $containerIds,
-        ];
-
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $hostgroup_ids = $args;
-                end($hostgroup_ids);
-                $last_key = key($hostgroup_ids);
-                unset($hostgroup_ids[$last_key]);
-
-                $_conditions = [
-                    'Hostgroup.id' => $hostgroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            } else {
-                $hostgroup_ids = $args;
-
-                $_conditions = [
-                    'Hostgroup.id' => $hostgroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            }
-        }
-
-        $hostgroups = $this->Hostgroup->find('all', [
-            'conditions' => $conditions,
-            'fields'     => [
-                'Hostgroup.description',
-                'Container.name',
-            ],
+        $HostgroupFilter = new HostgroupFilter($this->request);
+        $query = [
+            'recursive'  => -1,
             'contain'    => [
+                'Container',
                 'Host' => [
                     'fields' => [
+                        'Host.id',
                         'Host.name',
-                        'Host.uuid',
+                        'Host.uuid'
                     ],
-                ],
-                'Container',
+                ]
             ],
-        ]);
+            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $HostgroupFilter->indexFilter(),
+        ];
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+        }
 
+        $hostgroups = $this->Hostgroup->find('all', $query);
+
+
+        $hostgroupHostCount = 0;
         foreach ($hostgroups as $hgKey => $hostgroup) {
             $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
-
-            foreach ($hostgroupHostUuids as $hKey => $hostgroupHostUuid) {
-                $hoststatus = $this->Objects->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'name1'         => $hostgroupHostUuid,
-                        'objecttype_id' => 1,
-                    ],
-                    'fields'     => [
-                        'Hoststatus.current_state',
-                        'Hoststatus.is_flapping',
-                        'Hoststatus.problem_has_been_acknowledged',
-                        'Hoststatus.scheduled_downtime_depth',
-                        'Hoststatus.last_state_change',
-                        'Hoststatus.last_check',
-                        'Hoststatus.next_check',
-                    ],
-                    'joins'      => [
-                        [
-                            'table'      => 'nagios_hoststatus',
-                            'type'       => 'LEFT OUTER',
-                            'alias'      => 'Hoststatus',
-                            'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                        ],
-                    ],
-                ]);
-                $hostgroups[$hgKey]['Host'][$hKey]['Hoststatus'] = $hoststatus;
-            }
+            $hostgroupHostCount += count($hostgroupHostUuids);
+            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids);
+            $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
-        $hostgroupCount = Hash::apply($hostgroups, '{n}.Hostgroup', 'count');
-        $hostgroupHostCount = Hash::apply($hostgroups, '{n}.Host.{n}', 'count');
+
+        $hostgroupCount = count($hostgroups);
         $this->set(compact('hostgroups', 'hostgroupCount', 'hostgroupHostCount'));
 
-        $filename = 'Hostgroups_'.strtotime('now').'.pdf';
+        $filename = 'Hostgroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';

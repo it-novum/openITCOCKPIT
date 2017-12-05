@@ -67,8 +67,7 @@ app/Vendor/*
 !app/Vendor/imageSmoothArc.php
 !app/Vendor/qqFileUploader.php
 app/composer.lock
-vendor
-vendor/*
+
 Vendor
 Vendor/*
 

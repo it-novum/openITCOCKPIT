@@ -117,8 +117,8 @@ define service{
     register                           0
     check_period                       59132ffe6197bee769d97779a14140cfb890fd7b
     max_check_attempts                 3
-    normal_check_interval              300
-    retry_check_interval               60
+    check_interval                     300
+    retry_interval                     60
     notification_options               w,u,c,r
     notification_interval              7200
     notification_period                59132ffe6197bee769d97779a14140cfb890fd7b
