@@ -137,7 +137,6 @@ class MapeditorsController extends MapModuleAppController
 
 
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
-        $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
@@ -154,7 +153,6 @@ class MapeditorsController extends MapModuleAppController
             'servicegroup',
             'hostgroup',
             'hosts',
-            'services',
             'backgroundThumbs',
             'iconSets',
             'icons'
