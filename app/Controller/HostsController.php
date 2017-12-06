@@ -3231,4 +3231,25 @@ class HostsController extends AppController {
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }
+
+    public function loadHostsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
 }
