@@ -28,8 +28,6 @@ function ChosenAjax(conf){
     this.callback = conf.callback || function(){
     };
     this.oldTimeout = null;
-    this.selected = [];
-
 
     if(this.id === null){
         console.log('Required parameter id missing');
@@ -62,6 +60,9 @@ function ChosenAjax(conf){
         if(this.callback){
             defaultOptions['no_results_text'] = 'Search for ';
         }
+        if($('#' + this.id).prop('multiple')){
+            defaultOptions['select_all_buttons'] = true;
+        }
 
         $('#' + this.id).chosen(defaultOptions);
     };
@@ -80,17 +81,44 @@ function ChosenAjax(conf){
         this.triggerUpdate();
     };
 
+    this.addOptionGroups = function(options){
+        var $element = $('#' + this.id);
+        $element.empty();
+        var tmpHostname = null;
+        for(var key in options){
+            var current = options[key];
+            if(tmpHostname !== current.value.Host.name){
+                tmpHostname = current.value.Host.name;
+                var $optGroup = $('<optgroup>').attr('label', htmlspecialchars(tmpHostname));
+            }
+
+            var serviceName = current.value.Service.name;
+            if(current.value.Service.name === null || current.value.Service.name === ''){
+                serviceName = current.value.Servicetemplate.name
+            }
+
+            $optGroup.append('<option value="' + current.key + '">'+htmlspecialchars(tmpHostname)+'/'+htmlspecialchars(serviceName)+'</option>');
+            $element.append($optGroup);
+        }
+        this.triggerUpdate();
+    };
+
     this.triggerUpdate = function(){
         $('#' + this.id).trigger('chosen:updated');
     };
 
     this.setSelected = function(selected){
-        this.selected = selected;
+        $('#' + this.id).val(selected);
+        this.triggerUpdate();
     };
 
     this.getSelected = function(){
-        return this.selected;
+        return $('#' + this.id).val();
     };
+
+    this.getId = function(){
+        return this.id;
+    }
 }
 
 

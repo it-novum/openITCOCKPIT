@@ -912,7 +912,7 @@ class Service extends AppModel {
         return $returnValue;
     }
 
-    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
+    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = [], $limit = null) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -926,7 +926,7 @@ class Service extends AppModel {
         ];
         $conditions = Hash::merge($_conditions, $conditions);
 
-        $result = $this->find('all', [
+        $query = [
             'recursive' => -1,
             'contain' => [
                 'Servicetemplate' => [
@@ -961,7 +961,12 @@ class Service extends AppModel {
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-        ]);
+        ];
+        if($limit){
+            $query['limit'] = $limit;
+        }
+
+        $result = $this->find('all', $query);
 
         if ($type == 'list') {
             $_return = [];
