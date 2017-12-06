@@ -26,6 +26,7 @@
  * Calculates the time based on the given server time.
  *
  * This is also true for the client time.
+ * @deprecated
  */
 App.Components.TimeComponent = Frontend.Component.extend({
 	serverRenderTime: null,
@@ -37,56 +38,27 @@ App.Components.TimeComponent = Frontend.Component.extend({
 	timezoneOffset: 0,
 
 	setup: function(){
-		this.$localClienttime = $('#localClienttime');
-		this.$serverTime = $('#globalServertime');
-		this.serverRenderTime = this.$serverTime.data('render-servertime');
-		this.serverDate = new Date(this.serverRenderTime);
-		this.serverOffset = parseInt(this.$serverTime.attr('server-timezone-offset'), 10);
+		$.ajax({
+			url: '/angular/user_timezone.json',
+			type: 'GET',
+			cache: false,
+            //async: false,
+			error: function(){},
+			success: function(response){
+                this.timezoneOffset = response.timezone.user_offset;
+                this.serverOffset = response.timezone.server_timezone_offset;
+            }.bind(this),
+			complete: function(response){}
+		});
 
 		this.pageLoaded = new Date().getTime();
 
-		this.timezoneOffset = parseInt(this.$localClienttime.attr('timezone-offset'), 10);
 		if(this.timezoneOffset != this.serverOffset){
 			//Display the clock for users time
-			this.$localClienttime.parent().parent().show();
 			this.displayClientTime = true;
 		}
 
 		this.initialized = true;
-		this._serverClock(); // Starts the timer.
-	},
-
-	/**
-	 * @private
-	 */
-	_serverClock: function(){
-		var self = this;
-		var icon = '&nbsp;<i class="fa fa-clock-o"></i>';
-		var timeAsText = this.getServerTimeAsText();
-
-		this.$serverTime.html(icon + ' '+ timeAsText + '&nbsp;');
-
-		if(this.displayClientTime === true){
-			this._clientClock();
-		}
-
-		setTimeout(function(){
-			self._serverClock();
-		}, 10000);
-	},
-
-	/**
-	 * @private
-	 */
-	_clientClock: function(){
-		var timeAsText = this.getClientTimeAsText();
-
-		var icon = '&nbsp;<i class="fa fa-history fa-flip-horizontal"></i>';
-		if(this.$localClienttime.attr('timezone-offset') < 0){
-			icon = '&nbsp;<i class="fa fa-history"></i>';
-		}
-
-		this.$localClienttime.html(icon + ' '+ timeAsText + '&nbsp;');
 	},
 
 	/**

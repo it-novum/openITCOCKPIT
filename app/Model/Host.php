@@ -24,7 +24,9 @@
 //	confirmation.
 
 App::uses('ValidationCollection', 'Lib');
+
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * @property ParentHost $ParentHost
@@ -32,98 +34,98 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 class Host extends AppModel {
 
     public $hasAndBelongsToMany = [
-        'Container' => [
-            'className' => 'Container',
-            'joinTable' => 'hosts_to_containers',
-            'foreignKey' => 'host_id',
+        'Container'    => [
+            'className'             => 'Container',
+            'joinTable'             => 'hosts_to_containers',
+            'foreignKey'            => 'host_id',
             'associationForeignKey' => 'container_id',
         ],
         'Contactgroup' => [
-            'className' => 'Contactgroup',
-            'joinTable' => 'contactgroups_to_hosts',
-            'foreignKey' => 'host_id',
+            'className'             => 'Contactgroup',
+            'joinTable'             => 'contactgroups_to_hosts',
+            'foreignKey'            => 'host_id',
             'associationForeignKey' => 'contactgroup_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
-        'Contact' => [
-            'className' => 'Contact',
-            'joinTable' => 'contacts_to_hosts',
-            'foreignKey' => 'host_id',
+        'Contact'      => [
+            'className'             => 'Contact',
+            'joinTable'             => 'contacts_to_hosts',
+            'foreignKey'            => 'host_id',
             'associationForeignKey' => 'contact_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
-        'Parenthost' => [
-            'className' => 'Host',
-            'joinTable' => 'hosts_to_parenthosts',
-            'foreignKey' => 'host_id',
+        'Parenthost'   => [
+            'className'             => 'Host',
+            'joinTable'             => 'hosts_to_parenthosts',
+            'foreignKey'            => 'host_id',
             'associationForeignKey' => 'parenthost_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
-        'Hostgroup' => [
-            'className' => 'Hostgroup',
-            'joinTable' => 'hosts_to_hostgroups',
-            'foreignKey' => 'host_id',
+        'Hostgroup'    => [
+            'className'             => 'Hostgroup',
+            'joinTable'             => 'hosts_to_hostgroups',
+            'foreignKey'            => 'host_id',
             'associationForeignKey' => 'hostgroup_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
     ];
 
     public $hasMany = [
         'Hostcommandargumentvalue',
         'HostescalationHostMembership' => [
-            'className' => 'HostescalationHostMembership',
+            'className'  => 'HostescalationHostMembership',
             'foreignKey' => 'host_id',
-            'dependent' => true,
+            'dependent'  => true,
         ],
         'HostdependencyHostMembership' => [
-            'className' => 'HostdependencyHostMembership',
+            'className'  => 'HostdependencyHostMembership',
             'foreignKey' => 'host_id',
-            'dependent' => true,
+            'dependent'  => true,
         ],
-        'Service' => [
-            'className' => 'Service',
+        'Service'                      => [
+            'className'  => 'Service',
             'foreignKey' => 'host_id',
-            'dependent' => true,
+            'dependent'  => true,
         ],
-        'Customvariable' => [
-            'className' => 'Customvariable',
+        'Customvariable'               => [
+            'className'  => 'Customvariable',
             'foreignKey' => 'object_id',
             'conditions' => [
                 'objecttype_id' => OBJECT_HOST,
             ],
-            'dependent' => true,
+            'dependent'  => true,
         ],
     ];
 
     public $belongsTo = [
         'Hosttemplate',
-        'Container' => [
-            'className' => 'Container',
+        'Container'    => [
+            'className'  => 'Container',
             'foreignKey' => 'container_id',
         ],
-        'CheckPeriod' => [
-            'className' => 'Timeperiod',
+        'CheckPeriod'  => [
+            'className'  => 'Timeperiod',
             'foreignKey' => 'check_period_id',
         ],
         'NotifyPeriod' => [
-            'className' => 'Timeperiod',
+            'className'  => 'Timeperiod',
             'foreignKey' => 'notify_period_id',
         ],
         'CheckCommand' => [
-            'className' => 'Command',
+            'className'  => 'Command',
             'foreignKey' => 'command_id',
         ],
     ];
 
     public $validate = [
-        'name' => [
+        'name'               => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
             /*'isUnique' => [
@@ -131,42 +133,42 @@ class Host extends AppModel {
                 'message' => 'This host name has already been taken.'
             ],*/
         ],
-        'container_id' => [
+        'container_id'       => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'numeric' => [
-                'rule' => 'numeric',
+            'numeric'  => [
+                'rule'    => 'numeric',
                 'message' => 'This field needs to be numeric.',
             ],
-            'notZero' => [
-                'rule' => ['comparison', '>', 0],
-                'message' => 'Invalid container.',
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Invalid container.',
                 'required' => true,
             ],
         ],
-        'hosttemplate_id' => [
+        'hosttemplate_id'    => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'numeric' => [
-                'rule' => 'numeric',
+            'numeric'  => [
+                'rule'    => 'numeric',
                 'message' => 'This field needs to be numeric.',
             ],
-            'notZero' => [
-                'rule' => ['comparison', '>', 0],
-                'message' => 'Invalid host template.',
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Invalid host template.',
                 'required' => true,
             ],
         ],
-        'address' => [
+        'address'            => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
@@ -186,121 +188,96 @@ class Host extends AppModel {
             ]
         ],
         */
-        'command_id' => [
+        'command_id'         => [
             'numeric' => [
-                'rule' => 'numeric',
-                'message' => 'This field needs to be numeric.',
+                'rule'       => 'numeric',
+                'message'    => 'This field needs to be numeric.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
             'notZero' => [
-                'rule' => ['comparison', '>', 0],
-                'message' => 'This field cannot be left blank.',
+                'rule'       => ['comparison', '>', 0],
+                'message'    => 'This field cannot be left blank.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
         ],
         'max_check_attempts' => [
-            'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+            'notBlank'    => [
+                'rule'       => 'notBlank',
+                'message'    => 'This field cannot be left blank.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
             'positiveInt' => [
-                'rule' => ['positiveInt', 'max_check_attempts'],
+                'rule'    => ['positiveInt', 'max_check_attempts'],
                 'message' => 'This value need to be at least 1.',
             ],
 
         ],
     ];
 
-
     /**
-     * Returns an array with hosts, the user is allowed to see by container_id
-     *
-     * @param array $containerIds Container IDs of container ids the user is allowd to see
-     * @param array $conditions Additional conditions for selecting hosts
-     * @param array $hostsIncluding containing ids of hosts which must be in the result array too
-     *
-     * @return array
+     * @param HostConditions $HostConditions
+     * @param array $selected
+     * @return array|null
      */
-    public function getAjaxHosts($containerIds = [], $conditions = [], $hostsIncluding = []){
-        if (!is_array($containerIds)) {
-            $containerIds = [$containerIds];
-        }
-        $containerIds = array_unique($containerIds);
-
-        $_conditions = [
-            'HostsToContainers.container_id' => $containerIds,
-            'Host.disabled' => 0,
-        ];
-
-        $conditions = Hash::merge($_conditions, $conditions);
-        $hosts = $this->find('list', [
-            'recursive' => -1,
-            'joins' => [
+    public function getHostsForAngular(HostConditions $HostConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'joins'      => [
                 [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ],
             ],
-            'conditions' => $conditions,
-            'order' => [
+            'conditions' => $HostConditions->getConditionsForFind(),
+            'order'      => [
                 'Host.name' => 'ASC',
             ],
-            'fields' => [
-                'Host.id',
-                'Host.name',
+            'group' => [
+                'Host.id'
             ],
-            'limit' => self::ITN_AJAX_LIMIT,
-            'group' => 'Host.id'
-        ]);
+            'limit'      => self::ITN_AJAX_LIMIT
+        ];
+        $hostsWithLimit = $this->find('list', $query);
 
-        $formattedHosts = [];
-        if(!empty($hostsIncluding) && isset($hostsIncluding[0]) && is_array($hostsIncluding[0])){
-            foreach($hostsIncluding as $hostIncluding){
-                $formattedHosts[] = $hostIncluding['id'];
-            }
-        }elseif(is_array($hostsIncluding)){
-            $formattedHosts = $hostsIncluding;
-        }else{
-            $formattedHosts = [$hostsIncluding];
-        }
-
-        if(!empty($formattedHosts) && !empty(array_diff($formattedHosts, array_keys($hosts)))){
-            $selectedCondition = ['Host.id' => array_diff($formattedHosts, array_keys($hosts))];
-            $selectedHosts = $this->find('list', [
-                'recursive' => -1,
-                'joins' => [
+        $selectedHosts = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'joins'      => [
                     [
-                        'table' => 'hosts_to_containers',
-                        'alias' => 'HostsToContainers',
-                        'type' => 'LEFT',
+                        'table'      => 'hosts_to_containers',
+                        'alias'      => 'HostsToContainers',
+                        'type'       => 'INNER',
                         'conditions' => [
                             'HostsToContainers.host_id = Host.id',
                         ],
                     ],
                 ],
-                'conditions' => Hash::merge($selectedCondition, $_conditions),
-                'order' => [
+                'conditions' => [
+                    'Host.id' => $selected
+                ],
+                'order'      => [
                     'Host.name' => 'ASC',
                 ],
-                'fields' => [
-                    'Host.id',
-                    'Host.name',
-                ]
-            ]);
-
-            if(!empty($selectedHosts)){
-                $hosts = $hosts + $selectedHosts;
+            ];
+            if ($HostConditions->hasContainer()) {
+                $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
             }
+            if($HostConditions->includeDisabled() === false){
+                $query['conditions']['Host.disabled'] = 0;
+            }
+            $selectedHosts = $this->find('list', $query);
         }
 
+        $hosts = $hostsWithLimit + $selectedHosts;
+        asort($hosts, SORT_FLAG_CASE | SORT_NATURAL);
         return $hosts;
     }
 
@@ -323,39 +300,39 @@ class Host extends AppModel {
 
         $_conditions = [
             'HostsToContainers.container_id' => $containerIds,
-            'Host.disabled' => 0,
+            'Host.disabled'                  => 0,
         ];
 
         $conditions = Hash::merge($_conditions, $conditions);
 
         $selectArray = [
-            'recursive' => -1,
-            'joins' => [
+            'recursive'  => -1,
+            'joins'      => [
                 [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ],
             ],
             'conditions' => $conditions,
-            'order' => [
+            'order'      => [
                 'Host.name' => 'ASC',
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.' . $index,
                 'Host.name',
             ],
         ];
-        if(!is_null($limit)){
+        if (!is_null($limit)) {
             $selectArray['limit'] = $limit;
         }
 
         $hosts = $this->find($type, $selectArray);
 
-        if (in_array($type, ['list', 'first'])){
+        if (in_array($type, ['list', 'first'])) {
             return $hosts;
         }
 
@@ -378,11 +355,12 @@ class Host extends AppModel {
      */
     public function hostsByContainerIdExcludeHostId($container_ids = [], $type = 'all', $id) {
         return $this->find($type, [
-            'recursive' => -1,
-            'joins' => [
-                ['table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
@@ -390,10 +368,10 @@ class Host extends AppModel {
             ],
             'conditions' => [
                 'HostsToContainers.container_id' => $container_ids,
-                'Host.disabled' => 0,
-                'NOT' => ['Host.id' => $id],
+                'Host.disabled'                  => 0,
+                'NOT'                            => ['Host.id' => $id],
             ],
-            'order' => [
+            'order'      => [
                 'Host.name' => 'ASC',
             ],
         ]);
@@ -411,7 +389,7 @@ class Host extends AppModel {
         //if prepare_for_compare => false, nothing to do $prepare_array[0] => 'Template.{n}, $prepare_array[1] => true/false'
 
         if (!$prepare) {
-            if(!is_array($prepare_array)) return [];
+            if (!is_array($prepare_array)) return [];
             $currentKey = key($prepare_array);
             if (!in_array($currentKey, $keysForArraySort, true)) {
                 return $prepare_array;
@@ -577,16 +555,16 @@ class Host extends AppModel {
 
 
         $diff_array = Hash::merge($diff_array, [
-            'Host' => [
+            'Host'       => [
                 'hosttemplate_id' => $hostTemplateId,
-                'container_id' => $containerId,
+                'container_id'    => $containerId,
                 /* Set Contact/Contactgroup for custom validation rule*/
-                'Contact' => $requestData['Host']['Contact'],
-                'Contactgroup' => $requestData['Host']['Contactgroup'],
-                'Hostgroup' => $requestData['Host']['Hostgroup'],
-                'Parenthost' => $requestData['Parenthost']['Parenthost'],
+                'Contact'         => $requestData['Host']['Contact'],
+                'Contactgroup'    => $requestData['Host']['Contactgroup'],
+                'Hostgroup'       => $requestData['Host']['Hostgroup'],
+                'Parenthost'      => $requestData['Parenthost']['Parenthost'],
             ],
-            'Container' => [
+            'Container'  => [
                 'Container' => $containerIds,
             ],
             'Parenthost' => [
@@ -605,7 +583,7 @@ class Host extends AppModel {
                     'uuid' => UUID::v4(),
                 ],
             ]);
-        } elseif ($save_mode === 'edit') {
+        } else if ($save_mode === 'edit') {
             $diff_array = Hash::merge($diff_array, [
                 'Host' => [
                     'id' => $requestData['Host']['id'],
@@ -646,19 +624,19 @@ class Host extends AppModel {
             'conditions' => [
                 'Host.id' => $id,
             ],
-            'contain' => [
+            'contain'    => [
                 'Container',
                 'CheckPeriod',
                 'NotifyPeriod',
                 'CheckCommand',
-                'Hosttemplate' => [
-                    'Contact' => [
+                'Hosttemplate'             => [
+                    'Contact'                          => [
                         'fields' => [
                             'id', 'name',
                         ],
                     ],
-                    'Contactgroup' => [
-                        'fields' => ['id'],
+                    'Contactgroup'                     => [
+                        'fields'    => ['id'],
                         'Container' => [
                             'fields' => [
                                 'name',
@@ -668,21 +646,21 @@ class Host extends AppModel {
                     'CheckCommand',
                     'CheckPeriod',
                     'NotifyPeriod',
-                    'Customvariable' => [
+                    'Customvariable'                   => [
                         'fields' => [
                             'id', 'name', 'value', 'objecttype_id',
                         ],
                     ],
                     'Hosttemplatecommandargumentvalue' => [
-                        'fields' => [
+                        'fields'          => [
                             'commandargument_id', 'value',
                         ],
                         'Commandargument' => [
                             'fields' => ['human_name'],
                         ],
                     ],
-                    'Hostgroup' => [
-                        'fields' => ['id'],
+                    'Hostgroup'                        => [
+                        'fields'    => ['id'],
                         'Container' => [
                             'fields' => [
                                 'name',
@@ -690,26 +668,26 @@ class Host extends AppModel {
                         ],
                     ],
                 ],
-                'Contact' => [
+                'Contact'                  => [
                     'fields' => [
                         'id', 'name',
                     ],
                 ],
-                'Contactgroup' => [
-                    'fields' => ['id'],
+                'Contactgroup'             => [
+                    'fields'    => ['id'],
                     'Container' => [
                         'fields' => [
                             'name',
                         ],
                     ],
                 ],
-                'Customvariable' => [
+                'Customvariable'           => [
                     'fields' => [
                         'id', 'name', 'value', 'objecttype_id',
                     ],
                 ],
                 'Hostcommandargumentvalue' => [
-                    'fields' => [
+                    'fields'          => [
                         'id', 'commandargument_id', 'value',
                     ],
                     'Commandargument' => [
@@ -718,13 +696,13 @@ class Host extends AppModel {
                         ],
                     ],
                 ],
-                'Parenthost' => [
+                'Parenthost'               => [
                     'fields' => [
                         'id', 'name',
                     ],
                 ],
-                'Hostgroup' => [
-                    'fields' => [
+                'Hostgroup'                => [
+                    'fields'    => [
                         'id',
                     ],
                     'Container' => [
@@ -732,7 +710,7 @@ class Host extends AppModel {
                     ],
                 ],
             ],
-            'recursive' => -1,
+            'recursive'  => -1,
         ]);
         $host = $host[0];
         if (empty($host['Host']['hosttemplate_id']) || $host['Host']['hosttemplate_id'] == 0) {
@@ -750,51 +728,50 @@ class Host extends AppModel {
         $hostgroups = [];
         if (!empty($host['Hostgroup'])) {
             $hostgroups = Hash::combine($host['Hostgroup'], '{n}.id', '{n}.id');
-        } elseif (empty($host['Hostgroup']) && !(empty($host['Hosttemplate']['Hostgroup']))) {
+        } else if (empty($host['Hostgroup']) && !(empty($host['Hosttemplate']['Hostgroup']))) {
             $hostgroups = Hash::combine($host['Hosttemplate']['Hostgroup'], '{n}.id', '{n}.id');
         }
 
         $host = [
-            'Host' => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), Set::classicExtract($host['Hosttemplate'], '{(' . implode('|', array_keys(Hash::diff($host['Host'], Hash::filter($host['Host'], ['Host', 'filterNullValues'])))) . ')}')),
-            'Contact' => Hash::extract((($host['Host']['own_contacts']) ? $host['Contact'] : $host['Hosttemplate']['Contact']), '{n}.id'),
-            'Container' => Hash::extract($host['Container'], '{n}.id'),
-            'Contactgroup' => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
-            'Parenthost' => Hash::extract($host['Parenthost'], '{n}.id'),
-            'Customvariable' => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
+            'Host'                     => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), Set::classicExtract($host['Hosttemplate'], '{(' . implode('|', array_keys(Hash::diff($host['Host'], Hash::filter($host['Host'], ['Host', 'filterNullValues'])))) . ')}')),
+            'Contact'                  => Hash::extract((($host['Host']['own_contacts']) ? $host['Contact'] : $host['Hosttemplate']['Contact']), '{n}.id'),
+            'Container'                => Hash::extract($host['Container'], '{n}.id'),
+            'Contactgroup'             => Hash::extract((($host['Host']['own_contactgroups']) ? $host['Contactgroup'] : $host['Hosttemplate']['Contactgroup']), '{n}.id'),
+            'Parenthost'               => Hash::extract($host['Parenthost'], '{n}.id'),
+            'Customvariable'           => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $host['Hosttemplate']['Customvariable'],
             'Hostcommandargumentvalue' => $hostcommandargumentvalue,
-            'Hosttemplate' => $host['Hosttemplate'],
-            'Hostgroup' => $hostgroups,
-            'CheckCommand' => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
-            'CheckPeriod' => (!is_null($host['Host']['check_period_id'])) ? $host['CheckPeriod'] : $host['Hosttemplate']['CheckPeriod'],
-            'NotifyPeriod' => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],
+            'Hosttemplate'             => $host['Hosttemplate'],
+            'Hostgroup'                => $hostgroups,
+            'CheckCommand'             => (!is_null($host['Host']['command_id'])) ? $host['CheckCommand'] : $host['Hosttemplate']['CheckCommand'],
+            'CheckPeriod'              => (!is_null($host['Host']['check_period_id'])) ? $host['CheckPeriod'] : $host['Hosttemplate']['CheckPeriod'],
+            'NotifyPeriod'             => (!is_null($host['Host']['notify_period_id'])) ? $host['NotifyPeriod'] : $host['Hosttemplate']['NotifyPeriod'],
         ];
 
         return $host;
     }
 
-    public function dataForChangelogCopy($host, $hosttemplate)
-    {
+    public function dataForChangelogCopy($host, $hosttemplate) {
         $hostcommandargumentvalue = [];
         if (!empty($host['Hostcommandargumentvalue'])) {
             $hostcommandargumentvalue = $host['Hostcommandargumentvalue'];
-        }else {
+        } else {
             if ($host['Host']['command_id'] === $hosttemplate['Hosttemplate']['command_id'] || $host['Host']['command_id'] === null) {
                 $hostcommandargumentvalue = $hosttemplate['Hosttemplatecommandargumentvalue'];
             }
         }
 
         $host = [
-            'Host'                      => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), $hosttemplate['Hosttemplate']),
-            'Contact'                   => (!empty($host['Contact'])) ? $host['Contact'] : $hosttemplate['Contact'],
-            'Contactgroup'              => (!empty($host['Contactgroup'])) ? $host['Contactgroup'] : $hosttemplate['Contactgroup'],
-            'Customvariable'            => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $hosttemplate['Customvariable'],
-            'Hostcommandargumentvalue'  => $hostcommandargumentvalue,
-            'Hosttemplate'              => $hosttemplate['Hosttemplate'],
-            'Hostgroup'                 => (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $hosttemplate['Hostgroup'],
-            'Parenthost'                => (!empty($host['Parenthost'])) ? $host['Parenthost'] : [],
-            'CheckPeriod'               => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
-            'NotifyPeriod'              => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
-            'CheckCommand'              => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
+            'Host'                     => Hash::merge(Hash::filter($host['Host'], ['Host', 'filterNullValues']), $hosttemplate['Hosttemplate']),
+            'Contact'                  => (!empty($host['Contact'])) ? $host['Contact'] : $hosttemplate['Contact'],
+            'Contactgroup'             => (!empty($host['Contactgroup'])) ? $host['Contactgroup'] : $hosttemplate['Contactgroup'],
+            'Customvariable'           => ($host['Host']['own_customvariables']) ? $host['Customvariable'] : $hosttemplate['Customvariable'],
+            'Hostcommandargumentvalue' => $hostcommandargumentvalue,
+            'Hosttemplate'             => $hosttemplate['Hosttemplate'],
+            'Hostgroup'                => (!empty($host['Hostgroup'])) ? $host['Hostgroup'] : $hosttemplate['Hostgroup'],
+            'Parenthost'               => (!empty($host['Parenthost'])) ? $host['Parenthost'] : [],
+            'CheckPeriod'              => (empty($host['CheckPeriod'])) ? $hosttemplate['CheckPeriod'] : $host['CheckPeriod'],
+            'NotifyPeriod'             => (empty($host['NotifyPeriod'])) ? $hosttemplate['NotifyPeriod'] : $host['NotifyPeriod'],
+            'CheckCommand'             => (empty($host['CheckCommand'])) ? $hosttemplate['CheckCommand'] : $host['CheckCommand'],
         ];
         return $host;
     }
@@ -817,9 +794,9 @@ class Host extends AppModel {
     public function hostHasServiceByServicetemplateId($host_id, $servicetemplateId = null) {
         if ($this->exists($host_id)) {
             $host = $this->find('first', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => ['Host.id' => $host_id],
-                'contain' => [
+                'contain'    => [
                     'Service' => [
                         'Servicetemplate' => [
                             'fields' => ['id', 'name', 'uuid'],
@@ -871,11 +848,11 @@ class Host extends AppModel {
 
         if ($action == 'addParentHosts') {
             $this->validate = [
-                'id' => ValidationCollection::getIdRule(),
+                'id'         => ValidationCollection::getIdRule(),
                 'Parenthost' => [
                     'multiple' => [
-                        'rule' => ['multiple', ['min' => 1]],
-                        'message' => 'You need to select at least one parent host.',
+                        'rule'     => ['multiple', ['min' => 1]],
+                        'message'  => 'You need to select at least one parent host.',
                         'required' => true,
                     ],
                 ],
@@ -894,9 +871,9 @@ class Host extends AppModel {
      */
     public function servicesByContainerIds($containerIds, $type = 'all', $options = []) {
         $_options = [
-            'prefixHostname' => true,
-            'delimiter' => '/',
-            'forOptiongroup' => false,
+            'prefixHostname'    => true,
+            'delimiter'         => '/',
+            'forOptiongroup'    => false,
             'hasRootPrivileges' => false,
         ];
         $options = Hash::merge($_options, $options);
@@ -913,20 +890,20 @@ class Host extends AppModel {
                 $return = [];
                 foreach ($hosts as $hostId => $hostName) {
                     $services = $Service->find('all', [
-                        'recursive' => -1,
+                        'recursive'  => -1,
                         'conditions' => [
-                            'Service.host_id' => $hostId,
+                            'Service.host_id'  => $hostId,
                             'Service.disabled' => 0,
                         ],
-                        'joins' => [
+                        'joins'      => [
                             [
-                                'table' => 'servicetemplates',
-                                'type' => 'INNER',
-                                'alias' => 'Servicetemplate',
+                                'table'      => 'servicetemplates',
+                                'type'       => 'INNER',
+                                'alias'      => 'Servicetemplate',
                                 'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
                             ],
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'Service.*',
                             'Servicetemplate.id',
                             'Servicetemplate.name',
@@ -950,20 +927,20 @@ class Host extends AppModel {
                 $return = [];
                 foreach ($hosts as $hostId => $hostName) {
                     $services = $Service->find('all', [
-                        'recursive' => -1,
+                        'recursive'  => -1,
                         'conditions' => [
-                            'Service.host_id' => $hostId,
+                            'Service.host_id'  => $hostId,
                             'Service.disabled' => 0,
                         ],
-                        'joins' => [
+                        'joins'      => [
                             [
-                                'table' => 'servicetemplates',
-                                'type' => 'INNER',
-                                'alias' => 'Servicetemplate',
+                                'table'      => 'servicetemplates',
+                                'type'       => 'INNER',
+                                'alias'      => 'Servicetemplate',
                                 'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
                             ],
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'Service.id',
                             'Service.uuid',
                             'Service.servicetemplate_id',
@@ -1028,8 +1005,8 @@ class Host extends AppModel {
         //Load the Service Model to delete Graphgenerator configurations
         $Service = ClassRegistry::init('Service');
         $serviceIds = array_keys($Service->find('list', [
-            'recursive' => -1,
-            'contain' => [],
+            'recursive'  => -1,
+            'contain'    => [],
             'conditions' => [
                 'Service.host_id' => $id,
             ],
@@ -1071,11 +1048,11 @@ class Host extends AppModel {
                 $DeletedHost->create();
                 $data = [
                     'DeletedHost' => [
-                        'host_id' => $host['Host']['id'],
-                        'uuid' => $host['Host']['uuid'],
-                        'hosttemplate_id' => $host['Host']['hosttemplate_id'],
-                        'name' => $host['Host']['name'],
-                        'description' => $host['Host']['description'],
+                        'host_id'          => $host['Host']['id'],
+                        'uuid'             => $host['Host']['uuid'],
+                        'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
+                        'name'             => $host['Host']['name'],
+                        'description'      => $host['Host']['description'],
                         'deleted_perfdata' => 0,
                     ],
                 ];
@@ -1127,18 +1104,18 @@ class Host extends AppModel {
         $this->Constants = new ConstantsComponent();
 
         $serviceIds = Hash::extract($Service->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'host_id' => $host['Host']['id'],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
             ],
         ]), '{n}.Service.id');
 
         $moduleConstants = $this->Constants->defines['modules'];
         $usedBy = [
-            'Host' => [],
+            'Host'    => [],
             'Service' => [],
         ];
         foreach ($moduleConstants as $moduleName => $value) {
@@ -1169,8 +1146,8 @@ class Host extends AppModel {
 
     public function __deleteBySatellite($satelliteId, $userId) { // performance optimization
         $hostsInSatellite = $this->find('all', [
-            'recursive' => -1,
-            'contain' => [],
+            'recursive'  => -1,
+            'contain'    => [],
             'conditions' => [
                 'Host.satellite_id' => $satelliteId,
             ],
@@ -1181,11 +1158,11 @@ class Host extends AppModel {
         $Service = ClassRegistry::init('Service');
         foreach ($hostsInSatellite as $hostKey => $hostArr) {
             $serviceIds = Hash::extract($Service->find('all', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'host_id' => $hostArr['Host']['id'],
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                 ],
             ]), '{n}.Service.id');
@@ -1196,7 +1173,7 @@ class Host extends AppModel {
                 $evcCount = $this->Eventcorrelation->find('count', [
                     'conditions' => [
                         'OR' => [
-                            'Eventcorrelation.host_id' => $hostArr['Host']['id'],
+                            'Eventcorrelation.host_id'    => $hostArr['Host']['id'],
                             'Eventcorrelation.service_id' => $serviceIds,
                         ],
                     ],
@@ -1212,8 +1189,8 @@ class Host extends AppModel {
         $Changelog = ClassRegistry::init('Changelog');
         //Load the Service Model to delete Graphgenerator configurations
         $serviceIds = array_keys($Service->find('list', [
-            'recursive' => -1,
-            'contain' => [],
+            'recursive'  => -1,
+            'contain'    => [],
             'conditions' => [
                 'Service.host_id' => $hostIds,
             ],
@@ -1246,11 +1223,11 @@ class Host extends AppModel {
                 $DeletedHost->create();
                 $data = [
                     'DeletedHost' => [
-                        'host_id' => $hostArr['Host']['id'],
-                        'uuid' => $hostArr['Host']['uuid'],
-                        'hosttemplate_id' => $hostArr['Host']['hosttemplate_id'],
-                        'name' => $hostArr['Host']['name'],
-                        'description' => $hostArr['Host']['description'],
+                        'host_id'          => $hostArr['Host']['id'],
+                        'uuid'             => $hostArr['Host']['uuid'],
+                        'hosttemplate_id'  => $hostArr['Host']['hosttemplate_id'],
+                        'name'             => $hostArr['Host']['name'],
+                        'description'      => $hostArr['Host']['description'],
                         'deleted_perfdata' => 0,
                     ],
                 ];
@@ -1320,12 +1297,12 @@ class Host extends AppModel {
      */
     public function checkUsageFlag($hostId, $moduleValue) {
         $result = $this->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Host.id' => $hostId,
                 //'Host.usage_flag & '.$moduleValue
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.usage_flag'
             ]
         ]);
@@ -1345,10 +1322,10 @@ class Host extends AppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Hosttemplate' => [
                     'fields' => [
                         'Hoststatus.is_flapping',
@@ -1363,7 +1340,7 @@ class Host extends AppModel {
                 'Container'
             ],
             'conditions' => $conditions,
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -1389,28 +1366,28 @@ class Host extends AppModel {
 
                 'Hoststatus.current_state',
             ],
-            'order' => $HostConditions->getOrder(),
-            'joins' => [
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'HostObject',
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
                     'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                 ], [
-                    'table' => 'nagios_hoststatus',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'Hoststatus',
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
                 ], [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ],
             ],
-            'group' => [
+            'group'      => [
                 'Host.id',
             ],
         ];
@@ -1421,7 +1398,7 @@ class Host extends AppModel {
         return $query;
     }
 
-    public function virtualFieldsForIndex(){
+    public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
@@ -1430,10 +1407,10 @@ class Host extends AppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Hosttemplate' => [
                     'fields' => [
                         'Hosttemplate.id',
@@ -1446,7 +1423,7 @@ class Host extends AppModel {
                 'Container'
             ],
             'conditions' => $conditions,
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -1456,24 +1433,24 @@ class Host extends AppModel {
                 'Host.satellite_id',
 
             ],
-            'order' => $HostConditions->getOrder(),
-            'joins' => [
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'LEFT OUTER',
-                    'alias' => 'HostObject',
+                    'table'      => 'nagios_objects',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'HostObject',
                     'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
                 ],
                 [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ],
             ],
-            'group' => [
+            'group'      => [
                 'Host.id',
             ],
         ];

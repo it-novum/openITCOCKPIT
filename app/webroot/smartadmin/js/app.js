@@ -396,11 +396,14 @@ $.fn.extend({
 		var $this = $(this);
 
 		//add a mark [+] to a multilevel menu
+		/*
 		$this.find("li").each(function() {
-			if ($(this).find("ul").size() != 0) {
+			console.log($(this).find("ul").length);
+			console.log($(this).find("ul"));
+			if ($(this).find("ul").length > 0) {
 				//add the multilevel sign next to the link
 
-				$(this).find("a:first").append("<b class='collapse-sign'>" + opts.closedSign + "</b>");
+				//$(this).find("a:first").append("<b class='collapse-sign'>" + opts.closedSign + "</b>");
 				//avoid jumping to the top of the page when the href is an #
 				if ($(this).find("a:first").attr('href') == "#") {
 					$(this).find("a:first").click(function() {
@@ -409,6 +412,7 @@ $.fn.extend({
 				}
 			}
 		});
+		*/
 
 		//open active level
 		$this.find("li.active").each(function() {
@@ -419,7 +423,7 @@ $.fn.extend({
 
 		$this.find("li a").click(function() {
 
-			if ($(this).parent().find("ul").size() != 0) {
+			if ($(this).parent().find("ul").length != 0) {
 
 				if (opts.accordion) {
 					//Do nothing when the list is open

@@ -27,6 +27,22 @@ $config = [
     'acl_dependencies' => [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
         'always_allowed' => [
+            'Angular' => [
+                'paginator',
+                'mass_delete',
+                'confirm_delete',
+                'user_timezone',
+                'version_check',
+                'menustats',
+                'menu',
+                'websocket_configuration',
+                'export',
+                'not_found',
+                'nested_list',
+                'executing',
+                'acknowledge_service',
+                'downtime_service',
+            ],
             'Commands'         => [
                 'sortByCommandType',
             ],
@@ -35,6 +51,7 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
+                'validateDowntimeInputFromAngular'
             ],
             'Forward'          => [
                 'index',
@@ -67,7 +84,8 @@ $config = [
                 'grapherTemplate',
                 'grapherZoom',
                 'grapherZoomTemplate',
-                'createGrapherErrorPng'
+                'createGrapherErrorPng',
+                'icon'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -78,6 +96,7 @@ $config = [
                 'loadServicesByHostId',
                 'loadPerfDataStructures',
                 'loadServiceruleFromService',
+                'getPerfdataByUuid'
             ],
             'Dashboards'       => [
                 'index',
@@ -131,7 +150,10 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Timeperiods'           => [
-                'index'  => ['view'],
+                'index'  => [
+                    'view',
+                    'loadTimeperiodsByContainerId'
+                ],
                 'delete' => ['mass_delete'],
             ],
             'Contactgroups'         => [
@@ -171,12 +193,11 @@ $config = [
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
-                'edit'     => ['loadHosts', 'loadHosttemplates'],
-                'delete'   => ['mass_delete'],
+                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -190,6 +211,7 @@ $config = [
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport', 'expandServices'],
+                'add' => ['loadContainers']
             ],
             'Macros'                => [
                 'index' => ['addMacro'],
@@ -208,16 +230,15 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view'],
+                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
                 'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
                 'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
             ],
             'Services'              => [
                 'deactivate' => ['mass_deactivate'],
-                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
+                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId'],
                 'browser'    => ['servicesByHostId', 'longOutputByUuid'],
-                'delete'     => ['mass_delete'],
                 'add'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'       => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
             ],
@@ -227,12 +248,12 @@ $config = [
                 'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
                 'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['addFromLdap'],
                 'edit'  => ['resetPassword'],
             ],

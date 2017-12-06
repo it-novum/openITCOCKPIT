@@ -33,10 +33,12 @@ class ContainersController extends AppController {
     public $helpers = ['Nest'];
 
     public function index() {
+        $this->layout = 'angularjs';
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_NODE;
             $this->Container->create();
             if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('new node created successfully'));
             } else {
                 $this->setFlash(__('error while saving data'), false);
@@ -92,18 +94,32 @@ class ContainersController extends AppController {
         }
         if ($this->request->ext == 'json') {
             if ($this->Container->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $this->serializeId();
 
                 return;
             }
             $this->serializeErrorMessage();
-        } else {
-            if ($this->Container->save($this->request->data)) {
-                $this->setFlash(__('new node created successfully'));
-                $this->redirect(['action' => 'index']);
+        }
+    }
+
+    public function edit(){
+        $this->layout = 'blank';
+        if(!$this->isAngularJsRequest()){
+            return;
+        }
+        if($this->request->is('post')){
+            $containerId = $this->request->data['Container']['id'];
+            $containerTypeId = $this->request->data['Container']['containertype_id'];
+            if (!$this->Container->exists($containerId) || $containerTypeId!=5) {
+                throw new NotFoundException(__('Invalid container'));
+            }
+
+            if(!$this->Container->save($this->request->data)){
+                Cache::clear(false, 'permissions');
+                $this->serializeErrorMessage();
             } else {
-                $this->setFlash(__('error while saving data'), false);
-                $this->redirect(['action' => 'index']);
+                $this->serializeId();
             }
         }
     }
@@ -131,7 +147,9 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenant($id = null) {
-        $this->allowOnlyAjaxRequests();
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         if (!$this->Container->hasAny()) {
             throw new NotFoundException(__('tenant.notfound'));
         }
@@ -144,6 +162,7 @@ class ContainersController extends AppController {
         $nest = Hash::nest($this->Container->children($id, false, null, 'name'));
         $parent[0]['children'] = $nest;
         $this->set('nest', $parent);
+        $this->set('_serialize', ['nest']);
     }
 
     /**
@@ -158,9 +177,11 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenantForSelect($id = null, $options = []) {
-        $this->allowOnlyAjaxRequests();
-
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
+        $this->set('_serialize', ['paths']);
     }
 
     public function delete($id = null) {
@@ -386,8 +407,10 @@ class ContainersController extends AppController {
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Container deleted'));
                 $this->redirect(['action' => 'index']);
             } else {

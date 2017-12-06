@@ -56,16 +56,16 @@
         $css = '';
         $removeBGButtonVisibility = 'display:none;';
         if ($map['Map']['background'] != null && $map['Map']['background'] != ''):
-            $filePath = $backgroundThumbs['path'].'/'.$map['Map']['background'];
+            $filePath = $backgroundThumbs['path'] . '/' . $map['Map']['background'];
             if (file_exists($filePath)):
-                $size = getimagesize($backgroundThumbs['path'].DS.$map['Map']['background']);
-                $css = 'width: '.$size[0].'px; height: '.$size[1].'px; background-image: url('.$backgroundThumbs['webPath'].'/'.$map['Map']['background'].'); background-repeat: no-repeat';
+                $size = getimagesize($backgroundThumbs['path'] . DS . $map['Map']['background']);
+                $css = 'width: ' . $size[0] . 'px; height: ' . $size[1] . 'px; background-image: url(' . $backgroundThumbs['webPath'] . '/' . $map['Map']['background'] . '); background-repeat: no-repeat';
                 $removeBGButtonVisibility = 'display:inline;';
             else:
                 echo '<div class="alert alert-danger fade in">
 						<button class="close" data-dismiss="alert">×</button>
 						<i class="fa-fw fa fa-times"></i>
-						<strong>'.__('Error!').'</strong> '.__('Loading Background image failed!').'
+						<strong>' . __('Error!') . '</strong> ' . __('Loading Background image failed!') . '
 					</div>';
             endif;
         endif;
@@ -132,7 +132,8 @@
                         </div>
                         <div class="modal-body">
                             <div class="alert alert-danger" id="backgrounds-upload-error" style="display: none"></div>
-                            <div class="alert alert-success" id="backgrounds-upload-success" style="display: none"></div>
+                            <div class="alert alert-success" id="backgrounds-upload-success"
+                                 style="display: none"></div>
                             <div class="row">
                                 <div class="background-dropzone dropzone"
                                      action="/map_module/backgroundUploads/upload/">
@@ -465,13 +466,13 @@
                                     <?php
                                     $i = 0;
                                     foreach ($backgroundThumbs['files'] as $file):
-                                        $path = $backgroundThumbs['thumbPath'].'/thumb_'.$file['savedName'];
+                                        $path = $backgroundThumbs['thumbPath'] . '/thumb_' . $file['savedName'];
                                         ?>
                                         <div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize"
                                              title="<?php echo h($file['displayName']); ?>">
                                             <div class="thumbnail backgroundThumbnailStyle background-thumbnail">
                                                 <img class="background" src="<?php echo $path; ?>"
-                                                     original="<?php echo $backgroundThumbs['webPath'].'/'.$file['savedName']; ?>"
+                                                     original="<?php echo $backgroundThumbs['webPath'] . '/' . $file['savedName']; ?>"
                                                      filename-id="<?php echo $file['id']; ?>"
                                                      filename="<?php echo h($file['savedName']); ?>">
                                             </div>
@@ -500,7 +501,7 @@
                                     <?php
                                     $i = 0;
                                     foreach ($iconSets['items']['iconsets'] as $iconset):
-                                        $path = $iconSets['items']['webPath'].'/'.$iconset['savedName'].'/'.'ok.png';
+                                        $path = $iconSets['items']['webPath'] . '/' . $iconset['savedName'] . '/' . 'ok.png';
                                         ?>
                                         <div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer"
                                              title="<?php echo h($iconset['displayName']); ?>">
@@ -555,7 +556,7 @@
                                             $path = $icons['icons']['webPath']; ?>
                                             <div class="drag-element col-xs-6 col-sm-6 col-md-6 statelessIcon">
                                                 <div class="thumbnail">
-                                                    <img class="icon" src="<?php echo $path.'/'.$icon; ?>"
+                                                    <img class="icon" src="<?php echo $path . '/' . $icon; ?>"
                                                          icon="<?php echo h($icon); ?>">
                                                 </div>
                                             </div>
@@ -679,7 +680,6 @@
                                             ]
                                         );
                                         echo $this->Form->input('object_id', [
-                                                //'options' => $this->Html->chosenPlaceholder($services),
                                                 'data-placeholder' => __('Please select...'),
                                                 'multiple'         => false,
                                                 'class'            => 'chosen elementInput',
@@ -1062,20 +1062,20 @@
                                             ]
                                         );
                                         echo $this->Form->input('x', [
-                                            'value'             => 0,
-                                            'label'             => __('Position X'),
-                                            'wrapInput'         => 'col col-xs-8',
-                                            'class'             => 'gadgetInput',
-                                            'element-property'  => 'text',
-                                            'content'           => 'x'
+                                            'value'            => 0,
+                                            'label'            => __('Position X'),
+                                            'wrapInput'        => 'col col-xs-8',
+                                            'class'            => 'gadgetInput',
+                                            'element-property' => 'text',
+                                            'content'          => 'x'
                                         ]);
                                         echo $this->Form->input('y', [
-                                            'value'             => 0,
-                                            'label'             => __('Position Y'),
-                                            'wrapInput'         => 'col col-xs-8',
-                                            'class'             => 'gadgetInput',
-                                            'element-property'  => 'text',
-                                            'content'           => 'y'
+                                            'value'            => 0,
+                                            'label'            => __('Position Y'),
+                                            'wrapInput'        => 'col col-xs-8',
+                                            'class'            => 'gadgetInput',
+                                            'element-property' => 'text',
+                                            'content'          => 'y'
                                         ]);
                                         echo $this->Form->fancyCheckbox('transparent_background', [
                                             'caption'          => __('Transparent Background'),
@@ -1093,14 +1093,14 @@
                                         ]);
 
                                         echo $this->Form->input('font_size', [
-                                            'value'             => 13,
-                                            'caption'           => __('Font Size'),
-                                            'captionGridClass'  => 'col col-md-3 gadgetFontSize hidden',
-                                            'wrapGridClass'     => 'col col-xs-9 gadgetFontSize hidden',
+                                            'value'            => 13,
+                                            'caption'          => __('Font Size'),
+                                            'captionGridClass' => 'col col-md-3 gadgetFontSize hidden',
+                                            'wrapGridClass'    => 'col col-xs-9 gadgetFontSize hidden',
                                             //'wrapInput'       => 'col col-xs-8',
-                                            'class'             => 'gadgetInput',
-                                            'element-property'  => 'text',
-                                            'content'           => 'font_size'
+                                            'class'            => 'gadgetInput',
+                                            'element-property' => 'text',
+                                            'content'          => 'font_size'
                                         ]);
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'gadgetInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
@@ -1204,9 +1204,19 @@
                                     </div>
                                     <div class="col-lg-12 margin-top-5 no-padding" id="link-url-area"
                                          style="display:none;">
-                                        <?php echo $this->Form->input('insert-link-url', ['label' => __('URL:'), 'placeholder' => 'http://www.openitcockpit.org', 'style="width: 100%;"', 'class' => 'margin-top-5']); ?>
+                                        <?php echo $this->Form->input('insert-link-url', [
+                                            'label'       => __('URL:'),
+                                            'placeholder' => 'https://openitcockpit.io',
+                                            'style'       => 'width: 100%;',
+                                            'class'       => 'margin-top-5'
+                                        ]); ?>
                                     </div>
-                                    <?php echo $this->Form->input('insert-link-description', ['label' => __('Description:'), 'placeholder' => __('Official page for openITCOCKPIT'), 'style="width: 100%;"', 'class' => 'margin-top-5']); ?>
+                                    <?php echo $this->Form->input('insert-link-description', [
+                                        'label'       => __('Description:'),
+                                        'placeholder' => __('Official page for openITCOCKPIT'),
+                                        'style'       => 'width: 100%;',
+                                        'class'       => 'margin-top-5'
+                                    ]); ?>
                                     <div class="col-lg-12 margin-top-5 no-padding">
                                         <?php echo $this->Form->fancyCheckbox('insert-link-tab', [
                                             'caption'          => __('Open in a new tab'),

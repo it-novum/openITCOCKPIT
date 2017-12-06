@@ -29,6 +29,7 @@ use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
@@ -306,7 +307,7 @@ class HostsController extends AppController {
         $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
 
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
 
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
@@ -2480,10 +2481,10 @@ class HostsController extends AppController {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
 
-        $this->set('QueryHandler',new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
 
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
     }
 
     /**
@@ -3182,5 +3183,73 @@ class HostsController extends AppController {
         $servicetemplategroup = $this->Servicetemplategroup->findById($stg_id);
         $this->set(compact(['servicetemplategroup', 'host']));
         $this->set('_serialize', ['servicetemplategroup', 'host']);
+    }
+
+    public function ajaxList() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadHostsByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerIds);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadHostsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+        );
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
     }
 }

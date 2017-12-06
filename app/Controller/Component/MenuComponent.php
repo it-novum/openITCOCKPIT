@@ -26,19 +26,17 @@
 /**
  * Class MenuComponent
  */
-class MenuComponent extends Component
-{
+class MenuComponent extends Component {
     /**
      * @return array
      */
-    public function compileMenu()
-    {
+    public function compileMenu() {
         Configure::load('menu');
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $pluginName) {
-            Configure::load($pluginName.'.'.'menu');
+            Configure::load($pluginName . '.' . 'menu');
         }
         $menuOrder = [];
         $menu = Configure::read('menu');
@@ -88,13 +86,16 @@ class MenuComponent extends Component
      *
      * @return array
      */
-    public function filterMenuByAcl($menu, $permissions)
-    {
+    public function filterMenuByAcl($menu, $permissions, $realUrl = false) {
         $_menu = [];
         foreach ($menu as $parentKey => $parentNode) {
             $_parentNode = [];
             //Dashboard is always allowed
             if ($parentNode['url']['controller'] === 'dashboard' && $parentNode['url']['action'] === 'index' && $parentNode['url']['plugin'] === 'admin') {
+                if ($realUrl) {
+                    $parentNode['url_array'] = $parentNode['url'];
+                    $parentNode['url'] = Router::url($parentNode['url']);
+                }
                 $_menu[$parentKey] = $parentNode;
                 continue;
             }
@@ -103,8 +104,8 @@ class MenuComponent extends Component
                 if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
                     $_parentNode = $parentNode;
                     unset($_parentNode['children']);
-                // special way for maps becouse the are multiple logical root elements for the "maps" element
-                } elseif ($parentNode['url']['controller'] == 'statusmaps') {
+                    // special way for maps becouse the are multiple logical root elements for the "maps" element
+                } else if ($parentNode['url']['controller'] == 'statusmaps') {
                     if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions) ||
                         $this->checkPermissions('map_module', 'maps', $parentNode['url']['action'], $permissions) ||
                         $this->checkPermissions('map_module', 'rotations', $parentNode['url']['action'], $permissions)
@@ -120,6 +121,10 @@ class MenuComponent extends Component
                             $childNode['url']['plugin'] = '';
                         }
                         if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $childNode['url']['action'], $permissions)) {
+                            if ($realUrl) {
+                                $childNode['url_array'] = $childNode['url'];
+                                $childNode['url'] = Router::url($childNode['url']);
+                            }
                             $_childNodes[$childKey] = $childNode;
                         } else {
                             //Check if we have any fallback actions like by DowntimesController
@@ -130,6 +135,10 @@ class MenuComponent extends Component
                                 foreach ($childNode['fallback_actions'] as $fallbackAction) {
                                     if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackAction, $permissions)) {
                                         $childNode['url']['action'] = $fallbackAction;
+                                        if ($realUrl) {
+                                            $childNode['url_array'] = $childNode['url'];
+                                            $childNode['url'] = Router::url($childNode['url']);
+                                        }
                                         $_childNodes[$childKey] = $childNode;
                                         break;
                                     }
@@ -140,13 +149,24 @@ class MenuComponent extends Component
                 }
             } else {
                 if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
+                    if ($realUrl) {
+                        $parentNode['url_array'] = $parentNode['url'];
+                        $parentNode['url'] = Router::url($parentNode['url']);
+                    }
                     $_menu[$parentKey] = $parentNode;
                 }
             }
 
+
             if (!empty($_childNodes) && !empty($_parentNode)) {
                 $_parentNode['children'] = $_childNodes;
                 $_menu[$parentKey] = $_parentNode;
+                if($realUrl){
+                    if(is_array($_menu[$parentKey]['url'])){
+                        $_menu[$parentKey]['url_array'] = $_menu[$parentKey]['url'];
+                        $_menu[$parentKey]['url'] = Router::url($_menu[$parentKey]['url']);
+                    }
+                }
             }
         }
         return $_menu;
@@ -157,8 +177,7 @@ class MenuComponent extends Component
      *
      * @return string
      */
-    public function lower($string)
-    {
+    public function lower($string) {
         //return strtolower(Inflector::classify($string));
         return strtolower(str_replace('_', '', $string));
     }
@@ -171,8 +190,7 @@ class MenuComponent extends Component
      *
      * @return bool
      */
-    public function checkPermissions($plugin = '', $controller = '', $action = '', $permissions)
-    {
+    public function checkPermissions($plugin = '', $controller = '', $action = '', $permissions) {
         $controller = $this->lower($controller);
         $action = $this->lower($action);
         if ($plugin === '') {
@@ -182,6 +200,28 @@ class MenuComponent extends Component
 
             return isset($permissions[$plugin][$controller][$action]);
         }
+    }
+
+    /**
+     * @param array $menu
+     * @return array
+     */
+    public function forAngular($menu) {
+        $jsMenu = [];
+        foreach ($menu as $parentKey => $_parentNode) {
+            $_parentNode['id'] = $parentKey;
+            $parentNode = $_parentNode;
+            $parentNode['children'] = [];
+            if (isset($_parentNode['children'])) {
+                foreach ($_parentNode['children'] as $childKey => $childNode) {
+                    $childNode['id'] = $childKey;
+                    $parentNode['children'][] = $childNode;
+                }
+            }
+            $jsMenu[] = $parentNode;
+        }
+
+        return $jsMenu;
     }
 }
 

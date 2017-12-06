@@ -45,7 +45,7 @@ $Logo = new Logo();
 
     <?php
     foreach ($css as $cssFile): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT.$cssFile; ?>"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
 
 </head>
@@ -67,12 +67,12 @@ $Logo = new Logo();
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hostgroups: '.$hostgroupCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hostgroups: ' . $hostgroupCount); ?>
         </div>
     </div>
     <div class="row padding-left-10 margin-top-10 font-sm">
         <div class="text-left padding-left-10">
-            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: '.$hostgroupHostCount); ?>
+            <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $hostgroupHostCount); ?>
         </div>
     </div>
     <div class="padding-top-10">
@@ -98,41 +98,52 @@ $Logo = new Logo();
                 </tr>
                 <?php if (!empty($hostgroup['Host'])): ?>
                     <?php foreach ($hostgroup['Host'] as $key => $host): ?>
+                        <?php
+                        if(isset($hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus'])):
+                            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+                                $hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus']
+                            );
+                        else:
+                            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+                        endif;
+                        ?>
+
                         <tr>
                             <!-- status -->
                             <td class="text-center font-lg">
                                 <?php
-                                if ($host['Hoststatus'][0]['Hoststatus']['is_flapping'] == 1):
-                                    echo $this->Monitoring->hostFlappingIconColored($host['Hoststatus'][0]['Hoststatus']['is_flapping'], '', $host['Hoststatus'][0]['Hoststatus']['current_state']);
+                                if ($Hoststatus->isFlapping()):
+                                    echo $this->Monitoring->hostFlappingIconColored(1, '', $Hoststatus->currentState());
                                 else:
-                                    echo '<i class="fa fa-square '.$this->Status->HostStatusTextColor($host['Hoststatus'][0]['Hoststatus']['current_state']).'"></i>';
+                                    echo '<i class="fa fa-square ' . $this->Status->HostStatusTextColor($Hoststatus->currentState()) . '"></i>';
                                 endif;
                                 ?>
                             </td>
                             <!-- ACK -->
                             <td class="text-center">
-                                <?php if ($host['Hoststatus'][0]['Hoststatus']['problem_has_been_acknowledged'] > 0): ?>
+                                <?php if ($Hoststatus->isAcknowledged()): ?>
                                     <i class="fa fa-user fa-lg"></i>
                                 <?php endif; ?>
                             </td>
                             <!-- Downtime -->
                             <td class="text-center">
-                                <?php if ($host['Hoststatus'][0]['Hoststatus']['scheduled_downtime_depth'] > 0): ?>
+                                <?php if ($Hoststatus->isInDowntime()): ?>
                                     <i class="fa fa-power-off fa-lg"></i>
                                 <?php endif; ?>
                             </td>
                             <!-- Host -->
-                            <td class="font-xs"><?php echo $host['name']; ?></td>
+                            <td class="font-xs"><?php echo h($host['name']); ?></td>
                             <!-- status since -->
-                            <td class="font-xs"
-                                data-original-title="<?php echo h($this->Time->format($host['Hoststatus'][0]['Hoststatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
-                                data-placement="bottom" rel="tooltip" data-container="body">
-                                <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($host['Hoststatus'][0]['Hoststatus']['last_state_change']))); ?>
+                            <td class="font-xs">
+                                <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastStateChange())); ?>
                             </td>
                             <!-- last check -->
-                            <td class="font-xs"><?php echo $this->Time->format($host['Hoststatus'][0]['Hoststatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+                            <td class="font-xs">
+                                <?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
+                            </td>
                             <!-- next check -->
-                            <td class="font-xs"><?php echo $this->Time->format($host['Hoststatus'][0]['Hoststatus']['next_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
+                            <td class="font-xs"><?php echo $this->Time->format($Hoststatus->getNextCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?>
+                            </td>
                         </tr>
 
                     <?php endforeach; ?>
