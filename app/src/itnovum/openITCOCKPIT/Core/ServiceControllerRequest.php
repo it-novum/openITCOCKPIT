@@ -48,6 +48,9 @@ class ServiceControllerRequest {
      * @return bool
      */
     public function isRequestFromBrowser(){
+        if(isset($this->request->query['BrowserContainerId'])){
+            return true;
+        }
         return isset($this->request->params['named']['BrowserContainerId']);
     }
 
@@ -55,7 +58,14 @@ class ServiceControllerRequest {
      * @return array
      */
     public function getBrowserContainerIdsByRequest(){
-        $containerIds = $this->request->params['named']['BrowserContainerId'];
+        if(isset($this->request->params['named']['BrowserContainerId'])){
+            $containerIds = $this->request->params['named']['BrowserContainerId'];
+        }
+
+        if(isset($this->request->query['BrowserContainerId'])){
+            $containerIds = $this->request->query['BrowserContainerId'];
+        }
+
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }

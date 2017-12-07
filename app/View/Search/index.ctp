@@ -190,21 +190,7 @@
                                 ?>
                             </div>
                         </div>
-                        <div class="padding-top-10"> <!-- spacer for nice layout --></div>
-                        <div class="padding-top-20"> <!-- spacer for nice layout --></div>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-9 col-lg-7">
-                                <strong><i class="fa fa-cog"></i> <?php echo __('Search for services'); ?>:</strong>
-                                <br/>
-                                <?php
-                                echo $this->Form->input('Servicekeywords', [
-                                    'label' => __('Service tags'),
-                                    'help'  => __('This is a wildcard search, you don\'t need to add * or %. Use comma (,) as delimiter.'),
-                                ]);
 
-                                ?>
-                            </div>
-                        </div>
                         <div class="padding-top-20"> <!-- spacer for nice layout --></div>
                         <?php echo $this->Form->formActions(__('Search'), ['cancelButton' => false]); ?>
                     </div>

@@ -40,51 +40,42 @@
     </ol>
     <ol class="menustats">
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                            => 'services',
-                'action'                                => 'index',
-                'plugin'                                => '',
-                'Filter.Servicestatus.current_state[1]' => 1,
-                'Filter.Servicestatus.current_state[2]' => 1,
-                'Filter.Servicestatus.current_state[3]' => 1,
-                'sort'                                  => 'Servicestatus.last_state_change',
-                'direction'                             => 'desc'
+            <a href="/services/index<?php echo Router::queryString([
+                'sort' => 'Servicestatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" style="color:#bbb;">
                 <i class="fa fa-cog fa-lg"></i>
             </a>
         </li>
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                            => 'services',
-                'action'                                => 'index',
-                'plugin'                                => '',
-                'Filter.Servicestatus.current_state[1]' => 1,
-                'sort'                                  => 'Servicestatus.last_state_change',
-                'direction'                             => 'desc'
+            <a href="/services/index<?php echo Router::queryString([
+                'filter' => [
+                    'Servicestatus.current_state' => [1 => 'warning']
+                ],
+                'sort' => 'Servicestatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" class="btn btn-warning btn-xs">
                 {{ servicestatusCount['1'] }}
             </a>
         </li>
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                            => 'services',
-                'action'                                => 'index',
-                'plugin'                                => '',
-                'Filter.Servicestatus.current_state[2]' => 1,
-                'sort'                                  => 'Servicestatus.last_state_change',
-                'direction'                             => 'desc'
+            <a href="/services/index<?php echo Router::queryString([
+                'filter' => [
+                    'Servicestatus.current_state' => [2 => 'critical']
+                ],
+                'sort' => 'Servicestatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" class="btn btn-danger btn-xs">
                 {{ servicestatusCount['2'] }}
             </a>
         </li>
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                            => 'services',
-                'action'                                => 'index',
-                'plugin'                                => '',
-                'Filter.Servicestatus.current_state[3]' => 1,
-                'sort'                                  => 'Servicestatus.last_state_change',
-                'direction'                             => 'desc'
+            <a href="/services/index<?php echo Router::queryString([
+                'filter' => [
+                    'Servicestatus.current_state' => [3 => 'unknown']
+                ],
+                'sort' => 'Servicestatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" class="btn btn-default btn-xs">
                 {{ servicestatusCount['3'] }}
             </a>

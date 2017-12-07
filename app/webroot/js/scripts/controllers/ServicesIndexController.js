@@ -2,35 +2,31 @@ angular.module('openITCOCKPIT')
     .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort('Servicestatus.current_state');
-        SortService.setDirection('desc');
+        SortService.setSort(QueryStringService.getValue('sort', 'Servicestatus.current_state'));
+        SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
         $scope.id = QueryStringService.getCakeId();
+
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
                 Servicestatus: {
-                    current_state: {
-                        ok: false,
-                        warning: false,
-                        critical: false,
-                        unknown: false
-                    },
-                    acknowledged: false,
-                    not_acknowledged: false,
-                    in_downtime: false,
-                    not_in_downtime: false,
-                    passive: false,
+                    current_state: QueryStringService.servicestate(),
+                    acknowledged: QueryStringService.getValue('has_been_acknowledged', false) === '1',
+                    not_acknowledged: QueryStringService.getValue('has_not_been_acknowledged', false) === '1',
+                    in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
+                    not_in_downtime: QueryStringService.getValue('not_in_downtime', false) === '1',
+                    passive: QueryStringService.getValue('passive', false) === '1',
                     output: ''
                 },
                 Service: {
-                    name: '',
+                    name: QueryStringService.getValue('filter[Service.servicename]', ''),
                     keywords: ''
                 },
                 Host: {
-                    name: ''
+                    name: QueryStringService.getValue('filter[Host.name]', '')
                 }
             };
         };
@@ -144,21 +140,26 @@ angular.module('openITCOCKPIT')
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
+            var params = {
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.servicename]': $scope.filter.Service.name,
+                'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
+                'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
+                'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
+                'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
+                'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
+                'filter[Servicestatus.active_checks_enabled]': passive
+            };
+            if(QueryStringService.hasValue('BrowserContainerId')){
+                params['BrowserContainerId'] = QueryStringService.getValue('BrowserContainerId');
+            }
+
             $http.get("/services/index.json", {
-                params: {
-                    'angular': true,
-                    'sort': SortService.getSort(),
-                    'page': $scope.currentPage,
-                    'direction': SortService.getDirection(),
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[Service.servicename]': $scope.filter.Service.name,
-                    'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
-                    'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
-                    'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
-                    'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
-                    'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
-                    'filter[Servicestatus.active_checks_enabled]': passive
-                }
+                params: params
             }).then(function(result){
                 $scope.services = [];
                 $scope.serverResult = result.data.all_services;
