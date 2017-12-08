@@ -1464,6 +1464,10 @@ class Service extends AppModel {
             ],
             'limit' => self::ITN_AJAX_LIMIT
         ];
+
+        if($ServiceConditions->hasNotConditions()){
+            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        }
         $servicesWithLimit = $this->find('all', $query);
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
