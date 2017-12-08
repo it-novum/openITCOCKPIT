@@ -51,7 +51,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
     _initialize: function () {
         var self = this;
 
+        //this.foobar([1,15]);
+
         this.Ajaxloader.setup();
+
+        this.loadElementHostsByAjax();
+        this.loadGadgetHostsByAjax();
+        this.loadLineHostsByAjax();
 
         $(document).on('click', '.background', function () {
             self.changeBackground({el: this});
@@ -558,7 +564,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addHostX').val(self.current['x']);
                     $('#addHostY').val(self.current['y']);
                     if ('object_id' in self.current) {
-                        $('#addHostObjectId').val(self.current['object_id']).trigger('chosen:updated');
+                        var selector = '#addHostObjectId';
+                        $selector = $(selector);
+                        self.loadInitialData(self.current['object_id'], selector, function(){
+                            $selector.val(self.current['object_id']).trigger('chosen:updated');
+                        });
                     }
                     //Selected iconset in chosen selectbox
                     $('#addHostIconset').val(self.current['iconset']).trigger("chosen:updated");
@@ -572,10 +582,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceX').val(self.current['x']);
                     $('#addServiceY').val(self.current['y']);
                     if ('host_object_id' in self.current) {
-                        //insert the host for the service
-                        $('#addServiceHostObjectId').val(self.current['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceHostObjectId').change();
+                        var selector = '#addServiceHostObjectId';
+                        $selector = $(selector);
+                        self.loadInitialData(self.current['host_object_id'], selector, function(){
+                            //insert the host for the service
+                            $selector.val(self.current['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $selector.change();
+                        });
                     }
                     if ('object_id' in self.current) {
                         $('#addServiceObjectId').val(self.current['object_id']).trigger('chosen:updated');
@@ -650,7 +664,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addHostLineStartY').val(self.currentLine['startY']);
                     $('#addHostLineEndY').val(self.currentLine['endY']);
                     if ('object_id' in self.currentLine) {
-                        $('#addHostLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
+                        var selector = '#addHostLineObjectId';
+                        $selector = $(selector);
+                        self.loadInitialData(self.currentLine['object_id'], selector, function(){
+                            $selector.val(self.currentLine['object_id']).trigger('chosen:updated');
+                        });
                     }
                     //hide other forms
                     $('#addLine_service').hide();
@@ -664,10 +682,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceLineStartY').val(self.currentLine['startY']);
                     $('#addServiceLineEndY').val(self.currentLine['endY']);
                     if ('host_object_id' in self.currentLine) {
-                        //insert the host for the service
-                        $('#addServiceLineHostObjectId').val(self.currentLine['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceLineHostObjectId').change();
+                        var selector = '#addServiceLineHostObjectId';
+                        $selector = $(selector);
+                        self.loadInitialData(self.currentLine['host_object_id'], selector, function(){
+                            //insert the host for the service
+                            $selector.val(self.currentLine['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $selector.change();
+                        });
                     }
 
                     if ('object_id' in self.currentLine) {
@@ -745,11 +767,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 case 'service':
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
                     $('#addServiceGadgetY').val(self.currentGadget['y']);
+
                     if ('host_object_id' in self.currentGadget) {
-                        //insert the host for the service
-                        $('#addServiceGadgetHostObjectId').val(self.currentGadget['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceGadgetHostObjectId').change();
+
+                        self.loadInitialData(self.currentGadget['host_object_id'], '#addServiceGadgetHostObjectId', function(){
+                            //insert the host for the service
+                            $('#addServiceGadgetHostObjectId').val(self.currentGadget['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $('#addServiceGadgetHostObjectId').change();
+                        });
+
                     }
 
                     if ('object_id' in self.currentGadget) {
@@ -1325,6 +1352,177 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
     },
 
+    loadLineHostsByAjax:function(){
+        var LineAjaxObj = new ChosenAjax({
+            id: 'addHostLineObjectId' //Target select box
+        });
+
+        LineAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    LineAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+        LineAjaxObj.render();
+
+
+        var LineServiceHostsAjaxObj = new ChosenAjax({
+            id: 'addServiceLineHostObjectId' //Target select box
+        });
+
+        LineServiceHostsAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    LineServiceHostsAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+        LineServiceHostsAjaxObj.render();
+    },
+
+    loadGadgetHostsByAjax: function(selectedHostIds){
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        var GadgetAjaxObj = new ChosenAjax({
+            id: 'addServiceGadgetHostObjectId' //Target select box
+        });
+
+        GadgetAjaxObj.setSelected(selectedHostIds);
+
+        GadgetAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': selectedHostIds //ids
+                },
+                success: function(response){
+                    console.log(response.hosts);
+                    GadgetAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+        GadgetAjaxObj.render();
+    },
+
+    loadInitialData: function(selectedHostIds, selector, callback){
+        var self = this;
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadHostsByString.json',
+            data: {
+                'angular': true,
+                'selected[]': selectedHostIds //ids
+            },
+            success: function(response){
+                console.log(response.hosts);
+                $selector = $(selector);
+                var list = self.buildList(response.hosts);
+                $selector.append(list);
+                $selector.val(selectedHostIds);
+                $selector.trigger('chosen:updated');
+                if(callback != undefined){
+                    callback();
+                }
+            }
+        });
+    },
+
+
+    buildList: function(data){
+        var html = '';
+        for(var i in data){
+            console.log(data[i]);
+            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+        }
+        return html;
+    },
+
+    loadElementHostsByAjax: function(){
+        var ElementAjaxObj = new ChosenAjax({
+            id: 'addHostObjectId' //Target select box
+        });
+
+        ElementAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    ElementAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+
+        ElementAjaxObj.render();
+
+        var ElementServiceHostsAjaxObj = new ChosenAjax({
+            id: 'addServiceHostObjectId' //Target select box
+        });
+
+        ElementServiceHostsAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    ElementServiceHostsAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+
+        ElementServiceHostsAjaxObj.render();
+    },
+
     getGadgetUuidFromDataUuid: function(dataFieldUuid){
         if($('#'+dataFieldUuid).length > 0){
             var gadgetId = $('#'+dataFieldUuid).data('gadgetid');
@@ -1788,12 +1986,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         $.ajax({
             url: "/map_module/mapeditors/hostFromService/" + encodeURIComponent(serviceObjectId),
             type: "POST",
-            dataType: "html",
+            //dataType: "json",
             error: function () {
             },
             success: function () {
             },
             complete: function (response) {
+                console.log(response);
                 switch (type) {
                     case 'element':
                         self.current['host_object_id'] = response.responseText;
@@ -1808,6 +2007,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $('#LineWizardChoseType').trigger("change");
                         break;
                     case 'gadget':
+
                         self.currentGadget['host_object_id'] = response.responseText;
                         $('#GadgetWizardChoseType').val(self.currentGadget.type);
                         $('#GadgetWizardChoseType').trigger("chosen:updated");
