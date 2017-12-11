@@ -51,9 +51,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
     _initialize: function () {
         var self = this;
 
-        //this.foobar([1,15]);
-
         this.Ajaxloader.setup();
+
+        //load initial data
+        this.loadInitialData('#addHostObjectId');
+        this.loadInitialData('#addServiceHostObjectId');
+        this.loadInitialData('#addHostLineObjectId');
+        this.loadInitialData('#addServiceLineHostObjectId');
+        this.loadInitialData('#addServiceGadgetHostObjectId');
 
         this.loadElementHostsByAjax();
         this.loadGadgetHostsByAjax();
@@ -565,8 +570,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addHostY').val(self.current['y']);
                     if ('object_id' in self.current) {
                         var selector = '#addHostObjectId';
-                        $selector = $(selector);
-                        self.loadInitialData(self.current['object_id'], selector, function(){
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.current['object_id'], function(){
                             $selector.val(self.current['object_id']).trigger('chosen:updated');
                         });
                     }
@@ -583,8 +588,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceY').val(self.current['y']);
                     if ('host_object_id' in self.current) {
                         var selector = '#addServiceHostObjectId';
-                        $selector = $(selector);
-                        self.loadInitialData(self.current['host_object_id'], selector, function(){
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.current['host_object_id'], function(){
                             //insert the host for the service
                             $selector.val(self.current['host_object_id']).trigger('chosen:updated');
                             //trigger change event so that the services can be loaded
@@ -665,8 +670,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addHostLineEndY').val(self.currentLine['endY']);
                     if ('object_id' in self.currentLine) {
                         var selector = '#addHostLineObjectId';
-                        $selector = $(selector);
-                        self.loadInitialData(self.currentLine['object_id'], selector, function(){
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentLine['object_id'], function(){
                             $selector.val(self.currentLine['object_id']).trigger('chosen:updated');
                         });
                     }
@@ -683,8 +688,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceLineEndY').val(self.currentLine['endY']);
                     if ('host_object_id' in self.currentLine) {
                         var selector = '#addServiceLineHostObjectId';
-                        $selector = $(selector);
-                        self.loadInitialData(self.currentLine['host_object_id'], selector, function(){
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentLine['host_object_id'], function(){
                             //insert the host for the service
                             $selector.val(self.currentLine['host_object_id']).trigger('chosen:updated');
                             //trigger change event so that the services can be loaded
@@ -770,11 +775,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                     if ('host_object_id' in self.currentGadget) {
 
-                        self.loadInitialData(self.currentGadget['host_object_id'], '#addServiceGadgetHostObjectId', function(){
+                        var selector = '#addServiceGadgetHostObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentGadget['host_object_id'], function(){
                             //insert the host for the service
-                            $('#addServiceGadgetHostObjectId').val(self.currentGadget['host_object_id']).trigger('chosen:updated');
+                            $selector.val(self.currentGadget['host_object_id']).trigger('chosen:updated');
                             //trigger change event so that the services can be loaded
-                            $('#addServiceGadgetHostObjectId').change();
+                            $selector.change();
                         });
 
                     }
@@ -1137,6 +1144,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
 
         $('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function () {
+            console.log('change for host dropdown');
             var triggeredType = this.id;
 
             var hostId = $(this).val();
@@ -1393,6 +1401,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 },
                 success: function(response){
                     LineServiceHostsAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceLineHostObjectId').trigger('change');
+                    }
                 }
             });
         });
@@ -1426,15 +1438,18 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     'selected[]': selectedHostIds //ids
                 },
                 success: function(response){
-                    console.log(response.hosts);
                     GadgetAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceGadgetHostObjectId').trigger('change');
+                    }
                 }
             });
         });
         GadgetAjaxObj.render();
     },
 
-    loadInitialData: function(selectedHostIds, selector, callback){
+    loadInitialData: function(selector, selectedHostIds, callback){
         var self = this;
         if(selectedHostIds == null || selectedHostIds.length < 1){
             selectedHostIds = [];
@@ -1452,12 +1467,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 'selected[]': selectedHostIds //ids
             },
             success: function(response){
-                console.log(response.hosts);
-                $selector = $(selector);
+                var $selector = $(selector);
                 var list = self.buildList(response.hosts);
                 $selector.append(list);
                 $selector.val(selectedHostIds);
                 $selector.trigger('chosen:updated');
+
                 if(callback != undefined){
                     callback();
                 }
@@ -1469,7 +1484,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
     buildList: function(data){
         var html = '';
         for(var i in data){
-            console.log(data[i]);
             html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
         }
         return html;
@@ -1516,6 +1530,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 },
                 success: function(response){
                     ElementServiceHostsAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceHostObjectId').trigger('change');
+                    }
                 }
             });
         });
