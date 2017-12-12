@@ -3111,4 +3111,25 @@ class ServicesController extends AppController {
         $this->set(compact(['services']));
         $this->set('_serialize', ['services']);
     }
+
+    public function loadServicesByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $selected = $this->request->query('selected');
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setContainerIds($this->MY_RIGHTS);
+        $ServiceCondition->includeDisabled(true);
+
+        $services = $this->Service->makeItJavaScriptAble(
+            $this->Service->getServicesForAngular($ServiceCondition, $selected)
+        );
+
+
+        $this->set(compact(['services']));
+        $this->set('_serialize', ['services']);
+    }
 }

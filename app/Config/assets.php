@@ -105,6 +105,7 @@ $config = [
             'vendor/gauge/gauge.min.js',
             'vendor/lodash/lodash.min.js',
             'vendor/gridstack/dist/gridstack.min.js',
+            'lib/ChosenAjax.js',
         ],
         'jsFrontendPluginDependent' => [],
     ],
