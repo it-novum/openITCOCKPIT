@@ -48,19 +48,77 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Map', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('container_id', ['options' => $container, 'multiple' => true, 'class' => 'chosen', 'style' => 'width:100%;', 'label' => __('Container')]);
-            echo $this->Form->input('Map.name', ['label' => __('Map Name')]);
-            echo $this->Form->input('Map.title', ['label' => __('Map Title')]);
-            echo $this->Form->input('Map.refresh_interval', ['label' => __('Refresh interval'), 'type' => 'number', 'min' => 10, 'max' => 180, 'step' => 5, 'value' => 90]);
-            ?>
-            <br>
-            <br>
-            <?php echo $this->Form->formActions(); ?>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.Map.container_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="MapContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Map.container_id"
+                                    multiple>
+                            </select>
+                            <div ng-repeat="error in errors.Map.container_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Map.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Map Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Map.name">
+                            <div ng-repeat="error in errors.Map.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.Map.title}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Map Title'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Map.title">
+                            <div ng-repeat="error in errors.Map.title">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Refresh interval'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="number" ng-model="post.Map.refresh_interval" min="10" max="180" step="5">
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <a href="map_module/maps/index" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
