@@ -21,7 +21,8 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
-use itnovum\openITCOCKPIT\Core\SessionCache;
+
+use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class AngularController
@@ -33,10 +34,6 @@ use itnovum\openITCOCKPIT\Core\SessionCache;
 class AngularController extends AppController {
 
     public $layout = 'blank';
-
-    public $components = [
-        'Session'
-    ];
 
     public function paginator() {
         //Return HTML Template for PaginatorDirective
@@ -225,15 +222,17 @@ class AngularController extends AppController {
             return;
         }
 
-        $SessionCache = new SessionCache('Menu', $this->Session, 300);
-        if (!$SessionCache->has('items')) {
+        $User = new User($this->Auth);
+        $cacheKey = sprintf('Menu_%s', $User->getId());
+
+        if (!Cache::read($cacheKey, 'permissions')) {
             $menu = $this->Menu->compileMenu();
             $menu = $this->Menu->filterMenuByAcl($menu, $this->PERMISSIONS, true);
             $menu = $this->Menu->forAngular($menu);
-            $SessionCache->set('items', $menu);
+            Cache::write($cacheKey, $menu, 'permissions');
         }
 
-        $menu = $SessionCache->get('items');
+        $menu = Cache::read($cacheKey, 'permissions');
 
         $this->set('menu', $menu);
         $this->set('_serialize', ['menu']);
@@ -245,12 +244,11 @@ class AngularController extends AppController {
             return;
         }
 
-        $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
-        if ($SessionCache->isEmpty()) {
-            $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
+        if (!Cache::read('systemsettings', 'permissions')) {
+            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
         }
 
-        $systemsettings = $SessionCache->get('systemsettings');
+        $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
         $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
 

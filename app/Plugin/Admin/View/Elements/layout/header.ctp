@@ -26,7 +26,10 @@
 ?>
 <header id="header">
     <div id="logo-group">
-        <span id="logo"><?php echo $systemname; ?></span>
+        <span id="logo">
+            <div id="logo-image"></div>
+            <p id="logo-text"><?php echo $systemname; ?></p>
+        </span>
     </div>
 
     <?php if ($loggedIn): ?>

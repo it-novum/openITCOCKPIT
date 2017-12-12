@@ -35,7 +35,7 @@ App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\SessionCache;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * @property User $User
@@ -179,10 +179,11 @@ class AppController extends Controller {
     protected function __getUserRights() {
         //The user is logedIn, so we need to select container permissions out of DB
         $_user = $this->User->findById($this->Auth->user('id'));
+        $User = new User($this->Auth);
 
-        $SessionCache = new SessionCache('Permissions', $this->Session, 300);
+        $cacheKey = 'userPermissions_' . $User->getId();
 
-        if ($SessionCache->isEmpty()) {
+        if (!Cache::read($cacheKey, 'permissions')) {
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
@@ -250,10 +251,13 @@ class AppController extends Controller {
                 }
             }
 
-            $SessionCache->set('MY_RIGHTS', array_unique($rights));
-            $SessionCache->set('MY_RIGHTS_LEVEL', $rights_levels);
-            $SessionCache->set('PERMISSIONS', $permissions);
-            $SessionCache->set('hasRootPrivileges', $this->hasRootPrivileges);
+            $permissionsForCache = [
+                'MY_RIGHTS' => array_unique($rights),
+                'MY_RIGHTS_LEVEL' => $rights_levels,
+                'PERMISSIONS' => $permissions,
+                'hasRootPrivileges' => $this->hasRootPrivileges
+            ];
+            Cache::write($cacheKey, $permissionsForCache, 'permissions');
         }
 
         if (!empty($this->Auth->user('paginatorlength'))) {
@@ -270,11 +274,12 @@ class AppController extends Controller {
             $this->Paginator->settings['limit'] = 25;
         }
 
+        $permissionsFromCache = Cache::read($cacheKey, 'permissions');
         $this->userLimit = (int)$this->Paginator->settings['limit'];
-        $this->MY_RIGHTS = $SessionCache->get('MY_RIGHTS');
-        $this->MY_RIGHTS_LEVEL = $SessionCache->get('MY_RIGHTS_LEVEL');
-        $this->PERMISSIONS = $SessionCache->get('PERMISSIONS');
-        $this->hasRootPrivileges = $SessionCache->get('hasRootPrivileges');
+        $this->MY_RIGHTS = $permissionsFromCache['MY_RIGHTS'];
+        $this->MY_RIGHTS_LEVEL = $permissionsFromCache['MY_RIGHTS_LEVEL'];
+        $this->PERMISSIONS = $permissionsFromCache['PERMISSIONS'];
+        $this->hasRootPrivileges = $permissionsFromCache['hasRootPrivileges'];
         $this->set('hasRootPrivileges', $this->hasRootPrivileges);
         $this->set('aclPermissions', $this->PERMISSIONS);
         $this->set('MY_RIGHTS_LEVEL', $this->MY_RIGHTS_LEVEL);
@@ -286,12 +291,11 @@ class AppController extends Controller {
      */
 
     protected function _beforeAction() {
-        $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
-        if ($SessionCache->isEmpty()) {
-            $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
+        if (!Cache::read('systemsettings', 'permissions')) {
+            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
         }
+        $systemsettings = Cache::read('systemsettings', 'permissions');
 
-        $systemsettings = $SessionCache->get('systemsettings');
         $this->systemname = $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'];
 
         $this->exportRunningHeaderInfo = false;
@@ -336,11 +340,12 @@ class AppController extends Controller {
         //Add Websocket Information
         if ($this->Auth->loggedIn()) {
             $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
-            $SessionCache = new SessionCache('Systemsettings', $this->Session, 600);
-            if ($SessionCache->isEmpty()) {
-                $SessionCache->set('systemsettings', $this->Systemsetting->findAsArray());
+
+            if (!Cache::read('systemsettings', 'permissions')) {
+                Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
             }
-            $systemsettings = $SessionCache->get('systemsettings');
+            $systemsettings = Cache::read('systemsettings', 'permissions');
+
             $this->Frontend->setJson('akey', $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']);
 
         }

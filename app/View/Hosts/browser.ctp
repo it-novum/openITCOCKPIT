@@ -725,7 +725,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                     data-sort="<?php echo $Servicestatus->getLastStateChange();?>"
                                                                 >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
-                                                                    <?php echo strtotime($Servicestatus->getLastStateChange());?></td>
+                                                                    </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>
