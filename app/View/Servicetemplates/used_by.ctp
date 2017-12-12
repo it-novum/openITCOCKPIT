@@ -134,7 +134,7 @@
                             </div>
                         <?php endif; ?>
                         <div class="padding-top-10"></div>
-                        <?php echo $this->element('servicetemplate_mass_changes'); ?>
+                        <?php echo $this->element('service_mass_changes'); ?>
                         <div class="padding-top-10"></div>
 
                     </div>

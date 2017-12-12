@@ -29,7 +29,8 @@ App.Controllers.ServicetemplatesUsedByController = Frontend.AppController.extend
 	_initialize: function() {
 		this.Masschange.setup({
 			'controller': 'services',
-			'checkboxattr': 'servicename'
+			'checkboxattr': 'servicename',
+            'storeUuidsAsArray': true
 		});
 	}
 });
