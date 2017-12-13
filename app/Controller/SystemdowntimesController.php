@@ -112,6 +112,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function addHostdowntime() {
+        $this->layout = 'angularjs';
         $selected = $this->request->data('Systemdowntime.object_id');
         if(empty($selected) && !empty($this->request->params['named']['host_id'])){
             $selected[] = $this->request->params['named']['host_id'];
