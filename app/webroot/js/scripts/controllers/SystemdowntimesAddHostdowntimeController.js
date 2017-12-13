@@ -23,7 +23,8 @@ angular.module('openITCOCKPIT')
             FromDate: null,
             FromTime: null,
             ToDate: null,
-            ToTime: null
+            ToTime: null,
+            SuggestedHosts: {}
         };
 
         $scope.post = {
@@ -81,10 +82,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHostlist = function(needle){
-            $http.post("/hosts/loadHostsByString.json?angular=true", {
-                'filter[Host.name]': needle
+            $http.get("/hosts/loadHostsByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Host.name]': needle
+                }
             }).then(function(result){
                 console.log(result.data.hosts);
+                $scope.Downtime.SuggestedHosts=result.data.hosts;
                 /*
                 $timeout(function(){
                     $('#nodeCreatedFlashMessage').hide();
@@ -98,10 +103,6 @@ angular.module('openITCOCKPIT')
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }*/
-            });
-
-            $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant + '.json').then(function(result){
-                $scope.containerlist = result.data.paths;
             });
         };
 

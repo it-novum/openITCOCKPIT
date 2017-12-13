@@ -78,8 +78,8 @@
                                     id="ContainerId"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
+                                    chosen="Downtime.SuggestedHosts"
+                                    ng-options="host.key as host.value for host in Downtime.SuggestedHosts"
                                     ng-model="Downtime.Hostname">
                             </select>
                             <div ng-repeat="error in errors.container_id">
