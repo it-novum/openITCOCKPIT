@@ -80,7 +80,26 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadContainerlist = function(){
+        $scope.loadHostlist = function(needle){
+            $http.post("/hosts/loadHostsByString.json?angular=true", {
+                'filter[Host.name]': needle
+            }).then(function(result){
+                console.log(result.data.hosts);
+                /*
+                $timeout(function(){
+                    $('#nodeCreatedFlashMessage').hide();
+                },3000);
+                $scope.errors = null;
+                */
+            }, function errorCallback(result){
+                console.log(result);
+                console.log("badguy");
+                /*
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }*/
+            });
+
             $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant + '.json').then(function(result){
                 $scope.containerlist = result.data.paths;
             });
@@ -103,4 +122,58 @@ angular.module('openITCOCKPIT')
             }
         });
 
+        $( document ).ready(function(){
+
+            var $ = window.jQuery || window.Cowboy || ( window.Cowboy = {} ), jq_throttle;
+            $.throttle = jq_throttle = function( delay, no_trailing, callback, debounce_mode ) {
+                var timeout_id,
+                    last_exec = 0;
+                if ( typeof no_trailing !== 'boolean' ) {
+                    debounce_mode = callback;
+                    callback = no_trailing;
+                    no_trailing = undefined;
+                }
+                function wrapper() {
+                    var that = this,
+                        elapsed = +new Date() - last_exec,
+                        args = arguments;
+                    function exec() {
+                        last_exec = +new Date();
+                        callback.apply( that, args );
+                    };
+                    function clear() {
+                        timeout_id = undefined;
+                    };
+
+                    if ( debounce_mode && !timeout_id ) {
+                        exec();
+                    }
+                    timeout_id && clearTimeout( timeout_id );
+                    if ( debounce_mode === undefined && elapsed > delay ) {
+                        exec();
+                    } else if ( no_trailing !== true ) {
+                        timeout_id = setTimeout( debounce_mode ? clear : exec, debounce_mode === undefined ? delay - elapsed : delay );
+                    }
+                };
+                if ( $.guid ) {
+                    wrapper.guid = callback.guid = callback.guid || $.guid++;
+                }
+                return wrapper;
+            };
+
+            $.debounce = function( delay, at_begin, callback ) {
+                return callback === undefined
+                    ? jq_throttle( delay, at_begin, false )
+                    : jq_throttle( delay, callback, at_begin !== false );
+            };
+
+            var search = $('select').chosen().data('chosen');
+            search.search_field.on('keyup', $.debounce( 250, function(e){
+                var needle = $(this).val();
+                if(needle != false){
+                    console.log(needle);
+                    $scope.loadHostlist(needle);
+                }
+            } ));
+        });
     });
