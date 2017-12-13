@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 class GrafanaConfigurationController extends GrafanaModuleAppController {
 
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
 
     public $uses = [
         'Hostgroup',
@@ -45,11 +45,11 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
     public function index() {
         $hostgroups = $this->Hostgroup->findList([
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
-            'order' => [
+            'order'      => [
                 'Container.name' => 'asc',
             ],
             'conditions' => [
@@ -67,7 +67,7 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
@@ -93,8 +93,8 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                 }
                 $this->redirect([
                     'controller' => 'grafana_configuration',
-                    'action' => 'index',
-                    'plugin' => 'grafana_module'
+                    'action'     => 'index',
+                    'plugin'     => 'grafana_module'
                 ]);
             }
         } else {
@@ -104,16 +104,43 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             }
         }
 
+        $this->set('grafanaConfiguration', $grafanaConfiguration);
+        $this->set('_serialize', ['grafanaConfiguration']);
         $this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
-        $this->set(compact(['hostgroups']));
+        // $this->set(compact(['hostgroups']));
     }
 
-    public function testGrafanaConnection(){
+    public function loadHostgroups() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $hostgroups = $this->Hostgroup->findList([
+            'recursive'  => -1,
+            'contain'    => [
+                'Container'
+            ],
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ]);
+
+        $hostgroups = $this->Container->makeItJavaScriptAble($hostgroups);
+
+        $this->set('hostgroups', $hostgroups);
+        $this->set('_serialize', ['hostgroups']);
+    }
+
+    public function testGrafanaConnection() {
         $this->autoRender = false;
         $this->allowOnlyAjaxRequests();
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
@@ -123,10 +150,10 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         if ($client instanceof Client) {
             $status = ['status' => true];
         } else {
-            $client = (json_decode($client))?json_decode($client):['message' => $client];
+            $client = (json_decode($client)) ? json_decode($client) : ['message' => $client];
             $status = [
                 'status' => false,
-                'msg' => $client
+                'msg'    => $client
             ];
         }
 
