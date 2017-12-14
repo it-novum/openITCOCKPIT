@@ -14,10 +14,9 @@ angular.module('openITCOCKPIT')
                 Hostgroup: [],
                 Hostgroup_excluded: [],
             },
-            GrafanaConfigurationHostgroupMembership: {
-
-            }
         };
+
+        $scope.connectionSuccessful = null;
 
         $scope.load = function(){
             $http.get("/grafana_module/grafana_configuration/index.json", {
@@ -60,13 +59,17 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
-
-                console.log($scope.hostgroups);
             });
         };
 
         $scope.checkGrafanaConnection = function(){
-            alert('test');
+            $http.post("/grafana_module/grafana_configuration/testGrafanaConnection.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                $scope.connectionSuccessful = result.data.status.status;
+                console.log(result.data.status.status);
+                console.log(result.data.status);
+            });
         };
 
         $scope.submit = function(){
@@ -88,5 +91,5 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('post', function(){
             console.log($scope.post);
-        },true);
+        }, true);
     });
