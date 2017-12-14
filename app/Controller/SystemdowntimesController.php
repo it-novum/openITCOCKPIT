@@ -51,7 +51,7 @@ class SystemdowntimesController extends AppController {
         'CustomValidationErrors',
         'Uuid',
     ];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
 
     public function index() {
         $paginatorLimit = $this->Paginator->settings['limit'];
@@ -111,15 +111,32 @@ class SystemdowntimesController extends AppController {
         $this->set('paginatorLimit',$paginatorLimit);
     }
 
+    public function getHostdowntimeRefillData(){
+        $this->autoRender = false;
+        if(!$this->isAngularJsRequest()){
+            return;
+        }
+
+        $refill=[
+            'from_date' => date('d.m.Y'),
+            'from_time' => date('H:i'),
+            'to_date' => date('d.m.Y'),
+            'to_time' => date('H:i',time() + 60 * 15),
+            'comment' => __('In maintenance')
+        ];
+
+        echo json_encode($refill);
+    }
+
     public function addHostdowntime() {
-        $this->layout = 'angularjs';
+
         $selected = $this->request->data('Systemdowntime.object_id');
         if(empty($selected) && !empty($this->request->params['named']['host_id'])){
             $selected[] = $this->request->params['named']['host_id'];
         }
 
         $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype',$preselectedDowntimetype['Systemsetting']['value']);
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
 
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
@@ -155,8 +172,10 @@ class SystemdowntimesController extends AppController {
                 $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
             $this->request->data = $this->_rewritePostData();
+            //var_dump($this->request['data']);
+
             //Try validate the data:
-            foreach ($this->request->data as $request) {
+            foreach ($this->request['data'] as $request) {
                 if ($request['Systemdowntime']['is_recurring']) {
                     $this->Systemdowntime->validate = Hash::merge(
                         $this->Systemdowntime->validate,
@@ -177,6 +196,7 @@ class SystemdowntimesController extends AppController {
                     );
                 }
                 $this->Systemdowntime->set($request);
+
                 if ($this->Systemdowntime->validates()) {
                     /* The data is valide and we can save it.
                      * We need to use the foreach, becasue validates() cant handel saveAll() data :(
@@ -186,7 +206,6 @@ class SystemdowntimesController extends AppController {
                      * these guys we want to save in our systemdowntimestable
                      * Normal downtimes, will be sent to sudo_servers unix socket.
                      */
-
                     if ($request['Systemdowntime']['is_recurring'] == 1) {
                         $this->Systemdowntime->create();
                         $this->Systemdowntime->save($request);
