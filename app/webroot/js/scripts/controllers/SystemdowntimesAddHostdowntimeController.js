@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT')
         $scope.Downtime = {
             Type1: null,
             Type2: null,
+            host_id: null,
             Recurring: {
                 Style: {
                     "display": "none"
@@ -19,7 +20,9 @@ angular.module('openITCOCKPIT')
         post.Systemdowntime.day_of_month
         */
         $scope.post = {
-            angular: true,
+            params: {
+                'angular': true
+            },
             Systemdowntime: {
                 is_recurring: false,
                 weekdays: {},
@@ -31,8 +34,9 @@ angular.module('openITCOCKPIT')
                 downtimetype: 'host',
                 downtimetype_id: 0,
                 objecttype_id: null,
-                object_id: null,
-                comment: null
+                object_id: {},
+                comment: null,
+                author: "Root Wheel"
             }
         };
 
@@ -65,15 +69,19 @@ angular.module('openITCOCKPIT')
                 $scope.post.Systemdowntime.downtimetype_id="1";
             }
 
-            $http.post("/systemdowntimes/addHostdowntime", $scope.post).then(function(result){
-                //$('#nodeCreatedFlashMessage').show();
-                $scope.errors = null;
-            }, function errorCallback(result){
-                console.error(result);
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
+            $http.post("/systemdowntimes/addHostdowntime.json?angular=true", $scope.post).then(
+                function(result){
+                    //$('#nodeCreatedFlashMessage').show();
+                    window.location.href = '/downtimes/host';
+                    $scope.errors = null;
+                },
+                function errorCallback(result){
+                    console.error(result);
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
                 }
-            });
+            );
         };
 
         $scope.loadHostlist = function(needle){
@@ -97,11 +105,20 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('post.Systemdowntime.is_recurring', function(){
             if($scope.post.Systemdowntime.is_recurring === true){
+                $scope.post.Systemdowntime.is_recurring="1";
                 $scope.Downtime.Recurring.Style["display"]="block";
             }
             if($scope.post.Systemdowntime.is_recurring === false){
+                $scope.post.Systemdowntime.is_recurring="0";
                 $scope.Downtime.Recurring.Style["display"]="none";
             }
+        });
+
+        $scope.$watch('Downtime.host_id', function(){
+            //if($scope.post.Systemdowntime.object_id === parseInt($scope.post.Systemdowntime.object_id, 10)){
+            $scope.post.Systemdowntime.object_id = { 0: $scope.Downtime.host_id };
+            //}
+            console.log($scope.post.Systemdowntime.object_id);
         });
 
 

@@ -130,6 +130,10 @@ class SystemdowntimesController extends AppController {
 
     public function addHostdowntime() {
 
+        /*if($this->isAngularJsRequest()){
+            $this->autoRender = false;
+        }*/
+
         $selected = $this->request->data('Systemdowntime.object_id');
         if(empty($selected) && !empty($this->request->params['named']['host_id'])){
             $selected[] = $this->request->params['named']['host_id'];
@@ -162,8 +166,8 @@ class SystemdowntimesController extends AppController {
 
         }
 
-        $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
-        $this->set(compact(['hosts', 'selected']));
+  //      $hosts = $this->Host->hostsByContainerId($writeContainerIds, 'list');
+//        $this->set(compact(['hosts', 'selected']));
         $this->set('back_url', $this->referer());
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -171,11 +175,14 @@ class SystemdowntimesController extends AppController {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
                 $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
+            var_dump($this->request->data);
+
             $this->request->data = $this->_rewritePostData();
-            //var_dump($this->request['data']);
 
             //Try validate the data:
-            foreach ($this->request['data'] as $request) {
+            foreach ($this->request->data as $request) {  //$this->request['data']      $this->request->data
+
+                var_dump($request);
                 if ($request['Systemdowntime']['is_recurring']) {
                     $this->Systemdowntime->validate = Hash::merge(
                         $this->Systemdowntime->validate,
@@ -196,6 +203,7 @@ class SystemdowntimesController extends AppController {
                     );
                 }
                 $this->Systemdowntime->set($request);
+
 
                 if ($this->Systemdowntime->validates()) {
                     /* The data is valide and we can save it.
@@ -233,18 +241,34 @@ class SystemdowntimesController extends AppController {
                                 'author'       => $this->Auth->user('full_name'),
                             ];
                             $this->GearmanClient->sendBackground('createHostDowntime',$payload);
+
+
+                        }
+                        if ($this->request->ext === 'json') {
+                            if ($this->isAngularJsRequest()) {
+                                $this->setFlash(__('Downtime successfully saved'));
+                            }
+                            $this->serializeId();
+                            return;
                         }
                     }
                 } else {
+                    /*if ($this->request->ext === 'json') {
+                        $this->serializeErrorMessage();
+                        return;
+                    }
+                    $this->setFlash(__('could not save data'), false);*/
                     $this->setFlash(__('Downtime could not be saved'),false);
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
+                    //var_dump($this->validationErrors);
                     return;
                 }
             }
-            $this->setFlash(__('Downtime successfully saved'));
-            $this->redirect(['controller' => 'downtimes','action' => 'index']);
+
+            //$this->setFlash(__('Downtime successfully saved'));
+           // $this->redirect(['controller' => 'downtimes','action' => 'index']);
         }
     }
 

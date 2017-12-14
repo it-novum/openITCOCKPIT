@@ -81,7 +81,7 @@
                                     class="form-control"
                                     chosen="Downtime.SuggestedHosts"
                                     ng-options="host.key as host.value for host in Downtime.SuggestedHosts"
-                                    ng-model="post.Systemsettings.object_id">
+                                    ng-model="Downtime.host_id">
                             </select>
                             <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -227,7 +227,7 @@
                            ng-click="saveNewHostDowntime()"
                     >
                     &nbsp;
-                    <a href="/downtimes/host" class="btn btn-default">
+                    <a href="" class="btn btn-default">
                         <?php echo __('Cancel'); ?>
                     </a>
                 </div>
