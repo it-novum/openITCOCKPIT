@@ -608,8 +608,7 @@ class ServicetemplategroupsController extends AppController
         $hostgroup = $this->Hostgroup->find('first', [
             'recursive' => -1,
             'contain' => [
-                'Container',
-                'Host'
+                'Container'
             ],
             'conditions' => [
                 'Hostgroup.id' => $id_hostgroup,
