@@ -29,6 +29,9 @@
  * a host belongsTo a container (many to one)
  */
 
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+
 class Hostgroup extends AppModel
 {
 
@@ -183,5 +186,60 @@ class Hostgroup extends AppModel
     public function findList($options = [], $index = 'id')
     {
         return $this->findHostgroups('list', $options, $index);
+    }
+
+    public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields' => 'Containers.name',
+            'joins'      => [
+                [
+                    'table'      => 'containers',
+                    'alias'      => 'Containers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Hostgroup.container_id = Containers.id',
+                    ],
+                ],
+            ],
+            'conditions' => $HostgroupConditions->getConditionsForFind(),
+            'order'      => [
+                'Containers.name' => 'ASC',
+            ],
+            'group' => [
+                'Containers.id'
+            ],
+            'limit'      => self::ITN_AJAX_LIMIT
+        ];
+        $hostgroupsWithLimit = $this->find('list', $query);
+
+        $selectedHostgroups = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'fields' => 'Containers.name',
+                'joins'      => [
+                    [
+                        'table'      => 'containers',
+                        'alias'      => 'Containers',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Hostgroup.container_id = Containers.id',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Containers.id' => $selected
+                ],
+                'order'      => [
+                    'Containers.name' => 'ASC',
+                ],
+            ];
+            $selectedHostgroups = $this->find('list', $query);
+        }
+
+        $hostgroups = $hostgroupsWithLimit + $selectedHostgroups;
+        asort($hostgroups, SORT_FLAG_CASE | SORT_NATURAL);
+        return $hostgroups;
     }
 }

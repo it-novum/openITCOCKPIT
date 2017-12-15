@@ -131,7 +131,7 @@ class SystemdowntimesController extends AppController {
 
     public function addHostdowntime() {
         $this->layout = 'angularjs';
-
+        $flashmessage="";
         /*if($this->isAngularJsRequest()){
             $this->autoRender = false;
         }*/
@@ -222,13 +222,12 @@ class SystemdowntimesController extends AppController {
                         //$this->Systemdowntime->save($request);
                         if ($this->Systemdowntime->save($request) && $this->request->ext === 'json') {
                             if ($this->isAngularJsRequest()) {
-                                $this->setFlash(__('Recurring Downtime successfully saved'));
+                                $flashmessage=__('Recurring Downtime successfully saved');
                             }
                             $this->serializeId();
                         } else {
                             $this->serializeErrorMessage();
                         }
-                        return;
                     } else {
                         $start = strtotime($request['Systemdowntime']['from_date'] . ' ' . $request['Systemdowntime']['from_time']);
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
@@ -258,10 +257,9 @@ class SystemdowntimesController extends AppController {
                         }
                         if ($this->request->ext === 'json') {
                             if ($this->isAngularJsRequest()) {
-                                $this->setFlash(__('Downtime successfully saved'));
+                                $flashmessage=__('Downtime successfully saved');
                             }
                             $this->serializeId();
-                            return;
                         }
                     }
                 } else {
@@ -276,16 +274,19 @@ class SystemdowntimesController extends AppController {
                     $this->CustomValidationErrors->fetchErrors();
                     $this->serializeErrorMessage();
                     //var_dump($this->validationErrors);
-                    return;
+                    //return;
                 }
             }
 
-            //$this->setFlash(__('Downtime successfully saved'));
+            $this->setFlash($flashmessage);
            // $this->redirect(['controller' => 'downtimes','action' => 'index']);
         }
     }
 
     public function addHostgroupdowntime() {
+        $this->layout = 'angularjs';
+        $flashmessage="";
+
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
         $selected = $this->request->data('Systemdowntime.object_id');
 
@@ -302,6 +303,9 @@ class SystemdowntimesController extends AppController {
         ];
         $this->CustomValidationErrors->checkForRefill($customFildsToRefill);
 
+        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
+
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $writeContainerIds = [];
         foreach ($containerIds as $containerId) {
@@ -310,8 +314,8 @@ class SystemdowntimesController extends AppController {
             }
 
         }
-        $hostgroups = $this->Hostgroup->hostgroupsByContainerId($writeContainerIds,'list','id');
-        $this->set(compact(['hostgroups','selected']));
+        //$hostgroups = $this->Hostgroup->hostgroupsByContainerId($writeContainerIds,'list','id');
+        //$this->set(compact(['hostgroups','selected']));
         $this->set('back_url',$this->referer());
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -353,7 +357,14 @@ class SystemdowntimesController extends AppController {
 
                     if ($request['Systemdowntime']['is_recurring'] == 1) {
                         $this->Systemdowntime->create();
-                        $this->Systemdowntime->save($request);
+                        if ($this->Systemdowntime->save($request) && $this->request->ext === 'json') {
+                            if ($this->isAngularJsRequest()) {
+                                $flashmessage=__('Recurring hg Downtime successfully saved');
+                            }
+                            $this->serializeId();
+                        } else {
+                            $this->serializeErrorMessage();
+                        }
                     } else {
                         $start = strtotime($request['Systemdowntime']['from_date'] . ' ' . $request['Systemdowntime']['from_time']);
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
@@ -380,18 +391,25 @@ class SystemdowntimesController extends AppController {
 
                             $this->GearmanClient->sendBackground('createHostgroupDowntime', $payload);
                         }
+                        if ($this->request->ext === 'json') {
+                            if ($this->isAngularJsRequest()) {
+                                $flashmessage=__('Downtime successfully saved');
+                            }
+                            $this->serializeId();
+                        }
                     }
 
                 } else {
-                    $this->setFlash(__('Downtime could not be saved'),false);
+                    //$this->setFlash(__('Downtime could not be saved'),false);
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
-                    return;
+                    $this->serializeErrorMessage();
+                    //return;
                 }
             }
-            $this->setFlash(__('Downtime successfully saved'));
-            $this->redirect(['controller' => 'downtimes','action' => 'index']);
+            $this->setFlash($flashmessage);
+            //$this->redirect(['controller' => 'downtimes','action' => 'index']);
         }
     }
 
