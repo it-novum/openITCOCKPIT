@@ -67,8 +67,6 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 $scope.connectionSuccessful = result.data.status.status;
-                console.log(result.data.status.status);
-                console.log(result.data.status);
             });
         };
 
@@ -88,8 +86,4 @@ angular.module('openITCOCKPIT')
 
         $scope.load();
         $scope.loadHostgroups();
-
-        $scope.$watch('post', function(){
-            console.log($scope.post);
-        }, true);
     });

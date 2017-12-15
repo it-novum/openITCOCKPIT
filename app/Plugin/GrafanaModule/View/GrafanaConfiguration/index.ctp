@@ -177,8 +177,8 @@
 
 
                     <button type="button"
-                            class="btn text-center pull-right;"
-                            ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful === null}"
+                            class="btn text-center pull-right"
+                            ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful == null}"
                             ng-click="checkGrafanaConnection()">
                         <?php echo __('Check Grafana Connection'); ?>
                     </button>
