@@ -175,19 +175,16 @@
                         </div>
                     </div>
 
-
-                    <button type="button"
-                            class="btn text-center pull-right"
-                            ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful == null}"
-                            ng-click="checkGrafanaConnection()">
-                        <?php echo __('Check Grafana Connection'); ?>
-                    </button>
-
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
+                                <button type="button"
+                                        class="btn text-center"
+                                        ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful == null}"
+                                        ng-click="checkGrafanaConnection()">
+                                    <?php echo __('Check Grafana Connection'); ?>
+                                </button>
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="map_module/maps/index" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>
