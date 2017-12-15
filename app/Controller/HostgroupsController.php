@@ -615,7 +615,7 @@ class HostgroupsController extends AppController {
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
         $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
 
-        $hostgroups = $this->Host->makeItJavaScriptAble(
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
             $this->Hostgroup->getHostgroupsForAngular($HostgroupCondition, $selected)
         );
 

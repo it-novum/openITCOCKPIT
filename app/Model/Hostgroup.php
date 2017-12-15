@@ -208,8 +208,7 @@ class Hostgroup extends AppModel
             ],
             'group' => [
                 'Containers.id'
-            ],
-            'limit'      => self::ITN_AJAX_LIMIT
+            ]
         ];
         $hostgroupsWithLimit = $this->find('list', $query);
 
