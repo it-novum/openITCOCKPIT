@@ -51,7 +51,7 @@ class SystemdowntimesController extends AppController {
         'CustomValidationErrors',
         'Uuid',
     ];
-    public $layout = 'angularjs';
+    public $layout = 'Admin.default';
 
     public function index() {
         $paginatorLimit = $this->Paginator->settings['limit'];
@@ -112,6 +112,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function getHostdowntimeRefillData(){
+        $this->layout = 'angularjs';
         $this->autoRender = false;
         if(!$this->isAngularJsRequest()){
             return;
@@ -129,6 +130,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function addHostdowntime() {
+        $this->layout = 'angularjs';
 
         /*if($this->isAngularJsRequest()){
             $this->autoRender = false;
@@ -175,14 +177,14 @@ class SystemdowntimesController extends AppController {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
                 $this->request->data['Systemdowntime']['weekdays'] = implode(',',$this->request->data['Systemdowntime']['weekdays']);
             }
-            var_dump($this->request->data);
+            //var_dump($this->request->data);
 
             $this->request->data = $this->_rewritePostData();
 
             //Try validate the data:
             foreach ($this->request->data as $request) {  //$this->request['data']      $this->request->data
 
-                var_dump($request);
+                //var_dump($request);
                 if ($request['Systemdowntime']['is_recurring']) {
                     $this->Systemdowntime->validate = Hash::merge(
                         $this->Systemdowntime->validate,
@@ -215,8 +217,18 @@ class SystemdowntimesController extends AppController {
                      * Normal downtimes, will be sent to sudo_servers unix socket.
                      */
                     if ($request['Systemdowntime']['is_recurring'] == 1) {
+                        //var_dump($request['Systemdowntime']['is_recurring']);
                         $this->Systemdowntime->create();
-                        $this->Systemdowntime->save($request);
+                        //$this->Systemdowntime->save($request);
+                        if ($this->Systemdowntime->save($request) && $this->request->ext === 'json') {
+                            if ($this->isAngularJsRequest()) {
+                                $this->setFlash(__('Recurring Downtime successfully saved'));
+                            }
+                            $this->serializeId();
+                        } else {
+                            $this->serializeErrorMessage();
+                        }
+                        return;
                     } else {
                         $start = strtotime($request['Systemdowntime']['from_date'] . ' ' . $request['Systemdowntime']['from_time']);
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
@@ -257,11 +269,12 @@ class SystemdowntimesController extends AppController {
                         $this->serializeErrorMessage();
                         return;
                     }
-                    $this->setFlash(__('could not save data'), false);*/
-                    $this->setFlash(__('Downtime could not be saved'),false);
+                    $this->setFlash(__('could not save data'), false);
+                    $this->setFlash(__('Downtime could not be saved'),false);*/
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
+                    $this->serializeErrorMessage();
                     //var_dump($this->validationErrors);
                     return;
                 }

@@ -12,13 +12,12 @@ angular.module('openITCOCKPIT')
                 Style: {
                     "display": "none"
                 },
-                AllWeekdays: {}
+                AllWeekdays: {},
+                is_recurring: null
             },
             SuggestedHosts: {}
         };
-        /*
-        post.Systemdowntime.day_of_month
-        */
+
         $scope.post = {
             params: {
                 'angular': true
@@ -35,11 +34,9 @@ angular.module('openITCOCKPIT')
                 downtimetype_id: 0,
                 objecttype_id: null,
                 object_id: {},
-                comment: null,
-                author: "Root Wheel"
+                comment: null
             }
         };
-
 
         $scope.loadRefillData = function(){
             $http.get("/systemdowntimes/getHostdowntimeRefillData.json", {
@@ -71,12 +68,17 @@ angular.module('openITCOCKPIT')
 
             $http.post("/systemdowntimes/addHostdowntime.json?angular=true", $scope.post).then(
                 function(result){
-                    //$('#nodeCreatedFlashMessage').show();
-                    window.location.href = '/downtimes/host';
                     $scope.errors = null;
+                    if($scope.Downtime.Recurring.is_recurring){
+                        $('#RecurringDowntimeCreatedFlashMessage').show();
+                        setTimeout(function(){ window.location.href = '/systemdowntimes'; }, 1000);
+                    } else {
+                        $('#DowntimeCreatedFlashMessage').show();
+                        setTimeout(function(){ window.location.href = '/downtimes/host'; }, 1000);
+                    }
                 },
                 function errorCallback(result){
-                    console.error(result);
+                    console.error(result.data);
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error;
                     }
@@ -102,23 +104,19 @@ angular.module('openITCOCKPIT')
         };
 
 
-
-        $scope.$watch('post.Systemdowntime.is_recurring', function(){
-            if($scope.post.Systemdowntime.is_recurring === true){
-                $scope.post.Systemdowntime.is_recurring="1";
+        $scope.$watch('Downtime.Recurring.is_recurring', function(){
+            if($scope.Downtime.Recurring.is_recurring === true){
+                $scope.post.Systemdowntime.is_recurring=1;
                 $scope.Downtime.Recurring.Style["display"]="block";
             }
-            if($scope.post.Systemdowntime.is_recurring === false){
-                $scope.post.Systemdowntime.is_recurring="0";
+            if($scope.Downtime.Recurring.is_recurring === false){
+                $scope.post.Systemdowntime.is_recurring=0;
                 $scope.Downtime.Recurring.Style["display"]="none";
             }
         });
 
         $scope.$watch('Downtime.host_id', function(){
-            //if($scope.post.Systemdowntime.object_id === parseInt($scope.post.Systemdowntime.object_id, 10)){
             $scope.post.Systemdowntime.object_id = { 0: $scope.Downtime.host_id };
-            //}
-            console.log($scope.post.Systemdowntime.object_id);
         });
 
 
@@ -174,5 +172,7 @@ angular.module('openITCOCKPIT')
                     $scope.loadHostlist(needle);
                 }
             } ));
+
         });
+
     });
