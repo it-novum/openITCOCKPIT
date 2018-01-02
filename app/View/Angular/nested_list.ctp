@@ -17,7 +17,9 @@
 
         {{ container.Container.name }}
 
-        <edit-node container="container" callback="callback"></edit-node>
+        <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
+            <edit-node container="container" callback="callback"></edit-node>
+        <?php endif; ?>
 
 
         <i class="note pull-right" ng-if="((container.Container.rght-container.Container.lft)/2-0.5) == 0">empty</i>

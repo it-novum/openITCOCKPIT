@@ -354,6 +354,7 @@ class UsersController extends AppController
                 );
                 if ($this->User->saveAll($this->request->data)) {
                     $this->setFlash(__('User saved successfully'));
+                    Cache::clear(false, 'permissions');
                     $this->redirect(['action' => 'index']);
 
                     return;

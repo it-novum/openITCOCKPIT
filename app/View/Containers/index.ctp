@@ -104,76 +104,80 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-sm-12 col-lg-6">
-                    <div class="jarviswidget" id="wid-id-0">
+                    <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+                        <div class="jarviswidget" id="wid-id-0">
 
-                        <header>
-                            <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-                            <h2><?php echo __('Add new node'); ?>:</h2>
-                        </header>
+                            <header>
+                                <span class="widget-icon"> <i class="fa fa-link"></i> </span>
+                                <h2><?php echo __('Add new node'); ?>:</h2>
+                            </header>
 
-                        <div class="widget-body">
+                            <div class="widget-body">
 
-                            <div class="form-group" ng-class="{'has-error': errors.parent_id}">
-                                <label for="TenantSelect" class="col col-md-2 control-label">
-                                    <?php echo __('Parent Node'); ?>
-                                </label>
-                                <div class="col col-xs-10">
-                                    <select
-                                            id="TenantForNodeSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="containerlist"
-                                            ng-options="key as value for (key, value) in containerlist"
-                                            ng-model="post.Container.parent_id"
-                                    >
-                                    </select>
-                                    <div ng-repeat="error in errors.parent_id">
-                                        <div class="help-block text-danger">{{ error }}</div>
+                                <div class="form-group" ng-class="{'has-error': errors.parent_id}">
+                                    <label for="TenantSelect" class="col col-md-2 control-label">
+                                        <?php echo __('Parent Node'); ?>
+                                    </label>
+                                    <div class="col col-xs-10">
+                                        <select
+                                                id="TenantForNodeSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="containerlist"
+                                                ng-options="key as value for (key, value) in containerlist"
+                                                ng-model="post.Container.parent_id"
+                                        >
+                                        </select>
+                                        <div ng-repeat="error in errors.parent_id">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <br><br>
+
+                                <div class="form-group required" ng-class="{'has-error': errors.name}">
+                                    <label class="col col-md-2 control-label">
+                                        <?php echo __('Name'); ?>
+                                    </label>
+                                    <div class="col col-xs-10 required">
+
+                                        <input type="text"
+                                               class="form-control"
+                                               maxlength="255"
+                                               required="required"
+                                               placeholder="<?php echo __('Node name'); ?>"
+                                               ng-model="post.Container.name"
+                                        >
+                                        <div ng-repeat="error in errors.name">
+                                            <div class="help-block text-danger">{{ error }}</div>
+                                        </div>
                                     </div>
                                 </div>
 
                             </div>
-                            <br><br>
 
-                            <div class="form-group required" ng-class="{'has-error': errors.name}">
-                                <label class="col col-md-2 control-label">
-                                    <?php echo __('Name'); ?>
-                                </label>
-                                <div class="col col-xs-10 required">
-
-                                    <input type="text"
-                                           class="form-control"
-                                           maxlength="255"
-                                           required="required"
-                                           placeholder="<?php echo __('Node name'); ?>"
-                                           ng-model="post.Container.name"
+                            <div class="well formactions ">
+                                <div id="nodeCreatedFlashMessage" class="alert alert-success" style="display:none;">
+                                    <?php echo __('Node created successfully'); ?>
+                                </div>
+                                <div class="pull-right">
+                                    <input type="button"
+                                           class="btn btn-primary"
+                                           value="<?php echo __('Save'); ?>"
+                                           ng-click="saveNewNode()"
                                     >
-                                    <div ng-repeat="error in errors.name">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
+                                    &nbsp;
+                                    <a href="/containers" class="btn btn-default">
+                                        <?php echo __('Cancel'); ?>
+                                    </a>
                                 </div>
                             </div>
-
                         </div>
+                    <?php endif; ?>
 
-                        <div class="well formactions ">
-                            <div id="nodeCreatedFlashMessage" class="alert alert-success" style="display:none;">
-                                <?php echo __('Node created successfully'); ?>
-                            </div>
-                            <div class="pull-right">
-                                <input type="button"
-                                       class="btn btn-primary"
-                                       value="<?php echo __('Save'); ?>"
-                                       ng-click="saveNewNode()"
-                                >
-                                &nbsp;
-                                <a href="/containers" class="btn btn-default">
-                                    <?php echo __('Cancel'); ?>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="jarviswidget" id="wid-id-0">
 
