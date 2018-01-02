@@ -12,11 +12,11 @@ angular.module('openITCOCKPIT')
                 ignore_ssl_certificate: false, //number
                 dashboard_style: '', //light / dark
                 Hostgroup: [],
-                Hostgroup_excluded: [],
-            },
+                Hostgroup_excluded: []
+            }
         };
 
-        $scope.connectionSuccessful = null;
+        $scope.hasError = null;
 
         $scope.load = function(){
             $http.get("/grafana_module/grafana_configuration/index.json", {
@@ -66,7 +66,26 @@ angular.module('openITCOCKPIT')
             $http.post("/grafana_module/grafana_configuration/testGrafanaConnection.json?angular=true",
                 $scope.post
             ).then(function(result){
-                $scope.connectionSuccessful = result.data.status.status;
+                $scope.hasError = false;
+
+                console.log(result);
+
+                if(result.data.status.status === false){
+                    $scope.hasError = true;
+                    $scope.grafanaErrors = {
+                        status: 400,
+                        statusText:  'Bad Request',
+                        message: result.data.status.msg.message
+                    };
+                }
+
+            }, function errorCallback(result){
+                $scope.hasError = true;
+                $scope.grafanaErrors = {
+                    status: result.status,
+                    statusText: result.statusText,
+                    message: result.data.message
+                };
             });
         };
 

@@ -28,7 +28,7 @@
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.api_url}">
+                    <div class="form-group required" ng-class="{'has-error': errors.api_url}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Grafana URL'); ?>
                         </label>
@@ -38,13 +38,13 @@
                                     type="text"
                                     placeholder="metrics.example.org"
                                     ng-model="post.GrafanaConfiguration.api_url">
-                            <div ng-repeat="error in errors.GrafanaConfiguration.api_url">
+                            <div ng-repeat="error in errors.api_url">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.api_key}">
+                    <div class="form-group required" ng-class="{'has-error': errors.api_key}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Grafana API Key'); ?>
                         </label>
@@ -54,14 +54,14 @@
                                     type="text"
                                     placeholder="ZXhhbXBsZV9ncmFmYW5hX2FwaV9rZXk="
                                     ng-model="post.GrafanaConfiguration.api_key">
-                            <div ng-repeat="error in errors.GrafanaConfiguration.api_key">
+                            <div ng-repeat="error in errors.api_key">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group required"
-                         ng-class="{'has-error': errors.GrafanaConfiguration.graphite_prefix}">
+                         ng-class="{'has-error': errors.graphite_prefix}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Grafana Prefix'); ?>
                         </label>
@@ -71,7 +71,7 @@
                                     type="text"
                                     placeholder="openitcockpit"
                                     ng-model="post.GrafanaConfiguration.graphite_prefix">
-                            <div ng-repeat="error in errors.GrafanaConfiguration.graphite_prefix">
+                            <div ng-repeat="error in errors.graphite_prefix">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                     </div>
 
                     <div class="form-group required"
-                         ng-class="{'has-error': errors.GrafanaConfiguration.dashboard_style}">
+                         ng-class="{'has-error': errors.dashboard_style}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Dashboard Style'); ?>
                         </label>
@@ -128,13 +128,13 @@
                                 <option value="dark"><?php echo __('dark'); ?></option>
                                 <option value="light"><?php echo __('light'); ?></option>
                             </select>
-                            <div ng-repeat="error in errors.GrafanaConfiguration.dashboard_style">
+                            <div ng-repeat="error in errors.dashboard_style">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.Hostgroup}">
+                    <div class="form-group" ng-class="{'has-error': errors.Hostgroup}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Hostgroups'); ?>
                         </label>
@@ -148,14 +148,14 @@
                                     ng-model="post.GrafanaConfiguration.Hostgroup"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.GrafanaConfiguration.Hostgroup">
+                            <div ng-repeat="error in errors.Hostgroup">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required"
-                         ng-class="{'has-error': errors.GrafanaConfiguration.Hostgroup_excluded}">
+                    <div class="form-group"
+                         ng-class="{'has-error': errors.Hostgroup_excluded}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Hostgroups (excluded)'); ?>
                         </label>
@@ -169,18 +169,27 @@
                                     ng-model="post.GrafanaConfiguration.Hostgroup_excluded"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.GrafanaConfiguration.Hostgroup_excluded">
+                            <div ng-repeat="error in errors.Hostgroup_excluded">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="alert alert-danger alert-block" ng-show="hasError">
+                        <h4 class="alert-heading">{{ grafanaErrors.status }} - {{ grafanaErrors.statusText }}</h4>
+                        {{ grafanaErrors.message }}
+                    </div>
+
+                    <div class="alert alert-success" ng-show="hasError === false">
+                        <i class="fa-fw fa fa-check"></i>
+                        <?php echo __('Connection established successfully.'); ?>
                     </div>
 
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <button type="button"
-                                        class="btn text-center"
-                                        ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful == null}"
+                                        class="btn text-center btn-primary"
                                         ng-click="checkGrafanaConnection()">
                                     <?php echo __('Check Grafana Connection'); ?>
                                 </button>
