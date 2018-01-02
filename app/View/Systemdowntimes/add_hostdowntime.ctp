@@ -141,6 +141,24 @@
 
                     <div class="padding-10"><!-- spacer --></div>
                     <div id="recurringHost_settings" ng-style="Downtime.Recurring.Style">
+                        <div class="form-group required" ng-class="{'has-error': errors.from_time}">
+                            <label class="col col-md-1 control-label" for="SystemdowntimeFromTime"><?php echo __('Start time'); ?></label>
+                            <div class="col col-xs-4 col-md-2" >
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time" placeholder="<?php echo __('hh:mm'); ?>">
+                                <div ng-repeat="error in errors.from_time">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group required" ng-class="{'has-error': errors.duration}">
+                            <label class="col col-md-1 control-label" for="SystemdowntimeDuration"><?php echo __('Duration'); ?></label>
+                            <div class="col col-xs-4 col-md-2" ng-class="{'has-error': errors.duration}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.duration" placeholder="<?php echo __('minutes'); ?>">
+                                <div ng-repeat="error in errors.duration">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
                         <?php
                         $weekdays = [
                             1 => __('Monday'),
@@ -186,39 +204,38 @@
 
                     </div>
                     <br/>
-                    <!-- from -->
-                    <div class="form-group required">
-                        <label class="col col-md-1 control-label" for="SystemdowntimeFromDate"><?php echo __('From'); ?>
-                            :</label>
-                        <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.from_date}">
-                            <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date">
-                            <div ng-repeat="error in errors.from_date">
-                                <div class="help-block text-danger">{{ error }}</div>
+                    <div ng-style="Downtime.Recurring.ReverseStyle">
+                        <!-- from -->
+                        <div class="form-group required">
+                            <label class="col col-md-1 control-label" for="SystemdowntimeFromDate"><?php echo __('From'); ?></label>
+                            <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.from_date}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date">
+                                <div ng-repeat="error in errors.from_date">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                            <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.from_time}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time" placeholder="<?php echo __('hh:mm'); ?>">
+                                <div ng-repeat="error in errors.from_time">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.from_time}">
-                            <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time">
-                            <div ng-repeat="error in errors.from_time">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
 
-
-                    <!-- to -->
-                    <div class="form-group required">
-                        <label class="col col-md-1 control-label" for="SystemdowntimeToDate"><?php echo __('To'); ?>
-                            :</label>
-                        <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.to_date}">
-                            <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date">
-                            <div ng-repeat="error in errors.to_date">
-                                <div class="help-block text-danger">{{ error }}</div>
+                        <!-- to -->
+                        <div class="form-group required">
+                            <label class="col col-md-1 control-label" for="SystemdowntimeToDate"><?php echo __('To'); ?></label>
+                            <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.to_date}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date">
+                                <div ng-repeat="error in errors.to_date">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.to_time}">
-                            <input type="text" class="form-control" ng-model="post.Systemdowntime.to_time">
-                            <div ng-repeat="error in errors.to_time">
-                                <div class="help-block text-danger">{{ error }}</div>
+                            <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.to_time}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.to_time" placeholder="<?php echo __('hh:mm'); ?>">
+                                <div ng-repeat="error in errors.to_time">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>

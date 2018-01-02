@@ -13,6 +13,9 @@ angular.module('openITCOCKPIT')
                 Style: {
                     "display": "none"
                 },
+                ReverseStyle: {
+                    "display": "block"
+                },
                 AllWeekdays: {},
                 is_recurring: null
             },
@@ -31,6 +34,7 @@ angular.module('openITCOCKPIT')
                 from_time: null,
                 to_date: null,
                 to_time: null,
+                duration: null,
                 downtimetype: 'host',
                 downtimetype_id: 0,
                 objecttype_id: null,
@@ -50,6 +54,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.Systemdowntime.to_date=result.data.to_date;
                 $scope.post.Systemdowntime.to_time=result.data.to_time;
                 $scope.post.Systemdowntime.comment=result.data.comment;
+                $scope.post.Systemdowntime.duration=result.data.duration;
                 $scope.errors = null;
             }, function errorCallback(result){
                 console.error(result);
@@ -118,10 +123,15 @@ angular.module('openITCOCKPIT')
             if($scope.Downtime.Recurring.is_recurring === true){
                 $scope.post.Systemdowntime.is_recurring=1;
                 $scope.Downtime.Recurring.Style["display"]="block";
+                $scope.Downtime.Recurring.ReverseStyle["display"]="none";
+                if($scope.errors && $scope.errors['from_time']){
+                    delete $scope.errors['from_time'];
+                }
             }
             if($scope.Downtime.Recurring.is_recurring === false){
                 $scope.post.Systemdowntime.is_recurring=0;
                 $scope.Downtime.Recurring.Style["display"]="none";
+                $scope.Downtime.Recurring.ReverseStyle["display"]="block";
             }
         });
 

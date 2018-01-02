@@ -123,6 +123,7 @@ class SystemdowntimesController extends AppController {
             'from_time' => date('H:i'),
             'to_date' => date('d.m.Y'),
             'to_time' => date('H:i',time() + 60 * 15),
+            'duration' => "15",
             'comment' => __('In maintenance')
         ];
 
@@ -149,6 +150,7 @@ class SystemdowntimesController extends AppController {
                 'from_time',
                 'to_date',
                 'to_time',
+                'duration',
                 'is_recurring',
                 'weekdays',
                 'day_of_month'
@@ -193,6 +195,12 @@ class SystemdowntimesController extends AppController {
                                     'required'   => false,
                                     'allowEmpty' => true,
                                 ]
+                            ],
+                            'from_time' => [
+                                'notBlank' => [
+                                    'required'   => true,
+                                    'allowEmpty' => false,
+                                ],
                             ]
                         ]
                     );
@@ -221,6 +229,7 @@ class SystemdowntimesController extends AppController {
                     } else {
                         $start = strtotime($request['Systemdowntime']['from_date'] . ' ' . $request['Systemdowntime']['from_time']);
                         $end = strtotime($request['Systemdowntime']['to_date'] . ' ' . $request['Systemdowntime']['to_time']);
+
                         //Just a normal nagios downtime
                         if ($request['Systemdowntime']['downtimetype'] == 'host') {
 

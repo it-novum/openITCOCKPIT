@@ -427,19 +427,20 @@ class ContainersController extends AppController {
 
     }
 
-    public function loadContainersByString() {
+    public function loadContainersForAngular() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $selected = $this->request->query('selected');
-
-        $ContainerFilter = new ContainerFilter($this->request);
-        $ContainerConditions = new ContainerConditions($ContainerFilter->indexFilter());
-        $ContainerConditions->setContainerIds($this->MY_RIGHTS);
-        $containers = $this->Container->makeItJavaScriptAble(
-            $this->Container->getContainersForAngular($ContainerConditions, $selected)
-        );
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
+            );
+        } else {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $containers = $this->Tree->easyPath($this->getWriteContainers(),OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP])
+            );
+        }
 
         $this->set(compact(['containers']));
         $this->set('_serialize', ['containers']);
