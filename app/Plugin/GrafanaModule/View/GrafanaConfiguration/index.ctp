@@ -26,123 +26,170 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('GrafanaConfiguration', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <div class="row padding-left-20">
-                <div>
-                    <?php
-                    /*
-                     * Grafana API URL
-                     * Grafana API KEy
-                     * Graphite Prefix
-                     * Use HTTPS
-                     * Ignore SSL Certificate
-                     * ??? Include Hostgroups
-                     * ??? Exclude Hostgroups
-                     * */
-                    echo $this->Form->input('GrafanaConfiguration.api_url', [
-                        'label' => __('Grafana URL'),
-                        'placeholder' => __('metrics.example.org')
-                    ]);
-                    echo $this->Form->input('GrafanaConfiguration.api_key', [
-                        'label' => __('Grafana API Key'),
-                        'placeholder' => __('ZXhhbXBsZV9ncmFmYW5hX2FwaV9rZXk=')
-                    ]);
-                    echo $this->Form->input('GrafanaConfiguration.graphite_prefix', [
-                        'label' => __('Graphite Prefix'),
-                        'placeholder' => __('openitcockpit')
-                    ]);
-                    ?>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.api_url}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Grafana URL'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="metrics.example.org"
+                                    ng-model="post.GrafanaConfiguration.api_url">
+                            <div ng-repeat="error in errors.GrafanaConfiguration.api_url">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.api_key}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Grafana API Key'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="ZXhhbXBsZV9ncmFmYW5hX2FwaV9rZXk="
+                                    ng-model="post.GrafanaConfiguration.api_key">
+                            <div ng-repeat="error in errors.GrafanaConfiguration.api_key">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required"
+                         ng-class="{'has-error': errors.GrafanaConfiguration.graphite_prefix}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Grafana Prefix'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="openitcockpit"
+                                    ng-model="post.GrafanaConfiguration.graphite_prefix">
+                            <div ng-repeat="error in errors.GrafanaConfiguration.graphite_prefix">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <?php
                         echo $this->Form->fancyCheckbox('GrafanaConfiguration.use_https', [
-                            'caption' => __('Use HTTPS'),
-                            'wrapGridClass' => 'col col-xs-10',
+                            'caption'          => __('Use HTTPS'),
+                            'wrapGridClass'    => 'col col-md-1',
                             'captionGridClass' => 'col col-md-2',
-                            'captionClass' => 'control-label',
-                            'checked' => $this->CustomValidationErrors->refill(
-                                'use_https',
-                                (isset($this->request->data['GrafanaConfiguration']['use_https'])) ? $this->request->data['GrafanaConfiguration']['use_https'] : 1
-                            )
+                            'captionClass'     => 'control-label',
+                            'ng-model'         => 'post.GrafanaConfiguration.use_https'
                         ]);
                         ?>
                     </div>
+
                     <div class="form-group">
                         <?php
                         echo $this->Form->fancyCheckbox('GrafanaConfiguration.use_proxy', [
-                            'caption' => __('Use Proxy'),
-                            'wrapGridClass' => 'col col-xs-10',
+                            'caption'          => __('Use Proxy'),
+                            'wrapGridClass'    => 'col col-md-1',
                             'captionGridClass' => 'col col-md-2',
-                            'captionClass' => 'control-label',
-                            'checked' => $this->CustomValidationErrors->refill(
-                                'use_proxy',
-                                (isset($this->request->data['GrafanaConfiguration']['use_proxy'])) ? $this->request->data['GrafanaConfiguration']['use_proxy'] : 1
-                            )
+                            'captionClass'     => 'control-label',
+                            'ng-model'         => 'post.GrafanaConfiguration.use_proxy'
                         ]);
                         ?>
                     </div>
+
                     <div class="form-group">
                         <?php
                         echo $this->Form->fancyCheckbox('GrafanaConfiguration.ignore_ssl_certificate', [
-                            'caption' => __('Ignore SSL Certificate'),
-                            'wrapGridClass' => 'col col-xs-10',
+                            'caption'          => __('Ignore SSL Certificate'),
+                            'wrapGridClass'    => 'col col-md-1',
                             'captionGridClass' => 'col col-md-2',
-                            'captionClass' => 'control-label',
-                            'checked' => $this->CustomValidationErrors->refill(
-                                'ignore_ssl_certificate',
-                                (isset($this->request->data['GrafanaConfiguration']['ignore_ssl_certificate'])) ? $this->request->data['GrafanaConfiguration']['ignore_ssl_certificate'] : 1
-                            )
+                            'captionClass'     => 'control-label',
+                            'ng-model'         => 'post.GrafanaConfiguration.ignore_ssl_certificate'
                         ]);
                         ?>
                     </div>
-                    <?php
-                    echo $this->Form->input('GrafanaConfiguration.dashboard_style', [
-                        'options' => [
-                            'dark' => 'dark',
-                            'light' => 'light'
-                        ],
-                        'class' => 'chosen',
-                        'multiple' => false,
-                        'style' => 'width:100%;',
-                        'label' => __('<i class="fa fa-plus-square text-success"></i> Dashboard Style'),
-                    ]);
 
-                    echo $this->Form->input('GrafanaConfiguration.Hostgroup', [
-                        'options' => $hostgroups,
-                        'class' => 'chosen',
-                        'multiple' => true,
-                        'style' => 'width:100%;',
-                        'label' => __('<i class="fa fa-plus-square text-success"></i> Hostgroups'),
-                        'data-placeholder' => __('Please choose a hostgroup'),
-                        'wrapInput' => [
-                            'tag' => 'div',
-                            'class' => 'col col-xs-10 success'
-                        ],
-                        'target' => '#GrafanaConfigurationHostgroupExcluded'
-                    ]);
+                    <div class="form-group required"
+                         ng-class="{'has-error': errors.GrafanaConfiguration.dashboard_style}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Dashboard Style'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="dashboard_style"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="dashboard_style"
+                                    ng-model="post.GrafanaConfiguration.dashboard_style">
+                                <option value="dark"><?php echo __('dark'); ?></option>
+                                <option value="light"><?php echo __('light'); ?></option>
+                            </select>
+                            <div ng-repeat="error in errors.GrafanaConfiguration.dashboard_style">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-                    echo $this->Form->input('GrafanaConfiguration.Hostgroup_excluded', [
-                        'options' => $hostgroups,
-                        'class' => 'chosen',
-                        'multiple' => true,
-                        'style' => 'width:100%;',
-                        'label' => __('<i class="fa fa-minus-square text-danger"></i> Hostgroups (excluded)'),
-                        'data-placeholder' => __('Please choose a hostgroup'),
-                        'wrapInput' => [
-                            'tag' => 'div',
-                            'class' => 'col col-xs-10 danger'
-                        ],
-                        'target' => '#GrafanaConfigurationHostgroup'
-                    ]);
-                    ?>
-                    <button type="button" id="runGrafanaConnectionTest"
-                            class="btn btn-primary text-center pull-right"><?php echo __('Check Grafana Connection'); ?></button>
+                    <div class="form-group required" ng-class="{'has-error': errors.GrafanaConfiguration.Hostgroup}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Hostgroups'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="dashboard_style"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hostgroups"
+                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                    ng-model="post.GrafanaConfiguration.Hostgroup"
+                                    multiple>
+                            </select>
+                            <div ng-repeat="error in errors.GrafanaConfiguration.Hostgroup">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group required"
+                         ng-class="{'has-error': errors.GrafanaConfiguration.Hostgroup_excluded}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Hostgroups (excluded)'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="MapContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="hostgroups"
+                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                    ng-model="post.GrafanaConfiguration.Hostgroup_excluded"
+                                    multiple>
+                            </select>
+                            <div ng-repeat="error in errors.GrafanaConfiguration.Hostgroup_excluded">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <button type="button"
+                                        class="btn text-center"
+                                        ng-class="{'btn-success':connectionSuccessful === true, 'btn-danger': connectionSuccessful === false, 'btn-primary': connectionSuccessful == null}"
+                                        ng-click="checkGrafanaConnection()">
+                                    <?php echo __('Check Grafana Connection'); ?>
+                                </button>
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
-
-        <?php echo $this->Form->formActions(); ?>
     </div>
 </div>
