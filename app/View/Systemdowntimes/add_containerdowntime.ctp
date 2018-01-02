@@ -86,7 +86,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group" ng-class="{'has-error': errors.downtimetype_id}">
+                    <div class="form-group required" ng-class="{'has-error': errors.downtimetype_id}">
                         <label class="col-xs-1 col-md-1 col-lg-1 control-label">
                             <?php echo __('Maintenance period for');?>
                         </label>
@@ -94,11 +94,11 @@
                         <?php if($preselectedDowntimetype==1): ?> {{ Downtime.Type2="1";"" }} <?php endif; ?>
                         <div class="col col-xs-10 col-md-10 col-lg-10">
                             <label class="padding-right-10">
-                                <input type="radio" ng-model="Downtime.Type1" value="1">
+                                <input type="radio" name="data[Downtime][Type]" ng-model="Downtime.Type1" value="1">
                                 <i class="fa fa-desktop"></i> <?php echo __('Individual host'); ?>
                             </label>
                             <label class="padding-right-10">
-                                <input type="radio" ng-model="Downtime.Type2" value="1">
+                                <input type="radio" name="data[Downtime][Type]" ng-model="Downtime.Type2" value="1">
                                 <i class="fa fa-cogs"></i> <?php echo __('Host including services'); ?>
                             </label>
                             <div ng-repeat="error in errors.downtimetype_id">

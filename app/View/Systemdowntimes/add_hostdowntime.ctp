@@ -100,12 +100,12 @@
                         <?php if($preselectedDowntimetype==0): ?> {{ Downtime.Type1="1";"" }} <?php endif; ?>
                         <?php if($preselectedDowntimetype==1): ?> {{ Downtime.Type2="1";"" }} <?php endif; ?>
                         <div class="col col-xs-10 col-md-10 col-lg-10">
-                            <label class="padding-right-10" for="InstantreportEvaluation1">
-                                <input type="radio" name="data[Instantreport][evaluation]" ng-model="Downtime.Type1" value="1">
+                            <label class="padding-right-10">
+                                <input type="radio" name="data[Downtime][Type]" ng-model="Downtime.Type1" value="1">
                                 <i class="fa fa-desktop"></i> <?php echo __('Individual host'); ?>
                             </label>
-                            <label class="padding-right-10" for="InstantreportEvaluation2">
-                                <input type="radio" name="data[Instantreport][evaluation]" ng-model="Downtime.Type2" value="1">
+                            <label class="padding-right-10">
+                                <input type="radio" name="data[Downtime][Type]" ng-model="Downtime.Type2" value="1">
                                 <i class="fa fa-cogs"></i> <?php echo __('Host including services'); ?>
                             </label>
                             <div ng-repeat="error in errors.downtimetype_id">

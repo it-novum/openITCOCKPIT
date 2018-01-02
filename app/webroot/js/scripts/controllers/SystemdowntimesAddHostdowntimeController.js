@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = null;
 
         $scope.Downtime = {
+            InitialListLoaded: null,
             Type1: null,
             Type2: null,
             host_id: null,
@@ -87,11 +88,19 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHostlist = function(needle){
+            http_params = {
+                'angular': true,
+                'filter[Host.name]': needle
+            };
+            if($scope.Downtime.InitialListLoaded!=true){
+                http_params = {
+                    'angular': true
+                };
+                $scope.Downtime.InitialListLoaded=true;
+            }
+
             $http.get("/hosts/loadHostsByString.json", {
-                params: {
-                    'angular': true,
-                    'filter[Host.name]': needle
-                }
+                params: http_params
             }).then(function(result){
                 $scope.Downtime.SuggestedHosts=result.data.hosts;
                 $scope.errors = null;
@@ -103,6 +112,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHostlist();
 
         $scope.$watch('Downtime.Recurring.is_recurring', function(){
             if($scope.Downtime.Recurring.is_recurring === true){

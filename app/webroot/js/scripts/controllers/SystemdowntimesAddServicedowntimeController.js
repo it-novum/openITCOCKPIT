@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = null;
 
         $scope.Downtime = {
+            InitialListLoaded: null,
             service_id: null,
             Recurring: {
                 Style: {
@@ -80,11 +81,19 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServicelist = function(needle){
+            http_params = {
+                'angular': true,
+                'filter[Service.servicename]': needle
+            };
+            if($scope.Downtime.InitialListLoaded!=true){
+                http_params = {
+                    'angular': true
+                };
+                $scope.Downtime.InitialListLoaded=true;
+            }
+
             $http.get("/services/loadServicesByString.json", {
-                params: {
-                    'angular': true,
-                    'filter[Service.servicename]': needle
-                }
+                params: http_params
             }).then(function(result){
 
                 result.data.services.forEach(function(obj, index) {
@@ -104,6 +113,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadServicelist();
 
         $scope.$watch('Downtime.Recurring.is_recurring', function(){
             if($scope.Downtime.Recurring.is_recurring === true){

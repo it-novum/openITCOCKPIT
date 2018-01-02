@@ -5,6 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = null;
 
         $scope.Downtime = {
+            InitialListLoaded: null,
             Type1: null,
             Type2: null,
             host_id: null,
@@ -86,14 +87,21 @@ angular.module('openITCOCKPIT')
             );
         };
 
-        $scope.loadHostlist = function(needle){
+        $scope.loadHostgrouplist = function(needle){
+            http_params = {
+                'angular': true,
+                'filter[Containers.name]': needle
+            };
+            if($scope.Downtime.InitialListLoaded!=true){
+                http_params = {
+                    'angular': true
+                };
+                $scope.Downtime.InitialListLoaded=true;
+            }
+
             $http.get("/hostgroups/loadHostgroupsByString.json", {
-                params: {
-                    'angular': true,
-                    'filter[Containers.name]': needle
-                }
+                params: http_params
             }).then(function(result){
-                console.log(result);
                 $scope.Downtime.SuggestedHosts=result.data.hostgroups;
                 $scope.errors = null;
             }, function errorCallback(result){
@@ -104,6 +112,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadHostgrouplist();
 
         $scope.$watch('Downtime.Recurring.is_recurring', function(){
             if($scope.Downtime.Recurring.is_recurring === true){
@@ -170,7 +179,7 @@ angular.module('openITCOCKPIT')
             search.search_field.on('keyup', $.debounce( 250, function(e){
                 var needle = $(this).val();
                 if(needle != false){
-                    $scope.loadHostlist(needle);
+                    $scope.loadHostgrouplist(needle);
                 }
             } ));
 

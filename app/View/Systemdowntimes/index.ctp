@@ -270,6 +270,7 @@
                                     OBJECT_HOST      => __('Host'),
                                     OBJECT_SERVICE   => __('Service'),
                                     OBJECT_HOSTGROUP => __('Host group'),
+                                    OBJECT_NODE      => __('Container'),
                                 ];
                                 $weekdays = [
                                     1 => __('Monday'),
