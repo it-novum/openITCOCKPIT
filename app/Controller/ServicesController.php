@@ -2205,6 +2205,8 @@ class ServicesController extends AppController {
 
     public function serviceList($host_id) {
         $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
         if (!$this->Host->exists($host_id)) {
             throw new NotFoundException(__('Invalid host'));
         }
@@ -2231,7 +2233,47 @@ class ServicesController extends AppController {
         $containerIdsToCheck[] = $host['Host']['container_id'];
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
+            return;
+        }
 
+        if (!$this->isApiRequest()) {
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('username',$User->getFullName());
+            //Only ship HTML template
+            return;
+        }
+
+
+        /*
+        $ServiceFilter = new ServiceFilter($this->request);
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+
+        $host = $this->Host->find('first', [
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.host_url',
+                'Host.container_id',
+            ],
+            'conditions' => [
+                'Host.id' => $host_id,
+            ],
+            'contain'    => [
+                'Container',
+            ],
+        ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
             return;
         }
 
@@ -2315,6 +2357,7 @@ class ServicesController extends AppController {
 
         $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
         $this->set('_serialize', ['all_services']);
+        */
     }
 
     public function grapherSwitch($id) {

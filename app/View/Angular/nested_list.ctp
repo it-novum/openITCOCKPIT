@@ -18,7 +18,8 @@
         {{ container.Container.name }}
 
         <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
-            <edit-node container="container" callback="callback"></edit-node>
+            <edit-node container="container" callback="callback"
+                       ng-if="container.Container.allow_edit === true"></edit-node>
         <?php endif; ?>
 
 
@@ -29,7 +30,8 @@
     </div>
 
     <ol class="dd-list">
-        <nested-list container="container" ng-repeat="container in container.children" callback="callback"></nested-list>
+        <nested-list container="container" ng-repeat="container in container.children"
+                     callback="callback"></nested-list>
     </ol>
 
 </li>

@@ -47,7 +47,7 @@ angular.module('openITCOCKPIT')
             var services = [];
             var servicesstatus = [];
             var hosts = [];
-            var hostsstatus = [];
+            var hostsstatusArr = [];
             var saved_hostuuids = [];
             var result = [];
             var lastendhost = "";
@@ -58,10 +58,14 @@ angular.module('openITCOCKPIT')
                 servicesstatus.push([record.Service.id, record.Servicestatus]);
                 if(saved_hostuuids.indexOf(record.Host.uuid) < 0){
                     hosts.push(record.Host);
-                    hostsstatus.push([record.Host.id, record.Hoststatus]);
+                    hostsstatusArr.push({
+                        host_id: record.Host.id,
+                        Hoststatus: record.Hoststatus
+                    });
                     saved_hostuuids.push(record.Host.uuid);
                 }
             });
+
 
             services.forEach(function(service){
                 //Notice, API return some IDs as string :/
@@ -79,11 +83,12 @@ angular.module('openITCOCKPIT')
                             host = hostelem;
                         }
                     });
-                    hostsstatus.forEach(function(hoststatelem){
-                        if(hoststatelem[0] === service.host_id){
-                            hoststatus = hoststatelem[1];
+                    hostsstatusArr.forEach(function(hoststatelem){
+                        if(hoststatelem.host_id == service.host_id){
+                            hoststatus = hoststatelem.Hoststatus;
                         }
                     });
+
 
                     tmp_hostservicegroup = {
                         Host: host,

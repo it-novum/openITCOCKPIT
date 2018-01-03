@@ -338,6 +338,9 @@
                                 <tbody>
                                 <tr ng-repeat-start="host in services">
                                     <td colspan="13" class="service_table_host_header">
+
+                                        <hoststatusicon host="host"></hoststatusicon>
+
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
                                                href="/hosts/browser/{{host.Host.id}}">
@@ -525,7 +528,7 @@
                                     <?php echo __('Delete'); ?>
                                 </span>
                             </div>
-                            <div class="xol-xs-12 col-md-2">
+                            <div class="col-xs-12 col-md-2">
                                 <div class="btn-group">
                                     <a href="javascript:void(0);" class="btn btn-default"><?php echo __('More'); ?></a>
                                     <a href="javascript:void(0);" data-toggle="dropdown"
