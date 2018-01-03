@@ -72,6 +72,7 @@
                                     class="form-control"
                                     chosen="Downtime.SuggestedServices"
                                     ng-model="Downtime.service_id"
+                                    ng-selected="Downtime.service_id == value.id"
                                     ng-options="value.id as value.label group by value.group for value in Downtime.SuggestedServices">
                                 <option>--</option>
                             </select>

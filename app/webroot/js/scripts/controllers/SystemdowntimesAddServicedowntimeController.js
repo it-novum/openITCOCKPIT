@@ -105,7 +105,32 @@ angular.module('openITCOCKPIT')
                 params: http_params
             }).then(function(result){
                 $scope.Downtime.SuggestedServices = {};
+
+                function search(nameKey, myArray){
+                    for (var i=0; i < myArray.length; i++) {
+                        if (myArray[i].key === parseInt(nameKey)) {
+                            return myArray[i];
+                        }
+                    }
+                }
+
+                if((window.location+"").split("/")[(window.location+"").split("/").length-1].split(":")[1]){
+                    $scope.Downtime.service_id=(window.location+"").split("/")[(window.location+"").split("/").length-1].split(":")[1];
+                    if(!search($scope.Downtime.service_id, result.data.services)){
+                        $http.get("/services/view/"+$scope.Downtime.service_id+".json").then(function(result2){
+                            $scope.Downtime.SuggestedServices[0] = {
+                                "id": $scope.Downtime.service_id,
+                                "group": result2.data.service.Host.name,
+                                "label": result2.data.service.Servicetemplate.name
+                            };
+                        });
+                    }
+                }
+
                 result.data.services.forEach(function(obj, index) {
+                    if($scope.Downtime.service_id){
+                        index=index+1;
+                    }
                     $scope.Downtime.SuggestedServices[index] = {
                         "id": obj.value.Service.id,
                         "group": obj.value.Host.name,

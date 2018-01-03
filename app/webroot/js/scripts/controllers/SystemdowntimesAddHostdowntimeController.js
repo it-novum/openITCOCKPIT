@@ -111,6 +111,24 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadHostsByString.json", {
                 params: http_params
             }).then(function(result){
+                if((window.location+"").split("/")[(window.location+"").split("/").length-1].split(":")[1]){
+                    $scope.Downtime.host_id=parseInt((window.location+"").split("/")[(window.location+"").split("/").length-1].split(":")[1]);
+                    $http.get("/hosts/view/"+$scope.Downtime.host_id+".json").then(function(result2){
+                        function search(nameKey, myArray){
+                            for (var i=0; i < myArray.length; i++) {
+                                if (myArray[i].value === nameKey) {
+                                    return myArray[i];
+                                }
+                            }
+                        }
+                        if(!search(result2.data.host.Host.name, result.data.hosts)){
+                            result.data.hosts[result.data.hosts.length]={
+                                "key": parseInt(result2.data.host.Host.id),
+                                "value": result2.data.host.Host.name
+                            }
+                        }
+                    });
+                }
                 $scope.Downtime.SuggestedHosts=result.data.hosts;
                 $scope.errors = null;
             }, function errorCallback(result){

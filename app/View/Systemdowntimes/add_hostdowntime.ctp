@@ -85,6 +85,7 @@
                                     chosen="Downtime.SuggestedHosts"
                                     ng-options="host.key as host.value for host in Downtime.SuggestedHosts"
                                     ng-model="Downtime.host_id"
+                                    ng-selected="Downtime.host_id == host.key"
                                     ng-model-options="{debounce: 500}">
                             </select>
                             <div ng-repeat="error in errors.object_id">
