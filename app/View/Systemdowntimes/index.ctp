@@ -332,6 +332,17 @@
                                                         <?php
                                                     endif;
                                                     break;
+
+                                                case OBJECT_NODE:
+                                                    //debug($systemdowntime);
+                                                    if (isset($systemdowntime['Container']['id']) && $systemdowntime['Container']['id'] !== null): ?>
+                                                        <?php echo h($systemdowntime['Container']['name']); ?>
+                                                    <?php else: ?>
+                                                        <span class="muted"><?php echo __('Container deleted'); ?></span>
+                                                    <?php
+                                                    endif;
+                                                    break;
+
                                             endswitch;
                                             ?>
                                         </td>

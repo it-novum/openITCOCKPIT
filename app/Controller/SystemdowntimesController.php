@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+
 /**
  * @property Systemdowntime $Systemdowntime
  * @property Host $Host
@@ -36,6 +37,7 @@ class SystemdowntimesController extends AppController {
         'Host',
         'Service',
         'Hostgroup',
+        'Container',
     ];
     public $components = [
         'Paginator',
@@ -67,6 +69,7 @@ class SystemdowntimesController extends AppController {
         $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'],$requestSettings['conditions']);
         $this->Paginator->settings = Hash::merge($this->Paginator->settings,$requestSettings['default']);
 
+        $containerList=$this->Container->find("list");
         $all_systemdowntimes = $this->Paginator->paginate();
         foreach ($all_systemdowntimes as $dKey => $systemdowntime) {
             switch ($systemdowntime['Systemdowntime']['objecttype_id']) {
@@ -94,6 +97,22 @@ class SystemdowntimesController extends AppController {
                         $all_systemdowntimes[$dKey]['canDelete'] = true;
                     } else if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
                         $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == READ_RIGHT) {
+                        $all_systemdowntimes[$dKey]['canDelete'] = false;
+                    } else {
+                        unset($all_systemdowntimes[$dKey]);
+                    }
+                    break;
+
+                case OBJECT_NODE:
+                    $all_systemdowntimes[$dKey]['Container']['id']=$systemdowntime['Systemdowntime']['object_id'];
+                    $systemdowntime['Container']['id']=$systemdowntime['Systemdowntime']['object_id'];
+                    $all_systemdowntimes[$dKey]['Container']['name']=$containerList[$systemdowntime['Container']['id']];
+
+                    if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']] == WRITE_RIGHT) {
+                        $all_systemdowntimes[$dKey]['canDelete'] = true;
+                    } else if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']]) &&
+                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']] == READ_RIGHT) {
                         $all_systemdowntimes[$dKey]['canDelete'] = false;
                     } else {
                         unset($all_systemdowntimes[$dKey]);
@@ -201,6 +220,12 @@ class SystemdowntimesController extends AppController {
                                     'required'   => true,
                                     'allowEmpty' => false,
                                 ],
+                            ],
+                            'to_time' => [
+                                'notBlank' => [
+                                    'required'   => false,
+                                    'allowEmpty' => true,
+                                ],
                             ]
                         ]
                     );
@@ -284,6 +309,7 @@ class SystemdowntimesController extends AppController {
                 'from_time',
                 'to_date',
                 'to_time',
+                'duration',
                 'is_recurring',
                 'weekdays',
                 'day_of_month'
@@ -328,6 +354,18 @@ class SystemdowntimesController extends AppController {
                                     'required'   => false,
                                     'allowEmpty' => true,
                                 ]
+                            ],
+                            'from_time' => [
+                                'notBlank' => [
+                                    'required'   => true,
+                                    'allowEmpty' => false,
+                                ],
+                            ],
+                            'to_time' => [
+                                'notBlank' => [
+                                    'required'   => false,
+                                    'allowEmpty' => true,
+                                ],
                             ]
                         ]
                     );
@@ -418,6 +456,7 @@ class SystemdowntimesController extends AppController {
                 'from_time',
                 'to_date',
                 'to_time',
+                'duration',
                 'is_recurring',
                 'weekdays',
                 'day_of_month'
@@ -464,6 +503,18 @@ class SystemdowntimesController extends AppController {
                                     'required'   => false,
                                     'allowEmpty' => true,
                                 ]
+                            ],
+                            'from_time' => [
+                                'notBlank' => [
+                                    'required'   => true,
+                                    'allowEmpty' => false,
+                                ],
+                            ],
+                            'to_time' => [
+                                'notBlank' => [
+                                    'required'   => false,
+                                    'allowEmpty' => true,
+                                ],
                             ]
                         ]
                     );
@@ -555,6 +606,7 @@ class SystemdowntimesController extends AppController {
                 'from_time',
                 'to_date',
                 'to_time',
+                'duration',
                 'is_recurring',
                 'weekdays',
                 'day_of_month',
@@ -697,6 +749,18 @@ class SystemdowntimesController extends AppController {
                                     'required'   => false,
                                     'allowEmpty' => true,
                                 ]
+                            ],
+                            'from_time' => [
+                                'notBlank' => [
+                                    'required'   => true,
+                                    'allowEmpty' => false,
+                                ],
+                            ],
+                            'to_time' => [
+                                'notBlank' => [
+                                    'required'   => false,
+                                    'allowEmpty' => true,
+                                ],
                             ]
                         ]
                     );

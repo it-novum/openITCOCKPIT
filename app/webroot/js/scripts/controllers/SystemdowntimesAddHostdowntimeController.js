@@ -71,7 +71,11 @@ angular.module('openITCOCKPIT')
             if($scope.Downtime.Type2){
                 $scope.post.Systemdowntime.downtimetype_id="1";
             }
-
+            if($scope.post.Systemdowntime.is_recurring){
+                $scope.post.Systemdowntime.to_time=null;
+                $scope.post.Systemdowntime.to_date=null;
+                $scope.post.Systemdowntime.from_date=null;
+            }
             $http.post("/systemdowntimes/addHostdowntime.json?angular=true", $scope.post).then(
                 function(result){
                     $scope.errors = null;
