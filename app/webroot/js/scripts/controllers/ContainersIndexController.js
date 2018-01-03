@@ -71,6 +71,13 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('selectedTenant', function(){
             if($scope.selectedTenant !== null){
+
+                for(var key in $scope.tenants){
+                    if($scope.tenants[key].Tenant.container_id == $scope.selectedTenant){
+                        $scope.tenant = $scope.tenants[key];
+                    }
+                }
+
                 $scope.load();
             }
         });

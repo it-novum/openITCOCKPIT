@@ -29,6 +29,7 @@ use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
@@ -3251,5 +3252,55 @@ class HostsController extends AppController {
 
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadHostById($id = null){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $host = $this->Host->find('first',[
+            'conditions' => [
+                'Host.id' => $id,
+            ],
+            'contain'    => [
+                'Container',
+                'Hosttemplate'
+            ],
+        ]);
+
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        foreach($host['Host'] as $key => $value){
+            if($host['Host'][$key] === '' || $host['Host'][$key] === null){
+                if(isset($host['Hosttemplate'][$key])){
+                    $host['Host'][$key] = $host['Hosttemplate'][$key];
+                }
+            }
+        }
+
+        $host['Host']['is_satellite_host'] = (int)$host['Host']['satellite_id'] !== 0;
+        $host['Host']['allow_edit'] = false;
+        if($this->hasRootPrivileges === true){
+            $host['Host']['allow_edit'] = true;
+        }else{
+            if($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')){
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
+                $host['Host']['allow_edit'] = $ContainerPermissions->hasPermission();
+            }
+        }
+
+
+        unset($host['Hosttemplate']);
+        $this->set('host', $host);
+        $this->set('_serialize', ['host']);
     }
 }

@@ -110,14 +110,22 @@ class Systemsetting extends AppModel
      * @return mixed
      */
     public function getMasterInstanceName(){
-        return $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+        if(!Cache::read('systemsettings_master_instance', 'permissions')){
+            $name = $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+            Cache::write('systemsettings_master_instance', $name, 'permissions');
+        }
+        return Cache::read('systemsettings_master_instance', 'permissions');
     }
 
     /**
      * @return mixed
      */
     public function getQueryHandlerPath(){
-        return $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+        if(!Cache::read('systemsettings_qh_path', 'permissions')){
+            $path = $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+            Cache::write('systemsettings_qh_path', $path, 'permissions');
+        }
+        return Cache::read('systemsettings_qh_path', 'permissions');
     }
 
 }

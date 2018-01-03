@@ -107,7 +107,7 @@
 
                 <div class="col-sm-12 col-lg-6">
                     <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                        <div class="jarviswidget" id="wid-id-0">
+                        <div class="jarviswidget" id="wid-id-0" ng-if="tenant.Tenant.allow_edit === true">
 
                             <header>
                                 <span class="widget-icon"> <i class="fa fa-link"></i> </span>

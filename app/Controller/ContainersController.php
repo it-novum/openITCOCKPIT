@@ -159,7 +159,26 @@ class ContainersController extends AppController {
                 'id' => $id,
             ],
         ]);
-        $nest = Hash::nest($this->Container->children($id, false, null, 'name'));
+
+        $parent[0]['Container']['allow_edit'] = false;
+        if(isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])){
+            if((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT){
+                $parent[0]['Container']['allow_edit'] = true;
+            }
+        }
+
+        $containers = $this->Container->children($id, false, null, 'name');
+        foreach($containers as $key => $container){
+            $containers[$key]['Container']['allow_edit'] = false;
+            $containerId = $container['Container']['id'];
+            if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+                if((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT){
+                    $containers[$key]['Container']['allow_edit'] = true;
+                }
+            }
+        }
+
+        $nest = Hash::nest($containers);
         $parent[0]['children'] = $nest;
         $this->set('nest', $parent);
         $this->set('_serialize', ['nest']);

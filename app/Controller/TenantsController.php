@@ -78,6 +78,17 @@ class TenantsController extends AppController
             $all_tenants = $this->Paginator->paginate();
         }
 
+        foreach($all_tenants as $key => $tenant){
+            $all_tenants[$key]['Tenant']['allow_edit'] = false;
+            $tenantContainerId = $tenant['Tenant']['container_id'];
+            if(isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])){
+                if((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT){
+                    $all_tenants[$key]['Tenant']['allow_edit'] = true;
+                }
+            }
+        }
+
+
         $this->set(compact(['all_tenants']));
         $this->set('_serialize', ['all_tenants']);
     }

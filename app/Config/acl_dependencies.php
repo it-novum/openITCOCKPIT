@@ -197,7 +197,7 @@ $config = [
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
