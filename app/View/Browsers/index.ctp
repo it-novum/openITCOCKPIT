@@ -104,11 +104,11 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             foreach ($state_array_host as $state => $state_count):?>
                                 <div class="col-md-4 no-padding">
                                     <a href="<?php echo Router::url([
-                                        'controller' => 'hosts',
-                                        'action' => 'index',
-                                        'plugin' => '',
+                                        'controller'                                      => 'hosts',
+                                        'action'                                          => 'index',
+                                        'plugin'                                          => '',
                                         'Filter.Hoststatus.current_state[' . $state . ']' => 1,
-                                        'BrowserContainerId' => ROOT_CONTAINER,
+                                        'BrowserContainerId'                              => ROOT_CONTAINER,
                                     ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                                         <?php echo $state_count . ' (' . round($state_count / $state_total * 100, 2) . ' %)'; ?>
@@ -155,12 +155,13 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
                             foreach ($state_array_service as $state => $state_count):?>
                                 <div class="col-md-3 no-padding">
-                                    <a href="<?php echo Router::url([
-                                        'controller' => 'services',
-                                        'action' => 'index',
-                                        'plugin' => '',
-                                        'Filter.Servicestatus.current_state[' . $state . ']' => 1,
-                                        'BrowserContainerId' => ROOT_CONTAINER,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'             => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'sort'               => 'Servicestatus.last_state_change',
+                                        'direction'          => 'desc',
+                                        'BrowserContainerId' => ROOT_CONTAINER
                                     ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                                         <?php
@@ -295,14 +296,12 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                             <?php endif; ?>
                                         </td>
                                         <td><?php echo h($Host->getAddress()); ?></td>
-                                        <td data-original-title="<?php echo h($this->Time->format(
-                                            $Hoststatus->getLastHardStateChange(),
-                                            $this->Auth->user('dateformat'),
-                                            false,
-                                            $this->Auth->user('timezone')
-                                        )); ?>"
-                                            data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Hoststatus->getLastHardStateChange()))); ?>
+                                        <td data-original-title="<?php echo h($this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
+                                            data-placement="bottom" rel="tooltip"
+                                            data-container="body"
+                                            data-sort="<?php echo $Hoststatus->getLastHardStateChange();?>"
+                                        >
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastHardStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format(
                                                 $Hoststatus->getLastCheck(),
