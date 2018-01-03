@@ -265,6 +265,11 @@ angular.module('openITCOCKPIT')
             $scope.loadActiveServices();
         });
 
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
+
         $scope.loadTimezone();
         SortService.setCallback($scope.loadActiveServices);
 

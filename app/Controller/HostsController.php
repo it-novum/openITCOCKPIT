@@ -319,6 +319,12 @@ class HostsController extends AppController {
         $this->set('SatelliteNames', $SatelliteNames);
     }
 
+    public function icon() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
+    }
+
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();

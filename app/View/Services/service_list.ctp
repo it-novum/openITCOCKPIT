@@ -22,15 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+?>
 
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
-
-$Host = new Host([]);
-
-$this->Paginator->url($this->params['url']); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -68,16 +61,16 @@ $this->Paginator->url($this->params['url']); ?>
                     <div class="btn-group pull-left" style="padding-top: 2px;">
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                             <a href="/hosts/edit/{{ host.Host.id }}" ng-show="host.Host.allow_edit"
-                               class="btn btn-default btn-xs">
+                               class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
                             </a>
                         <?php else: ?>
-                            <a href="javascript:void(0);" class="btn btn-default btn-xs">
+                            <a href="javascript:void(0);" class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
                             </a>
                         <?php endif; ?>
                         <a href="javascript:void(0);" data-toggle="dropdown"
-                           class="btn btn-default btn-xs dropdown-toggle"><span class="caret"></span></a>
+                           class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                 <li>
@@ -187,7 +180,7 @@ $this->Paginator->url($this->params['url']); ?>
                         <div class="jarviswidget-editbox"></div>
                         <div class="widget-body no-padding">
                             <div class="tab-content">
-                                <!-- Tab index -->
+
                                 <div id="tab1" class="tab-pane fade active in">
                                     <div class="mobile_table">
                                         <table id="host_list"
@@ -195,12 +188,6 @@ $this->Paginator->url($this->params['url']); ?>
                                                style="">
                                             <thead>
                                             <tr>
-                                                <?php
-                                                $Servicestatus = new Servicestatus([]);
-                                                $ServicestatusIcon = new ServicestatusIcon();
-                                                $Service = new Service([]);
-
-                                                ?>
 
                                                 <th class="no-sort text-center">
                                                     <i class="fa fa-check-square-o fa-lg"></i>
@@ -390,7 +377,6 @@ $this->Paginator->url($this->params['url']); ?>
                                                         </ul>
                                                     </div>
                                                 </td>
-
                                             </tr>
                                             </tbody>
                                         </table>
@@ -402,155 +388,212 @@ $this->Paginator->url($this->params['url']); ?>
                                         </center>
                                     </div>
 
-                                    <div class="padding-top-10"></div>
-                                    <?php echo $this->element('service_mass_changes'); ?>
+                                    <reschedule-service></reschedule-service>
+                                    <disable-notifications></disable-notifications>
+                                    <enable-notifications></enable-notifications>
+                                    <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
+                                    <service-downtime author="<?php echo h($username); ?>"></service-downtime>
 
-                                </div>
-                                <!-- Disabled services -->
+                                    <div id="serviceGraphContainer" class="popup-graph-container">
+                                        <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;"
+                                             ng-show="isLoadingGraph">
+                                            <i class="fa fa-refresh fa-4x fa-spin"></i>
+                                        </div>
+                                        <div id="serviceGraphFlot"></div>
+                                    </div>
+
+                                    <div class="row margin-top-10 margin-bottom-10">
+                                        <div class="col-xs-12 col-md-2 text-muted text-center">
+                                            <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <span ng-click="selectAll()" class="pointer">
+                                                <i class="fa fa-lg fa-check-square-o"></i>
+                                                <?php echo __('Select all'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <span ng-click="undoSelection()" class="pointer">
+                                                <i class="fa fa-lg fa-square-o"></i>
+                                                <?php echo __('Undo selection'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                                <i class="fa fa-lg fa-files-o"></i>
+                                                <?php echo __('Copy'); ?>
+                                            </a>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2 txt-color-red">
+                                            <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                                <i class="fa fa-lg fa-trash-o"></i>
+                                                <?php echo __('Delete'); ?>
+                                            </span>
+                                        </div>
+                                        <div class="col-xs-12 col-md-2">
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0);"
+                                                   class="btn btn-default"><?php echo __('More'); ?></a>
+                                                <a href="javascript:void(0);" data-toggle="dropdown"
+                                                   class="btn btn-default dropdown-toggle"><span
+                                                            class="caret"></span></a>
+                                                <ul class="dropdown-menu">
+                                                    <li>
+                                                        <a ng-href="{{ linkForPdf() }}" class="a-clean">
+                                                            <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
+                                                        </a>
+                                                    </li>
+                                                    <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="reschedule(getObjectsForExternalCommand())">
+                                                                <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="disableNotifications(getObjectsForExternalCommand())">
+                                                                <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="enableNotifications(getObjectsForExternalCommand())">
+                                                                <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                                            </a>
+                                                        </li>
+                                                        <li class="divider"></li>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="serviceDowntime(getObjectsForExternalCommand())">
+                                                                <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="acknowledgeService(getObjectsForExternalCommand())">
+                                                                <i class="fa fa-user"></i> <?php echo __('Acknowledge status'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+
+                                </div> <!-- close tab1 -->
+
+                                <div id="tab2" class="tab-pane fade">
+
+                                    <table class="table table-striped table-hover table-bordered smart-form" style="">
+                                        <thead>
+                                        <tr>
+                                            <th class="no-sort text-center">
+                                                <i class="fa fa-check-square-o fa-lg"></i>
+                                            </th>
+
+                                            <th class="no-sort">
+                                                <?php echo __('Servicestatus'); ?>
+                                            </th>
+
+                                            <th class="no-sort text-center">
+                                                <i class="fa fa-user fa-lg"
+                                                   title="<?php echo __('Acknowledgedment'); ?>"></i>
+                                            </th>
+
+                                            <th class="no-sort text-center">
+                                                <i class="fa fa-power-off fa-lg"
+                                                   title="<?php echo __('in Downtime'); ?>"></i>
+                                            </th>
+
+                                            <th class="no-sort text-center">
+                                                <i class="fa fa fa-area-chart fa-lg"
+                                                   title="<?php echo __('Grapher'); ?>"></i>
+                                            </th>
+
+                                            <th class="no-sort text-center">
+                                                <strong title="<?php echo __('Passively transferred service'); ?>">
+                                                    P
+                                                </strong>
+                                            </th>
+
+                                            <th class="no-sort">
+                                                <?php echo __('Service name'); ?>
+                                            </th>
+
+                                            <th class="no-sort tableStatewidth">
+                                                <?php echo __('Last state change'); ?>
+                                            </th>
+
+                                            <th class="no-sort tableStatewidth">
+                                                <?php echo __('Last check'); ?>
+                                            </th>
+
+                                            <th class="no-sort tableStatewidth">
+                                                <?php echo __('Next check'); ?>
+                                            </th>
+
+                                            <th class="no-sort">
+                                                <?php echo __('Service output'); ?>
+                                            </th>
+
+                                            <th class="no-sort text-center width-50">
+                                                <i class="fa fa-gear fa-lg"></i>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+
+                                </div> <!-- cloase tab2 -->
+
                                 <div id="tab3" class="tab-pane fade">
+
                                     <div class="mobile_table">
-                                        <table class="table table-striped table-hover table-bordered smart-form"
-                                               style="">
+                                        <table class="table table-striped table-hover table-bordered smart-form" style="">
                                             <thead>
                                             <tr>
-                                                <?php $order = $this->Paginator->param('order'); ?>
-                                                <th class="no-sort"><?php echo __('Servicename'); ?></th>
+                                                <th class="no-sort"><?php echo __('Service name'); ?></th>
                                                 <th class="no-sort"><?php echo __('Service template'); ?></th>
                                                 <th class="no-sort"><?php echo __('UUID'); ?></th>
                                                 <th class="no-sort"><?php echo __('Options'); ?></th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <?php foreach ($disabledServices as $disabledService):
-                                                $Service = new Service($disabledService);
-                                                ?>
-                                                <tr>
-                                                    <td>
-                                                        <?php echo h($Service->getServicename()); ?>
-                                                    </td>
-                                                    <td><?php echo h($disabledService['Servicetemplate']['name']); ?></td>
-                                                    <td><?php echo h($Service->getUuid()); ?></td>
-                                                    <td>
-                                                        <div class="btn-group">
-                                                            <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
-                                                                <a href="<?php echo Router::url([
-                                                                    'controller' => 'services',
-                                                                    'action'     => 'edit',
-                                                                    $Service->getId()
-                                                                ]); ?>" class="btn btn-default">
-                                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                                </a>
-                                                            <?php else: ?>
-                                                                <a href="javascript:void(0);"
-                                                                   class="btn btn-default btn-xs">&nbsp;<i
-                                                                            class="fa fa-cog"></i>&nbsp;</a>
-                                                            <?php endif; ?>
-                                                            <a href="javascript:void(0);" data-toggle="dropdown"
-                                                               class="btn btn-default dropdown-toggle"><span
-                                                                        class="caret"></span></a>
-                                                            <ul class="dropdown-menu">
-                                                                <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
-                                                                    <li>
-                                                                        <a href="<?php echo Router::url([
-                                                                            'controller' => 'services',
-                                                                            'action'     => 'edit',
-                                                                            $Service->getId()
-                                                                        ]); ?>">
-                                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                                        </a>
-                                                                    </li>
-                                                                <?php endif; ?>
-                                                                <?php if ($this->Acl->hasPermission('enable', 'services') && $allowEdit): ?>
-                                                                    <li>
-                                                                        <a href="<?php echo Router::url([
-                                                                            'controller' => 'services',
-                                                                            'action'     => 'enable',
-                                                                            $Service->getId()
-                                                                        ]); ?>">
-                                                                            <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
-                                                                        </a>
-                                                                    </li>
-                                                                <?php endif; ?>
-                                                                <?php if ($this->Acl->hasPermission('delete', 'services') && $allowEdit): ?>
-                                                                    <li class="divider"></li>
-                                                                    <li>
-                                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $Service->getId()], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                                    </li>
-                                                                <?php endif; ?>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
 
-                                <!-- Deleted services -->
+                                </div> <!-- cloase tab4 -->
+
                                 <div id="tab4" class="tab-pane fade">
+
                                     <div class="mobile_table">
                                         <table class="table table-striped table-hover table-bordered smart-form"
                                                style="">
                                             <thead>
                                             <tr>
-                                                <?php $order = $this->Paginator->param('order'); ?>
-                                                <th class="no-sort"><?php echo __('Servicename'); ?></th>
+                                                <th class="no-sort"><?php echo __('Service name'); ?></th>
                                                 <th class="no-sort"><?php echo __('UUID'); ?></th>
                                                 <th class="no-sort"><?php echo __('Date'); ?></th>
                                                 <th class="no-sort"><?php echo __('Performance data deleted'); ?></th>
-
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <?php foreach ($deletedServices as $deletedService): ?>
-                                                <tr>
-                                                    <td><?php echo h($deletedService['DeletedService']['name']); ?></td>
-                                                    <td><?php echo h($deletedService['DeletedService']['uuid']); ?></td>
-                                                    <td>
-                                                        <?php echo $this->Time->format(
-                                                            $deletedService['DeletedService']['created'],
-                                                            $this->Auth->user('dateformat'),
-                                                            false,
-                                                            $this->Auth->user('timezone')
-                                                        ); ?>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <?php if ($deletedService['DeletedService']['deleted_perfdata'] == 1): ?>
-                                                            <i class="fa fa-check text-success"></i>
-                                                        <?php else: ?>
-                                                            <i class="fa fa-times txt-color-red"></i>
-                                                        <?php endif; ?>
-                                                    </td>
-                                                </tr>
-                                            <?php endforeach; ?>
+
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
+
+                                </div> <!-- cloase tab4 -->
+
                             </div>
-
-                            <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
-
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <reschedule-service></reschedule-service>
-            <disable-notifications></disable-notifications>
-            <enable-notifications></enable-notifications>
-            <acknowledge-service author="<?php echo h($username); ?>"></acknowledge-service>
-            <service-downtime author="<?php echo h($username); ?>"></service-downtime>
-
-            <div id="serviceGraphContainer" class="popup-graph-container">
-                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
-                    <i class="fa fa-refresh fa-4x fa-spin"></i>
-                </div>
-                <div id="serviceGraphFlot"></div>
-            </div>
-
         </article>
     </div>
 </section>
-

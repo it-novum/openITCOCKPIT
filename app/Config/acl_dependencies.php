@@ -128,7 +128,8 @@ $config = [
                 'saveMap',
             ],
             'Hosts'            => [
-                'view'
+                'view',
+                'icon'
             ]
         ],
         'dependencies'   => [
