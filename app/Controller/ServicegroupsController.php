@@ -382,7 +382,7 @@ class ServicegroupsController extends AppController {
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
                         'id' => $servicetemplate_id,
-                        'name' => $servicetemplates[$servicetemplate_id],
+                        'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
 
                 }
