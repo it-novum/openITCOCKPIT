@@ -46,9 +46,20 @@ class Container extends AppModel {
             ],
         ],
         'parent_id' => [
-            'rule' => 'notBlank',
-            'message' => 'This field cannot be left blank.',
-            'required' => true,
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'message' => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Invalid container.',
+                'required' => true,
+            ],
         ],
     ];
 

@@ -29,80 +29,136 @@
             <i class="fa fa-cogs fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Servicegroup'); ?>
-			</span>
+                <?php echo __('Service Groups'); ?>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
 </div>
 <div id="error_msg"></div>
 
+<confirm-delete></confirm-delete>
+
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon"> <i class="fa fa-cogs"></i> </span>
-        <h2><?php echo __('Edit servicegroup'); ?></h2>
+        <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
+        <h2><?php echo __('Edit Service Groups'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $servicegroup['Servicegroup']['id']); ?>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(servicegroup)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
         <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
-            <?php echo __('UUID: %s', h($servicegroup['Servicegroup']['uuid'])); ?>
+            <?php echo __('UUID:'); ?> {{ servicegroup.Servicegroup.uuid }}
         </div>
     </header>
-    <div>
-        <div class="widget-body">
-            <?php
-            echo $this->Form->create('Servicegroup', [
-                'class' => 'form-horizontal clear',
-            ]);
-
-            if ($hasRootPrivileges):
-                echo $this->Form->input('Container.parent_id', ['options' => $containers, 'selected' => $this->request->data['Container']['parent_id'], 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container')]);
-            elseif (!$hasRootPrivileges && $servicegroup['Container']['parent_id'] != ROOT_CONTAINER):
-                echo $this->Form->input('Container.parent_id', ['options' => $containers, 'selected' => $this->request->data['Container']['parent_id'], 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container')]);
-            else:
-                ?>
-                <div class="form-group required">
-                    <label class="col col-md-2 control-label"><?php echo __('Container'); ?></label>
-                    <div class="col col-xs-10 required"><input type="text" value="/root" class="form-control" readonly>
+    <div class="widget-body">
+        <form ng-submit="submit();" class="form-horizontal">
+            <div class="row">
+                <div class="form-group required" ng-class="{'has-error': errors.Container.parent_id}">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Container'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <select
+                                id="ServicegroupParentContainer"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Container.parent_id">
+                        </select>
+                        <div ng-repeat="error in errors.Container.parent_id">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                 </div>
-                <?php
-                echo $this->Form->input('Container.parent_id', [
-                        'value' => $servicegroup['Container']['parent_id'],
-                        'type'  => 'hidden',
-                    ]
-                );
-            endif;
-            echo $this->Form->input('id', ['type' => 'hidden', 'value' => $servicegroup['Servicegroup']['id']]);
-            echo $this->Form->input('container_id', ['type' => 'hidden', 'value' => $servicegroup['Servicegroup']['container_id']]);
-            echo $this->Form->input('Container.id', ['type' => 'hidden', 'value' => $servicegroup['Servicegroup']['container_id']]);
-            echo $this->Form->input('Container.name', ['label' => __('Servicegroup name'), 'value' => $this->request->data['Container']['name']]);
-            echo $this->Form->input('Servicegroup.description', ['label' => __('Description'), 'value' => $this->request->data['Servicegroup']['description']]);
-            echo $this->Form->input('Servicegroup.servicegroup_url', ['label' => __('Servicegroup URL'), 'value' => $this->request->data['Servicegroup']['servicegroup_url']]);
 
+                <div class="form-group required" ng-class="{'has-error': errors.Container.name}">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Service group name'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Container.name">
+                        <div ng-repeat="error in errors.Container.name">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
 
-            echo $this->Form->hostAndServiceSelectOptiongroup('Servicegroup.Service', [
-                'label'    => __('Services'),
-                'options'  => $services,
-                'selected' => isset($this->request->data['Servicegroup']['Service']) ? $this->request->data['Servicegroup']['Service'] : []
-            ]);
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Description'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <input class="form-control" type="text" ng-model="post.Servicegroup.description">
+                    </div>
+                </div>
 
-            echo $this->Form->input('Servicegroup.Servicetemplate', [
-                'options' => $servicetemplates,
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
-                'label' => __('Service templates'),
-                'data-placeholder' => __('Please choose a service template')
-            ]);
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Service group URL'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <input class="form-control" type="text" ng-model="post.Servicegroup.servicegroup_url">
+                    </div>
+                </div>
 
-            ?>
-            <br/>
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
-        </div>
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Services'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <select multiple
+                                id="ServiceId"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="services"
+                                callback="loadServices"
+                                ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                                ng-model="post.Servicegroup.Service">
+                        </select>
+
+                        <div ng-repeat="error in errors.Service">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Service templates'); ?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <select
+                                id="ServicegroupServicetemplates"
+                                multiple
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="servicetemplates"
+                                callback="loadServicetemplates"
+                                ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
+                                ng-model="post.Servicegroup.Servicetemplate" >
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 margin-top-10">
+                    <div class="well formactions ">
+                        <div class="pull-right">
+                            <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                            <a href="/servicegroups/index" class="btn btn-default">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

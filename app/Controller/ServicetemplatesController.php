@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
  * @property ChangelogComponent                       $Changelog
@@ -1669,4 +1670,24 @@ class ServicetemplatesController extends AppController
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
     }
+
+    public function loadServicetemplatesByContainerId($containerId = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+        $servicetemplates = $this->Servicetemplate->makeItJavaScriptAble(
+            $this->Servicetemplate->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
+        );
+        $this->set(compact(['servicetemplates']));
+        $this->set('_serialize', ['servicetemplates']);
+    }
+
 }

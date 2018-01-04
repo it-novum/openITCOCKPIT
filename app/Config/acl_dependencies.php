@@ -232,7 +232,7 @@ $config = [
             ],
             'Servicegroups'         => [
                 'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
+                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
                 'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
             ],
