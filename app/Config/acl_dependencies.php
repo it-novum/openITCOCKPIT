@@ -172,7 +172,7 @@ $config = [
                 'edit' => ['loadTasksByPlugin'],
             ],
             'Currentstatereports'   => [
-                'index' => ['createPdfReport'],
+                'index' => ['createPdfReport', 'createHtmlReport'],
             ],
             'Downtimereports'       => [
                 'index' => ['createPdfReport'],

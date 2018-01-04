@@ -30,7 +30,7 @@
             <?php echo __('Adhoc Reports'); ?>
             <span>>
                 <?php echo __('Current State Report'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -46,54 +46,106 @@
     <div>
         <div class="widget-body">
             <?php
-            echo $this->Form->create('Currentstatereport', [
+            echo $this->Form->create('Currentstatereport',[
                 'class' => 'form-horizontal clear',
             ]);
-
-            echo $this->Form->input('Service', [
-                'options'          => Hash::combine($services, '{n}.Service.id', [
-                        '%s/%s', '{n}.Host.name', '{n}.{n}.ServiceDescription',
-                    ],
-                    '{n}.Host.name'
-                ),
-                'class' => 'chosen',
-                'multiple' => true,
-                'style' => 'width:100%;',
-                'label' => __('Services'),
-                'data-placeholder' => __('Please choose a service'),
-                'wrapInput'        => [
-                    'tag'   => 'div',
-                    'class' => 'col col-xs-10',
-                ],
-            ]);
-
-            echo $this->Form->input(__('current_state'), [
-                'label'    => __('State filter'),
-                'type'     => 'select',
-                'multiple' => 'checkbox',
-                'class'    => 'font-sm padding-right-10',
-                'options'  => [
-                    $this->Status->humanSimpleServiceStatus(0),
-                    $this->Status->humanSimpleServiceStatus(1),
-                    $this->Status->humanSimpleServiceStatus(2),
-                    $this->Status->humanSimpleServiceStatus(3),
-                ],
-                'default'  => [0, 1, 2, 3],
-            ]);
-
-            echo $this->Form->input('report_format', [
-                    'options'          => ['pdf' => __('PDF'), 'html' => __('HTML')],
-                    'data-placeholder' => __('Please select...'),
-                    'class'            => 'chosen',
-                    'label'            => __('Report format'),
-                    'style'            => 'width:100%;',
-                ]
-            );
             ?>
+            <div class="form-group required" ng-class="{'has-error': errors.Service}">
+                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                    <?php echo __('Service'); ?>
+                </label>
+                <div class="col col-xs-10">
+                    <select
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            multiple
+                            chosen="SuggestedServices"
+                            ng-model="post.Currentstatereport.Service"
+                            ng-options="value.id as value.label group by value.group for value in SuggestedServices">
+                        <option>--</option>
+                    </select>
+                    <div ng-repeat="error in errors.Service">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group required" ng-class="{'has-error': errors.current_state}">
+                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                    <?php echo __('State filter'); ?>
+                </label>
+                <div class="col col-xs-10">
+                    <label>
+                        <input type="checkbox" ng-model="current_state.ok"/>
+                        <?php echo __('Ok'); ?>
+                    </label>
+
+                    <label>
+                        <input type="checkbox" ng-model="current_state.warning"/>
+                        <?php echo __('Warning'); ?>
+                    </label>
+
+                    <label>
+                        <input type="checkbox" ng-model="current_state.critical"/>
+                        <?php echo __('Critical'); ?>
+                    </label>
+
+                    <label>
+                        <input type="checkbox" ng-model="current_state.unknown"/>
+                        <?php echo __('Unknown'); ?>
+                    </label>
+                </div>
+                <div class="col col-xs-offset-1 col-xs-10" ng-repeat="error in errors.current_state">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': errors.report_format}">
+                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                    <?php echo __('Report format'); ?>
+                </label>
+                <div class="col col-xs-10 col-md-10 col-lg-10">
+                    <label class="padding-right-10">
+                        <input type="radio" name="report_format" ng-model="reportformat" value="1">
+                        <i class="fa fa-file-pdf-o"></i> <?php echo __('PDF'); ?>
+                    </label>
+                    <label class="padding-right-10">
+                        <input type="radio" name="report_format" ng-model="reportformat" value="2">
+                        <i class="fa fa-html5"></i> <?php echo __('HTML'); ?>
+                    </label>
+                    <div ng-repeat="error in errors.report_format">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="alert alert-info" ng-show="generatingReport">
+                    <i class="fa fa-spin fa-refresh"></i>
+                    <?php echo __('Generating report...'); ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="alert alert-info" ng-show="noDataFound">
+                    {{ noDataFoundMessage }}
+                </div>
+            </div>
+
         </div>
-        <?php
-        echo $this->Form->formActions(__('Create'));
-        ?>
+        <div class="well formactions ">
+            <div class="pull-right">
+                <input type="button"
+                       class="btn btn-primary"
+                       value="<?php echo __('Save'); ?>"
+                       ng-click="createCurrentStateReport()"
+                >
+                &nbsp;
+                <a href="/currentstatereports" class="btn btn-default">
+                    <?php echo __('Cancel'); ?>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 </div>
