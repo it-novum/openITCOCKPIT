@@ -30,7 +30,9 @@ $config = [
             'Angular' => [
                 'paginator',
                 'mass_delete',
+                'mass_deactivate',
                 'confirm_delete',
+                'confirm_deactivate',
                 'user_timezone',
                 'version_check',
                 'menustats',

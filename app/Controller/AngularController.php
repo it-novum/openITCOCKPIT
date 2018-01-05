@@ -48,6 +48,14 @@ class AngularController extends AppController {
         return;
     }
 
+    public function confirm_deactivate() {
+        return;
+    }
+
+    public function mass_deactivate() {
+        return;
+    }
+
     public function export(){
         return;
     }

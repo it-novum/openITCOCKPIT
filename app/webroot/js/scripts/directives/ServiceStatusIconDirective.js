@@ -26,9 +26,13 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
                         $scope.btnColor =  'danger';
                         $scope.flappingColor = 'txt-color-red';
                         return;
-                    default:
+                    case 3:
                         $scope.btnColor = 'default';
                         $scope.flappingColor = 'txt-color-blueDark';
+                        return;
+                    default:
+                        $scope.btnColor = 'primary';
+                        $scope.flappingColor = 'text-primary';
                 }
             };
 

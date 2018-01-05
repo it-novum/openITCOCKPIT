@@ -56,6 +56,7 @@
 <?php endif; ?>
 
 <massdelete></massdelete>
+<massdeactivate></massdeactivate>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -460,7 +461,8 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('deactivate')): ?>
                                                     <li ng-if="service.Service.allow_edit">
-                                                        <a href="/services/deactivate/{{service.Service.id}}">
+                                                        <a href="javascript:void(0);"
+                                                           ng-click="confirmDeactivate(getObjectForDelete(host, service))">
                                                             <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                         </a>
                                                     </li>

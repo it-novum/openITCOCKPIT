@@ -60,4 +60,22 @@ class ServiceFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function notMonitoredFilter(){
+        $filters = [
+            'like' => [
+                'Host.name',
+                'Service.servicename',
+            ],
+            'equals' => [
+                'Host.id',
+                'Service.uuid'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }

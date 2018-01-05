@@ -286,7 +286,7 @@ class ServicesController extends AppController {
 
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('username',$User->getFullName());
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }
@@ -353,6 +353,7 @@ class ServicesController extends AppController {
             $this->Paginator->settings['page'] = $ServiceFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
         }
 
         $hostContainers = [];
@@ -438,7 +439,114 @@ class ServicesController extends AppController {
     }
 
     public function notMonitored() {
-        $this->__unbindAssociations('Host');
+        $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+
+
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Service->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->indexFilter());
+            $this->Service->virtualFieldsForNotMonitored();
+            $modelName = 'Service';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new NotImplementedException('Not implemented yet');
+            /*
+            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
+            $modelName = 'Servicestatus';
+            */
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_services = $this->{$modelName}->find('all', $query);
+            $this->set('all_services', $all_services);
+            $this->set('_serialize', ['all_services']);
+            return;
+        } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
+        }
+
+        $hostContainers = [];
+        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')));
+
+
+        $all_services = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($services as $service) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$service['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+            }else{
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+
+            $tmpRecord = [
+                'Service'    => $Service->toArray(),
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus->toArray()
+            ];
+            $all_services[] = $tmpRecord;
+        }
+
+
+        $this->set('all_services', $all_services);
+        $this->set('_serialize', ['all_services', 'paging']);
+
+        return;
+
 
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
 
@@ -468,6 +576,7 @@ class ServicesController extends AppController {
 
         $all_services = [];
         $query = [
+            'recursive'  => -1,
             'contain'    => ['Servicetemplate'],
             'fields'     => [
                 'Service.id',
@@ -506,6 +615,7 @@ class ServicesController extends AppController {
             ],
             'conditions' => $conditions,
         ];
+
         if ($this->isApiRequest()) {
             unset($query['limit']);
             $all_services = $this->Service->find('all', $query);
@@ -1363,7 +1473,7 @@ class ServicesController extends AppController {
         $modules = $this->Constants->defines['modules'];
 
         $usedBy = $this->Service->isUsedByModules($service, $modules);
-        if(empty($usedBy)){
+        if (empty($usedBy)) {
             //Not used by any module
             if ($this->Service->__delete($service, $this->Auth->user('id'))) {
                 $this->set('success', true);
@@ -1742,34 +1852,27 @@ class ServicesController extends AppController {
     }
 
     public function deactivate($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->findById($id);
-        if ($this->__disable($service)) {
-            $this->setFlash(__('Service disabled'));
-            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+        $this->Service->id = $id;
+        if($this->Service->saveField('disabled', 1)){
+            $this->set('success', true);
+            $this->set('message', __('Service successfully deleted'));
+            $this->set('_serialize', ['success']);
+            return;
         }
-        $this->setFlash(__('Could not disable service'), false);
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-    }
 
-    public function mass_deactivate($id = null) {
-        foreach (func_get_args() as $service_id) {
-            if ($this->Service->exists($service_id)) {
-                $service = $this->Service->findById($service_id);
-                $this->__disable($service);
-            }
-        }
-        $this->setFlash(__('Services disabled'));
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-    }
-
-    protected function __disable($service) {
-        $service['Service']['disabled'] = 1;
-
-        return $this->Service->save($service);
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting service'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function enable($id = null) {
@@ -2238,7 +2341,7 @@ class ServicesController extends AppController {
 
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('username',$User->getFullName());
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }

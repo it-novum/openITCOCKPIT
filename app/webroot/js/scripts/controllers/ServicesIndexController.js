@@ -34,6 +34,7 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
+        $scope.deactivateUrl = '/services/deactivate/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -433,6 +434,7 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
         }, true);
