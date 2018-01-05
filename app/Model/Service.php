@@ -1460,26 +1460,18 @@ class Service extends AppModel {
                     'type'       => 'LEFT OUTER',
                     'alias'      => 'ServiceObject',
                     'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-                ], [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'group'      => [
-                'Service.id',
+                ]
             ]
-
         ];
 
         //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
 
         $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
         //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
-        $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
 
         if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
