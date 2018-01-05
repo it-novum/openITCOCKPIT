@@ -66,7 +66,6 @@ angular.module('openITCOCKPIT')
 
 
         $scope.loadServices = function(searchString){
-            console.log($scope.post.Servicegroup.Service);
             if($scope.post.Container.parent_id) {
                 $http.get("/services/loadServicesByContainerId.json", {
                     params: {

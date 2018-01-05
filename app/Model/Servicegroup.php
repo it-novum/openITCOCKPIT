@@ -53,6 +53,19 @@ class Servicegroup extends AppModel
         ],
     ];
 
+    public $hasMany = [
+        'ServiceEscalationServicegroupMembership' => [
+            'className'  => 'ServiceescalationServicegroupMembership',
+            'foreignKey' => 'servicegroup_id',
+            'dependent'  => true,
+        ],
+        'ServicedependencyServicegroupMembership' => [
+            'className'  => 'ServicedependencyServicegroupMembership',
+            'foreignKey' => 'servicegroup_id',
+            'dependent'  => true,
+        ]
+    ];
+
     public $validate = [
         'servicegroup_url' => [
             'rule'       => 'url',
