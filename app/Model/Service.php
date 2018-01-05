@@ -1309,7 +1309,10 @@ class Service extends AppModel {
 
     public function virtualFieldsForNotMonitored() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
-        $this->virtualFields['fullservicename'] = 'CONCAT(Host.name, IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
+    }
+
+    public function virtualFieldsForDisabled(){
+        $this->virtualFieldsForNotMonitored();
     }
 
     /**
@@ -1427,7 +1430,6 @@ class Service extends AppModel {
             'conditions' => $conditions,
             'contain'    => ['Servicetemplate'],
             'fields'     => [
-                'DISTINCT (Service.id) as banane', //Fix pagination
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -1478,6 +1480,58 @@ class Service extends AppModel {
         }
 
         $query['conditions'][] = 'ServiceObject.name2 IS NULL';
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDisabledQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = 1;
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
 
         return $query;
 

@@ -12,6 +12,9 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
             var interval;
 
             $scope.setServiceStatusColors = function(){
+                if($scope.service.Servicestatus.currentState === null){
+                    $scope.service.Servicestatus.currentState = -1; //Not found in monitoring
+                }
                 $scope.currentstate = parseInt($scope.service.Servicestatus.currentState, 10);
                 switch($scope.currentstate){
                     case 0:

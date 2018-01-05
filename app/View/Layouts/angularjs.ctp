@@ -92,17 +92,17 @@ foreach (new DirectoryIterator(APP . 'Plugin' . DS) as $pluginDir) {
     echo $this->element('assets_css');
 
     foreach ($scripts as $script):
-        printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), $script);
+        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), $script, PHP_EOL);
     endforeach;
 
     foreach ($appScripts as $appScript):
-        printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
+        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript), PHP_EOL);
     endforeach;
 
     foreach ($pluginScripts as $plugin):
         $currentPlugin = $plugin['module'];
         foreach ($plugin['dir'] as $pluginScript):
-            printf('<script src="%s/%s/%s"></script>', Router::fullBaseUrl(), Inflector::underscore($currentPlugin), str_replace(APP . 'Plugin' . DS . $currentPlugin . DS . 'webroot' . DS, '', $pluginScript));
+            printf('<script src="%s/%s/%s"></script>%s', Router::fullBaseUrl(), Inflector::underscore($currentPlugin), str_replace(APP . 'Plugin' . DS . $currentPlugin . DS . 'webroot' . DS, '', $pluginScript), PHP_EOL);
         endforeach;
     endforeach;
 

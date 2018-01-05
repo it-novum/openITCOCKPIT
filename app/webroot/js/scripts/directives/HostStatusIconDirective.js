@@ -12,6 +12,9 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
             var interval;
 
             $scope.setHostStatusColors = function(){
+                if($scope.host.Hoststatus.currentState === null){
+                    $scope.host.Hoststatus.currentState = -1; //Not found in monitoring
+                }
                 $scope.currentstate = parseInt($scope.host.Hoststatus.currentState, 10);
                 switch($scope.currentstate){
                     case 0:
@@ -22,9 +25,13 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                         $scope.btnColor = 'danger';
                         $scope.flappingColor = 'txt-color-red';
                         return;
-                    default:
+                    case 2:
                         $scope.btnColor = 'default';
                         $scope.flappingColor = 'txt-color-blueDark';
+                        return;
+                    default:
+                        $scope.btnColor = 'primary';
+                        $scope.flappingColor = 'text-primary';
                 }
             };
 

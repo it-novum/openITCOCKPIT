@@ -33,6 +33,7 @@ $config = [
                 'mass_deactivate',
                 'confirm_delete',
                 'confirm_deactivate',
+                'mass_activate',
                 'user_timezone',
                 'version_check',
                 'menustats',

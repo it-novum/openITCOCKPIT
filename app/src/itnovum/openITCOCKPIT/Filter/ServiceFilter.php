@@ -78,4 +78,11 @@ class ServiceFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function disabledFilter(){
+        return $this->notMonitoredFilter();
+    }
+
 }
