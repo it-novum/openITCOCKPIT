@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
         },
         controller: function($scope){
 
-            $scope.isFlapping = $scope.service.Servicestatus.isFlapping;
+            $scope.isFlapping = $scope.service.Servicestatus.isFlapping || false;
             $scope.flappingState = 0;
             var interval;
 

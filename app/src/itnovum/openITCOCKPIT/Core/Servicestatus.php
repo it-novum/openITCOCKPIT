@@ -399,6 +399,10 @@ class Servicestatus {
      */
     public function toArray(){
         $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
+
         if($this->UserTime !== null) {
             $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
             $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());

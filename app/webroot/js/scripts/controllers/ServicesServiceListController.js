@@ -10,6 +10,55 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
+        $scope.deactivateUrl = '/services/deactivate/';
+        $scope.activateUrl = '/services/enable/';
+
+        $scope.activeTab = 'active';
+
+        //There is no service status for not monitored services :)
+        $scope.fakeServicestatus = {
+            Servicestatus: {
+                currentState: 5
+            }
+        };
+
+        $scope.changeTab = function(tab){
+            if(tab !== $scope.activeTab){
+                $scope.activeTab = tab;
+                $scope.undoSelection();
+
+                SortService.setSort('Service.servicename');
+                SortService.setDirection('asc');
+                $scope.currentPage = 1;
+
+                if($scope.activeTab === 'deleted'){
+                    SortService.setSort('DeletedService.name');
+                }
+
+                $scope.load();
+            }
+
+        };
+
+        $scope.load = function(){
+            switch($scope.activeTab){
+                case 'active':
+                    $scope.loadActiveServices();
+                    break;
+
+                case 'notMonitored':
+                    $scope.loadNotMonitoredServices();
+                    break;
+
+                case 'disabled':
+                    $scope.loadDisabledServices();
+                    break;
+
+                case 'deleted':
+                    $scope.loadDeletedServices();
+                    break;
+            }
+        };
 
         $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
@@ -51,6 +100,66 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadNotMonitoredServices = function(){
+            var params = {
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[Host.id]': $scope.hostId
+            };
+
+            $http.get("/services/notMonitored.json", {
+                params: params
+            }).then(function(result){
+                $scope.services = [];
+                $scope.services = result.data.all_services;
+
+                $scope.paging = result.data.paging;
+                $scope.init = false;
+            });
+        };
+
+        $scope.loadDisabledServices = function(){
+            var params = {
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[Host.id]': $scope.hostId
+            };
+
+            $http.get("/services/disabled.json", {
+                params: params
+            }).then(function(result){
+                $scope.services = [];
+                $scope.services = result.data.all_services;
+
+                $scope.paging = result.data.paging;
+                $scope.init = false;
+            });
+        };
+
+        $scope.loadDeletedServices = function(){
+            var params = {
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'filter[DeletedService.host_id]': $scope.hostId
+            };
+
+            $http.get("/services/deleted.json", {
+                params: params
+            }).then(function(result){
+                $scope.deletedServices = [];
+                $scope.deletedServices = result.data.all_services;
+
+                $scope.paging = result.data.paging;
+                $scope.init = false;
+            });
+        };
+
         $scope.loadHosts = function(searchString){
             $http.get("/hosts/loadHostsByString.json", {
                 params: {
@@ -67,7 +176,7 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
-                $scope.loadActiveServices();
+                $scope.load();
             }
         };
 
@@ -88,7 +197,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(host, service){
             var object = {};
-            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+            object[service.Service.id] = host.Host.name + '/' + service.Service.servicename;
             return object;
         };
 
@@ -262,7 +371,7 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('hostId', function(){
             $scope.loadHost();
-            $scope.loadActiveServices();
+            $scope.load();
         });
 
         $scope.$watch('massChange', function(){
@@ -271,7 +380,7 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.loadTimezone();
-        SortService.setCallback($scope.loadActiveServices);
+        SortService.setCallback($scope.load);
 
         $scope.loadHosts('');
 

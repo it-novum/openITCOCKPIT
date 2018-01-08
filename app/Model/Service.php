@@ -1311,7 +1311,7 @@ class Service extends AppModel {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
     }
 
-    public function virtualFieldsForDisabled(){
+    public function virtualFieldsForDisabled() {
         $this->virtualFieldsForNotMonitored();
     }
 
@@ -1531,6 +1531,29 @@ class Service extends AppModel {
 
         if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDeletedQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'fields'     => [
+                'DeletedService.*'
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+        ];
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['DeletedService.host_id'] = $ServiceConditions->getHostId();
         }
 
         return $query;

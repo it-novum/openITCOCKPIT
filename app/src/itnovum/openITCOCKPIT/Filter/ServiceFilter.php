@@ -85,4 +85,17 @@ class ServiceFilter extends Filter {
         return $this->notMonitoredFilter();
     }
 
+    /**
+     * @return array
+     */
+    public function deletedFilter(){
+        $filters = [
+            'equals' => [
+                'DeletedService.host_id',
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }

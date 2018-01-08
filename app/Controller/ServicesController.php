@@ -459,7 +459,7 @@ class ServicesController extends AppController {
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->indexFilter());
+            $query = $this->Service->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->notMonitoredFilter());
             $this->Service->virtualFieldsForNotMonitored();
             $modelName = 'Service';
         }
@@ -565,7 +565,7 @@ class ServicesController extends AppController {
         //Default order
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
 
-        $query = $this->Service->getServiceDisabledQuery($ServiceConditions, $ServiceFilter->indexFilter());
+        $query = $this->Service->getServiceDisabledQuery($ServiceConditions, $ServiceFilter->disabledFilter());
         $this->Service->virtualFieldsForDisabled();
         $modelName = 'Service';
 
@@ -638,6 +638,54 @@ class ServicesController extends AppController {
             $all_services[] = $tmpRecord;
         }
 
+
+        $this->set('all_services', $all_services);
+        $this->set('_serialize', ['all_services', 'paging']);
+    }
+
+    public function deleted(){
+        $this->layout = 'angularjs';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+
+
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('DeletedService.name', 'asc'));
+
+        $query = $this->Service->getServiceDeletedQuery($ServiceConditions, $ServiceFilter->deletedFilter());
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_services = $this->DeletedService->find('all', $query);
+            $this->set('all_services', $all_services);
+            $this->set('_serialize', ['all_services']);
+            return;
+        } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $services = $this->Paginator->paginate('DeletedService', [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
+        }
+
+        $all_services = [];
+        foreach($services as $deletedService){
+            $DeletedService = new \itnovum\openITCOCKPIT\Core\Views\DeletedService($deletedService, $UserTime);
+            $all_services[] = [
+                'DeletedService' => $DeletedService->toArray()
+            ];
+        }
 
         $this->set('all_services', $all_services);
         $this->set('_serialize', ['all_services', 'paging']);
@@ -1333,6 +1381,13 @@ class ServicesController extends AppController {
 
 
     public function copy($id = null) {
+        if($id === null && $this->request->is('get')){
+            $this->redirect([
+                'controller' => 'services',
+                'action' => 'index'
+            ]);
+        }
+
         $userId = $this->Auth->user('id');
         $servicesToCopy = [];
         $servicesCantCopy = [];
