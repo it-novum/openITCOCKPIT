@@ -255,7 +255,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
-                            echo $this->Form->input(
+                            /*echo $this->Form->input(
                                 'Host.Parenthost',
                                 [
                                     'options' => $_parenthosts,
@@ -266,7 +266,24 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'selected' => $this->Html->getParameter('Host.Parenthost', $host['Parenthost']),
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
+                            );*/
+                            echo $this->Form->input('Host.Parenthost', [
+                                    'options'          => [],
+                                    'data-placeholder' => __('Please, start typing...'),
+                                    'class'            => 'chosen,',
+                                    'multiple'         => true,
+                                    'style'            => 'width:100%',
+                                    'label'            => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'required'         => true,
+                                    'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                    'selected' => $this->Html->getParameter('Host.Parenthost', $host['Parenthost']),
+                                    'div'              => [
+                                        'class' => 'form-group required',
+                                    ],
+                                ]
                             );
+
+
                             echo $this->Form->input('notes',
                                 [
                                     'label' => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],

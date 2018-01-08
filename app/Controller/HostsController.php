@@ -1380,7 +1380,7 @@ class HostsController extends AppController {
                     $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
                     $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-                    $_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
+                    //$_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
@@ -1391,7 +1391,7 @@ class HostsController extends AppController {
         }
         $sharingContainers = [];
         //Refil ajax stuff if set or not
-        $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'commands', 'containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
+        $this->set(compact(['_hosttemplates', '_hostgroups', '_timeperiods', '_contacts', '_contactgroups', 'commands', 'containers', 'masterInstance', 'Customvariable', 'sharingContainers']));
     }
 
     public function getSharingContainers($containerId = null, $jsonOutput = true) {
@@ -3260,7 +3260,32 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHostById($id = null){
+    public function loadParentHostsByString($containerId = 0, $host_id = 0) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setContainerIds($containerId);
+
+        $hosts = $this->Host->makeItJavaScriptAble(
+            $this->Host->getHostsForAngular($HostCondition, $selected)
+
+        );
+
+        if ($host_id != 0 && isset($hosts[$host_id])) {
+            unset($hosts[$host_id]);
+        }
+
+        $this->set(compact(['hosts']));
+        $this->set('_serialize', ['hosts']);
+    }
+
+    public function loadParentHostsById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3268,7 +3293,31 @@ class HostsController extends AppController {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
-        $host = $this->Host->find('first',[
+
+        $parenthost = $this->Host->find('first', [
+            'conditions' => [
+                'Host.id' => $id
+            ],
+            'contain' => [
+                'Parenthost'
+            ]
+        ]);
+
+        $parenthost = Hash::extract($parenthost, 'Parenthost.{n}.id');
+
+        $this->set(compact('parenthost'));
+        $this->set('_serialize', ['parenthost']);
+    }
+
+    public function loadHostById($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $host = $this->Host->find('first', [
             'conditions' => [
                 'Host.id' => $id,
             ],
@@ -3285,9 +3334,9 @@ class HostsController extends AppController {
             return;
         }
 
-        foreach($host['Host'] as $key => $value){
-            if($host['Host'][$key] === '' || $host['Host'][$key] === null){
-                if(isset($host['Hosttemplate'][$key])){
+        foreach ($host['Host'] as $key => $value) {
+            if ($host['Host'][$key] === '' || $host['Host'][$key] === null) {
+                if (isset($host['Hosttemplate'][$key])) {
                     $host['Host'][$key] = $host['Hosttemplate'][$key];
                 }
             }
@@ -3295,10 +3344,10 @@ class HostsController extends AppController {
 
         $host['Host']['is_satellite_host'] = (int)$host['Host']['satellite_id'] !== 0;
         $host['Host']['allow_edit'] = false;
-        if($this->hasRootPrivileges === true){
+        if ($this->hasRootPrivileges === true) {
             $host['Host']['allow_edit'] = true;
-        }else{
-            if($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')){
+        } else {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
                 $host['Host']['allow_edit'] = $ContainerPermissions->hasPermission();
             }

@@ -757,13 +757,6 @@ class ServicesController extends AppController {
         }
 
 
-        $hosts = $this->Host->find('list', [
-            'conditions' => [
-                'Host.host_type'    => GENERIC_HOST,
-                'Host.container_id' => $myRights
-            ]
-        ]);
-
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -780,7 +773,6 @@ class ServicesController extends AppController {
         $this->Frontend->setJson('lang_and', __('and'));
 
         $this->set(compact([
-            'hosts',
             'hostId',
             'servicetemplates',
             'servicegroups',
