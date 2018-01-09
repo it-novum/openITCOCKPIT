@@ -63,6 +63,15 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         }
         /* Contact inherit stuff end */
 
+        $('#deleteService').click(function(){
+            var result = confirm('Really delete?');
+            var serviceId = $(this).data('serviceId');
+            if(result){
+                //ajax delete
+                self.deleteService(serviceId);
+            }
+        });
+
         /*
          * Fix chosen width, if rendered in a tab
          */
@@ -830,6 +839,25 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         };
 
         self.servicetemplateManager.init();
+    },
+
+    deleteService: function(id){
+        console.log('delete'+ id);
+
+        $.ajax({
+            dataType: "json",
+            url: '/services/delete/'+id+'.json',
+            method: 'POST',
+            data: {
+                'angular': true,
+            },
+            success: function(response){
+
+                console.log(response);
+                window.location.href = '/services/index/';
+
+            }
+        });
     },
 
     checkFlapDetection: function () {
