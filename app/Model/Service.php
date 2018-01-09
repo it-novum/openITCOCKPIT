@@ -1013,7 +1013,7 @@ class Service extends AppModel {
 
         $compare_array = [
             'Service'         => [
-                ['Service.{(' . implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))) . ')}', false],
+                ['Service.{(' . implode('|', array_values(Hash::merge($fields, ['uuid', 'disabled', 'service_type']))) . ')}', false],
                 ['{^Contact$}.{^Contact$}.{n}', false],
                 ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
                 ['{^Servicegroup$}.{^Servicegroup$}.{n}', false],
