@@ -30,6 +30,39 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
+    public function indexFilter(){
+        $filters = [
+            'bool' => [
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.active_checks_enabled'
+            ],
+            'like' => [
+                'Host.name',
+                'Hoststatus.output'
+            ],
+            'rlike' => [
+                'Host.keywords'
+            ],
+            'equals' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.disabled',
+                'Host.satellite_id'
+            ],
+            'downtime' => [
+                'Hoststatus.scheduled_downtime_depth',
+            ],
+            'state' => [
+                'Hoststatus.current_state'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
     public function ajaxFilter(){
         $filters = [
             'like' => [

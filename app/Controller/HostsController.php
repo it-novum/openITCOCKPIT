@@ -30,6 +30,8 @@ use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
@@ -241,7 +243,30 @@ class HostsController extends AppController {
     ];
 
     public function index() {
-        $HostControllerRequest = new HostControllerRequest($this->request);
+        $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
+        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+            $SatelliteNames[0] = $masterInstanceName;
+        }
+
+        if (!$this->isApiRequest()) {
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('username', $User->getFullName());
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
+        }
+
+
+        $HostFilter = new HostFilter($this->request);
+
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
@@ -275,48 +300,82 @@ class HostsController extends AppController {
             }
         }
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder(
-            ['Host.name' => 'asc'] //Default order
-        ));
+        //Default order
+        $HostCondition->setOrder($HostControllerRequest->getOrder('Hoststatus.current_state', 'desc'));
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $this->Host->virtualFieldsForIndex();
             $modelName = 'Host';
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $modelName = 'Hoststatus';
         }
 
-        if ($this->isApiRequest()) {
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
             $all_hosts = $this->{$modelName}->find('all', $query);
+            $this->set('all_hosts', $all_hosts);
+            $this->set('_serialize', ['all_hosts']);
+            return;
         } else {
+            $this->Paginator->settings['page'] = $HostFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Host->getDataSource()->getLog(false, false));
+        }
+
+        $all_hosts = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($hosts as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
+            $PerfdataChecker = new HostPerfdataChecker($Host);
+
+            $hostSharingPermissions = new HostSharingPermissions(
+                $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
+            );
+            $allowSharing = $hostSharingPermissions->allowSharing();
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus->toArray()
+            ];
+            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
+            $tmpRecord['Host']['allow_sharing'] = $allowSharing;
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+
+            $all_hosts[] = $tmpRecord;
         }
 
         $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts']);
+        $this->set('_serialize', ['all_hosts', 'paging']);
 
-        $this->set('username', $User->getFullName());
-        $this->set('userRights', $this->MY_RIGHTS);
-        $this->set('myNamedFilters', $this->request->data);
 
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
+        //$preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+        //$this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
 
-        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
 
-        $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $SatelliteModel->find('list');
-        }
-        $this->set('SatelliteNames', $SatelliteNames);
     }
 
     public function icon() {
@@ -3260,7 +3319,7 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHostById($id = null){
+    public function loadHostById($id = null) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3268,7 +3327,7 @@ class HostsController extends AppController {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
-        $host = $this->Host->find('first',[
+        $host = $this->Host->find('first', [
             'conditions' => [
                 'Host.id' => $id,
             ],
@@ -3285,9 +3344,9 @@ class HostsController extends AppController {
             return;
         }
 
-        foreach($host['Host'] as $key => $value){
-            if($host['Host'][$key] === '' || $host['Host'][$key] === null){
-                if(isset($host['Hosttemplate'][$key])){
+        foreach ($host['Host'] as $key => $value) {
+            if ($host['Host'][$key] === '' || $host['Host'][$key] === null) {
+                if (isset($host['Hosttemplate'][$key])) {
                     $host['Host'][$key] = $host['Hosttemplate'][$key];
                 }
             }
@@ -3295,10 +3354,10 @@ class HostsController extends AppController {
 
         $host['Host']['is_satellite_host'] = (int)$host['Host']['satellite_id'] !== 0;
         $host['Host']['allow_edit'] = false;
-        if($this->hasRootPrivileges === true){
+        if ($this->hasRootPrivileges === true) {
             $host['Host']['allow_edit'] = true;
-        }else{
-            if($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')){
+        } else {
+            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
                 $host['Host']['allow_edit'] = $ContainerPermissions->hasPermission();
             }
