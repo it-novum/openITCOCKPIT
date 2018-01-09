@@ -30,6 +30,10 @@ use itnovum\openITCOCKPIT\Core\StatehistoryServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Filter\StatehistoryServiceFilter;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
+
 
 class StatehistoriesController extends AppController {
     /*
@@ -53,11 +57,6 @@ class StatehistoriesController extends AppController {
     public $layout = 'Admin.default';
 
     public $listFilters = [
-        'service' => [
-            'fields' => [
-                'StatehistoryService.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
         'host' => [
             'fields' => [
                 'StatehistoryHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
@@ -66,19 +65,11 @@ class StatehistoriesController extends AppController {
     ];
 
     public function service($id = null){
+        $this->layout = 'angularjs';
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('invalid service'));
         }
-
-        //Process request and set request settings back to front end
-        $ServiceStates = new ServiceStates();
-        $StateTypes = new StateTypes();
-        $StatehistoryRequest = new StatehistoryServiceControllerRequest(
-            $this->request,
-            $ServiceStates,
-            $StateTypes,
-            $this->userLimit
-        );
 
         $service = $this->Service->find('first', [
             'recursive' => -1,
@@ -111,24 +102,56 @@ class StatehistoriesController extends AppController {
             ],
         ]);
 
-        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $service['Host']['container_id'];
+        if(!$this->isAngularJsRequest()){
 
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
+            $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $service['Host']['container_id'];
+
+            //Check if user is permitted to see this object
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+                return;
+            }
+
+            $allowEdit = false;
+            if ($this->allowedByContainerId($containerIdsToCheck)) {
+                $allowEdit = true;
+            }
+
+            //Get meta data and push to front end
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Servicestatus.current_state',
+                    'Servicestatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
             return;
         }
 
+        //Process request and set request settings back to front end
+        $ServiceStates = new ServiceStates();
+        $StateTypes = new StateTypes();
 
-        $allowEdit = false;
-        if ($this->allowedByContainerId($containerIdsToCheck)) {
-            $allowEdit = true;
-        }
+        $StatehistoryServiceFilter = new StatehistoryServiceFilter($this->request);
+        print_r($StatehistoryServiceFilter->indexFilter());
+
 
 
         //Process conditions
         $Conditions = new StatehistoryServiceConditions();
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setOrder($StatehistoryServiceFilter->getOrderForPaginator('Statehistory.state_time', 'desc'));
+
+        /*
+        $Conditions->setStates($StatehistoryRequest->getServiceStates());
+
+
+
+        /*
+        $Conditions->setStates();
+
         $Conditions->setLimit($StatehistoryRequest->getLimit());
         $Conditions->setOrder($StatehistoryRequest->getOrder());
         $Conditions->setStates($StatehistoryRequest->getServiceStates());
@@ -136,26 +159,31 @@ class StatehistoriesController extends AppController {
         $Conditions->setFrom($StatehistoryRequest->getFrom());
         $Conditions->setTo($StatehistoryRequest->getTo());
         $Conditions->setServiceUuid($service['Service']['uuid']);
+*/
 
         //Query state history records
-        $query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_statehistories = $this->Paginator->paginate(
+        //$query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
+        $query = $this->StatehistoryService->getQuery($Conditions);
+
+        $this->Paginator->settings = $query;
+        $statehistories = $this->Paginator->paginate(
             $this->StatehistoryService->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
 
-        //Get meta data and push to front end
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping'
-            ],
-        ]);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-        $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'docuExists', 'allowEdit']));
-        $this->set('StatehistoryListsettings', $StatehistoryRequest->getRequestSettingsForListSettings());
+        $all_statehistories = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($statehistories as $statehistory){
+            $Statehistory = new StatehistoryService($statehistory['StatehistoryService'], $UserTime);
+            $all_statehistories[] = [
+                'StatehistoryService' => $Statehistory->toArray()
+            ];
+        }
+
+
+        $this->set(compact(['all_statehistories']));
+        $this->set('_serialize',['all_statehistories', 'paging']);
     }
 
     public function host($id = null){
