@@ -106,10 +106,10 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;">From</i>
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('From Date'); ?>"
-                                                   ng-model="filter.StatehistoryService.from"
+                                                   ng-model="filter.from"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -127,10 +127,10 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;">To</i>
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('To Date'); ?>"
-                                                   ng-model="filter.StatehistoryService.to"
+                                                   ng-model="filter.to"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>

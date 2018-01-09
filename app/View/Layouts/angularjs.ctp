@@ -41,6 +41,7 @@ $scripts = [
     'js/app/layoutfix.js',
     'js/lib/ColorGenerator.js',
     'js/lib/colr.js',
+    'js/lib/php.js',
     'smartadmin/js/plugin/flot/jquery.flot.cust.js',
     'smartadmin/js/plugin/flot/jquery.flot.time.js',
     //'/smartadmin/js/plugin/jquery-validate/jquery.validate.min.js',

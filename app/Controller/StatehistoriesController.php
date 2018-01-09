@@ -26,7 +26,6 @@
 use itnovum\openITCOCKPIT\Core\StatehistoryControllerRequest;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
-use itnovum\openITCOCKPIT\Core\StatehistoryServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
@@ -68,41 +67,41 @@ class StatehistoriesController extends AppController {
         $this->layout = 'angularjs';
 
         if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('invalid service'));
+            throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain' => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'Service.id' => $id,
-            ],
-        ]);
-
         if(!$this->isAngularJsRequest()){
+            //Service for .html requests
+            $service = $this->Service->find('first', [
+                'recursive' => -1,
+                'fields' => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.service_type',
+                    'Service.service_url'
+                ],
+                'contain' => [
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name',
+                            'Host.uuid',
+                            'Host.address'
+                        ],
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $id,
+                ],
+            ]);
 
             $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
             $containerIdsToCheck[] = $service['Host']['container_id'];
@@ -130,42 +129,38 @@ class StatehistoriesController extends AppController {
             return;
         }
 
-        //Process request and set request settings back to front end
-        $ServiceStates = new ServiceStates();
-        $StateTypes = new StateTypes();
+        //Service for .json requests
+        $service = $this->Service->find('first', [
+            'recursive' => -1,
+            'fields' => [
+                'Service.id',
+                'Service.uuid',
+            ],
+            'conditions' => [
+                'Service.id' => $id,
+            ],
+        ]);
 
-        $StatehistoryServiceFilter = new StatehistoryServiceFilter($this->request);
-        print_r($StatehistoryServiceFilter->indexFilter());
-
+        $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
 
 
         //Process conditions
         $Conditions = new StatehistoryServiceConditions();
         $Conditions->setLimit($this->Paginator->settings['limit']);
-        $Conditions->setOrder($StatehistoryServiceFilter->getOrderForPaginator('Statehistory.state_time', 'desc'));
-
-        /*
-        $Conditions->setStates($StatehistoryRequest->getServiceStates());
-
-
-
-        /*
-        $Conditions->setStates();
-
-        $Conditions->setLimit($StatehistoryRequest->getLimit());
-        $Conditions->setOrder($StatehistoryRequest->getOrder());
-        $Conditions->setStates($StatehistoryRequest->getServiceStates());
-        $Conditions->setStateTypes($StatehistoryRequest->getStateTypes());
-        $Conditions->setFrom($StatehistoryRequest->getFrom());
-        $Conditions->setTo($StatehistoryRequest->getTo());
+        $Conditions->setOrder($AngularStatehistoryControllerRequest->getOrderForPaginator('StatehistoryService.state_time', 'desc'));
+        $Conditions->setStates($AngularStatehistoryControllerRequest->getServiceStates());
+        $Conditions->setStateTypes($AngularStatehistoryControllerRequest->getServiceStateTypes());
+        $Conditions->setFrom($AngularStatehistoryControllerRequest->getFrom());
+        $Conditions->setTo($AngularStatehistoryControllerRequest->getTo());
         $Conditions->setServiceUuid($service['Service']['uuid']);
-*/
 
         //Query state history records
         //$query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $query = $this->StatehistoryService->getQuery($Conditions);
+        $query = $this->StatehistoryService->getQuery($Conditions, $AngularStatehistoryControllerRequest->getServiceFilters());
 
         $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
+
         $statehistories = $this->Paginator->paginate(
             $this->StatehistoryService->alias,
             [],
@@ -188,7 +183,7 @@ class StatehistoriesController extends AppController {
 
     public function host($id = null){
         if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('invalid host'));
+            throw new NotFoundException(__('Invalid host'));
         }
 
         //Process request and set request settings back to front end

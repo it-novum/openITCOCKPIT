@@ -1,11 +1,13 @@
 angular.module('openITCOCKPIT')
     .controller('StatehistoriesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Statehistory.state_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'StatehistoryService.state_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
         $scope.id = QueryStringService.getCakeId();
+
+        var now = new Date();
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -21,8 +23,10 @@ angular.module('openITCOCKPIT')
                         soft: false,
                         hard: false
                     },
-                    output: ""
-                }
+                    output: ''
+                },
+                from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
+                to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2))
             };
         };
         /*** Filter end ***/
@@ -49,7 +53,9 @@ angular.module('openITCOCKPIT')
                     'direction': SortService.getDirection(),
                     'filter[StatehistoryService.output]': $scope.filter.StatehistoryService.output,
                     'filter[StatehistoryService.state][]': $rootScope.currentStateForApi($scope.filter.StatehistoryService.state),
-                    'filter[StatehistoryService.state_type]': state_type
+                    'filter[StatehistoryService.state_type]': state_type,
+                    'filter[from]': $scope.filter.from,
+                    'filter[to]': $scope.filter.to
                 }
             }).then(function(result){
                 //console.log(result.data.all_statehistories[0]["StatehistoryService"]);
