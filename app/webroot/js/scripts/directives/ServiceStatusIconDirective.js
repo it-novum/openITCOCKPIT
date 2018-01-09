@@ -3,20 +3,35 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
         restrict: 'E',
         templateUrl: '/services/icon.html',
         scope: {
-            'service': '='
+            'service': '=?',
+            'state': '=?'
         },
         controller: function($scope){
+
+            if(typeof $scope.service === "undefined"){
+                //Fake Servicestatus
+                $scope.service = {
+                    Servicestatus: {}
+                };
+            }
+
 
             $scope.isFlapping = $scope.service.Servicestatus.isFlapping || false;
             $scope.flappingState = 0;
             var interval;
 
             $scope.setServiceStatusColors = function(){
-                if($scope.service.Servicestatus.currentState === null){
-                    $scope.service.Servicestatus.currentState = -1; //Not found in monitoring
+                var currentstate = -1;
+                if(typeof $scope.state === "undefined"){
+                    currentstate = parseInt($scope.service.Servicestatus.currentState, 10);
+                    if($scope.service.Servicestatus.currentState === null){
+                        currentstate = -1; //Not found in monitoring
+                    }
+                }else{
+                    currentstate = parseInt($scope.state, 10);
                 }
-                $scope.currentstate = parseInt($scope.service.Servicestatus.currentState, 10);
-                switch($scope.currentstate){
+
+                switch(currentstate){
                     case 0:
                         $scope.btnColor =  'success';
                         $scope.flappingColor = 'txt-color-green';

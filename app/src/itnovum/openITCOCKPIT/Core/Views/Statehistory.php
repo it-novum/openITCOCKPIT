@@ -208,7 +208,7 @@ abstract class Statehistory {
         if($this->UserTime !== null) {
             $arr['state_time'] = $this->UserTime->format($this->getStateTime());
         }else{
-            $arr['state_time'] = $this->$this->getStateTime();
+            $arr['state_time'] = $this->getStateTime();
         }
 
         return $arr;

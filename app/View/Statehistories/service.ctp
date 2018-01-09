@@ -27,6 +27,8 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 
+//Flapping Workaround while the status date is not loaded via Angular
+echo $this->Html->script('lib/FlappingWorkaround.js');
 
 $Service = new Service($service);
 $Host = new Host($service);
@@ -247,11 +249,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                                 <tr ng-repeat="StatehistoryService in statehistories">
 
-                                    <td class="text-center" ng-switch="StatehistoryService.StatehistoryService.state">
-                                        <a ng-switch-when="0" href="javascript:void(0)" class="btn btn-success status-circle" style="padding:0;"></a>
-                                        <a ng-switch-when="1" href="javascript:void(0)" class="btn btn-warning status-circle" style="padding:0;"></a>
-                                        <a ng-switch-when="2" href="javascript:void(0)" class="btn btn-danger status-circle" style="padding:0;"></a>
-                                        <a ng-switch-default href="javascript:void(0)" class="btn btn-default status-circle" style="padding:0;"></a>
+                                    <td class="text-center">
+                                       <servicestatusicon state="StatehistoryService.StatehistoryService.state"></servicestatusicon>
                                     </td>
                                     <td>
                                         {{ StatehistoryService.StatehistoryService.state_time }}

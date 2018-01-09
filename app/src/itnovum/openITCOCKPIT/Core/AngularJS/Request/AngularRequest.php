@@ -115,8 +115,8 @@ class AngularRequest {
     /**
      * @return HostStates
      */
-    public function gethostStates(){
-        $field = $this->ServiceStateField;
+    public function getHostStates(){
+        $field = $this->HostStateField;
         $HostStates = new HostStates();
 
         if($this->queryHasField($field)){
