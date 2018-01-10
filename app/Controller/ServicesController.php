@@ -146,7 +146,12 @@ class ServicesController extends AppController {
         }
 
         //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Host.name'           => 'asc',
+            'Service.servicename' => 'asc'
+        ]));
+
+//        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
 
         if ($this->DbBackend->isNdoUtils()) {
             $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
