@@ -24,8 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
-use itnovum\openITCOCKPIT\Core\ServicechecksControllerRequest;
-use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class ServicechecksController extends AppController {
     /*
@@ -54,11 +53,68 @@ class ServicechecksController extends AppController {
     ];
 
     public function index($id = null){
+        $this->layout="angularjs";
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        //Check if user is permitted to see this object
+        if (!$this->isAngularJsRequest()) {
+            //Service for .html requests
+            $service = $this->Service->find('first', [
+                'recursive' => -1,
+                'fields' => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.service_type',
+                    'Service.service_url'
+                ],
+                'contain' => [
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name',
+                            'Host.uuid',
+                            'Host.address'
+                        ],
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $id,
+                ],
+            ]);
+
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->render403();
+                return;
+            }
+            $allowEdit = false;
+            if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $allowEdit = true;
+            }
+
+            //Get meta data and push to front end
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Servicestatus.current_state',
+                    'Servicestatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
+            return;
+        }
+
+
+        //Service for .json requests
         $service = $this->Service->find('first', [
             'recursive' => -1,
             'fields' => [
@@ -68,70 +124,45 @@ class ServicechecksController extends AppController {
                 'Service.service_type',
                 'Service.service_url'
             ],
-            'contain' => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
             'conditions' => [
                 'Service.id' => $id,
             ],
         ]);
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $this->render403();
-            return;
-        }
-        $allowEdit = false;
-        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $allowEdit = true;
-        }
 
-        //Process request and set request settings back to front end
-        $ServicechecksControllerRequest = new ServicechecksControllerRequest(
-            $this->request,
-            new ServiceStates(),
-            $this->userLimit
-        );
+        $AngularServicechecksControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\ServicechecksControllerRequest($this->request);
 
         //Process conditions
         $Conditions = new ServicechecksConditions();
-        $Conditions->setLimit($ServicechecksControllerRequest->getLimit());
-        $Conditions->setFrom($ServicechecksControllerRequest->getFrom());
-        $Conditions->setTo($ServicechecksControllerRequest->getTo());
-        $Conditions->setOrder($ServicechecksControllerRequest->getOrder());
-        $Conditions->setStates($ServicechecksControllerRequest->getServiceStates());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setFrom($AngularServicechecksControllerRequest->getFrom());
+        $Conditions->setTo($AngularServicechecksControllerRequest->getTo());
+        $Conditions->setOrder($AngularServicechecksControllerRequest->getOrderForPaginator('Servicecheck.start_time', 'desc'));
+        $Conditions->setStates($AngularServicechecksControllerRequest->getServiceStates());
+        $Conditions->setStateTypes($AngularServicechecksControllerRequest->getServiceStateTypes());
         $Conditions->setServiceUuid($service['Service']['uuid']);
 
         //Query host notification records
-        $query = $this->Servicecheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_servicechecks = $this->Paginator->paginate(
+        $query = $this->Servicecheck->getQuery($Conditions, $AngularServicechecksControllerRequest->getIndexFilters());
+
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularServicechecksControllerRequest->getPage();
+
+        $servicechecks = $this->Paginator->paginate(
             $this->Servicecheck->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
-        //Get meta data and push to front end
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping'
-            ],
-        ]);
-        $this->set(compact(['service', 'all_servicechecks', 'servicestatus', 'docuExists', 'allowEdit']));
-        $this->set('ServicecheckListsettings', $ServicechecksControllerRequest->getRequestSettingsForListSettings());
+        $all_servicechecks = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($servicechecks as $servicecheck) {
+            $Servicecheck = new itnovum\openITCOCKPIT\Core\Views\Servicecheck($servicecheck['Servicecheck'], $UserTime);
+            $all_servicechecks[] = [
+                'Servicecheck' => $Servicecheck->toArray()
+            ];
+        }
+
+        $this->set(compact(['all_servicechecks']));
+        $this->set('_serialize', ['all_servicechecks', 'paging']);
     }
 }
