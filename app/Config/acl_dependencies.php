@@ -45,6 +45,11 @@ $config = [
                 'executing',
                 'acknowledge_service',
                 'downtime_service',
+                'reschedule_host',
+                'downtime_host',
+                'acknowledge_host',
+                'enable_host_notifications',
+                'disable_host_notifications'
             ],
             'Commands'         => [
                 'sortByCommandType',

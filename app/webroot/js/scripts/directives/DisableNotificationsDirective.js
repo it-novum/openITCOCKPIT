@@ -21,6 +21,7 @@ angular.module('openITCOCKPIT').directive('disableNotifications', function($http
                     ]));
                 }
                 $timeout(function(){
+                    $scope.percentage = 0;
                     $('#angularDisableNotificationsModal').modal('hide');
                 }, 500);
             };

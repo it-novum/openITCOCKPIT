@@ -92,6 +92,7 @@ class HostsController extends AppController {
         'Hostgroup',
         'Timeperiod',
         'Servicetemplategroup',
+        'Service'
     ];
     public $listFilters = [
         'index'            => [
@@ -1534,61 +1535,29 @@ class HostsController extends AppController {
         $this->set('_serialize', ['disabledHosts']);
     }
 
-    public function deactivate($id = null, $return = false) {
+    public function deactivate($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $this->__unbindAssociations('Host');
-        if ($this->Host->updateAll(['Host.disabled' => 1], ['Host.id' => $id])) {
-            $this->loadModel('Service');
-            $this->__unbindAssociations('Service');
-            if ($this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $id])) {
-                if ($return === false) {
-                    $this->setFlash(__('Host disabled'));
-                    $this->redirect(['action' => 'index']);
-                }
-
-                return true;
-            } else {
-                if ($return === false) {
-                    $this->setFlash(__('Could not disable services from host'), false);
-                    $this->Host->updateAll(['Host.disabled' => 0], ['Host.id' => $id]);
-                    $this->redirect(['action' => 'index']);
-                }
-
-                return false;
-            }
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        if ($return === false) {
-            $this->setFlash(__('Could not disable host'), false);
-            $this->redirect(['action' => 'index']);
+        $this->Host->id = $id;
+        if ($this->Host->saveField('disabled', 1)) {
+            $this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $id]);
+            $this->set('success', true);
+            $this->set('message', __('Host successfully disabled'));
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        return false;
-    }
-
-    public function mass_deactivate($id = null) {
-        $flash = '';
-        foreach (func_get_args() as $host_id) {
-            $host = $this->Host->findById($host_id);
-            if (!empty($host)) {
-                $this->__unbindAssociations('Host');
-                if ($this->Host->updateAll(['Host.disabled' => 1], ['Host.id' => $host['Host']['id']])) {
-                    $this->loadModel('Service');
-                    $this->__unbindAssociations('Service');
-                    if ($this->Service->updateAll(['Service.disabled' => 1], ['Service.host_id' => $host['Host']['id']])) {
-                        $flash .= __('Host ' . h($host['Host']['name']) . ' disabled successfully<br />');
-                    } else {
-                        $flash .= __('Services of Host ' . h($host['Host']['name']) . ' could not disabled successfully<br />');
-                        $this->Host->updateAll(['Host.disabled' => 0], ['Host.id' => $host['Host']['id']]);
-                    }
-                }
-            }
-        }
-        $this->setFlash($flash);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while disabling host'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
 
@@ -1597,21 +1566,24 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $this->__unbindAssociations('Host');
-        if ($this->Host->updateAll(['Host.disabled' => 0], ['Host.id' => $id])) {
-            $this->loadModel('Service');
-            $this->__unbindAssociations('Service');
-            if ($this->Service->updateAll(['Service.disabled' => 0], ['Service.host_id' => $id])) {
-                $this->setFlash(__('Host enabled'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not enable services from host'), false);
-                $this->Host->updateAll(['Host.disabled' => 0], ['Host.id' => $id]);
-                $this->redirect(['action' => 'index']);
-            }
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $this->setFlash(__('Could not enable host'), false);
-        $this->redirect(['action' => 'index']);
+
+        $this->Host->id = $id;
+        if ($this->Host->saveField('disabled', 0)) {
+            $this->Service->updateAll(['Service.disabled' => 0], ['Service.host_id' => $id]);
+            $this->set('success', true);
+            $this->set('message', __('Host successfully enabled'));
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while enabling host'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function delete($id = null) {
@@ -1624,71 +1596,37 @@ class HostsController extends AppController {
         }
 
         $host = $this->Host->findById($id);
-
         $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $host['Host']['container_id'];
         if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
-
             return;
         }
 
-        if ($this->Host->__delete($host, $this->Auth->user('id'))) {
-            $this->Flash->success('Host deleted', [
-                'key' => 'positive',
-            ]);
-            $this->redirect(['action' => 'index']);
-        }
+        $modules = $this->Constants->defines['modules'];
 
-        $this->Flash->error('Could not delete host', [
-            'key'    => 'positive',
-            'params' => [
-                'usedBy' => $this->Host->usedBy,
-            ]
-        ]);
-        $this->redirect(['action' => 'index']);
-    }
-
-    /*
-     * Delete one or more hosts
-     * Call: mass_delete(1,5,10,15);
-     * Or as HTML URL: /hosts/mass_delete/3/6/5/4/8/2/1/9
-     */
-    public function mass_delete($id = null) {
-        $msgCollect = [];
-        foreach (func_get_args() as $host_id) {
-            if ($this->Host->exists($host_id)) {
-                $host = $this->Host->findById($host_id);
-
-                $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-                $containerIdsToCheck[] = $host['Host']['container_id'];
-                if (!$this->allowedByContainerId($containerIdsToCheck)) {
-                    $this->render403();
-
-                    return;
-                }
-
-                if (!$this->Host->__delete($host, $this->Auth->user('id'))) {
-                    $msgCollect[] = $this->Host->usedBy;
-                }
+        $usedBy = $this->Host->isUsedByModules($host, $modules);
+        if (empty($usedBy['host']) && empty($usedBy['service'])) {
+            //Not used by any module
+            if ($this->Host->__delete($host, $this->Auth->user('id'))) {
+                $this->set('success', true);
+                $this->set('message', __('Host successfully deleted'));
+                $this->set('_serialize', ['success']);
+                return;
             }
         }
 
-        if (!empty($msgCollect)) {
-            $messages = call_user_func_array('array_merge_recursive', $msgCollect);
-            $this->Flash->error('Could not delete host', [
-                'key'    => 'positive',
-                'params' => [
-                    'usedBy' => $messages,
-                ]
-            ]);
-            $this->redirect(['action' => 'index']);
-        }
+        $usedBy = Hash::merge(
+            $this->getUsedByForFrontend($usedBy['host'], 'host'),
+            $this->getUsedByForFrontend($usedBy['service'], 'service')
+        );
 
-        $this->Flash->success('Host deleted', [
-            'key' => 'positive',
-        ]);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while deleting host'));
+        $this->set('usedBy', $usedBy);
+        $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
     }
 
     public function copy($id = null) {
@@ -1739,7 +1677,8 @@ class HostsController extends AppController {
                         'Host.own_contacts',
                         'Host.own_contactgroups',
                         'Host.own_customvariables',
-                        'Host.satellite_id'
+                        'Host.satellite_id',
+                        'Host.disabled'
                     ],
                     'contain'    => [
                         'Parenthost'               => [
@@ -2038,6 +1977,7 @@ class HostsController extends AppController {
                                 'Service.own_contacts',
                                 'Service.own_contactgroups',
                                 'Service.own_customvariables',
+                                'Service.disabled'
                             ],
                             'contain'    => [
                                 'CheckPeriod'                      => [

@@ -1,7 +1,7 @@
-angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, SudoService, $timeout){
+angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoService, $timeout){
     return {
         restrict: 'E',
-        templateUrl: '/angular/downtime_service.html',
+        templateUrl: '/angular/downtime_host.html',
 
         controller: function($scope){
 
@@ -12,7 +12,8 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                 from_date: '',
                 from_time: '',
                 to_date: '',
-                to_time: ''
+                to_time: '',
+                hostDowntimeType: "1"
             };
 
             var objects = {};
@@ -26,7 +27,17 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                 author = _author;
             };
 
-            $scope.doServiceDowntime = function(){
+            $scope.loadHostdowntimeDefaultSelection = function(){
+                $http.get("/angular/downtime_host.json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    $scope.downtime.hostDowntimeType = String(result.data.preselectedDowntimetype);
+                });
+            };
+
+            $scope.doHostDowntime = function(){
 
 
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
@@ -42,19 +53,19 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                         var object = objects[id];
                         i++;
                         $scope.percentage = Math.round(i / count * 100);
-                        SudoService.send(SudoService.toJson('submitServiceDowntime', [
+                        SudoService.send(SudoService.toJson('submitHostDowntime', [
                             object.Host.uuid,
-                            object.Service.uuid,
                             $scope.downtime.from_date + ' ' + $scope.downtime.from_time,
                             $scope.downtime.to_date + ' ' + $scope.downtime.to_time,
                             $scope.downtime.comment,
-                            author
+                            author,
+                            $scope.downtime.hostDowntimeType
                         ]));
                     }
                     $timeout(function(){
                         $scope.doDowntime = false;
                         $scope.percentage = 0;
-                        $('#angularServiceDowntimeModal').modal('hide');
+                        $('#angularHostDowntimeModal').modal('hide');
                     }, 500);
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
@@ -67,7 +78,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
         },
 
         link: function($scope, element, attr){
-            $scope.serviceDowntime = function(objects){
+            $scope.hostDowntime = function(objects){
                 if(Object.keys(objects).length === 0){
                     return;
                 }
@@ -75,7 +86,9 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
                 $scope.setAuthor(attr.author);
 
-                $('#angularServiceDowntimeModal').modal('show');
+                $scope.loadHostdowntimeDefaultSelection();
+
+                $('#angularHostDowntimeModal').modal('show');
             };
         }
     };

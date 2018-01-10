@@ -239,7 +239,7 @@ class Host extends AppModel {
             'order'      => [
                 'Host.name' => 'ASC',
             ],
-            'group' => [
+            'group'      => [
                 'Host.id'
             ],
             'limit'      => self::ITN_AJAX_LIMIT
@@ -270,7 +270,7 @@ class Host extends AppModel {
             if ($HostConditions->hasContainer()) {
                 $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
             }
-            if($HostConditions->includeDisabled() === false){
+            if ($HostConditions->includeDisabled() === false) {
                 $query['conditions']['Host.disabled'] = 0;
             }
             $selectedHosts = $this->find('list', $query);
@@ -986,14 +986,12 @@ class Host extends AppModel {
      * deletes a Host
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Array $host the Host to delete
-     * @param  Integer $userId the Id of the User
-     * @param  boolean $isAllowed eludes the __allowDelete() fn. This is needed when a host shall be deleted e.g from
-     *                            the EventcorrelationModule
+     * @param  $host array the Host to delete
+     * @param  $userId int the Id of the User
      *
      * @return boolean
      */
-    public function __delete($host, $userId, $isAllowed = false) {
+    public function __delete($host, $userId) {
         if (empty($host)) {
             return false;
         }
@@ -1019,125 +1017,102 @@ class Host extends AppModel {
             ],
         ]);
 
-        if ($this->__allowDelete($host) || $isAllowed === true) {
 
-            if ($this->delete()) {
-                //Delete was successfully - delete Graphgenerator configurations
-                foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                    $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-                }
-
-                $changelog_data = $Changelog->parseDataForChangelog(
-                    'delete',
-                    'hosts',
-                    $id,
-                    OBJECT_HOST,
-                    $host['Host']['container_id'],
-                    $userId,
-                    $host['Host']['name'],
-                    $host
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-
-                //Add host to deleted objects table
-                $DeletedHost = ClassRegistry::init('DeletedHost');
-                $DeletedService = ClassRegistry::init('DeletedService');
-                $DeletedHost->create();
-                $data = [
-                    'DeletedHost' => [
-                        'host_id'          => $host['Host']['id'],
-                        'uuid'             => $host['Host']['uuid'],
-                        'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
-                        'name'             => $host['Host']['name'],
-                        'description'      => $host['Host']['description'],
-                        'deleted_perfdata' => 0,
-                    ],
-                ];
-                if ($DeletedHost->save($data)) {
-                    // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
-                    $DeletedService->deleteAll([
-                        'DeletedService.host_id' => $id,
-                    ]);
-                }
-
-
-                /*
-                 * Check if the host was part of an hostgroup, hostescalation or hostdependency
-                 * If yes, cake delete the records by it self, but may be we have an empty hostescalation or hostgroup now.
-                 * Nagios don't relay like this so we need to check this and delete the hostescalation/hostgroup or host dependency if empty
-                 */
-                $this->_cleanupHostEscalationDependency($host);
-
-                $Documentation = ClassRegistry::init('Documentation');
-                //Delete the Documentation of the Host
-                $documentation = $Documentation->findByUuid($host['Host']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-                //Delete Idoit imported Hosts
-                if (CakePlugin::loaded('IdoitModule')) {
-                    $this->IdoitMapping = ClassRegistry::init('IdoitMapping');
-                    $this->IdoitMapping->deleteAll([
-                        'IdoitMapping.oitc_object_id' => $id,
-                        'IdoitMapping.type' => 1, // Must be IdoitMapping::TYPE_HOST
-                    ]);
-                }
-
-                return true;
+        if ($this->delete()) {
+            //Delete was successfully - delete Graphgenerator configurations
+            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
+                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
             }
+
+            $changelog_data = $Changelog->parseDataForChangelog(
+                'delete',
+                'hosts',
+                $id,
+                OBJECT_HOST,
+                $host['Host']['container_id'],
+                $userId,
+                $host['Host']['name'],
+                $host
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+
+            //Add host to deleted objects table
+            $DeletedHost = ClassRegistry::init('DeletedHost');
+            $DeletedService = ClassRegistry::init('DeletedService');
+            $DeletedHost->create();
+            $data = [
+                'DeletedHost' => [
+                    'host_id'          => $host['Host']['id'],
+                    'uuid'             => $host['Host']['uuid'],
+                    'hosttemplate_id'  => $host['Host']['hosttemplate_id'],
+                    'name'             => $host['Host']['name'],
+                    'description'      => $host['Host']['description'],
+                    'deleted_perfdata' => 0,
+                ],
+            ];
+            if ($DeletedHost->save($data)) {
+                // The host is history now, so we can delete all deleted services of this host, we dont need this data anymore
+                $DeletedService->deleteAll([
+                    'DeletedService.host_id' => $id,
+                ]);
+            }
+
+
+            /*
+             * Check if the host was part of an hostgroup, hostescalation or hostdependency
+             * If yes, cake delete the records by it self, but may be we have an empty hostescalation or hostgroup now.
+             * Nagios don't relay like this so we need to check this and delete the hostescalation/hostgroup or host dependency if empty
+             */
+            $this->_cleanupHostEscalationDependency($host);
+
+            $Documentation = ClassRegistry::init('Documentation');
+            //Delete the Documentation of the Host
+            $documentation = $Documentation->findByUuid($host['Host']['uuid']);
+            if (isset($documentation['Documentation']['id'])) {
+                $Documentation->delete($documentation['Documentation']['id']);
+                unset($documentation);
+            }
+
+            //Delete Idoit imported Hosts
+            if (CakePlugin::loaded('IdoitModule')) {
+                $this->IdoitMapping = ClassRegistry::init('IdoitMapping');
+                $this->IdoitMapping->deleteAll([
+                    'IdoitMapping.oitc_object_id' => $id,
+                    'IdoitMapping.type'           => 1, // Must be IdoitMapping::TYPE_HOST
+                ]);
+            }
+
+            return true;
+
         }
 
         return false;
     }
 
-    public $usedBy = null;
-
-    public function __allowDelete($host) {
-        $Service = ClassRegistry::init('Service');
-        //using components in Model is ugly but we need the Constants here
-        App::import('Component', 'Constants');
-        $this->Constants = new ConstantsComponent();
-
-        $serviceIds = Hash::extract($Service->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'host_id' => $host['Host']['id'],
-            ],
-            'fields'     => [
-                'Service.id',
-            ],
-        ]), '{n}.Service.id');
-
-        $moduleConstants = $this->Constants->defines['modules'];
+    /**
+     * @param $host
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($host, $moduleConstants) {
         $usedBy = [
-            'Host'    => [],
-            'Service' => [],
+            'host'    => [],
+            'service' => []
         ];
         foreach ($moduleConstants as $moduleName => $value) {
-            if ($this->checkUsageFlag($host['Host']['id'], $value)) {
-                $usedBy['Host'][$this->humanizeModuleConstantName($moduleName)][] = $host['Host']['id'];
+            if ($host['Host']['usage_flag'] & $value) {
+                $usedBy['host'][$moduleName] = $value;
             }
-
-            if (!empty($serviceIds)) {
-                foreach ($serviceIds as $serviceId) {
-                    if ($this->Service->checkUsageFlag($serviceId, $value)) {
-                        $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
-                    }
+            foreach ($host['Service'] as $service) {
+                if ($service['usage_flag'] & $value) {
+                    $usedBy['service'][$moduleName] = $value;
                 }
             }
         }
-
-        if (empty($usedBy['Host']) && empty($usedBy['Service'])) {
-            return true;
-        }
-
-        $this->usedBy = $usedBy;
-        return false;
+        return $usedBy;
     }
 
     public function humanizeModuleConstantName($name) {

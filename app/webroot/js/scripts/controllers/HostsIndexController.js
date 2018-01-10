@@ -95,9 +95,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.services){
-                for(var key in $scope.serverResult){
-                    var id = $scope.serverResult[key].Service.id;
+            if($scope.hosts){
+                for(var key in $scope.hosts){
+                    var id = $scope.hosts[key].Host.id;
                     $scope.massChange[id] = true;
                 }
             }
@@ -109,23 +109,20 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(host, service){
+        $scope.getObjectForDelete = function(host){
             var object = {};
-            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+            object[host.Host.id] = host.Host.hostname;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.serverResult){
+            for(var key in $scope.hosts){
                 for(var id in selectedObjects){
-                    if(id == $scope.serverResult[key].Service.id){
-                        objects[id] =
-                            $scope.serverResult[key].Host.hostname + '/' +
-                            $scope.serverResult[key].Service.servicename;
+                    if(id == $scope.hosts[key].Host.id){
+                        objects[id] = $scope.hosts[key].Host.hostname;
                     }
-
                 }
             }
             return objects;
@@ -134,10 +131,10 @@ angular.module('openITCOCKPIT')
         $scope.getObjectsForExternalCommand = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.serverResult){
+            for(var key in $scope.hosts){
                 for(var id in selectedObjects){
-                    if(id == $scope.serverResult[key].Service.id){
-                        objects[id] = $scope.serverResult[key]
+                    if(id == $scope.hosts[key].Host.id){
+                        objects[id] = $scope.hosts[key];
                     }
 
                 }
@@ -147,6 +144,21 @@ angular.module('openITCOCKPIT')
 
         $scope.linkForCopy = function(){
             var baseUrl = '/hosts/copy/';
+            return buildUrl(baseUrl);
+
+        };
+
+        $scope.linkForEditDetails = function(){
+            var baseUrl = '/hosts/edit_details/';
+            return buildUrl(baseUrl);
+        };
+
+        $scope.linkForAddToHostgroup = function(){
+            var baseUrl = '/hostgroups/mass_add/';
+            return buildUrl(baseUrl);
+        };
+
+        var buildUrl = function(baseUrl){
             var ids = Object.keys(MassChangeService.getSelected());
             return baseUrl + ids.join('/');
         };

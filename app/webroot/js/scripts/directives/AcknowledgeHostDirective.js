@@ -1,11 +1,12 @@
-angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, SudoService, $timeout){
+angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, SudoService, $timeout){
     return {
         restrict: 'E',
-        templateUrl: '/angular/acknowledge_service.html',
+        templateUrl: '/angular/acknowledge_host.html',
 
         controller: function($scope){
 
-            $scope.doAck = false;
+            $scope.doHostAck = false;
+            $scope.hostAckType = 'hostOnly';
             $scope.ack = {
                 comment: '',
                 sticky: false,
@@ -23,7 +24,7 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 author = _author;
             };
 
-            $scope.doAcknowledgeService = function(){
+            $scope.doAcknowledgeHost = function(){
                 $scope.ack.error = false;
                 if($scope.ack.comment === ''){
                     $scope.ack.error = true;
@@ -38,32 +39,32 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 var count = Object.keys(objects).length;
                 var i = 0;
                 $scope.percentage = 0;
-                $scope.doAck = true;
+                $scope.doHostAck = true;
 
                 $scope.percentage = Math.round(i / count * 100);
                 for(var id in objects){
                     var object = objects[id];
                     i++;
                     $scope.percentage = Math.round(i / count * 100);
-                    SudoService.send(SudoService.toJson('submitServicestateAck', [
+                    SudoService.send(SudoService.toJson('submitHoststateAck', [
                         object.Host.uuid,
-                        object.Service.uuid,
                         $scope.ack.comment,
                         author,
-                        sticky
+                        sticky,
+                        $scope.hostAckType
                     ]));
                 }
                 $timeout(function(){
-                    $scope.doAck = false;
+                    $scope.doHostAck = false;
                     $scope.percentage = 0;
-                    $('#angularacknowledgeServiceModal').modal('hide');
+                    $('#angularacknowledgeHostModal').modal('hide');
                 }, 500);
             };
 
         },
 
         link: function($scope, element, attr){
-            $scope.acknowledgeService = function(objects){
+            $scope.acknowledgeHost = function(objects){
                 if(Object.keys(objects).length === 0){
                     return;
                 }
@@ -71,7 +72,7 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
 
                 $scope.setAuthor(attr.author);
 
-                $('#angularacknowledgeServiceModal').modal('show');
+                $('#angularacknowledgeHostModal').modal('show');
             };
         }
     };
