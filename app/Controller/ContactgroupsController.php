@@ -25,14 +25,13 @@
 
 
 /**
- * @property Contactgroup       $Contactgroup
- * @property Container          $Container
- * @property Contact            $Contact
- * @property User               $User
+ * @property Contactgroup $Contactgroup
+ * @property Container $Container
+ * @property Contact $Contact
+ * @property User $User
  * @property ChangelogComponent $Changelog
  */
-class ContactgroupsController extends AppController
-{
+class ContactgroupsController extends AppController {
 
     public $uses = [
         'Contactgroup',
@@ -51,22 +50,21 @@ class ContactgroupsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Container.name'           => [
-                    'label'      => 'Name',
+                'Container.name' => [
+                    'label' => 'Name',
                     'searchType' => 'wildcard',
                 ],
                 'Contactgroup.description' => [
-                    'label'      => 'Alias',
+                    'label' => 'Alias',
                     'searchType' => 'wildcard',
                 ],
             ],
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $options = [
-            'order'      => [
+            'order' => [
                 'Container.name' => 'asc',
             ],
             'conditions' => [
@@ -89,8 +87,7 @@ class ContactgroupsController extends AppController
         $this->set('_serialize', ['all_contactgroups']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -114,8 +111,7 @@ class ContactgroupsController extends AppController
         $this->set('_serialize', ['contactgroup']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Contactgroup->exists($id)) {
             throw new NotFoundException(__('Invalid contactgroup'));
@@ -143,8 +139,8 @@ class ContactgroupsController extends AppController
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
                 foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
                     $_contact = $this->Contact->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
+                        'recursive' => -1,
+                        'fields' => [
                             'Contact.id',
                             'Contact.name',
                         ],
@@ -153,7 +149,7 @@ class ContactgroupsController extends AppController
                         ],
                     ]);
                     $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $contact_id,
+                        'id' => $contact_id,
                         'name' => $_contact['Contact']['name'],
                     ];
                 }
@@ -196,15 +192,14 @@ class ContactgroupsController extends AppController
         $this->request->data = Hash::merge($contactgroup, $this->request->data); // Is used in the template file
         $data = [
             'contactgroup' => $contactgroup,
-            'containers'   => $containers,
-            'contacts'     => $contacts,
+            'containers' => $containers,
+            'contacts' => $contacts,
         ];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
     }
 
-    public function add()
-    {
+    public function add() {
         $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
@@ -229,8 +224,8 @@ class ContactgroupsController extends AppController
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
                 foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
                     $_contact = $this->Contact->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
+                        'recursive' => -1,
+                        'fields' => [
                             'Contact.id',
                             'Contact.name',
                         ],
@@ -239,7 +234,7 @@ class ContactgroupsController extends AppController
                         ],
                     ]);
                     $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $contact_id,
+                        'id' => $contact_id,
                         'name' => $_contact['Contact']['name'],
                     ];
                     unset($_contact);
@@ -291,8 +286,7 @@ class ContactgroupsController extends AppController
         $this->set('_serialize', ['containers', 'contacts']);
     }
 
-    public function loadContacts($containerIds = null)
-    {
+    public function loadContacts($containerIds = null) {
         $this->allowOnlyAjaxRequests();
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
@@ -306,8 +300,7 @@ class ContactgroupsController extends AppController
         $this->set('_serialize', array_keys($data));
     }
 
-    protected function __allowDelete($contactgroup)
-    {
+    protected function __allowDelete($contactgroup) {
         if (is_numeric($contactgroup)) {
             $contactgroupId = $contactgroup;
         } else {
@@ -338,14 +331,24 @@ class ContactgroupsController extends AppController
         return true;
     }
 
-    public function delete($id)
-    {
+    public function delete($id) {
+        if (!$this->Contactgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid contact group'));
+        }
         $userId = $this->Auth->user('id');
-        $contactgroup = $this->Contactgroup->findById($id);
+
+        $contactgroup = $this->Contactgroup->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'conditions' => [
+                'Contactgroup.id' => $id
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
             $this->render403();
-
             return;
         }
 
@@ -372,21 +375,26 @@ class ContactgroupsController extends AppController
                 $this->redirect(['action' => 'index']);
             }
         } else {
-            $contactgroupsCanotDelete = [$contactgroup['Container']['name']];
+            $contactgroupsCanotDelete[$contactgroup['Contactgroup']['id']] = $contactgroup['Container']['name'];
             $this->set(compact(['contactgroupsCanotDelete']));
             $this->render('mass_delete');
         }
-
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
-
         if ($this->request->is('post') || $this->request->is('put')) {
             foreach ($this->request->data('Contactgroup.delete') as $contactgroupId) {
                 if ($this->Contactgroup->exists($contactgroupId)) {
-                    $contactgroup = $this->Contactgroup->findById($contactgroupId);
+                    $contactgroup = $this->Contactgroup->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Container'
+                        ],
+                        'conditions' => [
+                            'Contactgroup.id' => $contactgroupId
+                        ]
+                    ]);
                     if ($this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
                         if ($this->Contactgroup->delete($contactgroupId)) {
                             $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -407,18 +415,27 @@ class ContactgroupsController extends AppController
                 }
             }
             Cache::clear(false, 'permissions');
-            $this->setFlash(__('Contactgroups deleted'));
+            $this->setFlash(__('Contact groups deleted'));
             $this->redirect(['action' => 'index']);
         }
 
         foreach (func_get_args() as $contactgroupId) {
             if ($this->Contactgroup->exists($contactgroupId)) {
-                $contactgroup = $this->Contactgroup->findById($contactgroupId);
+                $contactgroup = $this->Contactgroup->find('first', [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Container'
+                    ],
+                    'conditions' => [
+                        'Contactgroup.id' => $contactgroupId
+                    ]
+                ]);
                 if ($this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
                     if ($this->__allowDelete($contactgroupId)) {
-                        $contactgroupsToDelete[] = $contactgroup;
+                        $contactgroupsToDelete[$contactgroupId] = $contactgroup;
                     } else {
-                        $contactgroupsCanotDelete[] = $contactgroup['Container']['name'];
+                        debug($contactgroup['Container']['name']);
+                        $contactgroupsCanotDelete[$contactgroupId] = $contactgroup['Container']['name'];
                     }
                 }
             }
@@ -429,12 +446,11 @@ class ContactgroupsController extends AppController
 
     }
 
-    public function copy($id = null)
-    {
+    public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $contactgroups = $this->Contactgroup->find('all', [
             'recursive' => -1,
-            'contain' =>[
+            'contain' => [
                 'Container' => [
                     'fields' => [
                         'Container.name',
@@ -443,7 +459,7 @@ class ContactgroupsController extends AppController
                     ]
                 ],
                 'Contact' => [
-                    'fields' =>[
+                    'fields' => [
                         'Contact.id',
                         'Contact.name'
                     ]
@@ -464,15 +480,15 @@ class ContactgroupsController extends AppController
                 $datasource->begin();
                 foreach ($this->request->data['Contactgroup'] as $sourceContactGroupId => $newContactGroup) {
                     $newContactGroupData = [
-                        'Container'    => [
-                            'parent_id'        => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
-                            'name'             => $newContactGroup['name'],
+                        'Container' => [
+                            'parent_id' => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
+                            'name' => $newContactGroup['name'],
                             'containertype_id' => $contactgroups[$sourceContactGroupId]['Container']['containertype_id'],
                         ],
                         'Contactgroup' => [
                             'description' => $newContactGroup['description'],
-                            'uuid'        => UUID::v4(),
-                            'Contact'     => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
+                            'uuid' => UUID::v4(),
+                            'Contact' => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
                         ],
                         'Contact' => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id')
                     ];
@@ -490,7 +506,7 @@ class ContactgroupsController extends AppController
                         $newContactGroup['name'],
                         Hash::merge($contactgroups[$sourceContactGroupId], [
                             'Contactgroup' => [
-                                'description' =>  $newContactGroup['description']
+                                'description' => $newContactGroup['description']
                             ],
                             'Container' => [
                                 'name' => $newContactGroup['name']
@@ -512,6 +528,121 @@ class ContactgroupsController extends AppController
             }
         }
         $this->set(compact('contactgroups'));
+        $this->set('back_url', $this->referer());
+    }
+
+    public function usedBy($id = null) {
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if (!$this->Contactgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid contact group'));
+        }
+
+        $this->Contactgroup->bindModel([
+            'hasAndBelongsToMany' => [
+                'Hosttemplate' => [
+                    'className' => 'Hosttemplate',
+                    'joinTable' => 'contactgroups_to_hosttemplates',
+                    'type' => 'INNER'
+                ],
+                'Host' => [
+                    'className' => 'Host',
+                    'joinTable' => 'contactgroups_to_hosts',
+                    'type' => 'INNER'
+                ],
+                'Servicetemplate' => [
+                    'className' => 'Servicetemplate',
+                    'joinTable' => 'contactgroups_to_servicetemplates',
+                    'type' => 'INNER'
+                ],
+                'Service' => [
+                    'className' => 'Service',
+                    'joinTable' => 'contactgroups_to_services',
+                    'type' => 'INNER'
+                ],
+                'Hostescalation' => [
+                    'className' => 'Hostescalation',
+                    'joinTable' => 'contactgroups_to_hostescalations',
+                    'type' => 'INNER'
+                ],
+                'Serviceescalation' => [
+                    'className' => 'Serviceescalation',
+                    'joinTable' => 'contactgroups_to_serviceescalations',
+                    'type' => 'INNER'
+                ],
+            ]
+        ]);
+
+        $contactgroupWithRelations = $this->Contactgroup->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.address'
+                    ]
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Service' => [
+                    'fields' => [
+                        'Service.id',
+                        'Service.name'
+                    ],
+                    'Host' => [
+                        'fields' => [
+                            'Host.name'
+                        ]
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.name'
+                        ]
+                    ]
+                ],
+                'Hostescalation.id',
+                'Serviceescalation.id'
+            ],
+            'conditions' => [
+                'Contactgroup.id' => $id
+            ]
+        ]);
+
+        /* Format service name for api "hostname|Service oder Service template name" */
+        array_walk($contactgroupWithRelations['Service'],function(&$service){
+            $serviceName = $service['name'];
+            if(empty($service['name'])) {
+                $serviceName = $service['Servicetemplate']['name'];
+            }
+            $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
+        });
+
+        //Sort host template, host, service template and service by name
+        foreach(['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName){
+            $contactgroupWithRelations[$modelName] = Hash::sort($contactgroupWithRelations[$modelName], '{n}.name', 'asc');
+        }
+        if (!$this->allowedByContainerId(Hash::extract($contactgroupWithRelations, 'Contactgroup.container_id'), false)) {
+            $this->render403();
+            return;
+        }
+        $this->set(compact(['contactgroupWithRelations']));
+        $this->set('_serialize', ['contactgroupWithRelations']);
         $this->set('back_url', $this->referer());
     }
 }
