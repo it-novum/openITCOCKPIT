@@ -28,6 +28,9 @@ app/webroot/img/graphs/*
 app/webroot/img/charts/*
 app/webroot/js/compressed_components.js
 app/webroot/js/compressed_controllers.js
+app/webroot/js/compressed_angular_controllers.js
+app/webroot/js/compressed_angular_directives.js
+app/webroot/js/compressed_angular_services.js
 app/Plugin/ArchiveMigration
 app/Plugin/AutoreportModule
 app/Plugin/AutoreportModule/webroot/tmp/*
