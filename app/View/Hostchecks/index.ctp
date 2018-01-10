@@ -29,16 +29,13 @@ use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use \itnovum\openITCOCKPIT\Core\Views\Hostcheck;
 use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
-$ListSettingsRenderer = new ListSettingsRenderer($HostcheckListsettings);
-$ListSettingsRenderer->setPaginator($this->Paginator);
 
 $Host = new Host($host);
 if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
-
-$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $HostcheckListsettings])]); ?>
+?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
         <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
@@ -72,191 +69,204 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
-                        <?php
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, [
-                                'class' => 'btn-danger btn-xs',
-                                'icon' => 'fa fa-times',
-                                'url' => 'index/' . $host['Host']['id']
-                            ]);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="0"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('State'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="1"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Date'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="2"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Check attempt'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="3"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Sate type'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="4"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Host output'); ?></a></li>
-                        </ul>
-                        <div class="clearfix"></div>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
 
-                    <div id="switch-1" class="widget-toolbar" role="menu">
-                        <?php
-                        echo $this->Form->create('hostchecks', [
-                            'class' => 'form-horizontal clear',
-                            'url' => 'index/' . $host['Host']['id'] //reset the URL on submit
-                        ]);
-                        echo $ListSettingsRenderer->getFromInput();
-                        echo $ListSettingsRenderer->getToInput();
-                        echo $ListSettingsRenderer->getLimitSelect();
-
-                        $state_types = [
-                            'recovery' => __('Recovery'),
-                            'down' => __('Down'),
-                            'unreachable' => __('Unreachable'),
-                        ];
-                        ?>
-
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <?php echo __('State types'); ?> <i class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php
-                                foreach ($state_types as $state_type => $name):
-                                    $checked = '';
-                                    if (isset($HostcheckListsettings['state_types'][$state_type]) && $HostcheckListsettings['state_types'][$state_type] == 1):
-                                        $checked = 'checked="checked"';
-                                    endif;
-                                    ?>
-                                    <li>
-                                        <input type="hidden" value="0"
-                                               name="data[Listsettings][state_types][<?php echo $state_type; ?>]"/>
-                                    </li>
-                                    <li style="width: 100%;"><a href="javascript:void(0)"
-                                                                class="listoptions_checkbox text-left"><input
-                                                    type="checkbox"
-                                                    name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
-                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
-                                    </li>
-                                <?php endforeach ?>
-                            </ul>
-                        </div>
-                        <?php
-
-                        echo $ListSettingsRenderer->getApply();
-                        echo $this->Form->end();
-                        ?>
-                    </div>
-
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
-                    <span class="widget-icon"> <i class="fa fa-check-square-o"></i> </span>
+                    <div class="jarviswidget-ctrls" role="menu"></div>
+                    <span class="widget-icon"> <i class="fa fa-history"></i> </span>
                     <h2><?php echo __('Check history'); ?> </h2>
 
                 </header>
 
-                <!-- widget div-->
                 <div>
-
-                    <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $HostcheckListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
 
-                        <table id="hostchecks_list" class="table table-striped table-hover table-bordered smart-form">
-                            <thead>
-                            <tr>
-                                <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'Hostcheck.state');
-                                    echo $this->Paginator->sort('Hostcheck.state', __('State')); ?>
-                                </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'Hostcheck.start_time');
-                                    echo $this->Paginator->sort('Hostcheck.start_time', __('Date')); ?>
-                                </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'current_check_attempt');
-                                    echo $this->Paginator->sort('current_check_attempt', __('Check attempt')); ?>
-                                </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'Hostcheck.state_type');
-                                    echo $this->Paginator->sort('Hostcheck.state_type', __('State type')); ?>
-                                </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'Hostcheck.output');
-                                    echo $this->Paginator->sort('Hostcheck.output', __('Host output')); ?>
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <?php //debug($all_notification); ?>
-                            <?php
-                            foreach ($all_hostchecks as $hostcheck):
-                                $Hostcheck = new Hostcheck($hostcheck['Hostcheck']);
-                                $StatusIcon = new HoststatusIcon($Hostcheck->getState());
-                                ?>
-                                <tr>
-                                    <td class="text-center">
-                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo h($this->Time->format(
-                                            $Hostcheck->getStartTime(),
-                                            $this->Auth->user('dateformat'),
-                                            false,
-                                            $this->Auth->user('timezone')
-                                        )); ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <?php echo h(sprintf('%s/%s',
-                                            $Hostcheck->getCurrentCheckAttempt(),
-                                            $Hostcheck->getMaxCheckAttempts()
-                                        )); ?>
-                                    </td>
-                                    <td class="text-center">
-                                        <?php echo h($this->Status->humanServiceStateType(
-                                            $Hostcheck->isHardstate()
-                                        )); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo h($Hostcheck->getOutput()); ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                        <?php if (empty($all_hostchecks)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-
-                        <div style="padding: 5px 10px;">
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   ng-model="filter.from"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   ng-model="filter.Hostcheck.output"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   ng-model="filter.to"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('States'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostcheck.state.recovery"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-success"></i>
+                                                <?php echo __('Up'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostcheck.state.down"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-danger"></i>
+                                                <?php echo __('Down'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostcheck.state.unreachable"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Unreachable'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('State Types'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostcheck.state_types.soft"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Soft'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Hostcheck.state_types.hard"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hard'); ?>
+                                            </label>
+
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <table id="hostchecks_list"
+                               class="table table-striped table-hover table-bordered smart-form"
+                               style="">
+                            <thead>
+                            <tr>
+                                <th class="no-sort" ng-click="orderBy('Hostcheck.state')">
+                                    <i class="fa" ng-class="getSortClass('Hostcheck.state')"></i>
+                                    <?php echo __('State'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hostcheck.start_time')">
+                                    <i class="fa" ng-class="getSortClass('Hostcheck.start_time')"></i>
+                                    <?php echo __('Date'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hostcheck.current_check_attempt')">
+                                    <i class="fa" ng-class="getSortClass('Hostcheck.current_check_attempt')"></i>
+                                    <?php echo __('Check attempt'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hostcheck.state_type')">
+                                    <i class="fa" ng-class="getSortClass('Hostcheck.state_type')"></i>
+                                    <?php echo __('State type'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Hostcheck.output')">
+                                    <i class="fa" ng-class="getSortClass('Hostcheck.output')"></i>
+                                    <?php echo __('Host output'); ?>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            <tr ng-repeat="Hostcheck in hostchecks">
+
+                                <td class="text-center">
+                                    <hoststatusicon state="Hostcheck.Hostcheck.state"></hoststatusicon>
+                                </td>
+                                <td>
+                                    {{ Hostcheck.Hostcheck.start_time }}
+                                </td>
+                                <td class="text-center">
+                                    {{ Hostcheck.Hostcheck.current_check_attempt }}/{{ Hostcheck.Hostcheck.max_check_attempts }}
+                                </td>
+                                <td class="text-center">
+                                        <span ng-show="Hostcheck.Hostcheck.is_hardstate">
+                                            <?php echo __('Hard'); ?>
+                                        </span>
+
+                                    <span ng-show="!Hostcheck.Hostcheck.is_hardstate">
+                                            <?php echo __('Soft'); ?>
+                                        </span>
+
+                                </td>
+                                <td>
+                                    {{ Hostcheck.Hostcheck.output }}
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="statehistories.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
 </section>
