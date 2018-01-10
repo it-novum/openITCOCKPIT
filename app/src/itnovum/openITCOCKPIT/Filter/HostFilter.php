@@ -38,7 +38,8 @@ class HostFilter extends Filter {
             ],
             'like' => [
                 'Host.name',
-                'Hoststatus.output'
+                'Hoststatus.output',
+                'Host.address'
             ],
             'rlike' => [
                 'Host.keywords'

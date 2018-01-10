@@ -148,7 +148,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by IP address'); ?>"
-                                                   ng-model="filter.Service.name"
+                                                   ng-model="filter.Host.address"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -158,7 +158,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                                             <input type="text" class="input-sm"
                                                    placeholder="<?php echo __('Filter by output'); ?>"
-                                                   ng-model="filter.Servicestatus.output"
+                                                   ng-model="filter.Hoststatus.output"
                                                    ng-model-options="{debounce: 500}">
                                         </label>
                                     </div>
@@ -170,7 +170,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
                                                placeholder="<?php echo __('Filter by tags'); ?>"
-                                               ng-model="filter.Service.keywords"
+                                               ng-model="filter.Host.keywords"
                                                ng-model-options="{debounce: 500}">
                                     </div>
                                 </div>
@@ -217,7 +217,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Servicestatus.acknowledged"
+                                                       ng-model="filter.Hoststatus.acknowledged"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Acknowledge'); ?>
@@ -225,7 +225,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Servicestatus.not_acknowledged"
+                                                       ng-model="filter.Hoststatus.not_acknowledged"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Not acknowledged'); ?>
@@ -240,7 +240,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Servicestatus.in_downtime"
+                                                       ng-model="filter.Hoststatus.in_downtime"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('In downtime'); ?>
@@ -248,7 +248,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Servicestatus.not_in_downtime"
+                                                       ng-model="filter.Hoststatus.not_in_downtime"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>
                                                 <?php echo __('Not in downtime'); ?>
@@ -583,7 +583,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php if ($this->Acl->hasPermission('edit_details', 'Hosts', '')): ?>
                                             <li>
                                                 <a ng-href="{{ linkForEditDetails() }}" class="a-clean">
-                                                    <i class="fa fa-file-pdf-o"></i> <?php echo __('Edit details'); ?>
+                                                    <i class="fa fa-cog"></i> <?php echo __('Edit details'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
@@ -603,7 +603,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php endif; ?>
 
                                         <li>
-                                            <a ng-href="" class="a-clean">
+                                            <a ng-href="{{ linkForPdf() }}" class="a-clean">
                                                 <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                             </a>
                                         </li>

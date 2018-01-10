@@ -371,12 +371,6 @@ class HostsController extends AppController {
 
         $this->set('all_hosts', $all_hosts);
         $this->set('_serialize', ['all_hosts', 'paging']);
-
-
-        //$preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        //$this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
-
-
     }
 
     public function icon() {
@@ -2837,26 +2831,28 @@ class HostsController extends AppController {
     }
 
     public function listToPdf() {
-        $HostControllerRequest = new HostControllerRequest($this->request);
+        $HostFilter = new HostFilter($this->request);
+
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
-        $User = new User($this->Auth);
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($this->MY_RIGHTS);
         }
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder(
-            ['Host.name' => 'asc'] //Default order
-        ));
+        $HostCondition->setOrder($HostControllerRequest->getOrder([
+            'Host.name'           => 'asc'
+        ]));
+
 
         if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $this->Host->virtualFieldsForIndex();
             $modelName = 'Host';
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $this->ListFilter->buildConditions());
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $modelName = 'Hoststatus';
         }
 
@@ -2866,16 +2862,6 @@ class HostsController extends AppController {
         $all_hosts = $this->{$modelName}->find('all', $query);
 
         $this->set('all_hosts', $all_hosts);
-
-        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
-
-        $SatelliteNames = [];
-        $ModuleManager = new ModuleManager('DistributeModule');
-        if ($ModuleManager->moduleExists()) {
-            $SatelliteModel = $ModuleManager->loadModel('Satellite');
-            $SatelliteNames = $SatelliteModel->find('list');
-        }
-        $this->set('SatelliteNames', $SatelliteNames);
 
         $filename = 'Hosts_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
@@ -2891,7 +2877,7 @@ class HostsController extends AppController {
                 'top'    => 15,
             ],
             'encoding'           => 'UTF-8',
-            'download'           => true,
+            'download'           => false,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
             'filename'           => $filename,

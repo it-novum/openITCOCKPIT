@@ -62,6 +62,7 @@ angular.module('openITCOCKPIT')
                 'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                'filter[Host.address]': $scope.filter.Host.address,
                 'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
             };
             if(QueryStringService.hasValue('BrowserContainerId')){
@@ -186,7 +187,10 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
-                'filter[Hoststatus.scheduled_downtime_depth]': inDowntime
+                'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                'filter[Host.address]': $scope.filter.Host.address,
+                'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
+
             });
 
         };
