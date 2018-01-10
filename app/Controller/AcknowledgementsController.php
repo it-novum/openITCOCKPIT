@@ -29,6 +29,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostControllerRequest;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class AcknowledgementsController extends AppController {
     /*
@@ -67,18 +68,69 @@ class AcknowledgementsController extends AppController {
     ];
 
     public function service($id = null){
+        $this->layout="angularjs";
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        //Process request and set request settings back to front end
-        $ServiceStates = new ServiceStates();
-        $AcknowledgedServiceControllerRequest = new AcknowledgedServiceControllerRequest(
-            $this->request,
-            $ServiceStates,
-            $this->userLimit
-        );
+        if (!$this->isAngularJsRequest()) {
+            //Service for .html requests
+            $service = $this->Service->find('first', [
+                'recursive' => -1,
+                'fields' => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.service_type',
+                    'Service.service_url'
+                ],
+                'contain' => [
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name',
+                            'Host.uuid',
+                            'Host.address'
+                        ],
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $id,
+                ],
+            ]);
 
+            //Check if user is permitted to see this object
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->render403();
+                return;
+            }
+
+            $allowEdit = false;
+            if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $allowEdit = true;
+            }
+
+            //Get meta data and push to front end
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Servicestatus.current_state',
+                    'Servicestatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
+            return;
+        }
+
+        //Service for .json requests
         $service = $this->Service->find('first', [
             'recursive' => -1,
             'fields' => [
@@ -88,67 +140,46 @@ class AcknowledgementsController extends AppController {
                 'Service.service_type',
                 'Service.service_url'
             ],
-            'contain' => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
             'conditions' => [
                 'Service.id' => $id,
             ],
         ]);
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $this->render403();
-            return;
-        }
 
-        $allowEdit = false;
-        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $allowEdit = true;
-        }
+        $AngularAcknowledgementsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\AcknowledgementsControllerRequest($this->request);
 
         //Process conditions
         $Conditions = new AcknowledgedServiceConditions();
-        $Conditions->setLimit($AcknowledgedServiceControllerRequest->getLimit());
-        $Conditions->setFrom($AcknowledgedServiceControllerRequest->getFrom());
-        $Conditions->setTo($AcknowledgedServiceControllerRequest->getTo());
-        $Conditions->setStates($AcknowledgedServiceControllerRequest->getServiceStates());
-        $Conditions->setOrder($AcknowledgedServiceControllerRequest->getOrder());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setFrom($AngularAcknowledgementsControllerRequest->getFrom());
+        $Conditions->setTo($AngularAcknowledgementsControllerRequest->getTo());
+        $Conditions->setStates($AngularAcknowledgementsControllerRequest->getServiceStates());
+        $Conditions->setOrder($AngularAcknowledgementsControllerRequest->getOrderForPaginator('AcknowledgedService.entry_time', 'desc'));
         $Conditions->setServiceUuid($service['Service']['uuid']);
 
+
         //Query state history records
-        $query = $this->AcknowledgedService->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_acknowledgements = $this->Paginator->paginate(
+        $query = $this->AcknowledgedService->getQuery($Conditions, $AngularAcknowledgementsControllerRequest->getServiceFilters());
+
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
+
+        $acknowledgements = $this->Paginator->paginate(
             $this->AcknowledgedService->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
 
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+        $all_acknowledgements = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($acknowledgements as $acknowledgement) {
+            $Acknowledgement = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
+            $all_acknowledgements[] = [
+                'AcknowledgedService' => $Acknowledgement->toArray()
+            ];
+        }
 
-        //Get meta data and push to front end
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping'
-            ],
-        ]);
-        $this->set(compact(['service', 'all_acknowledgements', 'servicestatus', 'docuExists', 'allowEdit']));
-        $this->set('AcknowledgementListsettings', $AcknowledgedServiceControllerRequest->getRequestSettingsForListSettings());
+        $this->set(compact(['all_acknowledgements']));
+        $this->set('_serialize', ['all_acknowledgements', 'paging']);
     }
 
     public function host($id = null){
