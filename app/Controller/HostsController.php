@@ -94,75 +94,6 @@ class HostsController extends AppController {
         'Servicetemplategroup',
         'Service'
     ];
-    public $listFilters = [
-        'index'            => [
-            'fields' => [
-                'Host.name'         => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Host.address'      => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.keywords'     => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
-
-                'Hoststatus.current_state'                 => [
-                    'label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Hoststatus.up',
-                                'value' => 1,
-                                'label' => 'Up',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                            '1' => [
-                                'name'  => 'Hoststatus.down',
-                                'value' => 1,
-                                'label' => 'Down',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                            '2' => [
-                                'name'  => 'Hoststatus.unreachable',
-                                'value' => 1,
-                                'label' => 'Unreachable',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                        ],
-                ],
-                'Hoststatus.problem_has_been_acknowledged' => [
-                    'label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Acknowledged',
-                                'value' => 1,
-                                'label' => 'Acknowledged',
-                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
-                            ],
-                            '0' => [
-                                'name'  => 'Not Acknowledged',
-                                'value' => 1,
-                                'label' => 'Not Acknowledged',
-                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
-                            ],
-                        ],
-                ],
-                'Hoststatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Downtime',
-                                'value' => 1,
-                                'label' => 'In Downtime',
-                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
-                            ],
-                            '0' => [
-                                'name'  => 'Not in Downtime',
-                                'value' => 1,
-                                'label' => 'Not in Downtime',
-                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
-                            ],
-                        ],
-                ],
-            ],
-        ],
-
-    ];
 
     public function index() {
         $this->layout = 'angularjs';
@@ -2867,7 +2798,7 @@ class HostsController extends AppController {
                 'top'    => 15,
             ],
             'encoding'           => 'UTF-8',
-            'download'           => false,
+            'download'           => true,
             'binary'             => $binary_path,
             'orientation'        => 'portrait',
             'filename'           => $filename,
