@@ -81,36 +81,58 @@ class NotificationsController extends AppController {
     ];
 
     public function index(){
+        $this->layout="angularjs";
+
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
         }
-        //Process request and set request settings back to front end
-        $NotificationsControllerRequest = new NotificationsControllerRequest(
-            $this->request,
-            new HostStates(),
-            $this->userLimit
-        );
+
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+
+        $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);
+
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
         $Conditions->setContainerIds($this->MY_RIGHTS);
-        $Conditions->setLimit($NotificationsControllerRequest->getLimit());
-        $Conditions->setFrom($NotificationsControllerRequest->getFrom());
-        $Conditions->setTo($NotificationsControllerRequest->getTo());
-        $Conditions->setOrder($NotificationsControllerRequest->getOrder());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHost.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
 
-        //Query notification records
-        $query = $this->NotificationHost->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_notification = $this->Paginator->paginate(
+
+        $query = $this->NotificationHost->getQuery($Conditions, $AngularNotificationsOverviewControllerRequest->getHostFilters());
+
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularNotificationsOverviewControllerRequest->getPage();
+
+        $notifications = $this->Paginator->paginate(
             $this->NotificationHost->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
-        $this->set('all_notification', $all_notification);
-        //Data for json and xml view /notifications.json or .xml
-        $this->set('_serialize', ['all_notification']);
-        $this->set('NotificationListsettings', $NotificationsControllerRequest->getRequestSettingsForListSettings());
+
+        $all_notifications = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($notifications as $notification) {
+            $NotificationHost = new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification, $UserTime);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $all_notifications[] = [
+                'NotificationHost' => $NotificationHost->toArray(),
+                'Host' => $Host->toArray(),
+                'Command' => $Command->toArray(),
+                'Contact' => $Contact->toArray()
+            ];
+        }
+
+        $this->set(compact(['all_notifications']));
+        $this->set('_serialize', ['all_notifications', 'paging']);
     }
 
     public function services(){
