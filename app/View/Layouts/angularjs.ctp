@@ -56,22 +56,31 @@ $scripts = [
 ];
 
 App::uses('Folder', 'Utility');
-$ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
-$appScripts = $ScriptsFolder->findRecursive('.*\.js');
-
-$pluginScripts = [];
-foreach (new DirectoryIterator(APP . 'Plugin' . DS) as $pluginDir) {
-    if ($pluginDir->isDot()) {
-        continue;
+$appScripts = [];
+if (ENVIRONMENT === Environments::PRODUCTION) {
+    $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
+    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularServices);
+        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDrectives);
+        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularControllers);
     }
-    $PluginScriptsFolder = new Folder(APP . 'Plugin' . DS . $pluginDir->getFilename() . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS);
-    $result = $PluginScriptsFolder->findRecursive('.*\.js');
-    if (!empty($result)) {
-        $pluginScripts[] = [
-            'dir'    => $result,
-            'module' => $pluginDir->getFilename()
-        ];
+} else {
+    $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts');
+    $uncompressedAngular = str_replace(WWW_ROOT, '', $core->findRecursive('.*\.js'));
+    foreach (CakePlugin::loaded() as $pluginName) {
+        $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+        $filenames = str_replace(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
+        if (!empty($filenames)) {
+            $fullPath = [];
+            foreach ($filenames as $filename) {
+                $fullPath[] = $pluginName . DS . $filename;
+            }
+            $uncompressedAngular = array_merge($uncompressedAngular, $fullPath);
+        }
     }
+    $appScripts = array_merge($appScripts, $uncompressedAngular);
 }
 
 ?>
@@ -96,16 +105,8 @@ foreach (new DirectoryIterator(APP . 'Plugin' . DS) as $pluginDir) {
     endforeach;
 
     foreach ($appScripts as $appScript):
-        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript), PHP_EOL);
+        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), $appScript, PHP_EOL);
     endforeach;
-
-    foreach ($pluginScripts as $plugin):
-        $currentPlugin = $plugin['module'];
-        foreach ($plugin['dir'] as $pluginScript):
-            printf('<script src="%s/%s/%s"></script>%s', Router::fullBaseUrl(), Inflector::underscore($currentPlugin), str_replace(APP . 'Plugin' . DS . $currentPlugin . DS . 'webroot' . DS, '', $pluginScript), PHP_EOL);
-        endforeach;
-    endforeach;
-
     ?>
 </head>
 <body class="<?= $bodyClass ?>">
