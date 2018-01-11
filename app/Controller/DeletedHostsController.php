@@ -23,41 +23,46 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DeletedHostsController extends AppController
-{
-    public $layout = 'Admin.default';
-    public $components = [
-        'Paginator',
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'AdditionalLinks',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
-    public $uses = ['DeletedHost', 'Host'];
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'DeletedHost.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'DeletedHost.uuid' => ['label' => 'UUID', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
+class DeletedHostsController extends AppController {
+    public $layout = 'angularjs';
 
-    public function index()
-    {
+    public $uses = ['DeletedHost'];
+
+
+    public function index() {
         $this->Paginator->settings['order'] = [
             'created' => 'DESC',
         ];
 
-        if ($this->isApiRequest()) {
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             $deletedHosts = $this->DeletedHost->find('all');
+            if (isset($this->Paginator->settings['limit'])) {
+                unset($this->Paginator->settings['limit']);
+            }
         } else {
-            $deletedHosts = $this->Paginator->paginate();
+            $HostFilter = new HostFilter($this->request);
+            $this->Paginator->settings['conditions'] = $HostFilter->deletedFilter();
+            $this->Paginator->settings['order'] = $HostFilter->getOrderForPaginator('DeletedHost.created', 'desc');
+            $this->Paginator->settings['page'] = $HostFilter->getPage();
+            $hosts = $this->Paginator->paginate();
         }
 
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $deletedHosts = [];
+        foreach($hosts as $host){
+            $DeletedHost = new \itnovum\openITCOCKPIT\Core\Views\DeletedHost($host, $UserTime);
+            $deletedHosts[] = [
+                'DeletedHost' => $DeletedHost->toArray()
+            ];
+        }
+
+
         $this->set(compact(['deletedHosts']));
-        $this->set('_serialize', ['deletedHosts']);
+        $this->set('_serialize', ['deletedHosts', 'paging']);
 
     }
 }

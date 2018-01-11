@@ -1439,4 +1439,54 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostDisabledQuery(HostConditions $HostConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+
+            ],
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        return $query;
+    }
+
 }

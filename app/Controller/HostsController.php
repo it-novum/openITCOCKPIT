@@ -161,86 +161,7 @@ class HostsController extends AppController {
                 ],
             ],
         ],
-        'listToPdf'        => [
-            'fields' => [
-                'Host.name'         => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Host.address'      => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.keywords'     => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
 
-                'Hoststatus.current_state'                 => [
-                    'label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Hoststatus.up',
-                                'value' => 1,
-                                'label' => 'Up',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                            '1' => [
-                                'name'  => 'Hoststatus.down',
-                                'value' => 1,
-                                'label' => 'Down',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                            '2' => [
-                                'name'  => 'Hoststatus.unreachable',
-                                'value' => 1,
-                                'label' => 'Unreachable',
-                                'data'  => 'Filter.Hoststatus.current_state',
-                            ],
-                        ],
-                ],
-                'Hoststatus.problem_has_been_acknowledged' => [
-                    'label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Acknowledged',
-                                'value' => 1,
-                                'label' => 'Acknowledged',
-                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
-                            ],
-                            '0' => [
-                                'name'  => 'Not Acknowledged',
-                                'value' => 1,
-                                'label' => 'Not Acknowledged',
-                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
-                            ],
-                        ],
-                ],
-                'Hoststatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Downtime',
-                                'value' => 1,
-                                'label' => 'In Downtime',
-                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
-                            ],
-                            '0' => [
-                                'name'  => 'Not in Downtime',
-                                'value' => 1,
-                                'label' => 'Not in Downtime',
-                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
-                            ],
-                        ],
-                ],
-            ],
-        ],
-        'notMnotMonitored' => [
-            'fields' => [
-                'Host.name'    => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Host.tags'    => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
-            ],
-        ],
-        'disabled'         => [
-            'fields' => [
-                'Host.name'    => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Host.tags'    => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
-            ],
-        ],
     ];
 
     public function index() {
@@ -466,7 +387,7 @@ class HostsController extends AppController {
         }
 
         $all_hosts = [];
-        foreach($hosts as $host){
+        foreach ($hosts as $host) {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
 
             $hostSharingPermissions = new HostSharingPermissions(
@@ -489,10 +410,10 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host' => $Host->toArray(),
+                'Host'       => $Host->toArray(),
                 'Hoststatus' => [
                     'isInMonitoring' => false,
-                    'currentState' => -1
+                    'currentState'   => -1
                 ]
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
@@ -1468,7 +1389,7 @@ class HostsController extends AppController {
                 } else {
                     $this->setFlash(__('<a href="/hosts/edit/%s">Host</a> created successfully', $this->Host->id));
                     $this->loadModel('Tenant');
-                    //				$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
+                    //$this->Tenant->hostCounter($this->request->data['Host']['container_id'], '+');
                     $this->redirect(['action' => 'notMonitored']);
                 }
             } else {
@@ -1513,70 +1434,89 @@ class HostsController extends AppController {
     }
 
     public function disabled() {
-        //$this->__unbindAssociations('Service');
-        if (!isset($this->request->params['named']['BrowserContainerId'])) {
-            $conditions = [
-                'Host.disabled'                  => 1,
-                'HostsToContainers.container_id' => $this->MY_RIGHTS,
-            ];
+        $this->layout = 'angularjs';
+
+        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        $SatelliteNames = [];
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $SatelliteNames = $SatelliteModel->find('list');
+            $SatelliteNames[0] = $masterInstanceName;
         }
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-        $query = [
-            'recursive'  => -1,
-            'conditions' => [
-                $conditions,
-            ],
-            'contain'    => [
-                'Hosttemplate',
-                'Container',
-            ],
-            //'contain' => [],
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                //'Host.description',
-                //'Host.active_checks_enabled',
-                'Host.address',
-                'Host.satellite_id',
-                'Hosttemplate.name',
 
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'order'      => ['Host.name' => 'asc'],
-            'group'      => [
-                'Host.id',
-            ],
-        ];
+        if (!$this->isApiRequest()) {
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
+        }
 
-        if ($this->isApiRequest()) {
+        $HostFilter = new HostFilter($this->request);
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
+        $HostCondition = new HostConditions();
+        $HostCondition->setIncludeDisabled(true);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $HostCondition->setOrder($HostControllerRequest->getOrder('Host.name', 'asc'));
+        $query = $this->Host->getHostDisabledQuery($HostCondition, $HostFilter->disabledFilter());
+
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
             $disabledHosts = $this->Host->find('all', $query);
+            $this->set(compact(['disabledHosts']));
+            $this->set('_serialize', ['disabledHosts']);
+            return;
         } else {
+            $this->Paginator->settings['page'] = $HostFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $disabledHosts = $this->Paginator->paginate();
+            $hosts = $this->Paginator->paginate();
+        }
+
+        $all_hosts = [];
+        foreach ($hosts as $host) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            $Hosttemplate = new \itnovum\openITCOCKPIT\Core\Views\Hosttemplate($host);
+
+            $hostSharingPermissions = new HostSharingPermissions(
+                $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
+            );
+            $allowSharing = $hostSharingPermissions->allowSharing();
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host'       => $Host->toArray(),
+                'Hosttemplate' => $Hosttemplate->toArray(),
+                'Hoststatus' => [
+                    'isInMonitoring' => false,
+                    'currentState'   => -1
+                ]
+            ];
+            $tmpRecord['Host']['allow_sharing'] = $allowSharing;
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_hosts[] = $tmpRecord;
         }
 
 
-        /*$activeHostCount = $this->Host->find('count', [
-            'conditions' => ['Host.disabled' => 0]
-        ]);
-
-        $disabledHostCount = $this->Host->find('count', [
-            'conditions' => ['Host.disabled' => 1]
-        ]);
-
-        $deletedHostCount = $this->DeletedHost->find('count');*/
-        $this->set(compact(['disabledHosts']));
-        $this->set('_serialize', ['disabledHosts']);
+        $this->set('all_hosts', $all_hosts);
+        $this->set('_serialize', ['all_hosts', 'paging']);
     }
 
     public function deactivate($id = null) {

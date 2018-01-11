@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsNotMonitoredController', function($scope, $http, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('HostsDisabledController', function($scope, $http, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         SortService.setSort(QueryStringService.getValue('sort', 'Host.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
         $scope.currentPage = 1;
@@ -19,7 +19,8 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/hosts/delete/';
-        $scope.deactivateUrl = '/hosts/deactivate/';
+        $scope.activateUrl = '/hosts/enable/';
+
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -37,7 +38,7 @@ angular.module('openITCOCKPIT')
                 'filter[Host.satellite_id][]': $scope.filter.Host.satellite_id
             };
 
-            $http.get("/hosts/notMonitored.json", {
+            $http.get("/hosts/disabled.json", {
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
@@ -90,21 +91,6 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.linkForCopy = function(){
-            var baseUrl = '/hosts/copy/';
-            return buildUrl(baseUrl);
-
-        };
-
-        $scope.linkForEditDetails = function(){
-            var baseUrl = '/hosts/edit_details/';
-            return buildUrl(baseUrl);
-        };
-
-        $scope.linkForAddToHostgroup = function(){
-            var baseUrl = '/hostgroups/mass_add/';
-            return buildUrl(baseUrl);
-        };
 
         var buildUrl = function(baseUrl){
             var ids = Object.keys(MassChangeService.getSelected());

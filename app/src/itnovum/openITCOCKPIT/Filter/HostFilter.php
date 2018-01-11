@@ -67,7 +67,8 @@ class HostFilter extends Filter {
     public function notMonitoredFilter(){
         $filters = [
             'like' => [
-                'Host.name'
+                'Host.name',
+                'Host.address'
             ],
             'equals' => [
                 'Host.id',
@@ -76,6 +77,26 @@ class HostFilter extends Filter {
         ];
 
         return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function deletedFilter(){
+        $filters = [
+            'like' => [
+                'DeletedHost.name'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function disabledFilter(){
+        return $this->notMonitoredFilter();
     }
 
 
