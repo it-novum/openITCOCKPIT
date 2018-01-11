@@ -180,7 +180,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                 <div class="col-xs-12 col-md-3">
                                     <fieldset>
-                                        <legend><?php echo __('Service status'); ?></legend>
+                                        <legend><?php echo __('Host status'); ?></legend>
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
@@ -589,7 +589,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-href="" class="a-clean">
+                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>

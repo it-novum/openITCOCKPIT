@@ -1407,6 +1407,7 @@ class Host extends AppModel {
                 'Host.active_checks_enabled',
                 'Host.address',
                 'Host.satellite_id',
+                'Host.container_id',
 
             ],
             'order'      => $HostConditions->getOrder(),

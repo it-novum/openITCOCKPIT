@@ -64,6 +64,24 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
+    public function notMonitoredFilter(){
+        $filters = [
+            'like' => [
+                'Host.name'
+            ],
+            'equals' => [
+                'Host.id',
+                'Host.satellite_id'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+
+    /**
+     * @return array
+     */
     public function ajaxFilter(){
         $filters = [
             'like' => [

@@ -409,53 +409,103 @@ class HostsController extends AppController {
     }
 
     public function notMonitored() {
-        $HostControllerRequest = new HostControllerRequest($this->request);
-        $HostCondition = new HostConditions();
-        $User = new User($this->Auth);
-        $HostCondition->setIncludeDisabled(false);
-        $HostCondition->setContainerIds($this->MY_RIGHTS);
+        $this->layout = 'angularjs';
 
-        $HostCondition->setOrder($HostControllerRequest->getOrder(
-            ['Host.name' => 'asc'] //Default order
-        ));
-
-
-        if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $this->ListFilter->buildConditions());
-            $modelName = 'Host';
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            $this->loadModel('CrateModule.CrateHost');
-            $query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $this->ListFilter->buildConditions());
-            $this->CrateHost->alias = 'Host';
-            $modelName = 'CrateHost';
-        }
-
-        if ($this->isApiRequest()) {
-            $all_hosts = $this->{$modelName}->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-        }
-
-
-        $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts']);
-
-        $this->set('userRights', $this->MY_RIGHTS);
-        $this->set('myNamedFilters', $this->request->data);
-
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-        $this->set('masterInstance', $this->Systemsetting->getMasterInstanceName());
-
+        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
             $SatelliteModel = $ModuleManager->loadModel('Satellite');
             $SatelliteNames = $SatelliteModel->find('list');
+            $SatelliteNames[0] = $masterInstanceName;
         }
-        $this->set('SatelliteNames', $SatelliteNames);
+
+        $User = new User($this->Auth);
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+
+            $this->set('username', $User->getFullName());
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
+        }
+
+        $HostFilter = new HostFilter($this->request);
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
+        $HostCondition = new HostConditions();
+        $HostCondition->setIncludeDisabled(false);
+        $HostCondition->setContainerIds($this->MY_RIGHTS);
+
+        $HostCondition->setOrder($HostControllerRequest->getOrder('Host.name', 'asc'));
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            $modelName = 'Host';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $this->loadModel('CrateModule.CrateHost');
+            $query = $this->CrateHost->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            $this->CrateHost->alias = 'Host';
+            $modelName = 'CrateHost';
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_hosts = $this->{$modelName}->find('all', $query);
+            $this->set('all_hosts', $all_hosts);
+            $this->set('_serialize', ['all_hosts']);
+            return;
+        } else {
+            $this->Paginator->settings['page'] = $HostFilter->getPage();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+        }
+
+        $all_hosts = [];
+        foreach($hosts as $host){
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+
+            $hostSharingPermissions = new HostSharingPermissions(
+                $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
+            );
+            $allowSharing = $hostSharingPermissions->allowSharing();
+
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $satelliteName = $masterInstanceName;
+            $satellite_id = 0;
+            if ($Host->isSatelliteHost()) {
+                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                $satellite_id = $Host->getSatelliteId();
+            }
+
+            $tmpRecord = [
+                'Host' => $Host->toArray(),
+                'Hoststatus' => [
+                    'isInMonitoring' => false,
+                    'currentState' => -1
+                ]
+            ];
+            $tmpRecord['Host']['allow_sharing'] = $allowSharing;
+            $tmpRecord['Host']['satelliteName'] = $satelliteName;
+            $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_hosts[] = $tmpRecord;
+        }
+
+
+        $this->set('all_hosts', $all_hosts);
+        $this->set('_serialize', ['all_hosts', 'paging']);
+
     }
 
     public function edit($id = null) {
@@ -2841,7 +2891,7 @@ class HostsController extends AppController {
         }
 
         $HostCondition->setOrder($HostControllerRequest->getOrder([
-            'Host.name'           => 'asc'
+            'Host.name' => 'asc'
         ]));
 
 

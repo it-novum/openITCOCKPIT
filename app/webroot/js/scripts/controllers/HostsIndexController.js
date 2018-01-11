@@ -87,14 +87,6 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
         };
 
-        $scope.isNextHost = function(service){
-            if(service.Host.uuid !== lastHostUuid){
-                lastHostUuid = service.Host.uuid;
-                return true;
-            }
-            return false;
-        };
-
         $scope.selectAll = function(){
             if($scope.hosts){
                 for(var key in $scope.hosts){
