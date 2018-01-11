@@ -23,14 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Command;
-use itnovum\openITCOCKPIT\Core\Views\Contact;
-use itnovum\openITCOCKPIT\Core\Views\NotificationService;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
 $Service = new Service($service);
 $Host = new Host($service);
@@ -206,12 +201,12 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                     <i class="fa" ng-class="getSortClass('NotificationService.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Host.hostname')">
-                                    <i class="fa" ng-class="getSortClass('Host.hostname')"></i>
+                                <th class="no-sort" ng-click="orderBy('Host.name')">
+                                    <i class="fa" ng-class="getSortClass('Host.name')"></i>
                                     <?php echo __('Host'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Service.servicename')">
-                                    <i class="fa" ng-class="getSortClass('Service.servicename')"></i>
+                                <th class="no-sort" ng-click="orderBy('Service.name')">
+                                    <i class="fa" ng-class="getSortClass('Service.name')"></i>
                                     <?php echo __('Service'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('NotificationService.start_time')">

@@ -40,17 +40,9 @@ class ServicechecksController extends AppController {
     ];
 
 
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $components = ['Paginator', 'RequestHandler'];
+    public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Servicecheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index($id = null){
         $this->layout="angularjs";

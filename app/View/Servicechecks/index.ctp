@@ -23,12 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\Servicecheck;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 $Service = new Service($service);
 $Host = new Host($service);

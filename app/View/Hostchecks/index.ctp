@@ -25,10 +25,6 @@
 
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use \itnovum\openITCOCKPIT\Core\Views\Hostcheck;
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
-
 
 $Host = new Host($host);
 if (!isset($hoststatus['Hoststatus'])):

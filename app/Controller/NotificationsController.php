@@ -24,9 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
-use itnovum\openITCOCKPIT\Core\NotificationsControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class NotificationsController extends AppController {
@@ -45,40 +43,9 @@ class NotificationsController extends AppController {
         'Documentation'
     ];
 
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
+    public $components = ['Paginator', 'RequestHandler'];
+    public $helpers = ['Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
-                'Contact.name' => ['label' => 'Contact name', 'searchType' => 'wildcard'],
-                'Command.name' => ['label' => 'Notification method', 'searchType' => 'wildcard'],
-
-            ],
-        ],
-        'services' => [
-            'fields' => [
-                'NotificationService.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.name' => ['label' => 'Host name', 'searchType' => 'wildcard'],
-                'Contact.name' => ['label' => 'Contact name', 'searchType' => 'wildcard'],
-                'Command.name' => ['label' => 'Notification method', 'searchType' => 'wildcard'],
-
-            ],
-        ],
-        'hostNotification' => [
-            'fields' => [
-                'NotificationHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'serviceNotification' => [
-            'fields' => [
-                'NotificationService.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index(){
         $this->layout="angularjs";
@@ -91,9 +58,7 @@ class NotificationsController extends AppController {
             return;
         }
 
-
         $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);
-
 
         //Process conditions
         $Conditions = new HostNotificationConditions();
@@ -225,6 +190,7 @@ class NotificationsController extends AppController {
                 return;
             }
             $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+
             //Get meta data and push to front end
             $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
                 'fields' => [

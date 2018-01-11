@@ -46,18 +46,9 @@ class StatehistoriesController extends AppController {
         'Documentation'
     ];
 
-
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $components = ['Paginator', 'RequestHandler'];
+    public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'host' => [
-            'fields' => [
-                'StatehistoryHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function service($id = null) {
         $this->layout = 'angularjs';
@@ -151,7 +142,6 @@ class StatehistoriesController extends AppController {
         $Conditions->setServiceUuid($service['Service']['uuid']);
 
         //Query state history records
-        //$query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
         $query = $this->StatehistoryService->getQuery($Conditions, $AngularStatehistoryControllerRequest->getServiceFilters());
 
         $this->Paginator->settings = $query;
@@ -252,7 +242,6 @@ class StatehistoriesController extends AppController {
 
         //Query state history records
         $query = $this->StatehistoryHost->getQuery($Conditions, $AngularStatehistoryControllerRequest->getHostFilters());
-       //print_r($query);
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
         $statehistories = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
@@ -264,7 +253,6 @@ class StatehistoriesController extends AppController {
                 'StatehistoryHost' => $StatehistoryHost->toArray()
             ];
         }
-
 
         $this->set(compact(['all_statehistories']));
         $this->set('_serialize', ['all_statehistories', 'paging']);

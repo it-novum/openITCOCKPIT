@@ -24,11 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
-use itnovum\openITCOCKPIT\Core\AcknowledgedServiceControllerRequest;
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-use itnovum\openITCOCKPIT\Core\AcknowledgedHostControllerRequest;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
-use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class AcknowledgementsController extends AppController {
@@ -47,25 +43,9 @@ class AcknowledgementsController extends AppController {
         'Documentation'
     ];
 
-
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Bbcode'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'Bbcode'];
+    public $components = ['Paginator', 'RequestHandler', 'Bbcode'];
+    public $helpers = ['Status', 'Monitoring', 'Bbcode'];
     public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'service' => [
-            'fields' => [
-                'AcknowledgedService.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-                'AcknowledgedService.author_name' => ['label' => 'Author', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'host' => [
-            'fields' => [
-                'AcknowledgedHost.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-                'AcknowledgedHost.author_name' => ['label' => 'Author', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function service($id = null){
         $this->layout="angularjs";

@@ -26,8 +26,6 @@
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 
 $Service = new Service($service);

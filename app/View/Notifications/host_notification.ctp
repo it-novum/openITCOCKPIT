@@ -23,13 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Command;
-use itnovum\openITCOCKPIT\Core\Views\Contact;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\NotificationHost;
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
 $Host = new Host($host);
 if (!isset($hoststatus['Hoststatus'])):
@@ -189,8 +184,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <i class="fa" ng-class="getSortClass('NotificationHost.state')"></i>
                                     <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('NotificationHost.name')">
-                                    <i class="fa" ng-class="getSortClass('NotificationHost.name')"></i>
+                                <th class="no-sort" ng-click="orderBy('Host.name')">
+                                    <i class="fa" ng-class="getSortClass('Host.name')"></i>
                                     <?php echo __('Host'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('NotificationHost.start_time')">
