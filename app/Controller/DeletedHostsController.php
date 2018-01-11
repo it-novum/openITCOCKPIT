@@ -42,6 +42,10 @@ class DeletedHostsController extends AppController {
             if (isset($this->Paginator->settings['limit'])) {
                 unset($this->Paginator->settings['limit']);
             }
+            $deletedHosts = $this->DeletedHost->find('all');
+            $this->set(compact(['deletedHosts']));
+            $this->set('_serialize', ['deletedHosts', 'paging']);
+            return;
         } else {
             $HostFilter = new HostFilter($this->request);
             $this->Paginator->settings['conditions'] = $HostFilter->deletedFilter();
