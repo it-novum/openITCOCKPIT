@@ -66,9 +66,13 @@
                                 </tr>
                                 <tr ng-repeat="hosttemplate in contactgroupWithRelations.Hosttemplate">
                                     <td>
-                                        <a href="/hosttemplates/edit/{{ hosttemplate.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosttemplates')):?>
+                                            <a href="/hosttemplates/edit/{{ hosttemplate.id }}" target="_blank">
+                                                {{ hosttemplate.name }}
+                                            </a>
+                                        <?php else: ?>
                                             {{ hosttemplate.name }}
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <tr ng-if="contactgroupWithRelations.Host.length > 0">
@@ -79,9 +83,13 @@
                                 </tr>
                                 <tr ng-repeat="host in contactgroupWithRelations.Host">
                                     <td>
-                                        <a href="/hosts/edit/{{ host.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')):?>
+                                            <a href="/hosts/edit/{{ host.id }}" target="_blank">
+                                                {{ host.name }} ({{ host.address }})
+                                            </a>
+                                        <?php else: ?>
                                             {{ host.name }} ({{ host.address }})
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <tr ng-if="contactgroupWithRelations.Servicetemplate.length > 0">
@@ -92,9 +100,13 @@
                                 </tr>
                                 <tr ng-repeat="servicetemplate in contactgroupWithRelations.Servicetemplate">
                                     <td>
-                                        <a href="/servicetemplates/edit/{{ servicetemplate.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')):?>
+                                            <a href="/servicetemplates/edit/{{ servicetemplate.id }}" target="_blank">
+                                                {{ servicetemplate.name }}
+                                            </a>
+                                        <?php else: ?>
                                             {{ servicetemplate.name }}
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <tr ng-if="contactgroupWithRelations.Service.length > 0">
@@ -105,9 +117,13 @@
                                 </tr>
                                 <tr ng-repeat="service in contactgroupWithRelations.Service">
                                     <td>
-                                        <a href="/services/edit/{{ service.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')):?>
+                                            <a href="/services/edit/{{ service.id }}" target="_blank">
+                                                {{ service.name }}
+                                            </a>
+                                        <?php else: ?>
                                             {{ service.name }}
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <tr ng-if="contactgroupWithRelations.Hostescalation.length > 0">
@@ -118,9 +134,13 @@
                                 </tr>
                                 <tr ng-repeat="hostescalation in contactgroupWithRelations.Hostescalation">
                                     <td>
-                                        <a href="/hostescalations/edit/{{ hostescalation.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hostescalations')):?>
+                                            <a href="/hostescalations/edit/{{ hostescalation.id }}" target="_blank">
+                                                <?php echo __('Host escalation'); ?> #{{ $index +1 }}
+                                            </a>
+                                        <?php else: ?>
                                             <?php echo __('Host escalation'); ?> #{{ $index +1 }}
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                                 <tr ng-if="contactgroupWithRelations.Serviceescalation.length > 0">
@@ -129,11 +149,15 @@
                                         <?php echo __('Service escalation'); ?> ({{contactgroupWithRelations.Serviceescalation.length}})
                                     </th>
                                 </tr>
-                                <tr ng-repeat="seriviceescalation in contactgroupWithRelations.Serviceescalation">
+                                <tr ng-repeat="serviceescalation in contactgroupWithRelations.Serviceescalation">
                                     <td>
-                                        <a href="/serviceescalations/edit/{{ seriviceescalation.id }}" target="_blank">
+                                        <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')):?>
+                                            <a href="/serviceescalations/edit/{{ serviceescalation.id }}" target="_blank">
+                                                <?php echo __('Service escalation'); ?> #{{ $index +1 }}
+                                            </a>
+                                        <?php else: ?>
                                             <?php echo __('Service escalation'); ?> #{{ $index +1 }}
-                                        </a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             </tbody>
@@ -146,5 +170,6 @@
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

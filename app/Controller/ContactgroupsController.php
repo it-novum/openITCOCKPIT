@@ -635,7 +635,11 @@ class ContactgroupsController extends AppController {
 
         //Sort host template, host, service template and service by name
         foreach(['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName){
-            $contactgroupWithRelations[$modelName] = Hash::sort($contactgroupWithRelations[$modelName], '{n}.name', 'asc');
+            $contactgroupWithRelations[$modelName] = Hash::sort($contactgroupWithRelations[$modelName], '{n}.name', 'asc', [
+                    'type' => 'natural',
+                    'ignoreCase' => true
+                ]
+            );
         }
         if (!$this->allowedByContainerId(Hash::extract($contactgroupWithRelations, 'Contactgroup.container_id'), false)) {
             $this->render403();
