@@ -53,6 +53,7 @@ class BrowsersController extends AppController {
         $parents = $this->Container->getPath($top_node['Container']['parent_id']);
 
         $tenants = $this->__getTenants();
+        natcasesort($tenants);
 
         //$recursive = true;
         $recursive = $this->Auth->user('recursive_browser');
@@ -102,6 +103,9 @@ class BrowsersController extends AppController {
             $containerNest = Hash::nest($this->Container->children($id));
             $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
         }
+
+        $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
+
         if ($this->hasRootPrivileges === false) {
             foreach ($browser as $key => $containerRecord) {
                 if (!in_array($containerRecord['id'], $this->MY_RIGHTS)) {

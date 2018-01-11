@@ -1,38 +1,31 @@
 <div class="pull-right" style="padding-right: 25px;">
     <ol class="menustats">
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                         => 'hosts',
-                'action'                             => 'index',
-                'plugin'                             => '',
-                'Filter.Hoststatus.current_state[1]' => 1,
-                'Filter.Hoststatus.current_state[2]' => 1,
-                'sort'                               => 'Hoststatus.last_state_change',
-                'direction'                          => 'desc'
+            <a href="/hosts/index<?php echo Router::queryString([
+                'sort' => 'Hoststatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" style="color:#bbb;">
                 <i class="fa fa-hdd-o fa-lg"></i>
             </a>
         </li>
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                         => 'hosts',
-                'action'                             => 'index',
-                'plugin'                             => '',
-                'Filter.Hoststatus.current_state[1]' => 1,
-                'sort'                               => 'Hoststatus.last_state_change',
-                'direction'                          => 'desc'
+            <a href="/hosts/index<?php echo Router::queryString([
+                'filter' => [
+                    'Hoststatus.current_state' => [1 => 'down']
+                ],
+                'sort' => 'Hoststatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" class="btn btn-danger btn-xs">
                 {{ hoststatusCount['1'] }}
             </a>
         </li>
         <li>
-            <a href="<?php echo Router::url([
-                'controller'                         => 'hosts',
-                'action'                             => 'index',
-                'plugin'                             => '',
-                'Filter.Hoststatus.current_state[2]' => 1,
-                'sort'                               => 'Hoststatus.last_state_change',
-                'direction'                          => 'desc'
+            <a href="/hosts/index<?php echo Router::queryString([
+                'filter' => [
+                    'Hoststatus.current_state' => [2 => 'unreachable']
+                ],
+                'sort' => 'Hoststatus.last_state_change',
+                'direction' => 'desc'
             ]); ?>" class="btn btn-default btn-xs">
                 {{ hoststatusCount['2'] }}
             </a>
