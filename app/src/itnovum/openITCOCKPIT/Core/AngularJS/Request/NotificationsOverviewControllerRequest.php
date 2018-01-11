@@ -43,7 +43,10 @@ class NotificationsOverviewControllerRequest extends AngularRequest {
         ],
         'service' => [
             'like' => [
-                'NotificationService.output'
+                'NotificationService.output',
+                'Host.name',
+                'Contact.name',
+                'Command.name'
             ]
         ]
     ];

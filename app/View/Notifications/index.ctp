@@ -195,8 +195,8 @@
                                         <i class="fa" ng-class="getSortClass('NotificationHost.state')"></i>
                                         <?php echo __('State'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('NotificationHost.name')">
-                                        <i class="fa" ng-class="getSortClass('NotificationHost.name')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Host.name')">
+                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
                                         <?php echo __('Host'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('NotificationHost.start_time')">
