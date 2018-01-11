@@ -27,6 +27,9 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 
+//Flapping Workaround while the status date is not loaded via Angular
+echo $this->Html->script('lib/FlappingWorkaround.js');
+
 $Service = new Service($service);
 $Host = new Host($service);
 if (!isset($servicestatus['Servicestatus'])):

@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+//Flapping Workaround while the status date is not loaded via Angular
+echo $this->Html->script('lib/FlappingWorkaround.js');
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">

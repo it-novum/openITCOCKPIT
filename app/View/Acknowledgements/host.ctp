@@ -26,6 +26,8 @@
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 
+//Flapping Workaround while the status date is not loaded via Angular
+echo $this->Html->script('lib/FlappingWorkaround.js');
 
 $Host = new Host($host);
 if (!isset($hoststatus['Hoststatus'])):
