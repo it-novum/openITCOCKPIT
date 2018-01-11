@@ -27,6 +27,7 @@ use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\NotificationsControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class NotificationsController extends AppController {
 
@@ -215,11 +216,67 @@ class NotificationsController extends AppController {
     }
 
     public function serviceNotification($service_id){
+        $this->layout="angularjs";
+
         if (!$this->Service->exists($service_id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        //Check if user is permitted to see this object
+        if (!$this->isAngularJsRequest()) {
+            //Service for .html requests
+            $service = $this->Service->find('first', [
+                'recursive' => -1,
+                'fields' => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.service_type',
+                    'Service.service_url'
+                ],
+                'contain' => [
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name',
+                            'Host.uuid',
+                            'Host.address'
+                        ],
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $service_id,
+                ],
+            ]);
+
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->render403();
+                return;
+            }
+            $allowEdit = false;
+            if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $allowEdit = true;
+            }
+
+            //Get meta data and push to front end
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Servicestatus.current_state',
+                    'Servicestatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
+            return;
+        }
+
+        //Service for .json requests
         $service = $this->Service->find('first', [
             'recursive' => -1,
             'fields' => [
@@ -229,72 +286,54 @@ class NotificationsController extends AppController {
                 'Service.service_type',
                 'Service.service_url'
             ],
-            'contain' => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
-            ],
             'conditions' => [
                 'Service.id' => $service_id,
             ],
         ]);
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $this->render403();
 
-            return;
-        }
-        $allowEdit = false;
-        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $allowEdit = true;
-        }
+        $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
 
-        //Process request and set request settings back to front end
-        $NotificationsControllerRequest = new NotificationsControllerRequest(
-            $this->request,
-            new HostStates(),
-            $this->userLimit
-        );
 
         //Process conditions
         $Conditions = new ServiceNotificationConditions();
-        $Conditions->setLimit($NotificationsControllerRequest->getLimit());
-        $Conditions->setFrom($NotificationsControllerRequest->getFrom());
-        $Conditions->setTo($NotificationsControllerRequest->getTo());
-        $Conditions->setOrder($NotificationsControllerRequest->getOrder());
-        $NotificationsControllerRequest->setShowServiceNotifications(true);
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setFrom($AngularNotificationsControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsControllerRequest->getOrderForPaginator('NotificationService.start_time', 'desc'));
         $Conditions->setServiceUuid($service['Service']['uuid']);
+        $Conditions->setStates($AngularNotificationsControllerRequest->getServiceStates());
 
-        //Query host notification records
-        $query = $this->NotificationService->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_notification = $this->Paginator->paginate(
+
+        $query = $this->NotificationService->getQuery($Conditions, $AngularNotificationsControllerRequest->getServiceFilters());
+
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
+
+        $notifications = $this->Paginator->paginate(
             $this->NotificationService->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
 
-        //Get meta data and push to front end
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping'
-            ],
-        ]);
-        $this->set(compact(['service', 'all_notification', 'servicestatus', 'docuExists', 'allowEdit']));
-        $this->set('NotificationListsettings', $NotificationsControllerRequest->getRequestSettingsForListSettings());
+        $all_notifications = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($notifications as $notification) {
+            $NotificationService = new itnovum\openITCOCKPIT\Core\Views\NotificationService($notification, $UserTime);
+            $Service = new itnovum\openITCOCKPIT\Core\Views\Service($notification);
+            $Host = new itnovum\openITCOCKPIT\Core\Views\Host($notification);
+            $Command = new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']);
+            $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
+            $all_notifications[] = [
+                'NotificationService' => $NotificationService->toArray(),
+                'Service' => $Service->toArray(),
+                'Host' => $Host->toArray(),
+                'Command' => $Command->toArray(),
+                'Contact' => $Contact->toArray()
+            ];
+        }
+
+        $this->set(compact(['all_notifications']));
+        $this->set('_serialize', ['all_notifications', 'paging']);
     }
 
 }

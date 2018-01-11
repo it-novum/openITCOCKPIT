@@ -22,50 +22,41 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core;
+namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
+use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class ServiceNotificationConditions extends ListSettingsConditions {
+class NotificationsControllerRequest extends AngularRequest {
 
     /**
      * @var array
      */
-    protected $order = [
-        'NotificationService.start_time' => 'DESC'
+    protected $filters = [
+        'host' => [
+            'like' => [
+                'NotificationHost.output'
+            ]
+        ],
+        'service' => [
+            'like' => [
+                'NotificationService.output'
+            ]
+        ]
     ];
 
-    /**
-     * @var string
-     */
-    protected $serviceUuid;
+    protected $ServiceStateField = 'NotificationService.state';
 
-    /**
-     * @param $uuid
-     */
-    public function setServiceUuid($uuid){
-        $this->serviceUuid = $uuid;
+    protected $HostStateField = 'NotificationHost.state';
+
+    public function getServiceFilters(){
+        $Filter = new BaseFilter($this->getRequest());
+        return $Filter->getConditionsByFilters($this->filters['service']);
     }
 
-    /**
-     * @return string
-     */
-    public function getServiceUuid(){
-        return $this->serviceUuid;
-    }
-
-    /**
-     * @param ServiceStates $ServiceStates
-     */
-    public function setStates(ServiceStates $ServiceStates){
-        if(sizeof($ServiceStates->asIntegerArray()) == 4){
-            $this->states = [];
-            return;
-        }
-
-        $this->states = $ServiceStates->asIntegerArray();
+    public function getHostFilters(){
+        $Filter = new BaseFilter($this->getRequest());
+        return $Filter->getConditionsByFilters($this->filters['host']);
     }
 
 }
-

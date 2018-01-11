@@ -157,7 +157,6 @@ class AcknowledgementsController extends AppController {
         $Conditions->setServiceUuid($service['Service']['uuid']);
 
 
-        //Query state history records
         $query = $this->AcknowledgedService->getQuery($Conditions, $AngularAcknowledgementsControllerRequest->getServiceFilters());
 
         $this->Paginator->settings = $query;
