@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT')
                     in_downtime: QueryStringService.getValue('in_downtime', false) === '1',
                     not_in_downtime: QueryStringService.getValue('not_in_downtime', false) === '1',
                     passive: QueryStringService.getValue('passive', false) === '1',
+                    active: QueryStringService.getValue('active', false) === '1',
                     output: ''
                 },
                 Service: {
@@ -142,7 +143,7 @@ angular.module('openITCOCKPIT')
             }
 
             var passive = '';
-            if($scope.filter.Servicestatus.passive){
+            if($scope.filter.Servicestatus.passive ^ $scope.filter.Servicestatus.active){
                 passive = !$scope.filter.Servicestatus.passive;
             }
 
