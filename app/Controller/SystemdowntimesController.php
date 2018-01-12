@@ -289,6 +289,7 @@ class SystemdowntimesController extends AppController {
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     $this->serializeErrorMessage();
+                    return;
                 }
             }
             $this->setFlash($flashmessage);
@@ -426,13 +427,12 @@ class SystemdowntimesController extends AppController {
                     }
 
                 } else {
-                    //$this->setFlash(__('Downtime could not be saved'),false);
-                    $flashmessage=__('Downtime could not be saved');
+                    //$flashmessage=__('Downtime could not be saved');
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     $this->serializeErrorMessage();
-                    //return;
+                    return;
                 }
             }
             $this->setFlash($flashmessage);
@@ -581,11 +581,12 @@ class SystemdowntimesController extends AppController {
                     }
 
                 } else {
-                    $flashmessage=__('Downtime could not be saved');
+                    //$flashmessage=__('Downtime could not be saved');
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date','from_time','to_date','to_time','downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     $this->serializeErrorMessage();
+                    return;
                 }
             }
             $this->setFlash($flashmessage);
@@ -815,11 +816,12 @@ class SystemdowntimesController extends AppController {
                     }
 
                 } else {
-                    $flashmessage=__('Downtime could not be saved');
+                    //$flashmessage=__('Downtime could not be saved');
                     $this->CustomValidationErrors->loadModel($this->Systemdowntime);
                     $this->CustomValidationErrors->customFields(['from_date', 'from_time', 'to_date', 'to_time', 'downtimetype']);
                     $this->CustomValidationErrors->fetchErrors();
                     $this->serializeErrorMessage();
+                    return;
                 }
             }
             $this->setFlash($flashmessage);

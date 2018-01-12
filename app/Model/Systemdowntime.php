@@ -82,7 +82,7 @@ class Systemdowntime extends AppModel {
             ],
             'checkPastDate' => [
                 'rule'     => ['checkPastDate'],
-                'message'  => 'The "to" date/time should be in the future and not the past',
+                'message'  => 'The "to" date should be in the future and not the past',
                 'required' => true
             ],
             'comparison'    => [
@@ -100,6 +100,11 @@ class Systemdowntime extends AppModel {
             'time'       => [
                 'rule'    => 'time',
                 'message' => 'Please enter a valid time',
+            ],
+            'checkPastTime' => [
+                'rule'     => ['checkPastTime'],
+                'message'  => 'The "to" time should be in the future and not the past',
+                'required' => true
             ],
             'comparison' => [
                 'rule'     => ['timeComparison'],
@@ -282,6 +287,14 @@ class Systemdowntime extends AppModel {
         if ($this->data[$this->name]['is_recurring']) {
             return true;
         }
+        //return CakeTime::fromString($this->data[$this->alias]['to_date'] . ' ' . $this->data[$this->alias]['to_time']) > time();
+        return CakeTime::fromString($this->data[$this->alias]['to_date']) >= CakeTime::fromString(date("d.m.Y",time()));
+    }
+
+    public function checkPastTime () {
+        if(CakeTime::fromString($this->data[$this->alias]['to_date']) > CakeTime::fromString(date("d.m.Y",time()))){
+            return true;
+        }
         return CakeTime::fromString($this->data[$this->alias]['to_date'] . ' ' . $this->data[$this->alias]['to_time']) > time();
     }
 
@@ -298,6 +311,8 @@ class Systemdowntime extends AppModel {
         }
         if (Validation::comparison($this->data[$this->alias]['from_date'],'==',$this->data[$this->alias]['to_date'])) {
             return Validation::comparison($this->data[$this->alias]['from_time'],'<',$this->data[$this->alias]['to_time']);
+        } else {
+            return true;
         }
         return false;
     }
