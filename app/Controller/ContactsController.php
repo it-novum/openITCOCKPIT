@@ -441,18 +441,31 @@ class ContactsController extends AppController {
     }
 
     public function delete($id){
+        if (!$this->Contact->exists($id)) {
+            throw new NotFoundException(__('Invalid contact'));
+        }
         $userId = $this->Auth->user('id');
-        $contact = $this->Contact->findById($id);
-
+        $contact = $this->Contact->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container.id',
+                'Container.name'
+            ],
+            'fields' => [
+                'Contact.id',
+                'Contact.name'
+            ],
+            'conditions' => [
+                'Contact.id' => $id
+            ]
+        ]);
         if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
             $this->render403();
-
             return;
         }
 
         if (!empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
             $this->render403();
-
             return;
         }
 
@@ -478,7 +491,7 @@ class ContactsController extends AppController {
                 $this->redirect(['action' => 'index']);
             }
         } else {
-            $contactsCanotDelete = [$contact['Contact']['name']];
+            $contactsCanotDelete[$contact['Contact']['id']] = $contact['Contact']['name'];
             $this->set(compact(['contactsCanotDelete']));
             $this->render('mass_delete');
         }
@@ -486,10 +499,22 @@ class ContactsController extends AppController {
 
     public function mass_delete($id = null){
         $userId = $this->Auth->user('id');
-
         if ($this->request->is('post') || $this->request->is('put')) {
             foreach ($this->request->data('Contact.delete') as $contactId) {
-                $contact = $this->Contact->findById($contactId);
+                $contact = $this->Contact->find('first', [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Container.id',
+                        'Container.name'
+                    ],
+                    'fields' => [
+                        'Contact.id',
+                        'Contact.name'
+                    ],
+                    'conditions' => [
+                        'Contact.id' => $contactId
+                    ]
+                ]);
                 if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
                     if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
                         if ($this->Contact->delete($contact['Contact']['id'])) {
@@ -517,13 +542,26 @@ class ContactsController extends AppController {
         $contactsCanotDelete = [];
         foreach (func_get_args() as $contactId) {
             if ($this->Contact->exists($contactId)) {
-                $contact = $this->Contact->findById($contactId);
+                $contact = $this->Contact->find('first', [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Container.id',
+                        'Container.name'
+                    ],
+                    'fields' => [
+                        'Contact.id',
+                        'Contact.name'
+                    ],
+                    'conditions' => [
+                        'Contact.id' => $contactId
+                    ]
+                ]);
                 if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
                     if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
                         if ($this->__allowDelete($contactId)) {
                             $contactsToDelete[] = $contact;
                         } else {
-                            $contactsCanotDelete[] = $contact['Contact']['name'];
+                            $contactsCanotDelete[$contactId] = $contact['Contact']['name'];
                         }
                     }
                 }
@@ -680,6 +718,132 @@ class ContactsController extends AppController {
 
         $this->set('objecttype_id', OBJECT_CONTACT);
         $this->set('counter', $counter);
+    }
+
+    public function usedBy($id = null) {
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if (!$this->Contact->exists($id)) {
+            throw new NotFoundException(__('Invalid contact'));
+        }
+
+        $this->Contact->bindModel([
+            'hasAndBelongsToMany' => [
+                'Hosttemplate' => [
+                    'className' => 'Hosttemplate',
+                    'joinTable' => 'contacts_to_hosttemplates',
+                    'type' => 'INNER'
+                ],
+                'Host' => [
+                    'className' => 'Host',
+                    'joinTable' => 'contacts_to_hosts',
+                    'type' => 'INNER'
+                ],
+                'Servicetemplate' => [
+                    'className' => 'Servicetemplate',
+                    'joinTable' => 'contacts_to_servicetemplates',
+                    'type' => 'INNER'
+                ],
+                'Service' => [
+                    'className' => 'Service',
+                    'joinTable' => 'contacts_to_services',
+                    'type' => 'INNER'
+                ],
+                'Hostescalation' => [
+                    'className' => 'Hostescalation',
+                    'joinTable' => 'contacts_to_hostescalations',
+                    'type' => 'INNER'
+                ],
+                'Serviceescalation' => [
+                    'className' => 'Serviceescalation',
+                    'joinTable' => 'contacts_to_serviceescalations',
+                    'type' => 'INNER'
+                ],
+            ]
+        ]);
+
+        $contactWithRelations = $this->Contact->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name'
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.address'
+                    ]
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Service' => [
+                    'fields' => [
+                        'Service.id',
+                        'Service.name'
+                    ],
+                    'Host' => [
+                        'fields' => [
+                            'Host.name'
+                        ]
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.name'
+                        ]
+                    ]
+                ],
+                'Hostescalation.id',
+                'Serviceescalation.id'
+            ],
+            'conditions' => [
+                'Contact.id' => $id
+            ]
+        ]);
+
+        if (!$this->allowedByContainerId(Hash::extract($contactWithRelations, 'Container.{n}.id'))) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty(array_diff(Hash::extract($contactWithRelations['Container'], '{n}.id'), $this->MY_RIGHTS))) {
+            $this->render403();
+            return;
+        }
+
+        /* Format service name for api "hostname|Service oder Service template name" */
+        array_walk($contactWithRelations['Service'],function(&$service){
+            $serviceName = $service['name'];
+            if(empty($service['name'])) {
+                $serviceName = $service['Servicetemplate']['name'];
+            }
+            $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
+        });
+
+        //Sort host template, host, service template and service by name
+        foreach(['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName){
+            $contactWithRelations[$modelName] = Hash::sort($contactWithRelations[$modelName], '{n}.name', 'asc', [
+                    'type' => 'natural',
+                    'ignoreCase' => true
+                ]
+            );
+        }
+
+        $this->set(compact(['contactWithRelations']));
+        $this->set('_serialize', ['contactWithRelations']);
+        $this->set('back_url', $this->referer());
     }
 }
 
