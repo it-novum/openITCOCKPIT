@@ -29,9 +29,21 @@ if ($sideMenuClosed) {
 }
 
 App::uses('Folder', 'Utility');
-$ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
-$appScripts = $ScriptsFolder->findRecursive('.*\.js');
-
+$appScripts = [];
+if (ENVIRONMENT === Environments::PRODUCTION) {
+    $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
+    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+        $appScripts[] = $compressedAngularServices;
+        $appScripts[] = $compressedAngularDrectives;
+        $appScripts[] = $compressedAngularControllers;
+    }
+} else {
+    App::uses('Folder', 'Utility');
+    $ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
+    $appScripts = $ScriptsFolder->findRecursive('.*\.js');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en" ng-app="openITCOCKPIT">
@@ -50,11 +62,11 @@ $appScripts = $ScriptsFolder->findRecursive('.*\.js');
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
-    //printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
+    printf('<script src="%s"></script>', 'js/scripts/ng.app.js');
+
     foreach ($appScripts as $appScript):
         printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
     endforeach;
-
     ?>
 </head>
 <body class="<?= $bodyClass ?>">
