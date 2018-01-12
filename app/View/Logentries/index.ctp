@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])]);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -43,170 +42,18 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
-                            <i class="fa fa-lg fa-table"></i>
-                        </a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
-                                    <input type="checkbox" class="pull-left"/>&nbsp; <?php echo __('Date'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="1">
-                                    <input type="checkbox" class="pull-left"/>&nbsp; <?php echo __('Type'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
-                                    <input type="checkbox" class="pull-left"/>&nbsp; <?php echo __('Log Entry'); ?>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
-
-                    <div id="switch-1" class="widget-toolbar" role="menu">
-                        <?php
-                        echo $this->Form->create('logentries', ['class' => 'form-horizontal clear', 'url' => 'index']);
-                        ?>
-
-                        <div class="btn-group">
-                            <?php
-                            $listoptions = [
-                                '5'    => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 5,
-                                    'human'         => 5,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '10'   => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 10,
-                                    'human'         => 10,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '25'   => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 25,
-                                    'human'         => 25,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '50'   => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 50,
-                                    'human'         => 50,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '100'  => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 100,
-                                    'human'         => 100,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '150'  => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 150,
-                                    'human'         => 150,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '500'  => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 500,
-                                    'human'         => 500,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                                '1000' => [
-                                    'submit_target' => '#listoptions_hidden_limit',
-                                    'value'         => 1000,
-                                    'human'         => 1000,
-                                    'selector'      => '#listoptions_limit',
-                                ],
-                            ];
-
-                            $selected = $paginatorLimit;
-
-
-                            if (isset($LogentiresListsettings['limit']) && isset($listoptions[$LogentiresListsettings['limit']]['human'])) {
-                                $selected = $listoptions[$LogentiresListsettings['limit']]['human'];
-                            }
-                            ?>
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <span id="listoptions_limit"><?php echo $selected; ?></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right stayOpenOnClick">
-                                <?php foreach ($listoptions as $listoption): ?>
-                                    <li>
-                                        <a href="javascript:void(0);" class="listoptions_action"
-                                           selector="<?php echo $listoption['selector']; ?>"
-                                           submit_target="<?php echo $listoption['submit_target']; ?>"
-                                           value="<?php echo $listoption['value']; ?>"><?php echo $listoption['human']; ?></a>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <input type="hidden" value="<?php if (isset($LogentiresListsettings['limit'])) {
-                                echo $LogentiresListsettings['limit'];
-                            } ?>" id="listoptions_hidden_limit" name="data[Listsettings][limit]"/>
-                        </div>
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <?php echo __('Options'); ?> <i class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right stayOpenOnClick">
-                                <?php
-                                foreach ($logentry_types as $logentry_type => $logentry_name):
-                                    $htmlChecked = 'checked="checked"';
-                                    if (isset($LogentiresListsettings['logentry_type'])):
-                                        $htmlChecked = '';
-                                        if ($LogentiresListsettings['logentry_type'] & $logentry_type):
-                                            $htmlChecked = 'checked="checked"';
-                                        endif;
-                                    endif;
-                                    ?>
-                                    <li>
-                                        <input type="hidden" value="0"
-                                               name="data[Listsettings][logentry_type][<?php echo $logentry_type; ?>]"/>
-                                    </li>
-                                    <li style="width: 100%;">
-                                        <a href="javascript:void(0)" class="listoptions_checkbox text-left">
-                                            <input type="checkbox"
-                                                   name="data[Listsettings][logentry_type][<?php echo $logentry_type; ?>]"
-                                                   value="<?php echo $logentry_type; ?>" <?php echo $htmlChecked; ?>/>&nbsp; <?php echo $logentry_name; ?>
-                                        </a>
-                                    </li>
-                                <?php endforeach; ?>
-                                <li class="divider"></li>
-                                <li style="width: 100%;">
-                                    <a href="javascript:void(0)" class="tick_all text-left">
-                                        <i class="fa fa-check-square-o"></i>&nbsp;&nbsp;<?php echo __('Tick all'); ?>
-                                    </a>
-                                </li>
-                                <li style="width: 100%;">
-                                    <a href="javascript:void(0)" class="untick_all text-left">
-                                        <i class="fa fa-square-o"></i>&nbsp;&nbsp;<?php echo __('Untick all'); ?>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <button class="btn btn-xs btn-success toggle">
-                            <i class="fa fa-check"></i> <?php echo __('Apply'); ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
                         </button>
-                        <?php
-                        echo $this->Form->end();
-                        ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
 
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
+
+                    <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-file-text-o"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Log Entries'); ?> </h2>
 
@@ -216,91 +63,125 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <div>
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by record'); ?>"
+                                                   ng-model="filter.Logentry.logentry_data"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12 col-lg-6">
+                                    <fieldset>
+                                        <legend><?php echo __('Filter hy host'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                    id="HostnameFilterSelect"
+                                                    data-placeholder="<?php echo __('Filter by host'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model-options="{debounce: 500}">
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="col-xs-12 col-lg-6">
+                                    <fieldset>
+                                        <legend><?php echo __('Filter by type'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <select
+                                                    id="LogentryTypeFilter"
+                                                    data-placeholder="<?php echo __('Filter by log entry type'); ?>"
+                                                    class="form-control"
+                                                    chosen="{}"
+                                                    multiple
+                                                    ng-model="filter.Logentry.logentry_type"
+                                                    ng-model-options="{debounce: 500}">
+                                                <?php
+                                                foreach ($logentry_types as $typeId => $typeName):
+                                                    printf('<option value="%s">%s</option>', h($typeId), h($typeName));
+                                                endforeach;
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="mobile_table">
                             <table id="logentries_list"
-                                   class="table table-striped table-hover table-bordered smart-form" style="">
+                                   class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'logentry_time');
-                                        echo $this->Paginator->sort('logentry_time', __('Date')); ?>
+                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_time')">
+                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_time')"></i>
+                                        <?php echo __('Date'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'logentry_type');
-                                        echo $this->Paginator->sort('logentry_type', __('Type')); ?>
+
+                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_type')">
+                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_type')"></i>
+                                        <?php echo __('Type'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'logentry_data');
-                                        echo $this->Paginator->sort('logentry_data', __('Log Entry')); ?>
+
+                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_data')">
+                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_data')"></i>
+                                        <?php echo __('Record'); ?>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($all_logentries as $logentry): ?>
-                                    <tr>
-                                        <td>
-                                            <?php echo h($this->Time->format($logentry['Logentry']['logentry_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            switch ($logentry['Logentry']['logentry_type']):
-                                                case 514:
-                                                    echo __('External command failed');
-                                                    break;
-                                                case 6:
-                                                    echo __('Timeperiod transition');
-                                                    break;
-                                                default:
-                                                    echo $logentry_types[$logentry['Logentry']['logentry_type']];
-                                                    break;
-                                            endswitch;
-                                            ?>
-                                        </td>
-                                        <td>
-                                            <?php echo $this->Uuid->replaceUuids($logentry['Logentry']['logentry_data']); ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                <tr ng-repeat="logentry in logentries">
+                                    <td>
+                                        {{ logentry.Logentry.logentry_time }}
+                                    </td>
+                                    <td>
+                                        {{ logentry.Logentry.logentry_type_string }}
+                                    </td>
+                                    <td>
+                                        {{ logentry.Logentry.logentry_data }}
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (empty($all_logentries)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
 
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info">
-                                        <?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php
-                                        echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]);
-                                        ?>
-                                    </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="logentries.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
-                    <!-- end widget content -->
                 </div>
-                <!-- end widget div -->
-            </div>
-            <!-- end widget -->
         </article>
     </div>
-    <!-- end row -->
 </section>
-<!-- end widget grid -->

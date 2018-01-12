@@ -23,8 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class LogentriesController extends AppController
-{
+use itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Filter\LogentryFilter;
+
+class LogentriesController extends AppController {
 
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
@@ -34,7 +37,7 @@ class LogentriesController extends AppController
 
     public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
 
     public $listFilters = [
         'index' => [
@@ -44,49 +47,61 @@ class LogentriesController extends AppController
         ],
     ];
 
-    public function index()
-    {
-        $requestSettings = $this->Logentry->listSettings($this->request->params['named']);
-        if($this->request->is('post')){
-            $requestSettings = $this->Logentry->listSettings($this->request->data);
+    public function index() {
+
+        if (!$this->isAngularJsRequest()) {
+            //Ship .html request
+            $this->set('logentry_types', $this->Logentry->types());
+            return;
         }
 
-        if (!is_array($this->Paginator->settings)) {
-            $this->Paginator->settings = [];
+        $LogentryFilter = new LogentryFilter($this->request);
+
+
+        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator(['Logentry.logentry_time' => 'desc']);
+        $this->Paginator->settings['page'] = $LogentryFilter->getPage();
+        $this->Paginator->settings['conditions'] = $LogentryFilter->indexFilter();
+
+        //print_r($this->Paginator->settings);
+
+        $logentries = $this->Paginator->paginate();
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        App::uses('UUID', 'Lib');
+
+
+        $all_logentries = [];
+        $foundUuids = [];
+        foreach ($logentries as $logentry) {
+            $matches = [];
+            preg_match_all(UUID::regex(), $logentry['Logentry']['logentry_data'], $matches);
+            foreach ($matches[0] as $uuid) {
+                $foundUuids[$uuid] = $uuid;
+            }
         }
 
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
+
+        $uuidToName = $this->Uuid->getNameForUuids($foundUuids, false);
+
+        foreach ($logentries as $logentry) {
+            $logentry['Logentry']['logentry_data'] = preg_replace_callback(UUID::regex(), function ($matches) use ($uuidToName) {
+                foreach ($matches as $match) {
+                    if (isset($uuidToName[$match])) {
+                        return $uuidToName[$match];
+                    }
+                }
+            }, $logentry['Logentry']['logentry_data']);
+
+            $Logentry = new \itnovum\openITCOCKPIT\Core\Views\Logentry($logentry, $UserTime);
+
+            $all_logentries[] = [
+                'Logentry' => $Logentry->toArray()
+            ];
         }
 
-        if(!empty($requestSettings['paginator']['order'])){
-            $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        }else{
-            $this->Paginator->settings['order'] = ['logentry_time' => 'desc'];
-        }
 
-
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-        }
-
-        if(!empty($requestSettings['paginator']['limit']) && $requestSettings['paginator']['limit'] > 100){
-            $this->Paginator->settings['maxLimit'] = $requestSettings['paginator']['limit'];
-        }
-
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['paginator']);
-
-        $paginatorLimit = $this->Paginator->settings['limit'];
-
-        $this->Uuid->buildCache();
-        $this->set('uuidCache', $this->Uuid->getCache());
-
-        $all_logentries = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-
-        $this->set(compact(['all_logentries', 'paginatorLimit']));
-        $this->set('LogentiresListsettings', $requestSettings['Listsettings']);
-        $this->set('logentry_types', $this->Logentry->types());
+        $this->set('all_logentries', $all_logentries);
+        $this->set('_serialize', ['all_logentries', 'paging']);
     }
+
 }
