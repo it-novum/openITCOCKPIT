@@ -96,6 +96,7 @@ angular.module('openITCOCKPIT')
         $scope.load();
 
         $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
         }, true);
