@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
 
                             if(i === count && issueCount === 0){
                                 $scope.isDeleting = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                                 $('#angularMassDelete').modal('hide');
                             }
@@ -52,6 +53,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                             issueCount = Object.keys($scope.issueObjects).length;
                             if(i === count && issueCount > 0){
                                 $scope.isDeleting = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                             }
                         });

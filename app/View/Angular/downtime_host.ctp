@@ -1,4 +1,4 @@
-<div id="angularServiceDowntimeModal" class="modal" role="dialog">
+<div id="angularHostDowntimeModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,6 +12,23 @@
             <div class="modal-body">
                 <div class="row">
 
+                    <div class="col-xs-12">
+                        <section class="smart-form">
+                            <label class="label"><?php echo __('Maintenance period for'); ?></label>
+                            <label class="select">
+                                <select ng-model="downtime.hostDowntimeType">
+                                    <option value="0"><?php echo __('Individual hosts'); ?></option>
+                                    <option value="1"><?php echo __('Hosts including services'); ?></option>
+                                    <option value="2"><?php echo __('Hosts and dependent Hosts (triggered)'); ?></option>
+                                    <option value="3"><?php echo __('Hosts and dependent Hosts (non-triggered)'); ?></option>
+                                </select><i> </i></label>
+                        </section>
+                    </div>
+                </div>
+
+                <br/>
+
+                <div class="row">
                     <!-- comment -->
                     <div class="form-group">
                         <label class="col col-md-2 control-label">
@@ -97,7 +114,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" ng-click="doServiceDowntime()">
+                <button type="button" class="btn btn-success" ng-click="doHostDowntime()">
                     <?php echo __('Save'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">

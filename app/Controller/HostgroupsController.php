@@ -684,6 +684,7 @@ class HostgroupsController extends AppController {
     }
 
     public function mass_add($id = null) {
+        $this->layout = 'Admin.default';
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $userId = $this->Auth->user('id');

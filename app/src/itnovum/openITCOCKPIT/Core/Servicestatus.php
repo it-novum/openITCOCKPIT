@@ -415,7 +415,7 @@ class Servicestatus {
             $arr['nextCheck'] = $this->getNextCheck();
         }
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
-        $arr['isInMonitoring'] = $this->isInDowntime();
+        $arr['isInMonitoring'] = $this->isInMonitoring();
         return $arr;
     }
 

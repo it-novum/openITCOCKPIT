@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Edit host details'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -94,6 +94,7 @@
                                 ?>
                             </div>
                         </div>
+                        <hr/>
                         <div class="editHostDetailFormInput">
                             <?php echo $this->Form->input('edit_description', [
                                     'type'      => 'checkbox',

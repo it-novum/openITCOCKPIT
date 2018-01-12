@@ -223,7 +223,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.services){
                 for(var id in selectedObjects){
                     if(id == $scope.services[key].Service.id){
-                        objects[id] = $scope.services[key]
+                        objects[id] = $scope.services[key];
                     }
 
                 }

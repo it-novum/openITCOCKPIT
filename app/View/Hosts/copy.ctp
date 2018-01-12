@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo $this->Utils->pluralize($hosts, __('Host'), __('Hosts')); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -55,7 +55,7 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-9 col-lg-7">
                         <fieldset>
-                            <legend><?php echo $host['Host']['name'] ?></legend>
+                            <legend><?php echo h($host['Host']['name']); ?></legend>
                             <?php
                             if (!isset($host['Host']['description']) || $host['Host']['description'] == null):
                                 $description = $host['Hosttemplate']['description'];
@@ -76,11 +76,12 @@
                             echo $this->Form->input('Host.'.$key.'.source', ['value' => $host['Host']['id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
-                    </div> <!-- close col -->
-                </div> <!-- close row-->
+                    </div>
+                </div>
             <?php endforeach; ?>
             <br/>
             <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>
+

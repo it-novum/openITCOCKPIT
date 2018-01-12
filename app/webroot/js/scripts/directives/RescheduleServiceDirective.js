@@ -22,6 +22,7 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
                     ]));
                 }
                 $timeout(function(){
+                    $scope.percentage = 0;
                     $('#angularRescheduleServiceModal').modal('hide');
                 }, 500);
             };

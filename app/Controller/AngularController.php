@@ -60,7 +60,7 @@ class AngularController extends AppController {
         return;
     }
 
-    public function export(){
+    public function export() {
         return;
     }
 
@@ -250,7 +250,7 @@ class AngularController extends AppController {
         $this->set('_serialize', ['menu']);
     }
 
-    public function websocket_configuration(){
+    public function websocket_configuration() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -268,33 +268,65 @@ class AngularController extends AppController {
         $this->set('_serialize', ['websocket']);
     }
 
-    public function not_found(){
+    public function not_found() {
         $this->layout = 'Admin.default';
         //Only ship HTML template
         return;
     }
 
-    public function executing(){
+    public function executing() {
         //Only ship HTML template
-        if(!isset($this->request->query['id'])){
+        if (!isset($this->request->query['id'])) {
             $id = 'angularExecutingModal';
-        }else{
+        } else {
             $id = $this->request->query['id'];
         }
         $this->set('id', $id);
     }
 
-    public function acknowledge_service(){
+    public function acknowledge_service() {
         //Only ship HTML template
         return;
     }
 
-    public function downtime_service(){
-    //Only ship HTML template
+    public function downtime_service() {
+        //Only ship HTML template
         return;
     }
 
-    public function nested_list(){
+    public function nested_list() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function reschedule_host() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function enable_host_notifications() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function disable_host_notifications() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function downtime_host() {
+        //Only ship HTML template
+
+        if ($this->isAngularJsRequest()) {
+            $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
+            $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
+            $this->set('_serialize', ['preselectedDowntimetype']);
+        }
+
+        return;
+    }
+
+    public function acknowledge_host() {
         //Only ship HTML template
         return;
     }

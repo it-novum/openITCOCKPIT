@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT').directive('massdeactivate', function($http, $fil
 
                             if(i === count && issueCount === 0){
                                 $scope.isDeactivating = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                                 $('#angularMassDeactivate').modal('hide');
                             }
@@ -52,6 +53,7 @@ angular.module('openITCOCKPIT').directive('massdeactivate', function($http, $fil
                             issueCount = Object.keys($scope.issueObjects).length;
                             if(i === count && issueCount > 0){
                                 $scope.isDeactivating = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                             }
                         });
