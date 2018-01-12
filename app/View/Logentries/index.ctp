@@ -30,20 +30,16 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-file-text-o fa-fw"></i>
             <?php echo __('Log Entries'); ?>
-            <span>
+            <span>>
                 <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
 </div>
 
-<!-- widget grid -->
 <section id="widget-grid" class="">
-    <!-- row -->
     <div class="row">
-        <!-- NEW WIDGET START -->
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
@@ -220,9 +216,10 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <div>
                     <!-- widget content -->
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $LogentiresListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="logentries_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="logentries_list"
+                                   class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -282,7 +279,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
                                          id="datatable_fixed_column_info">
-                                        <?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?>
+                                        <?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?>
                                     </div>
                                 </div>
                                 <div class="col-sm-6 text-right">

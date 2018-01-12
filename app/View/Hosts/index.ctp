@@ -40,7 +40,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
             <i class="fa fa-desktop fa-fw "></i>
             <?php echo __('Hosts') ?>
             <span>>
-                <?php echo __('List'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
