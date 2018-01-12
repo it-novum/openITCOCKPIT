@@ -2,8 +2,8 @@ angular.module('openITCOCKPIT')
     .controller('ServicesIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         $rootScope.lastObjectName = null;
 
-        SortService.setSort(QueryStringService.getValue('sort', 'Servicestatus.current_state'));
-        SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
+        SortService.setSort(QueryStringService.getValue('sort', ''));
+        SortService.setDirection(QueryStringService.getValue('direction', ''));
         $scope.currentPage = 1;
 
         $scope.id = QueryStringService.getCakeId();
@@ -34,6 +34,7 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/services/delete/';
+        $scope.deactivateUrl = '/services/deactivate/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -238,7 +239,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.serverResult){
                 for(var id in selectedObjects){
                     if(id == $scope.serverResult[key].Service.id){
-                        objects[id] = $scope.serverResult[key]
+                        objects[id] = $scope.serverResult[key];
                     }
 
                 }
@@ -433,6 +434,7 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
         }, true);

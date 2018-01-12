@@ -23,43 +23,74 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-use itnovum\openITCOCKPIT\Core\HostchecksControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class HostchecksController extends AppController {
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_HOSTCHECK, MONITORING_HOSTSTATUS, 'Host', 'Documentation'];
-
-
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
-    public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Hostcheck.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
+    public $uses = [
+        MONITORING_HOSTCHECK,
+        MONITORING_HOSTSTATUS,
+        'Host',
+        'Documentation'
     ];
 
+    public $components = ['Paginator', 'RequestHandler'];
+    public $helpers = ['Status', 'Monitoring'];
+    public $layout = 'Admin.default';
+
     public function index($id = null){
+        $this->layout="angularjs";
+
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('invalid host'));
         }
 
-        //Process request and set request settings back to front end
-        $HostStates = new HostStates();
-        $HostchecksControllerRequest = new HostchecksControllerRequest(
-            $this->request,
-            $HostStates,
-            $this->userLimit
-        );
+        if (!$this->isAngularJsRequest()) {
+            //Host for .html requests
+            $host = $this->Host->find('first', [
+                'fields' => [
+                    'Host.id',
+                    'Host.uuid',
+                    'Host.name',
+                    'Host.address',
+                    'Host.host_url',
+                    'Host.container_id',
+                    'Host.host_type'
+                ],
+                'conditions' => [
+                    'Host.id' => $id,
+                ],
+                'contain' => [
+                    'Container',
+                ],
+            ]);
 
+            //Check if user is permitted to see this object
+            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $host['Host']['container_id'];
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+                return;
+            }
+
+            //Get meta data and push to front end
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+                'fields' => [
+                    'Hoststatus.current_state',
+                    'Hoststatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+            $this->set(compact(['host', 'hoststatus', 'docuExists']));
+            return;
+        }
+
+
+        //Host for .json requests
         $host = $this->Host->find('first', [
             'fields' => [
                 'Host.id',
@@ -72,45 +103,43 @@ class HostchecksController extends AppController {
             ],
             'conditions' => [
                 'Host.id' => $id,
-            ],
-            'contain' => [
-                'Container',
-            ],
+            ]
         ]);
 
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-
-            return;
-        }
+        $AngularHostchecksControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest($this->request);
 
         //Process conditions
         $Conditions = new HostcheckConditions();
-        $Conditions->setLimit($HostchecksControllerRequest->getLimit());
-        $Conditions->setFrom($HostchecksControllerRequest->getFrom());
-        $Conditions->setTo($HostchecksControllerRequest->getTo());
-        $Conditions->setStates($HostchecksControllerRequest->getHostStates());
-        $Conditions->setOrder($HostchecksControllerRequest->getOrder());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setFrom($AngularHostchecksControllerRequest->getFrom());
+        $Conditions->setTo($AngularHostchecksControllerRequest->getTo());
+        $Conditions->setStates($AngularHostchecksControllerRequest->getHostStates());
+        $Conditions->setStateTypes($AngularHostchecksControllerRequest->getHostStateTypes());
+        $Conditions->setOrder($AngularHostchecksControllerRequest->getOrderForPaginator('Hostcheck.start_time', 'desc'));
         $Conditions->setHostUuid($host['Host']['uuid']);
 
         //Query host check records
-        $query = $this->Hostcheck->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_hostchecks = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
+        $query = $this->Hostcheck->getQuery($Conditions, $AngularHostchecksControllerRequest->getIndexFilters());
 
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularHostchecksControllerRequest->getPage();
 
-        //Get meta data and push to front end
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-            'fields' => [
-                'Hoststatus.current_state',
-                'Hoststatus.is_flapping'
-            ],
-        ]);
-        $this->set(compact(['host', 'all_hostchecks', 'hoststatus', 'docuExists']));
-        $this->set('HostcheckListsettings', $HostchecksControllerRequest->getRequestSettingsForListSettings());
+        $hostchecks = $this->Paginator->paginate(
+            $this->Hostcheck->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        $all_hostchecks = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($hostchecks as $hostcheck) {
+            $Hostcheck = new itnovum\openITCOCKPIT\Core\Views\Servicecheck($hostcheck['Hostcheck'], $UserTime);
+            $all_hostchecks[] = [
+                'Hostcheck' => $Hostcheck->toArray()
+            ];
+        }
+
+        $this->set(compact(['all_hostchecks']));
+        $this->set('_serialize', ['all_hostchecks', 'paging']);
     }
 }

@@ -53,6 +53,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                     }
                     $timeout(function(){
                         $scope.doDowntime = false;
+                        $scope.percentage = 0;
                         $('#angularServiceDowntimeModal').modal('hide');
                     }, 500);
                 }, function errorCallback(result){

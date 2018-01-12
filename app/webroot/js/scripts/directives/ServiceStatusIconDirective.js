@@ -3,17 +3,35 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
         restrict: 'E',
         templateUrl: '/services/icon.html',
         scope: {
-            'service': '='
+            'service': '=?',
+            'state': '=?'
         },
         controller: function($scope){
 
-            $scope.isFlapping = $scope.service.Servicestatus.isFlapping;
+            if(typeof $scope.service === "undefined"){
+                //Fake Servicestatus
+                $scope.service = {
+                    Servicestatus: {}
+                };
+            }
+
+
+            $scope.isFlapping = $scope.service.Servicestatus.isFlapping || false;
             $scope.flappingState = 0;
             var interval;
 
             $scope.setServiceStatusColors = function(){
-                $scope.currentstate = parseInt($scope.service.Servicestatus.currentState, 10);
-                switch($scope.currentstate){
+                var currentstate = -1;
+                if(typeof $scope.state === "undefined"){
+                    currentstate = parseInt($scope.service.Servicestatus.currentState, 10);
+                    if($scope.service.Servicestatus.currentState === null){
+                        currentstate = -1; //Not found in monitoring
+                    }
+                }else{
+                    currentstate = parseInt($scope.state, 10);
+                }
+
+                switch(currentstate){
                     case 0:
                         $scope.btnColor =  'success';
                         $scope.flappingColor = 'txt-color-green';
@@ -26,9 +44,13 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
                         $scope.btnColor =  'danger';
                         $scope.flappingColor = 'txt-color-red';
                         return;
-                    default:
+                    case 3:
                         $scope.btnColor = 'default';
                         $scope.flappingColor = 'txt-color-blueDark';
+                        return;
+                    default:
+                        $scope.btnColor = 'primary';
+                        $scope.flappingColor = 'text-primary';
                 }
             };
 

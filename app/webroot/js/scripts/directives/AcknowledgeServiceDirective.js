@@ -55,6 +55,7 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 }
                 $timeout(function(){
                     $scope.doAck = false;
+                    $scope.percentage = 0;
                     $('#angularacknowledgeServiceModal').modal('hide');
                 }, 500);
             };

@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class Servicecheck {
 
@@ -97,13 +98,16 @@ class Servicecheck {
      */
     private $timeout;
 
-
+    /**
+     * @var UserTime|null
+     */
+    private $UserTime;
 
     /**
      * StatehistoryHost constructor.
      * @param array $data
      */
-    public function __construct($data){
+    public function __construct($data, $UserTime = null){
         if (isset($data['command'])) {
             $this->command = $data['command'];
         }
@@ -164,6 +168,7 @@ class Servicecheck {
             $this->timeout = (int)$data['timeout'];
         }
 
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -262,5 +267,23 @@ class Servicecheck {
      */
     public function getTimeout(){
         return $this->timeout;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
+
+        if($this->UserTime !== null) {
+            $arr['start_time'] = $this->UserTime->format($this->getStartTime());
+        }else{
+            $arr['start_time'] = $this->getStartTime();
+        }
+
+        return $arr;
     }
 }

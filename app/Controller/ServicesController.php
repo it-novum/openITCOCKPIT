@@ -99,194 +99,13 @@ class ServicesController extends AppController {
         'Systemsetting'
     ];
 
-    public $listFilters = [
-        'index'        => [
-            'fields' => [
-                'Host.name'                                   => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Service.servicename'                         => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Servicestatus.output'                        => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Service.keywords'                            => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
-                'Servicestatus.current_state'                 => [
-                    'label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Servicestatus.ok',
-                                'value' => 1,
-                                'label' => 'Ok',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '1' => [
-                                'name'  => 'Servicestatus.warning',
-                                'value' => 1,
-                                'label' => 'Warning',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '2' => [
-                                'name'  => 'Servicestatus.critical',
-                                'value' => 1,
-                                'label' => 'Critical',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '3' => [
-                                'name'  => 'Servicestatus.unknown',
-                                'value' => 1,
-                                'label' => 'Unknown',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                        ],
-                ],
-                'Servicestatus.problem_has_been_acknowledged' => [
-                    'label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Acknowledged',
-                                'value' => 1,
-                                'label' => 'Acknowledged',
-                                'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
-                            ],
-                            '0' => [
-                                'name'  => 'Not Acknowledged',
-                                'value' => 1,
-                                'label' => 'Not Acknowledged',
-                                'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
-                            ],
-                        ],
-                ],
-                'Servicestatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Downtime',
-                                'value' => 1,
-                                'label' => 'In Downtime',
-                                'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
-                            ],
-                            '0' => [
-                                'name'  => 'Not in Downtime',
-                                'value' => 1,
-                                'label' => 'Not in Downtime',
-                                'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
-                            ],
-                        ],
-                ],
-                'Servicestatus.active_checks_enabled'         => [
-                    'label' => 'Passive', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Passive',
-                                'value' => 1,
-                                'label' => 'Passive',
-                                'data'  => 'Filter.Servicestatus.active_checks_enabled',
-                            ],
-                        ],
-                ],
-            ],
-        ],
-        'listToPdf'    => [
-            'fields' => [
-                'Host.name'                                   => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Service.servicename'                         => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Servicestatus.output'                        => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Service.keywords'                            => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
-                'Servicestatus.current_state'                 => [
-                    'label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Servicestatus.ok',
-                                'value' => 1,
-                                'label' => 'Ok',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '1' => [
-                                'name'  => 'Servicestatus.warning',
-                                'value' => 1,
-                                'label' => 'Warning',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '2' => [
-                                'name'  => 'Servicestatus.critical',
-                                'value' => 1,
-                                'label' => 'Critical',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                            '3' => [
-                                'name'  => 'Servicestatus.unknown',
-                                'value' => 1,
-                                'label' => 'Unknown',
-                                'data'  => 'Filter.Servicestatus.current_state',
-                            ],
-                        ],
-                ],
-                'Servicestatus.problem_has_been_acknowledged' => [
-                    'label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '1' => [
-                                'name'  => 'Acknowledged',
-                                'value' => 1,
-                                'label' => 'Acknowledged',
-                                'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
-                            ],
-                            '0' => [
-                                'name'  => 'Not Acknowledged',
-                                'value' => 1,
-                                'label' => 'Not Acknowledged',
-                                'data'  => 'Filter.Servicestatus.problem_has_been_acknowledged',
-                            ],
-                        ],
-                ],
-                'Servicestatus.scheduled_downtime_depth'      => [
-                    'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'downtime', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Downtime',
-                                'value' => 1,
-                                'label' => 'In Downtime',
-                                'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
-                            ],
-                            '1' => [
-                                'name'  => 'Not in Downtime',
-                                'value' => 1,
-                                'label' => 'Not in Downtime',
-                                'data'  => 'Filter.Servicestatus.scheduled_downtime_depth',
-                            ],
-                        ],
-                ],
-                'Servicestatus.active_checks_enabled'         => [
-                    'label' => 'Passive', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                        [
-                            '0' => [
-                                'name'  => 'Passive',
-                                'value' => 1,
-                                'label' => 'Passive',
-                                'data'  => 'Filter.Servicestatus.active_checks_enabled',
-                            ],
-                        ],
-                ],
-            ],
-        ],
-        'notMonitored' => [
-            'fields' => [
-                'Host.name'           => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Service.tags'        => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
-            ],
-        ],
-        'disabled'     => [
-            'fields' => [
-                'Host.name'           => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Service.servicename' => ['label' => 'Servicename', 'searchType' => 'wildcard'],
-                'Service.tags'        => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
-            ],
-        ],
-    ];
-
     public function index() {
         $this->layout = 'angularjs';
         $User = new User($this->Auth);
 
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('username',$User->getFullName());
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }
@@ -327,7 +146,12 @@ class ServicesController extends AppController {
         }
 
         //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
+            'Host.name'           => 'asc',
+            'Service.servicename' => 'asc'
+        ]));
+
+//        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
 
         if ($this->DbBackend->isNdoUtils()) {
             $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
@@ -353,6 +177,7 @@ class ServicesController extends AppController {
             $this->Paginator->settings['page'] = $ServiceFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
         }
 
         $hostContainers = [];
@@ -438,84 +263,58 @@ class ServicesController extends AppController {
     }
 
     public function notMonitored() {
-        $this->__unbindAssociations('Host');
+        $this->layout = 'angularjs';
+        $User = new User($this->Auth);
 
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
-
-        $conditions = ['Service.disabled' => 0, 'ServiceObject.name2 IS NULL'];
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-
-        if (isset($this->request->params['named']['BrowserContainerId'])) {
-            //The user set a comntainer id in the URL, may be over browser
-            $all_container_ids = Hash::merge(
-                [$this->request->params['named']['BrowserContainerId']],
-                Hash::extract(
-                    $this->Container->children(
-                        $this->request->params['named']['BrowserContainerId'],
-                        false,
-                        ['id', 'containertype_id']
-                    ),
-                    '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . ')$/].id'
-                )
-            );
-
-            $_conditions = [
-                'Host.disabled'     => 0,
-                'Host.container_id' => $all_container_ids,
-            ];
-            $conditions = Hash::merge($conditions, $_conditions);
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
         }
 
-        $all_services = [];
-        $query = [
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.description',
-                'Service.active_checks_enabled',
+        $ServiceFilter = new ServiceFilter($this->request);
 
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-                'Servicetemplate.active_checks_enabled',
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setIncludeDisabled(false);
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
 
-                'ServiceObject.object_id',
 
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.description',
-                'Host.address',
-            ],
-            'order'      => ['Host.name' => 'asc'],
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
-                    'conditions' => 'Service.host_id = Host.id',
-                ], [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'ServiceObject',
-                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-                ],
-            ],
-            'conditions' => $conditions,
-        ];
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_services = $this->Service->find('all', $query);
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Service->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->notMonitoredFilter());
+            $this->Service->virtualFieldsForNotMonitored();
+            $modelName = 'Service';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            throw new NotImplementedException('Not implemented yet');
+            /*
+            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
+            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
+            $modelName = 'Servicestatus';
+            */
+        }
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_services = $this->{$modelName}->find('all', $query);
+            $this->set('all_services', $all_services);
+            $this->set('_serialize', ['all_services']);
+            return;
         } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_services = $this->Paginator->paginate();
+            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
         }
+
         $hostContainers = [];
-        if (!empty($all_services)) {
-            $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
+        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
             $_hostContainers = $this->Host->find('all', [
                 'contain'    => [
                     'Container',
@@ -533,131 +332,86 @@ class ServicesController extends AppController {
             }
         }
 
-        $hoststatus = $this->Hoststatus->byUuid(array_unique(Hash::extract($all_services, '{n}.Host.uuid')));
+        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')));
 
-        // We want to display all services, that are not monitored (due to no export or whatever) so we can set an empty servicestatus array
-        $servicestatus = [];
 
-        $this->set(compact(['all_services', 'servicestatus', 'hoststatus', 'hostContainers']));
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_services']);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (isset($this->request->data['Filter']['ServiceStatus']['current_state'])) {
-                $this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
+        $all_services = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($services as $service) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
             } else {
-                $this->set('ServiceStatus.current_state', []);
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$service['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+            } else {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+
+            $tmpRecord = [
+                'Service'    => $Service->toArray(),
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus->toArray()
+            ];
+            $all_services[] = $tmpRecord;
         }
+
+
+        $this->set('all_services', $all_services);
+        $this->set('_serialize', ['all_services', 'paging']);
+
     }
 
     public function disabled() {
-        $this->__unbindAssociations('Host');
+        $this->layout = 'angularjs';
 
-        $this->Service->virtualFields['servicestatus'] = 'Servicestatus.current_state';
-        $this->Service->virtualFields['last_hard_state_change'] = 'Servicestatus.last_hard_state_change';
-        $this->Service->virtualFields['last_check'] = 'Servicestatus.last_check';
-        $this->Service->virtualFields['next_check'] = 'Servicestatus.next_check';
-        $this->Service->virtualFields['output'] = 'Servicestatus.output';
-        $this->Service->virtualFields['hostname'] = 'Host.name';
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
-
-        $conditions = ['Service.disabled' => 1];
-        $conditions = $this->ListFilter->buildConditions([], $conditions);
-
-        if (isset($this->request->params['named']['BrowserContainerId'])) {
-            //The user set a comntainer id in the URL, may be over browser
-            $all_container_ids = Hash::merge(
-                [$this->request->params['named']['BrowserContainerId']],
-                Hash::extract(
-                    $this->Container->children(
-                        $this->request->params['named']['BrowserContainerId'],
-                        false,
-                        ['id', 'containertype_id']
-                    ),
-                    '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . ')$/].id'
-                )
-            );
-
-            $_conditions = [
-                'Host.disabled'     => 0,
-                'Host.container_id' => $all_container_ids,
-            ];
-            $conditions = Hash::merge($conditions, $_conditions);
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
         }
 
-        $all_services = [];
-        $query = [
-            'contain'    => ['Servicetemplate'],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.description',
-                'Service.active_checks_enabled',
+        $ServiceFilter = new ServiceFilter($this->request);
 
-                'Servicetemplate.id',
-                'Servicetemplate.uuid',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-                'Servicetemplate.active_checks_enabled',
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
 
-                'HostObject.object_id',
 
-                'Host.name',
-                'Host.id',
-                'Host.uuid',
-                'Host.description',
-                'Host.address',
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Host.name', 'asc'));
 
-                'Hoststatus.current_state',
-            ],
-            'order'      => ['Host.name' => 'asc'],
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'type'       => 'INNER',
-                    'alias'      => 'Host',
-                    'conditions' => 'Service.host_id = Host.id',
-                ],
-                [
-                    'table'      => 'nagios_objects',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'HostObject',
-                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-                ],
-                [
-                    'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Hoststatus',
-                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
-                ],
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ],
-            ],
-            'conditions' => $conditions,
-            'group'      => [
-                'Service.id',
-            ],
-        ];
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_services = $this->Service->find('all', $query);
+        $query = $this->Service->getServiceDisabledQuery($ServiceConditions, $ServiceFilter->disabledFilter());
+        $this->Service->virtualFieldsForDisabled();
+        $modelName = 'Service';
+
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_services = $this->{$modelName}->find('all', $query);
+            $this->set('all_services', $all_services);
+            $this->set('_serialize', ['all_services']);
+            return;
         } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_services = $this->Paginator->paginate();
+            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
         }
+
         $hostContainers = [];
-        if (!empty($all_services)) {
-            $hostIds = array_unique(Hash::extract($all_services, '{n}.Host.id'));
+        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
             $_hostContainers = $this->Host->find('all', [
                 'contain'    => [
                     'Container',
@@ -675,22 +429,90 @@ class ServicesController extends AppController {
             }
         }
 
-        // We want to display all disabled services so we can set an empty servicestatus array
-        $servicestatus = [];
+        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')));
 
-        $this->set(compact(['all_services', 'servicestatus', 'hostContainers']));
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_services']);
-        if (isset($this->request->data['Filter']) && $this->request->data['Filter'] !== null) {
-            if (isset($this->request->data['Filter']['ServiceStatus']['current_state'])) {
-                $this->set('HostStatus.current_state', $this->request->data['Filter']['HostStatus']['current_state']);
+
+        $all_services = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($services as $service) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
             } else {
-                $this->set('ServiceStatus.current_state', []);
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$service['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
-            $this->set('isFilter', true);
-        } else {
-            $this->set('isFilter', false);
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            if (isset($hoststatusCache[$Host->getUuid()]['Hoststatus'])) {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusCache[$Host->getUuid()]['Hoststatus'], $UserTime);
+            } else {
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([], $UserTime);
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+
+            $tmpRecord = [
+                'Service'    => $Service->toArray(),
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus->toArray()
+            ];
+            $all_services[] = $tmpRecord;
         }
+
+
+        $this->set('all_services', $all_services);
+        $this->set('_serialize', ['all_services', 'paging']);
+    }
+
+    public function deleted(){
+        $this->layout = 'angularjs';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
+        $ServiceConditions = new ServiceConditions();
+
+
+        //Default order
+        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('DeletedService.name', 'asc'));
+
+        $query = $this->Service->getServiceDeletedQuery($ServiceConditions, $ServiceFilter->deletedFilter());
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            if (isset($query['limit'])) {
+                unset($query['limit']);
+            }
+            $all_services = $this->DeletedService->find('all', $query);
+            $this->set('all_services', $all_services);
+            $this->set('_serialize', ['all_services']);
+            return;
+        } else {
+            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $services = $this->Paginator->paginate('DeletedService', [], [key($this->Paginator->settings['order'])]);
+            //debug($this->Service->getDataSource()->getLog(false, false));
+        }
+
+        $all_services = [];
+        foreach($services as $deletedService){
+            $DeletedService = new \itnovum\openITCOCKPIT\Core\Views\DeletedService($deletedService, $UserTime);
+            $all_services[] = [
+                'DeletedService' => $DeletedService->toArray()
+            ];
+        }
+
+        $this->set('all_services', $all_services);
+        $this->set('_serialize', ['all_services', 'paging']);
     }
 
     public function add() {
@@ -1355,7 +1177,7 @@ class ServicesController extends AppController {
         $modules = $this->Constants->defines['modules'];
 
         $usedBy = $this->Service->isUsedByModules($service, $modules);
-        if(empty($usedBy)){
+        if (empty($usedBy)) {
             //Not used by any module
             if ($this->Service->__delete($service, $this->Auth->user('id'))) {
                 $this->set('success', true);
@@ -1375,6 +1197,13 @@ class ServicesController extends AppController {
 
 
     public function copy($id = null) {
+        if($id === null && $this->request->is('get')){
+            $this->redirect([
+                'controller' => 'services',
+                'action' => 'index'
+            ]);
+        }
+
         $userId = $this->Auth->user('id');
         $servicesToCopy = [];
         $servicesCantCopy = [];
@@ -1431,6 +1260,7 @@ class ServicesController extends AppController {
                             'Service.own_contacts',
                             'Service.own_contactgroups',
                             'Service.own_customvariables',
+                            'Service.disabled'
                         ],
                         'contain'    => [
                             'CheckPeriod'                      => [
@@ -1734,49 +1564,79 @@ class ServicesController extends AppController {
     }
 
     public function deactivate($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->findById($id);
-        if ($this->__disable($service)) {
-            $this->setFlash(__('Service disabled'));
-            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+        $this->Service->id = $id;
+        if ($this->Service->saveField('disabled', 1)) {
+            $this->set('success', true);
+            $this->set('message', __('Service successfully disabled'));
+            $this->set('_serialize', ['success']);
+            return;
         }
-        $this->setFlash(__('Could not disable service'), false);
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-    }
 
-    public function mass_deactivate($id = null) {
-        foreach (func_get_args() as $service_id) {
-            if ($this->Service->exists($service_id)) {
-                $service = $this->Service->findById($service_id);
-                $this->__disable($service);
-            }
-        }
-        $this->setFlash(__('Services disabled'));
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
-    }
-
-    protected function __disable($service) {
-        $service['Service']['disabled'] = 1;
-
-        return $this->Service->save($service);
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while disabling service'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function enable($id = null) {
+        if (!$this->request->is('post')) {
+            //throw new MethodNotAllowedException();
+        }
+
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $this->Service->findById($id);
-        $service['Service']['disabled'] = 0;
-        if ($this->Service->save($service)) {
-            $this->setFlash(__('Service enabled'));
-            $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.id' => $id
+            ],
+            'contain' => [
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.disabled'
+                    ]
+                ]
+            ],
+            'fields' => [
+                'Service.id',
+                'Service.host_id',
+            ]
+        ]);
+
+        if($service['Host']['disabled'] == 1){
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Could not enable service, because associated host is also disabled.'));
+            $this->set('_serialize', ['success', 'id', 'message']);
+            return;
         }
-        $this->setFlash(__('Could not enable service'), false);
-        $this->redirect(['action' => 'serviceList', $service['Service']['host_id']]);
+
+        $this->Service->id = $id;
+        if ($this->Service->saveField('disabled', 0)) {
+            $this->set('success', true);
+            $this->set('message', __('Service successfully enabled'));
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('id', $id);
+        $this->set('message', __('Issue while enabling service'));
+        $this->set('_serialize', ['success', 'id', 'message']);
     }
 
     public function loadContactsAndContactgroups($container_id = null) {
@@ -2230,7 +2090,7 @@ class ServicesController extends AppController {
 
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('username',$User->getFullName());
+            $this->set('username', $User->getFullName());
             //Only ship HTML template
             return;
         }

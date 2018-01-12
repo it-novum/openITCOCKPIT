@@ -31,7 +31,7 @@
                     <?php
                     $overview_chart = $this->PieChart->createHalfPieChart($widgetHostStateArray180['state']);
                     echo $this->Html->image(
-                        '/img/charts/'.$overview_chart
+                        '/img/charts/' . $overview_chart
                     );
                     $stateColors = [
                         'ok',
@@ -51,23 +51,25 @@
                     <?php foreach ([1, 2] as $state): ?>
                         <div class="col-xs-6">
                             <div class="col-xs-12 <?php echo $bgColors[$state]; ?>">
-                                <a href="<?php echo Router::url([
-                                    'controller'                                  => 'hosts',
-                                    'action'                                      => 'index',
-                                    'plugin'                                      => '',
-                                    'Filter.Hoststatus.current_state['.$state.']' => 1,
+                                <a href="/hosts/index<?php echo Router::queryString([
+                                    'filter'    => [
+                                        'Hoststatus.current_state' => [$state => 1]
+                                    ],
+                                    'sort'      => 'Hoststatus.last_state_change',
+                                    'direction' => 'desc'
                                 ]); ?>" style="color:#FFF;">
-                                    <?php echo __('( %s ) '.strtolower($this->Status->humanSimpleHostStatus($state)), $widgetHostStateArray180['state'][$state]); ?>
+                                    <?php echo __('( %s ) ' . strtolower($this->Status->humanSimpleHostStatus($state)), $widgetHostStateArray180['state'][$state]); ?>
                                 </a>
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['not_handled'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                         => 'hosts',
-                                        'action'                                             => 'index',
-                                        'plugin'                                             => '',
-                                        'Filter.Hoststatus.current_state['.$state.']'        => 1,
-                                        'Filter.Hoststatus.problem_has_been_acknowledged[0]' => 1,
+                                    <a href="/hosts/index<?php echo Router::queryString([
+                                        'filter'                    => [
+                                            'Hoststatus.current_state' => [$state => 1],
+                                        ],
+                                        'has_not_been_acknowledged' => 1,
+                                        'sort'                      => 'Hoststatus.last_state_change',
+                                        'direction'                 => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) not handled', $widgetHostStateArray180['not_handled'][$state]); ?>
                                     </a>
@@ -77,12 +79,13 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['acknowledged'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                         => 'hosts',
-                                        'action'                                             => 'index',
-                                        'plugin'                                             => '',
-                                        'Filter.Hoststatus.current_state['.$state.']'        => 1,
-                                        'Filter.Hoststatus.problem_has_been_acknowledged[1]' => 1,
+                                    <a href="/hosts/index<?php echo Router::queryString([
+                                        'filter'                => [
+                                            'Hoststatus.current_state' => [$state => 1],
+                                        ],
+                                        'has_been_acknowledged' => 1,
+                                        'sort'                  => 'Hoststatus.last_state_change',
+                                        'direction'             => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) acknowledged', $widgetHostStateArray180['acknowledged'][$state]); ?>
                                     </a>
@@ -92,12 +95,13 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['in_downtime'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                    => 'hosts',
-                                        'action'                                        => 'index',
-                                        'plugin'                                        => '',
-                                        'Filter.Hoststatus.current_state['.$state.']'   => 1,
-                                        'Filter.Hoststatus.scheduled_downtime_depth[0]' => 1,
+                                    <a href="/hosts/index<?php echo Router::queryString([
+                                        'filter'      => [
+                                            'Hoststatus.current_state' => [$state => 1],
+                                        ],
+                                        'in_downtime' => 1,
+                                        'sort'        => 'Hoststatus.last_state_change',
+                                        'direction'   => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) in downtime', $widgetHostStateArray180['in_downtime'][$state]); ?>
                                     </a>
@@ -116,16 +120,15 @@
                 </div>
                 <?php foreach ($widgetHostStateArray180['state'] as $state => $stateCount): ?>
                     <div class="col-md-4 no-padding">
-                        <a href="<?php echo Router::url([
-                            'controller'                                  => 'hosts',
-                            'action'                                      => 'index',
-                            'plugin'                                      => '',
-                            'Filter.Hoststatus.current_state['.$state.']' => 1,
-                            'sort'                                        => 'Hoststatus.last_state_change',
-                            'direction'                                   => 'desc'
+                        <a href="/hosts/index<?php echo Router::queryString([
+                            'filter'    => [
+                                'Hoststatus.current_state' => [$state => 1]
+                            ],
+                            'sort'      => 'Hoststatus.last_state_change',
+                            'direction' => 'desc'
                         ]); ?>">
                             <i class="fa fa-square <?php echo $stateColors[$state] ?>"></i>
-                            <?php echo $stateCount.' ('.round($stateCount / $widgetHostStateArray180['total'] * 100, 2).' %)'; ?>
+                            <?php echo $stateCount . ' (' . round($stateCount / $widgetHostStateArray180['total'] * 100, 2) . ' %)'; ?>
                         </a>
                     </div>
                 <?php endforeach; ?>

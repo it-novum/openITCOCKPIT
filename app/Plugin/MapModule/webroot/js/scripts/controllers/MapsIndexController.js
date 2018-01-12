@@ -1,5 +1,6 @@
 angular.module('openITCOCKPIT')
-    .controller('MapsIndexController', function($scope, $http, SortService, MassChangeService){
+    .controller('MapsIndexController', ['$scope', '$http', 'SortService', 'MassChangeService', function($scope, $http, SortService, MassChangeService){
+
 
         SortService.setSort('Map.name');
         SortService.setDirection('asc');
@@ -21,7 +22,7 @@ angular.module('openITCOCKPIT')
 
         $scope.showFilter = false;
         $scope.load = function(){
-            $http.get('/map_module/maps/index.json',{
+            $http.get('/map_module/maps/index.json', {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
@@ -100,4 +101,5 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
             $scope.load();
         }, true);
-    });
+
+    }]);

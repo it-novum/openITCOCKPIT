@@ -23,13 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\StatehistoryControllerRequest;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
-use itnovum\openITCOCKPIT\Core\StatehistoryServiceControllerRequest;
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
-use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
+use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+
 
 class StatehistoriesController extends AppController {
     /*
@@ -47,182 +46,215 @@ class StatehistoriesController extends AppController {
         'Documentation'
     ];
 
-
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring'];
+    public $components = ['Paginator', 'RequestHandler'];
+    public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
 
-    public $listFilters = [
-        'service' => [
-            'fields' => [
-                'StatehistoryService.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'host' => [
-            'fields' => [
-                'StatehistoryHost.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
+    public function service($id = null) {
+        $this->layout = 'angularjs';
 
-    public function service($id = null){
         if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('invalid service'));
+            throw new NotFoundException(__('Invalid service'));
         }
 
-        //Process request and set request settings back to front end
-        $ServiceStates = new ServiceStates();
-        $StateTypes = new StateTypes();
-        $StatehistoryRequest = new StatehistoryServiceControllerRequest(
-            $this->request,
-            $ServiceStates,
-            $StateTypes,
-            $this->userLimit
-        );
+        if (!$this->isAngularJsRequest()) {
+            //Service for .html requests
+            $service = $this->Service->find('first', [
+                'recursive'  => -1,
+                'fields'     => [
+                    'Service.id',
+                    'Service.uuid',
+                    'Service.name',
+                    'Service.service_type',
+                    'Service.service_url'
+                ],
+                'contain'    => [
+                    'Host'            => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name',
+                            'Host.uuid',
+                            'Host.address'
+                        ],
+                        'Container',
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $id,
+                ],
+            ]);
 
+            $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $service['Host']['container_id'];
+
+            //Check if user is permitted to see this object
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+                return;
+            }
+
+            $allowEdit = false;
+            if ($this->allowedByContainerId($containerIdsToCheck)) {
+                $allowEdit = true;
+            }
+
+            //Get meta data and push to front end
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
+                'fields' => [
+                    'Servicestatus.current_state',
+                    'Servicestatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
+            return;
+        }
+
+        //Service for .json requests
         $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.id',
                 'Service.uuid',
-                'Service.name',
-                'Service.service_type',
-                'Service.service_url'
-            ],
-            'contain' => [
-                'Host' => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address'
-                    ],
-                    'Container',
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                    ],
-                ],
             ],
             'conditions' => [
                 'Service.id' => $id,
             ],
         ]);
 
-        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $service['Host']['container_id'];
-
-        //Check if user is permitted to see this object
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-
-        $allowEdit = false;
-        if ($this->allowedByContainerId($containerIdsToCheck)) {
-            $allowEdit = true;
-        }
+        $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
 
 
         //Process conditions
         $Conditions = new StatehistoryServiceConditions();
-        $Conditions->setLimit($StatehistoryRequest->getLimit());
-        $Conditions->setOrder($StatehistoryRequest->getOrder());
-        $Conditions->setStates($StatehistoryRequest->getServiceStates());
-        $Conditions->setStateTypes($StatehistoryRequest->getStateTypes());
-        $Conditions->setFrom($StatehistoryRequest->getFrom());
-        $Conditions->setTo($StatehistoryRequest->getTo());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setOrder($AngularStatehistoryControllerRequest->getOrderForPaginator('StatehistoryService.state_time', 'desc'));
+        $Conditions->setStates($AngularStatehistoryControllerRequest->getServiceStates());
+        $Conditions->setStateTypes($AngularStatehistoryControllerRequest->getServiceStateTypes());
+        $Conditions->setFrom($AngularStatehistoryControllerRequest->getFrom());
+        $Conditions->setTo($AngularStatehistoryControllerRequest->getTo());
         $Conditions->setServiceUuid($service['Service']['uuid']);
 
         //Query state history records
-        $query = $this->StatehistoryService->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_statehistories = $this->Paginator->paginate(
+        $query = $this->StatehistoryService->getQuery($Conditions, $AngularStatehistoryControllerRequest->getServiceFilters());
+
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
+
+        $statehistories = $this->Paginator->paginate(
             $this->StatehistoryService->alias,
             [],
             [key($this->Paginator->settings['order'])]
         );
 
-        //Get meta data and push to front end
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping'
-            ],
-        ]);
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-        $this->set(compact(['service', 'all_statehistories', 'servicestatus', 'docuExists', 'allowEdit']));
-        $this->set('StatehistoryListsettings', $StatehistoryRequest->getRequestSettingsForListSettings());
+        $all_statehistories = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($statehistories as $statehistory) {
+            $Statehistory = new StatehistoryService($statehistory['StatehistoryService'], $UserTime);
+            $all_statehistories[] = [
+                'StatehistoryService' => $Statehistory->toArray()
+            ];
+        }
+
+
+        $this->set(compact(['all_statehistories']));
+        $this->set('_serialize', ['all_statehistories', 'paging']);
     }
 
-    public function host($id = null){
+    public function host($id = null) {
+        $this->layout = 'angularjs';
         if (!$this->Host->exists($id)) {
-            throw new NotFoundException(__('invalid host'));
+            throw new NotFoundException(__('Invalid host'));
         }
 
         //Process request and set request settings back to front end
-        $HostStates = new HostStates();
-        $StateTypes = new StateTypes();
-        $StatehistoryRequest = new StatehistoryControllerRequest(
-            $this->request,
-            $HostStates,
-            $StateTypes,
-            $this->userLimit
-        );
 
-        $host = $this->Host->find('first', [
-            'fields' => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.container_id',
-                'Host.host_type'
-            ],
-            'conditions' => [
-                'Host.id' => $id,
-            ],
-            'contain' => [
-                'Container',
-            ],
-        ]);
+        if (!$this->isAngularJsRequest()) {
+            //Host for .html request
+            $host = $this->Host->find('first', [
+                'fields'     => [
+                    'Host.id',
+                    'Host.uuid',
+                    'Host.name',
+                    'Host.address',
+                    'Host.host_url',
+                    'Host.container_id',
+                    'Host.host_type'
+                ],
+                'conditions' => [
+                    'Host.id' => $id,
+                ],
+                'contain'    => [
+                    'Container',
+                ],
+            ]);
 
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
+            //Check if user is permitted to see this object
+            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+            $containerIdsToCheck[] = $host['Host']['container_id'];
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $this->render403();
+                return;
+            }
+
+            //Get meta data and push to front end
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
+                'fields' => [
+                    'Hoststatus.current_state',
+                    'Hoststatus.is_flapping'
+                ],
+            ]);
+            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
+            $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
         }
 
+        //Host for .json request
+        $host = $this->Host->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+            ],
+            'conditions' => [
+                'Host.id' => $id,
+            ]
+        ]);
+
+        $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
-        $Conditions->setLimit($StatehistoryRequest->getLimit());
-        $Conditions->setOrder($StatehistoryRequest->getOrder());
-        $Conditions->setStates($StatehistoryRequest->getHostStates());
-        $Conditions->setStateTypes($StatehistoryRequest->getStateTypes());
-        $Conditions->setFrom($StatehistoryRequest->getFrom());
-        $Conditions->setTo($StatehistoryRequest->getTo());
+        $Conditions->setLimit($this->Paginator->settings['limit']);
+        $Conditions->setOrder($AngularStatehistoryControllerRequest->getOrderForPaginator('StatehistoryHost.state_time', 'desc'));
+        $Conditions->setStates($AngularStatehistoryControllerRequest->getHostStates());
+        $Conditions->setStateTypes($AngularStatehistoryControllerRequest->getHostStateTypes());
+        $Conditions->setFrom($AngularStatehistoryControllerRequest->getFrom());
+        $Conditions->setTo($AngularStatehistoryControllerRequest->getTo());
         $Conditions->setHostUuid($host['Host']['uuid']);
 
         //Query state history records
-        $query = $this->StatehistoryHost->getQuery($Conditions, $this->Paginator->settings['conditions']);
-        $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-        $all_statehistories = $this->Paginator->paginate(null,[], [key($this->Paginator->settings['order'])]);
+        $query = $this->StatehistoryHost->getQuery($Conditions, $AngularStatehistoryControllerRequest->getHostFilters());
+        $this->Paginator->settings = $query;
+        $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
+        $statehistories = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
 
-        //Get meta data and push to front end
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-            'fields' => [
-                'Hoststatus.current_state',
-                'Hoststatus.is_flapping'
-            ],
-        ]);
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-        $this->set(compact(['host', 'all_statehistories', 'hoststatus', 'docuExists']));
-        $this->set('StatehistoryListsettings', $StatehistoryRequest->getRequestSettingsForListSettings());
+        $all_statehistories = [];
+        foreach($statehistories as $statehistory){
+            $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost'], $UserTime);
+            $all_statehistories[] = [
+                'StatehistoryHost' => $StatehistoryHost->toArray()
+            ];
+        }
+
+        $this->set(compact(['all_statehistories']));
+        $this->set('_serialize', ['all_statehistories', 'paging']);
     }
 }

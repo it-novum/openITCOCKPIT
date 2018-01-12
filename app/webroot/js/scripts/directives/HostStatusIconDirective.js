@@ -3,17 +3,34 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
         restrict: 'E',
         templateUrl: '/hosts/icon.html',
         scope: {
-            'host': '='
+            'host': '=?',
+            'state': '=?'
         },
         controller: function($scope){
+
+            if(typeof $scope.host === "undefined"){
+                //Fake Servicestatus
+                $scope.host = {
+                    Hoststatus: {}
+                };
+            }
 
             $scope.isFlapping = $scope.host.Hoststatus.isFlapping;
             $scope.flappingState = 0;
             var interval;
 
             $scope.setHostStatusColors = function(){
-                $scope.currentstate = parseInt($scope.host.Hoststatus.currentState, 10);
-                switch($scope.currentstate){
+                var currentstate = -1;
+                if(typeof $scope.state === "undefined"){
+                    currentstate = parseInt($scope.host.Hoststatus.currentState, 10);
+                    if($scope.host.Hoststatus.currentState === null){
+                        currentstate = -1; //Not found in monitoring
+                    }
+                }else{
+                    currentstate = parseInt($scope.state, 10);
+                }
+
+                switch(currentstate){
                     case 0:
                         $scope.btnColor =  'success';
                         $scope.flappingColor = 'txt-color-green';
@@ -22,9 +39,13 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                         $scope.btnColor = 'danger';
                         $scope.flappingColor = 'txt-color-red';
                         return;
-                    default:
+                    case 2:
                         $scope.btnColor = 'default';
                         $scope.flappingColor = 'txt-color-blueDark';
+                        return;
+                    default:
+                        $scope.btnColor = 'primary';
+                        $scope.flappingColor = 'text-primary';
                 }
             };
 

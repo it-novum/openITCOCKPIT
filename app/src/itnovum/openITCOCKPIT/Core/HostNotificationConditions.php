@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+
 class HostNotificationConditions extends ListSettingsConditions {
 
     /**
@@ -50,6 +52,17 @@ class HostNotificationConditions extends ListSettingsConditions {
      */
     public function getHostUuid(){
         return $this->hostUuid;
+    }
+
+    /**
+     * @param HostStates $HostStates
+     */
+    public function setStates(HostStates $HostStates){
+        if(sizeof($HostStates->asIntegerArray()) == 4){
+            $this->states = [];
+            return;
+        }
+        $this->states = $HostStates->asIntegerArray();
     }
 }
 

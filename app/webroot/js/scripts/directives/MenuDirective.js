@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $httpParamSerializer){
     return {
         restrict: 'A',
         templateUrl: '/angular/menu.html',
@@ -81,7 +81,11 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout){
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-                    window.location.href = '/hosts/index/Filter.Host.name:' + encodeURI($scope.menuFilter) + '/q:1';
+
+                    window.location.href = '/hosts/index?' + $httpParamSerializer({
+                        'filter[Host.name]': encodeURI($scope.menuFilter)
+
+                    });
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){

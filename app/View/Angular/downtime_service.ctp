@@ -29,7 +29,10 @@
                     <div ng-repeat="error in errors.Downtime.comment" class="col-md-offset-2 col-xs-12 col-md-10">
                         <div class="help-block text-danger-important">{{ error }}</div>
                     </div>
+                </div>
+                <br/>
 
+                <div class="row">
                     <!-- from -->
                     <div class="form-group">
                         <label class="col col-md-2 control-label">

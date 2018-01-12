@@ -30,6 +30,79 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
+    public function indexFilter(){
+        $filters = [
+            'bool' => [
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.active_checks_enabled'
+            ],
+            'like' => [
+                'Host.name',
+                'Hoststatus.output',
+                'Host.address'
+            ],
+            'rlike' => [
+                'Host.keywords'
+            ],
+            'equals' => [
+                'Host.id',
+                'Host.uuid',
+                'Host.disabled',
+                'Host.satellite_id'
+            ],
+            'downtime' => [
+                'Hoststatus.scheduled_downtime_depth',
+            ],
+            'state' => [
+                'Hoststatus.current_state'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function notMonitoredFilter(){
+        $filters = [
+            'like' => [
+                'Host.name',
+                'Host.address'
+            ],
+            'equals' => [
+                'Host.id',
+                'Host.satellite_id'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function deletedFilter(){
+        $filters = [
+            'like' => [
+                'DeletedHost.name'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * @return array
+     */
+    public function disabledFilter(){
+        return $this->notMonitoredFilter();
+    }
+
+
+    /**
+     * @return array
+     */
     public function ajaxFilter(){
         $filters = [
             'like' => [

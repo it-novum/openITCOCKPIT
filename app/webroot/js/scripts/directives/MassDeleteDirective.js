@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
-            $scope.setObjects = function(objects){
+            $scope.setObjectsForMassDelete = function(objects){
                 $scope.objects = objects;
             };
 
@@ -31,6 +31,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
 
                             if(i === count && issueCount === 0){
                                 $scope.isDeleting = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                                 $('#angularMassDelete').modal('hide');
                             }
@@ -52,6 +53,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                             issueCount = Object.keys($scope.issueObjects).length;
                             if(i === count && issueCount > 0){
                                 $scope.isDeleting = false;
+                                $scope.percentage = 0;
                                 $scope.load();
                             }
                         });
@@ -62,7 +64,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
 
         link: function($scope, element, attr){
             $scope.confirmDelete = function(objects){
-                $scope.setObjects(objects);
+                $scope.setObjectsForMassDelete(objects);
                 $('#angularMassDelete').modal('show');
             };
         }
