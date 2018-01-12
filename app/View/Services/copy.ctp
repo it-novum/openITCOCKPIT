@@ -60,16 +60,20 @@
             ]);
 
             echo $this->Form->input('Service.host_id', [
-                'options'          => $this->Html->chosenPlaceholder($hosts),
-                'data-placeholder' => __('Please select...'),
-                'class'            => 'chosen',
-                'wrapInput'        => 'col col-xs-7',
-                'style'            => 'width: 100%',
-                'label'            => [
-                    'class' => 'col col-xs-1 control-label',
-                    'text'  => __('Host'),
-                ],
-            ]); ?>
+                    'options'          => [],
+                    'data-placeholder' => __('Please, start typing...'),
+                    'class'            => 'chosen,',
+                    'style'            => 'width:100%',
+                    'label'            => ['text' => __('Host'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                    'required'         => true,
+                    'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                    'div'              => [
+                        'class' => 'form-group required',
+                    ],
+                ]
+            );
+
+            ?>
             <div class="row">
                 <div class="col-xs-12 col-md-9 col-lg-7">
                     <div class="padding-bottom-10">

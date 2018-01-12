@@ -251,6 +251,15 @@
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.Servicestatus.active"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Active service'); ?>
+                                            </label>
+                                        </div>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
                                                        ng-model="filter.Servicestatus.passive"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>

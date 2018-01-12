@@ -137,7 +137,9 @@ $config = [
             ],
             'Hosts'            => [
                 'view',
-                'icon'
+                'icon',
+                'loadParentHostsByString',
+                'loadParentHostsById'
             ]
         ],
         'dependencies'   => [

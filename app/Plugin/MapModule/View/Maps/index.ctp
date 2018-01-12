@@ -151,7 +151,7 @@
                                         <?php endif; ?>
                                         <a href="javascript:void(0);" data-toggle="dropdown"
                                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-                                        <ul class="dropdown-menu pull-right">
+                                        <ul class="dropdown-menu pull-right" id="menuHack-{{map.Map.id}}">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
                                                 <li ng-if="map.Map.allowEdit">
                                                     <a href="/map_module/mapeditors/edit/{{map.Map.id}}">

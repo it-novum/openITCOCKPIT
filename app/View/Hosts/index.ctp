@@ -204,7 +204,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                        ng-model="filter.Hoststatus.current_state.unreachable"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-default"></i>
-                                                <?php echo __('unreachable'); ?>
+                                                <?php echo __('Unreachable'); ?>
                                             </label>
                                         </div>
                                     </fieldset>
