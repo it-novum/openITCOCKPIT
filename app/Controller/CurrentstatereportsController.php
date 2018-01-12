@@ -26,12 +26,11 @@
 
 /**
  * @property Currentstatereport $Currentstatereport
- * @property Host               $Host
- * @property Service            $Service
- * @property Hoststatus         $Hoststatus
+ * @property Host $Host
+ * @property Service $Service
+ * @property Hoststatus $Hoststatus
  */
-class CurrentstatereportsController extends AppController
-{
+class CurrentstatereportsController extends AppController {
     public $layout = 'Admin.default';
     public $uses = [
         MONITORING_HOSTSTATUS,
@@ -41,32 +40,32 @@ class CurrentstatereportsController extends AppController
         'Service',
     ];
 
-    public function index()
-    {
+    public function index () {
+        $this->layout = 'angularjs';
         $userContainerId = $this->Auth->user('container_id');
         $currentStateData = [];
         $serviceStatusExists = false;
         //ContainerID => 1 for ROOT Container
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS,$this->hasRootPrivileges);
         $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
-            '{n}.Service.id', '{n}'
+            '{n}.Service.id','{n}'
         );
-        $this->set(compact(['services', 'userContainerId']));
+        $this->set(compact(['services','userContainerId']));
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
                 foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
-                    if(empty($services[$serviceId]['Service']['uuid'])) continue;
-                    $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'], [
+                    if (empty($services[$serviceId]['Service']['uuid'])) continue;
+                    $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'],[
                         'conditions' => [
                             'Servicestatus.current_state' => $this->request->data('Currentstatereport.current_state'),
                         ],
                     ]);
                     if (!isset($currentStateData[$services[$serviceId]['Host']['uuid']]['Host'])) {
-                        $hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'], [
+                        $hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'],[
                                 'fields' => [
                                     'Hoststatus.current_state',
                                     'Hoststatus.perfdata',
@@ -123,27 +122,53 @@ class CurrentstatereportsController extends AppController
                 }
 
                 if (!$serviceStatusExists) {
-                    $this->setFlash(__('No service status information within specified filter found'), 'info');
-                } else {
-                    if ($this->request->data('Currentstatereport.report_format') == 'pdf') {
-                        $this->Session->write('currentStateData', $currentStateData);
-                        $this->redirect([
-                            'action' => 'createPdfReport',
-                            'ext'    => 'pdf',
-                        ]);
-
-                    } else {
-                        $this->set(compact(['currentStateData']));
-                        $this->render('/Elements/load_current_state_report_data');
-                    }
+                    $this->set('response',[
+                        'status'     => 200,
+                        'statusText' => 'Ok',
+                        'message'    => __('No service status information within specified filter found')
+                    ]);
+                    $this->set('_serialize',['response']);
+                    return;
                 }
+
+                $this->Session->write('currentStateData',$currentStateData);
+
+
+                $this->set('response',[
+                    'status'     => 201,
+                    'statusText' => 'Created'
+                ]);
+                $this->set('_serialize',['response']);
+                $this->response->statusCode(201);
+
+                return;
+
+                /*
+                //Plain PHP workaround
+                $this->redirect([
+                    'action' => 'createPdfReport',
+                    'ext'    => 'pdf',
+                ]);
+                */
+
+
+            } else {
+                $this->serializeErrorMessage();
             }
         }
     }
 
-    public function createPdfReport()
-    {
-        $this->set('currentStateData', $this->Session->read('currentStateData'));
+    public function createHtmlReport(){
+        $this->set('currentStateData',$this->Session->read('currentStateData'));
+        if ($this->Session->check('currentStateData')) {
+            $this->Session->delete('currentStateData');
+        }
+        $this->render('/Elements/load_current_state_report_data');
+
+    }
+
+    public function createPdfReport () {
+        $this->set('currentStateData',$this->Session->read('currentStateData'));
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
         }

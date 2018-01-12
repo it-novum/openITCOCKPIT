@@ -22,7 +22,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-App.Controllers.CurrentstatereportsIndexController = Frontend.AppController.extend({
+App.Controllers.CurrentstatereportsCreateHtmlReportController = Frontend.AppController.extend({
 	components: ['Ajaxloader'],
 
 	_initialize: function() {
