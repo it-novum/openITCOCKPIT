@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Filter;
 
 
-class HostgroupFilter extends Filter {
+class ContainerFilter extends Filter {
 
     /**
      * @return array
@@ -33,8 +33,7 @@ class HostgroupFilter extends Filter {
     public function indexFilter(){
         $filters = [
             'like' => [
-                'Containers.name',
-                'Hostgroup.description'
+                'Container.name'
             ]
         ];
 

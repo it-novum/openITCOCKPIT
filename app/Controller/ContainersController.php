@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ContainerConditions;
+use itnovum\openITCOCKPIT\Filter\ContainerFilter;
+
+
 
 /**
  * Class ContainersController
@@ -440,5 +444,24 @@ class ContainersController extends AppController {
         $this->setFlash(__('Could not delete container'), false);
         $this->redirect(['action' => 'index']);
 
+    }
+
+    public function loadContainersForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
+            );
+        } else {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $containers = $this->Tree->easyPath($this->getWriteContainers(),OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP])
+            );
+        }
+
+        $this->set(compact(['containers']));
+        $this->set('_serialize', ['containers']);
     }
 }

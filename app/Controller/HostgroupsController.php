@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
@@ -602,6 +603,25 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hosttemplates']);
     }
 
+    public function loadHostgroupsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
+
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+            $this->Hostgroup->getHostgroupsForAngular($HostgroupCondition, $selected)
+        );
+
+        $this->set(compact(['hostgroups']));
+        $this->set('_serialize', ['hostgroups']);
+    }
 
     public function loadHosgroupsByContainerId() {
         if (!$this->isApiRequest()) {
