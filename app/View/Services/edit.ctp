@@ -46,7 +46,7 @@ $notification_settings = [
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Service'); ?>
-			</span>
+            </span>
 
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
@@ -60,8 +60,9 @@ $notification_settings = [
         <h2><?php echo __('Edit Service'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <button class="btn btn-danger btn-xs" id="deleteService"
-                        data-service-id="<?php echo $service['Service']['id']; ?>"><i class="fa fa-trash-o"></i> Delete
+                <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#workaroundConfirmDelete">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
             <?php if ($this->Acl->hasPermission('browser')): ?>
@@ -667,12 +668,57 @@ $notification_settings = [
                         <!-- render additional Tabs if necessary -->
                         <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'service'); ?>
 
-                    </div><!-- close tab-content -->
-                </div><!-- close col -->
-            </div><!-- close row -->
+                    </div>
+                </div>
+            </div>
+            <
             <br/>
             <?php echo $this->Form->formActions(); ?>
 
-        </div><!-- close widget body -->
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>
+
+
+<div id="workaroundConfirmDelete" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-danger txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want delete this service?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDelete"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDelete" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Service deleted successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="yesDeleteService"
+                        data-service-id="<?php echo h($service['Service']['id']); ?>">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>

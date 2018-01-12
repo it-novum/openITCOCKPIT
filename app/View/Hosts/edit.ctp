@@ -65,7 +65,10 @@ $allowSharing = $hostSharingPermissions->allowSharing();
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit host'); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, $host['Host']['id']); ?>
+                <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#workaroundConfirmDelete">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <?php if ($this->Acl->hasPermission('browser')): ?>
                 <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-default btn-xs"><i
@@ -698,10 +701,54 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                         <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
 
                     </div> <!-- close tab-content -->
-                </div> <!-- close col -->
-            </div> <!-- close row-->
+                </div>
+            </div>
             <br/>
             <?php echo $this->Form->formActions(); ?>
-        </div> <!-- close widget body -->
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>
+
+
+<div id="workaroundConfirmDelete" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-danger txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want delete this host?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDelete"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDelete" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Host deleted successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="yesDeleteHost"
+                        data-host-id="<?php echo h($host['Host']['id']); ?>">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
