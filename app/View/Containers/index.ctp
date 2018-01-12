@@ -81,7 +81,46 @@
                 </span>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-lg-6">
+                <div class="col-sm-12 col-lg-12">
+                    <div class="jarviswidget" id="wid-id-0">
+
+                        <header>
+                            <span class="widget-icon"> <i class="fa fa-book"></i> </span>
+                            <h2><?php echo __('Legend'); ?>:</h2>
+                        </header>
+
+                        <div class="padding-bottom-10">
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-link"></i> <?php echo __('Node'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-12">
                     <div class="jarviswidget" id="wid-id-0">
                         <header>
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
@@ -90,7 +129,7 @@
 
                         <div class="widget-body">
 
-                            <div class="dd dd-nodrag" id="nestable">
+                            <div class="dd dd-nodrag containers-dd" id="nestable">
 
                                 <ol class="dd-list"
                                     id=""
@@ -105,104 +144,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-12 col-lg-6">
-                    <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-                        <div class="jarviswidget" id="wid-id-0" ng-if="tenant.Tenant.allow_edit === true">
 
-                            <header>
-                                <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-                                <h2><?php echo __('Add new node'); ?>:</h2>
-                            </header>
-
-                            <div class="widget-body">
-
-                                <div class="form-group" ng-class="{'has-error': errors.parent_id}">
-                                    <label for="TenantSelect" class="col col-md-2 control-label">
-                                        <?php echo __('Parent Node'); ?>
-                                    </label>
-                                    <div class="col col-xs-10">
-                                        <select
-                                                id="TenantForNodeSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="containerlist"
-                                                ng-options="key as value for (key, value) in containerlist"
-                                                ng-model="post.Container.parent_id"
-                                        >
-                                        </select>
-                                        <div ng-repeat="error in errors.parent_id">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <br><br>
-
-                                <div class="form-group required" ng-class="{'has-error': errors.name}">
-                                    <label class="col col-md-2 control-label">
-                                        <?php echo __('Name'); ?>
-                                    </label>
-                                    <div class="col col-xs-10 required">
-
-                                        <input type="text"
-                                               class="form-control"
-                                               maxlength="255"
-                                               required="required"
-                                               placeholder="<?php echo __('Node name'); ?>"
-                                               ng-model="post.Container.name"
-                                        >
-                                        <div ng-repeat="error in errors.name">
-                                            <div class="help-block text-danger">{{ error }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div class="well formactions ">
-                                <div id="nodeCreatedFlashMessage" class="alert alert-success" style="display:none;">
-                                    <?php echo __('Node created successfully'); ?>
-                                </div>
-                                <div class="pull-right">
-                                    <input type="button"
-                                           class="btn btn-primary"
-                                           value="<?php echo __('Save'); ?>"
-                                           ng-click="saveNewNode()"
-                                    >
-                                    &nbsp;
-                                    <a href="/containers" class="btn btn-default">
-                                        <?php echo __('Cancel'); ?>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-
-
-                    <div class="jarviswidget" id="wid-id-0">
-
-                        <header>
-                            <span class="widget-icon"> <i class="fa fa-book"></i> </span>
-                            <h2><?php echo __('Legend'); ?>:</h2>
-                        </header>
-
-                        <div class="widget-body">
-                            <div class="col col-xs-12"><br>
-                                <dl>
-                                    <dt><i class="fa fa-globe"></i> Global</dt>
-                                    <dt><i class="fa fa-home"></i> Tenant</dt>
-                                    <dt><i class="fa fa-location-arrow"></i> Location</dt>
-                                    <dt><i class="fa fa-link"></i> Node</dt>
-                                    <dt><i class="fa fa-users"></i> Contactgroup</dt>
-                                    <dt><i class="fa fa-sitemap"></i> Hostgroup</dt>
-                                    <dt><i class="fa fa-cogs"></i> Servicegroup</dt>
-                                    <dt><i class="fa fa-pencil-square-o"></i> Servicetemplategroup</dt>
-                                </dl>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
 
         </div>

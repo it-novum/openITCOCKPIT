@@ -1719,3 +1719,11 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     font-weight: bold!important;
 }
 
+.nodes-container-name {
+    display:inline-flex;
+    max-width:80%;
+}
+
+.containers-dd {
+    max-width: 100%;
+}

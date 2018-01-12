@@ -15,11 +15,18 @@
         <i class="fa fa-pencil-square-o"
            ng-if="container.Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>"></i>
 
-        {{ container.Container.name }}
+        <div class="nodes-container-name" title="{{ container.Container.name }}">
+            <span class="ellipsis"">{{ container.Container.name }}</span>
+        </div>
 
         <?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
             <edit-node container="container" callback="callback"
                        ng-if="container.Container.allow_edit === true"></edit-node>
+        <?php endif; ?>
+
+        <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
+            <add-node container="container" callback="callback"
+                      ng-if="container.Container.allow_edit === true"></add-node>
         <?php endif; ?>
 
 

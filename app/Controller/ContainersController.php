@@ -93,6 +93,7 @@ class ContainersController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->request->is('post') && !$this->request->is('put') && $this->request->ext == 'json') {
             return;
         }

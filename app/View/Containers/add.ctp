@@ -1,27 +1,29 @@
-<?php if ($this->Acl->hasPermission('edit','containers')): ?>
-    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
-       class="txt-color-red padding-left-10 font-xs pointer"
+<?php if ($this->Acl->hasPermission('add','containers')): ?>
+    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?> ||
+    container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
+    container.Container.containertype_id == <?php echo CT_LOCATION; ?>"
+       class="txt-color-green padding-left-10 font-xs pointer"
        ng-click="openModal()"
     >
-        <i class="fa fa-pencil"></i>
-        <?php echo __('Edit'); ?>
+        <i class="fa fa-plus"></i>
+        <?php echo __('Add'); ?>
     </a>
 <?php endif; ?>
 
 
-<div id="angularEditNode-{{container.Container.id}}" class="modal" role="dialog">
+<div id="angularAddNode-{{container.Container.id}}" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form onsubmit="return false;">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title"><?php echo __('Edit Node'); ?></h4>
+                    <h4 class="modal-title"><?php echo __('Add new Node'); ?></h4>
                 </div>
                 <div class="modal-body" ng-class="{'has-error': errors.name}">
                     <div class="row">
                         <div class="col-xs-2">
                             <label class="control-label">
-                                <?php echo __('Edit node name: '); ?>
+                                <?php echo __('New node name: '); ?>
                             </label>
                         </div>
                         <div class="col-xs-10">
@@ -40,11 +42,9 @@
                     </div>
                 </div>
 
+
+
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" ng-click="delete()" ng-class="{'has-error': errors.id}">
-                        <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
-                        <?php echo __('Delete'); ?>
-                    </button>
                     <div class="pull-left" ng-repeat="error in errors.id">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
