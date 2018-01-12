@@ -33,7 +33,7 @@ class HostgroupFilter extends Filter {
     public function indexFilter(){
         $filters = [
             'like' => [
-                'Containers.name',
+                'Container.name',
                 'Hostgroup.description'
             ]
         ];

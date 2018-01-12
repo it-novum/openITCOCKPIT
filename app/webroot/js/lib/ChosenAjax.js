@@ -74,9 +74,14 @@ function ChosenAjax(conf){
     this.addOptions = function(options){
         var $element = $('#' + this.id);
         $element.empty();
-        for(var key in options){
-            var current = options[key];
-            $element.append('<option value="' + current.key + '">'+htmlspecialchars(current.value)+'</option>');
+
+        if(options.length === 0){
+            $element.append('<option></option>');
+        }else{
+            for(var key in options){
+                var current = options[key];
+                $element.append('<option value="' + current.key + '">' + htmlspecialchars(current.value) + '</option>');
+            }
         }
         this.triggerUpdate();
     };

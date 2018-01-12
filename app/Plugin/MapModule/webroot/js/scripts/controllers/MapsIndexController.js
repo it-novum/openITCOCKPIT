@@ -97,6 +97,7 @@ angular.module('openITCOCKPIT')
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
         }, true);
