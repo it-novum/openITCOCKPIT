@@ -22,47 +22,13 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core;
+namespace itnovum\openITCOCKPIT\Filter;
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
-class HostNotificationConditions extends ListSettingsConditions {
+class BaseFilter extends Filter {
 
-    /**
-     * @var array
-     */
-    protected $order = [
-        'NotificationHost.start_time' => 'DESC'
-    ];
-
-    /**
-     * @var string
-     */
-    protected $hostUuid;
-
-    /**
-     * @param string $hostUuid
-     */
-    public function setHostUuid($hostUuid){
-        $this->hostUuid = $hostUuid;
+    public function getConditionsByFilters($filters){
+        return parent::getConditionsByFilters($filters);
     }
 
-    /**
-     * @return string
-     */
-    public function getHostUuid(){
-        return $this->hostUuid;
-    }
-
-    /**
-     * @param HostStates $HostStates
-     */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 4){
-            $this->states = [];
-            return;
-        }
-        $this->states = $HostStates->asIntegerArray();
-    }
 }
-

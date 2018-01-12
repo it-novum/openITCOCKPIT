@@ -22,47 +22,28 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core;
+namespace itnovum\openITCOCKPIT\Filter;
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 
-class HostNotificationConditions extends ListSettingsConditions {
-
-    /**
-     * @var array
-     */
-    protected $order = [
-        'NotificationHost.start_time' => 'DESC'
-    ];
+class StatehistoryServiceFilter extends Filter {
 
     /**
-     * @var string
+     * @return array
      */
-    protected $hostUuid;
+    public function indexFilter(){
+        $filters = [
+            'like' => [
+                'StatehistoryService.output'
+            ],
+            'state' => [
+                'StatehistoryService.state'
+            ],
+            'equals' => [
+                'StatehistoryService.state_type'
+            ]
+        ];
 
-    /**
-     * @param string $hostUuid
-     */
-    public function setHostUuid($hostUuid){
-        $this->hostUuid = $hostUuid;
+        return $this->getConditionsByFilters($filters);
     }
 
-    /**
-     * @return string
-     */
-    public function getHostUuid(){
-        return $this->hostUuid;
-    }
-
-    /**
-     * @param HostStates $HostStates
-     */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 4){
-            $this->states = [];
-            return;
-        }
-        $this->states = $HostStates->asIntegerArray();
-    }
 }
-

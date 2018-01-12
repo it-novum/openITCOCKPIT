@@ -24,6 +24,9 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+
+use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
+
 class ServiceNotificationConditions extends ListSettingsConditions {
 
     /**
@@ -50,6 +53,18 @@ class ServiceNotificationConditions extends ListSettingsConditions {
      */
     public function getServiceUuid(){
         return $this->serviceUuid;
+    }
+
+    /**
+     * @param ServiceStates $ServiceStates
+     */
+    public function setStates(ServiceStates $ServiceStates){
+        if(sizeof($ServiceStates->asIntegerArray()) == 4){
+            $this->states = [];
+            return;
+        }
+
+        $this->states = $ServiceStates->asIntegerArray();
     }
 
 }

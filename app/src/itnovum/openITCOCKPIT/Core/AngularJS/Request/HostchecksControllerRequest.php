@@ -22,47 +22,30 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core;
+namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+use itnovum\openITCOCKPIT\Filter\BaseFilter;
 
-class HostNotificationConditions extends ListSettingsConditions {
+class HostchecksControllerRequest extends AngularRequest {
 
     /**
      * @var array
      */
-    protected $order = [
-        'NotificationHost.start_time' => 'DESC'
+    protected $filters = [
+        'index' => [
+            'like' => [
+                'Hostcheck.output'
+            ]
+        ]
     ];
 
-    /**
-     * @var string
-     */
-    protected $hostUuid;
+    protected $HostStateField = 'Hostcheck.state';
 
-    /**
-     * @param string $hostUuid
-     */
-    public function setHostUuid($hostUuid){
-        $this->hostUuid = $hostUuid;
+    protected $HostStateTypeField = 'Hostcheck.state_type';
+
+    public function getIndexFilters(){
+        $Filter = new BaseFilter($this->getRequest());
+        return $Filter->getConditionsByFilters($this->filters['index']);
     }
 
-    /**
-     * @return string
-     */
-    public function getHostUuid(){
-        return $this->hostUuid;
-    }
-
-    /**
-     * @param HostStates $HostStates
-     */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 4){
-            $this->states = [];
-            return;
-        }
-        $this->states = $HostStates->asIntegerArray();
-    }
 }
-
