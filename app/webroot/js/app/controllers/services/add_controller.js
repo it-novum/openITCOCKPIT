@@ -121,7 +121,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
                 url: '/hosts/loadHostsByString.json',
                 data: {
                     'angular': true,
-                    'filter[Host.name]': searchString,
+                    'filter[Host.name]': searchString
                 },
                 success: function(response){
                     ChosenAjaxObj.addOptions(response.hosts);

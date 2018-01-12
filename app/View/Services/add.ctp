@@ -45,7 +45,7 @@ $notification_settings = [
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Service'); ?>
-			</span>
+            </span>
 
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
