@@ -97,7 +97,7 @@ angular.module('openITCOCKPIT', [])
     .filter('highlight', function($sce) {
         return function(title, searchString) {
             if (searchString) title = title.replace(new RegExp('('+searchString+')', 'gi'),
-                '<span class="search-highlight">$1</span>')
+                '<span class="search-highlight">$1</span>');
 
             return $sce.trustAsHtml(title)
         }

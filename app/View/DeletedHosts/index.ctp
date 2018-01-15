@@ -30,7 +30,7 @@
             <i class="fa fa-desktop fa-fw "></i>
             <?php echo __('Hosts') ?>
             <span>>
-                <?php echo __('Deleted hosts'); ?>
+                <?php echo __('Deleted'); ?>
             </span>
         </h1>
     </div>

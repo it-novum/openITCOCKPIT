@@ -23,23 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UuidComponent extends Component
-{
+class UuidComponent extends Component {
 
     public $uuidCache = [];
 
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         $this->controller = $controller;
     }
 
-    public function getCache()
-    {
+    public function getCache() {
         return $this->uuidCache;
     }
 
-    public function buildCache()
-    {
+    public function buildCache() {
         $Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Servicegroup', 'Service', 'Servicetemplate'];
         $options = [
             'Host'            => [
@@ -151,4 +147,144 @@ class UuidComponent extends Component
             }
         }
     }
+
+    public function getNameForUuids($unknownUuids, $fillNull = false) {
+        $Models = [
+            'Host',
+            'Service',
+            'Command',
+            'Contact',
+            'Timeperiod',
+            'Command',
+            'Contact',
+            'Contactgroup',
+            'Hostgroup',
+            'Servicegroup',
+            'Servicetemplate',
+            'Hosttemplate',
+        ];
+
+        $options = [
+            'Host'            => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid', 'name'],
+            ],
+            'Service'         => [
+                'recursive' => -1,
+                'fields'    => ['Service.id', 'Service.uuid', 'Service.name'],
+                'contain'   => [
+                    'Servicetemplate' => [
+                        'fields' => ['Servicetemplate.name'],
+                    ],
+                ],
+            ],
+            'Timeperiod'      => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid', 'name'],
+            ],
+            'Command'         => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid', 'name'],
+            ],
+            'Contact'         => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid', 'name'],
+            ],
+            'Contactgroup'    => [
+                'recursive' => -1,
+                'fields'    => ['Contactgroup.id', 'Contactgroup.uuid', 'Contactgroup.container_id'],
+                'contain'   => [
+                    'Container' => [
+                        'fields' => ['Container.name'],
+                    ],
+                ],
+            ],
+            'Hostgroup'       => [
+                'recursive' => -1,
+                'fields'    => ['Hostgroup.id', 'Hostgroup.uuid', 'Hostgroup.container_id'],
+                'contain'   => [
+                    'Container' => [
+                        'fields' => ['Container.name'],
+                    ],
+                ],
+            ],
+            'Servicegroup'    => [
+                'recursive' => -1,
+                'fields'    => ['Servicegroup.id', 'Servicegroup.uuid', 'Servicegroup.container_id'],
+                'contain'   => [
+                    'Container' => [
+                        'fields' => ['Container.name'],
+                    ],
+                ],
+            ],
+            'Hosttemplate'    => [
+                'recursive' => -1,
+                'fields'    => ['id', 'uuid', 'name'],
+            ],
+            'Servicetemplate' => [
+                'recursive' => -1,
+                'fields'    => ['Servicetemplate.id', 'Servicetemplate.uuid', 'Servicetemplate.name'],
+            ],
+        ];
+
+        $knownUuids = [];
+
+        foreach ($Models as $ModelName) {
+            if (!in_array($ModelName, $this->controller->uses, true)) {
+                $this->controller->loadModel($ModelName);
+            }
+
+            $query = $options[$ModelName];
+            $query['conditions'] = [
+                sprintf('%s.uuid', $ModelName) => $unknownUuids
+            ];
+            foreach ($this->controller->{$ModelName}->find('all', $query) as $record) {
+                $uuid = $record[$ModelName]['uuid'];
+
+
+                $name = null;
+                if (isset($result[$ModelName]['id'])) {
+                    $name = $record[$ModelName]['id'];
+                }
+
+                if (isset($record[$ModelName]['name'])) {
+                    $name = $record[$ModelName]['name'];
+                } else {
+                    //in php isset() returns false, if a variable is null
+                    // $a = null, isset($a) will return false!!!
+                    if ($ModelName == 'Service') {
+                        if ($record['Service']['name'] === null || $record['Service']['name'] === '') {
+                            $name = $record['Servicetemplate']['name'];
+                        }
+                    }
+                }
+
+                if (isset($record[$ModelName]['description'])) {
+                    $name = $record[$ModelName]['description'];
+                }
+
+                if (isset($record['Container']['name'])) {
+                    $name = $record['Container']['name'];
+                }
+
+
+                $knownUuids[$uuid] = $name;
+                unset($unknownUuids[$uuid]);
+            }
+
+            //debug(sizeof($unknownUuids));
+            if (empty($unknownUuids)) {
+                break;
+            }
+        }
+
+        if($fillNull) {
+            foreach ($unknownUuids as $uuid) {
+                $knownUuids[$uuid] = null;
+            }
+        }
+        return $knownUuids;
+    }
+
+
 }

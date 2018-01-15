@@ -300,7 +300,7 @@ $config = [
             ],
             'Notifications'         => [
                 'index' => ['services'],
-            ],
+            ]
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],
