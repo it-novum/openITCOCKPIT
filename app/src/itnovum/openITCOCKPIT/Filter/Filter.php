@@ -74,7 +74,7 @@ abstract class Filter {
                                 if (!is_array($value)) {
                                     $value = [$value];
                                 }
-                                $conditions[sprintf('%s rlike', $field)] = implode('|', $value);
+                                $conditions[sprintf('%s rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
                             }
                             break;
                         case 'equals':

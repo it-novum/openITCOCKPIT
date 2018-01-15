@@ -88,9 +88,11 @@
                                                     id="HostnameFilterSelect"
                                                     data-placeholder="<?php echo __('Filter by host'); ?>"
                                                     class="form-control"
-                                                    chosen="{}"
+                                                    chosen="hosts"
                                                     multiple
-                                                    ng-model="filter.Host.satellite_id"
+                                                    ng-model="filter.Host.id"
+                                                    callback="loadHosts"
+                                                    ng-options="host.key as host.value for host in hosts"
                                                     ng-model-options="{debounce: 500}">
                                             </select>
                                         </div>

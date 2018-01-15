@@ -11,6 +11,9 @@ angular.module('openITCOCKPIT')
                 Logentry: {
                     logentry_data: '',
                     logentry_type: ''
+                },
+                Host: {
+                    id: []
                 }
             };
         };
@@ -28,7 +31,8 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Logentry.logentry_data]': $scope.filter.Logentry.logentry_data
+                'filter[Logentry.logentry_data]': $scope.filter.Logentry.logentry_data,
+                'filter[Host.id][]': $scope.filter.Host.id
             };
 
             if($scope.filter.Logentry.logentry_type.length > 0){
@@ -41,6 +45,18 @@ angular.module('openITCOCKPIT')
                 $scope.logentries = result.data.all_logentries;
                 $scope.paging = result.data.paging;
                 $scope.init = false;
+            });
+        };
+
+        $scope.loadHosts = function(searchString){
+            $http.get("/hosts/loadHostsByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': $scope.filter.Host.id
+                }
+            }).then(function(result){
+                $scope.hosts = result.data.hosts;
             });
         };
 
@@ -62,6 +78,7 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
+        $scope.loadHosts('');
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;

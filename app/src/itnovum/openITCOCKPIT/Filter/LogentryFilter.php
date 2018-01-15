@@ -33,7 +33,7 @@ class LogentryFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'equals' => [
-                'Logentry.logentry_type'
+                'Logentry.logentry_type',
             ],
             'like' => [
                 'Logentry.logentry_data'

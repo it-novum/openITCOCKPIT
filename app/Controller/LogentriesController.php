@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\LogentryFilter;
 
@@ -58,13 +57,32 @@ class LogentriesController extends AppController {
         $LogentryFilter = new LogentryFilter($this->request);
 
 
-        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator(['Logentry.logentry_time' => 'desc']);
+        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator('Logentry.logentry_time', 'desc');
         $this->Paginator->settings['page'] = $LogentryFilter->getPage();
         $this->Paginator->settings['conditions'] = $LogentryFilter->indexFilter();
 
-        //print_r($this->Paginator->settings);
+        if (isset($this->request->query['filter']['Host.id']) && !empty($this->request->query['filter']['Host.id'])) {
+            $hosts = $this->Host->find('all', [
+                'recursive'  => -1,
+                'fields'     => [
+                    'Host.id',
+                    'Host.uuid'
+                ],
+                'conditions' => [
+                    'Host.id' => $this->request->query['filter']['Host.id']
+                ]
+            ]);
+            if(!empty($hosts)) {
+                $orConditions = [];
+                foreach($hosts as $host){
+                    $orConditions[] = $host['Host']['uuid'];
+                }
+                $this->Paginator->settings['conditions']['Logentry.logentry_data rlike'] = sprintf('.*(%s).*', implode('|', $orConditions));
+            }
+        }
 
         $logentries = $this->Paginator->paginate();
+
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         App::uses('UUID', 'Lib');
