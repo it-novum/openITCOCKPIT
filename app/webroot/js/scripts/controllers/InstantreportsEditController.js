@@ -125,7 +125,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHosts = function(searchString){
-            console.log($scope.post.Instantreport.Host);
             if($scope.post.Instantreport.container_id) {
                 $http.get("/hosts/loadHostsByContainerId.json", {
                     params: {

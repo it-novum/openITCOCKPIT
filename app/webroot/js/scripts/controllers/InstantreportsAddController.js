@@ -127,7 +127,6 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log($scope.post);
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
