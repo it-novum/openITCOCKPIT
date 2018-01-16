@@ -62,7 +62,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
-    printf('<script src="%s"></script>', 'js/scripts/ng.app.js');
+    printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
 
     foreach ($appScripts as $appScript):
         printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
