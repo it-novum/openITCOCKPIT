@@ -71,7 +71,7 @@
                                 <?php $i = 0; ?>
                                 <?php foreach ($all_systemsettings as $key => $values): ?>
                                     <tr>
-                                        <td class="bg-color-lightGray text-primary" colspan="3">
+                                        <td class="service_table_host_header text-primary" colspan="3">
                                             <strong><?php echo $key; ?></strong></td>
                                     <tr>
                                     <?php foreach ($values as $value): ?>
