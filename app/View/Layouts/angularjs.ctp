@@ -99,15 +99,22 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
         <?php echo $title_for_layout; ?> - <?php echo Configure::read('general.site_name') ?>
     </title>
     <?php
+    $fileVersion = '?v' . time();
+    if (ENVIRONMENT === Environments::PRODUCTION) {
+        Configure::load('version');
+        $fileVersion = '?v' . Configure::read('version');
+    }
+
+
     echo $this->Html->meta('icon');
     echo $this->element('assets_css');
 
     foreach ($scripts as $script):
-        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), $script, PHP_EOL);
+        printf('<script src="%s/%s%s"></script>%s', Router::fullBaseUrl(), $script, $fileVersion, PHP_EOL);
     endforeach;
 
     foreach ($appScripts as $appScript):
-        printf('<script src="%s/%s"></script>%s', Router::fullBaseUrl(), $appScript, PHP_EOL);
+        printf('<script src="%s/%s%s"></script>%s', Router::fullBaseUrl(), $appScript, $fileVersion, PHP_EOL);
     endforeach;
     ?>
 </head>

@@ -170,6 +170,16 @@ if (php_sapi_name() == 'cli') {
         'serialize'   => true,
     ]);
 
+    Cache::config('long', [
+        'engine'      => 'Redis',
+        'duration'    => '+24hour',
+        'probability' => 100,
+        'path'        => CACHE,
+        'prefix'      => 'long_',
+        'lock'        => false,
+        'serialize'   => true,
+    ]);
+
     Cache::config('permissions', [
         'engine'      => 'Redis',
         'duration'    => '+600 seconds',
