@@ -220,7 +220,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                     endif;
                                     ?>
                                     <tr>
-                                        <td class="text-center width-75">
+                                        <td class="text-center width-75" data-sort="<?php echo $Hoststatus->currentState();?>">
                                             <?php
                                             if ($Hoststatus->isFlapping() == 1):
                                                 echo $Hoststatus->getHostFlappingIconColored();
