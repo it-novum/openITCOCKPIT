@@ -992,7 +992,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime', 'host_id' => $host['Host']['id']]); ?>"
+                <a href="<?php echo Router::url([
+                        'controller' => 'systemdowntimes',
+                        'action' => 'addHostdowntime',
+                        $host['Host']['id']
+                ]); ?>"
                    class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
                 <button type="button" class="btn btn-success" id="submitCommitHostDowntime">
                     <?php echo __('Send'); ?>

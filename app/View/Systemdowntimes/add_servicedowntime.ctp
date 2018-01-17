@@ -35,12 +35,6 @@
     </div>
 </div>
 <div id="error_msg"></div>
-<div id="DowntimeCreatedFlashMessage" class="alert alert-success" style="display:none;">
-    <?php echo __('Downtime created successfully'); ?>
-</div>
-<div id="RecurringDowntimeCreatedFlashMessage" class="alert alert-success" style="display:none;">
-    <?php echo __('Recurring Downtime created successfully'); ?>
-</div>
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-power-off"></i> </span>
@@ -51,30 +45,23 @@
     </header>
     <div>
         <div class="widget-body">
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-12">
-                    <?php
-                    echo $this->Form->create('Systemdowntime',[
-                        'class' => 'form-horizontal clear',
-                    ]);
-                    ?>
-
-                    {{ post.Systemdowntime.objecttype_id="<?php echo OBJECT_SERVICE; ?>";""}}
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
 
                     <div class="form-group required" ng-class="{'has-error': errors.object_id}">
-                        <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <label class="col col-md-2 control-label">
                             <?php echo __('Service'); ?>
                         </label>
                         <div class="col col-xs-10">
-                            <select
-                                    id="ContainerId"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                            <select multiple
+                                    id="ServiceId"
+                                    data-placeholder="<?php echo __('Please select...'); ?>"
                                     class="form-control"
-                                    chosen="Downtime.SuggestedServices"
-                                    ng-model="Downtime.service_id"
-                                    ng-selected="Downtime.service_id == value.id"
-                                    ng-options="value.id as value.label group by value.group for value in Downtime.SuggestedServices">
-                                <option>--</option>
+                                    chosen="services"
+                                    callback="loadServices"
+                                    ng-options="value.id as value.label group by value.group for value in services"
+                                    ng-model="serviceIds"
+                            >
                             </select>
                             <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -83,11 +70,11 @@
                     </div>
 
                     <div class="form-group required" ng-class="{'has-error': errors.comment}">
-                        <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                        <label class="col col-md-2 control-label">
                             <?php echo __('Comment'); ?>
                         </label>
                         <div class="col col-xs-10 col-md-10 col-lg-10">
-                            <input class="form-control" type="text" ng-model="post.Systemdowntime.comment" >
+                            <input class="form-control" type="text" ng-model="post.Systemdowntime.comment">
                             <div ng-repeat="error in errors.comment">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -95,32 +82,40 @@
                     </div>
 
                     <div class="form-group">
-                        <?php
-                        echo $this->Form->fancyCheckbox('DowntimeIsRecurring', [
-                            'caption' => __('Recurring downtime'),
-                            'wrapGridClass' => 'col col-xs-1 col-md-1 col-lg-1',
-                            'captionGridClass' => 'col col-xs-1 col-md-1 col-lg-1',
-                            'captionClass' => 'col col-xs-1 control-label text-right ',
-                            'ng-model' => 'Downtime.Recurring.is_recurring'
-                        ]);
-                        ?>
+                        <label for="DowntimeIsRecurring" class="col col-md-2 control-label">
+                            <?php echo __('Recurring downtime'); ?>
+                        </label>
+                        <span class="onoffswitch margin-left-15">
+                            <input class="onoffswitch-checkbox"
+                                   value="1"
+                                   ng-model="Downtime.is_recurring"
+                                   id="DowntimeIsRecurring"
+                                   type="checkbox">
+                            <label for="DowntimeIsRecurring" class="onoffswitch-label">
+                                <span data-swchoff-text="Off" data-swchon-text="On" class="onoffswitch-inner"></span>
+                                <span class="onoffswitch-switch"></span>
+                            </label>
+                        </span>
                     </div>
 
-                    <div class="padding-10"><!-- spacer --></div>
-                    <div id="recurringHost_settings" ng-style="Downtime.Recurring.Style">
+                    <div id="recurringService_settings" ng-if="Downtime.is_recurring === true">
                         <div class="form-group required" ng-class="{'has-error': errors.from_time}">
-                            <label class="col col-md-1 control-label" for="SystemdowntimeFromTime"><?php echo __('Start time'); ?></label>
-                            <div class="col col-xs-4 col-md-2" >
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time" placeholder="<?php echo __('hh:mm'); ?>">
+                            <label class="col col-md-2 control-label"
+                                   for="SystemdowntimeFromTime"><?php echo __('Start time'); ?></label>
+                            <div class="col col-xs-10 col-md-10 col-lg-10">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time"
+                                       placeholder="<?php echo __('hh:mm'); ?>">
                                 <div ng-repeat="error in errors.from_time">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group required" ng-class="{'has-error': errors.duration}">
-                            <label class="col col-md-1 control-label" for="SystemdowntimeDuration"><?php echo __('Duration'); ?></label>
-                            <div class="col col-xs-4 col-md-2" ng-class="{'has-error': errors.duration}">
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.duration" placeholder="<?php echo __('minutes'); ?>">
+                            <label class="col col-md-2 control-label"
+                                   for="SystemdowntimeDuration"><?php echo __('Duration'); ?></label>
+                            <div class="col col-xs-10 col-md-10 col-lg-10" ng-class="{'has-error': errors.duration}">
+                                <input type="text" class="form-control" ng-model="post.Systemdowntime.duration"
+                                       placeholder="<?php echo __('minutes'); ?>">
                                 <div ng-repeat="error in errors.duration">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
@@ -138,17 +133,19 @@
                         ];
                         ?>
                         <div class="form-group required" ng-class="{'has-error': errors.weekdays}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                            <label class="col col-md-2 control-label">
                                 <?php echo __('Weekdays'); ?>
                             </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">{{ Downtime.Recurring.AllWeekdays=<?php echo json_encode($weekdays); ?>;"" }}
-                                <select class="form-control" multiple chosen="Downtime.Recurring.AllWeekdays" ng-model="post.Systemdowntime.weekdays">
-                                    <!--<option ng-repeat="weekday in Downtime.Recurring.AllWeekdays" value="{{weekday}}">{{weekday}}</option>-->
+                            <div class="col col-xs-10 col-md-10 col-lg-10">
+                                <select class="form-control" multiple
+                                        ng-model="post.Systemdowntime.weekdays"
+                                        chosen="{}">
                                     <?php
-                                    foreach($weekdays as $key=>$weekday){
-                                        echo '<option value="'.$key.'">'.$weekday.'</option>';
-                                    }
+                                    foreach ($weekdays as $key => $weekday) :
+                                        printf('<option value="%s">%s</option>', $key, h($weekday));
+                                    endforeach;
                                     ?>
+
                                 </select>
                                 <div ng-repeat="error in errors.weekdays">
                                     <div class="help-block text-danger">{{ error }}</div>
@@ -157,72 +154,79 @@
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.day_of_month}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                            <label class="col col-md-2 control-label">
                                 <?php echo __('Days of month'); ?>
                             </label>
                             <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <input class="form-control" type="text" ng-model="post.Systemdowntime.day_of_month" placeholder="<?php echo __('1,2,3,4,5 or <blank>'); ?>">
+                                <input class="form-control" type="text" ng-model="post.Systemdowntime.day_of_month"
+                                       placeholder="<?php echo __('1,2,3,4,5 or <blank>'); ?>">
                                 <div ng-repeat="error in errors.day_of_month">
                                     <div class="help-block text-danger">{{ error }}</div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
-                    <br/>
-                    <div ng-style="Downtime.Recurring.ReverseStyle">
+
+
+                    <div ng-if="Downtime.is_recurring === false">
                         <!-- from -->
-                        <div class="form-group required">
-                            <label class="col col-md-1 control-label"><?php echo __('From'); ?>
-                                :</label>
-                            <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.from_date}">
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date">
-                                <div ng-repeat="error in errors.from_date">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                        <div class="row">
+                            <div class="form-group required">
+                                <label class="col col-md-2 control-label"
+                                       for="SystemdowntimeFromDate"><?php echo __('From'); ?></label>
+                                <div class="col col-xs-3 col-md-3" ng-class="{'has-error': errors.from_date}">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date">
+                                    <div ng-repeat="error in errors.from_date">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.from_time}">
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time">
-                                <div ng-repeat="error in errors.from_time">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                <div class="col col-xs-2 col-md-2 no-padding"
+                                     ng-class="{'has-error': errors.from_time}">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.from_time"
+                                           placeholder="<?php echo __('hh:mm'); ?>">
+                                    <div ng-repeat="error in errors.from_time">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
 
                         <!-- to -->
-                        <div class="form-group required">
-                            <label class="col col-md-1 control-label"><?php echo __('To'); ?>
-                                :</label>
-                            <div class="col col-xs-3 col-md-3" style="padding-right: 0px;" ng-class="{'has-error': errors.to_date}">
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date">
-                                <div ng-repeat="error in errors.to_date">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                        <div class="row">
+                            <div class="form-group required">
+                                <label class="col col-md-2 control-label"
+                                       for="SystemdowntimeToDate"><?php echo __('To'); ?></label>
+                                <div class="col col-xs-3 col-md-3" ng-class="{'has-error': errors.to_date}">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date">
+                                    <div ng-repeat="error in errors.to_date">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col col-xs-4 col-md-2" style="padding-left: 0px;" ng-class="{'has-error': errors.to_time}">
-                                <input type="text" class="form-control" ng-model="post.Systemdowntime.to_time">
-                                <div ng-repeat="error in errors.to_time">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                <div class="col col-xs-2 col-md-2 no-padding" ng-class="{'has-error': errors.to_time}">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.to_time"
+                                           placeholder="<?php echo __('hh:mm'); ?>">
+                                    <div ng-repeat="error in errors.to_time">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div> <!-- close col -->
-            </div> <!-- close row-->
-            <div class="well formactions ">
-                <div class="pull-right">
-                    <input type="button"
-                           class="btn btn-primary"
-                           value="<?php echo __('Save'); ?>"
-                           ng-click="saveNewServiceDowntime()"
-                    >
-                    &nbsp;
-                    <a href="<?php echo $back_url;?>" class="btn btn-default">
-                        <?php echo __('Cancel'); ?>
-                    </a>
                 </div>
+            </form>
+        </div> <!-- close row-->
+        <div class="well formactions ">
+            <div class="pull-right">
+                <input type="button"
+                       class="btn btn-primary"
+                       value="<?php echo __('Save'); ?>"
+                       ng-click="saveNewServiceDowntime()"
+                >
+                &nbsp;
+                <a href="<?php echo $back_url; ?>" class="btn btn-default">
+                    <?php echo __('Cancel'); ?>
+                </a>
             </div>
-        </div> <!-- close widget body -->
+        </div>
     </div>
-</div> <!-- end jarviswidget -->
+</div>

@@ -37,6 +37,11 @@ class Systemdowntime extends AppModel {
                 'message'  => 'Please select at least 1 object',
                 'required' => true,
             ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Please select at least 1 object',
+                'required' => true,
+            ],
         ],
         'from_date'    => [
             'notBlank'   => [

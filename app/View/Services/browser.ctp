@@ -776,7 +776,11 @@ $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime', 'service_id' => $service['Service']['id']]); ?>"
+                <a href="<?php echo Router::url([
+                        'controller' => 'systemdowntimes',
+                        'action' => 'addServicedowntime',
+                        $service['Service']['id']
+                ]); ?>"
                    class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
                 <button type="button" class="btn btn-success" id="submitCommitServiceDowntime">
                     <?php echo __('Send'); ?>

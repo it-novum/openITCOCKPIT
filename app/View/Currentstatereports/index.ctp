@@ -55,14 +55,14 @@
                     <?php echo __('Service'); ?>
                 </label>
                 <div class="col col-xs-10">
-                    <select
+                    <select multiple
+                            id="ServiceId"
                             data-placeholder="<?php echo __('Please choose'); ?>"
                             class="form-control"
-                            multiple
-                            chosen="SuggestedServices"
-                            ng-model="post.Currentstatereport.Service"
-                            ng-options="value.id as value.label group by value.group for value in SuggestedServices">
-                        <option>--</option>
+                            chosen="services"
+                            callback="loadServices"
+                            ng-options="service.value.Service.id as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                            ng-model="post.Currentstatereport.Service">
                     </select>
                     <div ng-repeat="error in errors.Service">
                         <div class="help-block text-danger">{{ error }}</div>
@@ -137,7 +137,7 @@
             <div class="pull-right">
                 <input type="button"
                        class="btn btn-primary"
-                       value="<?php echo __('Save'); ?>"
+                       value="<?php echo __('Create'); ?>"
                        ng-click="createCurrentStateReport()"
                 >
                 &nbsp;
