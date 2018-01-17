@@ -210,3 +210,15 @@ canvas {
     border-radius: 0 0 3px 3px;
 }
 
+.login-center .alert-success {
+    background-color: transparent;
+    color: #72d473;
+    border-color: #02d004;
+}
+
+.login-center .alert-danger {
+    background-color: transparent;
+    color: #f3423e;
+    border-color: #f51b16;
+}
+
