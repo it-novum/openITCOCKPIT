@@ -14,7 +14,6 @@ angular.module('openITCOCKPIT')
             $scope.filter = {
                 Acknowledgement: {
                     state: {
-                        ok: false,
                         warning: false,
                         critical: false,
                         unknown: false
