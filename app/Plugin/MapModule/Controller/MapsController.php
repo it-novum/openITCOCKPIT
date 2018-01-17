@@ -23,71 +23,103 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\MapFilter;
+
 class MapsController extends MapModuleAppController {
 
-    public $layout = 'Admin.default';
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'CustomValidationErrors'];
-    public $helpers = ['CustomValidationErrors', 'ListFilter.ListFilter'];
-    //public $uses = ['Tenant'];
+    public $layout = 'angularjs';
+    public $components = [
+        'Paginator',
+        'ListFilter.ListFilter',
+        'RequestHandler',
+        'CustomValidationErrors'
+    ];
 
-    public $listFilters = ['index' => [
-        'fields' => [
-            'Map.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-            'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
-            //'Tenant.name' => array('label' => 'Contact', 'searchType' => 'wildcard'),
-        ],
-    ]];
+    public $helpers = [
+        'CustomValidationErrors',
+        'ListFilter.ListFilter'
+    ];
+
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
+            ],
+        ]
+    ];
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $MapFilter = new MapFilter($this->request);
+
         $query = [
-            'conditions' => ['MapsToContainers.container_id' => $this->MY_RIGHTS],
-            'fields' => [
+            'conditions' => $MapFilter->indexFilter(),
+            'fields'     => [
                 'Map.*',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'maps_to_containers',
-                    'type' => 'INNER',
-                    'alias' => 'MapsToContainers',
+                    'table'      => 'maps_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'MapsToContainers',
                     'conditions' => 'MapsToContainers.map_id = Map.id',
                 ],
             ],
-            'order' => [
-                'Map.name' => 'asc',
-            ],
-            'contain' => [
+            'order'      => $MapFilter->getOrderForPaginator('Map.name', 'asc'),
+            'contain'    => [
                 'Container' => [
                     'fields' => [
                         'Container.id',
                     ],
                 ],
             ],
-            'group' => 'Map.id',
+            'group'      => 'Map.id',
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['MapsToContainers.container_id'] = $this->MY_RIGHTS;
         }
-        if ($this->isApiRequest()) {
+
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
             $all_maps = $this->Map->find('all', $query);
         } else {
-            $this->Paginator->settings = array_merge_recursive($this->Paginator->settings, $query);
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $MapFilter->getPage();
             $all_maps = $this->Paginator->paginate();
         }
 
+        foreach ($all_maps as $key => $all_map) {
+            $all_maps[$key]['Map']['allowEdit'] = false;
+            if ($this->hasRootPrivileges == true) {
+                $all_maps[$key]['Map']['allowEdit'] = true;
+                continue;
+            }
+            foreach ($all_map['Container'] as $cKey => $container) {
+                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
+                    $all_maps[$key]['Map']['allowEdit'] = true;
+                    continue;
+                }
+            }
+        }
         $this->set('all_maps', $all_maps);
         //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_maps']);
+        $this->set('_serialize', ['all_maps', 'paging']);
     }
 
 
     public function add() {
-        $this->loadModel('Container');
-
-        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-
-        $this->set(compact('container'));
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
@@ -103,18 +135,16 @@ class MapsController extends MapModuleAppController {
             }
 
             if ($this->Map->saveAll($this->request->data)) {
-
                 if ($this->request->ext === 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
+                    }
                     $this->serializeId();
-
                     return;
                 }
-                $this->setFlash(__('Map properties successfully saved'));
-                $this->redirect(['action' => 'index']);
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('could not save data'), false);
@@ -122,47 +152,57 @@ class MapsController extends MapModuleAppController {
         }
     }
 
-    public function edit($id = null) {
-        if (!$this->Map->exists($id)) {
-            throw new NotFoundException(__('Invalid map'));
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
-        $this->loadModel('Tenant');
-        $this->Map->recursive = -1;
-        $this->Map->autoFields = false;
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
 
 
-        $this->Map->contain([
-            'Container' => [
-                'fields' => ['id', 'name'],
-            ],
-        ]);
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
 
-        $map = $this->Map->findById($id);
-
-        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
-            $this->render403();
-
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        //'Tenant.description' <-> Container.name
-        $tenants = Set::combine($this->Tenant->find('all', [
+        if (!$this->Map->exists($id)) {
+            throw new NotFoundException(__('Invalid map'));
+        }
 
-                'fields' => [
-                    'Container.id',
-                    'Container.name',
-                ],
-                'order' => 'Container.name ASC',
+        $map = $this->Map->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Map.id' => $id
+            ],
+            'contain' => [
+                'Container' => [
+                    'fields' => ['id', 'name'],
+                ]
             ]
-        ),
-            '{n}.Container.id', '{n}.Container.name'
-        );
-        $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges, []);
-        $this->set(compact('map', 'container'));
+        ]);
+
+        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+        if (!$this->allowedByContainerId($containerIdsToCheck)) {
+            $this->render403();
+            return;
+        }
+
+        $this->set('_serialize', ['map']);
+        $this->set(compact('map'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            $this->request->data['Map']['id'] = $id;
+
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
             if (empty($this->request->data['Map']['refresh_interval'])) {
@@ -178,16 +218,13 @@ class MapsController extends MapModuleAppController {
             if ($this->Map->saveAll($this->request->data)) {
                 if ($this->isJsonRequest()) {
                     $this->serializeId();
-
                     return;
                 }
-                $this->setFlash(__('Map properties successfully saved'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
 
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
-
                     return;
                 }
                 $this->setFlash(__('could not save data'), false);
@@ -204,7 +241,6 @@ class MapsController extends MapModuleAppController {
         $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
         if (!$this->allowedByContainerId($containerIdsToCheck)) {
             $this->render403();
-
             return;
         }
 
@@ -213,72 +249,14 @@ class MapsController extends MapModuleAppController {
         }
 
         if ($this->Map->delete($id, true)) {
-            $this->setFlash(__('Map deleted'));
-            $this->redirect(['action' => 'index']);
+            $this->setFlash(__('Map deleted successfully'));
+            $this->set('message', __('Map deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
         }
 
-        $this->setFlash(__('Could not delete map'), false);
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function mass_delete() {
-        $userId = $this->Auth->user('id');
-        foreach (func_get_args() as $mapId) {
-            if (!$this->Map->exists($mapId)) {
-                throw new NotFoundException(__('Invalid Map'));
-            }
-            $map = $this->Map->find('first', [
-                'recursive' => -1,
-                'conditions' => [
-                    'Map.id' => $mapId,
-                ],
-                'fields' => [
-                    'Map.name',
-                ],
-                'contain' => [
-                    'Container' => [
-                        'fields' => [
-                            'Container.id',
-                            'Container.parent_id',
-                        ],
-                    ],
-                ],
-            ]);
-
-            $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
-            if (!$this->allowedByContainerId($containerIdsToCheck)) {
-                $this->render403();
-
-                return;
-            }
-
-            if ($this->Map->delete($map['Map']['id'], true)) {
-                /*	$changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $ids,
-                        OBJECT_SERVICEGROUP,
-                        $servicegroup['Container']['parent_id'],
-                        $userId,
-                        $map['Map']['name'],
-                        $map
-                    );
-                    if($changelog_data){
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
-                    */
-            }
-        }
-        $this->setFlash(__('Maps deleted'));
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function loadUsersForTenant($tenantId = []) {
-        return;
-
-        foreach ($tenantId as $key => $value) {
-            //	debug($key);
-            //	debug($value);
-        }
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete Map'));
+        $this->set('_serialize', ['message']);
     }
 }

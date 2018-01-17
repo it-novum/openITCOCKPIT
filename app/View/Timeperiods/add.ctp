@@ -90,13 +90,16 @@
                                     'class'     => 'chosen weekdays',
                                     'div'       => false,
                                     'wrapInput' => 'col-md-2',
-                                    'label'     => ['text' => __('Day'), 'class' => 'col-md-1 no-padding text-right'],
+                                    'label'     => [
+                                        'text' => __('Day'),
+                                        'class' => 'col-md-1 no-padding text-right'
+                                    ],
                                     'selected'  => $timerange['day'],
                                 ]
                             );
 
                             echo $this->Form->input('Timerange.'.$key.'.start', [
-                                    'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
+                                    'class'       => 'form-control no-padding '.((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                     'placeholder' => '00:00',
                                     'maxlength'   => 5,
                                     'size'        => 5,
@@ -110,11 +113,12 @@
                                             'class' => 'text-danger',
                                         ],
                                     ],
+                                    'style' => 'height:auto; padding:1px 4px!important;',
                                     'errorClass'  => 'text-danger error',
                                 ]
                             );
                             echo $this->Form->input('Timerange.'.$key.'.end', [
-                                    'class'       => ((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
+                                    'class'       => 'form-control no-padding '.((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                     'placeholder' => '24:00',
                                     'maxlength'   => 5,
                                     'size'        => 5,
@@ -128,6 +132,8 @@
                                             'class' => 'text-danger',
                                         ],
                                     ],
+                                    'style' => 'height:auto; padding:1px 4px!important;',
+
                                 ]
                             );
                             ?>
@@ -153,22 +159,28 @@
                     echo $this->Form->input('template.1.day', [
                             'options'   => $weekdays,
                             'multiple'  => false,
-                            'class'     => 'weekdays',
+                            'class'     => 'chosen weekdays',
                             'div'       => false,
                             'wrapInput' => 'col-md-2',
-                            'label'     => ['text' => __('Day'), 'class' => 'col-md-1 no-padding text-right'],
+                            'label'     => [
+                                'text' => __('Day'),
+                                'class' => 'col-md-1 no-padding text-right'
+                            ],
                         ]
                     );
 
                     echo $this->Form->input('template.1.start', [
-                        'class'       => 'col-xs-8 no-padding',
+                        'class'       => 'form-control col-xs-8 no-padding',
+                        'style' => 'height:auto; padding:1px 4px!important;',
                         'placeholder' => '00:00',
-                        'value'       => '00:00',
                         'maxlength'   => 5,
                         'size'        => 5,
                         'div'         => false,
                         'wrapInput'   => 'col-md-2',
-                        'label'       => ['class' => 'col-md-2 text-right'],
+                        'label'       => [
+                            'class' => 'col-md-2 text-right',
+                            'style' => 'margin-top:4px;'
+                        ],
                         'error'       => [
                             'attributes' => [
                                 'wrap'  => 'div',
@@ -177,14 +189,17 @@
                         ],
                     ]);
                     echo $this->Form->input('template.1.end', [
-                            'class'       => 'col-xs-8 no-padding',
+                            'class'       => 'form-control col-xs-8 no-padding',
+                            'style' => 'height:auto; padding:1px 4px!important;',
                             'placeholder' => '24:00',
-                            'value'       => '24:00',
                             'maxlength'   => 5,
                             'size'        => 5,
                             'div'         => false,
                             'wrapInput'   => 'col-md-2',
-                            'label'       => ['class' => 'col-md-2 text-right'],
+                            'label'       => [
+                                'class' => 'col-md-2 text-right',
+                                'style' => 'margin-top:4px;'
+                            ],
                             'error'       => [
                                 'attributes' => [
                                     'wrap'  => 'div',

@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Automaps'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -178,7 +178,7 @@
 
     <div class="modal fade" id="serviceDetailsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
          aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">

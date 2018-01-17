@@ -45,19 +45,32 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
 
-            echo $this->Form->create('Container', [
-                'class' => 'form-horizontal clear',
-                'url' => 'index',
-            ]);
 
-            echo $this->Form->input('id', [
-                'label'     => ['text' => __('Tenants'), 'class' => 'col-xs-12 col-md-12 col-lg-12'],
-                'options'   => $tenants,
-                'class'     => 'select2 select_tenant',
-                'wrapInput' => 'col col-xs-12 col-md-12 col-lg-12',
-            ]); ?>
+            <div class="row">
+
+                <div class="form-group">
+                    <label class="col col-md-1 control-label">
+                        <?php echo __('Tenant'); ?>
+                    </label>
+                    <div class="col col-xs-11">
+
+                        <select
+                                id="TenantSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="tenants"
+                                ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
+                                ng-model="selectedTenant"
+
+                        >
+                        </select>
+
+                    </div>
+                </div>
+
+            </div>
+
             <br/>
             <div>
                 <span class="ajax_loader text-center">
@@ -68,47 +81,72 @@
                 </span>
             </div>
             <div class="row">
-                <div class="col-sm-12 col-lg-6">
+                <div class="col-sm-12 col-lg-12">
+                    <div class="jarviswidget" id="wid-id-0">
+
+                        <header>
+                            <span class="widget-icon"> <i class="fa fa-book"></i> </span>
+                            <h2><?php echo __('Legend'); ?>:</h2>
+                        </header>
+
+                        <div class="padding-bottom-10">
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-globe"></i> <?php echo __('Global'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-home"></i> <?php echo __('Tenant'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-location-arrow"></i> <?php echo __('Location'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-link"></i> <?php echo __('Node'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-users"></i> <?php echo __('Contactgroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-sitemap"></i> <?php echo __('Hostgroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-cogs"></i> <?php echo __('Servicegroup'); ?>
+                            </div>
+                            <div class="col col-xs-12 col-md-2 col-lg-3">
+                                <i class="fa fa-pencil-square-o"></i> <?php echo __('Servicetemplategroup'); ?>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-lg-12">
                     <div class="jarviswidget" id="wid-id-0">
                         <header>
                             <span class="widget-icon"> <i class="fa fa-link"></i> </span>
                             <h2><?php echo __('Tree'); ?></h2>
                         </header>
-                        <div>
-                            <div class="widget-body">
-                                <div id="ajax_result"></div>
+
+                        <div class="widget-body">
+
+                            <div class="dd dd-nodrag containers-dd" id="nestable">
+
+                                <ol class="dd-list"
+                                    id=""
+                                    ng-if="container.children.length > 0"
+                                    ng-repeat="container in containers"
+                                >
+                                    <nested-list container="container" callback="load"></nested-list>
+                                </ol>
+
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12 col-lg-6">
-                    <div class="jarviswidget" id="wid-id-0">
-                        <header>
-                            <span class="widget-icon"> <i class="fa fa-link"></i> </span>
-                            <h2><?php echo __('Add new node'); ?>:</h2>
-                        </header>
-                        <div>
-                            <div class="widget-body">
-                                <?php
 
 
-                                ?>
-                                <div id="ajax_parent_nodes"></div>
-                                <?php
-                                $options = [];
-                                if ($validationError === false):
-                                    $options = ['value' => false];
-                                endif;
-                                echo $this->Form->input('name', $options);
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <?php
-            echo $this->Form->formActions();
-            ?>
+
         </div>
     </div>
 </div>

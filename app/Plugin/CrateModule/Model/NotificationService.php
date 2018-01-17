@@ -111,6 +111,10 @@ class NotificationService extends CrateModuleAppModel {
             ];
         }
 
+        if(!empty($ServiceNotificationConditions->getStates())){
+            $query['conditions']['state'] = $ServiceNotificationConditions->getStates();
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 

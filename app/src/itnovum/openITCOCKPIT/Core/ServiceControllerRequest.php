@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+
 class ServiceControllerRequest {
 
     /**
@@ -32,15 +34,23 @@ class ServiceControllerRequest {
      */
     private $request;
 
+    /**
+     * @var ServiceFilter
+     */
+    private $ServiceFilter;
 
-    public function __construct(\CakeRequest $request){
+    public function __construct(\CakeRequest $request, ServiceFilter $ServiceFilter){
         $this->request = $request;
+        $this->ServiceFilter = $ServiceFilter;
     }
 
     /**
      * @return bool
      */
     public function isRequestFromBrowser(){
+        if(isset($this->request->query['BrowserContainerId'])){
+            return true;
+        }
         return isset($this->request->params['named']['BrowserContainerId']);
     }
 
@@ -48,7 +58,14 @@ class ServiceControllerRequest {
      * @return array
      */
     public function getBrowserContainerIdsByRequest(){
-        $containerIds = $this->request->params['named']['BrowserContainerId'];
+        if(isset($this->request->params['named']['BrowserContainerId'])){
+            $containerIds = $this->request->params['named']['BrowserContainerId'];
+        }
+
+        if(isset($this->request->query['BrowserContainerId'])){
+            $containerIds = $this->request->query['BrowserContainerId'];
+        }
+
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -56,18 +73,12 @@ class ServiceControllerRequest {
     }
 
     /**
-     * @param array $defaultOrder
+     * @param string $sort
+     * @param string $direction
      * @return array
      */
-    public function getOrder($defaultOrder = []){
-        if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
-            return [
-                $this->request['named']['sort'] => $this->request['named']['direction']
-            ];
-        }
-
-        return $defaultOrder;
-
+    public function getOrder($sort = '', $direction = ''){
+        return $this->ServiceFilter->getOrderForPaginator($sort, $direction);
     }
 
 }

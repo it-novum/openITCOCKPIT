@@ -103,13 +103,14 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             <?php
                             foreach ($state_array_host as $state => $state_count):?>
                                 <div class="col-md-4 no-padding">
-                                    <a href="<?php echo Router::url([
-                                        'controller' => 'hosts',
-                                        'action' => 'index',
-                                        'plugin' => '',
-                                        'Filter.Hoststatus.current_state[' . $state . ']' => 1,
-                                        'BrowserContainerId' => ROOT_CONTAINER,
-                                    ]); ?>">
+                                        <a href="/hosts/index<?php echo Router::queryString([
+                                            'filter'             => [
+                                                'Hoststatus.current_state' => [$state => 1]
+                                            ],
+                                            'sort'               => 'Hoststatus.last_state_change',
+                                            'direction'          => 'desc',
+                                            'BrowserContainerId' => ROOT_CONTAINER
+                                        ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                                         <?php echo $state_count . ' (' . round($state_count / $state_total * 100, 2) . ' %)'; ?>
                                     </a>
@@ -155,12 +156,13 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
                             foreach ($state_array_service as $state => $state_count):?>
                                 <div class="col-md-3 no-padding">
-                                    <a href="<?php echo Router::url([
-                                        'controller' => 'services',
-                                        'action' => 'index',
-                                        'plugin' => '',
-                                        'Filter.Servicestatus.current_state[' . $state . ']' => 1,
-                                        'BrowserContainerId' => ROOT_CONTAINER,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'             => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'sort'               => 'Servicestatus.last_state_change',
+                                        'direction'          => 'desc',
+                                        'BrowserContainerId' => ROOT_CONTAINER
                                     ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                                         <?php

@@ -26,7 +26,7 @@
 
 echo $this->Form->create('Documentation', [
     'class' => 'form-horizontal clear',
-    'url' => $this->params->params['pass']
+    'url'   => $this->params->params['pass']
 ]);
 ?>
 
@@ -41,40 +41,41 @@ echo $this->Form->create('Documentation', [
         <h5>
             <div class="pull-right">
                 <?php
-                switch($type):
-                case 'host':
-                    ?>
-                    <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
-                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
-                    </a>
-                    <?php
-                    echo $this->element('host_browser_menu');
-                break;
+                switch ($type):
+                    case 'host':
+                        ?>
+                        <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>" class="btn btn-primary btn-sm"><i
+                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
+                        </a>
+                        <?php
+                        echo $this->element('host_browser_menu');
+                        break;
 
-                case 'service':
-                    ?>
-                    <a href="/services/browser/<?php echo $service['Service']['id']; ?>" class="btn btn-primary btn-sm"><i
-                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
-                    </a>
-                    <?php
-                    echo $this->element('service_browser_menu');
-                    break;
+                    case 'service':
+                        ?>
+                        <a href="/services/browser/<?php echo $service['Service']['id']; ?>"
+                           class="btn btn-primary btn-sm"><i
+                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                        </a>
+                        <?php
+                        echo $this->element('service_browser_menu');
+                        break;
 
-                case 'servicetemplate':
-                    ?>
-                    <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
-                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                    </a>
-                    <?php
-                    break;
+                    case 'servicetemplate':
+                        ?>
+                        <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
+                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
+                        </a>
+                        <?php
+                        break;
 
-                case 'hosttemplate':
-                    ?>
-                    <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
-                                class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
-                    </a>
-                    <?php
-                    break;
+                    case 'hosttemplate':
+                        ?>
+                        <a href="/hosttemplates/index" class="btn btn-primary btn-sm"><i
+                                    class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back')); ?>
+                        </a>
+                        <?php
+                        break;
 
                 endswitch;
                 ?>
@@ -331,8 +332,16 @@ echo $this->Form->input('uuid', ['type' => 'hidden', 'value' => $uuid]);
             <div class="modal-body">
 
                 <div class="row">
-                    <?php echo $this->Form->input('url', ['label' => __('URL:'), 'placeholder' => 'http://www.openitcockpit.org', 'style="width: 100%;"']); ?>
-                    <?php echo $this->Form->input('description', ['label' => __('Description:'), 'placeholder' => __('Official page for openITCOCKPIT'), 'style="width: 100%;"']); ?>
+                    <?php echo $this->Form->input('url', [
+                        'label'       => __('URL:'),
+                        'placeholder' => 'https://openitcockpit.io',
+                        'style'       => 'width: 100%;'
+                    ]); ?>
+                    <?php echo $this->Form->input('description', [
+                            'label' => __('Description:'),
+                            'placeholder' => __('Official page for openITCOCKPIT'),
+                            'style' => 'width: 100%;'
+                    ]); ?>
                 </div>
 
             </div>

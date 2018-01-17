@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 abstract class Acknowledgement {
 
@@ -69,12 +70,16 @@ abstract class Acknowledgement {
      */
     private $state;
 
+    /**
+     * @var UserTime|null
+     */
+    private $UserTime;
 
     /**
      * StatehistoryHost constructor.
      * @param array $data
      */
-    public function __construct($data){
+    public function __construct($data, $UserTime = null){
         if (isset($data['acknowledgement_type'])) {
             $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
@@ -107,6 +112,7 @@ abstract class Acknowledgement {
             $this->state = (int)$data['state'];
         }
 
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -165,4 +171,21 @@ abstract class Acknowledgement {
         return $this->state;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
+
+        if($this->UserTime !== null) {
+            $arr['entry_time'] = $this->UserTime->format($this->getEntryTime());
+        }else{
+            $arr['entry_time'] = $this->getEntryTime();
+        }
+
+        return $arr;
+    }
 }

@@ -35,6 +35,12 @@ echo $this->fetch('script');
 
 $DesignModule = APP.'Plugin'.DS.'DesignModule'.DS.'webroot'.DS.'css'.DS.'style.css';
 if(file_exists($DesignModule)){
-    echo $this->Html->css('/design_module/css/style.css');
+    if(!Cache::read('design_module_style_time', 'long')){
+        Cache::write('design_module_style_time', time(), 'long');
+    }
+    $suffix = Cache::read('design_module_style_time', 'long');
+
+    printf('<link rel="stylesheet" type="text/css" href="/design_module/css/style.css?%s"/>', $suffix);
+    //echo $this->Html->css('/design_module/css/style.css');
 }
 

@@ -25,6 +25,7 @@
 App.Controllers.InstantreportsAddController = Frontend.AppController.extend({
 
     _initialize: function() {
+
         var self = this;
         $(document).on('click', '.group-result', function() {
         // Get unselected items in this group
@@ -48,6 +49,9 @@ App.Controllers.InstantreportsAddController = Frontend.AppController.extend({
             self.changeSendMail();
         });
         self.changeSendMail();
+
+        self.$tagsinput = $('.tagsinput');
+        self.$tagsinput.tagsinput();
     },
 
     changeInputFieldsByType: function(){

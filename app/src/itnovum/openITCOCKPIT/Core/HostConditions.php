@@ -62,6 +62,21 @@ class HostConditions {
         return $this->conditions;
     }
 
+    /**
+     * @return array
+     */
+    public function getConditionsForFind(){
+        $conditions = $this->conditions;
+        if(!empty($this->containerIds)){
+            $conditions['HostsToContainers.container_id'] = $this->containerIds;
+        }
+
+        if($this->includeDisabled() === false){
+            $conditions['Host.disabled'] = 0;
+        }
+
+        return $conditions;
+    }
 
     /**
      * @return boolean
@@ -89,6 +104,13 @@ class HostConditions {
      */
     public function setContainerIds($containerIds){
         $this->containerIds = $containerIds;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasContainer(){
+        return !empty($this->containerIds);
     }
 
     /**

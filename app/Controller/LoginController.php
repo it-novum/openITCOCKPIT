@@ -34,6 +34,8 @@ class LoginController extends AppController
     public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];
     public $components = ['Ldap'];
 
+    public $layout = 'login';
+
     public function beforeFilter()
     {
         $this->Auth->allow();
@@ -273,7 +275,7 @@ class LoginController extends AppController
                 $this->setFlash(__('Wrong One-time password'), false);
             }
         }
-        $this->layout = 'lock';
+        //$this->layout = 'lock';
         $_user = $this->User->findById($id);
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 

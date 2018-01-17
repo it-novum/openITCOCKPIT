@@ -43,7 +43,7 @@ endif;
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo $this->Utils->pluralize($count, __('Contact'), __('Contacts')); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo __('Delete'); ?></div>
         </h1>
     </div>
@@ -90,9 +90,21 @@ endif;
                                 <strong><i class="fa fa-info-circle"></i> <?php echo __('The following %s can\'t be deleted.', $this->Utils->pluralize($count, __('contact'), __('contacts'))); ?>
                                 </strong> <i><?php echo __('(Used by other object)'); ?>:</i>
                             </li>
-                            <?php foreach ($contactsCanotDelete as $contactCanotDelete): ?>
+                            <?php foreach ($contactsCanotDelete as $contactId => $contactCanotDelete): ?>
                                 <li class="list-group-item list-group-item-info">
-                                    <?php echo h($contactCanotDelete); ?>
+                                    <?php echo h($contactCanotDelete);
+                                    if($hasRootPrivileges && $this->Acl->hasPermission('usedBy')):
+                                        echo $this->Html->link(__('Used by ...'), [
+                                            'controller' => 'contacts',
+                                            'action' => 'usedBy',
+                                            $contactId
+                                        ], [
+                                            'target' => '_blank',
+                                            'icon' => 'fa fa-reply-all fa-flip-horizontal',
+                                            'class' => 'padding-10'
+                                        ]);
+                                    endif;
+                                    ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

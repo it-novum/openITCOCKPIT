@@ -25,21 +25,20 @@
 
 
 /**
- * @property Mapeditor    Mapeditor
- * @property Mapitem      Mapitem
- * @property Mapline      Mapline
- * @property Mapgadget    Mapgadget
- * @property Mapicon      Mapicon
- * @property Maptext      Maptext
- * @property Host         Host
- * @property Hostgroup    Hostgroup
- * @property Service      Service
+ * @property Mapeditor Mapeditor
+ * @property Mapitem Mapitem
+ * @property Mapline Mapline
+ * @property Mapgadget Mapgadget
+ * @property Mapicon Mapicon
+ * @property Maptext Maptext
+ * @property Host Host
+ * @property Hostgroup Hostgroup
+ * @property Service Service
  * @property Servicegroup Servicegroup
- * @property Background   Background
- * @property Map          Map
+ * @property Background Background
+ * @property Map Map
  */
-class MapeditorsController extends MapModuleAppController
-{
+class MapeditorsController extends MapModuleAppController {
     public $layout = 'Admin.default';
     public $uses = [
         'MapModule.Mapeditor',
@@ -62,20 +61,17 @@ class MapeditorsController extends MapModuleAppController
         'Perfdata',
     ];
 
-    public function index()
-    {
+    public function index() {
         $this->__checkForGD();
     }
 
-    protected function __checkForGD()
-    {
+    protected function __checkForGD() {
         if (!extension_loaded('gd') || !function_exists('gd_info')) {
             throw new InternalErrorException(__('php5-gd not installed'));
         }
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $this->__checkForGD();
         if (!$this->Map->exists($id)) {
             throw new NotFoundException(__('Invalid map'));
@@ -106,8 +102,8 @@ class MapeditorsController extends MapModuleAppController
             foreach ($elementIdsToDelete as $mapElementType => $ids) {
                 if (!empty($ids) && !in_array($mapElementType, ['Container', 'Rotation'])) {
                     $this->{$mapElementType}->deleteAll([
-                        $mapElementType.'.map_id' => $map['Map']['id'],
-                        $mapElementType.'.id'     => $ids,
+                        $mapElementType . '.map_id' => $map['Map']['id'],
+                        $mapElementType . '.id'     => $ids,
                     ]);
                 }
             }
@@ -136,8 +132,7 @@ class MapeditorsController extends MapModuleAppController
         $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
 
 
-        $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list');
-        $services = $this->Service->servicesByHostContainerIds($this->MY_RIGHTS, 'list');
+        $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list', [], 'id', 15);
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
@@ -154,32 +149,29 @@ class MapeditorsController extends MapModuleAppController
             'servicegroup',
             'hostgroup',
             'hosts',
-            'services',
             'backgroundThumbs',
             'iconSets',
             'icons'
         ]));
     }
 
-    public function getIconImages()
-    {
+    public function getIconImages() {
         $this->autoRender = false;
         $iconSets = $this->Background->findIconsets();
         foreach ($iconSets['items']['iconsets'] as $iconset) {
-            $path = $iconSets['items']['webPath'].'/'.$iconset['savedName'].'/'.'ok.png';
-            echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer" title="'.$iconset['displayName'].'">
+            $path = $iconSets['items']['webPath'] . '/' . $iconset['savedName'] . '/' . 'ok.png';
+            echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer" title="' . $iconset['displayName'] . '">
 				<div class="drag-element thumbnail thumbnailFix iconset-thumbnail">';
             if ($iconset['dimension'] < 80) {
                 echo '<span class="valignHelper"></span>';
             }
-            echo '<img class="iconset" src="'.$path.'" iconset-id="'.$iconset['id'].'" iconset="'.$iconset['savedName'].'">
+            echo '<img class="iconset" src="' . $path . '" iconset-id="' . $iconset['id'] . '" iconset="' . $iconset['savedName'] . '">
 				</div>
 			</div>';
         }
     }
 
-    public function getIconsetsList()
-    {
+    public function getIconsetsList() {
         $this->autoRender = false;
         $iconSets = $this->Background->findIconsets();
         foreach ($iconSets['items']['iconsets'] as $name) {
@@ -187,23 +179,21 @@ class MapeditorsController extends MapModuleAppController
         }
     }
 
-    public function getBackgroundImages()
-    {
+    public function getBackgroundImages() {
         $this->autoRender = false;
         $bgs = $this->Background->findBackgrounds();
         foreach ($bgs['files'] as $background) {
-            $path = $bgs['thumbPath'].'/thumb_'.$background['savedName'];
-            $original = $bgs['webPath'].'/'.$background['savedName'];
-            echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize" title="'.$background['displayName'].'">
+            $path = $bgs['thumbPath'] . '/thumb_' . $background['savedName'];
+            $original = $bgs['webPath'] . '/' . $background['savedName'];
+            echo '<div class="col-xs-6 col-sm-6 col-md-6 backgroundContainer thumbnailSize" title="' . $background['displayName'] . '">
 					<div class="thumbnail backgroundThumbnailStyle background-thumbnail">
-						<img class="background" src="'.$path.'" original="'.$original.'" filename="'.$background['savedName'].'" filename-id="'.$background['id'].'">
+						<img class="background" src="' . $path . '" original="' . $original . '" filename="' . $background['savedName'] . '" filename-id="' . $background['id'] . '">
 					</div>
 				</div>';
         }
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         $rotate = null;
         if (isset($this->request->params['named']['rotate'])) {
             $isFirst = true;
@@ -522,8 +512,7 @@ class MapeditorsController extends MapModuleAppController
         $this->set('_serialize', ['map', 'mapElements']);
     }
 
-    public function hostUuidFromServiceUuid($serviceUuid = null)
-    {
+    public function hostUuidFromServiceUuid($serviceUuid = null) {
 
         $hostUuid = $this->Service->find('first', [
             'conditions' => [
@@ -546,15 +535,13 @@ class MapeditorsController extends MapModuleAppController
         return $hostUuid;
     }
 
-    public function fullscreen($id = null)
-    {
+    public function fullscreen($id = null) {
         $this->layout = '';
         $this->view($id);
         $this->render('view');
     }
 
-    public function popoverHostStatus($uuid = null)
-    {
+    public function popoverHostStatus($uuid = null) {
         $hoststatusFields = [
             'Host.name',
             'Host.description',
@@ -589,15 +576,13 @@ class MapeditorsController extends MapModuleAppController
         $this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
     }
 
-    public function popoverServicegroupStatus($uuid = null)
-    {
+    public function popoverServicegroupStatus($uuid = null) {
         $fields = [];
         $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($uuid, $fields);
         $this->set(compact(['uuid', 'servicegroups']));
     }
 
-    public function popoverHostgroupStatus($uuid = null)
-    {
+    public function popoverHostgroupStatus($uuid = null) {
         $hostFields = [
             'Hoststatus.current_state',
             'Hoststatus.problem_has_been_acknowledged',
@@ -612,8 +597,7 @@ class MapeditorsController extends MapModuleAppController
     }
 
 
-    public function popoverServiceStatus($uuid = null)
-    {
+    public function popoverServiceStatus($uuid = null) {
         $fields = [
             'Host.name',
             'Objects.name2',
@@ -651,8 +635,7 @@ class MapeditorsController extends MapModuleAppController
         $this->set(compact('uuid', 'servicestatus', 'serviceinfo'));
     }
 
-    public function popoverMapStatus($id)
-    {
+    public function popoverMapStatus($id) {
         $mapstatus = $this->Mapeditor->mapStatus($id);
         $mapinfo = $this->Map->find('first', [
             'recursive'  => -1,
@@ -670,8 +653,7 @@ class MapeditorsController extends MapModuleAppController
     }
 
 
-    public function servicesForWizard($hostId = null)
-    {
+    public function servicesForWizard($hostId = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -702,8 +684,8 @@ class MapeditorsController extends MapModuleAppController
         $this->set(compact(['services']));
     }
 
-    public function hostFromService($serviceId = null)
-    {
+    public function hostFromService($serviceId = null) {
+        //$this->autoRender = false;
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -722,6 +704,7 @@ class MapeditorsController extends MapModuleAppController
                 'Host.id',
             ],
         ]);
+        $this->set('_serialize', ['service']);
         $this->set(compact('service'));
     }
 }

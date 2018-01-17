@@ -23,42 +23,94 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php echo $this->Form->create('Onetimetoken', [
-    'class'         => 'lockscreen animated flipInY',
-    'inputDefaults' => [
-        'wrapInput' => false,
-        'label'     => false,
-        'div'       => false,
-    ],
-]);
-?>
-    <div class="logo">
-        <h1 class="semi-bold"><?php echo $this->html->image('itc_logo_ball.png'); ?><?php echo $systemname; ?></h1>
-    </div>
-    <div>
-        <?php //echo $this->html->image('daniel.jpg', array('width' => 120, 'height' => 120));?>
-        <i class="fa fa-unlock-alt pull-left" style="font-size: 150px;"></i>
-        <div>
-            <h1><?php echo __('A One-time password was sent to your email address'); ?></h1>
-            <p class="text-muted">
-                <?php echo __('Please enter the code out of the email'); ?>
-            </p>
-            <?php echo $this->Form->hidden('id', ['value' => $user_id]); ?>
-            <div class="input-group">
-                <?php echo $this->Form->input('onetimetoken', ['placeholder' => __('One-time password'), 'tabindex' => '1']); ?>
-                <div class="input-group-btn">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fa fa-key"></i>
-                    </button>
-                </div>
+
+
+<div class="login-screen"></div>
+<div class="login-center">
+    <div class="container min-height" style="padding-top: 20px;">
+        <div class="row">
+            <div class="col-xs-12">
+                <?php echo $this->Flash->render(); ?>
+                <?php echo $this->Flash->render('auth'); ?>
             </div>
         </div>
 
+        <div class="row" style="padding-top: 20px;">
+            <div class="col-xs-12 text-center">
+                <h1><?php echo __('A One-time password was sent to your email address'); ?></h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-offset-4">
+
+                <div class="login" id="card">
+                    <div class="front signin_form">
+                        <?php echo $this->Form->create('Onetimetoken', [
+                            'class'         => 'login-form',
+                            'inputDefaults' => [
+                                'wrapInput' => false,
+                                'label'     => false,
+                                'div'       => false,
+                            ],
+                        ]); ?>
+
+                        <?php echo $this->Form->hidden('id', ['value' => $user_id]); ?>
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <?php echo $this->Form->input('onetimetoken', [
+                                    'class'         => 'form-control',
+                                    'placeholder'   => __('Type your One-time password'),
+                                    'type'          => 'text',
+                                    'inputDefaults' => [
+                                        'wrapInput' => false,
+                                        'label'     => false,
+                                        'div'       => false,
+                                    ]
+                                ]); ?>
+                                <span class="input-group-addon">
+                                <i class="fa fa-lg fa-key"></i>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="form-group sign-btn">
+                            <button type="submit" class="btn btn-primary pull-right">
+                                <?php echo __('Continue'); ?>
+                            </button>
+                        </div>
+                        <?php echo $this->Form->end(); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <p class="font-xs margin-top-5">
-        <?php echo __('Copyright'); ?> <a href="http://it-novum.com"
-                                          target="_blank"><?php echo __('it-novum GmbH'); ?></a> 2005
-        - <?php echo date('Y'); ?>
-    </p>
-    </form>
-<?php echo $this->Form->end(); ?>
+</div>
+
+
+<div class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 col-md-9">
+                <a href="https://openitcockpit.io/" target="_blank" class="btn btn-default">
+                    <i class="fa fa-lg fa-globe"></i>
+                </a>
+                <a href="https://github.com/it-novum/openITCOCKPIT" target="_blank" class="btn btn-default">
+                    <i class="fa fa-lg fa-github"></i>
+                </a>
+                <a href="https://twitter.com/openITCOCKPIT" target="_blank" class="btn btn-default">
+                    <i class="fa fa-lg fa-twitter"></i>
+                </a>
+            </div>
+            <div class="col-xs-12 col-md-3 text-right">
+                Photo by
+                <a class="credit"
+                   href="https://unsplash.com/photos/GDdRP7U5ct0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">SpaceX</a>
+                on
+                <a class="credit"
+                   href="https://unsplash.com/photos/GDdRP7U5ct0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+            </div>
+        </div>
+    </div>
+</div>
+
