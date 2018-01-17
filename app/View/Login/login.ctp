@@ -3,7 +3,14 @@
 // Based on https://bootsnipp.com/snippets/zD9xl
 ?>
 
-<div class="login-screen"></div>
+<div class="login-screen">
+    <figure>
+        <figcaption>Photo by SpaceX on Unsplash</figcaption>
+    </figure>
+    <figure>
+        <figcaption>Photo by NASA on Unsplash</figcaption>
+    </figure>
+</div>
 <div class="container-fluid">
     <div class="row">
         <div id="particles-js" class="col-xs-12 col-sm-5 col-md-4"></div>
@@ -133,7 +140,7 @@
 <div class="footer">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12 col-md-9">
+            <div class="col-xs-12">
                 <a href="https://openitcockpit.io/" target="_blank" class="btn btn-default">
                     <i class="fa fa-lg fa-globe"></i>
                 </a>
@@ -143,14 +150,6 @@
                 <a href="https://twitter.com/openITCOCKPIT" target="_blank" class="btn btn-default">
                     <i class="fa fa-lg fa-twitter"></i>
                 </a>
-            </div>
-            <div class="col-xs-12 col-md-3 text-right">
-                Photo by
-                <a class="credit"
-                   href="https://unsplash.com/photos/GDdRP7U5ct0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">SpaceX</a>
-                on
-                <a class="credit"
-                   href="https://unsplash.com/photos/GDdRP7U5ct0?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
             </div>
         </div>
     </div>
