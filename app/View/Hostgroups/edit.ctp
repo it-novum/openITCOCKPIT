@@ -103,12 +103,15 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group"  ng-class="{'has-error': errors.hostgroup_url}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Host group URL'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <input class="form-control" type="text" ng-model="post.Hostgroup.hostgroup_url">
+                        <div ng-repeat="error in errors.hostgroup_url">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                 </div>
 
