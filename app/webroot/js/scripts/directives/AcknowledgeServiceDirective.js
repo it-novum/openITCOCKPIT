@@ -15,11 +15,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
             var objects = {};
             var author = '';
 
-            $scope.setObjects = function(_objects){
+            $scope.setServiceAckObjects = function(_objects){
                 objects = _objects;
             };
 
-            $scope.setAuthor = function(_author){
+            $scope.setServiceAckAuthor = function(_author){
                 author = _author;
             };
 
@@ -67,9 +67,9 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 if(Object.keys(objects).length === 0){
                     return;
                 }
-                $scope.setObjects(objects);
+                $scope.setServiceAckObjects(objects);
 
-                $scope.setAuthor(attr.author);
+                $scope.setServiceAckAuthor(attr.author);
 
                 $('#angularacknowledgeServiceModal').modal('show');
             };

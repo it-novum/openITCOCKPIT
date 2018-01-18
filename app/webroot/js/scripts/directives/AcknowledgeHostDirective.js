@@ -16,11 +16,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
             var objects = {};
             var author = '';
 
-            $scope.setObjects = function(_objects){
+            $scope.setHostAckObjects = function(_objects){
                 objects = _objects;
             };
 
-            $scope.setAuthor = function(_author){
+            $scope.setHostAckAuthor = function(_author){
                 author = _author;
             };
 
@@ -68,9 +68,9 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
                 if(Object.keys(objects).length === 0){
                     return;
                 }
-                $scope.setObjects(objects);
+                $scope.setHostAckObjects(objects);
 
-                $scope.setAuthor(attr.author);
+                $scope.setHostAckAuthor(attr.author);
 
                 $('#angularacknowledgeHostModal').modal('show');
             };

@@ -18,11 +18,11 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
             var objects = {};
             var author = '';
 
-            $scope.setObjects = function(_objects){
+            $scope.setServiceDowntimeObjects = function(_objects){
                 objects = _objects;
             };
 
-            $scope.setAuthor = function(_author){
+            $scope.setServiceDowntimeAuthor = function(_author){
                 author = _author;
             };
 
@@ -71,9 +71,9 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                 if(Object.keys(objects).length === 0){
                     return;
                 }
-                $scope.setObjects(objects);
+                $scope.setServiceDowntimeObjects(objects);
 
-                $scope.setAuthor(attr.author);
+                $scope.setServiceDowntimeAuthor(attr.author);
 
                 $('#angularServiceDowntimeModal').modal('show');
             };

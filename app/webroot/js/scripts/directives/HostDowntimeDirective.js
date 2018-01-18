@@ -19,11 +19,11 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
             var objects = {};
             var author = '';
 
-            $scope.setObjects = function(_objects){
+            $scope.setHostDowntimeObjects = function(_objects){
                 objects = _objects;
             };
 
-            $scope.setAuthor = function(_author){
+            $scope.setHostDowntimeAuthor = function(_author){
                 author = _author;
             };
 
@@ -82,9 +82,9 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                 if(Object.keys(objects).length === 0){
                     return;
                 }
-                $scope.setObjects(objects);
+                $scope.setHostDowntimeObjects(objects);
 
-                $scope.setAuthor(attr.author);
+                $scope.setHostDowntimeAuthor(attr.author);
 
                 $scope.loadHostdowntimeDefaultSelection();
 
