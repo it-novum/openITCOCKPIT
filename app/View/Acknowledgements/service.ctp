@@ -155,14 +155,6 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                                         <div class="form-group smart-form">
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
-                                                       ng-model="filter.Acknowledgement.state.ok"
-                                                       ng-model-options="{debounce: 500}">
-                                                <i class="checkbox-success"></i>
-                                                <?php echo __('Ok'); ?>
-                                            </label>
-
-                                            <label class="checkbox small-checkbox-label">
-                                                <input type="checkbox" name="checkbox" checked="checked"
                                                        ng-model="filter.Acknowledgement.state.warning"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-warning"></i>
