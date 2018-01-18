@@ -43,6 +43,15 @@
             </span>
             </div>
 
+            <div id="hide-menu" class="btn-header pull-right">
+            <span>
+                <a href="javascript:void(0);" data-original-title="<?php echo __('Collapse menu'); ?>"
+                   data-placement="left" rel="tooltip" data-container="body">
+                    <i class="fa fa-arrow-circle-left"></i>
+                </a>
+            </span>
+            </div>
+
             <div class="btn-header pull-right">
                 <span>
                     <?php if ($exportRunningHeaderInfo === false): ?>
