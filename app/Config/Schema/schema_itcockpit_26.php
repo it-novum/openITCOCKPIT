@@ -976,7 +976,7 @@ class AppSchema extends CakeSchema
         'notify_on_warning'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_on_unknown'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_on_critical'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_on_recovery'           => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'notify_on_recovery'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_on_flapping'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'notify_on_downtime'           => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
         'flap_detection_enabled'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
