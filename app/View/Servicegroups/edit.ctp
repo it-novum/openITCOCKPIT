@@ -102,12 +102,15 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-class="{'has-error': errors.servicegroup_url}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Service group URL'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <input class="form-control" type="text" ng-model="post.Servicegroup.servicegroup_url">
+                        <div ng-repeat="error in errors.servicegroup_url">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
                     </div>
                 </div>
 
