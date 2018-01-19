@@ -230,7 +230,6 @@ class ServicesController extends AppController {
             $all_services[] = $tmpRecord;
         }
 
-
         $this->set('all_services', $all_services);
         $this->set('_serialize', ['all_services', 'paging']);
     }
