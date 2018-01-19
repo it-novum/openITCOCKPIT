@@ -36,10 +36,11 @@ class NotificationService extends Notification {
 
     /**
      * NotificationService constructor.
-     * @param array $data
+     * @param $data
+     * @param null $UserTime
      */
-    public function __construct($data){
-        parent::__construct($data, 'NotificationService');
+    public function __construct($data, $UserTime = null){
+        parent::__construct($data, 'NotificationService', $UserTime);
         if (isset($data['NotificationService']['notification_type'])) {
             $this->is_service_notification = (int)$data['NotificationService']['notification_type'] === 1;
         }

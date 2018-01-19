@@ -31,7 +31,7 @@
                     <?php
                     $overview_chart = $this->PieChart->createHalfPieChart($widgetServiceStateArray180['state']);
                     echo $this->Html->image(
-                        '/img/charts/'.$overview_chart
+                        '/img/charts/' . $overview_chart
                     );
                     $stateColors = [
                         'ok',
@@ -52,23 +52,25 @@
                     <?php foreach ([1, 2, 3] as $state): ?>
                         <div class="col-xs-4">
                             <div class="col-xs-12 <?php echo $bgColors[$state]; ?>">
-                                <a href="<?php echo Router::url([
-                                    'controller'                                     => 'services',
-                                    'action'                                         => 'index',
-                                    'plugin'                                         => '',
-                                    'Filter.Servicestatus.current_state['.$state.']' => 1,
+                                <a href="/services/index<?php echo Router::queryString([
+                                    'filter'    => [
+                                        'Servicestatus.current_state' => [$state => 1]
+                                    ],
+                                    'sort'      => 'Servicestatus.last_state_change',
+                                    'direction' => 'desc'
                                 ]); ?>" style="color:#FFF;">
-                                    <?php echo __('( %s ) '.strtolower($this->Status->humanSimpleServiceStatus($state)), $widgetServiceStateArray180['state'][$state]); ?>
+                                    <?php echo __('( %s ) ' . strtolower($this->Status->humanSimpleServiceStatus($state)), $widgetServiceStateArray180['state'][$state]); ?>
                                 </a>
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['not_handled'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                            => 'services',
-                                        'action'                                                => 'index',
-                                        'plugin'                                                => '',
-                                        'Filter.Servicestatus.current_state['.$state.']'        => 1,
-                                        'Filter.Servicestatus.problem_has_been_acknowledged[0]' => 1,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'                    => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'has_not_been_acknowledged' => 1,
+                                        'sort'                      => 'Servicestatus.last_state_change',
+                                        'direction'                 => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) not handled', $widgetServiceStateArray180['not_handled'][$state]); ?>
                                     </a>
@@ -77,29 +79,14 @@
                                 <?php endif; ?>
                             </div>
                             <div class="col-xs-12">
-                                <?php if ($widgetServiceStateArray180['by_host'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                     => 'services',
-                                        'action'                                         => 'index',
-                                        'plugin'                                         => '',
-                                        'Filter.Servicestatus.current_state['.$state.']' => 1,
-                                        'Filter.Hoststatus.current_state[1]'             => 1,
-                                        'Filter.Hoststatus.current_state[2]'             => 1,
-                                    ]); ?>">
-                                        <?php echo __('( %s ) by host', $widgetServiceStateArray180['by_host'][$state]); ?>
-                                    </a>
-                                <?php else: ?>
-                                    <?php echo __('( 0 ) by host'); ?>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['acknowledged'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                            => 'services',
-                                        'action'                                                => 'index',
-                                        'plugin'                                                => '',
-                                        'Filter.Servicestatus.current_state['.$state.']'        => 1,
-                                        'Filter.Servicestatus.problem_has_been_acknowledged[1]' => 1,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'                => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'has_been_acknowledged' => 1,
+                                        'sort'                  => 'Servicestatus.last_state_change',
+                                        'direction'             => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) acknowledged', $widgetServiceStateArray180['acknowledged'][$state]); ?>
                                     </a>
@@ -109,12 +96,13 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['in_downtime'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                       => 'services',
-                                        'action'                                           => 'index',
-                                        'plugin'                                           => '',
-                                        'Filter.Servicestatus.current_state['.$state.']'   => 1,
-                                        'Filter.Servicestatus.scheduled_downtime_depth[0]' => 1,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'      => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'in_downtime' => 1,
+                                        'sort'        => 'Servicestatus.last_state_change',
+                                        'direction'   => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) in downtime', $widgetServiceStateArray180['in_downtime'][$state]); ?>
                                     </a>
@@ -124,12 +112,13 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['passive'][$state] > 0): ?>
-                                    <a href="<?php echo Router::url([
-                                        'controller'                                     => 'services',
-                                        'action'                                         => 'index',
-                                        'plugin'                                         => '',
-                                        'Filter.Servicestatus.current_state['.$state.']' => 1,
-                                        'Filter.Servicestatus.active_checks_enabled[0]'  => 1,
+                                    <a href="/services/index<?php echo Router::queryString([
+                                        'filter'      => [
+                                            'Servicestatus.current_state' => [$state => 1]
+                                        ],
+                                        'passive' => 1,
+                                        'sort'        => 'Servicestatus.last_state_change',
+                                        'direction'   => 'desc'
                                     ]); ?>">
                                         <?php echo __('( %s ) passive', $widgetServiceStateArray180['passive'][$state]); ?>
                                     </a>
@@ -147,16 +136,15 @@
                 </div>
                 <?php foreach ($widgetServiceStateArray180['state'] as $state => $stateCount): ?>
                     <div class="col-md-3 no-padding">
-                        <a href="<?php echo Router::url([
-                            'controller'                                     => 'services',
-                            'action'                                         => 'index',
-                            'plugin'                                         => '',
-                            'Filter.Servicestatus.current_state['.$state.']' => 1,
-                            'sort'                                           => 'Servicestatus.last_state_change',
-                            'direction'                                      => 'desc'
+                        <a href="/services/index<?php echo Router::queryString([
+                            'filter'    => [
+                                'Servicestatus.current_state' => [$state => 1]
+                            ],
+                            'sort'      => 'Servicestatus.last_state_change',
+                            'direction' => 'desc'
                         ]); ?>">
                             <i class="fa fa-square <?php echo $stateColors[$state] ?>"></i>
-                            <?php echo $stateCount.' ('.round($stateCount / $widgetServiceStateArray180['total'] * 100, 2).' %)'; ?>
+                            <?php echo $stateCount . ' (' . round($stateCount / $widgetServiceStateArray180['total'] * 100, 2) . ' %)'; ?>
                         </a>
                     </div>
                 <?php endforeach; ?>

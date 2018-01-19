@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ContainerConditions;
+use itnovum\openITCOCKPIT\Filter\ContainerFilter;
+
+
 
 /**
  * Class ContainersController
@@ -33,10 +37,12 @@ class ContainersController extends AppController {
     public $helpers = ['Nest'];
 
     public function index() {
+        $this->layout = 'angularjs';
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_NODE;
             $this->Container->create();
             if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('new node created successfully'));
             } else {
                 $this->setFlash(__('error while saving data'), false);
@@ -87,23 +93,38 @@ class ContainersController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->request->is('post') && !$this->request->is('put') && $this->request->ext == 'json') {
             return;
         }
         if ($this->request->ext == 'json') {
             if ($this->Container->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $this->serializeId();
 
                 return;
             }
             $this->serializeErrorMessage();
-        } else {
-            if ($this->Container->save($this->request->data)) {
-                $this->setFlash(__('new node created successfully'));
-                $this->redirect(['action' => 'index']);
+        }
+    }
+
+    public function edit(){
+        $this->layout = 'blank';
+        if(!$this->isAngularJsRequest()){
+            return;
+        }
+        if($this->request->is('post')){
+            $containerId = $this->request->data['Container']['id'];
+            $containerTypeId = $this->request->data['Container']['containertype_id'];
+            if (!$this->Container->exists($containerId) || $containerTypeId!=5) {
+                throw new NotFoundException(__('Invalid container'));
+            }
+
+            if(!$this->Container->save($this->request->data)){
+                Cache::clear(false, 'permissions');
+                $this->serializeErrorMessage();
             } else {
-                $this->setFlash(__('error while saving data'), false);
-                $this->redirect(['action' => 'index']);
+                $this->serializeId();
             }
         }
     }
@@ -131,7 +152,9 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenant($id = null) {
-        $this->allowOnlyAjaxRequests();
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         if (!$this->Container->hasAny()) {
             throw new NotFoundException(__('tenant.notfound'));
         }
@@ -141,9 +164,32 @@ class ContainersController extends AppController {
                 'id' => $id,
             ],
         ]);
-        $nest = Hash::nest($this->Container->children($id, false, null, 'name'));
-        $parent[0]['children'] = $nest;
+
+        $parent[0]['Container']['allow_edit'] = false;
+        if(isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])){
+            if((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT){
+                $parent[0]['Container']['allow_edit'] = true;
+            }
+        }
+        $containers = $this->Container->children($id, false, null, 'name');
+        foreach($containers as $key => $container){
+            $containers[$key]['Container']['allow_edit'] = false;
+            $containerId = $container['Container']['id'];
+            if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+                if((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT){
+                    $containers[$key]['Container']['allow_edit'] = true;
+                }
+            }
+        }
+        $hasChilds = true;
+        if(empty($containers) && !empty($parent[0])){
+            $containers = $parent[0];
+            $hasChilds = false;
+        }
+        $nest = Hash::nest($containers);
+        $parent[0]['children'] = ($hasChilds)?$nest:[];
         $this->set('nest', $parent);
+        $this->set('_serialize', ['nest']);
     }
 
     /**
@@ -158,9 +204,11 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenantForSelect($id = null, $options = []) {
-        $this->allowOnlyAjaxRequests();
-
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException();
+        }
         $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
+        $this->set('_serialize', ['paths']);
     }
 
     public function delete($id = null) {
@@ -386,8 +434,10 @@ class ContainersController extends AppController {
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         if ($allowDeleteRoot) {
             if ($this->Container->__delete($id)) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Container deleted'));
                 $this->redirect(['action' => 'index']);
             } else {
@@ -398,5 +448,24 @@ class ContainersController extends AppController {
         $this->setFlash(__('Could not delete container'), false);
         $this->redirect(['action' => 'index']);
 
+    }
+
+    public function loadContainersForAngular() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
+            );
+        } else {
+            $containers = $this->Container->makeItJavaScriptAble(
+                $containers = $this->Tree->easyPath($this->getWriteContainers(),OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP])
+            );
+        }
+
+        $this->set(compact(['containers']));
+        $this->set('_serialize', ['containers']);
     }
 }

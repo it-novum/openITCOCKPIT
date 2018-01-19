@@ -37,8 +37,9 @@ class AppHelper extends Helper
      */
     public function assetTimestamp($path)
     {
+        Configure::load('version');
         if (Configure::read('debug') === 0) {
-            $path .= '?v'.Configure::read('general.version');
+            $path .= '?v'.Configure::read('version');
 
             return $path;
         }

@@ -58,6 +58,10 @@ class Hostcheck extends NagiosModuleAppModel
             $query['conditions']['state'] = $HostcheckConditions->getStates();
         }
 
+        if(!empty($HostcheckConditions->getStateTypes())){
+            $query['conditions']['state_type'] = $HostcheckConditions->getStateTypes();
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 

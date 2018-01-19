@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 abstract class Statehistory {
 
@@ -70,10 +71,15 @@ abstract class Statehistory {
     private $is_hardstate;
 
     /**
+     * @var UserTime|null
+     */
+    private $UserTime;
+
+    /**
      * StatehistoryHost constructor.
      * @param array $data
      */
-    public function __construct($data){
+    public function __construct($data, $UserTime = null){
         if (isset($data['current_check_attempt'])) {
             $this->current_check_attempt = (int)$data['current_check_attempt'];
         }
@@ -114,6 +120,7 @@ abstract class Statehistory {
             $this->is_hardstate = (bool)$data['state_type'];
         }
 
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -176,6 +183,9 @@ abstract class Statehistory {
      * @return mixed
      */
     public function getStateTime(){
+        if(!is_numeric($this->state_time)){
+            return strtotime($this->state_time);
+        }
         return $this->state_time;
     }
 
@@ -186,6 +196,22 @@ abstract class Statehistory {
         return $this->is_hardstate;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
 
+        if($this->UserTime !== null) {
+            $arr['state_time'] = $this->UserTime->format($this->getStateTime());
+        }else{
+            $arr['state_time'] = $this->getStateTime();
+        }
+
+        return $arr;
+    }
 
 }

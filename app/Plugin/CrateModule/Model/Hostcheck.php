@@ -55,6 +55,10 @@ class Hostcheck extends CrateModuleAppModel {
             $query['conditions']['state'] = $HostcheckConditions->getStates();
         }
 
+        if(!empty($HostcheckConditions->getStateTypes())){
+            $query['conditions']['is_hardstate'] = (bool)$HostcheckConditions->getStateTypes()[0];
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 

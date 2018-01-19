@@ -55,8 +55,11 @@
             <?php endif; ?>
         </span>
     </div>
-    <nav>
-        <?php echo $this->element('Admin.layout/menu'); ?>
+    <nav
+            menu
+            phpplugin="<?php echo $this->request->params['plugin']; ?>"
+            phpcontroller="<?php echo $this->request->params['controller']; ?>"
+            phpaction="<?php echo $this->request->params['action']; ?>">
     </nav>
     <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
 </aside>

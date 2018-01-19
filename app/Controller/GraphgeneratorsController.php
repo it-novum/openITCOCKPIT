@@ -501,6 +501,58 @@ class GraphgeneratorsController extends AppController
         $this->set('rrd_data', $result);
     }
 
+    public function getPerfdataByUuid(){
+        if(!$this->isAngularJsRequest()){
+            throw new MethodNotAllowedException();
+        }
+
+        $hostUuid = $this->request->query('host_uuid');
+        $serviceUuid = $this->request->query('service_uuid');
+        $hours = (int)$this->request->query('hours');
+        $jsTimestamp = (bool)$this->request->query('jsTimestamp');
+        if($hours < 1){
+            $hours = 3;
+        }
+
+        if(!$this->Rrd->isValidHostAndServiceUuid($hostUuid, $serviceUuid)){
+            $this->set('error', __('No Graph found for given host and service uuid'));
+            $this->set('_serialize', ['error']);
+            $this->response->statusCode(404);
+            return;
+        }
+
+
+        $options = [
+            'start' => time() - $hours * 3600,
+            'end'   => time(),
+        ];
+
+        $performance_data = [];
+        $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null);
+        $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
+        foreach($rrd_data['xml_data'] as $dataSource){
+
+            $tmpData = $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+            $data = [];
+            if($jsTimestamp){
+                foreach($tmpData as $timestamp => $value){
+                    $data[($timestamp * 1000)] = $value;
+                }
+            }else{
+                $data = $tmpData;
+            }
+
+            $performance_data[] = [
+                'datasource' => $dataSource,
+                'data' => $data
+            ];
+        }
+
+        $this->set('performance_data', $performance_data);
+        $this->set('_serialize', ['performance_data']);
+
+    }
+
     private function reduceData($data, $limit = 500, $technique = self::REDUCE_METHOD_AVERAGE)
     {
         switch ($technique) {

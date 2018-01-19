@@ -42,7 +42,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
             ajaxUrl: '/Hosts/loadElementsByContainerId/:selectBoxValue:.json',
             fieldTypes: {
                 hosttemplates: '#HostHosttemplateId',
-                parenthosts: '#HostParenthost',
+                //parenthosts: '#HostParenthost',
                 timeperiods: '#HostNotifyPeriodId',
                 checkperiods: '#HostCheckPeriodId',
                 contacts: '#HostContact',
@@ -68,6 +68,31 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 values[this.name] = $(this).val();
             }
         });
+
+        this.loadInitialData('#HostParenthost');
+        var containerId = $('#HostContainerId').val();
+        var ChosenAjaxObj = new ChosenAjax({
+            id: 'HostParenthost' //Target select box
+        });
+        ChosenAjaxObj.setCallback(function(searchString){
+            var selected = ChosenAjaxObj.getSelected();
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadParentHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': selected,
+                    'containerId': containerId
+                },
+                success: function(response){
+                    ChosenAjaxObj.addOptions(response.hosts);
+                    ChosenAjaxObj.setSelected(selected);
+                }
+            });
+        });
+
+        ChosenAjaxObj.render();
 
         // Fix chosen width, if rendered in a tab
         $("[data-toggle='tab']").click(function(){
@@ -854,6 +879,48 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         };
 
         self.hosttemplateManager.init();
+    },
+
+    loadInitialData: function(selector, selectedHostIds, callback){
+        var containerId = $('#HostContainerId').val();
+        var self = this;
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadParentHostsByString.json',
+            data: {
+                'angular': true,
+                'selected[]': selectedHostIds, //ids
+                'containerId': containerId
+            },
+            success: function(response){
+                var $selector = $(selector);
+                var list = self.buildList(response.hosts);
+                $selector.append(list);
+                $selector.val(selectedHostIds);
+                $selector.trigger('chosen:updated');
+
+                if(callback != undefined){
+                    callback();
+                }
+            }
+        });
+    },
+
+
+    buildList: function(data){
+        var html = '';
+        for(var i in data){
+            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+        }
+        return html;
     },
 
     inputPlaceholder: function(){

@@ -92,9 +92,7 @@ class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
             if ($this->isBase64($body)) {
                 $body = base64_decode(str_replace(["\n", "\r\n", "\r"], '', $body), true);
             }
-
 //debug($body);
-
             $parsedValues = $this->parseAckInformation($body);
             if (empty($parsedValues)) continue;
             $author = empty($message->getFrom()->getName()) ? $message->getFrom()->getAddress() : $message->getFrom()->getName();

@@ -45,9 +45,6 @@
                 <a href="#tab1" data-toggle="tab"> <?php echo __('default'); ?> </a>
             </li>
             <li class="">
-                <a href="#tab2" data-toggle="tab"><?php echo __('by tags'); ?></a>
-            </li>
-            <li class="">
                 <a href="#tab3" data-toggle="tab"><?php echo __('by address'); ?></a>
             </li>
             <li class="">
@@ -164,44 +161,6 @@
                                     'icon'             => '<i class="fa fa-square txt-color-blueDark"></i> ',
                                     'value'            => 1,
                                 ]);
-                                ?>
-                            </div>
-                        </div>
-                        <div class="padding-top-20"> <!-- spacer for nice layout --></div>
-                        <?php echo $this->Form->formActions(__('Search'), ['cancelButton' => false]); ?>
-                    </div>
-
-
-                    <div id="tab2" class="tab-pane fade">
-                        <?php
-                        echo $this->Form->create('SearchKeywords', [
-                            'class' => 'form-horizontal clear',
-                        ]);
-                        ?>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-9 col-lg-7">
-                                <strong><i class="fa fa-desktop"></i> <?php echo __('Search for hosts'); ?>:</strong>
-                                <br/>
-                                <?php
-                                echo $this->Form->input('Hostkeywords', [
-                                    'label' => __('Host tags'),
-                                    'help'  => __('This is a wildcard search, you don\'t need to add * or %. Use comma (,) as delimiter.'),
-                                ]);
-                                ?>
-                            </div>
-                        </div>
-                        <div class="padding-top-10"> <!-- spacer for nice layout --></div>
-                        <div class="padding-top-20"> <!-- spacer for nice layout --></div>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-9 col-lg-7">
-                                <strong><i class="fa fa-cog"></i> <?php echo __('Search for services'); ?>:</strong>
-                                <br/>
-                                <?php
-                                echo $this->Form->input('Servicekeywords', [
-                                    'label' => __('Service tags'),
-                                    'help'  => __('This is a wildcard search, you don\'t need to add * or %. Use comma (,) as delimiter.'),
-                                ]);
-
                                 ?>
                             </div>
                         </div>

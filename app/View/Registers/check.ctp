@@ -54,7 +54,7 @@
             <?php if ($isValide === true): ?>
                 <div class="alert alert-success alert-block">
                     <a href="#" data-dismiss="alert" class="close">×</a>
-                    <h1 class="alert-heading"><?php echo __('Success'); ?></h1>
+                    <h1 class="alert-heading" style="color:#356635"><?php echo __('Success'); ?></h1>
                     <h4><?php echo __('The entered license key is valid'); ?></h4>
                 </div>
                 <div class="paddint-top-20">

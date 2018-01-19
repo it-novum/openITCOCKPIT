@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class Hoststatus {
 
@@ -108,9 +109,17 @@ class Hoststatus {
      */
     private $current_check_attempt;
 
+    /**
+     * @var float
+     */
     private $latency;
 
-    public function __construct($data){
+    /**
+     * @var UserTime|null
+     */
+    private $UserTime;
+
+    public function __construct($data, $UserTime = null){
         if (isset($data['current_state'])) {
             $this->currentState = $data['current_state'];
         }
@@ -182,6 +191,8 @@ class Hoststatus {
         if (isset($data['latency'])) {
             $this->latency = $data['latency'];
         }
+
+        $this->UserTime = $UserTime;
     }
 
     public function getHumanHoststatus($href = 'javascript:void(0)', $style = ''){
@@ -400,5 +411,30 @@ class Hoststatus {
         }
 
         return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
+
+        if($this->UserTime !== null) {
+            $arr['lastHardStateChange'] = $this->UserTime->format($this->getLastHardStateChange());
+            $arr['last_state_change'] = $this->UserTime->format($this->getLastStateChange());
+            $arr['lastCheck'] = $this->UserTime->format($this->getLastCheck());
+            $arr['nextCheck'] = $this->UserTime->format($this->getNextCheck());
+        }else{
+            $arr['lastHardStateChange'] = $this->getLastHardStateChange();
+            $arr['last_state_change'] = $this->getLastStateChange();
+            $arr['lastCheck'] = $this->getLastCheck();
+            $arr['nextCheck'] = $this->getNextCheck();
+        }
+        $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
+        $arr['isInMonitoring'] = $this->isInMonitoring();
+        return $arr;
     }
 }

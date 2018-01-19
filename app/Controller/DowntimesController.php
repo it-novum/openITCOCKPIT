@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DowntimesController extends AppController
-{
+class DowntimesController extends AppController {
 
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
@@ -53,7 +52,7 @@ class DowntimesController extends AppController
         ],
     ];
 
-    public function host(){
+    public function host() {
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
@@ -74,17 +73,17 @@ class DowntimesController extends AppController
         //--force --doit --yes-i-know-what-i-do
         // force the order of joined tables
         $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-        foreach($all_downtimes as $dKey => $downtime){
-            if(isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT){
+        foreach ($all_downtimes as $dKey => $downtime) {
+            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
                 $all_downtimes[$dKey]['canDelete'] = true;
                 $serviceDowntimes = $this->Downtime->getServiceDowntimesForHost($downtime['Host']['id'], $downtime['Downtime']['scheduled_start_time'], $downtime['Downtime']['scheduled_end_time']);
                 $all_downtimes[$dKey]['servicesDown'] = '0';
-                if(count($serviceDowntimes) > 0){
-                    foreach($serviceDowntimes as $serviceDowntime){
-                        $all_downtimes[$dKey]['servicesDown'] .= ','.$serviceDowntime['Downtime']['internal_downtime_id'];
+                if (count($serviceDowntimes) > 0) {
+                    foreach ($serviceDowntimes as $serviceDowntime) {
+                        $all_downtimes[$dKey]['servicesDown'] .= ',' . $serviceDowntime['Downtime']['internal_downtime_id'];
                     }
                 }
-            }else{
+            } else {
                 $all_downtimes[$dKey]['canDelete'] = false;
             }
 
@@ -95,7 +94,7 @@ class DowntimesController extends AppController
     }
 
 
-    public function service(){
+    public function service() {
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
@@ -113,10 +112,10 @@ class DowntimesController extends AppController
         //--force --doit --yes-i-know-what-i-do
         // force the order of joined tables
         $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-        foreach($all_downtimes as $dKey => $downtime){
-            if(isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT){
+        foreach ($all_downtimes as $dKey => $downtime) {
+            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
                 $all_downtimes[$dKey]['canDelete'] = true;
-            }else{
+            } else {
                 $all_downtimes[$dKey]['canDelete'] = false;
             }
 
@@ -126,8 +125,7 @@ class DowntimesController extends AppController
 
     }
 
-    public function index()
-    {
+    public function index() {
         if (isset($this->PERMISSIONS['downtimes']['host'])) {
             $this->redirect(['action' => 'host']);
         }
@@ -137,8 +135,7 @@ class DowntimesController extends AppController
         }
     }
 
-    public function validateDowntimeInputFromBrowser()
-    {
+    public function validateDowntimeInputFromBrowser() {
         $this->render(false);
         if (isset($this->request->data['from']) && isset($this->request->data['to'])) {
             if (strtotime($this->request->data['from']) !== false && strtotime($this->request->data['to']) !== false
@@ -152,7 +149,57 @@ class DowntimesController extends AppController
         echo 0;
     }
 
-    public function delete(){
+    public function validateDowntimeInputFromAngular() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $error = ['Downtime' => []];
+        $data = $this->request->data;
+        if (!isset($data['comment']) || strlen($data['comment']) === 0) {
+            $error['Downtime']['comment'][] = __('Comment can not be empty');
+        }
+
+        if(!isset($data['from_date']) || strlen($data['from_date']) === 0){
+            $error['Downtime']['from_date'][] = __('Start date can not be empty');
+        }
+
+        if(!isset($data['from_time']) || strlen($data['from_time']) === 0){
+            $error['Downtime']['from_time'][] = __('Start time can not be empty');
+        }
+
+        if(!isset($data['to_date']) || strlen($data['to_date']) === 0){
+            $error['Downtime']['to_date'][] = __('End date can not be empty');
+        }
+
+        if(!isset($data['to_time']) || strlen($data['to_time']) === 0){
+            $error['Downtime']['to_time'][] = __('End time can not be empty');
+        }
+
+        if(empty($error['Downtime'])) {
+            $start = sprintf('%s %s', $data['from_date'], $data['from_time']);
+            $end = sprintf('%s %s', $data['to_date'], $data['to_time']);
+            if(strtotime($start) === false){
+                $error['Downtime']['from_date'][] = __('Date is not valid');
+            }
+
+            if(strtotime($end) === false){
+                $error['Downtime']['to_date'][] = __('Date is not valid');
+            }
+        }
+
+        if(!empty($error['Downtime'])){
+            $this->response->statusCode(400);
+            $this->set('success', false);
+        }else{
+            $this->set('success', true);
+        }
+
+        $this->set('error', $error);
+        $this->set('_serialize', ['error', 'success']);
+    }
+
+    public function delete() {
         // creating rights downtimes.delete
     }
 }

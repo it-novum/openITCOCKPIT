@@ -35,9 +35,10 @@ App.Controllers.GraphgeneratorsIndexController = Frontend.AppController.extend({
 	_service_rules_timeout_id: 0,
 	_service_rules_remove_timeout_id: 0,
 
-	components: ['Ajaxloader', 'Rrd', 'BootstrapModal', 'Overlay'],
+	components: ['Ajaxloader', 'Rrd', 'BootstrapModal', 'Overlay', 'Time'],
 
 	_initialize: function(){
+		this.Time.setup();
 		this.Ajaxloader.setup();
 		this.BootstrapModal.setup({
 			content: window.bootstrapModalContent,
