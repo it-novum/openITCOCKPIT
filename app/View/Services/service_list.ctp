@@ -448,11 +448,6 @@
                                                    class="btn btn-default dropdown-toggle"><span
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu">
-                                                    <li>
-                                                        <a ng-href="{{ linkForPdf() }}" class="a-clean">
-                                                            <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
-                                                        </a>
-                                                    </li>
                                                     <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
                                                         <li>
                                                             <a href="javascript:void(0);"

@@ -1731,3 +1731,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .containers-dd {
     max-width: 100%;
 }
+
+.ajax-notifications {
+    height: 378px;
+}

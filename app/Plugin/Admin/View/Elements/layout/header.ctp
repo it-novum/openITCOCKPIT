@@ -30,7 +30,12 @@
             <div id="logo-image"></div>
             <p id="logo-text"><?php echo $systemname; ?></p>
         </span>
+
+        <?php if ($loggedIn): ?>
+            <system-health></system-health>
+        <?php endif; ?>
     </div>
+
 
     <?php if ($loggedIn): ?>
         <div class="pull-right">

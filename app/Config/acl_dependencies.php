@@ -49,7 +49,8 @@ $config = [
                 'downtime_host',
                 'acknowledge_host',
                 'enable_host_notifications',
-                'disable_host_notifications'
+                'disable_host_notifications',
+                'system_health'
             ],
             'Commands'         => [
                 'sortByCommandType',

@@ -23,6 +23,7 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
  * Class AngularController
@@ -34,6 +35,7 @@ use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
 class AngularController extends AppController {
 
     public $layout = 'blank';
+    public $components = ['GearmanClient'];
 
     public function paginator() {
         //Return HTML Template for PaginatorDirective
@@ -63,6 +65,8 @@ class AngularController extends AppController {
     public function export() {
         return;
     }
+
+    private $state = 'unknown';
 
     public function user_timezone() {
         if (!$this->isApiRequest()) {
@@ -329,6 +333,98 @@ class AngularController extends AppController {
     public function acknowledge_host() {
         //Only ship HTML template
         return;
+    }
+
+    public function system_health() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $cache = Cache::read('system_health', 'permissions');
+        if ($cache === false) {
+            $status = [
+                'cache_readable' => false,
+                'state'          => 'unknown'
+            ];
+            $this->set('status', $status);
+            $this->set('_serialize', ['status']);
+            return;
+        }
+
+
+        $cache['cache_readable'] = true;
+        $cache['gearman_reachable'] = false;
+        $cache['gearman_worker_running'] = false;
+
+        $this->GearmanClient->client->setTimeout(5000);
+        $cache['gearman_reachable'] = @$this->GearmanClient->client->ping(true);
+
+
+        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        $cache['gearman_worker_running'] = sizeof($output) > 0;
+        if (!$cache['gearman_worker_running']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$cache['isNagiosRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$cache['isOitcCmdRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        if (!$cache['isSudoServerRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        if (!$cache['gearman_reachable'] || !$cache['gearman_worker_running']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($cache['isStatusengineInstalled'] && !$cache['isStatusengineRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($cache['isStatusenginePerfdataProcessor'] && !$cache['isStatusengineRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$cache['isStatusenginePerfdataProcessor'] && !$cache['isNpcdRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($cache['isDistributeModuleInstalled'] && !$cache['isPhpNstaRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        $this->setHealthState($cache['memory_usage']['memory']['state']);
+        $this->setHealthState($cache['memory_usage']['swap']['state']);
+        $this->setHealthState($cache['load']['state']);
+        foreach ($cache['disk_usage'] as $disk) {
+            $this->setHealthState($disk['state']);
+        }
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $cache['update'] = $UserTime->format($cache['update']);
+        $cache['state'] = $this->state;
+        $this->set('status', $cache);
+        $this->set('_serialize', ['status']);
+    }
+
+    private function setHealthState($state) {
+        //Do not overwrite critical with ok or warning
+        if ($this->state === 'critical') {
+            return;
+        }
+
+        //Do not overwrite warning with ok
+        if ($this->state === 'warning' && $state !== 'critical') {
+            return;
+        }
+
+        $this->state = $state;
     }
 
 }

@@ -145,6 +145,7 @@ $(document).ready(function() {
 
 	// ACTIVITY
 	// ajax drop
+    /*
 	$('#activity').click(function(e) {
 		$this = $(this);
 
@@ -178,6 +179,7 @@ $(document).ready(function() {
 		loadURL(url, container);
 
 	});
+	*/
 
 	$(document).mouseup(function(e) {
 		if (!$('.ajax-dropdown').is(e.target)// if the target of the click isn't the container...
