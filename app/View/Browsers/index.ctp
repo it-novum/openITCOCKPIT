@@ -304,7 +304,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                             $this->Auth->user('timezone')
                                         )); ?>"
                                             data-placement="bottom" rel="tooltip" data-container="body">
-                                            <?php echo h($this->Utils->secondsInHumanShort(time() - strtotime($Hoststatus->getLastHardStateChange()))); ?>
+                                            <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastHardStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format(
                                                 $Hoststatus->getLastCheck(),

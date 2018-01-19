@@ -171,7 +171,6 @@ class ContainersController extends AppController {
                 $parent[0]['Container']['allow_edit'] = true;
             }
         }
-
         $containers = $this->Container->children($id, false, null, 'name');
         foreach($containers as $key => $container){
             $containers[$key]['Container']['allow_edit'] = false;
@@ -182,9 +181,13 @@ class ContainersController extends AppController {
                 }
             }
         }
-
+        $hasChilds = true;
+        if(empty($containers) && !empty($parent[0])){
+            $containers = $parent[0];
+            $hasChilds = false;
+        }
         $nest = Hash::nest($containers);
-        $parent[0]['children'] = $nest;
+        $parent[0]['children'] = ($hasChilds)?$nest:[];
         $this->set('nest', $parent);
         $this->set('_serialize', ['nest']);
     }
