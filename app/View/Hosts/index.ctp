@@ -589,7 +589,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean">
+                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean pointer">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>

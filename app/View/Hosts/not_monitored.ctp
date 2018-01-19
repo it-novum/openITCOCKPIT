@@ -364,7 +364,7 @@ use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean">
+                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean pointer">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>
@@ -376,13 +376,6 @@ use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
                                                 </a>
                                             </li>
                                         <?php endif; ?>
-
-                                        <li>
-                                            <a ng-href="{{ linkForPdf() }}" class="a-clean">
-                                                <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
-                                            </a>
-                                        </li>
-
                                     </ul>
                                 </div>
                             </div>

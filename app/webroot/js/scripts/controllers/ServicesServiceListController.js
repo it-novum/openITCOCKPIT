@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
 
         $scope.changeTab = function(tab){
             if(tab !== $scope.activeTab){
+                $scope.services = [];
                 $scope.activeTab = tab;
                 $scope.undoSelection();
 
@@ -233,6 +234,12 @@ angular.module('openITCOCKPIT')
 
         $scope.linkForCopy = function(){
             var baseUrl = '/services/copy/';
+            var ids = Object.keys(MassChangeService.getSelected());
+            return baseUrl + ids.join('/');
+        };
+
+        $scope.linkForAddToServicegroup = function(){
+            var baseUrl = '/servicegroups/mass_add/';
             var ids = Object.keys(MassChangeService.getSelected());
             return baseUrl + ids.join('/');
         };

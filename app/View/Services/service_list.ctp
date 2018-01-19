@@ -448,7 +448,23 @@
                                                    class="btn btn-default dropdown-toggle"><span
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu">
+                                                    <?php if ($this->Acl->hasPermission('deactivate', 'Services')): ?>
+                                                        <li>
+                                                            <a href="javascript:void(0);"
+                                                               ng-click="confirmDeactivate(getObjectsForDelete())">
+                                                                <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                    <?php if ($this->Acl->hasPermission('add', 'servicegroups')): ?>
+                                                        <li>
+                                                            <a ng-href="{{ linkForAddToServicegroup() }}">
+                                                                <i class="fa fa-cogs"></i> <?php echo __('Add to servicegroup'); ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                                        <li class="divider"></li>
                                                         <li>
                                                             <a href="javascript:void(0);"
                                                                ng-click="reschedule(getObjectsForExternalCommand())">
@@ -585,6 +601,12 @@
                                         </tbody>
                                     </table>
 
+                                    <div class="noMatch" ng-show="services.length === 0">
+                                        <center>
+                                            <span class="txt-color-red italic"><?php echo __('No services found'); ?></span>
+                                        </center>
+                                    </div>
+
                                     <div class="row margin-top-10 margin-bottom-10">
                                         <div class="col-xs-12 col-md-2 text-muted text-center">
                                             <span ng-show="selectedElements > 0">({{selectedElements}})</span>
@@ -614,6 +636,7 @@
                                             </span>
                                         </div>
                                     </div>
+
 
                                     <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
 
@@ -715,6 +738,12 @@
                                             </tbody>
                                         </table>
 
+                                        <div class="noMatch" ng-show="services.length === 0">
+                                            <center>
+                                                <span class="txt-color-red italic"><?php echo __('No services found'); ?></span>
+                                            </center>
+                                        </div>
+
                                         <div class="row margin-top-10 margin-bottom-10">
                                             <div class="col-xs-12 col-md-2 text-muted text-center">
                                                 <span ng-show="selectedElements > 0">({{selectedElements}})</span>
@@ -779,7 +808,7 @@
                                             </tbody>
                                         </table>
 
-                                        <div class="noMatch" ng-show="services.length === 0">
+                                        <div class="noMatch" ng-show="deletedServices.length === 0">
                                             <center>
                                                 <span class="txt-color-red italic">
                                                     <?php echo __('No deleted services found for this host'); ?>
