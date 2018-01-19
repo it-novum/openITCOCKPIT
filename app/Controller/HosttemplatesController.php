@@ -1165,11 +1165,31 @@ class HosttemplatesController extends AppController {
     }
 
     public function usedBy($id = null) {
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
         if (!$this->Hosttemplate->exists($id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $hosttemplate = $this->Hosttemplate->findById($id);
+        $hosttemplate = $this->Hosttemplate->findById($id /*, [
+            'recursive' => -1,
+            'fields' => [
+                'Hosttemplate.name',
+                'Hosttemplate.id'
+            ]
+        ]*/);
+
+        $hosttemplate = $this->Hosttemplate->find('first', [
+            'recursive' => -1,
+            'fields' => [
+                'Hosttemplate.name'
+            ]
+        ]);
 
         if (!$this->allowedByContainerId(Hash::extract($hosttemplate, 'Container.id'), false)) {
             $this->render403();
@@ -1205,9 +1225,9 @@ class HosttemplatesController extends AppController {
             'group' => 'Host.id'
         ]);
 
+
         $this->set(compact(['all_hosts', 'hosttemplate']));
-        $this->set('_serialize', ['all_hosts']);
-        $this->set('back_url', $this->referer());
+        $this->set('_serialize', ['all_hosts', 'hosttemplate']);
     }
 
     public function loadElementsByContainerId($container_id = null) {
