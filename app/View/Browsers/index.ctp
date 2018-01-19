@@ -298,11 +298,12 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                         </td>
                                         <td><?php echo h($Host->getAddress()); ?></td>
                                         <td data-original-title="<?php echo h($this->Time->format(
-  , $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
-                                            data-placement="bottom" rel="tooltip"
-                                            data-container="body"
-                                            data-sort="<?php echo $Hoststatus->getLastHardStateChange();?>"
-                                        >
+                                            $Hoststatus->getLastHardStateChange(),
+                                            $this->Auth->user('dateformat'),
+                                            false,
+                                            $this->Auth->user('timezone')
+                                        )); ?>"
+                                            data-placement="bottom" rel="tooltip" data-container="body">
                                             <?php echo h($this->Utils->secondsInHumanShort(time() - $Hoststatus->getLastHardStateChange())); ?>
                                         </td>
                                         <td><?php echo h($this->Time->format(
