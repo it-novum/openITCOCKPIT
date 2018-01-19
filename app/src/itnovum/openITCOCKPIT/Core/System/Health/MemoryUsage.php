@@ -82,7 +82,7 @@ class MemoryUsage {
             'percentage' => 0,
         ];
         if ($meminfo['Active'] > 0 && $swapUsed > 0) {
-            $memory['swap']['percentage'] = ($swapUsed / $meminfo['SwapTotal'] * 100);
+            $memory['swap']['percentage'] = round($swapUsed / $meminfo['SwapTotal'] * 100);
         }
         $memory['swap']['state'] = 'ok';
         if ($memory['swap']['percentage'] > 40) {
