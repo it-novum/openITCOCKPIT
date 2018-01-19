@@ -128,25 +128,15 @@
                         </header>
 
                         <div class="widget-body">
-
                             <div class="dd dd-nodrag containers-dd" id="nestable">
-
-                                <ol class="dd-list"
-                                    id=""
-                                    ng-if="container.children.length > 0"
-                                    ng-repeat="container in containers"
-                                >
+                                <ol class="dd-list" ng-repeat="container in containers">
                                     <nested-list container="container" callback="load"></nested-list>
                                 </ol>
-
                             </div>
                         </div>
                     </div>
                 </div>
-
-
             </div>
-
         </div>
     </div>
 </div>
