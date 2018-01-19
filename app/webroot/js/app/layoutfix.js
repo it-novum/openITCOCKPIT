@@ -9,7 +9,9 @@ $(document).ready(function () {
      * Set an id for all the drop-down menus
      */
     $('.dropdown-menu').each(function (key, object) {
-        $(object).attr('id', (Math.floor(Math.random() * (100000000 - 1)) + 1));
+        if(typeof $(object).attr('id') === 'undefined'){
+            $(object).attr('id', (Math.floor(Math.random() * (100000000 - 1)) + 1));
+        }
     });
 
     //$('table .dropdown-toggle').click(function (){
@@ -17,15 +19,15 @@ $(document).ready(function () {
         //This is hacky shit and need to get frefactored ASAP!!
 
         if ($('#uglyDropdownMenuHack').html() != '') {
-            //Avoid that the menu distry it self if the user press twice on the 'open menu' arrow
+            //Avoid that the menu destroy it self if the user press twice on the 'open menu' arrow
             return false;
         }
 
         var $ul = $(this).next('ul');
+
         //$ul.hide();
         var offset = $(this).offset(),
             right = $('body').width() - 26 - parseInt(offset.left);
-
         $('#uglyDropdownMenuHack').attr('sourceId', $ul.attr('id'));
         $('#uglyDropdownMenuHack').html($ul.clone(true, true).attr('id', 'foobarclonezilla'));
 
@@ -62,8 +64,14 @@ $(document).ready(function () {
     $(document).on('hidden.bs.dropdown', function () {
         //Restore orginal menu content
 
+        if(typeof $('#uglyDropdownMenuHack').attr('sourceId') === 'undefined' || $('#uglyDropdownMenuHack').attr('sourceId') === ''){
+            //Drop down menu is not inside a table
+            return;
+        }
+
         $('#' + $('#uglyDropdownMenuHack').attr('sourceId')).html($('#foobarclonezilla').children().clone(true, true));
         $('#uglyDropdownMenuHack').html('');
+        $('#uglyDropdownMenuHack').attr('sourceId', '');
     });
 
     //Scroll back to top

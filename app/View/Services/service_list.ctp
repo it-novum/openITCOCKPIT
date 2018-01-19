@@ -74,7 +74,7 @@
                         <?php endif; ?>
                         <a href="javascript:void(0);" data-toggle="dropdown"
                            class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" id="menuHack-host">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                 <li>
                                     <a href="/hosts/browser/{{ host.Host.id }}">
@@ -370,7 +370,8 @@
                                                             <?php endif; ?>
                                                             <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
                                                                 <li ng-if="service.Service.allow_edit">
-                                                                    <a href="/services/deactivate/{{service.Service.id}}">
+                                                                    <a href="javascript:void(0);"
+                                                                       ng-click="confirmDeactivate(getObjectForDelete(host, service))">
                                                                         <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                                     </a>
                                                                 </li>
@@ -447,7 +448,7 @@
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
                                                             class="caret"></span></a>
-                                                <ul class="dropdown-menu">
+                                                <ul class="dropdown-menu" id="menuHack-1337">
                                                     <?php if ($this->Acl->hasPermission('deactivate', 'Services')): ?>
                                                         <li>
                                                             <a href="javascript:void(0);"
