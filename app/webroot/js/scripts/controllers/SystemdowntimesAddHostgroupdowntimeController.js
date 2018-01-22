@@ -5,10 +5,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = null;
 
         $scope.Downtime = {
-            Type1: "1",
-            Type2: "0",
-            AllWeekdays: {},
-            is_recurring: false,
+            is_recurring: false
         };
 
         $scope.post = {
@@ -38,10 +35,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                if(result.data.preselectedDowntimetype == 1){
-                    $scope.Downtime.Type1 = "0";
-                    $scope.Downtime.Type2 = "1";
-                }
+                $scope.post.Systemdowntime.downtimetype_id = result.data.preselectedDowntimetype;
             });
             $http.get("/systemdowntimes/getHostdowntimeRefillData.json", {
                 params: {
@@ -56,7 +50,6 @@ angular.module('openITCOCKPIT')
                 $scope.post.Systemdowntime.duration = result.data.duration;
                 $scope.errors = null;
             }, function errorCallback(result){
-                console.error(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
@@ -67,10 +60,6 @@ angular.module('openITCOCKPIT')
 
         $scope.saveNewHostgroupDowntime = function(){
             $scope.post.Systemdowntime.object_id = $scope.hostgroupIds;
-            $scope.post.Systemdowntime.downtimetype_id = "0";
-            if($scope.Downtime.Type2){
-                $scope.post.Systemdowntime.downtimetype_id = "1";
-            }
             if($scope.post.Systemdowntime.is_recurring){
                 $scope.post.Systemdowntime.to_time = null;
                 $scope.post.Systemdowntime.to_date = null;
