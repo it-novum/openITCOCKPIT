@@ -46,7 +46,7 @@ angular.module('openITCOCKPIT').directive('systemHealth', function($http, $inter
                 }
             };
 
-            $interval($scope.load, 10000);
+            $interval($scope.load, 60000);
 
             $scope.load();
 
