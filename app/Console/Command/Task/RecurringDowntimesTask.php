@@ -75,7 +75,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
             if ($downtime['Systemdowntimes']['day_of_month'] !== '' && $downtime['Systemdowntimes']['day_of_month'] !== null) {
                 $days_of_month = explode(',', $downtime['Systemdowntimes']['day_of_month']);
             }
-            $downtimeToTime = strtotime($downtime['Systemdowntimes']['from_time']) + strtotime($downtime['Systemdowntimes']['duration']);
+            $downtimeToTime = strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60;
 
             if (!empty($weekdays) && !empty($days_of_month)) {
                 if (in_array($current_weekday, $weekdays) && in_array($current_day_of_month, $days_of_month)) {
@@ -107,7 +107,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                         'author' => $downtime['Systemdowntimes']['author'],
                                         'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + strtotime($downtime['Systemdowntimes']['duration']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
@@ -133,7 +133,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                         'author' => $downtime['Systemdowntimes']['author'],
                                         'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + strtotime($downtime['Systemdowntimes']['duration']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
@@ -165,7 +165,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'hostUuid' => $service['Host']['uuid'],
                                         'serviceUuid' => $service['Service']['uuid'],
                                         'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + strtotime($downtime['Systemdowntimes']['duration']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                         'author' => $downtime['Systemdowntimes']['author'],
                                         'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     ]);
@@ -483,8 +483,10 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
     }
 
     public function isTimeInThePast($time) {
-        $time = str_replace(':', '', $time);
-        return $time < date('Hi');
+        return $time < time();
+        //debug($time);
+        //$time = str_replace(':', '', $time);
+        //return $time < date('Hi');
     }
 
     public function checkStatusDatForDowntime($statusdat, $downtime_id, $comment) {
