@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
         $scope.serviceIds.push(QueryStringService.getCakeId().toString());
 
         $scope.Downtime = {
-            AllWeekdays: {},
             is_recurring: false
         };
 

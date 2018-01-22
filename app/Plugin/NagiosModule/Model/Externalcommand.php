@@ -730,6 +730,9 @@ class Externalcommand extends NagiosModuleAppModel {
                         'Host.id',
                         'Host.uuid',
                     ],
+                    'conditions' => [
+                        'Host.disabled' => 0
+                    ]
                 ],
                 'Hosttemplate' => [
                     'fields' => [
@@ -762,7 +765,8 @@ class Externalcommand extends NagiosModuleAppModel {
                 'Host.hosttemplate_id' => $hostTemlateIds,
                 'NOT'                  => [
                     'Host.id' => $hostIds
-                ]
+                ],
+                'Host.disabled' => 0
             ],
             'fields'     => [
                 'Host.uuid'
