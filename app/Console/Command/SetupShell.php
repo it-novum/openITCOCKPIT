@@ -198,7 +198,7 @@ class SetupShell extends AppShell
 
     public function askPassword()
     {
-        $this->out('<blue>The password must consist of 6-12 alphanumeric characters and must contain at least one digit</blue>');
+        $this->out('<blue>The password must consist of 6 alphanumeric characters and must contain at least one digit</blue>');
         $pw1 = $this->in(__d('oitc_console', 'Please enter a password for the login.'));
         $pw1 = trim($pw1);
         if (strlen($pw1) >= 6 && strlen($pw1) <= 12) {
