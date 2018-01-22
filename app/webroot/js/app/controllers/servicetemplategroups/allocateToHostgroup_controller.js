@@ -48,7 +48,7 @@ App.Controllers.ServicetemplategroupsAllocateToHostgroupController = Frontend.Ap
 					// Create fieldset for every host of the hostgroup
 					$(response.responseJSON.hosts).each(function(intKey, hostObject){
 						var html = '';
-						html += '<fieldset><legend><i class="fa fa-desktop"></i> '+hostObject.Host.name+'</legend>';
+						html += '<fieldset><legend><i class="fa fa-desktop"></i> '+htmlspecialchars(hostObject.Host.name)+'</legend>';
 							// Create checkbox for each service out of the servicetemplategroup
 							$(response.responseJSON.servicetemplategroup.Servicetemplate).each(function(_intKey, servicetemplateObject){
 								// Checking if this service already exists or is disabled on the host
@@ -71,7 +71,7 @@ App.Controllers.ServicetemplategroupsAllocateToHostgroupController = Frontend.Ap
 								
 								html += '<div class="padding-left-10 padding-bottom-5">';
 									html += '<input type="checkbox" '+checked+' id="servicetemplate_'+servicetemplateObject.id+'_'+hostObject.Host.id+'" value="'+servicetemplateObject.id+'" name="data[Host]['+hostObject.Host.id+'][ServicesToAdd][]" />';
-									html += '<label for="servicetemplate_'+servicetemplateObject.id+'_'+hostObject.Host.id+'">'+servicetemplateObject.name+' <i class="text-info">('+servicetemplateObject.description+')</i></label>';
+									html += '<label for="servicetemplate_'+servicetemplateObject.id+'_'+hostObject.Host.id+'">'+htmlspecialchars(servicetemplateObject.name)+' <i class="text-info">('+htmlspecialchars(servicetemplateObject.description)+')</i></label>';
 									if(exists === true){
 										// the service exists on the host, show notice
 										html += '<a href="javascript:void(0);" data-original-title="'+self.getVar('service_exists')+'" data-placement="right" rel="tooltip" data-container="body"><i class="padding-left-5 fa fa-info-circle text-info"></i></a>';
