@@ -93,6 +93,7 @@ angular.module('openITCOCKPIT')
         };
 
         defaultFilter();
+        SortService.setCallback($scope.load);
         $scope.load();
 
         $scope.$watch('filter', function(){

@@ -80,17 +80,8 @@ class Map extends MapModuleAppModel
             ],
         ],
         'container_id' => [
-            'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one Container.',
-                'required' => true,
-                'on'       => 'create',
-            ],
-            'notZero'  => [
-                'rule'     => ['comparison', '>', 0],
-                'message'  => 'You must specify at least one Container.',
-                'required' => true,
-            ],
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more containers',
         ],
     ];
 

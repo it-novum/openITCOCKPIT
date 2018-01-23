@@ -40,17 +40,8 @@ class Rotation extends MapModuleAppModel
 
     var $validate = [
         'container_id' => [
-            'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one Container.',
-                'required' => true,
-                'on'       => 'create',
-            ],
-            'notZero'  => [
-                'rule'     => ['comparison', '>', 0],
-                'message'  => 'You must specify at least one Container.',
-                'required' => true,
-            ],
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more containers',
         ],
         'name'     => [
             'notBlank' => [
@@ -60,11 +51,8 @@ class Rotation extends MapModuleAppModel
             ],
         ],
         'Map'      => [
-            'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one map',
-                'required' => true,
-            ],
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more Map',
         ],
         'interval' => [
             'notBlank' => [
