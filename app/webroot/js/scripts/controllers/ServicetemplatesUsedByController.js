@@ -67,9 +67,11 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.serverResult = result.data.all_services;
-                $scope.services = forTemplate(result.data.all_services);
+                if($scope.serverResult) {
+                    $scope.services = forTemplate(result.data.all_services);
+                    $scope.total = result.data.all_services.length;
+                }
                 $scope.servicetemplate = result.data.servicetemplate;
-                $scope.total = result.data.all_services.length;
             }, function errorCallback(result){
                 if(result.status === 404){
                     window.location.href = '/angular/not_found';

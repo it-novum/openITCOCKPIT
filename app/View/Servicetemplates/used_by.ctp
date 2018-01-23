@@ -68,7 +68,7 @@
                                 <th class="no-sort"><?php echo __('Service name'); ?></th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody ng-show="serverResult">
                             <tr ng-repeat-start="host in services">
                                 <td colspan="2" class="service_table_host_header">
 
@@ -112,7 +112,7 @@
                             </tbody>
                         </table>
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="row margin-top-10 margin-bottom-10" ng-show="services.length == 0">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="!serverResult">
                                 <div class="col-xs-12 text-center txt-color-red italic">
                                     <?php echo __('This service template is not used by any service'); ?>
                                 </div>
