@@ -249,7 +249,6 @@ class MapsController extends MapModuleAppController {
         }
 
         if ($this->Map->delete($id, true)) {
-            $this->setFlash(__('Map deleted successfully'));
             $this->set('message', __('Map deleted successfully'));
             $this->set('_serialize', ['message']);
             return;

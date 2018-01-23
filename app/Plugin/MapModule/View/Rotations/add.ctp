@@ -49,7 +49,7 @@
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.Rotation.container_id}">
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
@@ -63,13 +63,13 @@
                                     ng-model="post.Rotation.container_id"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.Rotation.container_id">
+                            <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Rotation.name}">
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Rotation Name'); ?>
                         </label>
@@ -78,7 +78,7 @@
                                     class="form-control"
                                     type="text"
                                     ng-model="post.Rotation.name">
-                            <div ng-repeat="error in errors.Rotation.name">
+                            <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Rotation.map_id}">
+                    <div class="form-group required" ng-class="{'has-error': errors.Map}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Maps'); ?>
                         </label>
@@ -108,7 +108,7 @@
                                     ng-model="post.Rotation.Map"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.Rotation.map_id">
+                            <div ng-repeat="error in errors.Map">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="map_module/rotations/index" class="btn btn-default">Cancel</a>
+                                <a href="/map_module/rotations/index" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>

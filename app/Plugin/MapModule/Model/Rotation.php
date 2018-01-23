@@ -46,6 +46,11 @@ class Rotation extends MapModuleAppModel
                 'required' => true,
                 'on'       => 'create',
             ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'You must specify at least one Container.',
+                'required' => true,
+            ],
         ],
         'name'     => [
             'notBlank' => [

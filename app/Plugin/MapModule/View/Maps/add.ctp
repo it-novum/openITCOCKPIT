@@ -50,7 +50,7 @@
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.Map.container_id}">
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
@@ -64,13 +64,13 @@
                                     ng-model="post.Map.container_id"
                                     multiple>
                             </select>
-                            <div ng-repeat="error in errors.Map.container_id">
+                            <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Map.name}">
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Map Name'); ?>
                         </label>
@@ -79,13 +79,13 @@
                                     class="form-control"
                                     type="text"
                                     ng-model="post.Map.name">
-                            <div ng-repeat="error in errors.Map.name">
+                            <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.Map.title}">
+                    <div class="form-group required" ng-class="{'has-error': errors.title}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Map Title'); ?>
                         </label>
@@ -94,7 +94,7 @@
                                     class="form-control"
                                     type="text"
                                     ng-model="post.Map.title">
-                            <div ng-repeat="error in errors.Map.title">
+                            <div ng-repeat="error in errors.title">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
