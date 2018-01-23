@@ -384,6 +384,10 @@
                                    value="<?php echo $gadget['x']; ?>"/>
                             <input type="hidden" data-key="y" name="data[Mapgadget][<?php echo $uuid; ?>][y]"
                                    value="<?php echo $gadget['y']; ?>"/>
+                            <input type="hidden" data-key="size_x" name="data[Mapgadget][<?php echo $uuid; ?>][size_x]"
+                                   value="<?php echo $gadget['size_x']; ?>"/>
+                            <input type="hidden" data-key="size_y" name="data[Mapgadget][<?php echo $uuid; ?>][size_y]"
+                                   value="<?php echo $gadget['size_y']; ?>"/>
                             <input type="hidden" data-key="limit" name="data[Mapgadget][<?php echo $uuid; ?>][limit]"
                                    value="<?php echo $gadget['limit']; ?>"/>
                             <input type="hidden" data-key="gadget" name="data[Mapgadget][<?php echo $uuid; ?>][gadget]"
@@ -1076,6 +1080,24 @@
                                             'class'            => 'form-control gadgetInput',
                                             'element-property' => 'text',
                                             'content'          => 'y'
+                                        ]);
+
+                                        echo $this->Form->input('size_x', [
+                                            'value'             => 0,
+                                            'label'             => __('Size X'),
+                                            'wrapInput'         => 'col col-xs-8',
+                                            'class'             => 'gadgetInput',
+                                            'element-property'  => 'text',
+                                            'content'           => 'size_x'
+                                        ]);
+
+                                        echo $this->Form->input('size_y', [
+                                            'value'             => 0,
+                                            'label'             => __('Size Y'),
+                                            'wrapInput'         => 'col col-xs-8',
+                                            'class'             => 'gadgetInput',
+                                            'element-property'  => 'text',
+                                            'content'           => 'size_y'
                                         ]);
                                         echo $this->Form->fancyCheckbox('transparent_background', [
                                             'caption'          => __('Transparent Background'),

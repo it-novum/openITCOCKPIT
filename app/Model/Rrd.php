@@ -237,6 +237,8 @@ class Rrd extends AppModel {
 
         $width = (isset($options['width'])) ? $options['width'] : 850;
         $color = (isset($options['color'])) ? $options['color'] : 'BACK#FFFFFF';
+        $legend = (isset($options['legend'])) ? $options['legend'] : '';
+        $height = (isset($options['height'])) ? $options['height'] : '';
 
         $_rrd_options = [
             '--slope-mode',
@@ -260,6 +262,15 @@ class Rrd extends AppModel {
             'CDEF:predict=' . (3600 * 24) . ',-31,900,var0,PREDICT',
             'LINE2:predict#337AB7:Trend Prediction',
         ];
+
+        if(!empty($legend)){
+            array_push($_rrd_options, $legend);
+        }
+
+        if(!empty($height)){
+            array_push($_rrd_options, '--height', $height);
+        }
+
         if (is_array($color)) {
             foreach ($color as $c) {
                 array_push($_rrd_options, '--color');

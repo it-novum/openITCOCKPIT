@@ -130,9 +130,30 @@ class MapeditorsController extends MapModuleAppController {
         $this->Frontend->setJson('lang_and', __('and'));
         $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
         $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
-
-
+        
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list', [], 'id', 15);
+
+        $keys = array_keys($hosts);
+
+        $services = $this->Service->find('all',[
+            'recursive' => -1,
+            'conditions' => [
+                'Service.host_id' => $keys
+            ],
+            'fields' => [
+                'Service.id',
+                'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
+                'Service.uuid',
+            ],
+            'contain' => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
+                ],
+            ]
+        ]);
+      
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
