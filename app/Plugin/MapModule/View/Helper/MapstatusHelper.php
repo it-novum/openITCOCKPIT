@@ -277,7 +277,6 @@ class MapstatusHelper extends AppHelper {
         }
         $servicestate = Hash::extract($servicestates, '{n}.Servicestatus');
 
-        //debug($servicestates);
         if (!empty($servicestate)) {
             $cumulative_service_state = Hash::apply($servicestate, '{n}.current_state', 'max');
 
@@ -306,11 +305,32 @@ class MapstatusHelper extends AppHelper {
                     $cumulative_service_state = max($cumulative_service_states_data);
                 }
             }
+
             return (!$cumulative_service_state) ? $this->hostgroupstatusValuesHost($cumulative_host_state) : $this->hostgroupstatusValuesService($cumulative_service_state);
         }
-
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
+
+    public function hostgroupHoststatus($host) {
+        if(!empty($host['Servicestatus'])){
+            $servicestatus = [];
+            foreach ($host['Servicestatus'] as $servicestates){
+                $servicestatus[] = $servicestates['Servicestatus']['current_state'];
+            }
+            if(!empty($servicestatus)){
+                $cumulativeServiceState = max($servicestatus);
+
+                return $this->hostgroupstatusValuesService($cumulativeServiceState);
+            }
+
+        }else{
+            //host has no services -> return hoststatus
+            return $this->hostgroupstatusValuesHost($host['Hoststatus'][0]['Hoststatus']['current_state']);
+        }
+
+    }
+
+
 
     public function hostgroupstatusValuesHost($state) {
         if (!isset($state)) {
@@ -324,17 +344,17 @@ class MapstatusHelper extends AppHelper {
         }
         $states = [
             0 => [
-                'human_state' => __('Hostgroup is up'),
+                'human_state' => __('Up'),
                 'image' => 'up.png',
                 'state' => 0,
             ],
             1 => [
-                'human_state' => __('Hostgroup is down'),
+                'human_state' => __('Down'),
                 'image' => 'down.png',
                 'state' => 1,
             ],
             2 => [
-                'human_state' => __('Hostgroup is unreachable'),
+                'human_state' => __('Unreachable'),
                 'image' => 'unreachable.png',
                 'state' => 2,
             ],
