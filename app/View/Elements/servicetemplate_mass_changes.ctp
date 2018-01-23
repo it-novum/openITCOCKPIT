@@ -66,7 +66,7 @@
     <!-- hidden fields for multi language -->
     <input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>"/>
     <input type="hidden" id="delete_message_h2"
-           value="<?php echo __('Do you really want to delete the selected service templates? Please note, all attached services will be deleted too.'); ?>"/>
+           value="<?php echo __('Do you really want to delete the selected service templates and all attached services?'); ?>"/>
     <input type="hidden" id="disable_message_h1" value="<?php echo __('Notice!'); ?>"/>
     <input type="hidden" id="disable_message_h2"
            value="<?php echo __('Do you really want to disable the selected service templates?'); ?>"/>

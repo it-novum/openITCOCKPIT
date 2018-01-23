@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 /**
@@ -1380,6 +1382,13 @@ class ServicetemplatesController extends AppController
 
     public function usedBy($id = null)
     {
+
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         if (!$this->Servicetemplate->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplate'));
         }
@@ -1391,67 +1400,93 @@ class ServicetemplatesController extends AppController
 
             return;
         }
-
-        $this->loadModel('Service');
-        $_all_services = $this->Service->find('all', [
+        $ServiceConditions = new ServiceConditions();
+        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $query = [
             'recursive'  => -1,
+            'conditions' => [
+                'Servicetemplate.id' => $id,
+                'HostsToContainers.container_id' => $ServiceConditions->getContainerIds()
+            ],
+            'contain'    => ['Servicetemplate', 'Host'],
+            'fields'     => [
+                'Service.id',
+                'Service.name',
+
+                'Servicetemplate.id',
+                'Servicetemplate.name',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.address',
+
+                'HostsToContainers.container_id',
+            ],
             'joins'      => [
-                [
-                    'table'      => 'servicetemplates',
-                    'alias'      => 'Servicetemplate',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-                ],
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id',
-                    ],
-                ],
                 [
                     'table'      => 'hosts_to_containers',
                     'alias'      => 'HostsToContainers',
                     'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
-
                     ],
                 ],
             ],
-            'conditions' => [
-                'HostsToContainers.container_id' => $this->MY_RIGHTS,
-                'Service.servicetemplate_id'     => $id,
+            'group'      => [
+                'Service.id',
             ],
-            'fields'     => [
-                'Host.id', 'Host.name', 'Host.address', 'Service.id', 'Service.host_id', 'Service.name', 'Servicetemplate.id', 'Servicetemplate.template_name', 'HostsToContainers.container_id',
-            ],
-            'order'      => [
-                'Host.name' => 'asc',
-            ],
-        ]);
-        $all_hosts = [];
-        $all_services = [];
-        foreach ($_all_services as $service) {
-            $all_hosts[$service['Host']['id']]['Host'] = $service['Host'];
-            $all_hosts[$service['Host']['id']]['Container'][] = $service['HostsToContainers']['container_id'];
+        ];
 
-            if (!isset($all_services[$service['Host']['id']])) {
-                $all_services[$service['Host']['id']] = [];
+        $services = $this->Service->find('all', $query);
+
+        $hostContainers = [];
+        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostIds = array_unique(Hash::extract($services, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
             }
-
-            $all_services[$service['Host']['id']][$service['Service']['id']] = [
-                'Service'         => $service['Service'],
-                'Servicetemplate' => $service['Servicetemplate'],
-            ];
         }
 
-        $this->set(compact(['all_services', 'all_hosts', 'servicetemplate']));
-        $this->set('_serialize', ['all_services']);
-        $this->set('back_url', $this->referer());
+
+        foreach ($services as $service) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$service['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
+
+
+            $tmpRecord = [
+                'Service'       => $Service->toArray(),
+                'Host'          => $Host->toArray(),
+            ];
+            $all_services[] = $tmpRecord;
+        }
+
+
+        $this->set(compact(['all_services','servicetemplate']));
+        $this->set('_serialize', ['all_services', 'servicetemplate']);
     }
 
     public function loadArguments($command_id = null, $servicetemplate_id = null)
