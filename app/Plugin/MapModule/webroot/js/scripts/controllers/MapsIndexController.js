@@ -61,6 +61,7 @@ angular.module('openITCOCKPIT')
                 for(var key in $scope.maps){
                     var id = $scope.maps[key].Map.id;
                     $scope.massChange[id] = true;
+                    $scope.selectedElements = MassChangeService.getCount();
                 }
             }
         };
@@ -100,6 +101,11 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
+        }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
     }]);

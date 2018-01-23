@@ -100,4 +100,9 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
             $scope.load();
         }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
     });

@@ -121,7 +121,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                <a href="map_module/maps/index" class="btn btn-default">Cancel</a>
+                                <a href="/map_module/maps/index" class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>
